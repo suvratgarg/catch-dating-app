@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
     measurementId: 'G-9K5PP9HE4X',
   );
+
 }

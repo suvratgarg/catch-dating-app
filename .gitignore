@@ -23,6 +23,9 @@ migrate_working_dir/
 # is commented out by default.
 #.vscode/
 
+# Environment variables (secrets)
+.env
+
 # Flutter/Dart/Pub related
 **/doc/api/
 **/ios/Flutter/.last_build_id
@@ -31,6 +34,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+
 /coverage/
 
 # Symbolication related
@@ -43,3 +47,18 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# iOS build artifacts
+ios/build/
+
+# Firebase cache
+.firebase/
+
+# Claude Code memory (internal tool state)
+.claude/
+
+# Accidentally created nested project
+catch-dating-app/
+
+# Node modules
+**/node_modules/
