@@ -4,9 +4,14 @@ String authErrorMessage(Object error) {
   if (error is FirebaseAuthException) {
     return switch (error.code) {
       'email-already-in-use' => 'An account already exists for that email.',
-      'invalid-credential' || 'wrong-password' || 'user-not-found' =>
-        'Incorrect email or password.',
+      'invalid-credential' ||
+      'wrong-password' ||
+      'user-not-found' => 'Incorrect email or password.',
       'invalid-email' => 'Please enter a valid email address.',
+      'invalid-phone-number' => 'Please enter a valid phone number.',
+      'invalid-verification-code' => 'That code is invalid. Please try again.',
+      'session-expired' ||
+      'code-expired' => 'That code expired. Please request a new one.',
       'network-request-failed' =>
         'Check your internet connection and try again.',
       'operation-not-allowed' => 'This sign-in method is not enabled.',

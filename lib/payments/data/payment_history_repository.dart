@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,10 +15,10 @@ class PaymentHistoryRepository {
 
   CollectionReference<Payment> get _paymentsRef => _db
       .collection(_collectionPath)
-      .withConverter<Payment>(
-        fromFirestore: (doc, _) =>
-            Payment.fromJson({...doc.data()!, 'id': doc.id}),
-        toFirestore: (payment, _) => payment.toJson(),
+      .withDocumentIdConverter<Payment>(
+        idField: 'id',
+        fromJson: Payment.fromJson,
+        toJson: (payment) => payment.toJson(),
       );
 
   // ── Read ──────────────────────────────────────────────────────────────────

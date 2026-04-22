@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/common_widgets/error_banner.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -50,10 +51,9 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             const SizedBox(height: 32),
             Text(
               "What's your number?",
-              style: CatchTextStyles.displaySm(context).copyWith(
-                fontWeight: FontWeight.bold,
-                color: t.ink,
-              ),
+              style: CatchTextStyles.displaySm(
+                context,
+              ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
             ),
             gapH8,
             Text(
@@ -73,8 +73,14 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               ],
               decoration: InputDecoration(
                 prefixIcon: Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 2,
+                  ),
                   decoration: BoxDecoration(
                     color: t.surface,
                     borderRadius: BorderRadius.circular(6),
@@ -97,7 +103,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
             if (mutation.hasError) ...[
               gapH16,
               ErrorBanner(
-                message: (mutation as MutationError).error.toString(),
+                message: authErrorMessage((mutation as MutationError).error),
               ),
             ],
             const Spacer(),

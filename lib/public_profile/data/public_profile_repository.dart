@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,10 +15,10 @@ class PublicProfileRepository {
 
   CollectionReference<PublicProfile> get _publicProfilesRef => _db
       .collection(_collectionPath)
-      .withConverter<PublicProfile>(
-        fromFirestore: (doc, _) =>
-            PublicProfile.fromJson({...doc.data()!, 'uid': doc.id}),
-        toFirestore: (profile, _) => profile.toJson(),
+      .withDocumentIdConverter<PublicProfile>(
+        idField: 'uid',
+        fromJson: PublicProfile.fromJson,
+        toJson: (profile) => profile.toJson(),
       );
 
   DocumentReference<PublicProfile> _publicProfileRef(String uid) =>

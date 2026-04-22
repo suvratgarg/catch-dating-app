@@ -3,15 +3,15 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   AppUser buildUser({required DateTime dateOfBirth}) => AppUser(
-        uid: 'user-1',
-        name: 'Runner',
-        dateOfBirth: dateOfBirth,
-        gender: Gender.man,
-        sexualOrientation: SexualOrientation.straight,
-        phoneNumber: '+910000000000',
-        profileComplete: true,
-        interestedInGenders: const [Gender.woman],
-      );
+    uid: 'user-1',
+    name: 'Runner',
+    dateOfBirth: dateOfBirth,
+    gender: Gender.man,
+    sexualOrientation: SexualOrientation.straight,
+    phoneNumber: '+910000000000',
+    profileComplete: true,
+    interestedInGenders: const [Gender.woman],
+  );
 
   group('AppUser.age', () {
     test('#21 birthday earlier this year — full year counted', () {
@@ -28,8 +28,7 @@ void main() {
       final dob = DateTime(now.year - 30, 12, 31);
       final user = buildUser(dateOfBirth: dob);
       // If today is before Dec 31, age is still 29.
-      final expectedAge =
-          now.isBefore(DateTime(now.year, 12, 31)) ? 29 : 30;
+      final expectedAge = now.isBefore(DateTime(now.year, 12, 31)) ? 29 : 30;
       expect(user.age, expectedAge);
     });
 
@@ -40,5 +39,11 @@ void main() {
       final user = buildUser(dateOfBirth: dob);
       expect(user.age, 25);
     });
+  });
+
+  test('toJson omits uid because Firestore stores it in the document path', () {
+    final user = buildUser(dateOfBirth: DateTime(1995, 6, 15));
+
+    expect(user.toJson().containsKey('uid'), isFalse);
   });
 }

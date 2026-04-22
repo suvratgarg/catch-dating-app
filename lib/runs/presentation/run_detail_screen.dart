@@ -28,7 +28,7 @@ class RunDetailScreen extends ConsumerWidget {
           return RunDetailBody(
             run: vm.run,
             appUser: vm.appUser,
-            runClubId: vm.run.runClubId,
+            runClubId: runClubId,
             reviews: vm.reviews,
           );
         },

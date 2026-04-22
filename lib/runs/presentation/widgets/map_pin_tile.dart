@@ -29,9 +29,7 @@ class MapPinTile extends StatelessWidget {
         child: Row(
           children: [
             Icon(
-              hasPin
-                  ? Icons.edit_location_alt_outlined
-                  : Icons.map_outlined,
+              hasPin ? Icons.edit_location_alt_outlined : Icons.map_outlined,
               size: 20,
               color: hasPin ? t.primary : t.ink2,
             ),
@@ -40,7 +38,7 @@ class MapPinTile extends StatelessWidget {
               child: Text(
                 hasPin
                     ? '${startingPoint!.latitude.toStringAsFixed(5)}, '
-                        '${startingPoint!.longitude.toStringAsFixed(5)}'
+                          '${startingPoint!.longitude.toStringAsFixed(5)}'
                     : 'Pin exact starting point on map',
                 style: hasPin
                     ? CatchTextStyles.bodyMd(context, color: t.primary)
@@ -48,9 +46,7 @@ class MapPinTile extends StatelessWidget {
               ),
             ),
             Icon(
-              hasPin
-                  ? Icons.check_circle_rounded
-                  : Icons.chevron_right_rounded,
+              hasPin ? Icons.check_circle_rounded : Icons.chevron_right_rounded,
               size: 18,
               color: hasPin ? t.primary : t.ink3,
             ),

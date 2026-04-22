@@ -14,9 +14,21 @@ class PaceLevelColors {
 
 extension PaceLevelTheme on PaceLevel {
   PaceLevelColors get colors => switch (this) {
-        PaceLevel.easy        => const PaceLevelColors(bg: Color(0xFFDCFCE7), fg: Color(0xFF166534)),
-        PaceLevel.moderate    => const PaceLevelColors(bg: Color(0xFFDBEAFE), fg: Color(0xFF1E40AF)),
-        PaceLevel.fast        => const PaceLevelColors(bg: Color(0xFFFEF3C7), fg: Color(0xFF92400E)),
-        PaceLevel.competitive => const PaceLevelColors(bg: Color(0xFFFFE4E6), fg: Color(0xFF9F1239)),
-      };
+    PaceLevel.easy => const PaceLevelColors(
+      bg: Color(0xFFDCFCE7),
+      fg: Color(0xFF166534),
+    ),
+    PaceLevel.moderate => const PaceLevelColors(
+      bg: Color(0xFFDBEAFE),
+      fg: Color(0xFF1E40AF),
+    ),
+    PaceLevel.fast => const PaceLevelColors(
+      bg: Color(0xFFFEF3C7),
+      fg: Color(0xFF92400E),
+    ),
+    PaceLevel.competitive => const PaceLevelColors(
+      bg: Color(0xFFFFE4E6),
+      fg: Color(0xFF9F1239),
+    ),
+  };
 }

@@ -35,6 +35,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   final _step0Key = GlobalKey<FormState>();
   final _step1Key = GlobalKey<FormState>();
   final _step2Key = GlobalKey<FormState>();
+  final _step3Key = GlobalKey<FormState>();
 
   // Step 0 — When
   final _dateController = TextEditingController();
@@ -42,6 +43,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   DateTime? _selectedDate;
   TimeOfDay? _selectedStartTime;
   int _durationMinutes = 60;
+  String? _scheduleErrorText;
 
   static const _minDuration = 30;
   static const _maxDuration = 240;
@@ -92,6 +94,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     );
     if (picked != null) {
       setState(() {
+        _scheduleErrorText = null;
         _selectedDate = picked;
         _dateController.text =
             '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
@@ -106,6 +109,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     );
     if (picked != null) {
       setState(() {
+        _scheduleErrorText = null;
         _selectedStartTime = picked;
         _startTimeController.text =
             '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
@@ -116,8 +120,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   Future<void> _pickLocation() async {
     final result = await Navigator.of(context).push<LatLng>(
       MaterialPageRoute(
-        builder: (_) =>
-            LocationPickerScreen(initialLocation: _startingPoint),
+        builder: (_) => LocationPickerScreen(initialLocation: _startingPoint),
         fullscreenDialog: true,
       ),
     );
@@ -139,10 +142,26 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   }
 
   void _next() {
-    final keys = [_step0Key, _step1Key, _step2Key];
+    final keys = [_step0Key, _step1Key, _step2Key, _step3Key];
     if (_currentStep < keys.length) {
-      if (!keys[_currentStep].currentState!.validate()) return;
+      final formState = keys[_currentStep].currentState;
+      if (formState != null && !formState.validate()) return;
     }
+
+    if (_currentStep == 0) {
+      final selectedDate = _selectedDate;
+      final selectedStartTime = _selectedStartTime;
+      if (selectedDate == null || selectedStartTime == null) return;
+
+      final startTime = _combine(selectedDate, selectedStartTime);
+      if (!startTime.isAfter(DateTime.now())) {
+        setState(() {
+          _scheduleErrorText = 'Start time must be in the future';
+        });
+        return;
+      }
+    }
+
     if (_currentStep < _totalSteps - 1) {
       setState(() => _currentStep++);
       _pageController.nextPage(
@@ -177,7 +196,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     );
 
     CreateRunController.submitMutation.run(ref, (tx) async {
-      await tx.get(createRunControllerProvider.notifier).submit(
+      await tx
+          .get(createRunControllerProvider.notifier)
+          .submit(
             runClubId: widget.runClub.id,
             startTime: startTime,
             endTime: endTime,
@@ -191,19 +212,19 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
             pace: _selectedPace!,
             capacityLimit: int.parse(_capacityController.text.trim()),
             description: _descriptionController.text.trim(),
-            priceInPaise:
-                (double.parse(_priceController.text.trim()) * 100).round(),
+            priceInPaise: (double.parse(_priceController.text.trim()) * 100)
+                .round(),
             constraints: constraints,
           );
     });
   }
 
   static String _stepTitle(int step) => switch (step) {
-        0 => 'When is the run?',
-        1 => 'Where does it start?',
-        2 => 'Tell us about the run',
-        _ => 'Any rules? (optional)',
-      };
+    0 => 'When is the run?',
+    1 => 'Where does it start?',
+    2 => 'Tell us about the run',
+    _ => 'Any rules? (optional)',
+  };
 
   @override
   Widget build(BuildContext context) {
@@ -223,13 +244,20 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.screenH, 12, CatchSpacing.screenH, 0),
+                CatchSpacing.screenH,
+                12,
+                CatchSpacing.screenH,
+                0,
+              ),
               child: Row(
                 children: [
                   IconBtn(
                     onTap: _back,
-                    child: Icon(Icons.arrow_back_ios_new_rounded,
-                        size: 18, color: t.ink),
+                    child: Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 18,
+                      color: t.ink,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
@@ -242,8 +270,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                         ),
                         Text(
                           widget.runClub.name,
-                          style: CatchTextStyles.bodySm(context,
-                              color: t.ink2),
+                          style: CatchTextStyles.bodySm(context, color: t.ink2),
                         ),
                       ],
                     ),
@@ -257,7 +284,11 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.screenH, 12, CatchSpacing.screenH, 0),
+                CatchSpacing.screenH,
+                12,
+                CatchSpacing.screenH,
+                0,
+              ),
               child: StepProgressBar(
                 currentStep: _currentStep,
                 totalSteps: _totalSteps,
@@ -278,13 +309,14 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                     onPickTime: _pickStartTime,
                     onDecreaseDuration: _durationMinutes > _minDuration
                         ? () =>
-                            setState(() => _durationMinutes -= _durationStep)
+                              setState(() => _durationMinutes -= _durationStep)
                         : null,
                     onIncreaseDuration: _durationMinutes < _maxDuration
                         ? () =>
-                            setState(() => _durationMinutes += _durationStep)
+                              setState(() => _durationMinutes += _durationStep)
                         : null,
                     formatDuration: _fmtDuration,
+                    scheduleErrorText: _scheduleErrorText,
                   ),
                   WhereStep(
                     formKey: _step1Key,
@@ -303,6 +335,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                     onPaceChanged: (p) => setState(() => _selectedPace = p),
                   ),
                   EligibilityStep(
+                    formKey: _step3Key,
                     minAgeController: _minAgeController,
                     maxAgeController: _maxAgeController,
                     maxMenController: _maxMenController,

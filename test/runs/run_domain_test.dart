@@ -86,26 +86,17 @@ void main() {
 
   group('Run.isFull', () {
     test('#5 false when signedUpCount < capacityLimit', () {
-      final run = buildRun(
-        capacityLimit: 5,
-        signedUpUserIds: ['a', 'b'],
-      );
+      final run = buildRun(capacityLimit: 5, signedUpUserIds: ['a', 'b']);
       expect(run.isFull, isFalse);
     });
 
     test('#6 true when signedUpCount == capacityLimit', () {
-      final run = buildRun(
-        capacityLimit: 2,
-        signedUpUserIds: ['a', 'b'],
-      );
+      final run = buildRun(capacityLimit: 2, signedUpUserIds: ['a', 'b']);
       expect(run.isFull, isTrue);
     });
 
     test('true when signedUpCount exceeds capacityLimit', () {
-      final run = buildRun(
-        capacityLimit: 2,
-        signedUpUserIds: ['a', 'b', 'c'],
-      );
+      final run = buildRun(capacityLimit: 2, signedUpUserIds: ['a', 'b', 'c']);
       expect(run.isFull, isTrue);
     });
   });
@@ -119,6 +110,13 @@ void main() {
 
     test('false when priceInPaise > 0', () {
       expect(buildRun(priceInPaise: 50000).isFree, isFalse);
+    });
+  });
+
+  group('Run.distanceMiles', () {
+    test('converts kilometres to miles', () {
+      final run = buildRun();
+      expect(run.distanceMiles, closeTo(3.106855, 0.000001));
     });
   });
 

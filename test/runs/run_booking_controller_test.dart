@@ -1,140 +1,214 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
+import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/domain/run_constraints.dart';
+import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-// ── Fake payment repository ────────────────────────────────────────────────
-
-class _FakePaymentRepository implements PaymentRepository {
-  bool bookFreeRunCalled = false;
-  String? lastFreeRunId;
-  bool processPaymentCalled = false;
-  final bool _supportsPaid;
-
-  _FakePaymentRepository({bool supportsPaid = true})
-      : _supportsPaid = supportsPaid;
-
-  @override
-  bool get supportsPaidBookings => _supportsPaid;
-
-  @override
-  Future<void> bookFreeRun({required String runId}) async {
-    bookFreeRunCalled = true;
-    lastFreeRunId = runId;
-  }
-
-  @override
-  Future<void> processPayment({
-    required String activityId,
-    required int amountInPaise,
-    required String description,
-    required String userName,
-    required String userEmail,
-    required String userContact,
-  }) async {
-    processPaymentCalled = true;
-  }
-
-  @override
-  void dispose() {}
-}
-
-// ── Helpers ────────────────────────────────────────────────────────────────
-
-Run buildRun({
-  bool free = true,
-  String id = 'run-1',
-}) {
-  final start = DateTime.now().add(const Duration(hours: 2));
-  return Run(
-    id: id,
-    runClubId: 'club-1',
-    startTime: start,
-    endTime: start.add(const Duration(hours: 1)),
-    meetingPoint: 'Start',
-    distanceKm: 5,
-    pace: PaceLevel.easy,
-    capacityLimit: 20,
-    description: '',
-    priceInPaise: free ? 0 : 50000,
-    constraints: const RunConstraints(),
-  );
-}
-
-AppUser buildUser() => AppUser(
-      uid: 'user-1',
-      name: 'Runner',
-      dateOfBirth: DateTime(1995, 6, 15),
-      gender: Gender.man,
-      sexualOrientation: SexualOrientation.straight,
-      phoneNumber: '+910000000000',
-      profileComplete: true,
-      email: 'runner@example.com',
-      interestedInGenders: const [Gender.woman],
-    );
-
-// ── Tests ──────────────────────────────────────────────────────────────────
+import 'runs_test_helpers.dart';
 
 void main() {
-  group('RunBookingController.book()', () {
-    test('#29 free run calls bookFreeRun on the payment repository', () async {
-      final fakeRepo = _FakePaymentRepository();
-
+  group('RunBookingController.book', () {
+    test('books a free run through the payment repository', () async {
+      final fakePaymentRepository = FakePaymentRepository();
       final container = ProviderContainer(
         overrides: [
-          paymentRepositoryProvider.overrideWithValue(fakeRepo),
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
       addTearDown(container.dispose);
 
-      final controller =
-          container.read(runBookingControllerProvider.notifier);
-      await controller.book(run: buildRun(free: true), user: buildUser());
+      final controller = container.read(runBookingControllerProvider.notifier);
+      await controller.book(run: buildRun(), user: buildUser());
 
-      expect(fakeRepo.bookFreeRunCalled, isTrue);
-      expect(fakeRepo.lastFreeRunId, 'run-1');
-      expect(fakeRepo.processPaymentCalled, isFalse);
+      expect(fakePaymentRepository.bookFreeRunCalled, isTrue);
+      expect(fakePaymentRepository.bookedFreeRunId, 'run-1');
+      expect(fakePaymentRepository.processPaymentCalled, isFalse);
     });
 
-    test('#30 paid run calls processPayment when supportsPaidBookings is true', () async {
-      final fakeRepo = _FakePaymentRepository(supportsPaid: true);
-
+    test('books a paid run with the full payment payload', () async {
+      final fakePaymentRepository = FakePaymentRepository(supportsPaid: true);
       final container = ProviderContainer(
         overrides: [
-          paymentRepositoryProvider.overrideWithValue(fakeRepo),
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
       addTearDown(container.dispose);
 
-      final controller =
-          container.read(runBookingControllerProvider.notifier);
-      await controller.book(run: buildRun(free: false), user: buildUser());
-
-      expect(fakeRepo.processPaymentCalled, isTrue);
-      expect(fakeRepo.bookFreeRunCalled, isFalse);
-    });
-
-    test('#31 paid run throws UnsupportedError when supportsPaidBookings is false', () async {
-      final fakeRepo = _FakePaymentRepository(supportsPaid: false);
-
-      final container = ProviderContainer(
-        overrides: [
-          paymentRepositoryProvider.overrideWithValue(fakeRepo),
-        ],
+      final run = buildRun(
+        id: 'paid-run',
+        startTime: DateTime(2025, 1, 2, 6),
+        endTime: DateTime(2025, 1, 2, 7),
+        priceInPaise: 50000,
       );
-      addTearDown(container.dispose);
+      final user = buildUser(
+        uid: 'runner-7',
+        name: 'Priya',
+        email: 'priya@example.com',
+        phoneNumber: '+919876543210',
+      );
 
-      final controller =
-          container.read(runBookingControllerProvider.notifier);
+      final controller = container.read(runBookingControllerProvider.notifier);
+      await controller.book(run: run, user: user);
 
+      expect(fakePaymentRepository.processPaymentCalled, isTrue);
+      expect(fakePaymentRepository.lastProcessPaymentCall, isNotNull);
       expect(
-        () => controller.book(run: buildRun(free: false), user: buildUser()),
+        fakePaymentRepository.lastProcessPaymentCall!.activityId,
+        'paid-run',
+      );
+      expect(
+        fakePaymentRepository.lastProcessPaymentCall!.amountInPaise,
+        50000,
+      );
+      expect(
+        fakePaymentRepository.lastProcessPaymentCall!.description,
+        'Thursday Morning Run · Thu, 2 Jan',
+      );
+      expect(fakePaymentRepository.lastProcessPaymentCall!.userName, 'Priya');
+      expect(
+        fakePaymentRepository.lastProcessPaymentCall!.userEmail,
+        'priya@example.com',
+      );
+      expect(
+        fakePaymentRepository.lastProcessPaymentCall!.userContact,
+        '+919876543210',
+      );
+      expect(fakePaymentRepository.bookFreeRunCalled, isFalse);
+    });
+
+    test('throws when paid bookings are unsupported on the platform', () async {
+      final fakePaymentRepository = FakePaymentRepository(supportsPaid: false);
+      final container = ProviderContainer(
+        overrides: [
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final controller = container.read(runBookingControllerProvider.notifier);
+
+      await expectLater(
+        controller.book(run: buildRun(priceInPaise: 50000), user: buildUser()),
         throwsA(isA<UnsupportedError>()),
       );
-      expect(fakeRepo.processPaymentCalled, isFalse);
+      expect(fakePaymentRepository.processPaymentCalled, isFalse);
+    });
+  });
+
+  group('RunBookingController mutations', () {
+    test('cancelBooking delegates to the run repository', () async {
+      final fakeRunRepository = FakeRunRepository();
+      final container = ProviderContainer(
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(runBookingControllerProvider.notifier)
+          .cancelBooking(run: buildRun(id: 'run-9'));
+
+      expect(fakeRunRepository.cancelledRunId, 'run-9');
+    });
+
+    test('joinWaitlist uses the signed-in uid from auth', () async {
+      final fakeRunRepository = FakeRunRepository();
+      final container = ProviderContainer(
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-42')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await container
+          .read(runBookingControllerProvider.notifier)
+          .joinWaitlist(run: buildRun(id: 'run-42'));
+
+      expect(fakeRunRepository.joinedWaitlistRunId, 'run-42');
+      expect(fakeRunRepository.joinedWaitlistUserId, 'runner-42');
+    });
+
+    test('leaveWaitlist uses the signed-in uid from auth', () async {
+      final fakeRunRepository = FakeRunRepository();
+      final container = ProviderContainer(
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-42')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await container
+          .read(runBookingControllerProvider.notifier)
+          .leaveWaitlist(run: buildRun(id: 'run-42'));
+
+      expect(fakeRunRepository.leftWaitlistRunId, 'run-42');
+      expect(fakeRunRepository.leftWaitlistUserId, 'runner-42');
+    });
+
+    test('joinWaitlist throws when the user is not signed in', () async {
+      final container = ProviderContainer(
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => FakeRunRepository()),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await expectLater(
+        container
+            .read(runBookingControllerProvider.notifier)
+            .joinWaitlist(run: buildRun()),
+        throwsA(isA<StateError>()),
+      );
+    });
+
+    test('leaveWaitlist throws when the user is not signed in', () async {
+      final container = ProviderContainer(
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => FakeRunRepository()),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await expectLater(
+        container
+            .read(runBookingControllerProvider.notifier)
+            .leaveWaitlist(run: buildRun()),
+        throwsA(isA<StateError>()),
+      );
     });
   });
 }

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,10 +15,10 @@ class MatchRepository {
 
   CollectionReference<Match> get _matchesRef => _db
       .collection(_collectionPath)
-      .withConverter<Match>(
-        fromFirestore: (doc, _) =>
-            Match.fromJson({...doc.data()!, 'id': doc.id}),
-        toFirestore: (match, _) => match.toJson(),
+      .withDocumentIdConverter<Match>(
+        idField: 'id',
+        fromJson: Match.fromJson,
+        toJson: (match) => match.toJson(),
       );
 
   DocumentReference<Match> _matchRef(String id) => _matchesRef.doc(id);

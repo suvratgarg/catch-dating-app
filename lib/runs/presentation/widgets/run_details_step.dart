@@ -32,7 +32,11 @@ class RunDetailsStep extends StatelessWidget {
       key: formKey,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.screenH, 16, CatchSpacing.screenH, 24),
+          CatchSpacing.screenH,
+          16,
+          CatchSpacing.screenH,
+          24,
+        ),
         children: [
           Row(
             children: [
@@ -46,19 +50,25 @@ class RunDetailsStep extends StatelessWidget {
                       controller: distanceController,
                       decoration: InputDecoration(
                         hintText: '10',
-                        prefixIcon: Icon(Icons.straighten_outlined,
-                            color: t.ink2),
+                        prefixIcon: Icon(
+                          Icons.straighten_outlined,
+                          color: t.ink2,
+                        ),
                       ),
                       keyboardType: const TextInputType.numberWithOptions(
-                          decimal: true),
+                        decimal: true,
+                      ),
                       inputFormatters: [
                         FilteringTextInputFormatter.allow(
-                            RegExp(r'^\d*\.?\d*')),
+                          RegExp(r'^\d*\.?\d*'),
+                        ),
                       ],
                       textInputAction: TextInputAction.next,
                       validator: (v) {
                         if (v == null || v.trim().isEmpty) return 'Required';
-                        if (double.tryParse(v.trim()) == null) return 'Invalid';
+                        final distance = double.tryParse(v.trim());
+                        if (distance == null) return 'Invalid';
+                        if (distance <= 0) return 'Must be > 0';
                         return null;
                       },
                     ),
@@ -76,13 +86,10 @@ class RunDetailsStep extends StatelessWidget {
                       controller: capacityController,
                       decoration: InputDecoration(
                         hintText: '20',
-                        prefixIcon:
-                            Icon(Icons.people_outline, color: t.ink2),
+                        prefixIcon: Icon(Icons.people_outline, color: t.ink2),
                       ),
                       keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                      ],
+                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                       textInputAction: TextInputAction.next,
                       validator: (v) {
                         if (v == null || v.trim().isEmpty) return 'Required';
@@ -103,11 +110,9 @@ class RunDetailsStep extends StatelessWidget {
             controller: priceController,
             decoration: InputDecoration(
               hintText: '0',
-              prefixIcon:
-                  Icon(Icons.currency_rupee_outlined, color: t.ink2),
+              prefixIcon: Icon(Icons.currency_rupee_outlined, color: t.ink2),
             ),
-            keyboardType:
-                const TextInputType.numberWithOptions(decimal: true),
+            keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
             ],
@@ -149,8 +154,10 @@ class RunDetailsStep extends StatelessWidget {
                 if (field.hasError)
                   Padding(
                     padding: const EdgeInsets.only(top: 6, left: 4),
-                    child: Text(field.errorText!,
-                        style: TextStyle(fontSize: 12, color: t.primary)),
+                    child: Text(
+                      field.errorText!,
+                      style: TextStyle(fontSize: 12, color: t.primary),
+                    ),
                   ),
               ],
             ),
@@ -161,8 +168,7 @@ class RunDetailsStep extends StatelessWidget {
           TextFormField(
             controller: descriptionController,
             decoration: InputDecoration(
-              hintText:
-                  'What should runners expect? Any tips for the route?',
+              hintText: 'What should runners expect? Any tips for the route?',
               alignLabelWithHint: true,
               prefixIcon: Icon(Icons.edit_note_outlined, color: t.ink2),
             ),

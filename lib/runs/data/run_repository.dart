@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -16,9 +17,10 @@ class RunRepository {
 
   CollectionReference<Run> get _runsRef => _db
       .collection(_collectionPath)
-      .withConverter<Run>(
-        fromFirestore: (doc, _) => Run.fromJson({...doc.data()!, 'id': doc.id}),
-        toFirestore: (run, _) => run.toJson(),
+      .withDocumentIdConverter<Run>(
+        idField: 'id',
+        fromJson: Run.fromJson,
+        toJson: (run) => run.toJson(),
       );
 
   DocumentReference<Run> _runRef(String id) => _runsRef.doc(id);

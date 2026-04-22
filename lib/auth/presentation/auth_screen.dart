@@ -56,6 +56,16 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     notifier.toggleAuthState();
   }
 
+  void _goToPhoneOnboarding() {
+    final from = GoRouterState.of(context).uri.queryParameters['from'];
+    context.go(
+      Uri(
+        path: Routes.onboardingScreen.path,
+        queryParameters: {if (from != null && from.isNotEmpty) 'from': from},
+      ).toString(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(
@@ -171,9 +181,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             const OrDivider(),
             gapH16,
             OutlinedButton.icon(
-              onPressed: isSubmitting
-                  ? null
-                  : () => context.go(Routes.onboardingScreen.path),
+              onPressed: isSubmitting ? null : _goToPhoneOnboarding,
               icon: const Icon(Icons.phone_outlined),
               label: const Text('Continue with phone'),
               style: OutlinedButton.styleFrom(

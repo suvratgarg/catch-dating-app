@@ -65,7 +65,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
     final today = DateTime.now();
     int age = today.year - _selectedDate!.year;
     if (today.month < _selectedDate!.month ||
-        (today.month == _selectedDate!.month && today.day < _selectedDate!.day)) {
+        (today.month == _selectedDate!.month &&
+            today.day < _selectedDate!.day)) {
       age--;
     }
     return age;
@@ -73,12 +74,14 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      ref.read(onboardingControllerProvider.notifier).setNameDob(
-        firstName: _firstNameController.text.trim(),
-        lastName: _lastNameController.text.trim(),
-        dateOfBirth: _selectedDate!,
-        phoneNumber: _phoneController.text.trim(),
-      );
+      ref
+          .read(onboardingControllerProvider.notifier)
+          .setNameDob(
+            firstName: _firstNameController.text.trim(),
+            lastName: _lastNameController.text.trim(),
+            dateOfBirth: _selectedDate!,
+            phoneNumber: _phoneController.text.trim(),
+          );
       ref.read(onboardingControllerProvider.notifier).goToStep(4);
     }
   }
@@ -98,10 +101,9 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             const SizedBox(height: 32),
             Text(
               'What\'s your name?',
-              style: CatchTextStyles.displaySm(context).copyWith(
-                fontWeight: FontWeight.bold,
-                color: t.ink,
-              ),
+              style: CatchTextStyles.displaySm(
+                context,
+              ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
             ),
             const SizedBox(height: 32),
             Row(
@@ -139,8 +141,9 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                 prefixIcon: const Icon(Icons.calendar_today_outlined),
                 suffixText: age != null ? 'Age $age' : null,
               ),
-              validator: (v) =>
-                  v == null || v.isEmpty ? 'Please select your date of birth' : null,
+              validator: (v) => v == null || v.isEmpty
+                  ? 'Please select your date of birth'
+                  : null,
             ),
             gapH24,
             TextFormField(
@@ -164,6 +167,9 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               validator: (v) {
                 if (v == null || v.trim().isEmpty) {
                   return 'Please enter your phone number';
+                }
+                if (!_phoneReadOnly && v.trim().length != 10) {
+                  return 'Please enter a valid 10-digit number';
                 }
                 return null;
               },

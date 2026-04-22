@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -15,10 +16,10 @@ class AppUserRepository {
 
   CollectionReference<AppUser> get _usersRef => _db
       .collection(_collectionPath)
-      .withConverter<AppUser>(
-        fromFirestore: (doc, _) =>
-            AppUser.fromJson({...doc.data()!, 'uid': doc.id}),
-        toFirestore: (user, _) => user.toJson(),
+      .withDocumentIdConverter<AppUser>(
+        idField: 'uid',
+        fromJson: AppUser.fromJson,
+        toJson: (user) => user.toJson(),
       );
 
   DocumentReference<AppUser> _userRef(String uid) => _usersRef.doc(uid);

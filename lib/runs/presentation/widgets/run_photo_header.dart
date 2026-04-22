@@ -63,7 +63,10 @@ class RunPhotoHeader extends StatelessWidget {
                   children: [
                     Text(
                       run.meetingPoint,
-                      style: const TextStyle(fontSize: 13, color: Colors.white70),
+                      style: const TextStyle(
+                        fontSize: 13,
+                        color: Colors.white70,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -81,12 +84,17 @@ class RunPhotoHeader extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
                   borderRadius: BorderRadius.circular(CatchRadius.button),
                   border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.3), width: 1),
+                    color: Colors.white.withValues(alpha: 0.3),
+                    width: 1,
+                  ),
                 ),
                 child: Text(
                   run.distanceKm == run.distanceKm.roundToDouble()
@@ -145,7 +153,9 @@ class _RunMapPainter extends CustomPainter {
       Rect.fromLTWH(w * 0.42, h * 0.52, w * 0.2, h * 0.1),
     ]) {
       canvas.drawRRect(
-          RRect.fromRectAndRadius(r, const Radius.circular(2)), paint);
+        RRect.fromRectAndRadius(r, const Radius.circular(2)),
+        paint,
+      );
     }
 
     paint

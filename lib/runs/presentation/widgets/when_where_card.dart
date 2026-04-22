@@ -12,13 +12,28 @@ class WhenWhereCard extends StatelessWidget {
       '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
 
   static const _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   static const _weekdaysFull = [
-    'Monday', 'Tuesday', 'Wednesday',
-    'Thursday', 'Friday', 'Saturday', 'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday',
   ];
 
   static String _longDate(DateTime dt) =>
@@ -104,22 +119,28 @@ class WhenWhereCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(10),
                   border: Border.all(color: t.line),
                 ),
-                child: Icon(Icons.location_on_outlined,
-                    size: 20, color: t.ink2),
+                child: Icon(
+                  Icons.location_on_outlined,
+                  size: 20,
+                  color: t.ink2,
+                ),
               ),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(run.meetingPoint,
-                        style: CatchTextStyles.labelLg(context)),
+                    Text(
+                      run.meetingPoint,
+                      style: CatchTextStyles.labelLg(context),
+                    ),
                     if (run.locationDetails != null &&
                         run.locationDetails!.isNotEmpty) ...[
                       const SizedBox(height: 2),
-                      Text(run.locationDetails!,
-                          style: CatchTextStyles.bodySm(
-                              context, color: t.ink2)),
+                      Text(
+                        run.locationDetails!,
+                        style: CatchTextStyles.bodySm(context, color: t.ink2),
+                      ),
                     ],
                   ],
                 ),

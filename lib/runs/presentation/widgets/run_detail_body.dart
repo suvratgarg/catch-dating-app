@@ -36,8 +36,18 @@ class RunDetailBody extends ConsumerStatefulWidget {
 
 class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
   static const _months = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
   static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
@@ -58,16 +68,16 @@ class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
 
     ref.listen(RunBookingController.bookMutation, (prev, next) {
       if (prev?.isPending == true && next.isSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Booking confirmed!')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Booking confirmed!')));
       }
     });
     ref.listen(RunBookingController.cancelMutation, (prev, next) {
       if (prev?.isPending == true && next.isSuccess) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Booking cancelled.')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Booking cancelled.')));
       }
     });
 
@@ -85,8 +95,11 @@ class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
               child: IconBtn(
                 background: t.surface,
                 onTap: () => Navigator.of(context).pop(),
-                child: Icon(Icons.arrow_back_ios_new_rounded,
-                    size: 18, color: t.ink),
+                child: Icon(
+                  Icons.arrow_back_ios_new_rounded,
+                  size: 18,
+                  color: t.ink,
+                ),
               ),
             ),
             actions: [
@@ -108,8 +121,11 @@ class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
                   // to Firestore (savedRunIds on AppUser) or local prefs, then
                   // wire a toggle mutation and swap the icon to filled when saved.
                   onTap: () {},
-                  child: Icon(Icons.bookmark_border_rounded,
-                      size: 18, color: t.ink),
+                  child: Icon(
+                    Icons.bookmark_border_rounded,
+                    size: 18,
+                    color: t.ink,
+                  ),
                 ),
               ),
             ],
@@ -120,7 +136,11 @@ class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenH, 20, CatchSpacing.screenH, 32),
+              CatchSpacing.screenH,
+              20,
+              CatchSpacing.screenH,
+              32,
+            ),
             sliver: SliverList.list(
               children: [
                 Text(run.title, style: CatchTextStyles.displayLg(context)),

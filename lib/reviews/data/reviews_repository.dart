@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/domain/review_document_id.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -15,10 +16,10 @@ class ReviewsRepository {
 
   CollectionReference<Review> get _reviewsRef => _db
       .collection(_collectionPath)
-      .withConverter<Review>(
-        fromFirestore: (doc, _) =>
-            Review.fromJson({...doc.data()!, 'id': doc.id}),
-        toFirestore: (review, _) => review.toJson(),
+      .withDocumentIdConverter<Review>(
+        idField: 'id',
+        fromJson: Review.fromJson,
+        toJson: (review) => review.toJson(),
       );
 
   // ── Read ──────────────────────────────────────────────────────────────────

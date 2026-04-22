@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
+import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
@@ -11,6 +12,7 @@ import 'package:catch_dating_app/payments/presentation/payment_history_screen.da
 import 'package:catch_dating_app/profile/presentation/edit_profile_screen.dart';
 import 'package:catch_dating_app/profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create_run_club_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/run_club_detail_screen.dart';
@@ -20,12 +22,15 @@ import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart'
+    show AsyncValue, ConsumerWidget, WidgetRef;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'go_router.g.dart';
 
 enum Routes {
+  loadingScreen('/loading'),
   authScreen('/auth'),
   onboardingScreen('/onboarding'),
   editProfileScreen('/edit-profile'),
@@ -59,6 +64,8 @@ final _catchesShellKey = GlobalKey<NavigatorState>();
 final _chatsShellKey = GlobalKey<NavigatorState>();
 final _profileShellKey = GlobalKey<NavigatorState>();
 
+const _fromQueryParam = 'from';
+
 @Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
   final notifier = _RouterRefreshNotifier();
@@ -73,46 +80,24 @@ GoRouter goRouter(Ref ref) {
     initialLocation: Routes.dashboardScreen.path,
     refreshListenable: notifier,
     redirect: (context, state) {
-      final uidAsync = ref.read(uidProvider);
-      final appUserAsync = ref.read(appUserStreamProvider);
-
-      if (uidAsync.isLoading || appUserAsync.isLoading) return null;
-
-      final uid = uidAsync.value;
-      final appUser = appUserAsync.value;
-      final loc = state.matchedLocation;
-
-      final onOnboarding = loc == Routes.onboardingScreen.path;
-      final onAuth = loc == Routes.authScreen.path;
-
-      if (uid == null) {
-        // Not authenticated — only allow auth and onboarding routes
-        if (onAuth || onOnboarding) return null;
-        return Routes.authScreen.path;
-      }
-
-      if (appUser == null) {
-        // Authenticated but no profile doc yet
-        if (onOnboarding) return null;
-        return Routes.onboardingScreen.path;
-      }
-
-      if (!appUser.profileComplete) {
-        // Profile started but not finished
-        if (onOnboarding) return null;
-        return Routes.onboardingScreen.path;
-      }
-
-      // Fully set up — redirect away from auth / onboarding flows
-      if (onAuth || onOnboarding) return Routes.dashboardScreen.path;
-
-      return null;
+      return appRedirect(
+        uidAsync: ref.read(uidProvider),
+        appUserAsync: ref.read(appUserStreamProvider),
+        matchedLocation: state.matchedLocation,
+        uri: state.uri,
+      );
     },
     routes: [
       GoRoute(
+        path: Routes.loadingScreen.path,
+        name: Routes.loadingScreen.name,
+        builder: (context, state) => const _RouterLoadingScreen(),
+      ),
+      GoRoute(
         path: Routes.authScreen.path,
         name: Routes.authScreen.name,
-        builder: (context, state) => const AuthScreen(authState: AuthState.signIn),
+        builder: (context, state) =>
+            const AuthScreen(authState: AuthState.signIn),
       ),
       GoRoute(
         path: Routes.onboardingScreen.path,
@@ -175,8 +160,12 @@ GoRouter goRouter(Ref ref) {
                       GoRoute(
                         path: 'create-run',
                         name: Routes.createRunScreen.name,
-                        builder: (context, state) =>
-                            CreateRunScreen(runClub: state.extra! as RunClub),
+                        builder: (context, state) => CreateRunRouteScreen(
+                          runClubId: state.pathParameters['runClubId']!,
+                          initialRunClub: state.extra is RunClub
+                              ? state.extra! as RunClub
+                              : null,
+                        ),
                       ),
                     ],
                   ),
@@ -202,9 +191,8 @@ GoRouter goRouter(Ref ref) {
                   GoRoute(
                     path: ':runId',
                     name: Routes.swipeRunScreen.name,
-                    builder: (context, state) => SwipeScreen(
-                      runId: state.pathParameters['runId']!,
-                    ),
+                    builder: (context, state) =>
+                        SwipeScreen(runId: state.pathParameters['runId']!),
                   ),
                 ],
               ),
@@ -248,6 +236,134 @@ GoRouter goRouter(Ref ref) {
       ),
     ],
   );
+}
+
+String? appRedirect({
+  required AsyncValue<String?> uidAsync,
+  required AsyncValue<AppUser?> appUserAsync,
+  required String matchedLocation,
+  required Uri uri,
+}) {
+  final onLoading = matchedLocation == Routes.loadingScreen.path;
+  final onOnboarding = matchedLocation == Routes.onboardingScreen.path;
+  final onAuth = matchedLocation == Routes.authScreen.path;
+
+  final isWaitingOnAuth = uidAsync.isLoading;
+  final isWaitingOnProfile =
+      uidAsync.hasValue && uidAsync.value != null && appUserAsync.isLoading;
+
+  if (isWaitingOnAuth || isWaitingOnProfile) {
+    if (onLoading) return null;
+    return _locationWithFrom(
+      Routes.loadingScreen.path,
+      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
+    );
+  }
+
+  final uid = uidAsync.value;
+  final appUser = appUserAsync.value;
+
+  if (uid == null) {
+    if (onAuth || onOnboarding) return null;
+    return _locationWithFrom(
+      Routes.authScreen.path,
+      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
+    );
+  }
+
+  if (appUser == null || !appUser.profileComplete) {
+    if (onOnboarding) return null;
+    return _locationWithFrom(
+      Routes.onboardingScreen.path,
+      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
+    );
+  }
+
+  if (onLoading || onAuth || onOnboarding) {
+    return _resumeDestination(uri);
+  }
+
+  return null;
+}
+
+String? _pendingDestination({
+  required Uri uri,
+  required String matchedLocation,
+}) {
+  final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
+  if (from != null) return from;
+  if (_isTransientRoute(matchedLocation)) return null;
+  return uri.toString();
+}
+
+String _resumeDestination(Uri uri) {
+  final from = _sanitizeFrom(uri.queryParameters[_fromQueryParam]);
+  if (from == null) return Routes.dashboardScreen.path;
+
+  final targetPath = Uri.parse(from).path;
+  if (_isTransientRoute(targetPath)) {
+    return Routes.dashboardScreen.path;
+  }
+  return from;
+}
+
+String _locationWithFrom(String path, {String? from}) {
+  final safeFrom = _sanitizeFrom(from);
+  if (safeFrom == null || Uri.parse(safeFrom).path == path) {
+    return path;
+  }
+  return Uri(
+    path: path,
+    queryParameters: {_fromQueryParam: safeFrom},
+  ).toString();
+}
+
+String? _sanitizeFrom(String? from) {
+  if (from == null || from.isEmpty || !from.startsWith('/')) return null;
+  final uri = Uri.tryParse(from);
+  return uri?.toString();
+}
+
+bool _isTransientRoute(String path) =>
+    path == Routes.loadingScreen.path ||
+    path == Routes.authScreen.path ||
+    path == Routes.onboardingScreen.path;
+
+class _RouterLoadingScreen extends StatelessWidget {
+  const _RouterLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}
+
+class CreateRunRouteScreen extends ConsumerWidget {
+  const CreateRunRouteScreen({
+    super.key,
+    required this.runClubId,
+    this.initialRunClub,
+  });
+
+  final String runClubId;
+  final RunClub? initialRunClub;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (initialRunClub != null) {
+      return CreateRunScreen(runClub: initialRunClub!);
+    }
+
+    final runClubAsync = ref.watch(fetchRunClubProvider(runClubId));
+    return runClubAsync.when(
+      loading: () => const _RouterLoadingScreen(),
+      error: (error, _) =>
+          Scaffold(body: Center(child: Text(error.toString()))),
+      data: (runClub) => runClub == null
+          ? const Scaffold(body: Center(child: Text('Run club not found.')))
+          : CreateRunScreen(runClub: runClub),
+    );
+  }
 }
 
 // Minimal ChangeNotifier used as GoRouter's refreshListenable.

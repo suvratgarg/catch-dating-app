@@ -75,7 +75,7 @@ final class RunDetailViewModelProvider
 }
 
 String _$runDetailViewModelHash() =>
-    r'61d40615efe7dc5a557e2d8a2d97885c97de4c89';
+    r'9f07761cbef4731b20f7df352da8ad3ffff59f23';
 
 final class RunDetailViewModelFamily extends $Family
     with $FunctionalFamilyOverride<AsyncValue<RunDetailViewModel?>, String> {

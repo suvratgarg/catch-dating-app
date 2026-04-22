@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // FieldValue
@@ -16,10 +17,10 @@ class RunClubsRepository {
 
   CollectionReference<RunClub> get _runClubsRef => _db
       .collection(_collectionPath)
-      .withConverter<RunClub>(
-        fromFirestore: (doc, _) =>
-            RunClub.fromJson({...doc.data()!, 'id': doc.id}),
-        toFirestore: (club, _) => club.toJson(),
+      .withDocumentIdConverter<RunClub>(
+        idField: 'id',
+        fromJson: RunClub.fromJson,
+        toJson: (club) => club.toJson(),
       );
 
   DocumentReference<RunClub> _runClubRef([String? id]) => _runClubsRef.doc(id);

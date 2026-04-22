@@ -189,7 +189,7 @@ abstract class AppUser with _$AppUser {
 
   const factory AppUser({
     // Core (required at sign-up)
-    required String uid,
+    @JsonKey(includeToJson: false) required String uid,
     required String name,
     @TimestampConverter() required DateTime dateOfBirth,
     required Gender gender,

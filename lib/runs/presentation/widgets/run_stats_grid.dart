@@ -66,15 +66,19 @@ class RunStatCell extends StatelessWidget {
               Text(value, style: CatchTextStyles.monoLg(context)),
               if (unit.isNotEmpty) ...[
                 const SizedBox(width: 2),
-                Text(unit,
-                    style: CatchTextStyles.monoSm(context, color: t.ink2)),
+                Text(
+                  unit,
+                  style: CatchTextStyles.monoSm(context, color: t.ink2),
+                ),
               ],
             ],
           ),
           const SizedBox(height: 2),
-          Text(label,
-              style: CatchTextStyles.caption(context, color: t.ink3),
-              textAlign: TextAlign.center),
+          Text(
+            label,
+            style: CatchTextStyles.caption(context, color: t.ink3),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

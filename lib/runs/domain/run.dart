@@ -114,12 +114,21 @@ abstract class Run with _$Run {
 
   String get title {
     const weekdays = [
-      'Monday', 'Tuesday', 'Wednesday',
-      'Thursday', 'Friday', 'Saturday', 'Sunday',
+      'Monday',
+      'Tuesday',
+      'Wednesday',
+      'Thursday',
+      'Friday',
+      'Saturday',
+      'Sunday',
     ];
     final weekday = weekdays[startTime.weekday - 1];
     final hour = startTime.hour;
-    final period = hour < 12 ? 'Morning' : hour < 17 ? 'Afternoon' : 'Evening';
+    final period = hour < 12
+        ? 'Morning'
+        : hour < 17
+        ? 'Afternoon'
+        : 'Evening';
     return '$weekday $period Run';
   }
 }

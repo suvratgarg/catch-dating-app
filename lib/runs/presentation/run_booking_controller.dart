@@ -23,10 +23,7 @@ class RunBookingController extends _$RunBookingController {
   /// For free runs, calls the [signUpForFreeRun] Cloud Function directly.
   /// For paid runs, opens the Razorpay checkout sheet; on success the
   /// [verifyRazorpayPayment] Cloud Function atomically signs the user up.
-  Future<void> book({
-    required Run run,
-    required AppUser user,
-  }) async {
+  Future<void> book({required Run run, required AppUser user}) async {
     final paymentRepo = ref.read(paymentRepositoryProvider);
 
     if (run.isFree) {
@@ -51,7 +48,7 @@ class RunBookingController extends _$RunBookingController {
   /// Cancels the user's sign-up for [run] via the [cancelRunSignUp] Cloud
   /// Function, which atomically removes them from [signedUpUserIds] and
   /// decrements their gender count.
-  Future<void> cancelBooking({required Run run, required AppUser user}) async {
+  Future<void> cancelBooking({required Run run}) async {
     await ref
         .read(runRepositoryProvider)
         .cancelSignUpViaFunction(runId: run.id);
@@ -80,12 +77,20 @@ class RunBookingController extends _$RunBookingController {
   }
 
   static String _formatDate(DateTime dt) {
-    const weekdays = [
-      'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun',
-    ];
+    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     const months = [
-      'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-      'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${weekdays[dt.weekday - 1]}, ${dt.day} ${months[dt.month - 1]}';
   }

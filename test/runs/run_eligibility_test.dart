@@ -64,29 +64,38 @@ void main() {
 
   // ── #12: AlreadySignedUp ──────────────────────────────────────────────────
 
-  test('#12 eligibilityFor returns AlreadySignedUp when signed up, not attended', () {
-    final user = buildUser();
-    final run = buildRun(signedUpUserIds: [user.uid]);
-    expect(run.eligibilityFor(user), isA<AlreadySignedUp>());
-  });
+  test(
+    '#12 eligibilityFor returns AlreadySignedUp when signed up, not attended',
+    () {
+      final user = buildUser();
+      final run = buildRun(signedUpUserIds: [user.uid]);
+      expect(run.eligibilityFor(user), isA<AlreadySignedUp>());
+    },
+  );
 
   // ── #13: RunPast ──────────────────────────────────────────────────────────
 
-  test('#13 eligibilityFor returns RunPast for a past run the user never signed up for', () {
-    final user = buildUser();
-    final run = buildRun(
-      startTime: DateTime.now().subtract(const Duration(hours: 2)),
-    );
-    expect(run.eligibilityFor(user), isA<RunPast>());
-  });
+  test(
+    '#13 eligibilityFor returns RunPast for a past run the user never signed up for',
+    () {
+      final user = buildUser();
+      final run = buildRun(
+        startTime: DateTime.now().subtract(const Duration(hours: 2)),
+      );
+      expect(run.eligibilityFor(user), isA<RunPast>());
+    },
+  );
 
   // ── #14: OnWaitlist ───────────────────────────────────────────────────────
 
-  test('#14 eligibilityFor returns OnWaitlist when on waitlist (future, not full)', () {
-    final user = buildUser();
-    final run = buildRun(waitlistUserIds: [user.uid]);
-    expect(run.eligibilityFor(user), isA<OnWaitlist>());
-  });
+  test(
+    '#14 eligibilityFor returns OnWaitlist when on waitlist (future, not full)',
+    () {
+      final user = buildUser();
+      final run = buildRun(waitlistUserIds: [user.uid]);
+      expect(run.eligibilityFor(user), isA<OnWaitlist>());
+    },
+  );
 
   // ── #15: AgeTooYoung ─────────────────────────────────────────────────────
 
@@ -116,14 +125,17 @@ void main() {
 
   // ── #17: GenderCapacityReached ────────────────────────────────────────────
 
-  test('#17 eligibilityFor returns GenderCapacityReached when gender slot is full', () {
-    final user = buildUser(gender: Gender.man);
-    final run = buildRun(
-      constraints: const RunConstraints(maxMen: 2),
-      genderCounts: {'man': 2}, // at cap
-    );
-    expect(run.eligibilityFor(user), isA<GenderCapacityReached>());
-  });
+  test(
+    '#17 eligibilityFor returns GenderCapacityReached when gender slot is full',
+    () {
+      final user = buildUser(gender: Gender.man);
+      final run = buildRun(
+        constraints: const RunConstraints(maxMen: 2),
+        genderCounts: {'man': 2}, // at cap
+      );
+      expect(run.eligibilityFor(user), isA<GenderCapacityReached>());
+    },
+  );
 
   test('eligible when gender count is below cap', () {
     final user = buildUser(gender: Gender.man);
@@ -136,22 +148,28 @@ void main() {
 
   // ── #18: RunFull ──────────────────────────────────────────────────────────
 
-  test('#18 eligibilityFor returns RunFull when at capacity (user meets all criteria)', () {
-    final user = buildUser();
-    final run = buildRun(
-      capacityLimit: 2,
-      signedUpUserIds: ['other-1', 'other-2'],
-    );
-    expect(run.eligibilityFor(user), isA<RunFull>());
-  });
+  test(
+    '#18 eligibilityFor returns RunFull when at capacity (user meets all criteria)',
+    () {
+      final user = buildUser();
+      final run = buildRun(
+        capacityLimit: 2,
+        signedUpUserIds: ['other-1', 'other-2'],
+      );
+      expect(run.eligibilityFor(user), isA<RunFull>());
+    },
+  );
 
   // ── #19: Eligible ─────────────────────────────────────────────────────────
 
-  test('#19 eligibilityFor returns Eligible for a future, non-full, qualifying run', () {
-    final user = buildUser();
-    final run = buildRun(); // all defaults: future, 20 capacity, 0 sign-ups
-    expect(run.eligibilityFor(user), isA<Eligible>());
-  });
+  test(
+    '#19 eligibilityFor returns Eligible for a future, non-full, qualifying run',
+    () {
+      final user = buildUser();
+      final run = buildRun(); // all defaults: future, 20 capacity, 0 sign-ups
+      expect(run.eligibilityFor(user), isA<Eligible>());
+    },
+  );
 
   // ── #20: statusFor maps every eligibility to RunSignUpStatus ─────────────
 
@@ -184,10 +202,7 @@ void main() {
 
     test('RunFull → RunSignUpStatus.full', () {
       final user = buildUser();
-      final run = buildRun(
-        capacityLimit: 1,
-        signedUpUserIds: ['other-1'],
-      );
+      final run = buildRun(capacityLimit: 1, signedUpUserIds: ['other-1']);
       expect(run.statusFor(user), RunSignUpStatus.full);
     });
 

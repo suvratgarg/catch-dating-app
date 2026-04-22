@@ -19,13 +19,14 @@ abstract class RunDetailViewModel with _$RunDetailViewModel {
   }) = _RunDetailViewModel;
 }
 
-@riverpod
-AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
-  final runAsync = ref.watch(watchRunProvider(runId));
-  final appUserAsync = ref.watch(appUserStreamProvider);
-  final reviewsAsync = ref.watch(watchReviewsForRunProvider(runId));
-
-  if (runAsync.isLoading || appUserAsync.isLoading) return const AsyncLoading();
+AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
+  required AsyncValue<Run?> runAsync,
+  required AsyncValue<AppUser?> appUserAsync,
+  required AsyncValue<List<Review>> reviewsAsync,
+}) {
+  if (runAsync.isLoading || appUserAsync.isLoading || reviewsAsync.isLoading) {
+    return const AsyncLoading();
+  }
   if (runAsync.hasError) {
     return AsyncError(
       runAsync.error!,
@@ -36,6 +37,12 @@ AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
     return AsyncError(
       appUserAsync.error!,
       appUserAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (reviewsAsync.hasError) {
+    return AsyncError(
+      reviewsAsync.error!,
+      reviewsAsync.stackTrace ?? StackTrace.current,
     );
   }
 
@@ -50,5 +57,14 @@ AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
 
   return AsyncData(
     RunDetailViewModel(run: run, appUser: appUser, reviews: reviews),
+  );
+}
+
+@riverpod
+AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
+  return buildRunDetailViewModel(
+    runAsync: ref.watch(watchRunProvider(runId)),
+    appUserAsync: ref.watch(appUserStreamProvider),
+    reviewsAsync: ref.watch(watchReviewsForRunProvider(runId)),
   );
 }

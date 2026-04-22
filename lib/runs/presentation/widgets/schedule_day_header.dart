@@ -31,10 +31,13 @@ class ScheduleDayHeader extends StatelessWidget {
           backgroundColor: isToday ? t.primary : Colors.transparent,
           child: Text(
             '${day.day}',
-            style: CatchTextStyles.labelMd(
-              context,
-              color: isToday ? t.primaryInk : t.ink,
-            ).copyWith(fontWeight: isToday ? FontWeight.bold : FontWeight.normal),
+            style:
+                CatchTextStyles.labelMd(
+                  context,
+                  color: isToday ? t.primaryInk : t.ink,
+                ).copyWith(
+                  fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+                ),
           ),
         ),
       ],

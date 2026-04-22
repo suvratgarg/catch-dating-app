@@ -27,7 +27,11 @@ class WhereStep extends StatelessWidget {
       key: formKey,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.screenH, 16, CatchSpacing.screenH, 24),
+          CatchSpacing.screenH,
+          16,
+          CatchSpacing.screenH,
+          24,
+        ),
         children: [
           const FieldLabel('Meeting point'),
           const SizedBox(height: 8),
@@ -39,16 +43,12 @@ class WhereStep extends StatelessWidget {
             ),
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
-            validator: (v) =>
-                v == null || v.trim().isEmpty ? 'Required' : null,
+            validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
           ),
           const SizedBox(height: 20),
           const FieldLabel('Pin on map (optional)'),
           const SizedBox(height: 8),
-          MapPinTile(
-            startingPoint: startingPoint,
-            onTap: onPickLocation,
-          ),
+          MapPinTile(startingPoint: startingPoint, onTap: onPickLocation),
           const SizedBox(height: 20),
           const FieldLabel('Extra directions (optional)'),
           const SizedBox(height: 8),

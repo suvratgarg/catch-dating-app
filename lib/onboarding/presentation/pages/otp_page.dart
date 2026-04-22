@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/common_widgets/error_banner.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -27,9 +28,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   void _submit(String code) {
     if (code.length == 6) {
       OnboardingController.verifyOtpMutation.run(ref, (tx) async {
-        await tx
-            .get(onboardingControllerProvider.notifier)
-            .verifyOtp(code);
+        await tx.get(onboardingControllerProvider.notifier).verifyOtp(code);
       });
     }
   }
@@ -52,10 +51,9 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           const SizedBox(height: 32),
           Text(
             'Enter the code',
-            style: CatchTextStyles.displaySm(context).copyWith(
-              fontWeight: FontWeight.bold,
-              color: t.ink,
-            ),
+            style: CatchTextStyles.displaySm(
+              context,
+            ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
           ),
           gapH8,
           Text(
@@ -72,16 +70,14 @@ class _OtpPageState extends ConsumerState<OtpPage> {
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(6),
             ],
-            style: CatchTextStyles.displaySm(context).copyWith(
-              letterSpacing: 12,
-              fontWeight: FontWeight.bold,
-            ),
+            style: CatchTextStyles.displaySm(
+              context,
+            ).copyWith(letterSpacing: 12, fontWeight: FontWeight.bold),
             decoration: InputDecoration(
               hintText: '• • • • • •',
-              hintStyle: CatchTextStyles.displaySm(context).copyWith(
-                letterSpacing: 12,
-                color: t.line,
-              ),
+              hintStyle: CatchTextStyles.displaySm(
+                context,
+              ).copyWith(letterSpacing: 12, color: t.line),
             ),
             onChanged: (v) {
               if (v.length == 6) _submit(v);
@@ -90,7 +86,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           if (mutation.hasError) ...[
             gapH16,
             ErrorBanner(
-              message: (mutation as MutationError).error.toString(),
+              message: authErrorMessage((mutation as MutationError).error),
             ),
           ],
           gapH24,
@@ -101,10 +97,10 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             onPressed: mutation.isPending
                 ? null
                 : () => ref
-                    .read(onboardingControllerProvider.notifier)
-                    .goToStep(1),
+                      .read(onboardingControllerProvider.notifier)
+                      .goToStep(1),
             child: Text(
-              'Resend code',
+              'Change number',
               style: CatchTextStyles.bodyMd(context, color: t.ink2),
             ),
           ),

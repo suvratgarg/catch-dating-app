@@ -45,18 +45,16 @@ class RunScheduleGrid extends StatelessWidget {
   ) {
     final map = <(int, int), _RunCellInfo>{};
     for (final run in runs) {
-      final colIdx =
-          days.indexWhere((d) => DateUtils.isSameDay(d, run.startTime));
+      final colIdx = days.indexWhere(
+        (d) => DateUtils.isSameDay(d, run.startTime),
+      );
       if (colIdx < 0) continue;
       final col = colIdx + 1;
 
       final startMinuteOfDay = run.startTime.hour * 60 + run.startTime.minute;
-      final startSlot =
-          (startMinuteOfDay - _startHour * 60) ~/ _slotMinutes;
-      final durationMinutes =
-          run.endTime.difference(run.startTime).inMinutes;
-      final mergeSpan =
-          (durationMinutes + _slotMinutes - 1) ~/ _slotMinutes;
+      final startSlot = (startMinuteOfDay - _startHour * 60) ~/ _slotMinutes;
+      final durationMinutes = run.endTime.difference(run.startTime).inMinutes;
+      final mergeSpan = (durationMinutes + _slotMinutes - 1) ~/ _slotMinutes;
       final mergeRow = startSlot + 1;
 
       for (int r = mergeRow; r < mergeRow + mergeSpan; r++) {
@@ -83,8 +81,9 @@ class RunScheduleGrid extends StatelessWidget {
         extent: FixedTableSpanExtent(
           index == 0 ? _headerRowHeight : _slotRowHeight,
         ),
-        backgroundDecoration:
-            index == 0 ? TableSpanDecoration(color: t.raised) : null,
+        backgroundDecoration: index == 0
+            ? TableSpanDecoration(color: t.raised)
+            : null,
         foregroundDecoration: TableSpanDecoration(
           border: TableSpanBorder(
             trailing: BorderSide(color: t.line, width: 0.5),
@@ -95,8 +94,9 @@ class RunScheduleGrid extends StatelessWidget {
         extent: FixedTableSpanExtent(
           index == 0 ? _timeColumnWidth : _dayColumnWidth,
         ),
-        backgroundDecoration:
-            index == 0 ? TableSpanDecoration(color: t.raised) : null,
+        backgroundDecoration: index == 0
+            ? TableSpanDecoration(color: t.raised)
+            : null,
         foregroundDecoration: TableSpanDecoration(
           border: TableSpanBorder(
             trailing: BorderSide(color: t.line, width: 0.5),

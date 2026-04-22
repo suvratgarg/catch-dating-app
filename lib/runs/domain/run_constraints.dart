@@ -20,8 +20,8 @@ abstract class RunConstraints with _$RunConstraints {
 
   /// Returns the gender-specific cap for [gender], or null if uncapped.
   int? maxForGender(Gender gender) => switch (gender) {
-        Gender.man => maxMen,
-        Gender.woman => maxWomen,
-        _ => null,
-      };
+    Gender.man => maxMen,
+    Gender.woman => maxWomen,
+    _ => null,
+  };
 }

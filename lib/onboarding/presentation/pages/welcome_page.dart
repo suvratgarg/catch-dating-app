@@ -1,11 +1,23 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class WelcomePage extends ConsumerWidget {
   const WelcomePage({super.key});
+
+  void _goToAuth(BuildContext context) {
+    final from = GoRouterState.of(context).uri.queryParameters['from'];
+    context.go(
+      Uri(
+        path: Routes.authScreen.path,
+        queryParameters: {if (from != null && from.isNotEmpty) 'from': from},
+      ).toString(),
+    );
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -31,20 +43,18 @@ class WelcomePage extends ConsumerWidget {
             child: Center(
               child: Text(
                 'C',
-                style: CatchTextStyles.displayLg(context).copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: CatchTextStyles.displayLg(
+                  context,
+                ).copyWith(color: Colors.white, fontWeight: FontWeight.bold),
               ),
             ),
           ),
           const SizedBox(height: 24),
           Text(
             'Catch.',
-            style: CatchTextStyles.displayLg(context).copyWith(
-              color: t.ink,
-              fontWeight: FontWeight.bold,
-            ),
+            style: CatchTextStyles.displayLg(
+              context,
+            ).copyWith(color: t.ink, fontWeight: FontWeight.bold),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 12),
@@ -55,9 +65,8 @@ class WelcomePage extends ConsumerWidget {
           ),
           const Spacer(flex: 3),
           FilledButton(
-            onPressed: () => ref
-                .read(onboardingControllerProvider.notifier)
-                .goToStep(1),
+            onPressed: () =>
+                ref.read(onboardingControllerProvider.notifier).goToStep(1),
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
             ),
@@ -65,12 +74,7 @@ class WelcomePage extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           TextButton(
-            onPressed: () {
-              // Returning user goes to sign-in via the auth screen
-              // OnboardingScreen is only shown when uid == null so this
-              // navigates back to auth screen through the router.
-              Navigator.of(context).pop();
-            },
+            onPressed: () => _goToAuth(context),
             child: Text(
               'Already have an account? Sign in',
               style: CatchTextStyles.bodyMd(context, color: t.ink2),

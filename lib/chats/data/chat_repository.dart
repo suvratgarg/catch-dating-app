@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -17,10 +18,10 @@ class ChatRepository {
       .collection(_chatsCollectionPath)
       .doc(matchId)
       .collection('messages')
-      .withConverter<ChatMessage>(
-        fromFirestore: (doc, _) =>
-            ChatMessage.fromJson({...doc.data()!, 'id': doc.id}),
-        toFirestore: (msg, _) => msg.toJson(),
+      .withDocumentIdConverter<ChatMessage>(
+        idField: 'id',
+        fromJson: ChatMessage.fromJson,
+        toJson: (msg) => msg.toJson(),
       );
 
   DocumentReference<Map<String, dynamic>> _matchRef(String matchId) =>

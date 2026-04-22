@@ -30,8 +30,10 @@ class RequirementsRow extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Requirements',
-            style: CatchTextStyles.labelMd(context, color: t.ink2)),
+        Text(
+          'Requirements',
+          style: CatchTextStyles.labelMd(context, color: t.ink2),
+        ),
         const SizedBox(height: 8),
         Wrap(
           spacing: 6,

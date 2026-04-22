@@ -12,22 +12,18 @@ part 'who_is_running.g.dart';
 
 @riverpod
 Future<Map<String, (String name, String? photoUrl)>> runnerProfiles(
-    Ref ref, List<String> uids) async {
+  Ref ref,
+  List<String> uids,
+) async {
   if (uids.isEmpty) return {};
-  final profiles =
-      await ref.watch(publicProfileRepositoryProvider).fetchPublicProfiles(uids);
-  return {
-    for (final p in profiles)
-      p.uid: (p.name, p.photoUrls.firstOrNull),
-  };
+  final profiles = await ref
+      .watch(publicProfileRepositoryProvider)
+      .fetchPublicProfiles(uids);
+  return {for (final p in profiles) p.uid: (p.name, p.photoUrls.firstOrNull)};
 }
 
 class WhoIsRunning extends ConsumerWidget {
-  const WhoIsRunning({
-    super.key,
-    required this.run,
-    required this.appUser,
-  });
+  const WhoIsRunning({super.key, required this.run, required this.appUser});
 
   final Run run;
   final AppUser appUser;
@@ -47,17 +43,23 @@ class WhoIsRunning extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: Text("Who's running",
-                  style: CatchTextStyles.displaySm(context)),
+              child: Text(
+                "Who's running",
+                style: CatchTextStyles.displaySm(context),
+              ),
             ),
-            Text('$total/${run.capacityLimit}',
-                style: CatchTextStyles.labelMd(context, color: t.ink2)),
+            Text(
+              '$total/${run.capacityLimit}',
+              style: CatchTextStyles.labelMd(context, color: t.ink2),
+            ),
           ],
         ),
         const SizedBox(height: 12),
         if (total == 0)
-          Text('No one has booked yet — be the first!',
-              style: CatchTextStyles.bodySm(context, color: t.ink2))
+          Text(
+            'No one has booked yet — be the first!',
+            style: CatchTextStyles.bodySm(context, color: t.ink2),
+          )
         else ...[
           Wrap(
             spacing: 8,
@@ -71,8 +73,7 @@ class WhoIsRunning extends ConsumerWidget {
                   imageUrl: profile?.$2,
                 );
               }),
-              if (total > 7)
-                PersonAvatar.count(count: total - 7, size: 44),
+              if (total > 7) PersonAvatar.count(count: total - 7, size: 44),
             ],
           ),
           const SizedBox(height: 12),

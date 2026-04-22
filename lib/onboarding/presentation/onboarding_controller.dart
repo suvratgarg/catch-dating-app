@@ -43,7 +43,8 @@ class OnboardingController extends _$OnboardingController {
       state = state.copyWith(step: 0);
     } else if (appUser == null) {
       // Authenticated (email or phone) but no profile doc yet
-      final phoneFromAuth = ref.read(authRepositoryProvider).currentUser?.phoneNumber ?? '';
+      final phoneFromAuth =
+          ref.read(authRepositoryProvider).currentUser?.phoneNumber ?? '';
       state = state.copyWith(
         step: 3,
         phoneNumber: phoneFromAuth.replaceFirst('+91', ''),
@@ -59,26 +60,27 @@ class OnboardingController extends _$OnboardingController {
 
   Future<void> sendOtp(String phoneNumber) async {
     state = state.copyWith(phoneNumber: phoneNumber);
-    await ref.read(authRepositoryProvider).verifyPhoneNumber(
-      phoneNumber: '+91$phoneNumber',
-      codeSent: (verificationId, _) {
-        state = state.copyWith(verificationId: verificationId, step: 2);
-      },
-      verificationFailed: (e) => throw e,
-      verificationCompleted: (credential) async {
-        await ref.read(authRepositoryProvider).signInWithCredential(
-          credential,
+    await ref
+        .read(authRepositoryProvider)
+        .verifyPhoneNumber(
+          phoneNumber: '+91$phoneNumber',
+          codeSent: (verificationId, _) {
+            state = state.copyWith(verificationId: verificationId, step: 2);
+          },
+          verificationFailed: (e) => throw e,
+          verificationCompleted: (credential) async {
+            await ref
+                .read(authRepositoryProvider)
+                .signInWithCredential(credential);
+            state = state.copyWith(step: 3);
+          },
         );
-        state = state.copyWith(step: 3);
-      },
-    );
   }
 
   Future<void> verifyOtp(String code) async {
-    await ref.read(authRepositoryProvider).signInWithOtp(
-      verificationId: state.verificationId!,
-      smsCode: code,
-    );
+    await ref
+        .read(authRepositoryProvider)
+        .signInWithOtp(verificationId: state.verificationId!, smsCode: code);
     state = state.copyWith(step: 3);
   }
 
@@ -116,19 +118,21 @@ class OnboardingController extends _$OnboardingController {
     final rawPhone = state.phoneNumber;
     final phone = rawPhone.startsWith('+') ? rawPhone : '+91$rawPhone';
 
-    await ref.read(appUserRepositoryProvider).setAppUser(
-      appUser: AppUser(
-        uid: uid,
-        email: email,
-        name: '${state.firstName} ${state.lastName}'.trim(),
-        dateOfBirth: state.dateOfBirth!,
-        gender: state.gender!,
-        sexualOrientation: state.sexualOrientation!,
-        phoneNumber: phone,
-        interestedInGenders: state.interestedInGenders,
-        profileComplete: false,
-      ),
-    );
+    await ref
+        .read(appUserRepositoryProvider)
+        .setAppUser(
+          appUser: AppUser(
+            uid: uid,
+            email: email,
+            name: '${state.firstName} ${state.lastName}'.trim(),
+            dateOfBirth: state.dateOfBirth!,
+            gender: state.gender!,
+            sexualOrientation: state.sexualOrientation!,
+            phoneNumber: phone,
+            interestedInGenders: state.interestedInGenders,
+            profileComplete: false,
+          ),
+        );
     state = state.copyWith(step: 5);
   }
 
@@ -142,14 +146,16 @@ class OnboardingController extends _$OnboardingController {
     if (appUser == null) {
       throw StateError('User profile not loaded. Please try again.');
     }
-    await ref.read(appUserRepositoryProvider).setAppUser(
-      appUser: appUser.copyWith(
-        paceMinSecsPerKm: paceMinSecsPerKm,
-        paceMaxSecsPerKm: paceMaxSecsPerKm,
-        preferredDistances: preferredDistances,
-        runningReasons: runningReasons,
-        profileComplete: true,
-      ),
-    );
+    await ref
+        .read(appUserRepositoryProvider)
+        .setAppUser(
+          appUser: appUser.copyWith(
+            paceMinSecsPerKm: paceMinSecsPerKm,
+            paceMaxSecsPerKm: paceMaxSecsPerKm,
+            preferredDistances: preferredDistances,
+            runningReasons: runningReasons,
+            profileComplete: true,
+          ),
+        );
   }
 }

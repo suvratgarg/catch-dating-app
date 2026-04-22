@@ -71,7 +71,6 @@ _AppUser _$AppUserFromJson(Map<String, dynamic> json) => _AppUser(
 );
 
 Map<String, dynamic> _$AppUserToJson(_AppUser instance) => <String, dynamic>{
-  'uid': instance.uid,
   'name': instance.name,
   'dateOfBirth': const TimestampConverter().toJson(instance.dateOfBirth),
   'gender': _$GenderEnumMap[instance.gender]!,
