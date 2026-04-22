@@ -3,8 +3,8 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_clubs_list_controller.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_clubs_list_state.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 

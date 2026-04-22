@@ -12,18 +12,7 @@ class RequirementsRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final c = run.constraints;
-    final chips = <String>[];
-
-    if (c.minAge > 0 && c.maxAge < 99) {
-      chips.add('Age ${c.minAge}–${c.maxAge}');
-    } else if (c.minAge > 0) {
-      chips.add('${c.minAge}+ years');
-    } else if (c.maxAge < 99) {
-      chips.add('Up to ${c.maxAge} years');
-    }
-    if (c.maxMen != null) chips.add('Max ${c.maxMen} men');
-    if (c.maxWomen != null) chips.add('Max ${c.maxWomen} women');
+    final chips = run.constraints.requirementLabels;
 
     if (chips.isEmpty) return const SizedBox.shrink();
 

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/otp_page.dart';
@@ -18,78 +19,45 @@ class OnboardingScreen extends ConsumerStatefulWidget {
 }
 
 class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
-  final _pageController = PageController();
-
-  static const _totalSteps = 7; // 0..6
-
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) {
+        return;
+      }
       ref.read(onboardingControllerProvider.notifier).initStep();
-      final step = ref.read(onboardingControllerProvider).step;
-      if (step > 0) _pageController.jumpToPage(step);
     });
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingControllerProvider);
     final t = CatchTokens.of(context);
-
-    // Animate page whenever step changes
-    ref.listen(
-      onboardingControllerProvider.select((d) => d.step),
-      (prev, step) {
-        if (_pageController.hasClients) {
-          _pageController.animateToPage(
-            step,
-            duration: const Duration(milliseconds: 320),
-            curve: Curves.easeInOut,
-          );
-        }
-      },
-    );
-
-    // Minimum step the back button can reach (prevents going back past auth)
-    final minStep = _minStep(data);
+    final minStep = data.step.minimumBackStep;
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (_, _) {
-        if (data.step > minStep) {
+        final previousStep = data.step.previousWithin(minStep);
+        if (previousStep != null) {
           ref
               .read(onboardingControllerProvider.notifier)
-              .goToStep(data.step - 1);
+              .goToStep(previousStep);
         }
       },
       child: Scaffold(
         body: SafeArea(
           child: Column(
             children: [
-              if (data.step > 0) ...[
-                _ProgressBar(step: data.step, total: _totalSteps, tokens: t),
+              if (data.step.showsProgress) ...[
+                _ProgressBar(step: data.step, tokens: t),
                 const SizedBox(height: 8),
               ],
               Expanded(
-                child: PageView(
-                  controller: _pageController,
-                  physics: const NeverScrollableScrollPhysics(),
-                  children: const [
-                    WelcomePage(),
-                    PhonePage(),
-                    OtpPage(),
-                    NameDobPage(),
-                    GenderInterestPage(),
-                    PhotosPage(),
-                    RunningPrefsPage(),
-                  ],
+                child: KeyedSubtree(
+                  key: ValueKey(data.step),
+                  child: _buildStep(data.step),
                 ),
               ),
             ],
@@ -99,26 +67,29 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     );
   }
 
-  int _minStep(OnboardingData data) {
-    // Once profile steps start (step 3+), prevent backing into OTP/phone steps.
-    if (data.step >= 3) return 3;
-    return 0;
+  Widget _buildStep(OnboardingStep step) {
+    return switch (step) {
+      OnboardingStep.welcome => const WelcomePage(),
+      OnboardingStep.phone => const PhonePage(),
+      OnboardingStep.otp => const OtpPage(),
+      OnboardingStep.nameDob => const NameDobPage(),
+      OnboardingStep.genderInterest => const GenderInterestPage(),
+      OnboardingStep.photos => const PhotosPage(),
+      OnboardingStep.runningPrefs => const RunningPrefsPage(),
+    };
   }
 }
 
 class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({
-    required this.step,
-    required this.total,
-    required this.tokens,
-  });
+  const _ProgressBar({required this.step, required this.tokens});
 
-  final int step;
-  final int total;
+  final OnboardingStep step;
   final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
+    final total = OnboardingStep.values.length;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       child: Row(
@@ -129,7 +100,7 @@ class _ProgressBar extends StatelessWidget {
                 duration: const Duration(milliseconds: 200),
                 height: 3,
                 decoration: BoxDecoration(
-                  color: i <= step ? tokens.primary : tokens.line,
+                  color: i <= step.index ? tokens.primary : tokens.line,
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),

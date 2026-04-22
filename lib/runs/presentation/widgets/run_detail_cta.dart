@@ -7,6 +7,7 @@ import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,13 +17,6 @@ class RunDetailCta extends ConsumerWidget {
 
   final Run run;
   final AppUser appUser;
-
-  static String _fmtPrice(int paise) {
-    final r = paise / 100;
-    return r == r.roundToDouble()
-        ? '₹${r.round()}'
-        : '₹${r.toStringAsFixed(2)}';
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -55,7 +49,7 @@ class RunDetailCta extends ConsumerWidget {
         switch (status) {
           RunSignUpStatus.eligible => BottomCTA(
             label: run.isFree
-                ? 'Join run — ${run.capacityLimit - run.signedUpCount} spots left'
+                ? 'Join run — ${run.spotsRemaining} spots left'
                 : supportsPaid
                 ? 'Book run'
                 : 'Unavailable on this platform',
@@ -70,7 +64,9 @@ class RunDetailCta extends ConsumerWidget {
             isLoading: bookMutation.isPending,
             leadingContent: run.isFree
                 ? null
-                : PriceLeading(price: _fmtPrice(run.priceInPaise)),
+                : PriceLeading(
+                    price: RunFormatters.priceInPaise(run.priceInPaise),
+                  ),
           ),
           RunSignUpStatus.signedUp => BottomCTA(
             label: 'Cancel booking',

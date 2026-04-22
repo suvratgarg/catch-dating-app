@@ -1,8 +1,10 @@
 import 'package:catch_dating_app/app_user/domain/app_user.dart';
+import 'package:catch_dating_app/app_user/domain/profile_validation.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
+import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_candidate_repository.g.dart';
@@ -25,6 +27,8 @@ class SwipeCandidateRepository {
     // 1. Get the run to find attendees.
     final run = await _runRepository.fetchRun(runId);
     if (run == null) return [];
+    if (!hasOpenSwipeWindow(run)) return [];
+    if (!run.hasAttended(currentUser.uid)) return [];
 
     final attendedUserIds = [...run.attendedUserIds]..remove(currentUser.uid);
 
@@ -44,17 +48,38 @@ class SwipeCandidateRepository {
     final profiles = await _publicProfileRepository.fetchPublicProfiles(
       candidateIds,
     );
+    final orderedProfiles = _orderProfilesByCandidateIds(
+      profiles: profiles,
+      candidateIds: candidateIds,
+    );
 
     // 4. Filter by current user's age and gender preferences.
-    return profiles.where((p) {
-      final ageOk =
-          p.age >= currentUser.minAgePreference &&
-          p.age <= currentUser.maxAgePreference;
+    final ageRange = normalizeAgePreferenceRange(
+      minAgePreference: currentUser.minAgePreference,
+      maxAgePreference: currentUser.maxAgePreference,
+    );
+    return orderedProfiles.where((p) {
+      final ageOk = p.age >= ageRange.minAge && p.age <= ageRange.maxAge;
       final genderOk =
           currentUser.interestedInGenders.isEmpty ||
           currentUser.interestedInGenders.contains(p.gender);
       return ageOk && genderOk;
     }).toList();
+  }
+
+  List<PublicProfile> _orderProfilesByCandidateIds({
+    required List<PublicProfile> profiles,
+    required List<String> candidateIds,
+  }) {
+    final profilesById = {for (final profile in profiles) profile.uid: profile};
+    final orderedProfiles = <PublicProfile>[];
+    for (final candidateId in candidateIds) {
+      final profile = profilesById[candidateId];
+      if (profile != null) {
+        orderedProfiles.add(profile);
+      }
+    }
+    return orderedProfiles;
   }
 }
 

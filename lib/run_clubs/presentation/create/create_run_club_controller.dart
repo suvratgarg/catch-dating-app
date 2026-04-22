@@ -2,7 +2,7 @@ import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_clubs_controller_utils.dart';
+import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_controller_utils.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

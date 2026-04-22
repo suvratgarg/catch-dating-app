@@ -51,7 +51,7 @@ final class SwipeQueueNotifierProvider
 }
 
 String _$swipeQueueNotifierHash() =>
-    r'd2bfb0a7683ba66617fd45870b5bf722e14df43a';
+    r'bed07c5d316b28b7471dca22a6bd7e14cabb85c7';
 
 final class SwipeQueueNotifierFamily extends $Family
     with

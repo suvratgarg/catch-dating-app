@@ -1,14 +1,13 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 
 class ScheduleDayHeader extends StatelessWidget {
   const ScheduleDayHeader({super.key, required this.day});
 
   final DateTime day;
-
-  static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +18,7 @@ class ScheduleDayHeader extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Text(
-          _weekdays[day.weekday - 1],
+          RunFormatters.shortWeekday(day),
           style: CatchTextStyles.labelSm(
             context,
             color: isToday ? t.primary : t.ink2,

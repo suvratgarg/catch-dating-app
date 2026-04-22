@@ -348,7 +348,7 @@ void main() {
         findsOneWidget,
       );
       expect(
-        find.text('Swiping unlocks after the run finishes.'),
+        find.text('Swiping unlocks for 24 hours after the run finishes.'),
         findsOneWidget,
       );
     });
@@ -395,7 +395,7 @@ void main() {
         expect(find.text('+1'), findsOneWidget);
         expect(
           find.text(
-            'Swiping on fellow runners unlocks after the run finishes.',
+            'The swipe window is open for 24 hours after the run finishes.',
           ),
           findsOneWidget,
         );

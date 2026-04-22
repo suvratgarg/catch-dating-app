@@ -23,10 +23,21 @@ String authErrorMessage(Object error) {
     };
   }
 
-  final message = error.toString();
-  const exceptionPrefix = 'Exception: ';
-  if (message.startsWith(exceptionPrefix)) {
-    return message.substring(exceptionPrefix.length);
+  return _stripCommonErrorPrefix(error.toString());
+}
+
+String _stripCommonErrorPrefix(String message) {
+  const prefixes = <String>[
+    'Exception: ',
+    'Bad state: ',
+    'Invalid argument(s): ',
+  ];
+
+  for (final prefix in prefixes) {
+    if (message.startsWith(prefix)) {
+      return message.substring(prefix.length);
+    }
   }
+
   return message;
 }

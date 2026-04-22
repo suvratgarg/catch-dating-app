@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 
 class RunStatsGrid extends StatelessWidget {
@@ -12,10 +13,6 @@ class RunStatsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    final distStr = run.distanceKm == run.distanceKm.roundToDouble()
-        ? '${run.distanceKm.round()}'
-        : run.distanceKm.toStringAsFixed(1);
-
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
       decoration: BoxDecoration(
@@ -25,15 +22,15 @@ class RunStatsGrid extends StatelessWidget {
       ),
       child: Row(
         children: [
-          RunStatCell(value: distStr, unit: 'km', label: 'Distance'),
+          RunStatCell(
+            value: run.distanceValueLabel,
+            unit: 'km',
+            label: 'Distance',
+          ),
           const RunStatDivider(),
           RunStatCell(value: run.pace.label, unit: '', label: 'Pace level'),
           const RunStatDivider(),
-          RunStatCell(
-            value: '${run.signedUpCount}/${run.capacityLimit}',
-            unit: '',
-            label: 'Spots taken',
-          ),
+          RunStatCell(value: run.spotsLabel, unit: '', label: 'Spots taken'),
         ],
       ),
     );

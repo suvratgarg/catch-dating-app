@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -9,11 +9,13 @@ import 'package:go_router/go_router.dart';
 class WelcomePage extends ConsumerWidget {
   const WelcomePage({super.key});
 
+  static const _authPath = '/auth';
+
   void _goToAuth(BuildContext context) {
     final from = GoRouterState.of(context).uri.queryParameters['from'];
     context.go(
       Uri(
-        path: Routes.authScreen.path,
+        path: _authPath,
         queryParameters: {if (from != null && from.isNotEmpty) 'from': from},
       ).toString(),
     );
@@ -65,8 +67,9 @@ class WelcomePage extends ConsumerWidget {
           ),
           const Spacer(flex: 3),
           FilledButton(
-            onPressed: () =>
-                ref.read(onboardingControllerProvider.notifier).goToStep(1),
+            onPressed: () => ref
+                .read(onboardingControllerProvider.notifier)
+                .goToStep(OnboardingStep.phone),
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
             ),

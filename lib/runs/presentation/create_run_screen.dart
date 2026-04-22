@@ -7,6 +7,7 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_controller.dart';
 import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/eligibility_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_details_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/step_progress_bar.dart';
@@ -66,6 +67,35 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   final _maxAgeController = TextEditingController();
   final _maxMenController = TextEditingController();
   final _maxWomenController = TextEditingController();
+
+  GlobalKey<FormState> get _currentStepKey => switch (_currentStep) {
+    0 => _step0Key,
+    1 => _step1Key,
+    2 => _step2Key,
+    _ => _step3Key,
+  };
+
+  DateTime? get _selectedStartDateTime {
+    final selectedDate = _selectedDate;
+    final selectedStartTime = _selectedStartTime;
+    if (selectedDate == null || selectedStartTime == null) return null;
+    return _combine(selectedDate, selectedStartTime);
+  }
+
+  RunConstraints get _constraints => RunConstraints(
+    minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
+    maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
+    maxMen: int.tryParse(_maxMenController.text.trim()),
+    maxWomen: int.tryParse(_maxWomenController.text.trim()),
+  );
+
+  VoidCallback? get _decreaseDurationCallback => _durationMinutes > _minDuration
+      ? () => setState(() => _durationMinutes -= _durationStep)
+      : null;
+
+  VoidCallback? get _increaseDurationCallback => _durationMinutes < _maxDuration
+      ? () => setState(() => _durationMinutes += _durationStep)
+      : null;
 
   @override
   void dispose() {
@@ -131,43 +161,17 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
 
   void _back() {
     if (_currentStep > 0) {
-      setState(() => _currentStep--);
-      _pageController.previousPage(
-        duration: const Duration(milliseconds: 280),
-        curve: Curves.easeInOut,
-      );
+      _goToStep(_currentStep - 1);
     } else {
       Navigator.of(context).pop();
     }
   }
 
   void _next() {
-    final keys = [_step0Key, _step1Key, _step2Key, _step3Key];
-    if (_currentStep < keys.length) {
-      final formState = keys[_currentStep].currentState;
-      if (formState != null && !formState.validate()) return;
-    }
-
-    if (_currentStep == 0) {
-      final selectedDate = _selectedDate;
-      final selectedStartTime = _selectedStartTime;
-      if (selectedDate == null || selectedStartTime == null) return;
-
-      final startTime = _combine(selectedDate, selectedStartTime);
-      if (!startTime.isAfter(DateTime.now())) {
-        setState(() {
-          _scheduleErrorText = 'Start time must be in the future';
-        });
-        return;
-      }
-    }
+    if (!_validateCurrentStep() || !_validateCurrentSchedule()) return;
 
     if (_currentStep < _totalSteps - 1) {
-      setState(() => _currentStep++);
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 280),
-        curve: Curves.easeInOut,
-      );
+      _goToStep(_currentStep + 1);
     } else {
       _submit();
     }
@@ -176,24 +180,32 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   DateTime _combine(DateTime date, TimeOfDay time) =>
       DateTime(date.year, date.month, date.day, time.hour, time.minute);
 
-  static String _fmtDuration(int minutes) {
-    final h = minutes ~/ 60;
-    final m = minutes % 60;
-    if (h == 0) return '${m}m';
-    if (m == 0) return '${h}h';
-    return '${h}h ${m}m';
+  void _goToStep(int step) {
+    setState(() => _currentStep = step);
+    _pageController.animateToPage(
+      step,
+      duration: const Duration(milliseconds: 280),
+      curve: Curves.easeInOut,
+    );
+  }
+
+  bool _validateCurrentStep() =>
+      _currentStepKey.currentState?.validate() ?? true;
+
+  bool _validateCurrentSchedule() {
+    if (_currentStep != 0) return true;
+
+    final startTime = _selectedStartDateTime;
+    if (startTime == null) return false;
+    if (startTime.isAfter(DateTime.now())) return true;
+
+    setState(() => _scheduleErrorText = 'Start time must be in the future');
+    return false;
   }
 
   void _submit() {
-    final startTime = _combine(_selectedDate!, _selectedStartTime!);
+    final startTime = _selectedStartDateTime!;
     final endTime = startTime.add(Duration(minutes: _durationMinutes));
-
-    final constraints = RunConstraints(
-      minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
-      maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
-      maxMen: int.tryParse(_maxMenController.text.trim()),
-      maxWomen: int.tryParse(_maxWomenController.text.trim()),
-    );
 
     CreateRunController.submitMutation.run(ref, (tx) async {
       await tx
@@ -205,18 +217,21 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
             meetingPoint: _meetingPointController.text.trim(),
             startingPointLat: _startingPoint?.latitude,
             startingPointLng: _startingPoint?.longitude,
-            locationDetails: _locationDetailsController.text.trim().isEmpty
-                ? null
-                : _locationDetailsController.text.trim(),
+            locationDetails: _trimmedTextOrNull(_locationDetailsController),
             distanceKm: double.parse(_distanceController.text.trim()),
             pace: _selectedPace!,
             capacityLimit: int.parse(_capacityController.text.trim()),
             description: _descriptionController.text.trim(),
             priceInPaise: (double.parse(_priceController.text.trim()) * 100)
                 .round(),
-            constraints: constraints,
+            constraints: _constraints,
           );
     });
+  }
+
+  static String? _trimmedTextOrNull(TextEditingController controller) {
+    final text = controller.text.trim();
+    return text.isEmpty ? null : text;
   }
 
   static String _stepTitle(int step) => switch (step) {
@@ -307,15 +322,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                     durationMinutes: _durationMinutes,
                     onPickDate: _pickDate,
                     onPickTime: _pickStartTime,
-                    onDecreaseDuration: _durationMinutes > _minDuration
-                        ? () =>
-                              setState(() => _durationMinutes -= _durationStep)
-                        : null,
-                    onIncreaseDuration: _durationMinutes < _maxDuration
-                        ? () =>
-                              setState(() => _durationMinutes += _durationStep)
-                        : null,
-                    formatDuration: _fmtDuration,
+                    onDecreaseDuration: _decreaseDurationCallback,
+                    onIncreaseDuration: _increaseDurationCallback,
+                    formatDuration: RunFormatters.durationMinutes,
                     scheduleErrorText: _scheduleErrorText,
                   ),
                   WhereStep(

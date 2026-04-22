@@ -28,24 +28,89 @@ class CreateRunController extends _$CreateRunController {
     required int priceInPaise,
     required RunConstraints constraints,
   }) async {
+    final normalizedRunClubId = _trimmedRequired(
+      value: runClubId,
+      fieldName: 'runClubId',
+      message: 'Run club id is required.',
+    );
+    final normalizedMeetingPoint = _trimmedRequired(
+      value: meetingPoint,
+      fieldName: 'meetingPoint',
+      message: 'Meeting point is required.',
+    );
+    final normalizedDescription = description.trim();
+    final normalizedLocationDetails = _trimmedOrNull(locationDetails);
+
+    if (!endTime.isAfter(startTime)) {
+      throw ArgumentError.value(
+        endTime,
+        'endTime',
+        'Run end time must be after the start time.',
+      );
+    }
+    if (distanceKm <= 0) {
+      throw ArgumentError.value(
+        distanceKm,
+        'distanceKm',
+        'Distance must be greater than zero.',
+      );
+    }
+    if (capacityLimit < 1) {
+      throw ArgumentError.value(
+        capacityLimit,
+        'capacityLimit',
+        'Capacity limit must be at least 1.',
+      );
+    }
+    if (priceInPaise < 0) {
+      throw ArgumentError.value(
+        priceInPaise,
+        'priceInPaise',
+        'Price cannot be negative.',
+      );
+    }
+    if ((startingPointLat == null) != (startingPointLng == null)) {
+      throw ArgumentError(
+        'Starting point latitude and longitude must both be provided or both be omitted.',
+      );
+    }
+
     final runRepo = ref.read(runRepositoryProvider);
     await runRepo.createRun(
       run: Run(
         id: runRepo.generateId(),
-        runClubId: runClubId,
+        runClubId: normalizedRunClubId,
         startTime: startTime,
         endTime: endTime,
-        meetingPoint: meetingPoint,
+        meetingPoint: normalizedMeetingPoint,
         startingPointLat: startingPointLat,
         startingPointLng: startingPointLng,
-        locationDetails: locationDetails,
+        locationDetails: normalizedLocationDetails,
         distanceKm: distanceKm,
         pace: pace,
         capacityLimit: capacityLimit,
-        description: description,
+        description: normalizedDescription,
         priceInPaise: priceInPaise,
         constraints: constraints,
       ),
     );
+  }
+
+  static String _trimmedRequired({
+    required String value,
+    required String fieldName,
+    required String message,
+  }) {
+    final normalized = value.trim();
+    if (normalized.isEmpty) {
+      throw ArgumentError.value(value, fieldName, message);
+    }
+    return normalized;
+  }
+
+  static String? _trimmedOrNull(String? value) {
+    final normalized = value?.trim();
+    if (normalized == null || normalized.isEmpty) return null;
+    return normalized;
   }
 }

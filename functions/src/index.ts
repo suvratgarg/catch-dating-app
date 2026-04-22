@@ -17,6 +17,7 @@ export {onMatchCreated} from "./matching/onMatchCreated";
 export {onMessageCreated} from "./matching/onMessageCreated";
 export {syncRunClubReviewStats} from "./reviews/syncRunClubReviewStats";
 export {syncPublicProfile} from "./users/syncPublicProfile";
+export {joinWaitlist} from "./waitlist/joinWaitlist";
 
 export const createUserDocument = beforeUserCreated(async (event) => {
   const user = event.data;

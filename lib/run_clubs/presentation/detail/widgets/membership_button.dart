@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/run_clubs/presentation/run_club_detail_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

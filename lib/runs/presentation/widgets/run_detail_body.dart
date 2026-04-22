@@ -7,6 +7,7 @@ import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/requirements_row.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_photo_header.dart';
@@ -16,7 +17,7 @@ import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class RunDetailBody extends ConsumerStatefulWidget {
+class RunDetailBody extends ConsumerWidget {
   const RunDetailBody({
     super.key,
     required this.run,
@@ -31,40 +32,10 @@ class RunDetailBody extends ConsumerStatefulWidget {
   final List<Review> reviews;
 
   @override
-  ConsumerState<RunDetailBody> createState() => _RunDetailBodyState();
-}
-
-class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
-  static const _months = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
-  static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  static String _fmtDate(DateTime dt) =>
-      '${_weekdays[dt.weekday - 1]}, ${dt.day} ${_months[dt.month - 1]}';
-
-  bool _hasConstraints(Run run) =>
-      run.constraints.minAge > 0 ||
-      run.constraints.maxAge < 99 ||
-      run.constraints.maxMen != null ||
-      run.constraints.maxWomen != null;
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final run = widget.run;
-    final appUser = widget.appUser;
+    final run = this.run;
+    final appUser = this.appUser;
 
     ref.listen(RunBookingController.bookMutation, (prev, next) {
       if (prev?.isPending == true && next.isSuccess) {
@@ -150,7 +121,7 @@ class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
                     VibeTag(label: run.pace.label, active: true),
                     const SizedBox(width: 6),
                     Text(
-                      _fmtDate(run.startTime),
+                      run.shortDateLabel,
                       style: CatchTextStyles.bodySm(context, color: t.ink2),
                     ),
                   ],
@@ -166,7 +137,7 @@ class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
                     style: CatchTextStyles.bodyMd(context, color: t.ink2),
                   ),
                 ],
-                if (_hasConstraints(run)) ...[
+                if (run.hasRequirements) ...[
                   const SizedBox(height: 20),
                   RequirementsRow(run: run),
                 ],
@@ -178,9 +149,9 @@ class _RunDetailBodyState extends ConsumerState<RunDetailBody> {
                 Divider(color: t.line, height: 1),
                 const SizedBox(height: 24),
                 ReviewsSection(
-                  runClubId: widget.runClubId,
+                  runClubId: runClubId,
                   runId: run.id,
-                  reviews: widget.reviews,
+                  reviews: reviews,
                   currentUid: appUser.uid,
                   appUser: appUser,
                   hasAttended: run.hasAttended(appUser.uid),

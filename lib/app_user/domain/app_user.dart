@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/app_user/domain/profile_validation.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/labelled.dart';
@@ -241,13 +242,5 @@ abstract class AppUser with _$AppUser {
   factory AppUser.fromJson(Map<String, dynamic> json) =>
       _$AppUserFromJson(json);
 
-  int get age {
-    final today = DateTime.now();
-    int age = today.year - dateOfBirth.year;
-    if (today.month < dateOfBirth.month ||
-        (today.month == dateOfBirth.month && today.day < dateOfBirth.day)) {
-      age--;
-    }
-    return age;
-  }
+  int get age => calculateAge(dateOfBirth);
 }

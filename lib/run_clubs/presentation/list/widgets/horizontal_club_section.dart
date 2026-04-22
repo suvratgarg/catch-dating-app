@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/run_clubs/presentation/widgets/run_club_list_tile.dart';
-import 'package:catch_dating_app/run_clubs/presentation/widgets/section_header.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/section_header.dart';
 import 'package:flutter/material.dart';
 
 class HorizontalClubSection extends StatelessWidget {

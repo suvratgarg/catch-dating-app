@@ -9,46 +9,103 @@ typedef PhotoUploadState = ({Set<int> loadingIndices, Object? uploadError});
 
 @riverpod
 class PhotoUploadController extends _$PhotoUploadController {
+  Future<void> _pendingPhotoWrite = Future.value();
+
   @override
   PhotoUploadState build() => (loadingIndices: {}, uploadError: null);
 
   Future<void> pickAndUpload(int index) async {
     final repo = ref.read(imageUploadRepositoryProvider);
+    final appUserRepository = ref.read(appUserRepositoryProvider);
 
     final photo = await repo.pickImage();
-    if (photo == null) return;
+    if (photo == null || !ref.mounted) return;
 
-    state = (loadingIndices: {...state.loadingIndices, index}, uploadError: null);
+    _markUploading(index);
     try {
       final uid = ref.read(uidProvider).asData?.value;
       if (uid == null || uid.isEmpty) {
         throw StateError('Must be signed in to upload photos.');
       }
-      final currentUrls = List<String>.from(
-        ref.read(appUserStreamProvider).asData?.value?.photoUrls ?? [],
+      final url = await repo.uploadUserPhoto(
+        uid: uid,
+        index: index,
+        image: photo,
+      );
+      await _persistUploadedPhoto(
+        appUserRepository: appUserRepository,
+        uid: uid,
+        index: index,
+        url: url,
       );
 
-      final url = await repo.uploadUserPhoto(uid: uid, index: index, image: photo);
-
-      if (index < currentUrls.length) {
-        currentUrls[index] = url;
-      } else {
-        currentUrls.add(url);
-      }
-
-      await ref
-          .read(appUserRepositoryProvider)
-          .updatePhotoUrls(uid: uid, photoUrls: currentUrls);
-
-      state = (
-        loadingIndices: state.loadingIndices.difference({index}),
-        uploadError: null,
-      );
+      if (!ref.mounted) return;
+      _finishUploading(index);
     } catch (e) {
-      state = (
-        loadingIndices: state.loadingIndices.difference({index}),
-        uploadError: e,
-      );
+      if (!ref.mounted) return;
+      _failUploading(index, e);
     }
+  }
+
+  void _markUploading(int index) {
+    state = (
+      loadingIndices: {...state.loadingIndices, index},
+      uploadError: null,
+    );
+  }
+
+  void _finishUploading(int index) {
+    state = (
+      loadingIndices: state.loadingIndices.difference({index}),
+      uploadError: null,
+    );
+  }
+
+  void _failUploading(int index, Object error) {
+    state = (
+      loadingIndices: state.loadingIndices.difference({index}),
+      uploadError: error,
+    );
+  }
+
+  Future<void> _persistUploadedPhoto({
+    required AppUserRepository appUserRepository,
+    required String uid,
+    required int index,
+    required String url,
+  }) {
+    return _serializePhotoWrite(() async {
+      final latestUser = await appUserRepository.fetchAppUser(uid: uid);
+      final updatedUrls = _replacePhotoUrlAtIndex(
+        photoUrls: latestUser?.photoUrls ?? const [],
+        index: index,
+        url: url,
+      );
+
+      await appUserRepository.updatePhotoUrls(uid: uid, photoUrls: updatedUrls);
+    });
+  }
+
+  Future<T> _serializePhotoWrite<T>(Future<T> Function() operation) {
+    final nextWrite = _pendingPhotoWrite.then((_) => operation());
+    _pendingPhotoWrite = nextWrite.then<void>(
+      (_) {},
+      onError: (error, stackTrace) {},
+    );
+    return nextWrite;
+  }
+
+  static List<String> _replacePhotoUrlAtIndex({
+    required List<String> photoUrls,
+    required int index,
+    required String url,
+  }) {
+    final updatedUrls = List<String>.from(photoUrls);
+    if (index < updatedUrls.length) {
+      updatedUrls[index] = url;
+    } else {
+      updatedUrls.add(url);
+    }
+    return updatedUrls;
   }
 }

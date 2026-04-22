@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_clubs_controller_utils.dart';
+import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_controller_utils.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

@@ -1,10 +1,13 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:flutter/material.dart';
 
 class SwipeEmptyState extends StatelessWidget {
-  const SwipeEmptyState({super.key});
+  const SwipeEmptyState({super.key, this.content = defaultSwipeEmptyContent});
+
+  final SwipeEmptyContent content;
 
   @override
   Widget build(BuildContext context) {
@@ -16,16 +19,12 @@ class SwipeEmptyState extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.directions_run_rounded,
-              size: 72,
-              color: t.line2,
-            ),
+            Icon(content.icon, size: 72, color: t.line2),
             gapH16,
-            Text('No more runners', style: CatchTextStyles.displayLg(context)),
+            Text(content.title, style: CatchTextStyles.displayLg(context)),
             gapH8,
             Text(
-              'Join more runs to meet new people',
+              content.message,
               style: CatchTextStyles.bodyMd(context, color: t.ink2),
               textAlign: TextAlign.center,
             ),

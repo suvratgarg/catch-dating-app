@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_clubs_list_state.dart';
-import 'package:catch_dating_app/run_clubs/presentation/widgets/horizontal_club_section.dart';
-import 'package:catch_dating_app/run_clubs/presentation/widgets/nearby_clubs_section.dart';
-import 'package:catch_dating_app/run_clubs/presentation/widgets/run_club_list_tile.dart';
-import 'package:catch_dating_app/run_clubs/presentation/widgets/run_clubs_empty_state.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_state.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/horizontal_club_section.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/nearby_clubs_section.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_empty_state.dart';
 import 'package:flutter/material.dart';
 
 class RunClubsContent extends StatelessWidget {

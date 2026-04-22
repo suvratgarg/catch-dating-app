@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
@@ -75,9 +77,11 @@ abstract class Run with _$Run {
 
   double get distanceMiles => distanceKm * 0.621371;
   int get signedUpCount => signedUpUserIds.length;
+  int get spotsRemaining => math.max(0, capacityLimit - signedUpCount);
   bool get isFull => signedUpUserIds.length >= capacityLimit;
   bool get isFree => priceInPaise == 0;
   bool get isUpcoming => startTime.isAfter(DateTime.now());
+  bool get hasRequirements => constraints.hasRequirements;
 
   bool isSignedUp(String uid) => signedUpUserIds.contains(uid);
   bool hasAttended(String uid) => attendedUserIds.contains(uid);

@@ -1,10 +1,11 @@
+import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_info_chip.dart';
 import 'package:flutter/material.dart';
 
 class ProfileAttributesSection extends StatelessWidget {
   const ProfileAttributesSection({super.key, required this.attrs});
 
-  final List<({IconData icon, String text})> attrs;
+  final List<ProfileCardFact> attrs;
 
   @override
   Widget build(BuildContext context) {

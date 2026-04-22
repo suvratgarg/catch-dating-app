@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/app_user/domain/app_user.dart';
+import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/common_widgets/chip_field.dart';
 import 'package:catch_dating_app/common_widgets/error_banner.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,28 +17,31 @@ class GenderInterestPage extends ConsumerStatefulWidget {
 }
 
 class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
+  final _formKey = GlobalKey<FormState>();
   Gender? _gender;
   SexualOrientation? _orientation;
   Set<Gender> _interestedIn = {};
 
-  String? _error;
+  @override
+  void initState() {
+    super.initState();
+    final data = ref.read(onboardingControllerProvider);
+    _gender = data.gender;
+    _orientation = data.sexualOrientation;
+    _interestedIn = {...data.interestedInGenders};
+  }
 
   void _submit() {
-    if (_gender == null) {
-      setState(() => _error = 'Please select your gender');
+    if (!_formKey.currentState!.validate()) {
       return;
     }
-    if (_orientation == null) {
-      setState(() => _error = 'Please select your orientation');
-      return;
-    }
-
-    setState(() => _error = null);
-    ref.read(onboardingControllerProvider.notifier).setGenderInterest(
-      gender: _gender!,
-      sexualOrientation: _orientation!,
-      interestedInGenders: _interestedIn.toList(),
-    );
+    ref
+        .read(onboardingControllerProvider.notifier)
+        .setGenderInterest(
+          gender: _gender!,
+          sexualOrientation: _orientation!,
+          interestedInGenders: _interestedIn.toList(),
+        );
 
     OnboardingController.saveProfileMutation.run(ref, (tx) async {
       await tx.get(onboardingControllerProvider.notifier).saveProfile();
@@ -48,94 +51,78 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
   @override
   Widget build(BuildContext context) {
     final mutation = ref.watch(OnboardingController.saveProfileMutation);
-    final t = CatchTokens.of(context);
 
     return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const SizedBox(height: 32),
-          Text(
-            'How do you identify?',
-            style: CatchTextStyles.displaySm(context).copyWith(
-              fontWeight: FontWeight.bold,
-              color: t.ink,
+      child: Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const SizedBox(height: 32),
+            const OnboardingStepHeader(title: 'How do you identify?'),
+            const SizedBox(height: 32),
+            ChipField<Gender>(
+              label: 'I am a...',
+              values: Gender.values,
+              selected: _gender != null ? {_gender!} : {},
+              multiSelect: false,
+              validator: (_) =>
+                  _gender == null ? 'Please select your gender' : null,
+              onChanged: (next) {
+                OnboardingController.saveProfileMutation.reset(ref);
+                setState(() => _gender = next.isEmpty ? null : next.first);
+              },
             ),
-          ),
-          const SizedBox(height: 32),
-          _SectionLabel(label: 'I am a...', tokens: t),
-          gapH12,
-          ChipField<Gender>(
-            label: '',
-            values: Gender.values,
-            selected: _gender != null ? {_gender!} : {},
-            multiSelect: false,
-            onChanged: (v) =>
-                setState(() => _gender = v.isEmpty ? null : v.first),
-          ),
-          gapH24,
-          _SectionLabel(label: 'Sexual orientation', tokens: t),
-          gapH12,
-          ChipField<SexualOrientation>(
-            label: '',
-            values: SexualOrientation.values,
-            selected: _orientation != null ? {_orientation!} : {},
-            multiSelect: false,
-            onChanged: (v) =>
-                setState(() => _orientation = v.isEmpty ? null : v.first),
-          ),
-          gapH24,
-          _SectionLabel(label: 'Show me', tokens: t),
-          gapH12,
-          ChipField<Gender>(
-            label: '',
-            values: Gender.values,
-            selected: _interestedIn,
-            multiSelect: true,
-            onChanged: (v) => setState(() => _interestedIn = v),
-          ),
-          if (_error != null) ...[
-            gapH16,
-            ErrorBanner(message: _error!),
+            gapH24,
+            ChipField<SexualOrientation>(
+              label: 'Sexual orientation',
+              values: SexualOrientation.values,
+              selected: _orientation != null ? {_orientation!} : {},
+              multiSelect: false,
+              validator: (_) => _orientation == null
+                  ? 'Please select your orientation'
+                  : null,
+              onChanged: (next) {
+                OnboardingController.saveProfileMutation.reset(ref);
+                setState(() => _orientation = next.isEmpty ? null : next.first);
+              },
+            ),
+            gapH24,
+            ChipField<Gender>(
+              label: 'Show me',
+              values: Gender.values,
+              selected: _interestedIn,
+              multiSelect: true,
+              onChanged: (next) {
+                OnboardingController.saveProfileMutation.reset(ref);
+                setState(() => _interestedIn = next);
+              },
+            ),
+            if (mutation.hasError) ...[
+              gapH16,
+              ErrorBanner(
+                message: authErrorMessage((mutation as MutationError).error),
+              ),
+            ],
+            const SizedBox(height: 40),
+            FilledButton(
+              onPressed: mutation.isPending ? null : _submit,
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+              ),
+              child: mutation.isPending
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Continue'),
+            ),
+            const SizedBox(height: 32),
           ],
-          if (mutation.hasError) ...[
-            gapH16,
-            ErrorBanner(
-              message: (mutation as MutationError).error.toString(),
-            ),
-          ],
-          const SizedBox(height: 40),
-          FilledButton(
-            onPressed: mutation.isPending ? null : _submit,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
-            ),
-            child: mutation.isPending
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Continue'),
-          ),
-          const SizedBox(height: 32),
-        ],
+        ),
       ),
-    );
-  }
-}
-
-class _SectionLabel extends StatelessWidget {
-  const _SectionLabel({required this.label, required this.tokens});
-  final String label;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label,
-      style: CatchTextStyles.labelMd(context, color: tokens.ink2),
     );
   }
 }

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -32,6 +33,7 @@ class WhoIsRunning extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final total = run.signedUpCount;
+    final hasActiveSwipeWindow = hasOpenSwipeWindow(run);
 
     final previewIds = run.signedUpUserIds.take(7).toList();
     final profilesAsync = ref.watch(runnerProfilesProvider(previewIds));
@@ -78,48 +80,56 @@ class WhoIsRunning extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
         ],
-        if (!run.isUpcoming) ...[
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: t.primarySoft,
-              borderRadius: BorderRadius.circular(CatchRadius.card),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.favorite_rounded, size: 16, color: t.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Swiping on fellow runners unlocks after the run finishes.',
-                    style: CatchTextStyles.bodySm(context, color: t.primary),
-                  ),
-                ),
-              ],
-            ),
+        if (run.isUpcoming) ...[
+          _SwipeWindowBanner(
+            icon: Icons.lock_outline_rounded,
+            message: 'Swiping unlocks for 24 hours after the run finishes.',
           ),
-        ] else if (run.isUpcoming) ...[
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: t.primarySoft,
-              borderRadius: BorderRadius.circular(CatchRadius.card),
-            ),
-            child: Row(
-              children: [
-                Icon(Icons.lock_outline_rounded, size: 16, color: t.primary),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    'Swiping unlocks after the run finishes.',
-                    style: CatchTextStyles.bodySm(context, color: t.primary),
-                  ),
-                ),
-              ],
-            ),
+        ] else if (hasActiveSwipeWindow) ...[
+          _SwipeWindowBanner(
+            icon: Icons.favorite_rounded,
+            message:
+                'The swipe window is open for 24 hours after the run finishes.',
+          ),
+        ] else ...[
+          _SwipeWindowBanner(
+            icon: Icons.schedule_rounded,
+            message: 'The swipe window for this run has closed.',
           ),
         ],
       ],
+    );
+  }
+}
+
+class _SwipeWindowBanner extends StatelessWidget {
+  const _SwipeWindowBanner({required this.icon, required this.message});
+
+  final IconData icon;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: t.primarySoft,
+        borderRadius: BorderRadius.circular(CatchRadius.card),
+      ),
+      child: Row(
+        children: [
+          Icon(icon, size: 16, color: t.primary),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: CatchTextStyles.bodySm(context, color: t.primary),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

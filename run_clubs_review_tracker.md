@@ -36,12 +36,23 @@ Review and harden the `lib/run_clubs` feature starting from `run_clubs_list_scre
   removing a platform-specific branch and making the create form easier to
   test across Flutter targets.
 - Reached 100% line coverage for all non-generated files under `lib/run_clubs`.
+- Split the oversized `run_club_list_tile.dart` widget into focused part files
+  so the public API stays stable while the implementation becomes easier to
+  navigate and maintain.
+- Extracted repeated mutation error snackbar wiring into a shared presentation
+  helper to reduce screen-level duplication.
+- Reorganized the presentation layer into `create/`, `detail/`, `list/`, and
+  `shared/` modules so screens, controllers, state, and widgets now live next
+  to the surface they belong to.
+- Split the create flow into dedicated create widgets so the screen focuses on
+  state and submission orchestration rather than raw form rendering.
 
 ## Verification
 
 - `flutter analyze lib/run_clubs test/run_clubs`
 - `flutter test test/run_clubs --coverage`
-- Non-generated `lib/run_clubs` coverage: `941/941` lines, `100.0%`
+- `flutter test test/run_clubs/run_clubs_repository_test.dart test/run_clubs/run_clubs_controllers_test.dart test/run_clubs/run_clubs_list_controller_test.dart`
+- Non-generated `lib/run_clubs` coverage: `951/951` lines, `100.0%`
 
 ## Residual Risks / Follow-ups
 
@@ -51,11 +62,14 @@ Review and harden the `lib/run_clubs` feature starting from `run_clubs_list_scre
 - `go_router` route extras remain a convenience, not the source of truth. The
   detail flow now continues to rely on the `runClubId` path parameter for
   deep-link safety.
+- The feature now has a cleaner internal module shape, but future work could
+  still extract a reusable shared async-state scaffold if other feature folders
+  converge on the same `loading/error/data` screen pattern.
 
 ## Session Resume Prompt
 
 If this session expires, resume by:
 
 1. Reading this file.
-2. Reviewing `lib/run_clubs/presentation/run_clubs_list_screen.dart` and related state/controllers/tests.
+2. Reviewing `lib/run_clubs/presentation/list/run_clubs_list_screen.dart` and the sibling `create/`, `detail/`, and `shared/` modules.
 3. Continuing from the unchecked items in `In Progress`.

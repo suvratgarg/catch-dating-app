@@ -1,9 +1,10 @@
 import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/common_widgets/error_banner.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -37,11 +38,8 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingControllerProvider);
     final mutation = ref.watch(OnboardingController.verifyOtpMutation);
+    final shouldAutofocus = data.step == OnboardingStep.otp;
     final t = CatchTokens.of(context);
-
-    final maskedPhone = data.phoneNumber.length >= 5
-        ? '+91 ${data.phoneNumber.substring(0, 5)} ${data.phoneNumber.substring(5)}'
-        : '+91 ${data.phoneNumber}';
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -49,37 +47,36 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          Text(
-            'Enter the code',
-            style: CatchTextStyles.displaySm(
-              context,
-            ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
-          ),
-          gapH8,
-          Text(
-            'Sent to $maskedPhone',
-            style: CatchTextStyles.bodyMd(context, color: t.ink2),
+          OnboardingStepHeader(
+            title: 'Enter the code',
+            subtitle: 'Sent to ${_maskedPhoneNumber(data.phoneNumber)}',
           ),
           const SizedBox(height: 40),
           TextField(
             controller: _otpController,
-            autofocus: true,
+            autofocus: shouldAutofocus,
             keyboardType: TextInputType.number,
+            textInputAction: TextInputAction.done,
             textAlign: TextAlign.center,
+            autofillHints: const [AutofillHints.oneTimeCode],
             inputFormatters: [
               FilteringTextInputFormatter.digitsOnly,
               LengthLimitingTextInputFormatter(6),
             ],
-            style: CatchTextStyles.displaySm(
-              context,
-            ).copyWith(letterSpacing: 12, fontWeight: FontWeight.bold),
+            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+              letterSpacing: 12,
+              fontWeight: FontWeight.bold,
+            ),
             decoration: InputDecoration(
               hintText: '• • • • • •',
-              hintStyle: CatchTextStyles.displaySm(
-                context,
-              ).copyWith(letterSpacing: 12, color: t.line),
+              hintStyle: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                letterSpacing: 12,
+                color: t.line,
+              ),
             ),
+            onSubmitted: _submit,
             onChanged: (v) {
+              OnboardingController.verifyOtpMutation.reset(ref);
               if (v.length == 6) _submit(v);
             },
           ),
@@ -98,10 +95,12 @@ class _OtpPageState extends ConsumerState<OtpPage> {
                 ? null
                 : () => ref
                       .read(onboardingControllerProvider.notifier)
-                      .goToStep(1),
+                      .goToStep(OnboardingStep.phone),
             child: Text(
               'Change number',
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: t.ink2),
             ),
           ),
           const Spacer(),
@@ -109,5 +108,17 @@ class _OtpPageState extends ConsumerState<OtpPage> {
         ],
       ),
     );
+  }
+
+  String _maskedPhoneNumber(String phoneNumber) {
+    if (phoneNumber.isEmpty) {
+      return 'your number';
+    }
+
+    if (phoneNumber.length < 5) {
+      return '+91 $phoneNumber';
+    }
+
+    return '+91 ${phoneNumber.substring(0, 5)} ${phoneNumber.substring(5)}';
   }
 }

@@ -1,7 +1,9 @@
+import 'package:catch_dating_app/app_user/domain/profile_validation.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,14 +27,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final data = ref.read(onboardingControllerProvider);
-      if (data.phoneNumber.isNotEmpty) {
-        _phoneController.text = data.phoneNumber;
-        _phoneReadOnly = true;
-        setState(() {});
-      }
-    });
+    _seedDraft(ref.read(onboardingControllerProvider));
   }
 
   @override
@@ -49,27 +44,38 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
       context: context,
       initialDate: _selectedDate ?? DateTime(2000),
       firstDate: DateTime(1920),
-      lastDate: DateTime.now().subtract(const Duration(days: 365 * 18)),
+      lastDate: latestAllowedDateOfBirth(),
     );
     if (picked != null) {
       setState(() {
         _selectedDate = picked;
-        _dateController.text =
-            '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
+        _dateController.text = _formatDate(picked);
       });
     }
   }
 
   int? _age() {
     if (_selectedDate == null) return null;
-    final today = DateTime.now();
-    int age = today.year - _selectedDate!.year;
-    if (today.month < _selectedDate!.month ||
-        (today.month == _selectedDate!.month &&
-            today.day < _selectedDate!.day)) {
-      age--;
-    }
-    return age;
+    return calculateAge(_selectedDate!);
+  }
+
+  void _seedDraft(OnboardingData data) {
+    _firstNameController.text = data.firstName;
+    _lastNameController.text = data.lastName;
+    _selectedDate = data.dateOfBirth;
+    _dateController.text = data.dateOfBirth != null
+        ? _formatDate(data.dateOfBirth!)
+        : '';
+
+    final hasVerifiedPhone = data.phoneVerified;
+    _phoneController.text = data.phoneNumber;
+    _phoneReadOnly = hasVerifiedPhone;
+  }
+
+  String _formatDate(DateTime date) {
+    final day = date.day.toString().padLeft(2, '0');
+    final month = date.month.toString().padLeft(2, '0');
+    return '$day/$month/${date.year}';
   }
 
   void _submit() {
@@ -82,12 +88,19 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             dateOfBirth: _selectedDate!,
             phoneNumber: _phoneController.text.trim(),
           );
-      ref.read(onboardingControllerProvider.notifier).goToStep(4);
+      ref
+          .read(onboardingControllerProvider.notifier)
+          .goToStep(OnboardingStep.genderInterest);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final shouldAutofocus = ref.watch(
+      onboardingControllerProvider.select(
+        (data) => data.step == OnboardingStep.nameDob,
+      ),
+    );
     final t = CatchTokens.of(context);
     final age = _age();
 
@@ -99,20 +112,17 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 32),
-            Text(
-              'What\'s your name?',
-              style: CatchTextStyles.displaySm(
-                context,
-              ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
-            ),
+            const OnboardingStepHeader(title: 'What\'s your name?'),
             const SizedBox(height: 32),
             Row(
               children: [
                 Expanded(
                   child: TextFormField(
                     controller: _firstNameController,
+                    autofocus: shouldAutofocus,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.givenName],
                     decoration: const InputDecoration(labelText: 'First name'),
                     validator: (v) =>
                         v == null || v.trim().isEmpty ? 'Required' : null,
@@ -124,6 +134,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                     controller: _lastNameController,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
+                    autofillHints: const [AutofillHints.familyName],
                     decoration: const InputDecoration(labelText: 'Last name'),
                     validator: (v) =>
                         v == null || v.trim().isEmpty ? 'Required' : null,
@@ -143,6 +154,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               ),
               validator: (v) => v == null || v.isEmpty
                   ? 'Please select your date of birth'
+                  : _selectedDate == null || !isAtLeastAge(_selectedDate!)
+                  ? 'You must be at least $minimumProfileAge years old'
                   : null,
             ),
             gapH24,
@@ -151,6 +164,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               readOnly: _phoneReadOnly,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
+              autofillHints: const [AutofillHints.telephoneNumberNational],
               inputFormatters: _phoneReadOnly
                   ? null
                   : [

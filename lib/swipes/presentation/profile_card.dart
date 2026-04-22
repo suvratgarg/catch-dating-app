@@ -38,7 +38,7 @@ class ProfileCard extends StatelessWidget {
               child: IgnorePointer(
                 child: Opacity(
                   opacity: likeOpacity,
-                  child: SwipeStamp(label: 'LIKE', color: t.like),
+                  child: SwipeStamp(kind: SwipeStampKind.like, color: t.like),
                 ),
               ),
             ),
@@ -48,7 +48,7 @@ class ProfileCard extends StatelessWidget {
               child: IgnorePointer(
                 child: Opacity(
                   opacity: nopeOpacity,
-                  child: SwipeStamp(label: 'NOPE', color: t.pass),
+                  child: SwipeStamp(kind: SwipeStampKind.nope, color: t.pass),
                 ),
               ),
             ),

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -37,7 +38,7 @@ class RunBookingController extends _$RunBookingController {
       await paymentRepo.processPayment(
         activityId: run.id,
         amountInPaise: run.priceInPaise,
-        description: '${run.title} · ${_formatDate(run.startTime)}',
+        description: '${run.title} · ${run.shortDateLabel}',
         userName: user.name,
         userEmail: user.email,
         userContact: user.phoneNumber,
@@ -74,24 +75,5 @@ class RunBookingController extends _$RunBookingController {
     await ref
         .read(runRepositoryProvider)
         .leaveWaitlist(runId: run.id, userId: uid);
-  }
-
-  static String _formatDate(DateTime dt) {
-    const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
-    ];
-    return '${weekdays[dt.weekday - 1]}, ${dt.day} ${months[dt.month - 1]}';
   }
 }

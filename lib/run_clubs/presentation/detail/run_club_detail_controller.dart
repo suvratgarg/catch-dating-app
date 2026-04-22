@@ -5,7 +5,7 @@ import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_clubs_controller_utils.dart';
+import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_controller_utils.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';

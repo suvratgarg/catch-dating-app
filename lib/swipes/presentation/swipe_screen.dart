@@ -1,5 +1,8 @@
+import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
+import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_action_buttons.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_empty_state.dart';
@@ -46,6 +49,8 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
   @override
   Widget build(BuildContext context) {
     final queueAsync = ref.watch(swipeQueueProvider(widget.runId));
+    final runAsync = ref.watch(watchRunProvider(widget.runId));
+    final currentUserAsync = ref.watch(appUserStreamProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Discover')),
@@ -53,7 +58,12 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(e.toString())),
         data: (profiles) => profiles.isEmpty
-            ? const SwipeEmptyState()
+            ? SwipeEmptyState(
+                content: buildSwipeEmptyContent(
+                  run: runAsync.asData?.value,
+                  currentUser: currentUserAsync.asData?.value,
+                ),
+              )
             : Column(
                 children: [
                   Expanded(
@@ -63,30 +73,27 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                         controller: _controller,
                         cardsCount: profiles.length,
                         onSwipe: _onSwipe,
-                        allowedSwipeDirection:
-                            const AllowedSwipeDirection.only(
+                        allowedSwipeDirection: const AllowedSwipeDirection.only(
                           left: true,
                           right: true,
                         ),
-                        cardBuilder: (
-                          context,
-                          index,
-                          horizontalOffsetPercentage,
-                          verticalOffsetPercentage,
-                        ) =>
-                            ProfileCard(
-                          profile: profiles[index],
-                          horizontalOffsetPercentage:
+                        cardBuilder:
+                            (
+                              context,
+                              index,
                               horizontalOffsetPercentage,
-                        ),
+                              verticalOffsetPercentage,
+                            ) => ProfileCard(
+                              profile: profiles[index],
+                              horizontalOffsetPercentage:
+                                  horizontalOffsetPercentage,
+                            ),
                       ),
                     ),
                   ),
                   SwipeActionButtons(
-                    onPass: () =>
-                        _controller.swipe(CardSwiperDirection.left),
-                    onLike: () =>
-                        _controller.swipe(CardSwiperDirection.right),
+                    onPass: () => _controller.swipe(CardSwiperDirection.left),
+                    onLike: () => _controller.swipe(CardSwiperDirection.right),
                   ),
                   const SizedBox(height: 24),
                 ],

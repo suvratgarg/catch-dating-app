@@ -2,21 +2,19 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Shows a swipe-window callout for the most recent attended run that still
-/// has an open swipe window (run.endTime + 24 h > now).
+/// has an open swipe window.
 /// Returns [SizedBox.shrink] when no active window exists.
 class CatchesCallout extends ConsumerWidget {
   const CatchesCallout({super.key, required this.tokens, required this.uid});
 
   final CatchTokens tokens;
   final String uid;
-
-  static const _swipeWindowDuration = Duration(hours: 24);
 
   static String _formatCountdown(Duration remaining) {
     final h = remaining.inHours;
@@ -31,17 +29,11 @@ class CatchesCallout extends ConsumerWidget {
     final attended = attendedAsync.asData?.value ?? [];
 
     final now = DateTime.now();
-
-    final Run? activeRun = attended.fold<Run?>(null, (best, run) {
-      final windowClose = run.endTime.add(_swipeWindowDuration);
-      if (windowClose.isBefore(now)) return best;
-      if (best == null) return run;
-      return run.endTime.isAfter(best.endTime) ? run : best;
-    });
+    final activeRun = latestRunWithOpenSwipeWindow(attended, now: now);
 
     if (activeRun == null) return const SizedBox.shrink();
 
-    final windowClose = activeRun.endTime.add(_swipeWindowDuration);
+    final windowClose = swipeWindowClosesAt(activeRun);
     final remaining = windowClose.difference(now);
 
     return GestureDetector(
@@ -61,7 +53,11 @@ class CatchesCallout extends ConsumerWidget {
                 color: Colors.white.withValues(alpha: 0.2),
                 shape: BoxShape.circle,
               ),
-              child: Icon(Icons.favorite_rounded, color: t.primaryInk, size: 22),
+              child: Icon(
+                Icons.favorite_rounded,
+                color: t.primaryInk,
+                size: 22,
+              ),
             ),
             gapW12,
             Expanded(
@@ -78,7 +74,10 @@ class CatchesCallout extends ConsumerWidget {
                   gapH2,
                   Text(
                     'Swipe on runners from ${activeRun.title}',
-                    style: CatchTextStyles.displaySm(context, color: t.primaryInk),
+                    style: CatchTextStyles.displaySm(
+                      context,
+                      color: t.primaryInk,
+                    ),
                   ),
                 ],
               ),

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
+import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
@@ -22,20 +23,22 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
     final profiles = state.value;
     if (profiles == null || profiles.isEmpty) return;
 
-    final currentUser = ref.read(appUserStreamProvider).value;
+    final currentUserId = ref.read(authRepositoryProvider).currentUser?.uid;
     final target = profiles.first;
 
-    if (currentUser != null) {
-      await ref.read(swipeRepositoryProvider).recordSwipe(
-        swipe: Swipe(
-          swiperId: currentUser.uid,
-          targetId: target.uid,
-          runId: runId,
-          direction: direction,
-          createdAt: DateTime.now(),
-        ),
-      );
-    }
+    if (currentUserId == null) return;
+
+    await ref
+        .read(swipeRepositoryProvider)
+        .recordSwipe(
+          swipe: Swipe(
+            swiperId: currentUserId,
+            targetId: target.uid,
+            runId: runId,
+            direction: direction,
+            createdAt: DateTime.now(),
+          ),
+        );
 
     state = AsyncData(profiles.sublist(1));
   }

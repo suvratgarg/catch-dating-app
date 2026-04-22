@@ -25,12 +25,14 @@ class ProfileInfoTile extends StatelessWidget {
         children: [
           Icon(icon, color: t.ink2),
           gapW16,
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(label, style: CatchTextStyles.caption(context)),
-              Text(value, style: CatchTextStyles.bodyLg(context)),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, style: CatchTextStyles.caption(context)),
+                Text(value, style: CatchTextStyles.bodyLg(context)),
+              ],
+            ),
           ),
         ],
       ),

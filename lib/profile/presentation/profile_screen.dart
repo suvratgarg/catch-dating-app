@@ -9,31 +9,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfileScreen extends ConsumerStatefulWidget {
+class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  ConsumerState<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends ConsumerState<ProfileScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final appUserAsync = ref.watch(appUserStreamProvider);
     final uploadState = ref.watch(photoUploadControllerProvider);
 
@@ -45,49 +25,50 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       }
     });
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.receipt_long_outlined),
-            tooltip: 'Payment history',
-            onPressed: () =>
-                context.pushNamed(Routes.paymentHistoryScreen.name),
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit_outlined),
-            tooltip: 'Edit profile',
-            onPressed: () => context.pushNamed(Routes.editProfileScreen.name),
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout_rounded),
-            tooltip: 'Sign out',
-            onPressed: () => ref.read(authRepositoryProvider).signOut(),
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: const [
-            Tab(text: 'Profile'),
-            Tab(text: 'Preview'),
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Profile'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.receipt_long_outlined),
+              tooltip: 'Payment history',
+              onPressed: () =>
+                  context.pushNamed(Routes.paymentHistoryScreen.name),
+            ),
+            IconButton(
+              icon: const Icon(Icons.edit_outlined),
+              tooltip: 'Edit profile',
+              onPressed: () => context.pushNamed(Routes.editProfileScreen.name),
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout_rounded),
+              tooltip: 'Sign out',
+              onPressed: () => ref.read(authRepositoryProvider).signOut(),
+            ),
           ],
-        ),
-      ),
-      body: appUserAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
-        data: (user) {
-          if (user == null) return const SizedBox.shrink();
-
-          return TabBarView(
-            controller: _tabController,
-            children: [
-              ProfileTab(user: user, uploadState: uploadState),
-              PreviewTab(profile: publicProfileFromAppUser(user)),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Profile'),
+              Tab(text: 'Preview'),
             ],
-          );
-        },
+          ),
+        ),
+        body: appUserAsync.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (e, _) => Center(child: Text('Error: $e')),
+          data: (user) {
+            if (user == null) return const SizedBox.shrink();
+
+            return TabBarView(
+              children: [
+                ProfileTab(user: user, uploadState: uploadState),
+                PreviewTab(profile: publicProfileFromAppUser(user)),
+              ],
+            );
+          },
+        ),
       ),
     );
   }

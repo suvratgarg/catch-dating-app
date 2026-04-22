@@ -1,10 +1,10 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_clubs_list_controller.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_clubs_list_state.dart';
-import 'package:catch_dating_app/run_clubs/presentation/widgets/run_clubs_content.dart';
-import 'package:catch_dating_app/run_clubs/presentation/widgets/run_clubs_header.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_state.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_content.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_header.dart';
+import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_mutation_feedback.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RunClubsListScreen extends ConsumerWidget {
@@ -16,14 +16,11 @@ class RunClubsListScreen extends ConsumerWidget {
     final viewModelAsync = ref.watch(runClubsListViewModelProvider);
     final followMutation = ref.watch(RunClubsListController.followMutation);
 
-    ref.listen(RunClubsListController.followMutation, (previous, current) {
-      if (previous?.isPending == true && current.hasError) {
-        final error = current as MutationError;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(error.error.toString())));
-      }
-    });
+    listenForMutationErrorSnackbar(
+      context: context,
+      ref: ref,
+      mutation: RunClubsListController.followMutation,
+    );
 
     return Scaffold(
       backgroundColor: t.bg,

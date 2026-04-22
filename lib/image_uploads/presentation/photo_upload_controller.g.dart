@@ -42,7 +42,7 @@ final class PhotoUploadControllerProvider
 }
 
 String _$photoUploadControllerHash() =>
-    r'3ad66e732b6163da78a1f87fa700310de193baf6';
+    r'b290799c57018c995f349084368c628b4e12e781';
 
 abstract class _$PhotoUploadController extends $Notifier<PhotoUploadState> {
   PhotoUploadState build();

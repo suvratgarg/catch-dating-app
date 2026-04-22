@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,32 +21,31 @@ class PhotosPage extends ConsumerWidget {
 
     ref.listen(photoUploadControllerProvider, (_, state) {
       if (state.uploadError != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Upload failed. Please try again.')),
-        );
+        final messenger = ScaffoldMessenger.of(context);
+        messenger
+          ..clearSnackBars()
+          ..showSnackBar(
+            const SnackBar(content: Text('Upload failed. Please try again.')),
+          );
       }
     });
 
     final canContinue =
         photoUrls.length >= 2 && uploadState.loadingIndices.isEmpty;
+    final continueHint = _continueHint(
+      photoCount: photoUrls.length,
+      uploadingCount: uploadState.loadingIndices.length,
+    );
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.symmetric(horizontal: 24),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          Text(
-            'Show yourself',
-            style: CatchTextStyles.displaySm(context).copyWith(
-              fontWeight: FontWeight.bold,
-              color: t.ink,
-            ),
-          ),
-          gapH8,
-          Text(
-            'Add at least 2 photos so others can find you.',
-            style: CatchTextStyles.bodyMd(context, color: t.ink2),
+          const OnboardingStepHeader(
+            title: 'Show yourself',
+            subtitle: 'Add at least 2 photos so others can find you.',
           ),
           gapH8,
           Row(
@@ -55,7 +55,9 @@ class PhotosPage extends ConsumerWidget {
               Expanded(
                 child: Text(
                   'Running photos boost catches by 2.3×',
-                  style: CatchTextStyles.bodySm(context, color: t.accent),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(color: t.accent),
                 ),
               ),
             ],
@@ -68,21 +70,50 @@ class PhotosPage extends ConsumerWidget {
                 .read(photoUploadControllerProvider.notifier)
                 .pickAndUpload(index),
           ),
-          const Spacer(),
+          gapH24,
           FilledButton(
             onPressed: canContinue
                 ? () => ref
-                    .read(onboardingControllerProvider.notifier)
-                    .goToStep(6)
+                      .read(onboardingControllerProvider.notifier)
+                      .goToStep(OnboardingStep.runningPrefs)
                 : null,
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
             ),
             child: const Text('Continue'),
           ),
+          if (continueHint != null) ...[
+            gapH12,
+            Text(
+              continueHint,
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: t.ink2),
+              textAlign: TextAlign.center,
+            ),
+          ],
           const SizedBox(height: 32),
         ],
       ),
     );
+  }
+
+  String? _continueHint({
+    required int photoCount,
+    required int uploadingCount,
+  }) {
+    if (uploadingCount > 0) {
+      return 'Finish uploading your photos to continue.';
+    }
+
+    final remainingPhotos = 2 - photoCount;
+    if (remainingPhotos > 0) {
+      final label = remainingPhotos == 1
+          ? '1 more photo'
+          : '$remainingPhotos more photos';
+      return 'Add $label to continue.';
+    }
+
+    return null;
   }
 }

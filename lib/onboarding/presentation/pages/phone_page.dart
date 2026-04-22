@@ -4,6 +4,8 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -19,6 +21,12 @@ class PhonePage extends ConsumerStatefulWidget {
 class _PhonePageState extends ConsumerState<PhonePage> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _phoneController.text = ref.read(onboardingControllerProvider).phoneNumber;
+  }
 
   @override
   void dispose() {
@@ -39,6 +47,11 @@ class _PhonePageState extends ConsumerState<PhonePage> {
   @override
   Widget build(BuildContext context) {
     final mutation = ref.watch(OnboardingController.sendOtpMutation);
+    final shouldAutofocus = ref.watch(
+      onboardingControllerProvider.select(
+        (data) => data.step == OnboardingStep.phone,
+      ),
+    );
     final t = CatchTokens.of(context);
 
     return Padding(
@@ -49,24 +62,19 @@ class _PhonePageState extends ConsumerState<PhonePage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const SizedBox(height: 32),
-            Text(
-              "What's your number?",
-              style: CatchTextStyles.displaySm(
-                context,
-              ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
-            ),
-            gapH8,
-            Text(
-              "We'll send you a one-time code to verify.",
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
+            const OnboardingStepHeader(
+              title: "What's your number?",
+              subtitle: "We'll send you a one-time code to verify.",
             ),
             const SizedBox(height: 40),
             TextFormField(
               controller: _phoneController,
-              autofocus: true,
+              autofocus: shouldAutofocus,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
+              autofillHints: const [AutofillHints.telephoneNumberNational],
               onFieldSubmitted: (_) => _submit(),
+              onChanged: (_) => OnboardingController.sendOtpMutation.reset(ref),
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),

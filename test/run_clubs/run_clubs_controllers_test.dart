@@ -4,8 +4,8 @@ import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/run_clubs/presentation/create_run_club_controller.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_club_detail_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_controller.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

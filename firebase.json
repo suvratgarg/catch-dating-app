@@ -39,13 +39,20 @@
     }
   },
   "hosting": {
-    "public": "build/web",
+    "public": "website",
     "ignore": [
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
     ],
     "rewrites": [
+      {
+        "source": "/api/join-waitlist",
+        "function": {
+          "functionId": "joinWaitlist",
+          "region": "asia-south1"
+        }
+      },
       {
         "source": "**",
         "destination": "/index.html"

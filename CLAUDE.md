@@ -100,12 +100,29 @@ No mechanism exists to mark a run as "attended" after it ends.
 
 ---
 
+## 9. Structure / Naming Refactor
+
+Paused on 2026-04-22 while other in-progress local changes finish. Resume from item #22.
+
+| # | Area | Issue / target change | Done |
+|---|------|------------------------|------|
+| 22 | `publicProfiles` ownership | Make `publicProfiles` backend-owned only. Remove client-side sync/write paths after reconciling the in-progress local changes in `lib/app.dart`, `lib/app_user/data/app_user_repository.dart`, and `lib/public_profile/data/public_profile_sync_provider.dart`. | [ ] |
+| 23 | User schema contract | Align `functions/src/index.ts` bootstrap write with `AppUser` / `AppUserDoc` so document ID fields are not duplicated in document data and bootstrap fields are intentional. | [ ] |
+| 24 | Run club membership naming | Standardize on membership wording across app + backend. Rename `followedRunClubIds`, `_followClub`, `followClub()`, and related UI copy to a consistent `join/member` vocabulary. | [ ] |
+| 25 | Payments naming | Rename payment payload/model fields from `activityId` to `runId` across Flutter models, repositories, screens, and Cloud Functions. | [ ] |
+| 26 | Controller vs view-model naming | Split mixed read-model/mutation files and rename them clearly. Examples: `run_clubs_list_state.dart`, `run_detail_controller.dart`, and `run_club_detail_controller.dart`. | [ ] |
+| 27 | `functions/src` structure | Reorganize Functions by backend bounded context instead of partial frontend mirroring. Candidate target: `auth/`, `profiles/`, `runs/`, `payments/`, `matching/`, `reviews/`, `shared/`. | [ ] |
+| 28 | Shared folders cleanup | Reconcile `core/widgets` vs `common_widgets`, and remove or fill empty placeholder folders such as `lib/app_user/presentation`, `lib/profile/data`, and `lib/core/data` if they are still unused after the refactor. | [ ] |
+
+---
+
 ## Notes
 
 - **Critical:** Items #15–16 (attendance) break the entire swipe/catches feature. Fix these first.
 - Items #12 (FCM route) was fixed in the audit session.
 - All other items are UX/data gaps that don't prevent other features from working.
 - The `Payment` model lacks an `activityTitle` field — affects payment history tile (#13).
+- Structure refactor note: current worktree already contains in-progress client-side `publicProfiles` sync changes. Do not overwrite them blindly; reconcile ownership first when resuming.
 
 ---
 
@@ -116,3 +133,4 @@ No mechanism exists to mark a run as "attended" after it ends.
 | 2026-04-22 | Full audit pass 1: dashboard, runs, FCM, payments. TODO comments added. FCM route bug fixed. |
 | 2026-04-22 | Full audit pass 2: functions, swipes, reviews, Cloud Functions. Found critical `attendedUserIds` gap (#15), review guards (#17–19), CF message bug (#20). |
 | 2026-04-22 | Implemented all TODOs #1–#21. Highlights: `markRunAttendance` CF created (#15–16); all dashboard widgets wired to real data (#1–8, #14); `AppUser.city` field added (#2); `WhoIsRunning` batch-fetches `PublicProfile` (#11); `ReviewsSection` guards + "See all" (#17–19); payment history shows run title (#13); CF bugs fixed (#20–21). Run `build_runner` is up to date. |
+| 2026-04-22 | Structure/naming audit follow-up scoped. Refactor intentionally paused because the worktree already has in-progress client-side `publicProfiles` sync changes that conflict with the planned backend-owned projection cleanup. Pending work tracked in items #22–#28 above. |

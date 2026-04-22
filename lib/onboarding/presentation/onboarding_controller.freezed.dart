@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OnboardingData {
 
- int get step; String get phoneNumber; String? get verificationId; String get firstName; String get lastName; DateTime? get dateOfBirth; Gender? get gender; SexualOrientation? get sexualOrientation; List<Gender> get interestedInGenders;
+ OnboardingStep get step; bool get phoneVerified; String? get verificationId; OnboardingProfileDraft get profileDraft;
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $OnboardingDataCopyWith<OnboardingData> get copyWith => _$OnboardingDataCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.verificationId, verificationId) || other.verificationId == verificationId)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.sexualOrientation, sexualOrientation) || other.sexualOrientation == sexualOrientation)&&const DeepCollectionEquality().equals(other.interestedInGenders, interestedInGenders));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.verificationId, verificationId) || other.verificationId == verificationId)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,step,phoneNumber,verificationId,firstName,lastName,dateOfBirth,gender,sexualOrientation,const DeepCollectionEquality().hash(interestedInGenders));
+int get hashCode => Object.hash(runtimeType,step,phoneVerified,verificationId,profileDraft);
 
 @override
 String toString() {
-  return 'OnboardingData(step: $step, phoneNumber: $phoneNumber, verificationId: $verificationId, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, gender: $gender, sexualOrientation: $sexualOrientation, interestedInGenders: $interestedInGenders)';
+  return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, verificationId: $verificationId, profileDraft: $profileDraft)';
 }
 
 
@@ -45,11 +45,11 @@ abstract mixin class $OnboardingDataCopyWith<$Res>  {
   factory $OnboardingDataCopyWith(OnboardingData value, $Res Function(OnboardingData) _then) = _$OnboardingDataCopyWithImpl;
 @useResult
 $Res call({
- int step, String phoneNumber, String? verificationId, String firstName, String lastName, DateTime? dateOfBirth, Gender? gender, SexualOrientation? sexualOrientation, List<Gender> interestedInGenders
+ OnboardingStep step, bool phoneVerified, String? verificationId, OnboardingProfileDraft profileDraft
 });
 
 
-
+$OnboardingProfileDraftCopyWith<$Res> get profileDraft;
 
 }
 /// @nodoc
@@ -62,21 +62,25 @@ class _$OnboardingDataCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? phoneNumber = null,Object? verificationId = freezed,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? gender = freezed,Object? sexualOrientation = freezed,Object? interestedInGenders = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? phoneVerified = null,Object? verificationId = freezed,Object? profileDraft = null,}) {
   return _then(_self.copyWith(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
-as int,phoneNumber: null == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
-as String,verificationId: freezed == verificationId ? _self.verificationId : verificationId // ignore: cast_nullable_to_non_nullable
-as String?,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
-as DateTime?,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as Gender?,sexualOrientation: freezed == sexualOrientation ? _self.sexualOrientation : sexualOrientation // ignore: cast_nullable_to_non_nullable
-as SexualOrientation?,interestedInGenders: null == interestedInGenders ? _self.interestedInGenders : interestedInGenders // ignore: cast_nullable_to_non_nullable
-as List<Gender>,
+as OnboardingStep,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
+as bool,verificationId: freezed == verificationId ? _self.verificationId : verificationId // ignore: cast_nullable_to_non_nullable
+as String?,profileDraft: null == profileDraft ? _self.profileDraft : profileDraft // ignore: cast_nullable_to_non_nullable
+as OnboardingProfileDraft,
   ));
 }
-
+/// Create a copy of OnboardingData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OnboardingProfileDraftCopyWith<$Res> get profileDraft {
+  
+  return $OnboardingProfileDraftCopyWith<$Res>(_self.profileDraft, (value) {
+    return _then(_self.copyWith(profileDraft: value));
+  });
+}
 }
 
 
@@ -158,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int step,  String phoneNumber,  String? verificationId,  String firstName,  String lastName,  DateTime? dateOfBirth,  Gender? gender,  SexualOrientation? sexualOrientation,  List<Gender> interestedInGenders)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( OnboardingStep step,  bool phoneVerified,  String? verificationId,  OnboardingProfileDraft profileDraft)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingData() when $default != null:
-return $default(_that.step,_that.phoneNumber,_that.verificationId,_that.firstName,_that.lastName,_that.dateOfBirth,_that.gender,_that.sexualOrientation,_that.interestedInGenders);case _:
+return $default(_that.step,_that.phoneVerified,_that.verificationId,_that.profileDraft);case _:
   return orElse();
 
 }
@@ -179,10 +183,10 @@ return $default(_that.step,_that.phoneNumber,_that.verificationId,_that.firstNam
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int step,  String phoneNumber,  String? verificationId,  String firstName,  String lastName,  DateTime? dateOfBirth,  Gender? gender,  SexualOrientation? sexualOrientation,  List<Gender> interestedInGenders)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( OnboardingStep step,  bool phoneVerified,  String? verificationId,  OnboardingProfileDraft profileDraft)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingData():
-return $default(_that.step,_that.phoneNumber,_that.verificationId,_that.firstName,_that.lastName,_that.dateOfBirth,_that.gender,_that.sexualOrientation,_that.interestedInGenders);case _:
+return $default(_that.step,_that.phoneVerified,_that.verificationId,_that.profileDraft);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +203,10 @@ return $default(_that.step,_that.phoneNumber,_that.verificationId,_that.firstNam
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int step,  String phoneNumber,  String? verificationId,  String firstName,  String lastName,  DateTime? dateOfBirth,  Gender? gender,  SexualOrientation? sexualOrientation,  List<Gender> interestedInGenders)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( OnboardingStep step,  bool phoneVerified,  String? verificationId,  OnboardingProfileDraft profileDraft)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingData() when $default != null:
-return $default(_that.step,_that.phoneNumber,_that.verificationId,_that.firstName,_that.lastName,_that.dateOfBirth,_that.gender,_that.sexualOrientation,_that.interestedInGenders);case _:
+return $default(_that.step,_that.phoneVerified,_that.verificationId,_that.profileDraft);case _:
   return null;
 
 }
@@ -213,25 +217,14 @@ return $default(_that.step,_that.phoneNumber,_that.verificationId,_that.firstNam
 /// @nodoc
 
 
-class _OnboardingData implements OnboardingData {
-  const _OnboardingData({this.step = 0, this.phoneNumber = '', this.verificationId, this.firstName = '', this.lastName = '', this.dateOfBirth, this.gender, this.sexualOrientation, final  List<Gender> interestedInGenders = const []}): _interestedInGenders = interestedInGenders;
+class _OnboardingData extends OnboardingData {
+  const _OnboardingData({this.step = OnboardingStep.welcome, this.phoneVerified = false, this.verificationId, this.profileDraft = const OnboardingProfileDraft()}): super._();
   
 
-@override@JsonKey() final  int step;
-@override@JsonKey() final  String phoneNumber;
+@override@JsonKey() final  OnboardingStep step;
+@override@JsonKey() final  bool phoneVerified;
 @override final  String? verificationId;
-@override@JsonKey() final  String firstName;
-@override@JsonKey() final  String lastName;
-@override final  DateTime? dateOfBirth;
-@override final  Gender? gender;
-@override final  SexualOrientation? sexualOrientation;
- final  List<Gender> _interestedInGenders;
-@override@JsonKey() List<Gender> get interestedInGenders {
-  if (_interestedInGenders is EqualUnmodifiableListView) return _interestedInGenders;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_interestedInGenders);
-}
-
+@override@JsonKey() final  OnboardingProfileDraft profileDraft;
 
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +236,16 @@ _$OnboardingDataCopyWith<_OnboardingData> get copyWith => __$OnboardingDataCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.verificationId, verificationId) || other.verificationId == verificationId)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.sexualOrientation, sexualOrientation) || other.sexualOrientation == sexualOrientation)&&const DeepCollectionEquality().equals(other._interestedInGenders, _interestedInGenders));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingData&&(identical(other.step, step) || other.step == step)&&(identical(other.phoneVerified, phoneVerified) || other.phoneVerified == phoneVerified)&&(identical(other.verificationId, verificationId) || other.verificationId == verificationId)&&(identical(other.profileDraft, profileDraft) || other.profileDraft == profileDraft));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,step,phoneNumber,verificationId,firstName,lastName,dateOfBirth,gender,sexualOrientation,const DeepCollectionEquality().hash(_interestedInGenders));
+int get hashCode => Object.hash(runtimeType,step,phoneVerified,verificationId,profileDraft);
 
 @override
 String toString() {
-  return 'OnboardingData(step: $step, phoneNumber: $phoneNumber, verificationId: $verificationId, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, gender: $gender, sexualOrientation: $sexualOrientation, interestedInGenders: $interestedInGenders)';
+  return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, verificationId: $verificationId, profileDraft: $profileDraft)';
 }
 
 
@@ -263,11 +256,11 @@ abstract mixin class _$OnboardingDataCopyWith<$Res> implements $OnboardingDataCo
   factory _$OnboardingDataCopyWith(_OnboardingData value, $Res Function(_OnboardingData) _then) = __$OnboardingDataCopyWithImpl;
 @override @useResult
 $Res call({
- int step, String phoneNumber, String? verificationId, String firstName, String lastName, DateTime? dateOfBirth, Gender? gender, SexualOrientation? sexualOrientation, List<Gender> interestedInGenders
+ OnboardingStep step, bool phoneVerified, String? verificationId, OnboardingProfileDraft profileDraft
 });
 
 
-
+@override $OnboardingProfileDraftCopyWith<$Res> get profileDraft;
 
 }
 /// @nodoc
@@ -280,22 +273,26 @@ class __$OnboardingDataCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingData
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? step = null,Object? phoneNumber = null,Object? verificationId = freezed,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? gender = freezed,Object? sexualOrientation = freezed,Object? interestedInGenders = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? step = null,Object? phoneVerified = null,Object? verificationId = freezed,Object? profileDraft = null,}) {
   return _then(_OnboardingData(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
-as int,phoneNumber: null == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
-as String,verificationId: freezed == verificationId ? _self.verificationId : verificationId // ignore: cast_nullable_to_non_nullable
-as String?,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
-as String,lastName: null == lastName ? _self.lastName : lastName // ignore: cast_nullable_to_non_nullable
-as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth // ignore: cast_nullable_to_non_nullable
-as DateTime?,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as Gender?,sexualOrientation: freezed == sexualOrientation ? _self.sexualOrientation : sexualOrientation // ignore: cast_nullable_to_non_nullable
-as SexualOrientation?,interestedInGenders: null == interestedInGenders ? _self._interestedInGenders : interestedInGenders // ignore: cast_nullable_to_non_nullable
-as List<Gender>,
+as OnboardingStep,phoneVerified: null == phoneVerified ? _self.phoneVerified : phoneVerified // ignore: cast_nullable_to_non_nullable
+as bool,verificationId: freezed == verificationId ? _self.verificationId : verificationId // ignore: cast_nullable_to_non_nullable
+as String?,profileDraft: null == profileDraft ? _self.profileDraft : profileDraft // ignore: cast_nullable_to_non_nullable
+as OnboardingProfileDraft,
   ));
 }
 
-
+/// Create a copy of OnboardingData
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$OnboardingProfileDraftCopyWith<$Res> get profileDraft {
+  
+  return $OnboardingProfileDraftCopyWith<$Res>(_self.profileDraft, (value) {
+    return _then(_self.copyWith(profileDraft: value));
+  });
+}
 }
 
 // dart format on
