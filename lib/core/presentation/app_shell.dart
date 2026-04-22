@@ -6,6 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+// Tab indices — kept in sync with branch order in go_router.dart
+//   0  Home      (DashboardScreen)
+//   1  Clubs     (RunClubsListScreen)
+//   2  Catches   (SwipeHubScreen)
+//   3  Chats     (MatchesListScreen)
+//   4  You       (ProfileScreen)
+
 class AppShell extends ConsumerStatefulWidget {
   const AppShell({super.key, required this.navigationShell});
 
@@ -26,12 +33,15 @@ class _AppShellState extends ConsumerState<AppShell> {
 
   void _initFcm() {
     final uid = ref.read(uidProvider).value;
-    if (uid == null || _fcmInitialized) return;
+    final fcmService = ref.read(fcmServiceProvider);
+    if (uid == null || _fcmInitialized || !fcmService.isSupportedPlatform) {
+      return;
+    }
     _fcmInitialized = true;
-    ref.read(fcmServiceProvider).initialize(
-          uid: uid,
-          router: ref.read(goRouterProvider),
-        );
+    fcmService.initialize(
+      uid: uid,
+      router: ref.read(goRouterProvider),
+    );
   }
 
   @override
@@ -48,16 +58,25 @@ class _AppShellState extends ConsumerState<AppShell> {
           initialLocation: index == widget.navigationShell.currentIndex,
         ),
         destinations: [
+          // 0 — Home
+          const NavigationDestination(
+            icon: Icon(Icons.home_outlined),
+            selectedIcon: Icon(Icons.home_rounded),
+            label: 'Home',
+          ),
+          // 1 — Clubs
           const NavigationDestination(
             icon: Icon(Icons.groups_outlined),
-            selectedIcon: Icon(Icons.groups),
+            selectedIcon: Icon(Icons.groups_rounded),
             label: 'Clubs',
           ),
+          // 2 — Catches
           const NavigationDestination(
-            icon: Icon(Icons.swipe_outlined),
-            selectedIcon: Icon(Icons.swipe),
-            label: 'Swipe',
+            icon: Icon(Icons.favorite_outline_rounded),
+            selectedIcon: Icon(Icons.favorite_rounded),
+            label: 'Catches',
           ),
+          // 3 — Chats
           NavigationDestination(
             icon: unreadCount > 0
                 ? Badge(
@@ -73,10 +92,11 @@ class _AppShellState extends ConsumerState<AppShell> {
                 : const Icon(Icons.chat_bubble_rounded),
             label: 'Chats',
           ),
+          // 4 — You
           const NavigationDestination(
             icon: Icon(Icons.person_outline_rounded),
             selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profile',
+            label: 'You',
           ),
         ],
       ),

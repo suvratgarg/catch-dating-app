@@ -21,7 +21,7 @@ final class AuthRepositoryProvider
         argument: null,
         retry: null,
         name: r'authRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class AuthRepositoryProvider
   }
 }
 
-String _$authRepositoryHash() => r'38ee623fa7369430eb0cac16d0401b474a8938f5';
+String _$authRepositoryHash() => r'c3c4aa2a198f809725f6aa65101c5448ea3a0ea6';
 
 @ProviderFor(authStateChanges)
 final authStateChangesProvider = AuthStateChangesProvider._();
@@ -62,7 +62,7 @@ final class AuthStateChangesProvider
         argument: null,
         retry: null,
         name: r'authStateChangesProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -81,7 +81,7 @@ final class AuthStateChangesProvider
   }
 }
 
-String _$authStateChangesHash() => r'e3271821cb8427baaf961542f7779cd1a6502ed7';
+String _$authStateChangesHash() => r'e246328b490fb2a0f9db7404efe37f2e9d80102e';
 
 @ProviderFor(uid)
 final uidProvider = UidProvider._();
@@ -95,7 +95,7 @@ final class UidProvider
         argument: null,
         retry: null,
         name: r'uidProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -114,4 +114,4 @@ final class UidProvider
   }
 }
 
-String _$uidHash() => r'a0384aea8d5573ccca78314b94e70360013329fd';
+String _$uidHash() => r'41a6359bcba041bf40e2f060eacdb4a6c39b0c31';

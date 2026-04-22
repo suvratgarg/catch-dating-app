@@ -58,7 +58,7 @@ final class AuthControllerProvider
   }
 }
 
-String _$authControllerHash() => r'c85ef922ffb4af26a077758f3f4b5e8c1de5503a';
+String _$authControllerHash() => r'9fdbd837a441bbf22feb4750a0d992d14a27d5b0';
 
 final class AuthControllerFamily extends $Family
     with

@@ -42,7 +42,7 @@ final class EditProfileControllerProvider
 }
 
 String _$editProfileControllerHash() =>
-    r'c72487187566d62b69d6e1cdd5b5dd7c92356d71';
+    r'b4812382529495167599e24be37ecbaeb50acd7f';
 
 abstract class _$EditProfileController extends $Notifier<void> {
   void build();

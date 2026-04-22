@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -26,7 +27,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final t = CatchTokens.of(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -61,7 +62,7 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
                       point: _selected!,
                       child: Icon(
                         Icons.location_pin,
-                        color: colorScheme.primary,
+                        color: t.primary,
                         size: 40,
                         shadows: const [
                           Shadow(blurRadius: 4, offset: Offset(0, 2)),

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/appUser/domain/app_user.dart';
+import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -32,6 +32,11 @@ class RunBookingController extends _$RunBookingController {
     if (run.isFree) {
       await paymentRepo.bookFreeRun(runId: run.id);
     } else {
+      if (!paymentRepo.supportsPaidBookings) {
+        throw UnsupportedError(
+          'Paid bookings are currently available on Android and iOS only.',
+        );
+      }
       await paymentRepo.processPayment(
         activityId: run.id,
         amountInPaise: run.priceInPaise,
@@ -43,20 +48,21 @@ class RunBookingController extends _$RunBookingController {
     }
   }
 
-  /// Cancels the user's sign-up for [run].
-  ///
-  /// Note: refund handling (if paid) is managed separately.
+  /// Cancels the user's sign-up for [run] via the [cancelRunSignUp] Cloud
+  /// Function, which atomically removes them from [signedUpUserIds] and
+  /// decrements their gender count.
   Future<void> cancelBooking({required Run run, required AppUser user}) async {
-    await ref.read(runRepositoryProvider).cancelSignUp(
-          runId: run.id,
-          userId: user.uid,
-          gender: user.gender,
-        );
+    await ref
+        .read(runRepositoryProvider)
+        .cancelSignUpViaFunction(runId: run.id);
   }
 
   /// Adds the user to the waitlist for a full run.
   Future<void> joinWaitlist({required Run run}) async {
-    final uid = ref.read(uidProvider).asData?.value ?? '';
+    final uid = ref.read(uidProvider).asData?.value;
+    if (uid == null || uid.isEmpty) {
+      throw StateError('You need to be signed in to join a waitlist.');
+    }
     await ref
         .read(runRepositoryProvider)
         .joinWaitlist(runId: run.id, userId: uid);
@@ -64,7 +70,10 @@ class RunBookingController extends _$RunBookingController {
 
   /// Removes the user from the waitlist.
   Future<void> leaveWaitlist({required Run run}) async {
-    final uid = ref.read(uidProvider).asData?.value ?? '';
+    final uid = ref.read(uidProvider).asData?.value;
+    if (uid == null || uid.isEmpty) {
+      throw StateError('You need to be signed in to leave a waitlist.');
+    }
     await ref
         .read(runRepositoryProvider)
         .leaveWaitlist(runId: run.id, userId: uid);

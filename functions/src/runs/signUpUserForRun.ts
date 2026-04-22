@@ -88,7 +88,7 @@ export async function signUpUserForRun(
     if (run.signedUpUserIds.length >= run.capacityLimit) {
       throw new HttpsError(
         "failed-precondition",
-        "This run is now full. You have been added to the waitlist."
+        "This run is now full."
       );
     }
 

@@ -283,3 +283,88 @@ final class WatchReviewsByUserFamily extends $Family
   @override
   String toString() => r'watchReviewsByUserProvider';
 }
+
+@ProviderFor(watchUserReviewForClub)
+final watchUserReviewForClubProvider = WatchUserReviewForClubFamily._();
+
+final class WatchUserReviewForClubProvider
+    extends $FunctionalProvider<AsyncValue<Review?>, Review?, Stream<Review?>>
+    with $FutureModifier<Review?>, $StreamProvider<Review?> {
+  WatchUserReviewForClubProvider._({
+    required WatchUserReviewForClubFamily super.from,
+    required ({String runClubId, String reviewerUserId}) super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchUserReviewForClubProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchUserReviewForClubHash();
+
+  @override
+  String toString() {
+    return r'watchUserReviewForClubProvider'
+        ''
+        '$argument';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Review?> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<Review?> create(Ref ref) {
+    final argument =
+        this.argument as ({String runClubId, String reviewerUserId});
+    return watchUserReviewForClub(
+      ref,
+      runClubId: argument.runClubId,
+      reviewerUserId: argument.reviewerUserId,
+    );
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchUserReviewForClubProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchUserReviewForClubHash() =>
+    r'7dc470a93937679a8ad1b96e4717079085f32400';
+
+final class WatchUserReviewForClubFamily extends $Family
+    with
+        $FunctionalFamilyOverride<
+          Stream<Review?>,
+          ({String runClubId, String reviewerUserId})
+        > {
+  WatchUserReviewForClubFamily._()
+    : super(
+        retry: null,
+        name: r'watchUserReviewForClubProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchUserReviewForClubProvider call({
+    required String runClubId,
+    required String reviewerUserId,
+  }) => WatchUserReviewForClubProvider._(
+    argument: (runClubId: runClubId, reviewerUserId: reviewerUserId),
+    from: this,
+  );
+
+  @override
+  String toString() => r'watchUserReviewForClubProvider';
+}

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/appUser/domain/app_user.dart';
+import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';

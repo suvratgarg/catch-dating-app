@@ -50,6 +50,75 @@ final class RunRepositoryProvider
 
 String _$runRepositoryHash() => r'efce1135c515bcbb4c8809e98b99f5f640c0bd9e';
 
+@ProviderFor(watchRun)
+final watchRunProvider = WatchRunFamily._();
+
+final class WatchRunProvider
+    extends $FunctionalProvider<AsyncValue<Run?>, Run?, Stream<Run?>>
+    with $FutureModifier<Run?>, $StreamProvider<Run?> {
+  WatchRunProvider._({
+    required WatchRunFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchRunProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchRunHash();
+
+  @override
+  String toString() {
+    return r'watchRunProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Run?> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<Run?> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchRun(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchRunProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchRunHash() => r'98f031bde136bc17743d37b6b7080a91c1af5e4b';
+
+final class WatchRunFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<Run?>, String> {
+  WatchRunFamily._()
+    : super(
+        retry: null,
+        name: r'watchRunProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchRunProvider call(String runId) =>
+      WatchRunProvider._(argument: runId, from: this);
+
+  @override
+  String toString() => r'watchRunProvider';
+}
+
 @ProviderFor(runsForClub)
 final runsForClubProvider = RunsForClubFamily._();
 
@@ -258,4 +327,87 @@ final class SignedUpRunsFamily extends $Family
 
   @override
   String toString() => r'signedUpRunsProvider';
+}
+
+/// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+
+@ProviderFor(recommendedRuns)
+final recommendedRunsProvider = RecommendedRunsFamily._();
+
+/// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+
+final class RecommendedRunsProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<Run>>,
+          List<Run>,
+          FutureOr<List<Run>>
+        >
+    with $FutureModifier<List<Run>>, $FutureProvider<List<Run>> {
+  /// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+  RecommendedRunsProvider._({
+    required RecommendedRunsFamily super.from,
+    required List<String> super.argument,
+  }) : super(
+         retry: null,
+         name: r'recommendedRunsProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$recommendedRunsHash();
+
+  @override
+  String toString() {
+    return r'recommendedRunsProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $FutureProviderElement<List<Run>> $createElement($ProviderPointer pointer) =>
+      $FutureProviderElement(pointer);
+
+  @override
+  FutureOr<List<Run>> create(Ref ref) {
+    final argument = this.argument as List<String>;
+    return recommendedRuns(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is RecommendedRunsProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$recommendedRunsHash() => r'db8467b5b5593f56269b23fb605f8a515c936497';
+
+/// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+
+final class RecommendedRunsFamily extends $Family
+    with $FunctionalFamilyOverride<FutureOr<List<Run>>, List<String>> {
+  RecommendedRunsFamily._()
+    : super(
+        retry: null,
+        name: r'recommendedRunsProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  /// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+
+  RecommendedRunsProvider call(List<String> followedClubIds) =>
+      RecommendedRunsProvider._(argument: followedClubIds, from: this);
+
+  @override
+  String toString() => r'recommendedRunsProvider';
 }

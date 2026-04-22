@@ -25,6 +25,10 @@ export const onSwipeCreated = onDocumentCreated(
       return;
     }
 
+    // Cross-run matching is intentional for MVP: if A liked B on Run1 and B liked
+    // A on Run2, they still match. Add a `reverseSwipe.runId === swipeData.runId`
+    // check here if you want to restrict matches to runners from the same event.
+
     // Deterministic match ID — sorted so it's the same regardless of who swiped first
     const [id1, id2] = [swiperId, targetId].sort();
     const matchId = `${id1}_${id2}`;

@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -17,11 +19,29 @@ class FcmService {
 
   final FirebaseFirestore _db;
 
+  bool get isSupportedPlatform {
+    if (!AppConfig.enablePushMessaging) {
+      return false;
+    }
+
+    if (kIsWeb) {
+      return AppConfig.firebaseWebVapidKey.isNotEmpty;
+    }
+
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.android || TargetPlatform.iOS || TargetPlatform.macOS =>
+        true,
+      _ => false,
+    };
+  }
+
   /// Call once when the authenticated shell mounts.
   Future<void> initialize({
     required String uid,
     required GoRouter router,
   }) async {
+    if (!isSupportedPlatform) return;
+
     // Register the background handler before anything else.
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
@@ -33,7 +53,11 @@ class FcmService {
     );
 
     // Store the current token, then keep it up-to-date.
-    final token = await FirebaseMessaging.instance.getToken();
+    final token = kIsWeb
+        ? await FirebaseMessaging.instance.getToken(
+            vapidKey: AppConfig.firebaseWebVapidKey,
+          )
+        : await FirebaseMessaging.instance.getToken();
     if (token != null) await _saveToken(uid, token);
     FirebaseMessaging.instance.onTokenRefresh
         .listen((t) => _saveToken(uid, t));
@@ -53,7 +77,8 @@ class FcmService {
   void _handleTap(GoRouter router, RemoteMessage message) {
     final matchId = message.data['matchId'] as String?;
     if (matchId != null) {
-      router.go('/matches/$matchId');
+      // TODO(bug): route was '/matches/$matchId' but the GoRouter path is '/chats/$matchId' — fix to Routes.chatScreen
+      router.go('/chats/$matchId');
     }
   }
 

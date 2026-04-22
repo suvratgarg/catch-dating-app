@@ -1,11 +1,11 @@
 {
-    "name": "catch_dating_app",
-    "short_name": "catch_dating_app",
+    "name": "Catch",
+    "short_name": "Catch",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Catch helps runners discover clubs, book runs, and connect with other people.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

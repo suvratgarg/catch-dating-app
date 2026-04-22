@@ -25,6 +25,17 @@ migrate_working_dir/
 
 # Environment variables (secrets)
 .env
+.env.*
+
+# Signing keys and provisioning artifacts
+key.properties
+*.jks
+*.keystore
+*.p12
+*.p8
+*.cer
+*.mobileprovision
+*.pem
 
 # Flutter/Dart/Pub related
 **/doc/api/

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/appUser/data/app_user_repository.dart';
-import 'package:catch_dating_app/appUser/domain/app_user.dart';
+import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
+import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -36,7 +36,9 @@ class EditProfileController extends _$EditProfileController {
     List<Language> languages = const [],
   }) async {
     final current = ref.read(appUserStreamProvider).asData?.value;
-    if (current == null) return;
+    if (current == null) {
+      throw StateError('User profile not loaded. Please try again.');
+    }
     await ref.read(appUserRepositoryProvider).setAppUser(
       appUser: current.copyWith(
         name: name,

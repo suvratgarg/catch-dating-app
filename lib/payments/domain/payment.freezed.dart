@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$Payment {
 
 @JsonKey(includeToJson: false) String get id; String get userId; String get orderId; String get paymentId; String get activityId; int get amount;// in paise
- String get currency; PaymentStatus get status;@TimestampConverter() DateTime get createdAt;
+ String get currency; PaymentStatus get status; bool get signUpFailed;@TimestampConverter() DateTime get createdAt;
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $PaymentCopyWith<Payment> get copyWith => _$PaymentCopyWithImpl<Payment>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.activityId, activityId) || other.activityId == activityId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.activityId, activityId) || other.activityId == activityId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.signUpFailed, signUpFailed) || other.signUpFailed == signUpFailed)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,orderId,paymentId,activityId,amount,currency,status,createdAt);
+int get hashCode => Object.hash(runtimeType,id,userId,orderId,paymentId,activityId,amount,currency,status,signUpFailed,createdAt);
 
 @override
 String toString() {
-  return 'Payment(id: $id, userId: $userId, orderId: $orderId, paymentId: $paymentId, activityId: $activityId, amount: $amount, currency: $currency, status: $status, createdAt: $createdAt)';
+  return 'Payment(id: $id, userId: $userId, orderId: $orderId, paymentId: $paymentId, activityId: $activityId, amount: $amount, currency: $currency, status: $status, signUpFailed: $signUpFailed, createdAt: $createdAt)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $PaymentCopyWith<$Res>  {
   factory $PaymentCopyWith(Payment value, $Res Function(Payment) _then) = _$PaymentCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String userId, String orderId, String paymentId, String activityId, int amount, String currency, PaymentStatus status,@TimestampConverter() DateTime createdAt
+@JsonKey(includeToJson: false) String id, String userId, String orderId, String paymentId, String activityId, int amount, String currency, PaymentStatus status, bool signUpFailed,@TimestampConverter() DateTime createdAt
 });
 
 
@@ -66,7 +66,7 @@ class _$PaymentCopyWithImpl<$Res>
 
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? orderId = null,Object? paymentId = null,Object? activityId = null,Object? amount = null,Object? currency = null,Object? status = null,Object? createdAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? userId = null,Object? orderId = null,Object? paymentId = null,Object? activityId = null,Object? amount = null,Object? currency = null,Object? status = null,Object? signUpFailed = null,Object? createdAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,8 @@ as String,activityId: null == activityId ? _self.activityId : activityId // igno
 as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as int,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as PaymentStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as PaymentStatus,signUpFailed: null == signUpFailed ? _self.signUpFailed : signUpFailed // ignore: cast_nullable_to_non_nullable
+as bool,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }
@@ -162,10 +163,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String activityId,  int amount,  String currency,  PaymentStatus status, @TimestampConverter()  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String activityId,  int amount,  String currency,  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Payment() when $default != null:
-return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activityId,_that.amount,_that.currency,_that.status,_that.createdAt);case _:
+return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activityId,_that.amount,_that.currency,_that.status,_that.signUpFailed,_that.createdAt);case _:
   return orElse();
 
 }
@@ -183,10 +184,10 @@ return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activi
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String activityId,  int amount,  String currency,  PaymentStatus status, @TimestampConverter()  DateTime createdAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String activityId,  int amount,  String currency,  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _Payment():
-return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activityId,_that.amount,_that.currency,_that.status,_that.createdAt);case _:
+return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activityId,_that.amount,_that.currency,_that.status,_that.signUpFailed,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +204,10 @@ return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activi
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String activityId,  int amount,  String currency,  PaymentStatus status, @TimestampConverter()  DateTime createdAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String userId,  String orderId,  String paymentId,  String activityId,  int amount,  String currency,  PaymentStatus status,  bool signUpFailed, @TimestampConverter()  DateTime createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Payment() when $default != null:
-return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activityId,_that.amount,_that.currency,_that.status,_that.createdAt);case _:
+return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activityId,_that.amount,_that.currency,_that.status,_that.signUpFailed,_that.createdAt);case _:
   return null;
 
 }
@@ -218,7 +219,7 @@ return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.activi
 @JsonSerializable()
 
 class _Payment implements Payment {
-  const _Payment({@JsonKey(includeToJson: false) required this.id, required this.userId, required this.orderId, required this.paymentId, required this.activityId, required this.amount, this.currency = 'INR', required this.status, @TimestampConverter() required this.createdAt});
+  const _Payment({@JsonKey(includeToJson: false) required this.id, required this.userId, required this.orderId, required this.paymentId, required this.activityId, required this.amount, this.currency = 'INR', required this.status, this.signUpFailed = false, @TimestampConverter() required this.createdAt});
   factory _Payment.fromJson(Map<String, dynamic> json) => _$PaymentFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -230,6 +231,7 @@ class _Payment implements Payment {
 // in paise
 @override@JsonKey() final  String currency;
 @override final  PaymentStatus status;
+@override@JsonKey() final  bool signUpFailed;
 @override@TimestampConverter() final  DateTime createdAt;
 
 /// Create a copy of Payment
@@ -245,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.activityId, activityId) || other.activityId == activityId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Payment&&(identical(other.id, id) || other.id == id)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.orderId, orderId) || other.orderId == orderId)&&(identical(other.paymentId, paymentId) || other.paymentId == paymentId)&&(identical(other.activityId, activityId) || other.activityId == activityId)&&(identical(other.amount, amount) || other.amount == amount)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.status, status) || other.status == status)&&(identical(other.signUpFailed, signUpFailed) || other.signUpFailed == signUpFailed)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,userId,orderId,paymentId,activityId,amount,currency,status,createdAt);
+int get hashCode => Object.hash(runtimeType,id,userId,orderId,paymentId,activityId,amount,currency,status,signUpFailed,createdAt);
 
 @override
 String toString() {
-  return 'Payment(id: $id, userId: $userId, orderId: $orderId, paymentId: $paymentId, activityId: $activityId, amount: $amount, currency: $currency, status: $status, createdAt: $createdAt)';
+  return 'Payment(id: $id, userId: $userId, orderId: $orderId, paymentId: $paymentId, activityId: $activityId, amount: $amount, currency: $currency, status: $status, signUpFailed: $signUpFailed, createdAt: $createdAt)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$PaymentCopyWith<$Res> implements $PaymentCopyWith<$Res> {
   factory _$PaymentCopyWith(_Payment value, $Res Function(_Payment) _then) = __$PaymentCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String userId, String orderId, String paymentId, String activityId, int amount, String currency, PaymentStatus status,@TimestampConverter() DateTime createdAt
+@JsonKey(includeToJson: false) String id, String userId, String orderId, String paymentId, String activityId, int amount, String currency, PaymentStatus status, bool signUpFailed,@TimestampConverter() DateTime createdAt
 });
 
 
@@ -282,7 +284,7 @@ class __$PaymentCopyWithImpl<$Res>
 
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? orderId = null,Object? paymentId = null,Object? activityId = null,Object? amount = null,Object? currency = null,Object? status = null,Object? createdAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? userId = null,Object? orderId = null,Object? paymentId = null,Object? activityId = null,Object? amount = null,Object? currency = null,Object? status = null,Object? signUpFailed = null,Object? createdAt = null,}) {
   return _then(_Payment(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
@@ -292,7 +294,8 @@ as String,activityId: null == activityId ? _self.activityId : activityId // igno
 as String,amount: null == amount ? _self.amount : amount // ignore: cast_nullable_to_non_nullable
 as int,currency: null == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
 as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as PaymentStatus,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as PaymentStatus,signUpFailed: null == signUpFailed ? _self.signUpFailed : signUpFailed // ignore: cast_nullable_to_non_nullable
+as bool,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,
   ));
 }

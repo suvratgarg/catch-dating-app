@@ -15,6 +15,7 @@ _Payment _$PaymentFromJson(Map<String, dynamic> json) => _Payment(
   amount: (json['amount'] as num).toInt(),
   currency: json['currency'] as String? ?? 'INR',
   status: $enumDecode(_$PaymentStatusEnumMap, json['status']),
+  signUpFailed: json['signUpFailed'] as bool? ?? false,
   createdAt: const TimestampConverter().fromJson(
     json['createdAt'] as Timestamp,
   ),
@@ -28,6 +29,7 @@ Map<String, dynamic> _$PaymentToJson(_Payment instance) => <String, dynamic>{
   'amount': instance.amount,
   'currency': instance.currency,
   'status': _$PaymentStatusEnumMap[instance.status]!,
+  'signUpFailed': instance.signUpFailed,
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
 };
 
@@ -35,4 +37,5 @@ const _$PaymentStatusEnumMap = {
   PaymentStatus.pending: 'pending',
   PaymentStatus.completed: 'completed',
   PaymentStatus.failed: 'failed',
+  PaymentStatus.refunded: 'refunded',
 };

@@ -26,7 +26,7 @@ final class FirebaseFirestoreProvider
         argument: null,
         retry: null,
         name: r'firebaseFirestoreProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -54,7 +54,7 @@ final class FirebaseFirestoreProvider
   }
 }
 
-String _$firebaseFirestoreHash() => r'eca974fdc891fcd3f9586742678f47582b20adec';
+String _$firebaseFirestoreHash() => r'211c9d7cd91051da8adfacbf85a09b8bad1d41e8';
 
 @ProviderFor(firebaseAuth)
 final firebaseAuthProvider = FirebaseAuthProvider._();
@@ -68,7 +68,7 @@ final class FirebaseAuthProvider
         argument: null,
         retry: null,
         name: r'firebaseAuthProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -95,7 +95,7 @@ final class FirebaseAuthProvider
   }
 }
 
-String _$firebaseAuthHash() => r'8f84097cccd00af817397c1715c5f537399ba780';
+String _$firebaseAuthHash() => r'8c3e9d11b27110ca96130356b5ef4d5d34a5ffc2';
 
 @ProviderFor(firebaseStorage)
 final firebaseStorageProvider = FirebaseStorageProvider._();
@@ -110,7 +110,7 @@ final class FirebaseStorageProvider
         argument: null,
         retry: null,
         name: r'firebaseStorageProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -137,4 +137,4 @@ final class FirebaseStorageProvider
   }
 }
 
-String _$firebaseStorageHash() => r'47903c48019f7dfa1ba82fa0a905885442d69f6b';
+String _$firebaseStorageHash() => r'4d34fbbd82ac849c74805e19a05079afa5e20cad';

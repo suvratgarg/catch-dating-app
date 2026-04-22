@@ -125,6 +125,8 @@ export interface AppUserDoc {
   profileComplete: boolean;
   // Photos
   photoUrls: string[];
+  // Location (optional — set during onboarding)
+  city?: IndianCity;
   // Matching preferences
   followedRunClubIds: string[];
   interestedInGenders: Gender[];
@@ -177,7 +179,7 @@ export interface PublicProfileDoc {
 
 /**
  * /runClubs/{clubId}
- * Dart: lib/runClubs/domain/run_club.dart — RunClub
+ * Dart: lib/run_clubs/domain/run_club.dart — RunClub
  * Note: "id" is the document ID, not stored in the document data.
  */
 export interface RunClubDoc {
@@ -227,7 +229,7 @@ export interface RunDoc {
   genderCounts: Record<string, number>;
 }
 
-export type PaymentStatus = "pending" | "completed" | "failed";
+export type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
 
 /**
  * /payments/{paymentId}
@@ -243,6 +245,8 @@ export interface PaymentDoc {
   currency: string;
   status: PaymentStatus;
   createdAt: FirebaseFirestore.Timestamp;
+  /** true when payment succeeded but sign-up failed (race condition or cancellation refund). */
+  signUpFailed?: boolean;
 }
 
 /**
@@ -290,6 +294,8 @@ export interface ChatMessageDoc {
  * /reviews/{reviewId}
  * Dart: lib/reviews/domain/review.dart — Review
  * Note: "id" is the document ID, not stored in the document data.
+ * The current client uses one deterministic review document per
+ * `(runClubId, reviewerUserId)` pair.
  */
 export interface ReviewDoc {
   runClubId: string;

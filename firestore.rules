@@ -1,18 +1,267 @@
-rules_version='2'
+rules_version = '2';
 
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // This rule allows anyone with your database reference to view, edit,
-      // and delete all data in your database. It is useful for getting
-      // started, but it is configured to expire after 30 days because it
-      // leaves your app open to attackers. At that time, all client
-      // requests to your database will be denied.
-      //
-      // Make sure to write security rules for your app before that time, or
-      // else all client requests to your database will be denied until you
-      // update your rules.
-      allow read, write: if request.time < timestamp.date(2026, 5, 4);
+
+    function isAuthed() {
+      return request.auth != null;
+    }
+
+    function isValidRunClubCreate() {
+      return request.resource.data.keys().hasOnly([
+          'name',
+          'description',
+          'location',
+          'hostUserId',
+          'createdAt',
+          'imageUrl',
+          'memberUserIds',
+          'rating',
+          'reviewCount'
+        ])
+        && request.resource.data.name is string
+        && request.resource.data.description is string
+        && request.resource.data.location is string
+        && request.resource.data.hostUserId == request.auth.uid
+        && request.resource.data.createdAt is timestamp
+        && (request.resource.data.imageUrl == null
+            || request.resource.data.imageUrl is string)
+        && request.resource.data.memberUserIds is list
+        && request.resource.data.memberUserIds.size() == 1
+        && request.resource.data.memberUserIds.hasAll([request.auth.uid])
+        && request.resource.data.rating == 0
+        && request.resource.data.reviewCount == 0;
+    }
+
+    function expectedReviewId() {
+      return 'club_' + request.resource.data.runClubId + '_user_' + request.auth.uid;
+    }
+
+    function hasValidReviewReference(data) {
+      return exists(/databases/$(database)/documents/runClubs/$(data.runClubId))
+        && (
+          data.runId == null
+          || (
+            exists(/databases/$(database)/documents/runs/$(data.runId))
+            && get(/databases/$(database)/documents/runs/$(data.runId))
+                .data.runClubId == data.runClubId
+          )
+        );
+    }
+
+    function isValidReviewPayload(data) {
+      return data.keys().hasAll([
+          'runClubId',
+          'reviewerUserId',
+          'reviewerName',
+          'rating',
+          'comment',
+          'createdAt'
+        ])
+        && data.keys().hasOnly([
+          'runClubId',
+          'runId',
+          'reviewerUserId',
+          'reviewerName',
+          'rating',
+          'comment',
+          'createdAt',
+          'updatedAt'
+        ])
+        && data.runClubId is string
+        && (data.runId == null || data.runId is string)
+        && data.reviewerUserId == request.auth.uid
+        && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        && data.reviewerName is string
+        && data.reviewerName == get(/databases/$(database)/documents/users/$(request.auth.uid))
+            .data.name
+        && data.rating is int
+        && data.rating >= 1
+        && data.rating <= 5
+        && data.comment is string
+        && data.createdAt is timestamp
+        && (data.updatedAt == null || data.updatedAt is timestamp)
+        && hasValidReviewReference(data);
+    }
+
+    // ── Users ─────────────────────────────────────────────────────────────────
+    // Any authenticated user can read profiles (needed for chat, matches).
+    // Only the owner can write their own document.
+    match /users/{uid} {
+      allow read: if isAuthed();
+      allow write: if request.auth.uid == uid;
+    }
+
+    // ── Public profiles ───────────────────────────────────────────────────────
+    // Synced by the syncPublicProfile Cloud Function trigger. No client writes.
+    match /publicProfiles/{uid} {
+      allow read: if isAuthed();
+      allow write: if false;
+    }
+
+    // ── Run clubs ─────────────────────────────────────────────────────────────
+    match /runClubs/{clubId} {
+      allow read: if isAuthed();
+
+      // Any authenticated user can create a club; they must be its host.
+      allow create: if isAuthed()
+        && isValidRunClubCreate();
+
+      allow update: if isAuthed() && (
+        // Host can edit club profile fields only.
+        (
+          resource.data.hostUserId == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys()
+              .hasOnly(['name', 'description', 'location', 'imageUrl'])
+        )
+
+        // Non-hosts can only modify memberUserIds (join / leave).
+        || (
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['memberUserIds'])
+          && (
+            // Adding only self.
+            (
+              request.resource.data.memberUserIds.size()
+                == resource.data.memberUserIds.size() + 1
+              && request.resource.data.memberUserIds
+                  .hasAll(resource.data.memberUserIds)
+              && request.resource.data.memberUserIds
+                  .hasAll([request.auth.uid])
+            )
+            ||
+            // Removing only self.
+            (
+              request.resource.data.memberUserIds.size()
+                == resource.data.memberUserIds.size() - 1
+              && resource.data.memberUserIds
+                  .hasAll(request.resource.data.memberUserIds)
+              && resource.data.memberUserIds.hasAll([request.auth.uid])
+            )
+          )
+        )
+      );
+
+      allow delete: if isAuthed()
+        && resource.data.hostUserId == request.auth.uid;
+    }
+
+    // ── Runs ──────────────────────────────────────────────────────────────────
+    match /runs/{runId} {
+      allow read: if isAuthed();
+
+      // Only the club host can create a run for their club.
+      allow create: if isAuthed()
+        && get(/databases/$(database)/documents/runClubs/$(request.resource.data.runClubId))
+            .data.hostUserId == request.auth.uid;
+
+      allow update: if isAuthed() && (
+        // Host can edit run details but NOT the booking lists or gender counts
+        // — those are managed exclusively by Cloud Functions.
+        (
+          get(/databases/$(database)/documents/runClubs/$(resource.data.runClubId))
+              .data.hostUserId == request.auth.uid
+          && !request.resource.data.diff(resource.data).affectedKeys()
+              .hasAny(['signedUpUserIds', 'attendedUserIds', 'genderCounts'])
+        )
+
+        // Users can join or leave the waitlist (only their own UID).
+        || (
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['waitlistUserIds'])
+          && (
+            // Adding only self.
+            (
+              request.resource.data.waitlistUserIds.size()
+                == resource.data.waitlistUserIds.size() + 1
+              && request.resource.data.waitlistUserIds
+                  .hasAll(resource.data.waitlistUserIds)
+              && request.resource.data.waitlistUserIds
+                  .hasAll([request.auth.uid])
+            )
+            ||
+            // Removing only self.
+            (
+              request.resource.data.waitlistUserIds.size()
+                == resource.data.waitlistUserIds.size() - 1
+              && resource.data.waitlistUserIds
+                  .hasAll(request.resource.data.waitlistUserIds)
+              && resource.data.waitlistUserIds.hasAll([request.auth.uid])
+            )
+          )
+        )
+      );
+
+      allow delete: if isAuthed()
+        && get(/databases/$(database)/documents/runClubs/$(resource.data.runClubId))
+            .data.hostUserId == request.auth.uid;
+    }
+
+    // ── Payments ──────────────────────────────────────────────────────────────
+    // Written exclusively by Cloud Functions (verifyRazorpayPayment).
+    // Users can only read their own payment records.
+    match /payments/{paymentId} {
+      allow read: if isAuthed() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── Reviews ───────────────────────────────────────────────────────────────
+    match /reviews/{reviewId} {
+      allow read: if isAuthed();
+      allow create: if isAuthed()
+        && reviewId == expectedReviewId()
+        && isValidReviewPayload(request.resource.data);
+      allow update: if isAuthed()
+        && resource.data.reviewerUserId == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['rating', 'comment', 'updatedAt'])
+        && request.resource.data.rating is int
+        && request.resource.data.rating >= 1
+        && request.resource.data.rating <= 5
+        && request.resource.data.comment is string
+        && request.resource.data.updatedAt is timestamp;
+      allow delete: if isAuthed()
+        && resource.data.reviewerUserId == request.auth.uid;
+    }
+
+    // ── Swipes ────────────────────────────────────────────────────────────────
+    // Each user owns their outgoing swipes subcollection.
+    match /swipes/{userId}/outgoing/{targetId} {
+      allow read, create: if request.auth.uid == userId;
+    }
+
+    // ── Matches ───────────────────────────────────────────────────────────────
+    // Created by the onSwipeCreated Cloud Function. Participants can read.
+    match /matches/{matchId} {
+      allow read: if isAuthed() && (
+        resource.data.user1Id == request.auth.uid
+        || resource.data.user2Id == request.auth.uid
+      );
+      allow write: if false;
+    }
+
+    // ── Chat messages ─────────────────────────────────────────────────────────
+    match /chats/{matchId}/messages/{messageId} {
+      allow read: if isAuthed() && (
+        get(/databases/$(database)/documents/matches/$(matchId))
+            .data.user1Id == request.auth.uid
+        || get(/databases/$(database)/documents/matches/$(matchId))
+            .data.user2Id == request.auth.uid
+      );
+      allow create: if isAuthed()
+        && request.resource.data.senderId == request.auth.uid
+        && (
+          get(/databases/$(database)/documents/matches/$(matchId))
+              .data.user1Id == request.auth.uid
+          || get(/databases/$(database)/documents/matches/$(matchId))
+              .data.user2Id == request.auth.uid
+        );
+    }
+
+    // ── App config (force-update gate) ────────────────────────────────────────
+    match /config/{document} {
+      allow read: if isAuthed();
+      allow write: if false;
     }
   }
 }

@@ -1,20 +1,22 @@
-import 'package:catch_dating_app/appUser/data/app_user_repository.dart';
-import 'package:catch_dating_app/appUser/presentation/create_profile_screen.dart';
-import 'package:catch_dating_app/imageUploads/presentation/upload_photos_screen.dart';
+import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
-import 'package:catch_dating_app/profile/presentation/edit_profile_screen.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/chats/presentation/matches_list_screen.dart';
-import 'package:catch_dating_app/publicProfile/domain/public_profile.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
+import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
+import 'package:catch_dating_app/profile/presentation/edit_profile_screen.dart';
 import 'package:catch_dating_app/profile/presentation/profile_screen.dart';
-import 'package:catch_dating_app/runClubs/domain/run_club.dart';
-import 'package:catch_dating_app/runClubs/presentation/create_run_club_screen.dart';
-import 'package:catch_dating_app/runClubs/presentation/run_club_detail_screen.dart';
-import 'package:catch_dating_app/runClubs/presentation/run_clubs_list_screen.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/presentation/create_run_club_screen.dart';
+import 'package:catch_dating_app/run_clubs/presentation/run_club_detail_screen.dart';
+import 'package:catch_dating_app/run_clubs/presentation/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
+import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:flutter/material.dart';
@@ -25,69 +27,84 @@ part 'go_router.g.dart';
 
 enum Routes {
   authScreen('/auth'),
-  createProfileScreen('/create-profile'),
-  uploadPhotosScreen('/upload-photos'),
+  onboardingScreen('/onboarding'),
   editProfileScreen('/edit-profile'),
-  // Clubs branch
-  runClubsListScreen('/'),
-  runClubDetailScreen('/run-clubs/:runClubId'),
-  createRunClubScreen('/create-run-club'),
-  createRunScreen('/run-clubs/:runClubId/create-run'),
-  // Swipe branch
-  swipeHubScreen('/swipe'),
-  swipeRunScreen('/swipe/:runId'),
-  // Chats branch
-  matchesListScreen('/matches'),
-  chatScreen('/matches/:matchId'),
-  // Profile branch
-  profileScreen('/profile');
+  // Home / Dashboard branch (index 0)
+  dashboardScreen('/'),
+  // Clubs branch (index 1)
+  runClubsListScreen('/clubs'),
+  runClubDetailScreen('/clubs/run-clubs/:runClubId'),
+  runDetailScreen('/clubs/run-clubs/:runClubId/runs/:runId'),
+  createRunClubScreen('/clubs/create-run-club'),
+  createRunScreen('/clubs/run-clubs/:runClubId/create-run'),
+  // Catches branch (index 2)
+  swipeHubScreen('/catches'),
+  swipeRunScreen('/catches/:runId'),
+  // Chats branch (index 3)
+  matchesListScreen('/chats'),
+  chatScreen('/chats/:matchId'),
+  // You / Profile branch (index 4)
+  profileScreen('/you'),
+  paymentHistoryScreen('/payment-history');
 
   const Routes(this.path);
   final String path;
 }
 
+// Navigator keys are file-level so they are created once for the app lifetime.
+final _rootNavigatorKey = GlobalKey<NavigatorState>();
+final _dashboardShellKey = GlobalKey<NavigatorState>();
+final _clubsShellKey = GlobalKey<NavigatorState>();
+final _catchesShellKey = GlobalKey<NavigatorState>();
+final _chatsShellKey = GlobalKey<NavigatorState>();
+final _profileShellKey = GlobalKey<NavigatorState>();
+
 @Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
-  final uidAsync = ref.watch(uidProvider);
-  final appUserAsync = ref.watch(appUserStreamProvider);
+  final notifier = _RouterRefreshNotifier();
 
-  final rootNavigatorKey = GlobalKey<NavigatorState>();
-  final clubsShellKey = GlobalKey<NavigatorState>();
-  final swipeShellKey = GlobalKey<NavigatorState>();
-  final chatsShellKey = GlobalKey<NavigatorState>();
-  final profileShellKey = GlobalKey<NavigatorState>();
+  ref.listen(uidProvider, (_, _) => notifier.notify());
+  ref.listen(appUserStreamProvider, (_, _) => notifier.notify());
+
+  ref.onDispose(notifier.dispose);
 
   return GoRouter(
-    navigatorKey: rootNavigatorKey,
-    initialLocation: Routes.runClubsListScreen.path,
+    navigatorKey: _rootNavigatorKey,
+    initialLocation: Routes.dashboardScreen.path,
+    refreshListenable: notifier,
     redirect: (context, state) {
+      final uidAsync = ref.read(uidProvider);
+      final appUserAsync = ref.read(appUserStreamProvider);
+
       if (uidAsync.isLoading || appUserAsync.isLoading) return null;
 
       final uid = uidAsync.value;
       final appUser = appUserAsync.value;
       final loc = state.matchedLocation;
 
+      final onOnboarding = loc == Routes.onboardingScreen.path;
+      final onAuth = loc == Routes.authScreen.path;
+
       if (uid == null) {
-        return loc == Routes.authScreen.path ? null : Routes.authScreen.path;
+        // Not authenticated — only allow auth and onboarding routes
+        if (onAuth || onOnboarding) return null;
+        return Routes.authScreen.path;
       }
 
       if (appUser == null) {
-        return loc == Routes.createProfileScreen.path
-            ? null
-            : Routes.createProfileScreen.path;
+        // Authenticated but no profile doc yet
+        if (onOnboarding) return null;
+        return Routes.onboardingScreen.path;
       }
 
       if (!appUser.profileComplete) {
-        return loc == Routes.uploadPhotosScreen.path
-            ? null
-            : Routes.uploadPhotosScreen.path;
+        // Profile started but not finished
+        if (onOnboarding) return null;
+        return Routes.onboardingScreen.path;
       }
 
-      if (loc == Routes.authScreen.path ||
-          loc == Routes.createProfileScreen.path ||
-          loc == Routes.uploadPhotosScreen.path) {
-        return Routes.runClubsListScreen.path;
-      }
+      // Fully set up — redirect away from auth / onboarding flows
+      if (onAuth || onOnboarding) return Routes.dashboardScreen.path;
 
       return null;
     },
@@ -95,42 +112,66 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.authScreen.path,
         name: Routes.authScreen.name,
-        builder: (context, state) => AuthScreen(authState: AuthState.signIn),
+        builder: (context, state) => const AuthScreen(authState: AuthState.signIn),
       ),
       GoRoute(
-        path: Routes.createProfileScreen.path,
-        name: Routes.createProfileScreen.name,
-        builder: (context, state) => const CreateProfileScreen(),
-      ),
-      GoRoute(
-        path: Routes.uploadPhotosScreen.path,
-        name: Routes.uploadPhotosScreen.name,
-        builder: (context, state) => const UploadPhotosScreen(),
+        path: Routes.onboardingScreen.path,
+        name: Routes.onboardingScreen.name,
+        builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
         path: Routes.editProfileScreen.path,
         name: Routes.editProfileScreen.name,
         builder: (context, state) => const EditProfileScreen(),
       ),
+      GoRoute(
+        path: Routes.paymentHistoryScreen.path,
+        name: Routes.paymentHistoryScreen.name,
+        builder: (context, state) => const PaymentHistoryScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>
             AppShell(navigationShell: navigationShell),
         branches: [
-          // ── Branch 0: Clubs ──────────────────────────────────────────
+          // ── Branch 0: Home / Dashboard ───────────────────────────────
           StatefulShellBranch(
-            navigatorKey: clubsShellKey,
+            navigatorKey: _dashboardShellKey,
+            routes: [
+              GoRoute(
+                path: Routes.dashboardScreen.path,
+                name: Routes.dashboardScreen.name,
+                builder: (context, state) => const DashboardScreen(),
+              ),
+            ],
+          ),
+
+          // ── Branch 1: Clubs ──────────────────────────────────────────
+          StatefulShellBranch(
+            navigatorKey: _clubsShellKey,
             routes: [
               GoRoute(
                 path: Routes.runClubsListScreen.path,
                 name: Routes.runClubsListScreen.name,
-                builder: (context, state) => RunClubsListScreen(),
+                builder: (context, state) => const RunClubsListScreen(),
                 routes: [
                   GoRoute(
                     path: 'run-clubs/:runClubId',
                     name: Routes.runClubDetailScreen.name,
-                    builder: (context, state) =>
-                        RunClubDetailScreen(runClub: state.extra! as RunClub),
+                    builder: (context, state) => RunClubDetailScreen(
+                      runClubId: state.pathParameters['runClubId']!,
+                      initialRunClub: state.extra is RunClub
+                          ? state.extra! as RunClub
+                          : null,
+                    ),
                     routes: [
+                      GoRoute(
+                        path: 'runs/:runId',
+                        name: Routes.runDetailScreen.name,
+                        builder: (context, state) => RunDetailScreen(
+                          runClubId: state.pathParameters['runClubId']!,
+                          runId: state.pathParameters['runId']!,
+                        ),
+                      ),
                       GoRoute(
                         path: 'create-run',
                         name: Routes.createRunScreen.name,
@@ -149,9 +190,9 @@ GoRouter goRouter(Ref ref) {
             ],
           ),
 
-          // ── Branch 1: Swipe ──────────────────────────────────────────
+          // ── Branch 2: Catches (swipe) ────────────────────────────────
           StatefulShellBranch(
-            navigatorKey: swipeShellKey,
+            navigatorKey: _catchesShellKey,
             routes: [
               GoRoute(
                 path: Routes.swipeHubScreen.path,
@@ -170,9 +211,9 @@ GoRouter goRouter(Ref ref) {
             ],
           ),
 
-          // ── Branch 2: Chats ──────────────────────────────────────────
+          // ── Branch 3: Chats ──────────────────────────────────────────
           StatefulShellBranch(
-            navigatorKey: chatsShellKey,
+            navigatorKey: _chatsShellKey,
             routes: [
               GoRoute(
                 path: Routes.matchesListScreen.path,
@@ -192,9 +233,9 @@ GoRouter goRouter(Ref ref) {
             ],
           ),
 
-          // ── Branch 3: Profile ─────────────────────────────────────────
+          // ── Branch 4: You / Profile ──────────────────────────────────
           StatefulShellBranch(
-            navigatorKey: profileShellKey,
+            navigatorKey: _profileShellKey,
             routes: [
               GoRoute(
                 path: Routes.profileScreen.path,
@@ -207,4 +248,9 @@ GoRouter goRouter(Ref ref) {
       ),
     ],
   );
+}
+
+// Minimal ChangeNotifier used as GoRouter's refreshListenable.
+class _RouterRefreshNotifier extends ChangeNotifier {
+  void notify() => notifyListeners();
 }

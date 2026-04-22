@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/appUser/data/app_user_repository.dart';
-import 'package:catch_dating_app/publicProfile/domain/public_profile.dart';
+import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';

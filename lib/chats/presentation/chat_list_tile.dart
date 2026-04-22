@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/publicProfile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -30,7 +32,7 @@ class ChatListTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final profileAsync = ref.watch(publicProfileProvider(_otherUid));
-    final colorScheme = Theme.of(context).colorScheme;
+    final t = CatchTokens.of(context);
     final unreadCount = match.unreadCounts[currentUid] ?? 0;
     final hasUnread = unreadCount > 0;
 
@@ -46,7 +48,6 @@ class ChatListTile extends ConsumerWidget {
             ? profile!.photoUrls.first
             : null;
 
-        // "You: preview" if we sent the last message, otherwise plain preview
         final String previewText;
         if (match.lastMessagePreview == null) {
           previewText = 'You matched!';
@@ -59,11 +60,11 @@ class ChatListTile extends ConsumerWidget {
         final avatar = CircleAvatar(
           radius: 28,
           backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-          backgroundColor: colorScheme.primaryContainer,
+          backgroundColor: t.primarySoft,
           child: photoUrl == null
               ? Text(
                   name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: TextStyle(color: colorScheme.onPrimaryContainer),
+                  style: CatchTextStyles.labelMd(context, color: t.primary),
                 )
               : null,
         );
@@ -78,32 +79,26 @@ class ChatListTile extends ConsumerWidget {
               : avatar,
           title: Text(
             name,
-            style: TextStyle(
-              fontWeight:
-                  hasUnread ? FontWeight.w700 : FontWeight.w600,
+            style: CatchTextStyles.labelLg(context).copyWith(
+              fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
             ),
           ),
           subtitle: Text(
             previewText,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: TextStyle(
-              color: hasUnread
-                  ? colorScheme.onSurface
-                  : colorScheme.onSurfaceVariant,
-              fontWeight:
-                  hasUnread ? FontWeight.w500 : FontWeight.normal,
+            style: CatchTextStyles.bodySm(
+              context,
+              color: hasUnread ? t.ink : t.ink2,
+              weight: hasUnread ? FontWeight.w500 : FontWeight.w400,
             ),
           ),
           trailing: Text(
             _formatTime(match.lastMessageAt ?? match.createdAt),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: hasUnread
-                      ? colorScheme.primary
-                      : colorScheme.onSurfaceVariant,
-                  fontWeight:
-                      hasUnread ? FontWeight.w600 : FontWeight.normal,
-                ),
+            style: CatchTextStyles.caption(
+              context,
+              color: hasUnread ? t.primary : t.ink2,
+            ).copyWith(fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal),
           ),
         );
       },

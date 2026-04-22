@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/appUser/domain/app_user.dart';
+import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/publicProfile/data/public_profile_repository.dart';
-import 'package:catch_dating_app/publicProfile/domain/public_profile.dart';
+import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';

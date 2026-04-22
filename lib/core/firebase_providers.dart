@@ -5,11 +5,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'firebase_providers.g.dart';
 
-@riverpod
+@Riverpod(keepAlive: true)
 FirebaseFirestore firebaseFirestore(Ref ref) => FirebaseFirestore.instance;
 
-@riverpod
+@Riverpod(keepAlive: true)
 FirebaseAuth firebaseAuth(Ref ref) => FirebaseAuth.instance;
 
-@riverpod
+@Riverpod(keepAlive: true)
 FirebaseStorage firebaseStorage(Ref ref) => FirebaseStorage.instance;

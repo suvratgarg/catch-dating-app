@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/appUser/domain/app_user.dart';
+import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'run_constraints.freezed.dart';

@@ -20,7 +20,7 @@ class PaymentException implements Exception {
 
 class PaymentRepository {
   PaymentRepository(this._functions) {
-    if (!kIsWeb) {
+    if (supportsPaidBookings) {
       _razorpay = Razorpay();
       _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS, _onSuccess);
       _razorpay!.on(Razorpay.EVENT_PAYMENT_ERROR, _onError);
@@ -33,6 +33,15 @@ class PaymentRepository {
   Completer<void>? _completer;
   String? _pendingActivityId;
   int? _pendingAmountInPaise;
+
+  bool get supportsPaidBookings {
+    if (kIsWeb) return false;
+
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.android || TargetPlatform.iOS => true,
+      _ => false,
+    };
+  }
 
   // ── Paid run booking ──────────────────────────────────────────────────────
 
@@ -48,8 +57,10 @@ class PaymentRepository {
     required String userEmail,
     required String userContact,
   }) async {
-    if (kIsWeb || _razorpay == null) {
-      throw UnsupportedError('Payments are only supported on Android and iOS.');
+    if (!supportsPaidBookings || _razorpay == null) {
+      throw UnsupportedError(
+        'Paid bookings are only supported on Android and iOS.',
+      );
     }
 
     // Step 1: Create a Razorpay order server-side.

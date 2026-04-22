@@ -1,8 +1,11 @@
-import 'package:catch_dating_app/appUser/data/app_user_repository.dart';
-import 'package:catch_dating_app/appUser/domain/app_user.dart';
-import 'package:catch_dating_app/commonWidgets/app_form_layout.dart';
-import 'package:catch_dating_app/commonWidgets/chip_field.dart';
-import 'package:catch_dating_app/commonWidgets/enum_dropdown.dart';
+import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
+import 'package:catch_dating_app/app_user/domain/app_user.dart';
+import 'package:catch_dating_app/common_widgets/app_form_layout.dart';
+import 'package:catch_dating_app/common_widgets/chip_field.dart';
+import 'package:catch_dating_app/common_widgets/enum_dropdown.dart';
+import 'package:catch_dating_app/common_widgets/error_banner.dart';
+import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,9 +20,6 @@ class EditProfileScreen extends ConsumerStatefulWidget {
 }
 
 class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
-  static const _fieldSpacing = 16.0;
-  static const _buttonTopSpacing = 24.0;
-
   final _formKey = GlobalKey<FormState>();
 
   final _nameController = TextEditingController();
@@ -153,8 +153,6 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
   Widget build(BuildContext context) {
     final userAsync = ref.watch(appUserStreamProvider);
     final submitMutation = ref.watch(EditProfileController.submitMutation);
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
 
     ref.listen(EditProfileController.submitMutation, (previous, current) {
       if (previous?.isPending == true && current.isSuccess) {
@@ -191,7 +189,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ? 'Please enter your name'
                     : null,
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               TextFormField(
                 controller: _dateController,
                 readOnly: true,
@@ -204,7 +202,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ? 'Please select your date of birth'
                     : null,
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               ChipField<Gender>(
                 label: 'Gender',
                 values: Gender.values,
@@ -217,7 +215,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 onChanged: (v) => setState(
                     () => _selectedGender = v.isEmpty ? null : v.first),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               ChipField<SexualOrientation>(
                 label: 'Sexual orientation',
                 values: SexualOrientation.values,
@@ -231,7 +229,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 onChanged: (v) => setState(
                     () => _selectedOrientation = v.isEmpty ? null : v.first),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               TextFormField(
                 controller: _phoneController,
                 decoration: const InputDecoration(
@@ -244,7 +242,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ? 'Please enter your phone number'
                     : null,
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               TextFormField(
                 controller: _bioController,
                 decoration: const InputDecoration(
@@ -261,13 +259,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
               // ── Matching preferences ───────────────────────────────────────
 
-              const SizedBox(height: 32),
+              gapH32,
               const Divider(),
-              const SizedBox(height: 16),
-              Text('Who you want to meet',
-                  style: textTheme.titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              gapH16,
+              Text(
+                'Who you want to meet',
+                style: CatchTextStyles.displaySm(context)
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              gapH16,
               ChipField<Gender>(
                 label: 'Interested in',
                 values: Gender.values,
@@ -276,7 +276,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 onChanged: (v) =>
                     setState(() => _interestedInGenders = v),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               Row(
                 children: [
                   Expanded(
@@ -293,7 +293,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       textInputAction: TextInputAction.next,
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  gapW12,
                   Expanded(
                     child: TextFormField(
                       controller: _maxAgeController,
@@ -313,13 +313,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
               // ── About you ──────────────────────────────────────────────────
 
-              const SizedBox(height: 32),
+              gapH32,
               const Divider(),
-              const SizedBox(height: 16),
-              Text('About you',
-                  style: textTheme.titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              gapH16,
+              Text(
+                'About you',
+                style: CatchTextStyles.displaySm(context)
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              gapH16,
               EnumDropdownField<RelationshipGoal>(
                 values: RelationshipGoal.values,
                 label: 'Looking for',
@@ -327,7 +329,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 initialValue: _selectedGoal,
                 onChanged: (v) => setState(() => _selectedGoal = v),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               TextFormField(
                 controller: _heightController,
                 decoration: const InputDecoration(
@@ -339,7 +341,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 textInputAction: TextInputAction.next,
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               TextFormField(
                 controller: _occupationController,
                 decoration: const InputDecoration(
@@ -349,7 +351,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               TextFormField(
                 controller: _companyController,
                 decoration: const InputDecoration(
@@ -359,7 +361,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 textCapitalization: TextCapitalization.words,
                 textInputAction: TextInputAction.next,
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               EnumDropdownField<EducationLevel>(
                 values: EducationLevel.values,
                 label: 'Education',
@@ -367,7 +369,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 initialValue: _selectedEducation,
                 onChanged: (v) => setState(() => _selectedEducation = v),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               EnumDropdownField<Religion>(
                 values: Religion.values,
                 label: 'Religion',
@@ -375,7 +377,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 initialValue: _selectedReligion,
                 onChanged: (v) => setState(() => _selectedReligion = v),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               ChipField<Language>(
                 label: 'Languages',
                 values: Language.values,
@@ -387,13 +389,15 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
               // ── Lifestyle ──────────────────────────────────────────────────
 
-              const SizedBox(height: 32),
+              gapH32,
               const Divider(),
-              const SizedBox(height: 16),
-              Text('Lifestyle',
-                  style: textTheme.titleLarge
-                      ?.copyWith(fontWeight: FontWeight.bold)),
-              const SizedBox(height: 16),
+              gapH16,
+              Text(
+                'Lifestyle',
+                style: CatchTextStyles.displaySm(context)
+                    .copyWith(fontWeight: FontWeight.bold),
+              ),
+              gapH16,
               EnumDropdownField<DrinkingHabit>(
                 values: DrinkingHabit.values,
                 label: 'Drinking',
@@ -401,7 +405,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 initialValue: _selectedDrinking,
                 onChanged: (v) => setState(() => _selectedDrinking = v),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               EnumDropdownField<SmokingHabit>(
                 values: SmokingHabit.values,
                 label: 'Smoking',
@@ -409,7 +413,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 initialValue: _selectedSmoking,
                 onChanged: (v) => setState(() => _selectedSmoking = v),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               EnumDropdownField<WorkoutFrequency>(
                 values: WorkoutFrequency.values,
                 label: 'Workout',
@@ -417,7 +421,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 initialValue: _selectedWorkout,
                 onChanged: (v) => setState(() => _selectedWorkout = v),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               EnumDropdownField<DietaryPreference>(
                 values: DietaryPreference.values,
                 label: 'Diet',
@@ -425,7 +429,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 initialValue: _selectedDiet,
                 onChanged: (v) => setState(() => _selectedDiet = v),
               ),
-              const SizedBox(height: _fieldSpacing),
+              gapH16,
               EnumDropdownField<ChildrenStatus>(
                 values: ChildrenStatus.values,
                 label: 'Children',
@@ -437,30 +441,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
               // ── Submit ─────────────────────────────────────────────────────
 
               if (submitMutation.hasError) ...[
-                const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: colorScheme.errorContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    children: [
-                      Icon(Icons.error_outline,
-                          color: colorScheme.onErrorContainer, size: 20),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          (submitMutation as MutationError).error.toString(),
-                          style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onErrorContainer),
-                        ),
-                      ),
-                    ],
-                  ),
+                gapH16,
+                ErrorBanner(
+                  message: (submitMutation as MutationError).error.toString(),
                 ),
               ],
-              const SizedBox(height: _buttonTopSpacing),
+              gapH24,
               FilledButton(
                 onPressed: submitMutation.isPending ? null : _submit,
                 child: Row(
@@ -469,7 +455,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   children: [
                     const Text('Save changes'),
                     if (submitMutation.isPending) ...[
-                      const SizedBox(width: 8),
+                      gapW8,
                       const SizedBox(
                         width: 16,
                         height: 16,
@@ -479,7 +465,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   ],
                 ),
               ),
-              const SizedBox(height: 48),
+              gapH48,
             ],
           );
         },

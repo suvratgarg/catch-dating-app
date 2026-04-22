@@ -1,11 +1,11 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/attended_run_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 class SwipeHubScreen extends ConsumerWidget {
   const SwipeHubScreen({super.key});
@@ -13,6 +13,7 @@ class SwipeHubScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
+    final t = CatchTokens.of(context);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Swipe')),
@@ -22,6 +23,10 @@ class SwipeHubScreen extends ConsumerWidget {
         data: (uid) {
           if (uid == null) return const SizedBox.shrink();
 
+          // TODO(critical): attendedRunsProvider queries runs.attendedUserIds,
+          // but no Cloud Function or client code ever writes attendedUserIds.
+          // This provider will ALWAYS return an empty list until a
+          // "mark attendance" mechanism is built — see CLAUDE.md item #15.
           final runsAsync = ref.watch(attendedRunsProvider(uid));
 
           return runsAsync.when(
@@ -36,20 +41,14 @@ class SwipeHubScreen extends ConsumerWidget {
                       Icon(
                         Icons.directions_run_outlined,
                         size: 64,
-                        color: Theme.of(context).colorScheme.outline,
+                        color: t.line2,
                       ),
-                      const SizedBox(height: 16),
-                      Text(
-                        'No runs yet',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 8),
+                      gapH16,
+                      Text('No runs yet', style: CatchTextStyles.displaySm(context)),
+                      gapH8,
                       Text(
                         'Attend a run to start meeting people!',
-                        style: TextStyle(
-                          color:
-                              Theme.of(context).colorScheme.onSurfaceVariant,
-                        ),
+                        style: CatchTextStyles.bodyMd(context, color: t.ink2),
                       ),
                     ],
                   ),
@@ -57,54 +56,14 @@ class SwipeHubScreen extends ConsumerWidget {
               }
 
               return ListView.separated(
-                padding: const EdgeInsets.symmetric(vertical: 8),
+                padding: const EdgeInsets.symmetric(vertical: Sizes.p8),
                 itemCount: runs.length,
                 separatorBuilder: (_, _) => const Divider(height: 1),
-                itemBuilder: (context, i) =>
-                    _RunTile(run: runs[i]),
+                itemBuilder: (context, i) => AttendedRunTile(run: runs[i]),
               );
             },
           );
         },
-      ),
-    );
-  }
-}
-
-class _RunTile extends StatelessWidget {
-  const _RunTile({required this.run});
-
-  final Run run;
-
-  @override
-  Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final dateStr = DateFormat('EEE, d MMM · h:mm a').format(run.startTime);
-
-    return ListTile(
-      contentPadding:
-          const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      leading: CircleAvatar(
-        backgroundColor: colorScheme.primaryContainer,
-        child: Icon(
-          Icons.directions_run,
-          color: colorScheme.onPrimaryContainer,
-        ),
-      ),
-      title: Text(
-        run.title,
-        style: const TextStyle(fontWeight: FontWeight.w600),
-      ),
-      subtitle: Text(
-        '$dateStr · ${run.attendedUserIds.length} attendees',
-        style: TextStyle(color: colorScheme.onSurfaceVariant),
-      ),
-      trailing: FilledButton.tonal(
-        onPressed: () => context.pushNamed(
-          Routes.swipeRunScreen.name,
-          pathParameters: {'runId': run.id},
-        ),
-        child: const Text('Swipe'),
       ),
     );
   }

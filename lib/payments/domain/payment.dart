@@ -9,7 +9,8 @@ part 'payment.g.dart';
 enum PaymentStatus implements Labelled {
   pending('Pending'),
   completed('Completed'),
-  failed('Failed');
+  failed('Failed'),
+  refunded('Refunded');
 
   const PaymentStatus(this.label);
   @override
@@ -27,6 +28,7 @@ abstract class Payment with _$Payment {
     required int amount, // in paise
     @Default('INR') String currency,
     required PaymentStatus status,
+    @Default(false) bool signUpFailed,
     @TimestampConverter() required DateTime createdAt,
   }) = _Payment;
 

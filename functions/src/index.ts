@@ -10,9 +10,12 @@ admin.initializeApp();
 export {createRazorpayOrder} from "./payments/createRazorpayOrder";
 export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";
 export {signUpForFreeRun} from "./runs/signUpForFreeRun";
+export {cancelRunSignUp} from "./runs/cancelRunSignUp";
+export {markRunAttendance} from "./runs/markRunAttendance";
 export {onSwipeCreated} from "./matching/onSwipeCreated";
 export {onMatchCreated} from "./matching/onMatchCreated";
 export {onMessageCreated} from "./matching/onMessageCreated";
+export {syncRunClubReviewStats} from "./reviews/syncRunClubReviewStats";
 export {syncPublicProfile} from "./users/syncPublicProfile";
 
 export const createUserDocument = beforeUserCreated(async (event) => {

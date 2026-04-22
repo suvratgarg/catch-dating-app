@@ -2,8 +2,10 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {defineSecret} from "firebase-functions/params";
 import * as crypto from "crypto";
+import Razorpay from "razorpay";
 import {signUpUserForRun} from "../runs/signUpUserForRun";
 
+const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
 const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
 
 interface VerifyPaymentData {
@@ -15,7 +17,7 @@ interface VerifyPaymentData {
 }
 
 export const verifyRazorpayPayment = onCall(
-  {secrets: [razorpayKeySecret]},
+  {secrets: [razorpayKeyId, razorpayKeySecret]},
   async (request) => {
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Must be signed in.");
@@ -44,14 +46,25 @@ export const verifyRazorpayPayment = onCall(
     const db = admin.firestore();
     const userId = request.auth.uid;
 
-    // Sign the user up for the run. This is transactional — if the run is
-    // somehow full (race condition), this throws and the payment record is
-    // still written below so we have an audit trail for a potential refund.
+    // Sign the user up for the run. If this fails (e.g. run filled up in a
+    // race condition between order creation and payment), issue an immediate
+    // refund so the user is never charged for a spot they didn't get.
     try {
       await signUpUserForRun(db, activityId, userId);
     } catch (signUpError) {
-      // Record the payment with a note that sign-up failed, then re-throw
-      // so the client knows something went wrong.
+      const razorpay = new Razorpay({
+        key_id: razorpayKeyId.value(),
+        key_secret: razorpayKeySecret.value(),
+      });
+
+      let refundSucceeded = false;
+      try {
+        await razorpay.payments.refund(paymentId, {amount: amountInPaise ?? 0});
+        refundSucceeded = true;
+      } catch (refundError) {
+        console.error("Refund failed for payment", paymentId, refundError);
+      }
+
       await db.collection("payments").doc(paymentId).set({
         userId,
         orderId,
@@ -59,10 +72,11 @@ export const verifyRazorpayPayment = onCall(
         activityId,
         amount: amountInPaise ?? 0,
         currency: "INR",
-        status: "completed",
+        status: refundSucceeded ? "refunded" : "completed",
         signUpFailed: true,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
+
       throw signUpError;
     }
 

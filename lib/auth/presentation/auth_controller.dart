@@ -15,7 +15,7 @@ class AuthController extends _$AuthController {
     return authState;
   }
 
-  Future<void> toggleAuthState() async {
+  void toggleAuthState() {
     state = state == AuthState.signIn ? AuthState.signUp : AuthState.signIn;
   }
 

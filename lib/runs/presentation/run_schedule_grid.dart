@@ -1,4 +1,8 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/schedule_day_header.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/schedule_run_card.dart';
 import 'package:flutter/material.dart';
 import 'package:two_dimensional_scrollables/two_dimensional_scrollables.dart';
 
@@ -66,12 +70,9 @@ class RunScheduleGrid extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
+    final t = CatchTokens.of(context);
     final days = _days;
     final runMap = _buildRunMap(runs, days);
-    final lineColor = colorScheme.outlineVariant;
-    final stickyBg = colorScheme.surfaceContainerHighest;
 
     return TableView.builder(
       pinnedRowCount: 1,
@@ -83,10 +84,10 @@ class RunScheduleGrid extends StatelessWidget {
           index == 0 ? _headerRowHeight : _slotRowHeight,
         ),
         backgroundDecoration:
-            index == 0 ? TableSpanDecoration(color: stickyBg) : null,
+            index == 0 ? TableSpanDecoration(color: t.raised) : null,
         foregroundDecoration: TableSpanDecoration(
           border: TableSpanBorder(
-            trailing: BorderSide(color: lineColor, width: 0.5),
+            trailing: BorderSide(color: t.line, width: 0.5),
           ),
         ),
       ),
@@ -95,10 +96,10 @@ class RunScheduleGrid extends StatelessWidget {
           index == 0 ? _timeColumnWidth : _dayColumnWidth,
         ),
         backgroundDecoration:
-            index == 0 ? TableSpanDecoration(color: stickyBg) : null,
+            index == 0 ? TableSpanDecoration(color: t.raised) : null,
         foregroundDecoration: TableSpanDecoration(
           border: TableSpanBorder(
-            trailing: BorderSide(color: lineColor, width: 0.5),
+            trailing: BorderSide(color: t.line, width: 0.5),
           ),
         ),
       ),
@@ -111,7 +112,7 @@ class RunScheduleGrid extends StatelessWidget {
         }
 
         if (row == 0) {
-          return TableViewCell(child: _DayHeader(day: days[col - 1]));
+          return TableViewCell(child: ScheduleDayHeader(day: days[col - 1]));
         }
 
         if (col == 0) {
@@ -123,9 +124,7 @@ class RunScheduleGrid extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 6, top: 4),
                 child: Text(
                   '${hour.toString().padLeft(2, '0')}:00',
-                  style: textTheme.labelSmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                  style: CatchTextStyles.labelSm(context, color: t.ink2),
                   textAlign: TextAlign.right,
                 ),
               ),
@@ -142,7 +141,7 @@ class RunScheduleGrid extends StatelessWidget {
             rowMergeSpan: runInfo.mergeSpan,
             child: Padding(
               padding: const EdgeInsets.all(2),
-              child: _RunCard(
+              child: ScheduleRunCard(
                 run: runInfo.run,
                 isSelected: isSelected,
                 onTap: () => onRunSelected?.call(runInfo.run),
@@ -153,132 +152,6 @@ class RunScheduleGrid extends StatelessWidget {
 
         return const TableViewCell(child: SizedBox.shrink());
       },
-    );
-  }
-}
-
-class _DayHeader extends StatelessWidget {
-  const _DayHeader({required this.day});
-
-  final DateTime day;
-
-  static const _weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-
-  @override
-  Widget build(BuildContext context) {
-    final isToday = DateUtils.isSameDay(day, DateTime.now());
-    final colorScheme = Theme.of(context).colorScheme;
-
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Text(
-          _weekdays[day.weekday - 1],
-          style: TextStyle(
-            fontSize: 11,
-            color:
-                isToday ? colorScheme.primary : colorScheme.onSurfaceVariant,
-            fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-          ),
-        ),
-        const SizedBox(height: 2),
-        CircleAvatar(
-          radius: 13,
-          backgroundColor:
-              isToday ? colorScheme.primary : Colors.transparent,
-          child: Text(
-            '${day.day}',
-            style: TextStyle(
-              fontSize: 13,
-              color: isToday ? colorScheme.onPrimary : colorScheme.onSurface,
-              fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _RunCard extends StatelessWidget {
-  const _RunCard({
-    required this.run,
-    required this.isSelected,
-    this.onTap,
-  });
-
-  final Run run;
-  final bool isSelected;
-  final VoidCallback? onTap;
-
-  static Color _bgColor(PaceLevel pace) => switch (pace) {
-    PaceLevel.easy => Colors.green.shade100,
-    PaceLevel.moderate => Colors.blue.shade100,
-    PaceLevel.fast => Colors.orange.shade100,
-    PaceLevel.competitive => Colors.red.shade100,
-  };
-
-  static Color _fgColor(PaceLevel pace) => switch (pace) {
-    PaceLevel.easy => Colors.green.shade800,
-    PaceLevel.moderate => Colors.blue.shade800,
-    PaceLevel.fast => Colors.orange.shade800,
-    PaceLevel.competitive => Colors.red.shade800,
-  };
-
-  static String _formatTime(DateTime t) =>
-      '${t.hour.toString().padLeft(2, '0')}:${t.minute.toString().padLeft(2, '0')}';
-
-  static String _formatDistance(double km) => km == km.roundToDouble()
-      ? '${km.round()}km'
-      : '${km.toStringAsFixed(1)}km';
-
-  @override
-  Widget build(BuildContext context) {
-    final bg = _bgColor(run.pace);
-    final fg = _fgColor(run.pace);
-
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 150),
-        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(8),
-          border: Border.all(
-            color: isSelected ? fg : fg.withAlpha(80),
-            width: isSelected ? 2 : 1,
-          ),
-          boxShadow: isSelected
-              ? [BoxShadow(color: fg.withAlpha(60), blurRadius: 6)]
-              : null,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '${_formatDistance(run.distanceKm)} · ${run.pace.label}',
-              style: TextStyle(
-                fontSize: 11,
-                fontWeight: FontWeight.bold,
-                color: fg,
-              ),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              '${_formatTime(run.startTime)}–${_formatTime(run.endTime)}',
-              style: TextStyle(fontSize: 10, color: fg),
-              maxLines: 1,
-            ),
-            if (run.signedUpCount > 0)
-              Text(
-                '${run.signedUpCount}/${run.capacityLimit}',
-                style: TextStyle(fontSize: 10, color: fg),
-              ),
-          ],
-        ),
-      ),
     );
   }
 }
