@@ -5,8 +5,8 @@ import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
+import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_body.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
@@ -80,7 +80,7 @@ void main() {
                   startTime: DateTime(2025, 4, 23, 18),
                   endTime: DateTime(2025, 4, 23, 19),
                 ),
-                appUser: buildUser(),
+                userProfile: buildUser(),
                 reviews: const [],
               ),
             ),
@@ -102,7 +102,7 @@ void main() {
         Scaffold(
           bottomNavigationBar: RunDetailCta(
             run: buildRun(signedUpUserIds: const ['a', 'b']),
-            appUser: buildUser(),
+            userProfile: buildUser(),
           ),
         ),
         overrides: [
@@ -129,7 +129,7 @@ void main() {
         Scaffold(
           bottomNavigationBar: RunDetailCta(
             run: buildRun(),
-            appUser: buildUser(),
+            userProfile: buildUser(),
           ),
         ),
         overrides: [
@@ -161,7 +161,7 @@ void main() {
         Scaffold(
           bottomNavigationBar: RunDetailCta(
             run: buildRun(priceInPaise: 15000),
-            appUser: buildUser(),
+            userProfile: buildUser(),
           ),
         ),
         overrides: [
@@ -186,7 +186,7 @@ void main() {
         Scaffold(
           bottomNavigationBar: RunDetailCta(
             run: buildRun(signedUpUserIds: const ['runner-1']),
-            appUser: buildUser(),
+            userProfile: buildUser(),
           ),
         ),
         overrides: [
@@ -232,11 +232,11 @@ void main() {
                       capacityLimit: 1,
                       signedUpUserIds: const ['other-runner'],
                     ),
-                    appUser: buildUser(uid: 'runner-9'),
+                    userProfile: buildUser(uid: 'runner-9'),
                   ),
                   RunDetailCta(
                     run: buildRun(waitlistUserIds: const ['runner-9']),
-                    appUser: buildUser(uid: 'runner-9'),
+                    userProfile: buildUser(uid: 'runner-9'),
                   ),
                 ],
               ),
@@ -266,14 +266,14 @@ void main() {
             children: [
               RunDetailCta(
                 run: buildRun(attendedUserIds: const ['runner-1']),
-                appUser: buildUser(),
+                userProfile: buildUser(),
               ),
               RunDetailCta(
                 run: buildRun(
                   startTime: DateTime.now().subtract(const Duration(hours: 2)),
                   endTime: DateTime.now().subtract(const Duration(hours: 1)),
                 ),
-                appUser: buildUser(),
+                userProfile: buildUser(),
               ),
             ],
           ),
@@ -306,18 +306,18 @@ void main() {
             children: [
               RunDetailCta(
                 run: buildRun(constraints: const RunConstraints(minAge: 18)),
-                appUser: tooYoungUser,
+                userProfile: tooYoungUser,
               ),
               RunDetailCta(
                 run: buildRun(constraints: const RunConstraints(maxAge: 40)),
-                appUser: olderUser,
+                userProfile: olderUser,
               ),
               RunDetailCta(
                 run: buildRun(
                   constraints: const RunConstraints(maxMen: 1),
                   genderCounts: const {'man': 1},
                 ),
-                appUser: buildUser(uid: 'runner-3'),
+                userProfile: buildUser(uid: 'runner-3'),
               ),
             ],
           ),
@@ -347,7 +347,7 @@ void main() {
         tester,
         RunDetailBody(
           run: run,
-          appUser: user,
+          userProfile: user,
           runClubId: 'club-1',
           reviews: const [],
         ),
@@ -371,7 +371,7 @@ void main() {
         tester,
         RunDetailBody(
           run: buildRun(),
-          appUser: buildUser(),
+          userProfile: buildUser(),
           runClubId: 'club-1',
           reviews: const [],
         ),
@@ -393,7 +393,7 @@ void main() {
         tester,
         RunDetailBody(
           run: buildRun(signedUpUserIds: const ['runner-1']),
-          appUser: buildUser(),
+          userProfile: buildUser(),
           runClubId: 'club-1',
           reviews: const [],
         ),
@@ -427,7 +427,7 @@ void main() {
                   const Scaffold(body: Center(child: Text('Home'))),
               '/detail': (context) => RunDetailBody(
                 run: buildRun(),
-                appUser: buildUser(),
+                userProfile: buildUser(),
                 runClubId: 'club-1',
                 reviews: const [],
               ),

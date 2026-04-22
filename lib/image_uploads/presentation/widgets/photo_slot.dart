@@ -31,11 +31,7 @@ class PhotoSlot extends StatelessWidget {
       content = Container(
         color: t.primarySoft,
         child: Center(
-          child: Icon(
-            Icons.add_rounded,
-            size: 36,
-            color: t.primary,
-          ),
+          child: Icon(Icons.add_rounded, size: 36, color: t.primary),
         ),
       );
     } else {
@@ -67,11 +63,7 @@ class PhotoSlot extends StatelessWidget {
                     color: t.surface.withValues(alpha: 0.85),
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    Icons.edit_outlined,
-                    size: 14,
-                    color: t.ink,
-                  ),
+                  child: Icon(Icons.edit_outlined, size: 14, color: t.ink),
                 ),
               ),
           ],

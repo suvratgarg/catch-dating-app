@@ -37,19 +37,32 @@ class PaymentHistoryRepository {
     return snap.docs.map((d) => d.data()).toList();
   }
 
-  /// Returns the payment record for a specific activity, if any.
-  Future<Payment?> fetchPaymentForActivity({
+  /// Returns the payment record for a specific run, if any.
+  Future<Payment?> fetchPaymentForRun({
     required String userId,
-    required String activityId,
+    required String runId,
   }) async {
     final snap = await _paymentsRef
         .where('userId', isEqualTo: userId)
-        .where('activityId', isEqualTo: activityId)
+        .where('runId', isEqualTo: runId)
         .where('status', isEqualTo: PaymentStatus.completed.name)
-        .limit(1)
+        .limit(10)
         .get();
-    return snap.docs.firstOrNull?.data();
+    return selectLatestSuccessfulPayment(snap.docs.map((doc) => doc.data()));
   }
+}
+
+Payment? selectLatestSuccessfulPayment(Iterable<Payment> payments) {
+  final completedPayments =
+      payments
+          .where(
+            (payment) =>
+                payment.status == PaymentStatus.completed &&
+                !payment.signUpFailed,
+          )
+          .toList()
+        ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+  return completedPayments.firstOrNull;
 }
 
 @Riverpod(keepAlive: true)

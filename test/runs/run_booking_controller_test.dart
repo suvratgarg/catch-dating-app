@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
@@ -53,14 +54,7 @@ void main() {
 
       expect(fakePaymentRepository.processPaymentCalled, isTrue);
       expect(fakePaymentRepository.lastProcessPaymentCall, isNotNull);
-      expect(
-        fakePaymentRepository.lastProcessPaymentCall!.activityId,
-        'paid-run',
-      );
-      expect(
-        fakePaymentRepository.lastProcessPaymentCall!.amountInPaise,
-        50000,
-      );
+      expect(fakePaymentRepository.lastProcessPaymentCall!.runId, 'paid-run');
       expect(
         fakePaymentRepository.lastProcessPaymentCall!.description,
         'Thursday Morning Run · Thu, 2 Jan',
@@ -90,7 +84,7 @@ void main() {
 
       await expectLater(
         controller.book(run: buildRun(priceInPaise: 50000), user: buildUser()),
-        throwsA(isA<UnsupportedError>()),
+        throwsA(isA<PaidBookingUnsupportedException>()),
       );
       expect(fakePaymentRepository.processPaymentCalled, isFalse);
     });

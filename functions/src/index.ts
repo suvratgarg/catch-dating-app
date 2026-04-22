@@ -1,6 +1,4 @@
 import {setGlobalOptions} from "firebase-functions";
-import * as logger from "firebase-functions/logger";
-import {beforeUserCreated} from "firebase-functions/v2/identity";
 import * as admin from "firebase-admin";
 
 setGlobalOptions({maxInstances: 10});
@@ -16,18 +14,5 @@ export {onSwipeCreated} from "./matching/onSwipeCreated";
 export {onMatchCreated} from "./matching/onMatchCreated";
 export {onMessageCreated} from "./matching/onMessageCreated";
 export {syncRunClubReviewStats} from "./reviews/syncRunClubReviewStats";
-export {syncPublicProfile} from "./users/syncPublicProfile";
+export {syncPublicProfile} from "./profiles/syncPublicProfile";
 export {joinWaitlist} from "./waitlist/joinWaitlist";
-
-export const createUserDocument = beforeUserCreated(async (event) => {
-  const user = event.data;
-  if (!user) return;
-
-  logger.info("Creating Firestore document for new user", {uid: user.uid});
-
-  await admin.firestore().collection("users").doc(user.uid).set({
-    uid: user.uid,
-    email: user.email ?? null,
-    createdAt: admin.firestore.FieldValue.serverTimestamp(),
-  });
-});

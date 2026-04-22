@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'onboarding_profile_draft.freezed.dart';

@@ -1,11 +1,11 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_form_data.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
 
 void main() {
-  test('EditProfileFormData maps to and from AppUser cleanly', () {
+  test('EditProfileFormData maps to and from UserProfile cleanly', () {
     final user =
         buildUser(
           uid: 'runner-42',
@@ -31,7 +31,7 @@ void main() {
           languages: const [Language.english, Language.hindi],
         );
 
-    final formData = EditProfileFormData.fromAppUser(user);
+    final formData = EditProfileFormData.fromUserProfile(user);
     final updatedUser = formData.applyTo(user.copyWith(name: 'Old name'));
 
     expect(updatedUser.name, 'Asha');

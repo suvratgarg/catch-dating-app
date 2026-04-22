@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-AppUser _completeUser() => AppUser(
+UserProfile _completeUser() => UserProfile(
   uid: 'user-1',
   name: 'Runner',
   dateOfBirth: DateTime(1995, 6, 15),
@@ -14,7 +14,7 @@ AppUser _completeUser() => AppUser(
   interestedInGenders: const [Gender.woman],
 );
 
-AppUser _incompleteUser() => AppUser(
+UserProfile _incompleteUser() => UserProfile(
   uid: 'user-1',
   name: 'New Runner',
   dateOfBirth: DateTime(1995, 6, 15),
@@ -27,14 +27,14 @@ AppUser _incompleteUser() => AppUser(
 
 String? _redirect({
   required AsyncValue<String?> uidAsync,
-  required AsyncValue<AppUser?> appUserAsync,
+  required AsyncValue<UserProfile?> userProfileAsync,
   required String location,
   String? matchedLocation,
 }) {
   final uri = Uri.parse(location);
   return appRedirect(
     uidAsync: uidAsync,
-    appUserAsync: appUserAsync,
+    userProfileAsync: userProfileAsync,
     matchedLocation: matchedLocation ?? uri.path,
     uri: uri,
   );
@@ -48,7 +48,7 @@ void main() {
         expect(
           _redirect(
             uidAsync: const AsyncData(null),
-            appUserAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
             location: '/chats/match-1',
             matchedLocation: Routes.chatScreen.path,
           ),
@@ -63,7 +63,7 @@ void main() {
         expect(
           _redirect(
             uidAsync: const AsyncData('user-1'),
-            appUserAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
             location: '/clubs',
             matchedLocation: Routes.runClubsListScreen.path,
           ),
@@ -78,7 +78,7 @@ void main() {
         expect(
           _redirect(
             uidAsync: const AsyncData('user-1'),
-            appUserAsync: AsyncData(_incompleteUser()),
+            userProfileAsync: AsyncData(_incompleteUser()),
             location: '/auth?from=%2Fchats%2Fmatch-1',
             matchedLocation: Routes.authScreen.path,
           ),
@@ -91,7 +91,7 @@ void main() {
       expect(
         _redirect(
           uidAsync: const AsyncLoading(),
-          appUserAsync: const AsyncLoading(),
+          userProfileAsync: const AsyncLoading(),
           location: '/catches/run-1?tab=recent',
           matchedLocation: Routes.swipeRunScreen.path,
         ),
@@ -105,7 +105,7 @@ void main() {
         expect(
           _redirect(
             uidAsync: const AsyncData('user-1'),
-            appUserAsync: AsyncData(_completeUser()),
+            userProfileAsync: AsyncData(_completeUser()),
             location: '/onboarding?from=%2Fchats%2Fmatch-1',
             matchedLocation: Routes.onboardingScreen.path,
           ),
@@ -120,7 +120,7 @@ void main() {
         expect(
           _redirect(
             uidAsync: const AsyncData('user-1'),
-            appUserAsync: AsyncData(_completeUser()),
+            userProfileAsync: AsyncData(_completeUser()),
             location: '/auth',
             matchedLocation: Routes.authScreen.path,
           ),
@@ -133,7 +133,7 @@ void main() {
       expect(
         _redirect(
           uidAsync: const AsyncData(null),
-          appUserAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
           location: '/auth?from=%2Fchats%2Fmatch-1',
           matchedLocation: Routes.authScreen.path,
         ),

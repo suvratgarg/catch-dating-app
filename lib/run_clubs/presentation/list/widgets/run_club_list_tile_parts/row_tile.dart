@@ -5,13 +5,13 @@ class _RowTile extends StatelessWidget {
     required this.club,
     required this.isJoined,
     this.onTap,
-    this.onFollow,
+    this.onJoin,
   });
 
   final RunClub club;
   final bool isJoined;
   final VoidCallback? onTap;
-  final VoidCallback? onFollow;
+  final VoidCallback? onJoin;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +57,7 @@ class _RowTile extends StatelessWidget {
             ),
             const SizedBox(width: 8),
             OutlinedButton(
-              onPressed: isJoined ? null : onFollow,
+              onPressed: isJoined ? null : onJoin,
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 12,
@@ -71,7 +71,7 @@ class _RowTile extends StatelessWidget {
                 ),
               ),
               child: Text(
-                isJoined ? 'Joined' : 'Follow',
+                isJoined ? 'Joined' : 'Join',
                 style: CatchTextStyles.labelMd(
                   context,
                   color: isJoined ? t.ink3 : t.ink2,

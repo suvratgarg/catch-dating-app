@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -37,12 +37,12 @@ void main() {
     );
   }
 
-  AppUser buildUser({
+  UserProfile buildUser({
     String uid = 'user-1',
     int birthYear = 1990, // ~35 y/o — well within any reasonable constraint
     Gender gender = Gender.man,
   }) {
-    return AppUser(
+    return UserProfile(
       uid: uid,
       name: 'Test Runner',
       dateOfBirth: DateTime(birthYear, 6, 15),

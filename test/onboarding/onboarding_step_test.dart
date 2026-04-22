@@ -10,14 +10,8 @@ void main() {
     });
 
     test('locks back navigation to name step once profile steps begin', () {
-      expect(
-        OnboardingStep.phone.minimumBackStep,
-        OnboardingStep.welcome,
-      );
-      expect(
-        OnboardingStep.nameDob.minimumBackStep,
-        OnboardingStep.nameDob,
-      );
+      expect(OnboardingStep.phone.minimumBackStep, OnboardingStep.welcome);
+      expect(OnboardingStep.nameDob.minimumBackStep, OnboardingStep.nameDob);
       expect(
         OnboardingStep.runningPrefs.minimumBackStep,
         OnboardingStep.nameDob,

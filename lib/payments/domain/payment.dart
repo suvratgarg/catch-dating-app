@@ -24,7 +24,7 @@ abstract class Payment with _$Payment {
     required String userId,
     required String orderId,
     required String paymentId,
-    required String activityId,
+    required String runId,
     required int amount, // in paise
     @Default('INR') String currency,
     required PaymentStatus status,

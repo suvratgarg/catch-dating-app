@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -24,10 +24,10 @@ Future<Map<String, (String name, String? photoUrl)>> runnerProfiles(
 }
 
 class WhoIsRunning extends ConsumerWidget {
-  const WhoIsRunning({super.key, required this.run, required this.appUser});
+  const WhoIsRunning({super.key, required this.run, required this.userProfile});
 
   final Run run;
-  final AppUser appUser;
+  final UserProfile userProfile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {

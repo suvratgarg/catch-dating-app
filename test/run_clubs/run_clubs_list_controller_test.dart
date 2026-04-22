@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_state.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -73,11 +73,11 @@ void main() {
 
         final container = ProviderContainer(
           overrides: [
-            appUserStreamProvider.overrideWith(
+            userProfileStreamProvider.overrideWith(
               (ref) => Stream.value(
                 buildUser(
                   uid: 'runner-1',
-                  followedRunClubIds: const ['followed-club'],
+                  joinedRunClubIds: const ['followed-club'],
                 ),
               ),
             ),
@@ -144,7 +144,7 @@ void main() {
     test('runClubsListViewModelProvider surfaces app user errors', () async {
       final container = ProviderContainer(
         overrides: [
-          appUserStreamProvider.overrideWith(
+          userProfileStreamProvider.overrideWith(
             (ref) => Stream.error(StateError('user failed')),
           ),
           filteredRunClubsProvider.overrideWithValue(
@@ -171,7 +171,7 @@ void main() {
       () async {
         final container = ProviderContainer(
           overrides: [
-            appUserStreamProvider.overrideWith(
+            userProfileStreamProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
             ),
             filteredRunClubsProvider.overrideWithValue(
@@ -196,7 +196,7 @@ void main() {
   });
 
   group('RunClubsListController', () {
-    test('followClub joins the selected club for the signed-in user', () async {
+    test('joinClub joins the selected club for the signed-in user', () async {
       final fakeRepository = FakeRunClubsRepository();
       final container = ProviderContainer(
         overrides: [
@@ -214,13 +214,13 @@ void main() {
       await container.pump();
       await container
           .read(runClubsListControllerProvider.notifier)
-          .followClub('club-123');
+          .joinClub('club-123');
 
       expect(fakeRepository.joinedClubId, 'club-123');
       expect(fakeRepository.joinedUserId, 'runner-1');
     });
 
-    test('followClub throws when there is no signed-in user', () async {
+    test('joinClub throws when there is no signed-in user', () async {
       final container = ProviderContainer(
         overrides: [uidProvider.overrideWith((ref) => Stream.value(null))],
       );
@@ -236,7 +236,7 @@ void main() {
       expect(
         () => container
             .read(runClubsListControllerProvider.notifier)
-            .followClub('club-123'),
+            .joinClub('club-123'),
         throwsA(isA<StateError>()),
       );
     });

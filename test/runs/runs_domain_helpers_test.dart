@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/runs/domain/pace_level_theme.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

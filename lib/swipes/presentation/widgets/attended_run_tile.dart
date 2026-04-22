@@ -26,10 +26,7 @@ class AttendedRunTile extends StatelessWidget {
         backgroundColor: t.primarySoft,
         child: Icon(Icons.directions_run, color: t.primary),
       ),
-      title: Text(
-        run.title,
-        style: CatchTextStyles.labelLg(context),
-      ),
+      title: Text(run.title, style: CatchTextStyles.labelLg(context)),
       subtitle: Text(
         '$dateStr · ${run.attendedUserIds.length} attendees',
         style: CatchTextStyles.bodySm(context, color: t.ink2),

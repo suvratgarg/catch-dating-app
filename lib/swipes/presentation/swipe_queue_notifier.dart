@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_queue_notifier.g.dart';
@@ -12,7 +12,7 @@ part 'swipe_queue_notifier.g.dart';
 class SwipeQueueNotifier extends _$SwipeQueueNotifier {
   @override
   Future<List<PublicProfile>> build(String runId) async {
-    final currentUser = await ref.watch(appUserStreamProvider.future);
+    final currentUser = await ref.watch(userProfileStreamProvider.future);
     if (currentUser == null) return [];
     return ref
         .read(swipeCandidateRepositoryProvider)

@@ -2,6 +2,8 @@
 
 Flutter app for iOS, Android, web, and macOS.
 
+See [FIREBASE_SETUP.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/FIREBASE_SETUP.md) for the Firebase and FCM runbook.
+
 ## Local setup
 
 1. Run `flutter pub get`.
@@ -32,12 +34,6 @@ Use Firebase emulators:
 flutter run --dart-define=USE_FIREBASE_EMULATORS=true
 ```
 
-Bypass auth with the local dummy user:
-
-```bash
-flutter run --dart-define=BYPASS_AUTH=true
-```
-
 Enable push messaging:
 
 ```bash
@@ -57,16 +53,16 @@ Combine local dev flags:
 ```bash
 flutter run \
   --dart-define=USE_FIREBASE_EMULATORS=true \
-  --dart-define=BYPASS_AUTH=true
+  --dart-define=ENABLE_PUSH_MESSAGING=true
 ```
 
 ## Platform notes
 
 - Paid Razorpay booking is enabled on Android and iOS only.
 - Web and macOS builds disable paid booking until a supported checkout flow is added for those platforms.
-- Push notifications still require platform provisioning outside the repo:
-  Android notification permission is configured in-app.
-  iOS/macOS still need Apple push provisioning/capabilities in your developer account and Xcode signing setup.
+- Push notifications are wired in-repo for Android, iOS, macOS, and web.
+  Apple push still needs APNs setup in Apple Developer and Firebase Console.
+  macOS push is additionally blocked until the Apple team provisioning profile includes Push Notifications.
   Web still needs a valid Firebase Web Push VAPID key.
 
 ## Verification

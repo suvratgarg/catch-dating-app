@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
-import 'package:catch_dating_app/app_user/domain/profile_validation.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_candidate_repository.g.dart';
@@ -22,7 +22,7 @@ class SwipeCandidateRepository {
 
   Future<List<PublicProfile>> fetchCandidates({
     required String runId,
-    required AppUser currentUser,
+    required UserProfile currentUser,
   }) async {
     // 1. Get the run to find attendees.
     final run = await _runRepository.fetchRun(runId);

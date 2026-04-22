@@ -20,12 +20,12 @@ class RecommendCard extends StatelessWidget {
     required Run run,
     required CatchTokens tokens,
   }) => RecommendCard(
-        key: key,
-        club: run.title,
-        dist: '${run.distanceKm.toStringAsFixed(0)}K',
-        when: DateFormat('EEE d MMM').format(run.startTime),
-        tokens: tokens,
-      );
+    key: key,
+    club: run.title,
+    dist: '${run.distanceKm.toStringAsFixed(0)}K',
+    when: DateFormat('EEE d MMM').format(run.startTime),
+    tokens: tokens,
+  );
 
   final String club;
   final String dist;
@@ -81,10 +81,12 @@ class RecommendCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(club,
-                    style: CatchTextStyles.labelMd(context),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis),
+                Text(
+                  club,
+                  style: CatchTextStyles.labelMd(context),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
                 gapH2,
                 Text(when, style: CatchTextStyles.caption(context)),
               ],

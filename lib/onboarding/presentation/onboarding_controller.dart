@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
-import 'package:catch_dating_app/app_user/domain/profile_validation.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -55,14 +55,14 @@ class OnboardingController extends _$OnboardingController {
 
   void syncEntryStep() {
     final uid = ref.read(uidProvider).asData?.value;
-    final appUser = ref.read(appUserStreamProvider).asData?.value;
+    final userProfile = ref.read(userProfileStreamProvider).asData?.value;
 
     if (uid == null) {
       _setStateIfChanged(state.copyWith(step: OnboardingStep.welcome));
       return;
     }
 
-    if (appUser == null) {
+    if (userProfile == null) {
       if (state.step.index > OnboardingStep.nameDob.index) {
         return;
       }
@@ -82,7 +82,7 @@ class OnboardingController extends _$OnboardingController {
       return;
     }
 
-    if (!appUser.profileComplete) {
+    if (!userProfile.profileComplete) {
       _setStateIfChanged(state.copyWith(step: OnboardingStep.photos));
     }
   }
@@ -172,9 +172,9 @@ class OnboardingController extends _$OnboardingController {
     final email = ref.read(authRepositoryProvider).currentUser?.email ?? '';
 
     await ref
-        .read(appUserRepositoryProvider)
-        .setAppUser(
-          appUser: AppUser(
+        .read(userProfileRepositoryProvider)
+        .setUserProfile(
+          userProfile: UserProfile(
             uid: uid,
             email: email,
             name: draft.fullName,
@@ -195,14 +195,14 @@ class OnboardingController extends _$OnboardingController {
     required List<PreferredDistance> preferredDistances,
     required List<RunReason> runningReasons,
   }) async {
-    final appUser = ref.read(appUserStreamProvider).asData?.value;
-    if (appUser == null) {
+    final userProfile = ref.read(userProfileStreamProvider).asData?.value;
+    if (userProfile == null) {
       throw StateError('User profile not loaded. Please try again.');
     }
     await ref
-        .read(appUserRepositoryProvider)
-        .setAppUser(
-          appUser: appUser.copyWith(
+        .read(userProfileRepositoryProvider)
+        .setUserProfile(
+          userProfile: userProfile.copyWith(
             paceMinSecsPerKm: paceMinSecsPerKm,
             paceMaxSecsPerKm: paceMaxSecsPerKm,
             preferredDistances: preferredDistances,

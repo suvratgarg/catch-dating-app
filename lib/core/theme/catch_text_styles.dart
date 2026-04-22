@@ -60,31 +60,40 @@ abstract final class CatchTextStyles {
   // ── Body — Inter ──────────────────────────────────────────────────────────
 
   /// 17 px regular — primary body copy.
-  static TextStyle bodyLg(BuildContext context, {Color? color, FontWeight weight = FontWeight.w400}) =>
-      GoogleFonts.inter(
-        fontSize: 17,
-        fontWeight: weight,
-        height: 1.5,
-        color: color ?? CatchTokens.of(context).ink,
-      );
+  static TextStyle bodyLg(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.w400,
+  }) => GoogleFonts.inter(
+    fontSize: 17,
+    fontWeight: weight,
+    height: 1.5,
+    color: color ?? CatchTokens.of(context).ink,
+  );
 
   /// 15 px regular — secondary body, card descriptions.
-  static TextStyle bodyMd(BuildContext context, {Color? color, FontWeight weight = FontWeight.w400}) =>
-      GoogleFonts.inter(
-        fontSize: 15,
-        fontWeight: weight,
-        height: 1.45,
-        color: color ?? CatchTokens.of(context).ink,
-      );
+  static TextStyle bodyMd(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.w400,
+  }) => GoogleFonts.inter(
+    fontSize: 15,
+    fontWeight: weight,
+    height: 1.45,
+    color: color ?? CatchTokens.of(context).ink,
+  );
 
   /// 13 px regular — captions, meta text.
-  static TextStyle bodySm(BuildContext context, {Color? color, FontWeight weight = FontWeight.w400}) =>
-      GoogleFonts.inter(
-        fontSize: 13,
-        fontWeight: weight,
-        height: 1.4,
-        color: color ?? CatchTokens.of(context).ink2,
-      );
+  static TextStyle bodySm(
+    BuildContext context, {
+    Color? color,
+    FontWeight weight = FontWeight.w400,
+  }) => GoogleFonts.inter(
+    fontSize: 13,
+    fontWeight: weight,
+    height: 1.4,
+    color: color ?? CatchTokens.of(context).ink2,
+  );
 
   // ── Labels — Inter semibold / bold ────────────────────────────────────────
 

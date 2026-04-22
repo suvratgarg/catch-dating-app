@@ -42,7 +42,7 @@ final class RunClubsListControllerProvider
 }
 
 String _$runClubsListControllerHash() =>
-    r'052be7e13a0c28c2001dc91b43f4a59fc186411e';
+    r'fd2588d594b45dae2bd8ad46f30383b27b31f6c6';
 
 abstract class _$RunClubsListController extends $Notifier<void> {
   void build();

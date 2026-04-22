@@ -29,8 +29,9 @@ class FcmService {
     }
 
     return switch (defaultTargetPlatform) {
-      TargetPlatform.android || TargetPlatform.iOS || TargetPlatform.macOS =>
-        true,
+      TargetPlatform.android ||
+      TargetPlatform.iOS ||
+      TargetPlatform.macOS => true,
       _ => false,
     };
   }
@@ -41,9 +42,6 @@ class FcmService {
     required GoRouter router,
   }) async {
     if (!isSupportedPlatform) return;
-
-    // Register the background handler before anything else.
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
     // Request permission (no-op on Android < 13, required on iOS).
     await FirebaseMessaging.instance.requestPermission(
@@ -59,15 +57,15 @@ class FcmService {
           )
         : await FirebaseMessaging.instance.getToken();
     if (token != null) await _saveToken(uid, token);
-    FirebaseMessaging.instance.onTokenRefresh
-        .listen((t) => _saveToken(uid, t));
+    FirebaseMessaging.instance.onTokenRefresh.listen((t) => _saveToken(uid, t));
 
     // Foreground: the real-time Firestore stream updates the UI automatically.
     // We don't display an OS notification while the app is open, so no handler needed.
 
     // Background tap: app was open in background, user tapped notification.
-    FirebaseMessaging.onMessageOpenedApp
-        .listen((msg) => _handleTap(router, msg));
+    FirebaseMessaging.onMessageOpenedApp.listen(
+      (msg) => _handleTap(router, msg),
+    );
 
     // Terminated tap: app was closed, user tapped notification.
     final initial = await FirebaseMessaging.instance.getInitialMessage();
@@ -82,10 +80,8 @@ class FcmService {
     }
   }
 
-  Future<void> _saveToken(String uid, String token) => _db
-      .collection('users')
-      .doc(uid)
-      .update({'fcmToken': token});
+  Future<void> _saveToken(String uid, String token) =>
+      _db.collection('users').doc(uid).update({'fcmToken': token});
 }
 
 @Riverpod(keepAlive: true)

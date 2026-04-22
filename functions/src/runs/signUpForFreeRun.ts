@@ -1,6 +1,6 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {RunDoc} from "../types/firestore";
+import {RunDoc} from "../shared/firestore";
 import {signUpUserForRun} from "./signUpUserForRun";
 
 interface SignUpForFreeRunData {

@@ -1,12 +1,10 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
-import 'package:catch_dating_app/chats/presentation/matches_list_screen.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_screen.dart';
@@ -21,6 +19,8 @@ import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show AsyncValue, ConsumerWidget, WidgetRef;
@@ -71,7 +71,7 @@ GoRouter goRouter(Ref ref) {
   final notifier = _RouterRefreshNotifier();
 
   ref.listen(uidProvider, (_, _) => notifier.notify());
-  ref.listen(appUserStreamProvider, (_, _) => notifier.notify());
+  ref.listen(userProfileStreamProvider, (_, _) => notifier.notify());
 
   ref.onDispose(notifier.dispose);
 
@@ -82,7 +82,7 @@ GoRouter goRouter(Ref ref) {
     redirect: (context, state) {
       return appRedirect(
         uidAsync: ref.read(uidProvider),
-        appUserAsync: ref.read(appUserStreamProvider),
+        userProfileAsync: ref.read(userProfileStreamProvider),
         matchedLocation: state.matchedLocation,
         uri: state.uri,
       );
@@ -240,7 +240,7 @@ GoRouter goRouter(Ref ref) {
 
 String? appRedirect({
   required AsyncValue<String?> uidAsync,
-  required AsyncValue<AppUser?> appUserAsync,
+  required AsyncValue<UserProfile?> userProfileAsync,
   required String matchedLocation,
   required Uri uri,
 }) {
@@ -250,7 +250,7 @@ String? appRedirect({
 
   final isWaitingOnAuth = uidAsync.isLoading;
   final isWaitingOnProfile =
-      uidAsync.hasValue && uidAsync.value != null && appUserAsync.isLoading;
+      uidAsync.hasValue && uidAsync.value != null && userProfileAsync.isLoading;
 
   if (isWaitingOnAuth || isWaitingOnProfile) {
     if (onLoading) return null;
@@ -261,7 +261,7 @@ String? appRedirect({
   }
 
   final uid = uidAsync.value;
-  final appUser = appUserAsync.value;
+  final userProfile = userProfileAsync.value;
 
   if (uid == null) {
     if (onAuth || onOnboarding) return null;
@@ -271,7 +271,7 @@ String? appRedirect({
     );
   }
 
-  if (appUser == null || !appUser.profileComplete) {
+  if (userProfile == null || !userProfile.profileComplete) {
     if (onOnboarding) return null;
     return _locationWithFrom(
       Routes.onboardingScreen.path,

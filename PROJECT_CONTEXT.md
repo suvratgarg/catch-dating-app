@@ -85,8 +85,7 @@ Startup flow in [`lib/main.dart`](/Users/suvratgarg/Development/catch-dating-app
 - Initializes Firebase.
 - Optionally points Auth, Firestore, Storage, and Functions at emulators.
 - Registers global error handlers.
-- Builds a custom Riverpod `ProviderContainer`.
-- Optionally overrides `uidProvider` and `appUserStreamProvider` when `BYPASS_AUTH=true`.
+- Boots the app inside Riverpod `ProviderScope`.
 
 ### 4.2 Auth and routing
 
@@ -234,7 +233,7 @@ Eligibility constraints:
 - `maxMen`
 - `maxWomen`
 
-Run detail CTA states are derived from `run.statusFor(appUser)`:
+Run detail CTA states are derived from `run.statusFor(userProfile)`:
 
 - eligible
 - signed up
@@ -320,7 +319,7 @@ Behavior:
 
 - Paid booking is supported only on Android and iOS.
 - Web and macOS deliberately disable paid booking.
-- Payment history shows Firestore `payments` docs and resolves the run title from `runs/{activityId}`.
+- Payment history shows Firestore `payments` docs and resolves the run title from `runs/{runId}`.
 
 Force update:
 
@@ -352,7 +351,7 @@ Private user data:
 
 - `users/{uid}`
   - source of truth for onboarding/profile
-  - includes dating prefs, running prefs, `followedRunClubIds`, `photoUrls`, optional `fcmToken`
+  - includes dating prefs, running prefs, `joinedRunClubIds`, `photoUrls`, optional `fcmToken`
 
 Public user projection:
 
@@ -507,12 +506,6 @@ Use emulators:
 flutter run --dart-define=USE_FIREBASE_EMULATORS=true
 ```
 
-Bypass auth:
-
-```bash
-flutter run --dart-define=BYPASS_AUTH=true
-```
-
 Push messaging:
 
 ```bash
@@ -560,7 +553,7 @@ If you need to change auth/onboarding:
 
 - `lib/auth/**`
 - `lib/onboarding/**`
-- `lib/app_user/**`
+- `lib/user_profile/**`
 - `lib/public_profile/**`
 
 If you need to change run club discovery or hosting:
@@ -637,30 +630,21 @@ Impact:
 - Run-level reviews still reuse that same club-scoped ID.
 - If product intent is “one review per run”, the ID strategy, repo, and rules all need to change.
 
-### 14.3 Auth bootstrap likely does not match `AppUser` decoding
+### 14.3 Auth bootstrap likely does not match `UserProfile` decoding
 
-`createUserDocument` writes a minimal `users/{uid}` document, but `AppUser.fromJson` expects many required fields.
+`createUserDocument` writes a minimal `users/{uid}` document, but `UserProfile.fromJson` expects many required fields.
 
 Files:
 
 - Trigger: [`functions/src/index.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/index.ts)
-- App user model: [`lib/app_user/domain/app_user.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/app_user/domain/app_user.dart)
-- App user repo: [`lib/app_user/data/app_user_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/app_user/data/app_user_repository.dart)
+- App user model: [`lib/user_profile/domain/user_profile.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/user_profile/domain/user_profile.dart)
+- App user repo: [`lib/user_profile/data/user_profile_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/user_profile/data/user_profile_repository.dart)
 
 Impact:
 
 - Email sign-up and partially created user docs may be fragile until this contract is made explicit.
 
-### 14.4 `BYPASS_AUTH` is only a partial client override
-
-`BYPASS_AUTH` overrides `uidProvider` and `appUserStreamProvider` only. It does not create a real Firebase Auth session.
-
-Impact:
-
-- Router and some UI can work.
-- Firestore rules, callable functions, and other auth-backed operations may still fail because Firebase itself is unauthenticated.
-
-### 14.5 Attendance is manual, not automatic
+### 14.4 Attendance is manual, not automatic
 
 Swiping depends on `attendedUserIds`, and those are only populated when the host calls `markRunAttendance`.
 
@@ -715,4 +699,3 @@ These look like support material, not runtime app code:
 - `catch-dating-app/`
 
 They may still be useful as design reference, but primary product code lives in `lib/` and `functions/`.
-

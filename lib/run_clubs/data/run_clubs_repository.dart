@@ -89,7 +89,7 @@ class RunClubsRepository {
       ),
     );
     batch.set(_userRef(hostUserId), {
-      'followedRunClubIds': FieldValue.arrayUnion([ref.id]),
+      'joinedRunClubIds': FieldValue.arrayUnion([ref.id]),
     }, SetOptions(merge: true));
 
     await batch.commit();
@@ -119,7 +119,7 @@ class RunClubsRepository {
 
         transaction.set(clubRef, runClub.addMember(userId));
         transaction.set(userRef, {
-          'followedRunClubIds': FieldValue.arrayUnion([clubId]),
+          'joinedRunClubIds': FieldValue.arrayUnion([clubId]),
         }, SetOptions(merge: true));
       });
 
@@ -136,7 +136,7 @@ class RunClubsRepository {
 
         transaction.set(clubRef, runClub.removeMember(userId));
         transaction.set(userRef, {
-          'followedRunClubIds': FieldValue.arrayRemove([clubId]),
+          'joinedRunClubIds': FieldValue.arrayRemove([clubId]),
         }, SetOptions(merge: true));
       });
 }

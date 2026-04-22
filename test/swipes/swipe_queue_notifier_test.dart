@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -45,7 +45,7 @@ void main() {
     test('does not pop the queue when auth uid is unavailable', () async {
       final container = ProviderContainer(
         overrides: [
-          appUserStreamProvider.overrideWith(
+          userProfileStreamProvider.overrideWith(
             (ref) => Stream.value(buildUser(uid: 'runner-1')),
           ),
           authRepositoryProvider.overrideWithValue(authRepository),
@@ -83,7 +83,7 @@ void main() {
         authRepository.currentUserValue = TestUser(uid: 'runner-1');
         final container = ProviderContainer(
           overrides: [
-            appUserStreamProvider.overrideWith(
+            userProfileStreamProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
             ),
             authRepositoryProvider.overrideWithValue(authRepository),

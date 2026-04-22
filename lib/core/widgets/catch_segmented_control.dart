@@ -31,8 +31,10 @@ import 'package:flutter/material.dart';
 /// ```
 class CatchSegment<T> {
   const CatchSegment({required this.value, this.label, this.icon})
-      : assert(label != null || icon != null,
-            'Provide at least a label or an icon');
+    : assert(
+        label != null || icon != null,
+        'Provide at least a label or an icon',
+      );
 
   final T value;
   final String? label;
@@ -86,8 +88,9 @@ class CatchSegmentedControl<T> extends StatelessWidget {
                       seg.label!,
                       style: TextStyle(
                         fontSize: 13,
-                        fontWeight:
-                            isActive ? FontWeight.w600 : FontWeight.w400,
+                        fontWeight: isActive
+                            ? FontWeight.w600
+                            : FontWeight.w400,
                         color: isActive ? t.surface : t.ink2,
                       ),
                     ),

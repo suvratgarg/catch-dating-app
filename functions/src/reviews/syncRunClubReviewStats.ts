@@ -1,6 +1,6 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
-import {ReviewDoc} from "../types/firestore";
+import {ReviewDoc} from "../shared/firestore";
 
 /**
  * Recomputes the denormalized rating and review count for one run club.

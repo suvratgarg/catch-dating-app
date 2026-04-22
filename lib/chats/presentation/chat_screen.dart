@@ -13,11 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
-  const ChatScreen({
-    super.key,
-    required this.matchId,
-    this.otherProfile,
-  });
+  const ChatScreen({super.key, required this.matchId, this.otherProfile});
 
   final String matchId;
   final PublicProfile? otherProfile;
@@ -50,10 +46,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   void _resetUnread() {
     final uid = _currentUid;
     if (uid == null) return;
-    ref.read(matchRepositoryProvider).resetUnread(
-          matchId: widget.matchId,
-          uid: uid,
-        );
+    ref
+        .read(matchRepositoryProvider)
+        .resetUnread(matchId: widget.matchId, uid: uid);
   }
 
   Future<void> _send() async {
@@ -65,11 +60,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _controller.clear();
 
     try {
-      await ref.read(chatRepositoryProvider).sendMessage(
-            matchId: widget.matchId,
-            senderId: uid,
-            text: text,
-          );
+      await ref
+          .read(chatRepositoryProvider)
+          .sendMessage(matchId: widget.matchId, senderId: uid, text: text);
       if (_scrollController.hasClients) {
         unawaited(
           _scrollController.animateTo(

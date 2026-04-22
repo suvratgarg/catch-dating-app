@@ -357,10 +357,7 @@ void main() {
           'constraints': rawRun.constraints.toJson(),
         };
         final decoded = fromFirestore(
-          TestMapDocumentSnapshot(
-            idValue: 'run-77',
-            dataValue: encoded,
-          ),
+          TestMapDocumentSnapshot(idValue: 'run-77', dataValue: encoded),
           null,
         );
 

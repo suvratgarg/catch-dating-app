@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
+import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -13,7 +13,7 @@ void main() {
     test('returns loading while any dependency is still loading', () {
       final result = buildRunDetailViewModel(
         runAsync: const AsyncLoading(),
-        appUserAsync: AsyncData(buildUser()),
+        userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
       );
 
@@ -27,21 +27,21 @@ void main() {
 
       final result = buildRunDetailViewModel(
         runAsync: AsyncData(run),
-        appUserAsync: AsyncData(user),
+        userProfileAsync: AsyncData(user),
         reviewsAsync: AsyncData([review]),
       );
 
       final value = result.requireValue;
       expect(value, isNotNull);
       expect(value!.run, run);
-      expect(value.appUser, user);
+      expect(value.userProfile, user);
       expect(value.reviews, [review]);
     });
 
     test('returns null data when the run does not exist', () {
       final result = buildRunDetailViewModel(
         runAsync: const AsyncData(null),
-        appUserAsync: AsyncData(buildUser()),
+        userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
       );
 
@@ -51,7 +51,7 @@ void main() {
     test('returns loading when the app user stream yields null', () {
       final result = buildRunDetailViewModel(
         runAsync: AsyncData(buildRun()),
-        appUserAsync: const AsyncData(null),
+        userProfileAsync: const AsyncData(null),
         reviewsAsync: const AsyncData(<Review>[]),
       );
 
@@ -61,7 +61,7 @@ void main() {
     test('surfaces run stream errors', () {
       final result = buildRunDetailViewModel(
         runAsync: AsyncError(StateError('run failed'), StackTrace.empty),
-        appUserAsync: AsyncData(buildUser()),
+        userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
       );
 
@@ -72,7 +72,10 @@ void main() {
     test('surfaces app user stream errors', () {
       final result = buildRunDetailViewModel(
         runAsync: AsyncData(buildRun()),
-        appUserAsync: AsyncError(StateError('user failed'), StackTrace.empty),
+        userProfileAsync: AsyncError(
+          StateError('user failed'),
+          StackTrace.empty,
+        ),
         reviewsAsync: const AsyncData(<Review>[]),
       );
 
@@ -83,7 +86,7 @@ void main() {
     test('surfaces review stream errors instead of swallowing them', () {
       final result = buildRunDetailViewModel(
         runAsync: AsyncData(buildRun()),
-        appUserAsync: AsyncData(buildUser()),
+        userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: AsyncError(
           StateError('reviews failed'),
           StackTrace.empty,
@@ -103,7 +106,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
-            appUserStreamProvider.overrideWith((ref) => Stream.value(user)),
+            userProfileStreamProvider.overrideWith((ref) => Stream.value(user)),
             watchReviewsForRunProvider(
               run.id,
             ).overrideWith((ref) => Stream.value([review])),
@@ -118,7 +121,7 @@ void main() {
         addTearDown(subscription.close);
 
         await container.read(watchRunProvider(run.id).future);
-        await container.read(appUserStreamProvider.future);
+        await container.read(userProfileStreamProvider.future);
         await container.read(watchReviewsForRunProvider(run.id).future);
         await container.pump();
         await container.pump();
@@ -126,7 +129,7 @@ void main() {
         final value = subscription.read().requireValue;
         expect(value, isNotNull);
         expect(value!.run, run);
-        expect(value.appUser, user);
+        expect(value.userProfile, user);
         expect(value.reviews, [review]);
       },
     );

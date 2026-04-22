@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
@@ -8,19 +7,20 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RunDetailCta extends ConsumerWidget {
-  const RunDetailCta({super.key, required this.run, required this.appUser});
+  const RunDetailCta({super.key, required this.run, required this.userProfile});
 
   final Run run;
-  final AppUser appUser;
+  final UserProfile userProfile;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final status = run.statusFor(appUser);
+    final status = run.statusFor(userProfile);
     final supportsPaid = ref
         .watch(paymentRepositoryProvider)
         .supportsPaidBookings;
@@ -59,7 +59,7 @@ class RunDetailCta extends ConsumerWidget {
                     ref,
                     (tx) async => tx
                         .get(runBookingControllerProvider.notifier)
-                        .book(run: run, user: appUser),
+                        .book(run: run, user: userProfile),
                   ),
             isLoading: bookMutation.isPending,
             leadingContent: run.isFree
@@ -115,7 +115,7 @@ class RunDetailCta extends ConsumerWidget {
             onPressed: null,
           ),
           RunSignUpStatus.ineligible => BottomCTA(
-            label: switch (run.eligibilityFor(appUser)) {
+            label: switch (run.eligibilityFor(userProfile)) {
               AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
               AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
               GenderCapacityReached() => 'Spots for your gender are full',

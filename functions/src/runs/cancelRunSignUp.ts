@@ -2,7 +2,7 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {defineSecret} from "firebase-functions/params";
 import Razorpay from "razorpay";
-import {AppUserDoc, PaymentDoc, RunDoc} from "../types/firestore";
+import {UserProfileDoc, PaymentDoc, RunDoc} from "../shared/firestore";
 
 const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
 const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
@@ -42,7 +42,7 @@ export const cancelRunSignUp = onCall(
     const paymentQuery = await db
       .collection("payments")
       .where("userId", "==", userId)
-      .where("activityId", "==", runId)
+      .where("runId", "==", runId)
       .where("status", "==", "completed")
       .limit(1)
       .get();
@@ -62,7 +62,7 @@ export const cancelRunSignUp = onCall(
       }
 
       const run = runSnap.data() as RunDoc;
-      const user = userSnap.data() as AppUserDoc;
+      const user = userSnap.data() as UserProfileDoc;
 
       // Idempotent — already not signed up.
       if (!run.signedUpUserIds.includes(userId)) {
@@ -78,7 +78,8 @@ export const cancelRunSignUp = onCall(
       let newSignedUpIds = run.signedUpUserIds.filter((id) => id !== userId);
       let newWaitlistIds = [...(run.waitlistUserIds ?? [])];
       const newGenderCounts = {...run.genderCounts};
-      newGenderCounts[cancellerGender] = (newGenderCounts[cancellerGender] ?? 1) - 1;
+      newGenderCounts[cancellerGender] =
+        (newGenderCounts[cancellerGender] ?? 1) - 1;
 
       // Promote the first waitlist user who passes gender-cap constraints.
       for (let i = 0; i < newWaitlistIds.length; i++) {
@@ -88,7 +89,7 @@ export const cancelRunSignUp = onCall(
         );
         if (!waitlistUserSnap.exists) continue;
 
-        const waitlistUser = waitlistUserSnap.data() as AppUserDoc;
+        const waitlistUser = waitlistUserSnap.data() as UserProfileDoc;
         const wGender = waitlistUser.gender;
         const currentCount = run.genderCounts[wGender] ?? 0;
 

@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -9,6 +9,7 @@ import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,17 +57,17 @@ Run buildRun({
   );
 }
 
-AppUser buildUser({
+UserProfile buildUser({
   String uid = 'runner-1',
   String name = 'Runner',
   String email = 'runner@example.com',
   Gender gender = Gender.man,
   DateTime? dateOfBirth,
   String phoneNumber = '+910000000000',
-  List<String> followedRunClubIds = const [],
+  List<String> joinedRunClubIds = const [],
   List<String> photoUrls = const [],
 }) {
-  return AppUser(
+  return UserProfile(
     uid: uid,
     email: email,
     name: name,
@@ -76,7 +77,7 @@ AppUser buildUser({
     sexualOrientation: SexualOrientation.straight,
     phoneNumber: phoneNumber,
     profileComplete: true,
-    followedRunClubIds: followedRunClubIds,
+    joinedRunClubIds: joinedRunClubIds,
     interestedInGenders: const [Gender.woman],
     photoUrls: photoUrls,
   );
@@ -283,20 +284,21 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
 
   @override
   Future<void> processPayment({
-    required String activityId,
-    required int amountInPaise,
+    required String runId,
     required String description,
     required String userName,
     required String userEmail,
     required String userContact,
   }) async {
+    if (!supportsPaid) {
+      throw const PaidBookingUnsupportedException();
+    }
     if (processPaymentError != null) {
       throw processPaymentError!;
     }
     processPaymentCalled = true;
     lastProcessPaymentCall = ProcessPaymentCall(
-      activityId: activityId,
-      amountInPaise: amountInPaise,
+      runId: runId,
       description: description,
       userName: userName,
       userEmail: userEmail,
@@ -310,16 +312,14 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
 
 class ProcessPaymentCall {
   const ProcessPaymentCall({
-    required this.activityId,
-    required this.amountInPaise,
+    required this.runId,
     required this.description,
     required this.userName,
     required this.userEmail,
     required this.userContact,
   });
 
-  final String activityId;
-  final int amountInPaise;
+  final String runId;
   final String description;
   final String userName;
   final String userEmail;

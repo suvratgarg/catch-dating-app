@@ -8,13 +8,13 @@ class NearbyClubsSection extends StatelessWidget {
   const NearbyClubsSection({
     super.key,
     required this.clubs,
-    required this.isFollowPending,
-    this.onFollow,
+    required this.isJoinPending,
+    this.onJoin,
   });
 
   final List<RunClub> clubs;
-  final bool isFollowPending;
-  final ValueChanged<RunClub>? onFollow;
+  final bool isJoinPending;
+  final ValueChanged<RunClub>? onJoin;
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +29,9 @@ class NearbyClubsSection extends StatelessWidget {
                 RunClubListTile(
                   club: clubs[i],
                   variant: RunClubListTileVariant.rowTile,
-                  onFollow: onFollow == null || isFollowPending
+                  onJoin: onJoin == null || isJoinPending
                       ? null
-                      : () => onFollow!(clubs[i]),
+                      : () => onJoin!(clubs[i]),
                 ),
                 if (i < clubs.length - 1)
                   Divider(color: CatchTokens.of(context).line, height: 1),

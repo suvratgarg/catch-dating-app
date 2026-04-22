@@ -1,14 +1,14 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
-import 'package:catch_dating_app/app_user/domain/profile_validation.dart';
-import 'package:catch_dating_app/common_widgets/app_form_layout.dart';
-import 'package:catch_dating_app/common_widgets/chip_field.dart';
-import 'package:catch_dating_app/common_widgets/enum_dropdown.dart';
-import 'package:catch_dating_app/common_widgets/error_banner.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/widgets/app_form_layout.dart';
+import 'package:catch_dating_app/core/widgets/chip_field.dart';
+import 'package:catch_dating_app/core/widgets/enum_dropdown.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_controller.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_form_data.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/edit_profile_section.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -64,11 +64,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
     super.dispose();
   }
 
-  void _initFromUser(AppUser user) {
+  void _initFromUser(UserProfile user) {
     if (_initialized) return;
     _initialized = true;
 
-    _applyFormData(EditProfileFormData.fromAppUser(user));
+    _applyFormData(EditProfileFormData.fromUserProfile(user));
   }
 
   Future<void> _pickDate() async {
@@ -164,7 +164,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final userAsync = ref.watch(appUserStreamProvider);
+    final userAsync = ref.watch(userProfileStreamProvider);
     final submitMutation = ref.watch(EditProfileController.submitMutation);
 
     ref.listen(EditProfileController.submitMutation, (previous, current) {

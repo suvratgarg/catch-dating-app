@@ -29,8 +29,10 @@ class StrideCard extends ConsumerWidget {
     final isToday = now.weekday - 1; // 0 = Mon
 
     final thisWeek = attended
-        .where((r) =>
-            r.startTime.isAfter(weekStart) && r.startTime.isBefore(weekEnd))
+        .where(
+          (r) =>
+              r.startTime.isAfter(weekStart) && r.startTime.isBefore(weekEnd),
+        )
         .toList();
 
     // Sum km per weekday (0=Mon … 6=Sun).
@@ -64,8 +66,9 @@ class StrideCard extends ConsumerWidget {
             children: [
               Text(
                 totalKm.toStringAsFixed(1),
-                style: CatchTextStyles.displayXl(context)
-                    .copyWith(fontSize: 36, letterSpacing: -1),
+                style: CatchTextStyles.displayXl(
+                  context,
+                ).copyWith(fontSize: 36, letterSpacing: -1),
               ),
               gapW6,
               Text(

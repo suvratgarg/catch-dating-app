@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'public_profile.freezed.dart';
@@ -37,26 +37,28 @@ abstract class PublicProfile with _$PublicProfile {
       _$PublicProfileFromJson(json);
 }
 
-/// Builds a [PublicProfile] from an [AppUser], projecting only the fields
-/// that are visible to other users. Call this whenever the app user's profile
-/// is created or edited to keep the two documents in sync.
-PublicProfile publicProfileFromAppUser(AppUser user) => PublicProfile(
-      uid: user.uid,
-      name: user.name,
-      age: user.age,
-      bio: user.bio,
-      gender: user.gender,
-      photoUrls: user.photoUrls,
-      height: user.height,
-      occupation: user.occupation,
-      company: user.company,
-      education: user.education,
-      religion: user.religion,
-      languages: user.languages,
-      relationshipGoal: user.relationshipGoal,
-      drinking: user.drinking,
-      smoking: user.smoking,
-      workout: user.workout,
-      diet: user.diet,
-      children: user.children,
-    );
+/// Builds a [PublicProfile] from a [UserProfile], projecting only the fields
+/// that are visible to other users.
+///
+/// This is still useful on the client for previews and tests, but the
+/// persisted `publicProfiles/{uid}` document is owned by Cloud Functions.
+PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
+  uid: user.uid,
+  name: user.name,
+  age: user.age,
+  bio: user.bio,
+  gender: user.gender,
+  photoUrls: user.photoUrls,
+  height: user.height,
+  occupation: user.occupation,
+  company: user.company,
+  education: user.education,
+  religion: user.religion,
+  languages: user.languages,
+  relationshipGoal: user.relationshipGoal,
+  drinking: user.drinking,
+  smoking: user.smoking,
+  workout: user.workout,
+  diet: user.diet,
+  children: user.children,
+);

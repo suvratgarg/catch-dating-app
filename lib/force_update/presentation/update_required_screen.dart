@@ -25,16 +25,13 @@ class UpdateRequiredScreen extends ConsumerWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Icon(
-                Icons.system_update_outlined,
-                size: 72,
-                color: t.primary,
-              ),
+              Icon(Icons.system_update_outlined, size: 72, color: t.primary),
               gapH32,
               Text(
                 'Update required',
-                style: CatchTextStyles.displayLg(context)
-                    .copyWith(fontWeight: FontWeight.bold),
+                style: CatchTextStyles.displayLg(
+                  context,
+                ).copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               gapH12,
@@ -47,8 +44,11 @@ class UpdateRequiredScreen extends ConsumerWidget {
               gapH48,
               FilledButton.icon(
                 onPressed: config != null
-                    ? () => _openStore(context, config.storeUrlAndroid,
-                        config.storeUrlIos)
+                    ? () => _openStore(
+                        context,
+                        config.storeUrlAndroid,
+                        config.storeUrlIos,
+                      )
                     : null,
                 icon: const Icon(Icons.open_in_new),
                 label: const Text('Update now'),
@@ -73,9 +73,9 @@ class UpdateRequiredScreen extends ConsumerWidget {
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       // ignore: use_build_context_synchronously
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Could not open store')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Could not open store')));
       }
     }
   }

@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -24,20 +24,14 @@ class RunBookingController extends _$RunBookingController {
   /// For free runs, calls the [signUpForFreeRun] Cloud Function directly.
   /// For paid runs, opens the Razorpay checkout sheet; on success the
   /// [verifyRazorpayPayment] Cloud Function atomically signs the user up.
-  Future<void> book({required Run run, required AppUser user}) async {
+  Future<void> book({required Run run, required UserProfile user}) async {
     final paymentRepo = ref.read(paymentRepositoryProvider);
 
     if (run.isFree) {
       await paymentRepo.bookFreeRun(runId: run.id);
     } else {
-      if (!paymentRepo.supportsPaidBookings) {
-        throw UnsupportedError(
-          'Paid bookings are currently available on Android and iOS only.',
-        );
-      }
       await paymentRepo.processPayment(
-        activityId: run.id,
-        amountInPaise: run.priceInPaise,
+        runId: run.id,
         description: '${run.title} · ${run.shortDateLabel}',
         userName: user.name,
         userEmail: user.email,
@@ -57,10 +51,7 @@ class RunBookingController extends _$RunBookingController {
 
   /// Adds the user to the waitlist for a full run.
   Future<void> joinWaitlist({required Run run}) async {
-    final uid = ref.read(uidProvider).asData?.value;
-    if (uid == null || uid.isEmpty) {
-      throw StateError('You need to be signed in to join a waitlist.');
-    }
+    final uid = requireSignedInUid(ref, action: 'join a waitlist');
     await ref
         .read(runRepositoryProvider)
         .joinWaitlist(runId: run.id, userId: uid);
@@ -68,10 +59,7 @@ class RunBookingController extends _$RunBookingController {
 
   /// Removes the user from the waitlist.
   Future<void> leaveWaitlist({required Run run}) async {
-    final uid = ref.read(uidProvider).asData?.value;
-    if (uid == null || uid.isEmpty) {
-      throw StateError('You need to be signed in to leave a waitlist.');
-    }
+    final uid = requireSignedInUid(ref, action: 'leave a waitlist');
     await ref
         .read(runRepositoryProvider)
         .leaveWaitlist(runId: run.id, userId: uid);

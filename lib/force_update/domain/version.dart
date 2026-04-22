@@ -5,10 +5,7 @@
 ///
 /// Non-parseable strings are treated as "0.0.0" so a missing/malformed
 /// Firestore document never blocks the user.
-bool isUpdateRequired({
-  required String current,
-  required String minimum,
-}) {
+bool isUpdateRequired({required String current, required String minimum}) {
   final cur = _parse(current);
   final min = _parse(minimum);
   for (var i = 0; i < 3; i++) {

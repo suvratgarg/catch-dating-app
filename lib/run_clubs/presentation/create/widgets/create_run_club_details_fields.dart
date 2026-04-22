@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/common_widgets/enum_dropdown.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/widgets/enum_dropdown.dart';
 import 'package:flutter/material.dart';
 
 class CreateRunClubDetailsFields extends StatelessWidget {

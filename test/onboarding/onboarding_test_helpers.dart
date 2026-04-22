@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -89,25 +89,26 @@ class FakeAuthRepository extends Fake implements AuthRepository {
   }
 }
 
-class FakeOnboardingAppUserRepository extends Fake
-    implements AppUserRepository {
-  FakeOnboardingAppUserRepository({this.currentUser});
+class FakeOnboardingUserProfileRepository extends Fake
+    implements UserProfileRepository {
+  FakeOnboardingUserProfileRepository({this.currentUser});
 
-  AppUser? currentUser;
-  AppUser? lastSavedUser;
+  UserProfile? currentUser;
+  UserProfile? lastSavedUser;
   final updatedPhotoUrls = <List<String>>[];
 
   @override
-  Future<AppUser?> fetchAppUser({required String? uid}) async => currentUser;
+  Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
+      currentUser;
 
   @override
-  Stream<AppUser?> watchAppUser({required String? uid}) =>
+  Stream<UserProfile?> watchUserProfile({required String? uid}) =>
       Stream.value(currentUser);
 
   @override
-  Future<void> setAppUser({required AppUser appUser}) async {
-    lastSavedUser = appUser;
-    currentUser = appUser;
+  Future<void> setUserProfile({required UserProfile userProfile}) async {
+    lastSavedUser = userProfile;
+    currentUser = userProfile;
   }
 
   @override
@@ -175,8 +176,8 @@ Future<void> primeOnboardingAsyncProviders(ProviderContainer container) async {
     (_, _) {},
     fireImmediately: true,
   );
-  final appUserSubscription = container.listen(
-    appUserStreamProvider,
+  final userProfileSubscription = container.listen(
+    userProfileStreamProvider,
     (_, _) {},
     fireImmediately: true,
   );
@@ -184,6 +185,6 @@ Future<void> primeOnboardingAsyncProviders(ProviderContainer container) async {
     await container.pump();
   } finally {
     uidSubscription.close();
-    appUserSubscription.close();
+    userProfileSubscription.close();
   }
 }

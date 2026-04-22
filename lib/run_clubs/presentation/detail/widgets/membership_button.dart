@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,10 +22,10 @@ class MembershipButton extends ConsumerWidget {
         child: OutlinedButton(
           onPressed: isMutating
               ? null
-              : () => RunClubDetailController.leaveMutation.run(
+              : () => RunClubMembershipController.leaveMutation.run(
                   ref,
                   (tx) async => tx
-                      .get(runClubDetailControllerProvider.notifier)
+                      .get(runClubMembershipControllerProvider.notifier)
                       .leave(clubId),
                 ),
           child: isMutating
@@ -44,10 +44,10 @@ class MembershipButton extends ConsumerWidget {
       child: FilledButton(
         onPressed: isMutating
             ? null
-            : () => RunClubDetailController.joinMutation.run(
+            : () => RunClubMembershipController.joinMutation.run(
                 ref,
                 (tx) async => tx
-                    .get(runClubDetailControllerProvider.notifier)
+                    .get(runClubMembershipControllerProvider.notifier)
                     .join(clubId),
               ),
         child: isMutating

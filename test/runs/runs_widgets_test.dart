@@ -336,7 +336,7 @@ void main() {
         Scaffold(
           body: WhoIsRunning(
             run: buildRun(signedUpUserIds: const []),
-            appUser: buildUser(),
+            userProfile: buildUser(),
           ),
         ),
       );
@@ -380,7 +380,7 @@ void main() {
         await pumpRunsTestApp(
           tester,
           Scaffold(
-            body: WhoIsRunning(run: run, appUser: buildUser()),
+            body: WhoIsRunning(run: run, userProfile: buildUser()),
           ),
           overrides: [
             publicProfileRepositoryProvider.overrideWith(

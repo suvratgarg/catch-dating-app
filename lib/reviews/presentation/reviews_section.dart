@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
@@ -6,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
 /// Renders a reviews list with a header summary and a write/edit button.
@@ -20,7 +20,7 @@ class ReviewsSection extends StatelessWidget {
     this.runId,
     required this.reviews,
     required this.currentUid,
-    required this.appUser,
+    required this.userProfile,
     this.isHost = false,
     this.isMember = false,
     this.hasAttended = false,
@@ -30,11 +30,14 @@ class ReviewsSection extends StatelessWidget {
   final String? runId;
   final List<Review> reviews;
   final String? currentUid;
-  final AppUser? appUser;
+  final UserProfile? userProfile;
+
   /// True when the current user is the host — hides the write-review CTA.
   final bool isHost;
+
   /// True when the current user is a club member — gates club-level reviews.
   final bool isMember;
+
   /// True when the current user attended the run — gates run-level reviews.
   final bool hasAttended;
 
@@ -53,14 +56,14 @@ class ReviewsSection extends StatelessWidget {
           controller: controller,
           padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
           children: [
-            Text('All reviews (${reviews.length})',
-                style: CatchTextStyles.displaySm(context)),
+            Text(
+              'All reviews (${reviews.length})',
+              style: CatchTextStyles.displaySm(context),
+            ),
             const SizedBox(height: 16),
             ...reviews.map(
-              (r) => ReviewCard(
-                review: r,
-                isOwn: r.reviewerUserId == currentUid,
-              ),
+              (r) =>
+                  ReviewCard(review: r, isOwn: r.reviewerUserId == currentUid),
             ),
           ],
         ),
@@ -78,8 +81,7 @@ class ReviewsSection extends StatelessWidget {
 
     final avgRating = reviews.isEmpty
         ? null
-        : reviews.map((r) => r.rating).reduce((a, b) => a + b) /
-            reviews.length;
+        : reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -109,18 +111,20 @@ class ReviewsSection extends StatelessWidget {
             style: CatchTextStyles.bodySm(context, color: t.ink2),
           )
         else ...[
-          ...reviews.take(_previewCount).map(
+          ...reviews
+              .take(_previewCount)
+              .map(
                 (r) => ReviewCard(
                   review: r,
                   isOwn: r.reviewerUserId == currentUid,
-                  onEdit: appUser != null
+                  onEdit: userProfile != null
                       ? () => showWriteReviewSheet(
-                            context: context,
-                            runClubId: runClubId,
-                            runId: runId,
-                            reviewer: appUser!,
-                            existingReview: r,
-                          )
+                          context: context,
+                          runClubId: runClubId,
+                          runId: runId,
+                          reviewer: userProfile!,
+                          existingReview: r,
+                        )
                       : null,
                 ),
               ),
@@ -140,7 +144,8 @@ class ReviewsSection extends StatelessWidget {
         // Show the write-review button only when the user is allowed to review:
         // - For run reviews: the user must have attended the run.
         // - For club reviews: the user must be a member (not the host).
-        if (appUser != null && !isHost &&
+        if (userProfile != null &&
+            !isHost &&
             (runId != null ? hasAttended : isMember)) ...[
           const SizedBox(height: 12),
           SizedBox(
@@ -150,7 +155,7 @@ class ReviewsSection extends StatelessWidget {
                 context: context,
                 runClubId: runClubId,
                 runId: runId,
-                reviewer: appUser!,
+                reviewer: userProfile!,
                 existingReview: existingReview,
               ),
               child: Text(

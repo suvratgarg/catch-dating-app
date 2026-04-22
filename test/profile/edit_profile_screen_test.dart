@@ -1,20 +1,20 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_controller.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_screen.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
 
-class FakeAppUserRepository extends Fake implements AppUserRepository {
-  AppUser? lastSavedUser;
+class FakeUserProfileRepository extends Fake implements UserProfileRepository {
+  UserProfile? lastSavedUser;
 
   @override
-  Future<void> setAppUser({required AppUser appUser}) async {
-    lastSavedUser = appUser;
+  Future<void> setUserProfile({required UserProfile userProfile}) async {
+    lastSavedUser = userProfile;
   }
 }
 
@@ -47,11 +47,11 @@ void main() {
     final maxAgeField = find.widgetWithText(TextFormField, 'Max age').first;
     final saveButton = find.widgetWithText(FilledButton, 'Save changes').first;
 
-    final repository = FakeAppUserRepository();
+    final repository = FakeUserProfileRepository();
     final container = ProviderContainer(
       overrides: [
-        appUserRepositoryProvider.overrideWith((ref) => repository),
-        appUserStreamProvider.overrideWith(
+        userProfileRepositoryProvider.overrideWith((ref) => repository),
+        userProfileStreamProvider.overrideWith(
           (ref) => Stream.value(
             buildUser(
               uid: 'runner-42',

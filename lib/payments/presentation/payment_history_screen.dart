@@ -55,7 +55,8 @@ class _PaymentList extends ConsumerWidget {
           ),
           itemCount: payments.length,
           separatorBuilder: (_, _) => const Divider(height: 1),
-          itemBuilder: (context, index) => _PaymentTile(payment: payments[index]),
+          itemBuilder: (context, index) =>
+              _PaymentTile(payment: payments[index]),
         );
       },
     );
@@ -79,8 +80,9 @@ class _PaymentTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final runAsync = ref.watch(watchRunProvider(payment.activityId));
+    final runAsync = ref.watch(watchRunProvider(payment.runId));
     final runTitle = runAsync.asData?.value?.title ?? 'Run booking';
+    final statusPresentation = _statusPresentation(payment);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: Sizes.p12),
@@ -90,15 +92,19 @@ class _PaymentTile extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  runTitle,
-                  style: CatchTextStyles.bodyMd(context),
-                ),
+                Text(runTitle, style: CatchTextStyles.bodyMd(context)),
                 gapH4,
                 Text(
                   _dateFormat.format(payment.createdAt),
                   style: CatchTextStyles.caption(context, color: t.ink2),
                 ),
+                if (statusPresentation.detail case final detail?) ...[
+                  gapH4,
+                  Text(
+                    detail,
+                    style: CatchTextStyles.caption(context, color: t.ink2),
+                  ),
+                ],
               ],
             ),
           ),
@@ -107,33 +113,73 @@ class _PaymentTile extends ConsumerWidget {
             children: [
               Text(
                 _formattedAmount(payment),
-                style: CatchTextStyles.bodyMd(context)
-                    .copyWith(fontWeight: FontWeight.w600),
+                style: CatchTextStyles.bodyMd(
+                  context,
+                ).copyWith(fontWeight: FontWeight.w600),
               ),
               gapH4,
-              _StatusChip(status: payment.status),
+              _StatusChip(
+                label: statusPresentation.label,
+                color: statusPresentation.color,
+              ),
             ],
           ),
         ],
       ),
     );
   }
+
+  ({String label, Color color, String? detail}) _statusPresentation(
+    Payment payment,
+  ) {
+    if (payment.signUpFailed) {
+      return switch (payment.status) {
+        PaymentStatus.refunded => (
+          label: 'Refunded',
+          color: Colors.blue.shade700,
+          detail: 'Booking failed, but your payment was refunded.',
+        ),
+        _ => (
+          label: 'Booking failed',
+          color: Colors.orange.shade700,
+          detail: 'No spot was reserved. Refund may still be pending.',
+        ),
+      };
+    }
+
+    return switch (payment.status) {
+      PaymentStatus.completed => (
+        label: 'Paid',
+        color: Colors.green.shade700,
+        detail: null,
+      ),
+      PaymentStatus.refunded => (
+        label: 'Refunded',
+        color: Colors.blue.shade700,
+        detail: null,
+      ),
+      PaymentStatus.failed => (
+        label: 'Failed',
+        color: Colors.red.shade700,
+        detail: null,
+      ),
+      PaymentStatus.pending => (
+        label: 'Pending',
+        color: Colors.orange.shade700,
+        detail: null,
+      ),
+    };
+  }
 }
 
 class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.status});
+  const _StatusChip({required this.label, required this.color});
 
-  final PaymentStatus status;
+  final String label;
+  final Color color;
 
   @override
   Widget build(BuildContext context) {
-    final (label, color) = switch (status) {
-      PaymentStatus.completed => ('Paid', Colors.green.shade700),
-      PaymentStatus.refunded => ('Refunded', Colors.blue.shade700),
-      PaymentStatus.failed => ('Failed', Colors.red.shade700),
-      PaymentStatus.pending => ('Pending', Colors.orange.shade700),
-    };
-
     return Container(
       padding: const EdgeInsets.symmetric(
         horizontal: Sizes.p8,
@@ -143,10 +189,7 @@ class _StatusChip extends StatelessWidget {
         color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(Sizes.p4),
       ),
-      child: Text(
-        label,
-        style: CatchTextStyles.caption(context, color: color),
-      ),
+      child: Text(label, style: CatchTextStyles.caption(context, color: color)),
     );
   }
 }

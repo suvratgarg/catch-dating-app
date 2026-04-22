@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
@@ -12,6 +11,7 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/membershi
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -22,7 +22,7 @@ class ClubDetailBody extends StatelessWidget {
     required this.runs,
     required this.upcoming,
     required this.reviews,
-    required this.appUser,
+    required this.userProfile,
     required this.uid,
     required this.isHost,
     required this.isMember,
@@ -33,7 +33,7 @@ class ClubDetailBody extends StatelessWidget {
   final List<Run> runs;
   final List<Run> upcoming;
   final List<Review> reviews;
-  final AppUser? appUser;
+  final UserProfile? userProfile;
   final String? uid;
   final bool isHost;
   final bool isMember;
@@ -80,7 +80,7 @@ class ClubDetailBody extends StatelessWidget {
                     runClubId: runClub.id,
                     reviews: reviews,
                     currentUid: uid,
-                    appUser: appUser,
+                    userProfile: userProfile,
                     isHost: isHost,
                     isMember: isMember,
                   ),

@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_tab.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -14,7 +14,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final appUserAsync = ref.watch(appUserStreamProvider);
+    final userProfileAsync = ref.watch(userProfileStreamProvider);
     final uploadState = ref.watch(photoUploadControllerProvider);
 
     ref.listen(photoUploadControllerProvider, (_, state) {
@@ -55,7 +55,7 @@ class ProfileScreen extends ConsumerWidget {
             ],
           ),
         ),
-        body: appUserAsync.when(
+        body: userProfileAsync.when(
           loading: () => const Center(child: CircularProgressIndicator()),
           error: (e, _) => Center(child: Text('Error: $e')),
           data: (user) {
@@ -64,7 +64,7 @@ class ProfileScreen extends ConsumerWidget {
             return TabBarView(
               children: [
                 ProfileTab(user: user, uploadState: uploadState),
-                PreviewTab(profile: publicProfileFromAppUser(user)),
+                PreviewTab(profile: publicProfileFromUserProfile(user)),
               ],
             );
           },

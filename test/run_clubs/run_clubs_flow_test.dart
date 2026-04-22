@@ -1,7 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -14,6 +12,8 @@ import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_scre
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -56,7 +56,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            appUserStreamProvider.overrideWith((ref) => Stream.value(user)),
+            userProfileStreamProvider.overrideWith((ref) => Stream.value(user)),
             watchRunClubsByLocationProvider(
               IndianCity.mumbai,
             ).overrideWith((ref) => Stream.value([club])),
@@ -93,7 +93,9 @@ void main() {
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Review>[])),
               uidProvider.overrideWith((ref) => Stream.value(null)),
-              appUserStreamProvider.overrideWith((ref) => Stream.value(null)),
+              userProfileStreamProvider.overrideWith(
+                (ref) => Stream.value(null),
+              ),
             ],
             child: MaterialApp(
               theme: AppTheme.light,
@@ -128,7 +130,7 @@ void main() {
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Review>[])),
               uidProvider.overrideWith((ref) => Stream.value('runner-2')),
-              appUserStreamProvider.overrideWith(
+              userProfileStreamProvider.overrideWith(
                 (ref) => Stream.value(_buildUser(uid: 'runner-2')),
               ),
             ],
@@ -179,11 +181,11 @@ RunClub _buildClub({
   );
 }
 
-AppUser _buildUser({
+UserProfile _buildUser({
   required String uid,
-  List<String> followedRunClubIds = const [],
+  List<String> joinedRunClubIds = const [],
 }) {
-  return AppUser(
+  return UserProfile(
     uid: uid,
     email: '$uid@example.com',
     name: 'Runner $uid',
@@ -193,7 +195,7 @@ AppUser _buildUser({
     sexualOrientation: SexualOrientation.straight,
     phoneNumber: '+10000000000',
     profileComplete: true,
-    followedRunClubIds: followedRunClubIds,
+    joinedRunClubIds: joinedRunClubIds,
     interestedInGenders: const [Gender.woman],
   );
 }

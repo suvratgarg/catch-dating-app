@@ -1,12 +1,12 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
-import 'package:catch_dating_app/common_widgets/chip_field.dart';
-import 'package:catch_dating_app/common_widgets/error_banner.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/chip_field.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,22 +46,22 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final appUser = ref.watch(appUserStreamProvider).asData?.value;
+    final userProfile = ref.watch(userProfileStreamProvider).asData?.value;
     final mutation = ref.watch(OnboardingController.completeMutation);
     final t = CatchTokens.of(context);
 
-    if (!_didSeedFromProfile && appUser != null) {
+    if (!_didSeedFromProfile && userProfile != null) {
       _didSeedFromProfile = true;
       _paceRange = RangeValues(
-        appUser.paceMinSecsPerKm.toDouble(),
-        appUser.paceMaxSecsPerKm.toDouble(),
+        userProfile.paceMinSecsPerKm.toDouble(),
+        userProfile.paceMaxSecsPerKm.toDouble(),
       );
       _distances
         ..clear()
-        ..addAll(appUser.preferredDistances);
+        ..addAll(userProfile.preferredDistances);
       _reasons
         ..clear()
-        ..addAll(appUser.runningReasons);
+        ..addAll(userProfile.runningReasons);
     }
 
     return SingleChildScrollView(

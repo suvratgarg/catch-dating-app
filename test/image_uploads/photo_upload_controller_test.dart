@@ -1,24 +1,26 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../runs/runs_test_helpers.dart';
 
-class FakePhotoAppUserRepository extends Fake implements AppUserRepository {
-  FakePhotoAppUserRepository(this.currentUser);
+class FakePhotoUserProfileRepository extends Fake
+    implements UserProfileRepository {
+  FakePhotoUserProfileRepository(this.currentUser);
 
-  AppUser currentUser;
+  UserProfile currentUser;
   final updatedPhotoUrls = <List<String>>[];
 
   @override
-  Future<AppUser?> fetchAppUser({required String? uid}) async => currentUser;
+  Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
+      currentUser;
 
   @override
   Future<void> updatePhotoUrls({
@@ -56,7 +58,7 @@ void main() {
   test(
     'serializes overlapping photo writes so newer state is preserved',
     () async {
-      final appUserRepository = FakePhotoAppUserRepository(
+      final userProfileRepository = FakePhotoUserProfileRepository(
         buildUser(
           uid: 'runner-1',
           photoUrls: const ['https://img.example/old-0.jpg'],
@@ -65,7 +67,9 @@ void main() {
       final imageUploadRepository = ControlledImageUploadRepository();
       final container = ProviderContainer(
         overrides: [
-          appUserRepositoryProvider.overrideWith((ref) => appUserRepository),
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
           imageUploadRepositoryProvider.overrideWith(
             (ref) => imageUploadRepository,
           ),
@@ -98,11 +102,11 @@ void main() {
 
       await Future.wait([firstUpload, secondUpload]);
 
-      expect(appUserRepository.updatedPhotoUrls, [
+      expect(userProfileRepository.updatedPhotoUrls, [
         ['https://img.example/old-0.jpg', 'https://img.example/new-1.jpg'],
         ['https://img.example/new-0.jpg', 'https://img.example/new-1.jpg'],
       ]);
-      expect(appUserRepository.currentUser.photoUrls, [
+      expect(userProfileRepository.currentUser.photoUrls, [
         'https://img.example/new-0.jpg',
         'https://img.example/new-1.jpg',
       ]);
@@ -114,13 +118,15 @@ void main() {
   );
 
   test('completes safely if the provider is disposed mid-upload', () async {
-    final appUserRepository = FakePhotoAppUserRepository(
+    final userProfileRepository = FakePhotoUserProfileRepository(
       buildUser(uid: 'runner-1'),
     );
     final imageUploadRepository = ControlledImageUploadRepository();
     final container = ProviderContainer(
       overrides: [
-        appUserRepositoryProvider.overrideWith((ref) => appUserRepository),
+        userProfileRepositoryProvider.overrideWith(
+          (ref) => userProfileRepository,
+        ),
         imageUploadRepositoryProvider.overrideWith(
           (ref) => imageUploadRepository,
         ),

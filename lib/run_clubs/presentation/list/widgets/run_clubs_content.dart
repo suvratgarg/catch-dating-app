@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_state.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/horizontal_club_section.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/nearby_clubs_section.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
@@ -10,13 +10,13 @@ class RunClubsContent extends StatelessWidget {
   const RunClubsContent({
     super.key,
     required this.viewModel,
-    required this.isFollowPending,
-    this.onFollow,
+    required this.isJoinPending,
+    this.onJoin,
   });
 
   final RunClubsListViewModel viewModel;
-  final bool isFollowPending;
-  final ValueChanged<RunClub>? onFollow;
+  final bool isJoinPending;
+  final ValueChanged<RunClub>? onJoin;
 
   @override
   Widget build(BuildContext context) {
@@ -49,8 +49,8 @@ class RunClubsContent extends StatelessWidget {
           const SizedBox(height: 20),
           NearbyClubsSection(
             clubs: viewModel.discoverClubs,
-            isFollowPending: isFollowPending,
-            onFollow: onFollow,
+            isJoinPending: isJoinPending,
+            onJoin: onJoin,
           ),
         ],
         const SizedBox(height: 24),

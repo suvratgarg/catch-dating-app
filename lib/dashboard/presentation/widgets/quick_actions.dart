@@ -30,9 +30,7 @@ class QuickActions extends StatelessWidget {
       children: _actions.map((a) {
         return Expanded(
           child: Padding(
-            padding: EdgeInsets.only(
-              right: a == _actions.last ? 0 : 10,
-            ),
+            padding: EdgeInsets.only(right: a == _actions.last ? 0 : 10),
             child: GestureDetector(
               onTap: () => _onTap(context, a.$2),
               child: Container(
@@ -55,9 +53,11 @@ class QuickActions extends StatelessWidget {
                       child: Icon(a.$1, color: t.primary, size: 18),
                     ),
                     const SizedBox(height: 8),
-                    Text(a.$2,
-                        style: CatchTextStyles.labelMd(context),
-                        maxLines: 2),
+                    Text(
+                      a.$2,
+                      style: CatchTextStyles.labelMd(context),
+                      maxLines: 2,
+                    ),
                   ],
                 ),
               ),

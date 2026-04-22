@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
-import 'package:catch_dating_app/common_widgets/error_banner.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_controller.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,7 +16,7 @@ Future<void> showWriteReviewSheet({
   required BuildContext context,
   required String runClubId,
   String? runId,
-  required AppUser reviewer,
+  required UserProfile reviewer,
   Review? existingReview,
 }) {
   return showModalBottomSheet(
@@ -42,7 +42,7 @@ class _WriteReviewSheet extends ConsumerStatefulWidget {
 
   final String runClubId;
   final String? runId;
-  final AppUser reviewer;
+  final UserProfile reviewer;
   final Review? existingReview;
 
   @override
@@ -59,8 +59,9 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
   void initState() {
     super.initState();
     _rating = widget.existingReview?.rating ?? 0;
-    _commentController =
-        TextEditingController(text: widget.existingReview?.comment ?? '');
+    _commentController = TextEditingController(
+      text: widget.existingReview?.comment ?? '',
+    );
   }
 
   @override
@@ -72,7 +73,9 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
   void _submit() {
     if (_rating == 0) return;
     WriteReviewController.submitMutation.run(ref, (tx) async {
-      await tx.get(writeReviewControllerProvider.notifier).submit(
+      await tx
+          .get(writeReviewControllerProvider.notifier)
+          .submit(
             runClubId: widget.runClubId,
             runId: widget.runId,
             reviewerUserId: widget.reviewer.uid,
@@ -107,8 +110,9 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
         children: [
           Text(
             _isEdit ? 'Edit review' : 'Write a review',
-            style: CatchTextStyles.displaySm(context)
-                .copyWith(fontWeight: FontWeight.bold),
+            style: CatchTextStyles.displaySm(
+              context,
+            ).copyWith(fontWeight: FontWeight.bold),
           ),
           gapH16,
           StarRatingPicker(
@@ -126,9 +130,7 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            ErrorBanner(
-              message: (mutation as MutationError).error.toString(),
-            ),
+            ErrorBanner(message: (mutation as MutationError).error.toString()),
           ],
           gapH20,
           SizedBox(

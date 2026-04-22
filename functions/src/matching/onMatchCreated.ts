@@ -1,7 +1,7 @@
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {AppUserDoc, MatchDoc} from "../types/firestore";
+import {UserProfileDoc, MatchDoc} from "../shared/firestore";
 
 export const onMatchCreated = onDocumentCreated(
   "matches/{matchId}",
@@ -19,13 +19,16 @@ export const onMatchCreated = onDocumentCreated(
     ]);
 
     const tokens = [
-      (user1Doc.data() as AppUserDoc | undefined)?.fcmToken,
-      (user2Doc.data() as AppUserDoc | undefined)?.fcmToken,
+      (user1Doc.data() as UserProfileDoc | undefined)?.fcmToken,
+      (user2Doc.data() as UserProfileDoc | undefined)?.fcmToken,
     ].filter((t): t is string => !!t);
 
     if (tokens.length === 0) return;
 
-    logger.info("Sending match notifications", {matchId, tokenCount: tokens.length});
+    logger.info("Sending match notifications", {
+      matchId,
+      tokenCount: tokens.length,
+    });
 
     await Promise.allSettled(
       tokens.map((token) =>

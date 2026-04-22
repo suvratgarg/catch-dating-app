@@ -1,5 +1,3 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
@@ -9,6 +7,8 @@ import 'package:catch_dating_app/onboarding/presentation/pages/phone_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -366,7 +366,7 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         final container = createOnboardingTestContainer(
           overrides: [
-            appUserStreamProvider.overrideWith(
+            userProfileStreamProvider.overrideWith(
               (ref) => Stream.value(
                 buildUser(uid: 'runner-1').copyWith(photoUrls: const []),
               ),

@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommend_card.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,10 +14,10 @@ class Recommendations extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = tokens;
-    final userAsync = ref.watch(appUserStreamProvider);
+    final userAsync = ref.watch(userProfileStreamProvider);
     final user = userAsync.asData?.value;
 
-    final clubIds = user?.followedRunClubIds ?? [];
+    final clubIds = user?.joinedRunClubIds ?? [];
     final runsAsync = ref.watch(recommendedRunsProvider(clubIds));
     final runs = runsAsync.asData?.value ?? [];
 
@@ -29,8 +29,10 @@ class Recommendations extends ConsumerWidget {
         Row(
           children: [
             Expanded(
-              child: Text('Recommended runs',
-                  style: CatchTextStyles.displaySm(context)),
+              child: Text(
+                'Recommended runs',
+                style: CatchTextStyles.displaySm(context),
+              ),
             ),
           ],
         ),

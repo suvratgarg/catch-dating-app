@@ -1,12 +1,13 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
-import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
@@ -49,7 +50,7 @@ void main() {
     });
   });
 
-  group('RunClubDetailController', () {
+  group('RunClubMembershipController', () {
     test('join forwards club and user ids to the repository', () async {
       final fakeRepository = FakeRunClubsRepository();
       final container = ProviderContainer(
@@ -67,7 +68,7 @@ void main() {
       addTearDown(uidSubscription.close);
       await container.pump();
       await container
-          .read(runClubDetailControllerProvider.notifier)
+          .read(runClubMembershipControllerProvider.notifier)
           .join('club-7');
 
       expect(fakeRepository.joinedClubId, 'club-7');
@@ -91,7 +92,7 @@ void main() {
       addTearDown(uidSubscription.close);
       await container.pump();
       await container
-          .read(runClubDetailControllerProvider.notifier)
+          .read(runClubMembershipControllerProvider.notifier)
           .leave('club-9');
 
       expect(fakeRepository.leftClubId, 'club-9');
@@ -119,7 +120,7 @@ void main() {
         ),
         runsAsync: AsyncData([futureRun, pastRun]),
         reviewsAsync: AsyncData([buildReview()]),
-        appUserAsync: AsyncData(buildUser(uid: 'runner-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
         now: now,
       );
@@ -137,7 +138,7 @@ void main() {
         clubAsync: const AsyncLoading(),
         runsAsync: const AsyncData(<Run>[]),
         reviewsAsync: const AsyncData(<Review>[]),
-        appUserAsync: AsyncData(buildUser(uid: 'runner-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
       );
 
@@ -149,7 +150,7 @@ void main() {
         clubAsync: const AsyncData(null),
         runsAsync: const AsyncData(<Run>[]),
         reviewsAsync: const AsyncData(<Review>[]),
-        appUserAsync: AsyncData(buildUser(uid: 'runner-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
       );
 
@@ -161,7 +162,7 @@ void main() {
         clubAsync: AsyncError(StateError('club failed'), StackTrace.empty),
         runsAsync: const AsyncData(<Run>[]),
         reviewsAsync: const AsyncData(<Review>[]),
-        appUserAsync: AsyncData(buildUser(uid: 'runner-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
       );
 
@@ -174,7 +175,7 @@ void main() {
         clubAsync: AsyncData(buildRunClub()),
         runsAsync: AsyncError(StateError('runs failed'), StackTrace.empty),
         reviewsAsync: const AsyncData(<Review>[]),
-        appUserAsync: AsyncData(buildUser(uid: 'runner-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
       );
 
@@ -190,7 +191,7 @@ void main() {
           StateError('reviews failed'),
           StackTrace.empty,
         ),
-        appUserAsync: AsyncData(buildUser(uid: 'runner-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
       );
 
@@ -203,7 +204,7 @@ void main() {
         clubAsync: AsyncData(buildRunClub()),
         runsAsync: const AsyncData(<Run>[]),
         reviewsAsync: const AsyncData(<Review>[]),
-        appUserAsync: AsyncData(buildUser(uid: 'runner-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: AsyncError(StateError('uid failed'), StackTrace.empty),
       );
 
@@ -216,7 +217,7 @@ void main() {
         clubAsync: AsyncData(buildRunClub()),
         runsAsync: const AsyncData(<Run>[]),
         reviewsAsync: const AsyncData(<Review>[]),
-        appUserAsync: AsyncError(
+        userProfileAsync: AsyncError(
           StateError('app user failed'),
           StackTrace.empty,
         ),
@@ -239,7 +240,7 @@ void main() {
             (ref) => fakeImageUploadRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          appUserStreamProvider.overrideWith(
+          userProfileStreamProvider.overrideWith(
             (ref) => Stream.value(
               buildUser(
                 uid: 'host-1',
@@ -257,12 +258,12 @@ void main() {
         fireImmediately: true,
       );
       addTearDown(uidSubscription.close);
-      final appUserSubscription = container.listen(
-        appUserStreamProvider,
+      final userProfileSubscription = container.listen(
+        userProfileStreamProvider,
         (_, _) {},
         fireImmediately: true,
       );
-      addTearDown(appUserSubscription.close);
+      addTearDown(userProfileSubscription.close);
       await container.pump();
       await container.pump();
 
@@ -298,7 +299,7 @@ void main() {
             (ref) => fakeImageUploadRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          appUserStreamProvider.overrideWith(
+          userProfileStreamProvider.overrideWith(
             (ref) => Stream.value(buildUser(uid: 'host-1', name: 'Priya')),
           ),
         ],
@@ -310,12 +311,12 @@ void main() {
         fireImmediately: true,
       );
       addTearDown(uidSubscription.close);
-      final appUserSubscription = container.listen(
-        appUserStreamProvider,
+      final userProfileSubscription = container.listen(
+        userProfileStreamProvider,
         (_, _) {},
         fireImmediately: true,
       );
-      addTearDown(appUserSubscription.close);
+      addTearDown(userProfileSubscription.close);
       await container.pump();
       await container.pump();
 
@@ -344,7 +345,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('host-1')),
-            appUserStreamProvider.overrideWith((ref) => Stream.value(null)),
+            userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
           ],
         );
         addTearDown(container.dispose);
@@ -354,12 +355,12 @@ void main() {
           fireImmediately: true,
         );
         addTearDown(uidSubscription.close);
-        final appUserSubscription = container.listen(
-          appUserStreamProvider,
+        final userProfileSubscription = container.listen(
+          userProfileStreamProvider,
           (_, _) {},
           fireImmediately: true,
         );
-        addTearDown(appUserSubscription.close);
+        addTearDown(userProfileSubscription.close);
         await container.pump();
         await container.pump();
 

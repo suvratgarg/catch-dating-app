@@ -1,7 +1,12 @@
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {AppUserDoc, ChatMessageDoc, MatchDoc, PublicProfileDoc} from "../types/firestore";
+import {
+  UserProfileDoc,
+  ChatMessageDoc,
+  MatchDoc,
+  PublicProfileDoc,
+} from "../shared/firestore";
 
 export const onMessageCreated = onDocumentCreated(
   "chats/{matchId}/messages/{messageId}",
@@ -31,15 +36,17 @@ export const onMessageCreated = onDocumentCreated(
       db.collection("users").doc(recipientId).get(),
     ]);
 
-    const fcmToken = (recipientUserDoc.data() as AppUserDoc | undefined)?.fcmToken;
+    const fcmToken =
+      (recipientUserDoc.data() as UserProfileDoc | undefined)?.fcmToken;
     if (!fcmToken) return;
 
     const senderName =
-      (senderProfileDoc.data() as PublicProfileDoc | undefined)?.name ?? "New message";
+      (senderProfileDoc.data() as PublicProfileDoc | undefined)?.name ??
+      "New message";
     const body =
-      message.text.length > 100
-        ? message.text.slice(0, 100) + "…"
-        : message.text;
+      message.text.length > 100 ?
+        message.text.slice(0, 100) + "…" :
+        message.text;
 
     logger.info("Sending message notification", {matchId, recipientId});
 

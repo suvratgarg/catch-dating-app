@@ -525,7 +525,7 @@ void main() {
       final userWrite = batch.setCalls.last;
       expect(
         userWrite.data,
-        containsPair('followedRunClubIds', isA<FieldValue>()),
+        containsPair('joinedRunClubIds', isA<FieldValue>()),
       );
       expect(userWrite.options?.merge, isTrue);
       expect(batch.commitCalled, isTrue);
@@ -592,7 +592,7 @@ void main() {
         expect(userWrite.document, same(userDoc));
         expect(
           userWrite.data,
-          containsPair('followedRunClubIds', isA<FieldValue>()),
+          containsPair('joinedRunClubIds', isA<FieldValue>()),
         );
         expect(userWrite.options?.merge, isTrue);
       },
@@ -651,7 +651,7 @@ void main() {
         expect(userWrite.document, same(userDoc));
         expect(
           userWrite.data,
-          containsPair('followedRunClubIds', isA<FieldValue>()),
+          containsPair('joinedRunClubIds', isA<FieldValue>()),
         );
         expect(userWrite.options?.merge, isTrue);
       },

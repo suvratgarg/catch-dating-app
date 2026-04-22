@@ -14,7 +14,7 @@ part 'run_club_list_tile_parts/row_tile.dart';
 part 'run_club_list_tile_parts/scroll_card.dart';
 
 enum RunClubListTileVariant {
-  /// List row: avatar · name/subtitle · Follow chip. Used in "Nearby".
+  /// List row: avatar · name/subtitle · Join chip. Used in "Nearby".
   rowTile,
 
   /// 220 px wide horizontal-scroll card. Used in "Your clubs".
@@ -37,7 +37,7 @@ class RunClubListTile extends StatelessWidget {
     this.variant = RunClubListTileVariant.rowTile,
     this.isJoined = false,
     this.isActive = false,
-    this.onFollow,
+    this.onJoin,
   });
 
   final RunClub club;
@@ -48,7 +48,7 @@ class RunClubListTile extends StatelessWidget {
   final bool isActive;
 
   /// Only used by [RunClubListTileVariant.rowTile].
-  final VoidCallback? onFollow;
+  final VoidCallback? onJoin;
 
   void _openDetail(BuildContext context) => context.pushNamed(
     Routes.runClubDetailScreen.name,
@@ -63,7 +63,7 @@ class RunClubListTile extends StatelessWidget {
         club: club,
         isJoined: isJoined,
         onTap: () => _openDetail(context),
-        onFollow: onFollow,
+        onJoin: onJoin,
       ),
       RunClubListTileVariant.scrollCard => _ScrollCard(
         club: club,

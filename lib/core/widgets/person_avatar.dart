@@ -48,10 +48,10 @@ class PersonAvatar extends StatelessWidget {
     required int count,
     this.borderWidth = 0,
     this.borderColor,
-  })  : _count = count,
-        name = '',
-        imageUrl = null,
-        showStatusDot = false;
+  }) : _count = count,
+       name = '',
+       imageUrl = null,
+       showStatusDot = false;
 
   final double size;
   final String name;
@@ -190,10 +190,18 @@ class _GradientPlaceholder extends StatelessWidget {
 
   // Gradient begin/end pairs, one per palette entry for variety.
   static const _begins = [
-    Alignment.topLeft, Alignment.topCenter, Alignment.topRight,
-    Alignment.centerLeft, Alignment.topLeft, Alignment.bottomLeft,
-    Alignment.topRight, Alignment.topLeft, Alignment.topCenter,
-    Alignment.topLeft, Alignment.topRight, Alignment.centerLeft,
+    Alignment.topLeft,
+    Alignment.topCenter,
+    Alignment.topRight,
+    Alignment.centerLeft,
+    Alignment.topLeft,
+    Alignment.bottomLeft,
+    Alignment.topRight,
+    Alignment.topLeft,
+    Alignment.topCenter,
+    Alignment.topLeft,
+    Alignment.topRight,
+    Alignment.centerLeft,
   ];
 
   @override
@@ -205,8 +213,8 @@ class _GradientPlaceholder extends StatelessWidget {
     final end = begin == Alignment.topLeft
         ? Alignment.bottomRight
         : begin == Alignment.topRight
-            ? Alignment.bottomLeft
-            : Alignment.bottomCenter;
+        ? Alignment.bottomLeft
+        : Alignment.bottomCenter;
 
     return Container(
       width: size,

@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'photo_upload_controller.g.dart';
@@ -16,24 +16,21 @@ class PhotoUploadController extends _$PhotoUploadController {
 
   Future<void> pickAndUpload(int index) async {
     final repo = ref.read(imageUploadRepositoryProvider);
-    final appUserRepository = ref.read(appUserRepositoryProvider);
+    final userProfileRepository = ref.read(userProfileRepositoryProvider);
 
     final photo = await repo.pickImage();
     if (photo == null || !ref.mounted) return;
 
     _markUploading(index);
     try {
-      final uid = ref.read(uidProvider).asData?.value;
-      if (uid == null || uid.isEmpty) {
-        throw StateError('Must be signed in to upload photos.');
-      }
+      final uid = requireSignedInUid(ref, action: 'upload photos');
       final url = await repo.uploadUserPhoto(
         uid: uid,
         index: index,
         image: photo,
       );
       await _persistUploadedPhoto(
-        appUserRepository: appUserRepository,
+        userProfileRepository: userProfileRepository,
         uid: uid,
         index: index,
         url: url,
@@ -69,20 +66,23 @@ class PhotoUploadController extends _$PhotoUploadController {
   }
 
   Future<void> _persistUploadedPhoto({
-    required AppUserRepository appUserRepository,
+    required UserProfileRepository userProfileRepository,
     required String uid,
     required int index,
     required String url,
   }) {
     return _serializePhotoWrite(() async {
-      final latestUser = await appUserRepository.fetchAppUser(uid: uid);
+      final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
       final updatedUrls = _replacePhotoUrlAtIndex(
         photoUrls: latestUser?.photoUrls ?? const [],
         index: index,
         url: url,
       );
 
-      await appUserRepository.updatePhotoUrls(uid: uid, photoUrls: updatedUrls);
+      await userProfileRepository.updatePhotoUrls(
+        uid: uid,
+        photoUrls: updatedUrls,
+      );
     });
   }
 

@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_state.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_content.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_header.dart';
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_mutation_feedback.dart';
@@ -14,12 +14,12 @@ class RunClubsListScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final viewModelAsync = ref.watch(runClubsListViewModelProvider);
-    final followMutation = ref.watch(RunClubsListController.followMutation);
+    final joinMutation = ref.watch(RunClubsListController.joinMutation);
 
     listenForMutationErrorSnackbar(
       context: context,
       ref: ref,
-      mutation: RunClubsListController.followMutation,
+      mutation: RunClubsListController.joinMutation,
     );
 
     return Scaffold(
@@ -36,10 +36,10 @@ class RunClubsListScreen extends ConsumerWidget {
                     Center(child: Text('Error loading clubs: $error')),
                 data: (viewModel) => RunClubsContent(
                   viewModel: viewModel,
-                  isFollowPending: followMutation.isPending,
-                  onFollow: followMutation.isPending
+                  isJoinPending: joinMutation.isPending,
+                  onJoin: joinMutation.isPending
                       ? null
-                      : (club) => _followClub(ref, club.id),
+                      : (club) => _joinClub(ref, club.id),
                 ),
               ),
             ),
@@ -49,11 +49,11 @@ class RunClubsListScreen extends ConsumerWidget {
     );
   }
 
-  void _followClub(WidgetRef ref, String clubId) {
-    RunClubsListController.followMutation.run(ref, (transaction) async {
+  void _joinClub(WidgetRef ref, String clubId) {
+    RunClubsListController.joinMutation.run(ref, (transaction) async {
       await transaction
           .get(runClubsListControllerProvider.notifier)
-          .followClub(clubId);
+          .joinClub(clubId);
     });
   }
 }

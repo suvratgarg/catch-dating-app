@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -12,8 +11,9 @@ import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_screen.dart';
-import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_screen.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/host_stats_bar.dart';
@@ -21,7 +21,7 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/membershi
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_state.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/horizontal_club_section.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/nearby_clubs_section.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
@@ -31,6 +31,7 @@ import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -53,7 +54,7 @@ void main() {
               joinedClubs: [],
               discoverClubs: [],
             ),
-            isFollowPending: false,
+            isJoinPending: false,
           ),
         );
 
@@ -74,7 +75,7 @@ void main() {
             ],
             discoverClubs: [buildRunClub(id: 'discover-1')],
           ),
-          isFollowPending: false,
+          isJoinPending: false,
         ),
       );
 
@@ -164,17 +165,17 @@ void main() {
     testWidgets('row tile follow button is tappable and accessible', (
       tester,
     ) async {
-      var didFollow = false;
+      var didJoin = false;
 
       await pumpTestApp(
         tester,
-        RunClubListTile(club: buildRunClub(), onFollow: () => didFollow = true),
+        RunClubListTile(club: buildRunClub(), onJoin: () => didJoin = true),
       );
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Follow'));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Join'));
       await tester.pump();
 
-      expect(didFollow, isTrue);
+      expect(didJoin, isTrue);
     });
 
     testWidgets('row tile joined state uses the default next-run copy', (
@@ -431,7 +432,7 @@ void main() {
                   buildRunClub(id: 'c'),
                   buildRunClub(id: 'd'),
                 ],
-                isFollowPending: false,
+                isJoinPending: false,
               ),
             ],
           ),
@@ -518,7 +519,7 @@ void main() {
                 runs: const [],
                 upcoming: [buildRun(runClubId: club.id)],
                 reviews: const [],
-                appUser: buildUser(uid: 'host-1'),
+                userProfile: buildUser(uid: 'host-1'),
                 uid: 'host-1',
                 isHost: true,
                 isMember: true,
@@ -571,7 +572,7 @@ void main() {
                 runs: [run],
                 upcoming: [run],
                 reviews: const [],
-                appUser: buildUser(uid: 'runner-1'),
+                userProfile: buildUser(uid: 'runner-1'),
                 uid: 'runner-1',
                 isHost: false,
                 isMember: true,
@@ -615,7 +616,7 @@ void main() {
         overrides: [
           runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          appUserStreamProvider.overrideWith(
+          userProfileStreamProvider.overrideWith(
             (ref) => Stream.value(buildUser(uid: 'runner-1')),
           ),
           watchRunClubsByLocationProvider(
@@ -643,7 +644,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Follow'));
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Join'));
       await tester.pumpAndSettle();
 
       expect(fakeRepository.joinedClubId, 'club-99');
@@ -722,13 +723,13 @@ void main() {
       await tester.pump();
 
       try {
-        await RunClubsListController.followMutation.run(container, (tx) async {
-          throw StateError('follow failed');
+        await RunClubsListController.joinMutation.run(container, (tx) async {
+          throw StateError('join failed');
         });
       } catch (_) {}
       await tester.pumpAndSettle();
 
-      expect(find.textContaining('follow failed'), findsOneWidget);
+      expect(find.textContaining('join failed'), findsOneWidget);
     });
 
     testWidgets(
@@ -751,7 +752,7 @@ void main() {
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Review>[])),
               uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-              appUserStreamProvider.overrideWith(
+              userProfileStreamProvider.overrideWith(
                 (ref) => Stream.value(buildUser(uid: 'runner-1')),
               ),
             ],
@@ -825,7 +826,7 @@ void main() {
                 upcomingRuns: const [],
                 allRuns: const [],
                 reviews: const [],
-                appUser: buildUser(uid: 'runner-1'),
+                userProfile: buildUser(uid: 'runner-1'),
                 uid: 'runner-1',
               ),
             ),
@@ -845,14 +846,16 @@ void main() {
       await tester.pump();
 
       try {
-        await RunClubDetailController.joinMutation.run(container, (tx) async {
+        await RunClubMembershipController.joinMutation.run(container, (
+          tx,
+        ) async {
           throw StateError('join failed');
         });
       } catch (_) {}
       await tester.pump();
 
       expect(find.textContaining('join failed'), findsOneWidget);
-      RunClubDetailController.joinMutation.reset(container);
+      RunClubMembershipController.joinMutation.reset(container);
       await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
       container.dispose();
       await tester.pump(const Duration(milliseconds: 500));
@@ -872,7 +875,7 @@ void main() {
                 upcomingRuns: const [],
                 allRuns: const [],
                 reviews: const [],
-                appUser: buildUser(uid: 'runner-1'),
+                userProfile: buildUser(uid: 'runner-1'),
                 uid: 'runner-1',
               ),
             ),
@@ -892,14 +895,16 @@ void main() {
       await tester.pump();
 
       try {
-        await RunClubDetailController.leaveMutation.run(container, (tx) async {
+        await RunClubMembershipController.leaveMutation.run(container, (
+          tx,
+        ) async {
           throw StateError('leave failed');
         });
       } catch (_) {}
       await tester.pump();
 
       expect(find.textContaining('leave failed'), findsOneWidget);
-      RunClubDetailController.leaveMutation.reset(container);
+      RunClubMembershipController.leaveMutation.reset(container);
       await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
       container.dispose();
       await tester.pump(const Duration(milliseconds: 500));
@@ -980,7 +985,7 @@ void main() {
               (ref) => fakeImageUploadRepository,
             ),
             uidProvider.overrideWith((ref) => Stream.value('host-1')),
-            appUserStreamProvider.overrideWith(
+            userProfileStreamProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'host-1', name: 'Priya')),
             ),
           ],
@@ -992,12 +997,12 @@ void main() {
           fireImmediately: true,
         );
         addTearDown(uidSubscription.close);
-        final appUserSubscription = container.listen(
-          appUserStreamProvider,
+        final userProfileSubscription = container.listen(
+          userProfileStreamProvider,
           (_, _) {},
           fireImmediately: true,
         );
-        addTearDown(appUserSubscription.close);
+        addTearDown(userProfileSubscription.close);
         await container.pump();
         await container.pump();
 

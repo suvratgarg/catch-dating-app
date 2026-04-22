@@ -8,11 +8,6 @@ class AppConfig {
     defaultValue: false,
   );
 
-  static const bool bypassAuth = bool.fromEnvironment(
-    'BYPASS_AUTH',
-    defaultValue: false,
-  );
-
   // Default true so native push works in release builds without extra flags.
   // Web still requires a VAPID key — see firebaseWebVapidKey.
   static const bool enablePushMessaging = bool.fromEnvironment(

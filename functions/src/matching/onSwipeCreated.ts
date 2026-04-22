@@ -1,7 +1,7 @@
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {MatchDoc, SwipeDoc} from "../types/firestore";
+import {MatchDoc, SwipeDoc} from "../shared/firestore";
 
 export const onSwipeCreated = onDocumentCreated(
   "swipes/{swiperId}/outgoing/{targetId}",
@@ -25,11 +25,12 @@ export const onSwipeCreated = onDocumentCreated(
       return;
     }
 
-    // Cross-run matching is intentional for MVP: if A liked B on Run1 and B liked
-    // A on Run2, they still match. Add a `reverseSwipe.runId === swipeData.runId`
-    // check here if you want to restrict matches to runners from the same event.
+    // Cross-run matching is intentional for MVP.
+    // If A liked B on Run1 and B liked A on Run2, they still match.
+    // Add `reverseSwipe.runId === swipeData.runId` here to restrict
+    // matches to runners from the same event.
 
-    // Deterministic match ID — sorted so it's the same regardless of who swiped first
+    // Deterministic match ID, regardless of who swiped first.
     const [id1, id2] = [swiperId, targetId].sort();
     const matchId = `${id1}_${id2}`;
     const matchRef = admin.firestore().collection("matches").doc(matchId);
@@ -39,7 +40,9 @@ export const onSwipeCreated = onDocumentCreated(
       user2Id: id2,
       participantIds: [id1, id2],
       runId: swipeData.runId,
-      createdAt: admin.firestore.FieldValue.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
+      createdAt:
+        admin.firestore.FieldValue.serverTimestamp() as
+        unknown as FirebaseFirestore.Timestamp,
       lastMessageAt: null,
       lastMessagePreview: null,
       lastMessageSenderId: null,
@@ -47,9 +50,13 @@ export const onSwipeCreated = onDocumentCreated(
     };
 
     try {
-      // create() throws if the document already exists, preventing duplicate matches
+      // create() throws if the document already exists.
       await matchRef.create(matchDoc);
-      logger.info("Match created", {matchId, user1Id: id1, user2Id: id2});
+      logger.info("Match created", {
+        matchId,
+        user1Id: id1,
+        user2Id: id2,
+      });
     } catch (e: unknown) {
       if ((e as {code?: number}).code === 6) {
         // gRPC ALREADY_EXISTS — match already exists, nothing to do

@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -8,13 +7,14 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.da
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class DashboardFull extends StatelessWidget {
   const DashboardFull({super.key, required this.user});
 
-  final AppUser? user;
+  final UserProfile? user;
 
   static String greeting() {
     final h = DateTime.now().hour;
@@ -53,13 +53,11 @@ class DashboardFull extends StatelessWidget {
                       children: [
                         Text(
                           dayCity(user?.city?.label).toUpperCase(),
-                          style: CatchTextStyles.labelSm(
-                            context,
-                            color: t.ink3,
-                          ).copyWith(
-                            fontWeight: FontWeight.w600,
-                            letterSpacing: 1.0,
-                          ),
+                          style: CatchTextStyles.labelSm(context, color: t.ink3)
+                              .copyWith(
+                                fontWeight: FontWeight.w600,
+                                letterSpacing: 1.0,
+                              ),
                         ),
                         gapH2,
                         Text(

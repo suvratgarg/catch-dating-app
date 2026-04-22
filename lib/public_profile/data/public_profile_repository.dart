@@ -51,16 +51,6 @@ class PublicProfileRepository {
     }
     return profiles;
   }
-
-  // ── Write ─────────────────────────────────────────────────────────────────
-
-  Future<void> setPublicProfile({required PublicProfile profile}) =>
-      _publicProfileRef(profile.uid).set(profile);
-
-  Future<void> updatePhotoUrls({
-    required String uid,
-    required List<String> photoUrls,
-  }) => _publicProfileRef(uid).update({'photoUrls': photoUrls});
 }
 
 @Riverpod(keepAlive: true)

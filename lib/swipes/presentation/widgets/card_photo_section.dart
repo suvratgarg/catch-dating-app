@@ -40,12 +40,7 @@ class CardPhotoSection extends StatelessWidget {
                 ),
               ),
             ),
-            Positioned(
-              left: 20,
-              right: 20,
-              bottom: 28,
-              child: overlayChild!,
-            ),
+            Positioned(left: 20, right: 20, bottom: 28, child: overlayChild!),
           ],
         ],
       ),

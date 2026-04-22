@@ -32,8 +32,11 @@ class NextRunHero extends ConsumerWidget {
 
     final Run? nextRun = runsAsync.asData?.value
         .where((r) => r.isUpcoming)
-        .fold<Run?>(null, (best, r) =>
-            best == null || r.startTime.isBefore(best.startTime) ? r : best);
+        .fold<Run?>(
+          null,
+          (best, r) =>
+              best == null || r.startTime.isBefore(best.startTime) ? r : best,
+        );
 
     if (nextRun == null) {
       return const SizedBox.shrink();
@@ -49,10 +52,7 @@ class NextRunHero extends ConsumerWidget {
       child: Stack(
         children: [
           Positioned.fill(
-            child: Opacity(
-              opacity: 0.25,
-              child: StaticMapDark(),
-            ),
+            child: Opacity(opacity: 0.25, child: StaticMapDark()),
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -102,12 +102,16 @@ class NextRunHero extends ConsumerWidget {
                   if (nextRun.signedUpCount > 0) ...[
                     SizedBox(
                       height: 28,
-                      width: 28 + (nextRun.signedUpCount.clamp(1, 4) - 1) * (28 - 8.0),
+                      width:
+                          28 +
+                          (nextRun.signedUpCount.clamp(1, 4) - 1) * (28 - 8.0),
                       child: Stack(
                         children: [
-                          for (var i = 0;
-                              i < nextRun.signedUpCount && i < 4;
-                              i++)
+                          for (
+                            var i = 0;
+                            i < nextRun.signedUpCount && i < 4;
+                            i++
+                          )
                             Positioned(
                               left: i * (28 - 8.0),
                               child: PersonAvatar(

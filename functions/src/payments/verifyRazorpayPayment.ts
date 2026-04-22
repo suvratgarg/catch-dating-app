@@ -1,97 +1,128 @@
-import {onCall, HttpsError} from "firebase-functions/v2/https";
+import {
+  CallableRequest,
+  HttpsError,
+  onCall,
+} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {defineSecret} from "firebase-functions/params";
-import * as crypto from "crypto";
 import Razorpay from "razorpay";
 import {signUpUserForRun} from "../runs/signUpUserForRun";
-
-const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
-const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
+import {buildPaymentRecord, verifyPaidRunBooking} from "./paymentValidation";
+import {
+  createRazorpayClient,
+  razorpayKeyId,
+  razorpayKeySecret,
+  verifyPaymentSignature,
+} from "./razorpay";
 
 interface VerifyPaymentData {
   paymentId: string;
   orderId: string;
   signature: string;
-  activityId: string; // runId
-  amountInPaise: number;
+}
+
+interface VerifyRazorpayPaymentDeps {
+  createClient: () => Razorpay;
+  firestore: () => FirebaseFirestore.Firestore;
+  serverTimestamp: () => unknown;
+  signUpForRun: typeof signUpUserForRun;
+  verifySignature: typeof verifyPaymentSignature;
+}
+
+const defaultDeps: VerifyRazorpayPaymentDeps = {
+  createClient: createRazorpayClient,
+  firestore: () => admin.firestore(),
+  serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  signUpForRun: signUpUserForRun,
+  verifySignature: verifyPaymentSignature,
+};
+
+export async function verifyRazorpayPaymentHandler(
+  request: CallableRequest<Partial<VerifyPaymentData> | null>,
+  deps: VerifyRazorpayPaymentDeps = defaultDeps
+) {
+  if (!request.auth) {
+    throw new HttpsError("unauthenticated", "Must be signed in.");
+  }
+
+  const paymentId = request.data?.paymentId;
+  const orderId = request.data?.orderId;
+  const signature = request.data?.signature;
+
+  if (!paymentId || !orderId || !signature) {
+    throw new HttpsError("invalid-argument", "Missing required fields.");
+  }
+
+  if (!deps.verifySignature({orderId, paymentId, signature})) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Payment signature verification failed."
+    );
+  }
+
+  const db = deps.firestore();
+  const userId = request.auth.uid;
+  const razorpay = deps.createClient();
+  const [order, payment] = await Promise.all([
+    razorpay.orders.fetch(orderId),
+    razorpay.payments.fetch(paymentId),
+  ]);
+  const booking = verifyPaidRunBooking({
+    order,
+    payment,
+    expectedUserId: userId,
+  });
+
+  // Sign the user up for the run. If this fails (e.g. run filled up in a
+  // race condition between order creation and payment), issue an immediate
+  // refund so the user is never charged for a spot they didn't get.
+  try {
+    await deps.signUpForRun(db, booking.runId, userId);
+  } catch (signUpError) {
+    let refundSucceeded = false;
+    try {
+      await razorpay.payments.refund(paymentId, {
+        amount: booking.amountInPaise,
+      });
+      refundSucceeded = true;
+    } catch (refundError) {
+      console.error("Refund failed for payment", paymentId, refundError);
+    }
+
+    await db.collection("payments").doc(paymentId).set({
+      ...buildPaymentRecord({
+        userId,
+        orderId,
+        paymentId,
+        runId: booking.runId,
+        amountInPaise: booking.amountInPaise,
+        currency: booking.currency,
+        status: refundSucceeded ? "refunded" : "completed",
+        signUpFailed: true,
+      }),
+      createdAt: deps.serverTimestamp(),
+    });
+
+    throw signUpError;
+  }
+
+  // Record the completed payment.
+  await db.collection("payments").doc(paymentId).set({
+    ...buildPaymentRecord({
+      userId,
+      orderId,
+      paymentId,
+      runId: booking.runId,
+      amountInPaise: booking.amountInPaise,
+      currency: booking.currency,
+      status: "completed",
+    }),
+    createdAt: deps.serverTimestamp(),
+  });
+
+  return {verified: true, runId: booking.runId};
 }
 
 export const verifyRazorpayPayment = onCall(
   {secrets: [razorpayKeyId, razorpayKeySecret]},
-  async (request) => {
-    if (!request.auth) {
-      throw new HttpsError("unauthenticated", "Must be signed in.");
-    }
-
-    const {paymentId, orderId, signature, activityId, amountInPaise} =
-      request.data as VerifyPaymentData;
-
-    if (!paymentId || !orderId || !signature || !activityId) {
-      throw new HttpsError("invalid-argument", "Missing required fields.");
-    }
-
-    // Verify HMAC-SHA256 signature.
-    const expectedSignature = crypto
-      .createHmac("sha256", razorpayKeySecret.value())
-      .update(`${orderId}|${paymentId}`)
-      .digest("hex");
-
-    if (expectedSignature !== signature) {
-      throw new HttpsError(
-        "invalid-argument",
-        "Payment signature verification failed."
-      );
-    }
-
-    const db = admin.firestore();
-    const userId = request.auth.uid;
-
-    // Sign the user up for the run. If this fails (e.g. run filled up in a
-    // race condition between order creation and payment), issue an immediate
-    // refund so the user is never charged for a spot they didn't get.
-    try {
-      await signUpUserForRun(db, activityId, userId);
-    } catch (signUpError) {
-      const razorpay = new Razorpay({
-        key_id: razorpayKeyId.value(),
-        key_secret: razorpayKeySecret.value(),
-      });
-
-      let refundSucceeded = false;
-      try {
-        await razorpay.payments.refund(paymentId, {amount: amountInPaise ?? 0});
-        refundSucceeded = true;
-      } catch (refundError) {
-        console.error("Refund failed for payment", paymentId, refundError);
-      }
-
-      await db.collection("payments").doc(paymentId).set({
-        userId,
-        orderId,
-        paymentId,
-        activityId,
-        amount: amountInPaise ?? 0,
-        currency: "INR",
-        status: refundSucceeded ? "refunded" : "completed",
-        signUpFailed: true,
-        createdAt: admin.firestore.FieldValue.serverTimestamp(),
-      });
-
-      throw signUpError;
-    }
-
-    // Record the completed payment.
-    await db.collection("payments").doc(paymentId).set({
-      userId,
-      orderId,
-      paymentId,
-      activityId,
-      amount: amountInPaise ?? 0,
-      currency: "INR",
-      status: "completed",
-      createdAt: admin.firestore.FieldValue.serverTimestamp(),
-    });
-
-    return {verified: true};
-  }
+  (request) => verifyRazorpayPaymentHandler(request)
 );

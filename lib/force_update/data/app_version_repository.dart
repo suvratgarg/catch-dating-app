@@ -19,11 +19,7 @@ class AppVersionRepository {
   static const _document = 'app_config';
 
   Stream<AppVersionConfig> watchConfig() {
-    return _db
-        .collection(_collection)
-        .doc(_document)
-        .snapshots()
-        .map((snap) {
+    return _db.collection(_collection).doc(_document).snapshots().map((snap) {
       if (!snap.exists || snap.data() == null) {
         return const AppVersionConfig();
       }

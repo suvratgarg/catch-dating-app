@@ -1,6 +1,6 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
-import {AppUserDoc, RunDoc} from "../types/firestore";
+import {UserProfileDoc, RunDoc} from "../shared/firestore";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid runs)
@@ -14,6 +14,10 @@ import {AppUserDoc, RunDoc} from "../types/firestore";
  *   5. Remove the user from waitlistUserIds if present.
  *
  * Idempotent — calling it twice for the same user/run is safe.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} runId Run to sign the user up for.
+ * @param {string} userId User being signed up.
+ * @return {Promise<void>} Resolves when the transaction completes.
  */
 export async function signUpUserForRun(
   db: FirebaseFirestore.Firestore,
@@ -37,7 +41,7 @@ export async function signUpUserForRun(
     }
 
     const run = runSnap.data() as RunDoc;
-    const user = userSnap.data() as AppUserDoc;
+    const user = userSnap.data() as UserProfileDoc;
 
     // Idempotent — user already signed up.
     if (run.signedUpUserIds.includes(userId)) {
@@ -46,7 +50,7 @@ export async function signUpUserForRun(
 
     const constraints = run.constraints ?? {minAge: 0, maxAge: 99};
 
-    // ── Age check ─────────────────────────────────────────────────────────────
+    // Age check.
     if (constraints.minAge > 0 || constraints.maxAge < 99) {
       const age = computeAge(
         (user.dateOfBirth as FirebaseFirestore.Timestamp).toDate()
@@ -54,25 +58,27 @@ export async function signUpUserForRun(
       if (age < constraints.minAge) {
         throw new HttpsError(
           "failed-precondition",
-          `You must be at least ${constraints.minAge} years old to join this run.`
+          `You must be at least ${constraints.minAge} ` +
+            "years old to join this run."
         );
       }
       if (age > constraints.maxAge) {
         throw new HttpsError(
           "failed-precondition",
-          `You must be ${constraints.maxAge} or younger to join this run.`
+          `You must be ${constraints.maxAge} ` +
+            "or younger to join this run."
         );
       }
     }
 
-    // ── Gender cap check ──────────────────────────────────────────────────────
+    // Gender cap check.
     const gender = user.gender;
     const genderCap =
-      gender === "man"
-        ? constraints.maxMen
-        : gender === "woman"
-          ? constraints.maxWomen
-          : undefined;
+      gender === "man" ?
+        constraints.maxMen :
+        gender === "woman" ?
+          constraints.maxWomen :
+          undefined;
 
     if (genderCap !== undefined && genderCap !== null) {
       const currentCount = (run.genderCounts ?? {})[gender] ?? 0;
@@ -84,7 +90,7 @@ export async function signUpUserForRun(
       }
     }
 
-    // ── Overall capacity check ─────────────────────────────────────────────────
+    // Overall capacity check.
     if (run.signedUpUserIds.length >= run.capacityLimit) {
       throw new HttpsError(
         "failed-precondition",
@@ -92,7 +98,7 @@ export async function signUpUserForRun(
       );
     }
 
-    // ── Atomic write ──────────────────────────────────────────────────────────
+    // Atomic write.
     tx.update(runRef, {
       signedUpUserIds: admin.firestore.FieldValue.arrayUnion(userId),
       waitlistUserIds: admin.firestore.FieldValue.arrayRemove(userId),
@@ -101,6 +107,11 @@ export async function signUpUserForRun(
   });
 }
 
+/**
+ * Computes a user's age in full years from their date of birth.
+ * @param {Date} dob User birth date.
+ * @return {number} User age in whole years.
+ */
 function computeAge(dob: Date): number {
   const today = new Date();
   let age = today.getFullYear() - dob.getFullYear();

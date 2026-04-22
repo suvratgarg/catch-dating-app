@@ -33,8 +33,8 @@ class RunCardData {
 
   /// Pre-formatted, e.g. "Today · 6:00 AM" or "Mon 22 Apr · 6:00 AM"
   final String dateTime;
-  final String distanceLabel;  // "7K"
-  final String paceLabel;       // "5:30 /km"
+  final String distanceLabel; // "7K"
+  final String paceLabel; // "5:30 /km"
 
   /// Formatted price string: "₹299" or "Free"
   final String price;
@@ -108,9 +108,23 @@ class RunCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (density) {
-      RunCardDensity.compact  => _CompactCard(data: data, showPrice: showPrice, onTap: onTap),
-      RunCardDensity.standard => _StandardCard(data: data, showPrice: showPrice, showRoster: showRoster, onTap: onTap),
-      RunCardDensity.hero     => _HeroCard(data: data, showPrice: showPrice, showRoster: showRoster, onTap: onTap),
+      RunCardDensity.compact => _CompactCard(
+        data: data,
+        showPrice: showPrice,
+        onTap: onTap,
+      ),
+      RunCardDensity.standard => _StandardCard(
+        data: data,
+        showPrice: showPrice,
+        showRoster: showRoster,
+        onTap: onTap,
+      ),
+      RunCardDensity.hero => _HeroCard(
+        data: data,
+        showPrice: showPrice,
+        showRoster: showRoster,
+        onTap: onTap,
+      ),
     };
   }
 }
@@ -168,8 +182,10 @@ class _CompactCard extends StatelessWidget {
             if (showPrice)
               Text(
                 data.price,
-                style: CatchTextStyles.labelLg(context,
-                    color: data.price == 'Free' ? t.accent : t.ink),
+                style: CatchTextStyles.labelLg(
+                  context,
+                  color: data.price == 'Free' ? t.accent : t.ink,
+                ),
               ),
           ],
         ),
@@ -232,8 +248,10 @@ class _StandardCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           data.price,
-                          style: CatchTextStyles.labelLg(context,
-                              color: data.price == 'Free' ? t.accent : t.ink),
+                          style: CatchTextStyles.labelLg(
+                            context,
+                            color: data.price == 'Free' ? t.accent : t.ink,
+                          ),
                         ),
                       ],
                     ],
@@ -245,19 +263,23 @@ class _StandardCard extends StatelessWidget {
                       Icon(Icons.location_on_outlined, size: 13, color: t.ink2),
                       const SizedBox(width: 3),
                       Flexible(
-                        child: Text(data.location,
-                            style: CatchTextStyles.bodySm(context),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          data.location,
+                          style: CatchTextStyles.bodySm(context),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       const SizedBox(width: 10),
                       Icon(Icons.access_time_rounded, size: 13, color: t.ink2),
                       const SizedBox(width: 3),
                       Flexible(
-                        child: Text(data.dateTime,
-                            style: CatchTextStyles.bodySm(context),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          data.dateTime,
+                          style: CatchTextStyles.bodySm(context),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                   ),
@@ -310,7 +332,11 @@ class _HeroCard extends StatelessWidget {
             _PhotoHeader(data: data, height: 220),
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.cardH, 16, CatchSpacing.cardH, 16),
+                CatchSpacing.cardH,
+                16,
+                CatchSpacing.cardH,
+                16,
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -328,8 +354,10 @@ class _HeroCard extends StatelessWidget {
                         const SizedBox(width: 8),
                         Text(
                           data.price,
-                          style: CatchTextStyles.displaySm(context,
-                              color: data.price == 'Free' ? t.accent : t.ink),
+                          style: CatchTextStyles.displaySm(
+                            context,
+                            color: data.price == 'Free' ? t.accent : t.ink,
+                          ),
                         ),
                       ],
                     ],
@@ -348,11 +376,17 @@ class _HeroCard extends StatelessWidget {
                     children: [
                       Icon(Icons.location_on_outlined, size: 14, color: t.ink2),
                       const SizedBox(width: 3),
-                      Text(data.location, style: CatchTextStyles.bodyMd(context, color: t.ink2)),
+                      Text(
+                        data.location,
+                        style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                      ),
                       const SizedBox(width: 12),
                       Icon(Icons.access_time_rounded, size: 14, color: t.ink2),
                       const SizedBox(width: 3),
-                      Text(data.dateTime, style: CatchTextStyles.bodyMd(context, color: t.ink2)),
+                      Text(
+                        data.dateTime,
+                        style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                      ),
                     ],
                   ),
                   if (showRoster) ...[
@@ -392,7 +426,9 @@ class _PhotoHeader extends StatelessWidget {
           else if (data.heroImageUrl != null)
             Image.network(data.heroImageUrl!, fit: BoxFit.cover)
           else
-            _MapPlaceholder(dark: Theme.of(context).brightness == Brightness.dark),
+            _MapPlaceholder(
+              dark: Theme.of(context).brightness == Brightness.dark,
+            ),
 
           // Hot badge + dist/pace pill
           Positioned(
@@ -447,18 +483,21 @@ class _Badge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: bg,
-          borderRadius: BorderRadius.circular(CatchRadius.button),
-        ),
-        child: Text(
-          label,
-          style: TextStyle(
-              fontSize: 11, fontWeight: FontWeight.w700,
-              letterSpacing: 0.4, color: fg),
-        ),
-      );
+    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+    decoration: BoxDecoration(
+      color: bg,
+      borderRadius: BorderRadius.circular(CatchRadius.button),
+    ),
+    child: Text(
+      label,
+      style: TextStyle(
+        fontSize: 11,
+        fontWeight: FontWeight.w700,
+        letterSpacing: 0.4,
+        color: fg,
+      ),
+    ),
+  );
 }
 
 /// Stacked circular avatars with overflow count — matches the design.
@@ -523,7 +562,9 @@ class _RosterRow extends StatelessWidget {
             text: TextSpan(
               style: CatchTextStyles.bodySm(context),
               children: [
-                TextSpan(text: '${data.attendeeCount}/${data.capacity} runners'),
+                TextSpan(
+                  text: '${data.attendeeCount}/${data.capacity} runners',
+                ),
               ],
             ),
           ),
@@ -564,7 +605,13 @@ class _MapPlaceholder extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CustomPaint(
-      painter: _MapPainter(landBg: landBg, water: water, road: road, block: block, routeColor: t.primary),
+      painter: _MapPainter(
+        landBg: landBg,
+        water: water,
+        road: road,
+        block: block,
+        routeColor: t.primary,
+      ),
     );
   }
 }
@@ -624,15 +671,20 @@ class _MapPainter extends CustomPainter {
       Rect.fromLTWH(w * 0.07, h * 0.41, w * 0.17, h * 0.11),
       Rect.fromLTWH(w * 0.77, h * 0.41, w * 0.20, h * 0.14),
     ]) {
-      canvas.drawRRect(RRect.fromRectAndRadius(r, const Radius.circular(2)), paint);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(r, const Radius.circular(2)),
+        paint,
+      );
     }
 
     // Park (green block)
-    paint.color = (dark ? const Color(0xFF25413A) : const Color(0xFFCFDCB8)).withValues(alpha: 0.7);
+    paint.color = (dark ? const Color(0xFF25413A) : const Color(0xFFCFDCB8))
+        .withValues(alpha: 0.7);
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-          Rect.fromLTWH(w * 0.40, h * 0.375, w * 0.23, h * 0.22),
-          const Radius.circular(2)),
+        Rect.fromLTWH(w * 0.40, h * 0.375, w * 0.23, h * 0.22),
+        const Radius.circular(2),
+      ),
       paint,
     );
 

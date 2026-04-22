@@ -1,10 +1,10 @@
 import 'dart:math' as math;
 
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -88,7 +88,7 @@ abstract class Run with _$Run {
   bool isOnWaitlist(String uid) => waitlistUserIds.contains(uid);
 
   /// Returns the detailed eligibility of [user] for this run.
-  RunEligibility eligibilityFor(AppUser user) {
+  RunEligibility eligibilityFor(UserProfile user) {
     if (hasAttended(user.uid)) return const Attended();
     if (isSignedUp(user.uid)) return const AlreadySignedUp();
     if (!isUpcoming) return const RunPast();
@@ -104,7 +104,7 @@ abstract class Run with _$Run {
   }
 
   /// Returns the coarse booking status of this run from [user]'s perspective.
-  RunSignUpStatus statusFor(AppUser user) {
+  RunSignUpStatus statusFor(UserProfile user) {
     return switch (eligibilityFor(user)) {
       Attended() => RunSignUpStatus.attended,
       AlreadySignedUp() => RunSignUpStatus.signedUp,

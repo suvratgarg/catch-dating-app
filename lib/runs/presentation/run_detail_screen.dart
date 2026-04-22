@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
+import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_body.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +27,7 @@ class RunDetailScreen extends ConsumerWidget {
           }
           return RunDetailBody(
             run: vm.run,
-            appUser: vm.appUser,
+            userProfile: vm.userProfile,
             runClubId: runClubId,
             reviews: vm.reviews,
           );

@@ -1,9 +1,9 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,7 +18,7 @@ void main() {
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          appUserStreamProvider.overrideWith((ref) => Stream.value(null)),
+          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
         ],
       );
       addTearDown(repository.dispose);
@@ -45,7 +45,7 @@ void main() {
           overrides: [
             authRepositoryProvider.overrideWithValue(repository),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            appUserStreamProvider.overrideWith((ref) => Stream.value(null)),
+            userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
           ],
         );
         addTearDown(repository.dispose);
@@ -72,7 +72,7 @@ void main() {
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          appUserStreamProvider.overrideWith(
+          userProfileStreamProvider.overrideWith(
             (ref) => Stream.value(
               buildUser(uid: 'runner-1').copyWith(profileComplete: false),
             ),
@@ -238,13 +238,15 @@ void main() {
   group('OnboardingController.saveProfile', () {
     test('throws when the user is no longer signed in', () async {
       final repository = FakeAuthRepository();
-      final appUserRepository = FakeOnboardingAppUserRepository();
+      final userProfileRepository = FakeOnboardingUserProfileRepository();
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          appUserRepositoryProvider.overrideWith((ref) => appUserRepository),
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          appUserStreamProvider.overrideWith((ref) => Stream.value(null)),
+          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
         ],
       );
       addTearDown(repository.dispose);
@@ -274,7 +276,7 @@ void main() {
           ),
         ),
       );
-      expect(appUserRepository.lastSavedUser, isNull);
+      expect(userProfileRepository.lastSavedUser, isNull);
     });
 
     test('persists the draft profile and advances to photos', () async {
@@ -283,13 +285,15 @@ void main() {
           uid: 'runner-1',
           email: 'runner@example.com',
         );
-      final appUserRepository = FakeOnboardingAppUserRepository();
+      final userProfileRepository = FakeOnboardingUserProfileRepository();
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          appUserRepositoryProvider.overrideWith((ref) => appUserRepository),
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          appUserStreamProvider.overrideWith((ref) => Stream.value(null)),
+          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
         ],
       );
       addTearDown(repository.dispose);
@@ -311,12 +315,12 @@ void main() {
 
       await notifier.saveProfile();
 
-      expect(appUserRepository.lastSavedUser, isNotNull);
-      expect(appUserRepository.lastSavedUser!.uid, 'runner-1');
-      expect(appUserRepository.lastSavedUser!.email, 'runner@example.com');
-      expect(appUserRepository.lastSavedUser!.name, 'Asha Runner');
-      expect(appUserRepository.lastSavedUser!.phoneNumber, '+919876543210');
-      expect(appUserRepository.lastSavedUser!.profileComplete, isFalse);
+      expect(userProfileRepository.lastSavedUser, isNotNull);
+      expect(userProfileRepository.lastSavedUser!.uid, 'runner-1');
+      expect(userProfileRepository.lastSavedUser!.email, 'runner@example.com');
+      expect(userProfileRepository.lastSavedUser!.name, 'Asha Runner');
+      expect(userProfileRepository.lastSavedUser!.phoneNumber, '+919876543210');
+      expect(userProfileRepository.lastSavedUser!.profileComplete, isFalse);
       expect(
         container.read(onboardingControllerProvider).step,
         OnboardingStep.photos,
@@ -327,13 +331,15 @@ void main() {
   group('OnboardingController.complete', () {
     test('throws when the latest profile is unavailable', () async {
       final repository = FakeAuthRepository();
-      final appUserRepository = FakeOnboardingAppUserRepository();
+      final userProfileRepository = FakeOnboardingUserProfileRepository();
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          appUserRepositoryProvider.overrideWith((ref) => appUserRepository),
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          appUserStreamProvider.overrideWith((ref) => Stream.value(null)),
+          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
         ],
       );
       addTearDown(repository.dispose);
@@ -361,7 +367,7 @@ void main() {
 
     test('saves running preferences and marks the profile complete', () async {
       final repository = FakeAuthRepository();
-      final appUserRepository = FakeOnboardingAppUserRepository(
+      final userProfileRepository = FakeOnboardingUserProfileRepository(
         currentUser: buildUser(
           uid: 'runner-1',
         ).copyWith(profileComplete: false),
@@ -369,9 +375,11 @@ void main() {
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
-          appUserRepositoryProvider.overrideWith((ref) => appUserRepository),
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          appUserStreamProvider.overrideWith(
+          userProfileStreamProvider.overrideWith(
             (ref) => Stream.value(
               buildUser(uid: 'runner-1').copyWith(profileComplete: false),
             ),
@@ -391,17 +399,17 @@ void main() {
             runningReasons: const [RunReason.community, RunReason.social],
           );
 
-      expect(appUserRepository.lastSavedUser, isNotNull);
-      expect(appUserRepository.lastSavedUser!.paceMinSecsPerKm, 305);
-      expect(appUserRepository.lastSavedUser!.paceMaxSecsPerKm, 355);
-      expect(appUserRepository.lastSavedUser!.preferredDistances, const [
+      expect(userProfileRepository.lastSavedUser, isNotNull);
+      expect(userProfileRepository.lastSavedUser!.paceMinSecsPerKm, 305);
+      expect(userProfileRepository.lastSavedUser!.paceMaxSecsPerKm, 355);
+      expect(userProfileRepository.lastSavedUser!.preferredDistances, const [
         PreferredDistance.tenK,
       ]);
-      expect(appUserRepository.lastSavedUser!.runningReasons, const [
+      expect(userProfileRepository.lastSavedUser!.runningReasons, const [
         RunReason.community,
         RunReason.social,
       ]);
-      expect(appUserRepository.lastSavedUser!.profileComplete, isTrue);
+      expect(userProfileRepository.lastSavedUser!.profileComplete, isTrue);
     });
   });
 }

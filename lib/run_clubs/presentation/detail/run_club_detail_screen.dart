@@ -1,12 +1,13 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_mutation_feedback.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -23,20 +24,23 @@ class RunClubDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(runClubDetailViewModelProvider(runClubId));
-    final joinMutation = ref.watch(RunClubDetailController.joinMutation);
-    final leaveMutation = ref.watch(RunClubDetailController.leaveMutation);
+    final joinMutation = ref.watch(RunClubMembershipController.joinMutation);
+    final leaveMutation = ref.watch(RunClubMembershipController.leaveMutation);
     final currentUid = ref.watch(uidProvider).asData?.value;
-    final currentAppUser = ref.watch(appUserStreamProvider).asData?.value;
+    final currentUserProfile = ref
+        .watch(userProfileStreamProvider)
+        .asData
+        ?.value;
 
     listenForMutationErrorSnackbar(
       context: context,
       ref: ref,
-      mutation: RunClubDetailController.joinMutation,
+      mutation: RunClubMembershipController.joinMutation,
     );
     listenForMutationErrorSnackbar(
       context: context,
       ref: ref,
-      mutation: RunClubDetailController.leaveMutation,
+      mutation: RunClubMembershipController.leaveMutation,
     );
 
     final vm = vmAsync.asData?.value;
@@ -48,7 +52,7 @@ class RunClubDetailScreen extends ConsumerWidget {
           runs: vm.allRuns,
           upcomingRuns: vm.upcomingRuns,
           reviews: vm.reviews,
-          appUser: vm.appUser,
+          userProfile: vm.userProfile,
           uid: vm.uid,
           isHost: vm.isHost,
           isMember: vm.isMember,
@@ -64,7 +68,7 @@ class RunClubDetailScreen extends ConsumerWidget {
           runs: const [],
           upcomingRuns: const [],
           reviews: const [],
-          appUser: currentAppUser,
+          userProfile: currentUserProfile,
           uid: currentUid,
           isHost:
               currentUid != null && currentUid == initialRunClub!.hostUserId,
@@ -88,7 +92,7 @@ class RunClubDetailScreen extends ConsumerWidget {
     required List<Run> runs,
     required List<Run> upcomingRuns,
     required List<Review> reviews,
-    required AppUser? appUser,
+    required UserProfile? userProfile,
     required String? uid,
     required bool isHost,
     required bool isMember,
@@ -99,7 +103,7 @@ class RunClubDetailScreen extends ConsumerWidget {
       runs: runs,
       upcoming: upcomingRuns,
       reviews: reviews,
-      appUser: appUser,
+      userProfile: userProfile,
       uid: uid,
       isHost: isHost,
       isMember: isMember,

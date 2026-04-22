@@ -12,11 +12,7 @@ import 'package:flutter/material.dart';
 enum RunStatus { open, joined, waitlist, pending, paid, full, interested }
 
 class StatusChip extends StatelessWidget {
-  const StatusChip({
-    super.key,
-    required this.status,
-    this.waitlistPosition,
-  });
+  const StatusChip({super.key, required this.status, this.waitlistPosition});
 
   final RunStatus status;
 
@@ -47,19 +43,15 @@ class StatusChip extends StatelessWidget {
     );
   }
 
-  static (String, Color, Color) _resolve(
-    RunStatus s,
-    CatchTokens t,
-    int? pos,
-  ) {
+  static (String, Color, Color) _resolve(RunStatus s, CatchTokens t, int? pos) {
     return switch (s) {
-      RunStatus.joined     => ('JOINED',               t.accent,      t.accentInk),
-      RunStatus.paid       => ('PAID',                 t.accent,      t.accentInk),
-      RunStatus.waitlist   => ('WAITLIST #${pos ?? '?'}', t.gold,    t.surface),
-      RunStatus.pending    => ('PENDING',              t.raised,      t.ink2),
-      RunStatus.full       => ('FULL',                 t.ink,         t.surface),
-      RunStatus.interested => ('INTERESTED',           t.primarySoft, t.primary),
-      RunStatus.open       => ('OPEN',                 t.primarySoft, t.primary),
+      RunStatus.joined => ('JOINED', t.accent, t.accentInk),
+      RunStatus.paid => ('PAID', t.accent, t.accentInk),
+      RunStatus.waitlist => ('WAITLIST #${pos ?? '?'}', t.gold, t.surface),
+      RunStatus.pending => ('PENDING', t.raised, t.ink2),
+      RunStatus.full => ('FULL', t.ink, t.surface),
+      RunStatus.interested => ('INTERESTED', t.primarySoft, t.primary),
+      RunStatus.open => ('OPEN', t.primarySoft, t.primary),
     };
   }
 }

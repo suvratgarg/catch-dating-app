@@ -4,10 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('reviewDocumentId is deterministic per club and reviewer', () {
     expect(
-      reviewDocumentId(
-        runClubId: 'club-123',
-        reviewerUserId: 'user-456',
-      ),
+      reviewDocumentId(runClubId: 'club-123', reviewerUserId: 'user-456'),
       'club_club-123_user_user-456',
     );
   });

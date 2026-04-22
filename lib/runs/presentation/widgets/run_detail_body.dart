@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
@@ -14,6 +13,7 @@ import 'package:catch_dating_app/runs/presentation/widgets/run_photo_header.dart
 import 'package:catch_dating_app/runs/presentation/widgets/run_stats_grid.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_where_card.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -21,13 +21,13 @@ class RunDetailBody extends ConsumerWidget {
   const RunDetailBody({
     super.key,
     required this.run,
-    required this.appUser,
+    required this.userProfile,
     required this.runClubId,
     required this.reviews,
   });
 
   final Run run;
-  final AppUser appUser;
+  final UserProfile userProfile;
   final String runClubId;
   final List<Review> reviews;
 
@@ -35,7 +35,7 @@ class RunDetailBody extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final run = this.run;
-    final appUser = this.appUser;
+    final userProfile = this.userProfile;
 
     ref.listen(RunBookingController.bookMutation, (prev, next) {
       if (prev?.isPending == true && next.isSuccess) {
@@ -89,7 +89,7 @@ class RunDetailBody extends ConsumerWidget {
                 child: IconBtn(
                   background: t.surface,
                   // TODO: implement bookmark/save. Decide whether this persists
-                  // to Firestore (savedRunIds on AppUser) or local prefs, then
+                  // to Firestore (savedRunIds on UserProfile) or local prefs, then
                   // wire a toggle mutation and swap the icon to filled when saved.
                   onTap: () {},
                   child: Icon(
@@ -144,7 +144,7 @@ class RunDetailBody extends ConsumerWidget {
                 const SizedBox(height: 24),
                 Divider(color: t.line, height: 1),
                 const SizedBox(height: 24),
-                WhoIsRunning(run: run, appUser: appUser),
+                WhoIsRunning(run: run, userProfile: userProfile),
                 const SizedBox(height: 24),
                 Divider(color: t.line, height: 1),
                 const SizedBox(height: 24),
@@ -152,9 +152,9 @@ class RunDetailBody extends ConsumerWidget {
                   runClubId: runClubId,
                   runId: run.id,
                   reviews: reviews,
-                  currentUid: appUser.uid,
-                  appUser: appUser,
-                  hasAttended: run.hasAttended(appUser.uid),
+                  currentUid: userProfile.uid,
+                  userProfile: userProfile,
+                  hasAttended: run.hasAttended(userProfile.uid),
                 ),
                 const SizedBox(height: 16),
               ],
@@ -162,7 +162,7 @@ class RunDetailBody extends ConsumerWidget {
           ),
         ],
       ),
-      bottomNavigationBar: RunDetailCta(run: run, appUser: appUser),
+      bottomNavigationBar: RunDetailCta(run: run, userProfile: userProfile),
     );
   }
 }

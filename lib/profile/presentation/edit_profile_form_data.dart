@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/app_user/domain/app_user.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 
 class EditProfileFormData {
   const EditProfileFormData({
@@ -25,29 +25,30 @@ class EditProfileFormData {
     this.languages = const [],
   });
 
-  factory EditProfileFormData.fromAppUser(AppUser user) => EditProfileFormData(
-    name: user.name,
-    dateOfBirth: user.dateOfBirth,
-    bio: user.bio,
-    gender: user.gender,
-    sexualOrientation: user.sexualOrientation,
-    phoneNumber: user.phoneNumber,
-    interestedInGenders: user.interestedInGenders,
-    minAgePreference: user.minAgePreference,
-    maxAgePreference: user.maxAgePreference,
-    height: user.height,
-    occupation: user.occupation,
-    company: user.company,
-    education: user.education,
-    relationshipGoal: user.relationshipGoal,
-    drinking: user.drinking,
-    smoking: user.smoking,
-    workout: user.workout,
-    diet: user.diet,
-    children: user.children,
-    religion: user.religion,
-    languages: user.languages,
-  );
+  factory EditProfileFormData.fromUserProfile(UserProfile user) =>
+      EditProfileFormData(
+        name: user.name,
+        dateOfBirth: user.dateOfBirth,
+        bio: user.bio,
+        gender: user.gender,
+        sexualOrientation: user.sexualOrientation,
+        phoneNumber: user.phoneNumber,
+        interestedInGenders: user.interestedInGenders,
+        minAgePreference: user.minAgePreference,
+        maxAgePreference: user.maxAgePreference,
+        height: user.height,
+        occupation: user.occupation,
+        company: user.company,
+        education: user.education,
+        relationshipGoal: user.relationshipGoal,
+        drinking: user.drinking,
+        smoking: user.smoking,
+        workout: user.workout,
+        diet: user.diet,
+        children: user.children,
+        religion: user.religion,
+        languages: user.languages,
+      );
 
   final String name;
   final DateTime dateOfBirth;
@@ -71,7 +72,7 @@ class EditProfileFormData {
   final Religion? religion;
   final List<Language> languages;
 
-  AppUser applyTo(AppUser user) => user.copyWith(
+  UserProfile applyTo(UserProfile user) => user.copyWith(
     name: name,
     dateOfBirth: dateOfBirth,
     bio: bio,

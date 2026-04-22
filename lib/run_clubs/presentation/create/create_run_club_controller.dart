@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
+import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_controller_utils.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -24,12 +24,12 @@ class CreateRunClubController extends _$CreateRunClubController {
     XFile? coverImage,
   }) async {
     final uid = requireSignedInUid(ref, action: 'create a club');
-    final appUser = ref.read(appUserStreamProvider).asData?.value;
-    if (appUser == null) {
+    final userProfile = ref.read(userProfileStreamProvider).asData?.value;
+    if (userProfile == null) {
       throw StateError('User profile not loaded. Please try again.');
     }
-    final hostName = appUser.name;
-    final hostAvatarUrl = appUser.photoUrls.firstOrNull;
+    final hostName = userProfile.name;
+    final hostAvatarUrl = userProfile.photoUrls.firstOrNull;
 
     final clubsRepo = ref.read(runClubsRepositoryProvider);
     String? clubId;

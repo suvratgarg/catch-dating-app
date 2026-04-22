@@ -23,10 +23,7 @@ abstract final class AppTheme {
     required ColorScheme colorScheme,
     required CatchTokens tokens,
   }) {
-    final base = ThemeData(
-      useMaterial3: true,
-      colorScheme: colorScheme,
-    );
+    final base = ThemeData(useMaterial3: true, colorScheme: colorScheme);
 
     return base.copyWith(
       // Inter as the app-wide text theme baseline.

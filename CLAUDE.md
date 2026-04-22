@@ -16,12 +16,12 @@ If we hit a usage limit mid-session, resume from the next unchecked item.
 | # | File | Issue | Done |
 |---|------|-------|------|
 | 1 | `lib/dashboard/presentation/dashboard_screen.dart:32` | `_resolveHasBookedRun()` always returns `false`; `DashboardFull` is never shown. Wire to `signedUpRunsProvider` or `attendedRunsProvider`. | [x] |
-| 2 | `lib/dashboard/presentation/widgets/dashboard_full.dart:28` | `dayCity()` hardcodes "Mumbai". Added `IndianCity? city` field to `AppUser`; `dayCity()` now uses `user.city?.label`. | [x] |
+| 2 | `lib/dashboard/presentation/widgets/dashboard_full.dart:28` | `dayCity()` hardcodes "Mumbai". Added `IndianCity? city` field to `UserProfile`; `dayCity()` now uses `user.city?.label`. | [x] |
 | 3 | `lib/dashboard/presentation/widgets/next_run_hero.dart` | Entire widget is hardcoded (title, time, location, participant count, match count). Wire to the user's next signed-up run via `signedUpRunsProvider`. | [x] |
 | 4 | `lib/dashboard/presentation/widgets/catches_callout.dart` | Entire widget is hardcoded (countdown, unswiped count). Wire to the user's most-recent attended run + swipe state. | [x] |
 | 5 | `lib/dashboard/presentation/widgets/quick_actions.dart` | "Browse runs" now navigates to RunClubsListScreen. Map view and Calendar are not yet built (no-op). | [x] |
 | 6 | `lib/dashboard/presentation/widgets/stride_card.dart` | "28.4 km · 3 runs" and the bar chart are hardcoded. Aggregate from user's attended runs. | [x] |
-| 7 | `lib/dashboard/presentation/widgets/recommendations.dart` | Static list `_runs` replaced with real upcoming runs from `followedRunClubIds` via `recommendedRunsProvider`. | [x] |
+| 7 | `lib/dashboard/presentation/widgets/recommendations.dart` | Static list `_runs` replaced with real upcoming runs from `joinedRunClubIds` via `recommendedRunsProvider`. | [x] |
 | 8 | `lib/dashboard/presentation/widgets/empty_hero_card.dart:53` | "Find a run near me" button has empty `onPressed: () {}`. Should navigate to the Clubs tab. | [x] |
 
 ---
@@ -102,17 +102,17 @@ No mechanism exists to mark a run as "attended" after it ends.
 
 ## 9. Structure / Naming Refactor
 
-Paused on 2026-04-22 while other in-progress local changes finish. Resume from item #22.
+Completed on 2026-04-22.
 
 | # | Area | Issue / target change | Done |
 |---|------|------------------------|------|
-| 22 | `publicProfiles` ownership | Make `publicProfiles` backend-owned only. Remove client-side sync/write paths after reconciling the in-progress local changes in `lib/app.dart`, `lib/app_user/data/app_user_repository.dart`, and `lib/public_profile/data/public_profile_sync_provider.dart`. | [ ] |
-| 23 | User schema contract | Align `functions/src/index.ts` bootstrap write with `AppUser` / `AppUserDoc` so document ID fields are not duplicated in document data and bootstrap fields are intentional. | [ ] |
-| 24 | Run club membership naming | Standardize on membership wording across app + backend. Rename `followedRunClubIds`, `_followClub`, `followClub()`, and related UI copy to a consistent `join/member` vocabulary. | [ ] |
-| 25 | Payments naming | Rename payment payload/model fields from `activityId` to `runId` across Flutter models, repositories, screens, and Cloud Functions. | [ ] |
-| 26 | Controller vs view-model naming | Split mixed read-model/mutation files and rename them clearly. Examples: `run_clubs_list_state.dart`, `run_detail_controller.dart`, and `run_club_detail_controller.dart`. | [ ] |
-| 27 | `functions/src` structure | Reorganize Functions by backend bounded context instead of partial frontend mirroring. Candidate target: `auth/`, `profiles/`, `runs/`, `payments/`, `matching/`, `reviews/`, `shared/`. | [ ] |
-| 28 | Shared folders cleanup | Reconcile `core/widgets` vs `common_widgets`, and remove or fill empty placeholder folders such as `lib/app_user/presentation`, `lib/profile/data`, and `lib/core/data` if they are still unused after the refactor. | [ ] |
+| 22 | `publicProfiles` ownership | Make `publicProfiles` backend-owned only. Remove client-side sync/write paths after reconciling the in-progress local changes in `lib/app.dart`, `lib/user_profile/data/user_profile_repository.dart`, and `lib/public_profile/data/public_profile_sync_provider.dart`. | [x] |
+| 23 | User schema contract | Align `functions/src/index.ts` bootstrap write with `UserProfile` / `UserProfileDoc` so document ID fields are not duplicated in document data and bootstrap fields are intentional. | [x] |
+| 24 | Run club membership naming | Standardize on membership wording across app + backend. Rename `followedRunClubIds`, `_followClub`, `followClub()`, and related UI copy to a consistent `join/member` vocabulary. | [x] |
+| 25 | Payments naming | Rename payment payload/model fields from `activityId` to `runId` across Flutter models, repositories, screens, and Cloud Functions. | [x] |
+| 26 | Controller vs view-model naming | Split mixed read-model/mutation files and rename them clearly. Examples: `run_clubs_list_state.dart`, `run_detail_controller.dart`, and `run_club_detail_controller.dart`. | [x] |
+| 27 | `functions/src` structure | Reorganize Functions by backend bounded context instead of partial frontend mirroring. Candidate target: `auth/`, `profiles/`, `runs/`, `payments/`, `matching/`, `reviews/`, `shared/`. | [x] |
+| 28 | Shared folders cleanup | Reconcile `core/widgets` vs `common_widgets`, and remove or fill empty placeholder folders such as `lib/user_profile/presentation`, `lib/profile/data`, and `lib/core/data` if they are still unused after the refactor. | [x] |
 
 ---
 
@@ -122,7 +122,9 @@ Paused on 2026-04-22 while other in-progress local changes finish. Resume from i
 - Items #12 (FCM route) was fixed in the audit session.
 - All other items are UX/data gaps that don't prevent other features from working.
 - The `Payment` model lacks an `activityTitle` field — affects payment history tile (#13).
-- Structure refactor note: current worktree already contains in-progress client-side `publicProfiles` sync changes. Do not overwrite them blindly; reconcile ownership first when resuming.
+- Fresh-backend schema note: Firestore now stores `joinedRunClubIds` on `users/{uid}` and `runId` on `payments/{paymentId}` directly. No backward-compatibility field aliases remain.
+- Architecture note: the private `users/{uid}` model now lives under `lib/user_profile/**` as its own shared feature. Keep it separate from `auth` and `profile` presentation.
+- `publicProfiles/{uid}` is backend-owned again; the client reads it but no longer syncs or writes it directly.
 
 ---
 
@@ -132,5 +134,8 @@ Paused on 2026-04-22 while other in-progress local changes finish. Resume from i
 |------|-----------|
 | 2026-04-22 | Full audit pass 1: dashboard, runs, FCM, payments. TODO comments added. FCM route bug fixed. |
 | 2026-04-22 | Full audit pass 2: functions, swipes, reviews, Cloud Functions. Found critical `attendedUserIds` gap (#15), review guards (#17–19), CF message bug (#20). |
-| 2026-04-22 | Implemented all TODOs #1–#21. Highlights: `markRunAttendance` CF created (#15–16); all dashboard widgets wired to real data (#1–8, #14); `AppUser.city` field added (#2); `WhoIsRunning` batch-fetches `PublicProfile` (#11); `ReviewsSection` guards + "See all" (#17–19); payment history shows run title (#13); CF bugs fixed (#20–21). Run `build_runner` is up to date. |
+| 2026-04-22 | Implemented all TODOs #1–#21. Highlights: `markRunAttendance` CF created (#15–16); all dashboard widgets wired to real data (#1–8, #14); `UserProfile.city` field added (#2); `WhoIsRunning` batch-fetches `PublicProfile` (#11); `ReviewsSection` guards + "See all" (#17–19); payment history shows run title (#13); CF bugs fixed (#20–21). Run `build_runner` is up to date. |
 | 2026-04-22 | Structure/naming audit follow-up scoped. Refactor intentionally paused because the worktree already has in-progress client-side `publicProfiles` sync changes that conflict with the planned backend-owned projection cleanup. Pending work tracked in items #22–#28 above. |
+| 2026-04-22 | Completed structure/naming refactor items #22–#28. Highlights: `publicProfiles` writes moved fully back to Cloud Functions; payment and run-club naming cleaned up at the code level with backward-compatible serialized keys; run club and run detail read-model/controller files split and renamed; `functions/src` regrouped under `profiles/` and `shared/`; shared widget and matches UI folders consolidated. Verification: `flutter analyze lib test`, `flutter test test/user_profile test/run_clubs test/runs test/reviews/review_document_id_test.dart`, and `npm run build` in `functions/` all passed. |
+| 2026-04-23 | Removed the temporary backward-compatibility schema shims for the fresh backend. Firestore now stores `joinedRunClubIds` and `runId` directly across Flutter, Functions, tests, and docs. Verification: `flutter analyze lib test`, `flutter test test/user_profile test/run_clubs test/runs test/reviews/review_document_id_test.dart`, and `npm run build` in `functions/` all passed. |
+| 2026-04-23 | Renamed the private profile bounded context from `app_user` to `user_profile` across Flutter, tests, docs, and Functions type references. Core symbols are now `UserProfile`, `UserProfileRepository`, `userProfileRepositoryProvider`, and `userProfileStreamProvider`. Verification: `flutter analyze lib test`, `flutter test test/user_profile test/onboarding test/profile test/image_uploads test/run_clubs test/runs test/swipes test/routing test/reviews/review_document_id_test.dart`, and `npm run build` in `functions/` all passed. |

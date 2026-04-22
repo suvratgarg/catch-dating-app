@@ -38,10 +38,7 @@ class _AppShellState extends ConsumerState<AppShell> {
       return;
     }
     _fcmInitialized = true;
-    fcmService.initialize(
-      uid: uid,
-      router: ref.read(goRouterProvider),
-    );
+    fcmService.initialize(uid: uid, router: ref.read(goRouterProvider));
   }
 
   @override

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_sync_provider.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +10,6 @@ class MyApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    ref.watch(publicProfileSyncProvider);
     final goRouter = ref.watch(goRouterProvider);
     final forceUpdate = ref.watch(forceUpdateRequiredProvider);
 

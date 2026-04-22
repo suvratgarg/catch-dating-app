@@ -27,11 +27,10 @@ class DefaultFirebaseOptions {
       case TargetPlatform.macOS:
         return macos;
       case TargetPlatform.windows:
-        return windows;
       case TargetPlatform.linux:
         throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for linux - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
+          'DefaultFirebaseOptions are not configured for this platform. '
+          'Windows and Linux support have been removed from this app.',
         );
       default:
         throw UnsupportedError(
@@ -74,16 +73,6 @@ class DefaultFirebaseOptions {
     projectId: 'catch-dating-app-64e51',
     storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
     iosBundleId: 'com.example.catchDatingApp',
-  );
-
-  static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBZUkQpo1xw1GYOLhdRh5RbVdy0wq8A644',
-    appId: '1:574779808785:web:defa51d04129bf1d8ea5b0',
-    messagingSenderId: '574779808785',
-    projectId: 'catch-dating-app-64e51',
-    authDomain: 'catch-dating-app-64e51.firebaseapp.com',
-    storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
-    measurementId: 'G-9K5PP9HE4X',
   );
 
 }
