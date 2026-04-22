@@ -22,7 +22,7 @@ final class SwipeRepositoryProvider
         argument: null,
         retry: null,
         name: r'swipeRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -49,4 +49,4 @@ final class SwipeRepositoryProvider
   }
 }
 
-String _$swipeRepositoryHash() => r'8c2b345702a3d0e162c366c8f82de9b16f250e53';
+String _$swipeRepositoryHash() => r'6c880204c19a719bd35307c5a0d31cc532cc321a';

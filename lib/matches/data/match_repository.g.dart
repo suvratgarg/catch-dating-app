@@ -22,7 +22,7 @@ final class MatchRepositoryProvider
         argument: null,
         retry: null,
         name: r'matchRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -49,7 +49,7 @@ final class MatchRepositoryProvider
   }
 }
 
-String _$matchRepositoryHash() => r'13f7432d5244d50c8fe9c712bd636394ac5d2c17';
+String _$matchRepositoryHash() => r'9907af557432ac8e51f83fa9e128fe925e7518b0';
 
 @ProviderFor(matchesForUser)
 final matchesForUserProvider = MatchesForUserFamily._();

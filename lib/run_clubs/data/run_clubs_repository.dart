@@ -7,51 +7,57 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'run_clubs_repository.g.dart';
 
 class RunClubsRepository {
-  RunClubsRepository(this._db);
+  const RunClubsRepository(this._db);
+
+  static const _collectionPath = 'runClubs';
+  static const _usersCollectionPath = 'users';
 
   final FirebaseFirestore _db;
 
-  CollectionReference<RunClub> _getCollectionReference() =>
-      _db.collection('runClubs').withConverter<RunClub>(
-        fromFirestore: (doc, _) => RunClub.fromJson({...doc.data()!, 'id': doc.id}),
+  CollectionReference<RunClub> get _runClubsRef => _db
+      .collection(_collectionPath)
+      .withConverter<RunClub>(
+        fromFirestore: (doc, _) =>
+            RunClub.fromJson({...doc.data()!, 'id': doc.id}),
         toFirestore: (club, _) => club.toJson(),
       );
 
-  DocumentReference<RunClub> _getDocumentReference([String? id]) =>
-      _getCollectionReference().doc(id);
+  DocumentReference<RunClub> _runClubRef([String? id]) => _runClubsRef.doc(id);
 
-  DocumentReference<Map<String, dynamic>> _getUserDocumentReference(String uid) =>
-      _db.collection('users').doc(uid);
+  DocumentReference<Map<String, dynamic>> _userRef(String uid) =>
+      _db.collection(_usersCollectionPath).doc(uid);
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Stream<RunClub?> watchRunClub(String id) => _getDocumentReference(id)
-      .snapshots()
-      .map((doc) => doc.exists ? doc.data() : null);
+  Stream<RunClub?> watchRunClub(String id) =>
+      _runClubRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null);
 
-  Future<RunClub?> getRunClub(String id) async {
-    final doc = await _getDocumentReference(id).get();
+  Future<RunClub?> fetchRunClub(String id) async {
+    final doc = await _runClubRef(id).get();
     return doc.exists ? doc.data() : null;
   }
 
   Stream<List<RunClub>> watchRunClubsByLocation(IndianCity location) =>
-      _getCollectionReference()
+      _runClubsRef
           .where('location', isEqualTo: location.name)
           .orderBy('createdAt', descending: true)
           .snapshots()
           .map((snap) => snap.docs.map((d) => d.data()).toList());
 
   Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
-          IndianCity location) =>
-      _getCollectionReference()
-          .where('location', isEqualTo: location.name)
-          .orderBy('rating', descending: true)
-          .snapshots()
-          .map((snap) => snap.docs.map((d) => d.data()).toList());
+    IndianCity location,
+  ) => _runClubsRef
+      .where('location', isEqualTo: location.name)
+      .orderBy('rating', descending: true)
+      .snapshots()
+      .map((snap) => snap.docs.map((d) => d.data()).toList());
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
+  String generateId() => _runClubRef().id;
+
   Future<String> createRunClub({
+    String? clubId,
     required String name,
     required String description,
     required IndianCity location,
@@ -59,8 +65,9 @@ class RunClubsRepository {
     required String hostUserId,
     required String hostName,
     String? hostAvatarUrl,
+    String? imageUrl,
   }) async {
-    final ref = _getDocumentReference();
+    final ref = _runClubRef(clubId);
     final batch = _db.batch();
 
     batch.set(
@@ -75,11 +82,12 @@ class RunClubsRepository {
         hostName: hostName,
         hostAvatarUrl: hostAvatarUrl,
         createdAt: DateTime.now(),
+        imageUrl: imageUrl,
         memberUserIds: [hostUserId],
         memberCount: 1,
       ),
     );
-    batch.set(_getUserDocumentReference(hostUserId), {
+    batch.set(_userRef(hostUserId), {
       'followedRunClubIds': FieldValue.arrayUnion([ref.id]),
     }, SetOptions(merge: true));
 
@@ -88,42 +96,51 @@ class RunClubsRepository {
   }
 
   Future<void> updateRunClub({required RunClub runClub}) =>
-      _getDocumentReference(runClub.id).set(runClub);
+      _runClubRef(runClub.id).set(runClub);
 
-  Future<void> deleteRunClub(String id) =>
-      _getDocumentReference(id).delete();
+  Future<void> deleteRunClub(String id) => _runClubRef(id).delete();
 
   Future<void> updateImageUrl(String id, String imageUrl) =>
-      _getDocumentReference(id).update({'imageUrl': imageUrl});
+      _runClubRef(id).update({'imageUrl': imageUrl});
 
   // ── Members ───────────────────────────────────────────────────────────────
 
-  Future<void> joinClub(String clubId, String userId) async {
-    final batch = _db.batch();
-    batch.update(_getDocumentReference(clubId), {
-      'memberUserIds': FieldValue.arrayUnion([userId]),
-      'memberCount': FieldValue.increment(1),
-    });
-    batch.set(_getUserDocumentReference(userId), {
-      'followedRunClubIds': FieldValue.arrayUnion([clubId]),
-    }, SetOptions(merge: true));
-    await batch.commit();
-  }
+  Future<void> joinClub(String clubId, String userId) =>
+      _db.runTransaction((transaction) async {
+        final clubRef = _runClubRef(clubId);
+        final userRef = _userRef(userId);
+        final clubSnapshot = await transaction.get(clubRef);
+        final runClub = clubSnapshot.data();
 
-  Future<void> leaveClub(String clubId, String userId) async {
-    final batch = _db.batch();
-    batch.update(_getDocumentReference(clubId), {
-      'memberUserIds': FieldValue.arrayRemove([userId]),
-      'memberCount': FieldValue.increment(-1),
-    });
-    batch.set(_getUserDocumentReference(userId), {
-      'followedRunClubIds': FieldValue.arrayRemove([clubId]),
-    }, SetOptions(merge: true));
-    await batch.commit();
-  }
+        if (!clubSnapshot.exists || runClub == null) {
+          throw StateError('Run club $clubId not found.');
+        }
+
+        transaction.set(clubRef, runClub.addMember(userId));
+        transaction.set(userRef, {
+          'followedRunClubIds': FieldValue.arrayUnion([clubId]),
+        }, SetOptions(merge: true));
+      });
+
+  Future<void> leaveClub(String clubId, String userId) =>
+      _db.runTransaction((transaction) async {
+        final clubRef = _runClubRef(clubId);
+        final userRef = _userRef(userId);
+        final clubSnapshot = await transaction.get(clubRef);
+        final runClub = clubSnapshot.data();
+
+        if (!clubSnapshot.exists || runClub == null) {
+          throw StateError('Run club $clubId not found.');
+        }
+
+        transaction.set(clubRef, runClub.removeMember(userId));
+        transaction.set(userRef, {
+          'followedRunClubIds': FieldValue.arrayRemove([clubId]),
+        }, SetOptions(merge: true));
+      });
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 RunClubsRepository runClubsRepository(Ref ref) =>
     RunClubsRepository(ref.watch(firebaseFirestoreProvider));
 
@@ -137,11 +154,12 @@ Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) =>
 
 @riverpod
 Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
-        Ref ref, IndianCity location) =>
-    ref
-        .watch(runClubsRepositoryProvider)
-        .watchRunClubsByLocationSortedByRating(location);
+  Ref ref,
+  IndianCity location,
+) => ref
+    .watch(runClubsRepositoryProvider)
+    .watchRunClubsByLocationSortedByRating(location);
 
 @riverpod
 Future<RunClub?> fetchRunClub(Ref ref, String id) =>
-    ref.watch(runClubsRepositoryProvider).getRunClub(id);
+    ref.watch(runClubsRepositoryProvider).fetchRunClub(id);

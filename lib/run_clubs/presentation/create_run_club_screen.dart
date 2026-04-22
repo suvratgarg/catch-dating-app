@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:catch_dating_app/common_widgets/app_form_layout.dart';
 import 'package:catch_dating_app/common_widgets/enum_dropdown.dart';
@@ -7,8 +7,8 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create_run_club_controller.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,6 +29,7 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
   final _descriptionController = TextEditingController();
   IndianCity? _selectedCity;
   XFile? _coverImage;
+  Uint8List? _coverImageBytes;
 
   @override
   void dispose() {
@@ -39,12 +40,20 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
   }
 
   Future<void> _pickCoverImage() async {
-    final picker = ImagePicker();
-    final image = await picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 85,
-    );
-    if (image != null) setState(() => _coverImage = image);
+    final image = await ref
+        .read(imageUploadRepositoryProvider)
+        .pickImage(imageQuality: 85);
+    if (!mounted || image == null) {
+      return;
+    }
+    final imageBytes = await image.readAsBytes();
+    if (!mounted) {
+      return;
+    }
+    setState(() {
+      _coverImage = image;
+      _coverImageBytes = imageBytes;
+    });
   }
 
   void _submit() {
@@ -97,13 +106,11 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
               aspectRatio: 16 / 9,
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(CatchRadius.card),
-                child: _coverImage != null
+                child: _coverImageBytes != null
                     ? Stack(
                         fit: StackFit.expand,
                         children: [
-                          kIsWeb
-                              ? Image.network(_coverImage!.path, fit: BoxFit.cover)
-                              : Image.file(File(_coverImage!.path), fit: BoxFit.cover),
+                          Image.memory(_coverImageBytes!, fit: BoxFit.cover),
                           Positioned(
                             bottom: 8,
                             right: 8,
@@ -135,11 +142,17 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
                             gapH8,
                             Text(
                               'Add cover photo',
-                              style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                              style: CatchTextStyles.bodyMd(
+                                context,
+                                color: t.ink2,
+                              ),
                             ),
                             Text(
                               'Optional',
-                              style: CatchTextStyles.caption(context, color: t.ink3),
+                              style: CatchTextStyles.caption(
+                                context,
+                                color: t.ink3,
+                              ),
                             ),
                           ],
                         ),

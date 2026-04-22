@@ -95,7 +95,7 @@ final class RunClubSearchQueryProvider
 }
 
 String _$runClubSearchQueryHash() =>
-    r'589f111b26652dd621684a2d8c6efa67417651bd';
+    r'64a158e60f6baec7ce721df41fae9b9cf14c4fac';
 
 abstract class _$RunClubSearchQuery extends $Notifier<String> {
   String build();
@@ -168,7 +168,7 @@ final class FilteredRunClubsProvider
   }
 }
 
-String _$filteredRunClubsHash() => r'58557e8ddc64d42647ae0a64833f6db91ca796de';
+String _$filteredRunClubsHash() => r'8460f2e5083fe3b5945204d9f60095c03006c768';
 
 @ProviderFor(runClubsListViewModel)
 final runClubsListViewModelProvider = RunClubsListViewModelProvider._();
@@ -218,4 +218,4 @@ final class RunClubsListViewModelProvider
 }
 
 String _$runClubsListViewModelHash() =>
-    r'24a75f6a82d7f67ef5e410625e9bd75283a88df1';
+    r'1dacc7068936f1142bc4e7168e1330064c06562d';

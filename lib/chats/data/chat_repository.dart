@@ -6,26 +6,30 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'chat_repository.g.dart';
 
 class ChatRepository {
-  ChatRepository(this._db);
+  const ChatRepository(this._db);
+
+  static const _chatsCollectionPath = 'chats';
+  static const _matchesCollectionPath = 'matches';
 
   final FirebaseFirestore _db;
 
-  CollectionReference<ChatMessage> _getMessagesCollectionReference(
-          String matchId) =>
-      _db
-          .collection('chats')
-          .doc(matchId)
-          .collection('messages')
-          .withConverter<ChatMessage>(
-            fromFirestore: (doc, _) =>
-                ChatMessage.fromJson({...doc.data()!, 'id': doc.id}),
-            toFirestore: (msg, _) => msg.toJson(),
-          );
+  CollectionReference<ChatMessage> _messagesRef(String matchId) => _db
+      .collection(_chatsCollectionPath)
+      .doc(matchId)
+      .collection('messages')
+      .withConverter<ChatMessage>(
+        fromFirestore: (doc, _) =>
+            ChatMessage.fromJson({...doc.data()!, 'id': doc.id}),
+        toFirestore: (msg, _) => msg.toJson(),
+      );
+
+  DocumentReference<Map<String, dynamic>> _matchRef(String matchId) =>
+      _db.collection(_matchesCollectionPath).doc(matchId);
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
   Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
-      _getMessagesCollectionReference(matchId)
+      _messagesRef(matchId)
           .orderBy('sentAt')
           .snapshots()
           .map((snap) => snap.docs.map((d) => d.data()).toList());
@@ -42,21 +46,18 @@ class ChatRepository {
 
     // Use an untyped ref so we can write FieldValue.serverTimestamp() for sentAt.
     final msgRef = _db
-        .collection('chats')
+        .collection(_chatsCollectionPath)
         .doc(matchId)
         .collection('messages')
         .doc();
 
-    batch.set(msgRef, {
-      'senderId': senderId,
-      'text': text,
-      'sentAt': now,
-    });
+    batch.set(msgRef, {'senderId': senderId, 'text': text, 'sentAt': now});
 
-    batch.update(_db.collection('matches').doc(matchId), {
+    batch.update(_matchRef(matchId), {
       'lastMessageAt': now,
-      'lastMessagePreview':
-          text.length > 80 ? '${text.substring(0, 80)}…' : text,
+      'lastMessagePreview': text.length > 80
+          ? '${text.substring(0, 80)}…'
+          : text,
       'lastMessageSenderId': senderId,
     });
 
@@ -64,7 +65,7 @@ class ChatRepository {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 ChatRepository chatRepository(Ref ref) =>
     ChatRepository(ref.watch(firebaseFirestoreProvider));
 

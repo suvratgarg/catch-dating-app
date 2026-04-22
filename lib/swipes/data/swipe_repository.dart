@@ -6,16 +6,17 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'swipe_repository.g.dart';
 
 class SwipeRepository {
-  SwipeRepository(this._db);
+  const SwipeRepository(this._db);
+
+  static const _collectionPath = 'swipes';
 
   final FirebaseFirestore _db;
 
-  CollectionReference<Map<String, dynamic>> _getOutgoingCollection(
-          String uid) =>
-      _db.collection('swipes').doc(uid).collection('outgoing');
+  CollectionReference<Map<String, dynamic>> _outgoingSwipesRef(String uid) =>
+      _db.collection(_collectionPath).doc(uid).collection('outgoing');
 
   Future<void> recordSwipe({required Swipe swipe}) =>
-      _getOutgoingCollection(swipe.swiperId).doc(swipe.targetId).set({
+      _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
         'swiperId': swipe.swiperId,
         'targetId': swipe.targetId,
         'runId': swipe.runId,
@@ -25,11 +26,11 @@ class SwipeRepository {
 
   /// Returns the set of user IDs this user has already swiped on.
   Future<Set<String>> fetchSwipedUserIds({required String uid}) async {
-    final snap = await _getOutgoingCollection(uid).get();
+    final snap = await _outgoingSwipesRef(uid).get();
     return snap.docs.map((d) => d.id).toSet();
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 SwipeRepository swipeRepository(Ref ref) =>
     SwipeRepository(ref.watch(firebaseFirestoreProvider));

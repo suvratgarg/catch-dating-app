@@ -26,7 +26,7 @@ final class RunClubsRepositoryProvider
         argument: null,
         retry: null,
         name: r'runClubsRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,7 +55,7 @@ final class RunClubsRepositoryProvider
 }
 
 String _$runClubsRepositoryHash() =>
-    r'7395a02d56cab070c5d06bfe8038aaf99b9efb33';
+    r'96bac17bc05b11d1ba4f0ccf673533f9a8b819c7';
 
 @ProviderFor(watchRunClub)
 final watchRunClubProvider = WatchRunClubFamily._();
@@ -336,7 +336,7 @@ final class FetchRunClubProvider
   }
 }
 
-String _$fetchRunClubHash() => r'62ec042c227a523289338c7235d77f4f9547ba98';
+String _$fetchRunClubHash() => r'f81158d26687b92c5266dd7a4c7dd2c9161fea0a';
 
 final class FetchRunClubFamily extends $Family
     with $FunctionalFamilyOverride<FutureOr<RunClub?>, String> {

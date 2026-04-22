@@ -44,24 +44,39 @@ class RunClubListTile extends StatelessWidget {
   final VoidCallback? onFollow;
 
   void _openDetail(BuildContext context) => context.pushNamed(
-        Routes.runClubDetailScreen.name,
-        pathParameters: {'runClubId': club.id},
-        extra: club,
-      );
+    Routes.runClubDetailScreen.name,
+    pathParameters: {'runClubId': club.id},
+    extra: club,
+  );
 
   @override
   Widget build(BuildContext context) {
     return switch (variant) {
-      RunClubListTileVariant.rowTile =>
-        _RowTile(club: club, isJoined: isJoined, onTap: () => _openDetail(context), onFollow: onFollow),
-      RunClubListTileVariant.scrollCard =>
-        _ScrollCard(club: club, isJoined: isJoined, onTap: () => _openDetail(context)),
-      RunClubListTileVariant.portraitCard =>
-        _PortraitCard(club: club, onTap: () => _openDetail(context)),
-      RunClubListTileVariant.directory =>
-        _DirectoryCard(club: club, isJoined: isJoined, onTap: () => _openDetail(context)),
-      RunClubListTileVariant.avatarChip =>
-        _AvatarChip(club: club, isActive: isActive, onTap: () => _openDetail(context)),
+      RunClubListTileVariant.rowTile => _RowTile(
+        club: club,
+        isJoined: isJoined,
+        onTap: () => _openDetail(context),
+        onFollow: onFollow,
+      ),
+      RunClubListTileVariant.scrollCard => _ScrollCard(
+        club: club,
+        isJoined: isJoined,
+        onTap: () => _openDetail(context),
+      ),
+      RunClubListTileVariant.portraitCard => _PortraitCard(
+        club: club,
+        onTap: () => _openDetail(context),
+      ),
+      RunClubListTileVariant.directory => _DirectoryCard(
+        club: club,
+        isJoined: isJoined,
+        onTap: () => _openDetail(context),
+      ),
+      RunClubListTileVariant.avatarChip => _AvatarChip(
+        club: club,
+        isActive: isActive,
+        onTap: () => _openDetail(context),
+      ),
     };
   }
 }
@@ -107,30 +122,43 @@ class _RowTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(club.name,
-                      style: CatchTextStyles.labelLg(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    club.name,
+                    style: CatchTextStyles.labelLg(context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: 2),
-                  Text(subtitle,
-                      style: CatchTextStyles.caption(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    subtitle,
+                    style: CatchTextStyles.caption(context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: 8),
-            GestureDetector(
-              onTap: onFollow,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(CatchRadius.button),
-                  border: Border.all(color: t.line2),
+            OutlinedButton(
+              onPressed: isJoined ? null : onFollow,
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
                 ),
-                child: Text('Follow',
-                    style: CatchTextStyles.labelMd(context, color: t.ink2)),
+                minimumSize: Size.zero,
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                side: BorderSide(color: t.line2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(CatchRadius.button),
+                ),
+              ),
+              child: Text(
+                isJoined ? 'Joined' : 'Follow',
+                style: CatchTextStyles.labelMd(
+                  context,
+                  color: isJoined ? t.ink3 : t.ink2,
+                ),
               ),
             ),
           ],
@@ -143,11 +171,7 @@ class _RowTile extends StatelessWidget {
 // ── Scroll card (Your clubs) — 220 px wide ────────────────────────────────────
 
 class _ScrollCard extends StatelessWidget {
-  const _ScrollCard({
-    required this.club,
-    required this.isJoined,
-    this.onTap,
-  });
+  const _ScrollCard({required this.club, required this.isJoined, this.onTap});
 
   final RunClub club;
   final bool isJoined;
@@ -188,8 +212,11 @@ class _ScrollCard extends StatelessWidget {
                           color: Colors.white.withValues(alpha: 0.95),
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.check_rounded,
-                            size: 14, color: Colors.black),
+                        child: const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: Colors.black,
+                        ),
                       ),
                     ),
                 ],
@@ -200,15 +227,18 @@ class _ScrollCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(club.name,
-                      style: CatchTextStyles.labelLg(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis),
+                  Text(
+                    club.name,
+                    style: CatchTextStyles.labelLg(context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   if (isJoined) ...[
                     const SizedBox(height: 2),
-                    Text(club.nextRunLabel ?? 'Next run coming up',
-                        style: CatchTextStyles.caption(context,
-                            color: t.primary)),
+                    Text(
+                      club.nextRunLabel ?? 'Next run coming up',
+                      style: CatchTextStyles.caption(context, color: t.primary),
+                    ),
                   ],
                 ],
               ),
@@ -354,17 +384,23 @@ class _DirectoryCard extends StatelessWidget {
                       left: 10,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
-                            horizontal: 10, vertical: 4),
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.white.withValues(alpha: 0.95),
-                          borderRadius:
-                              BorderRadius.circular(CatchRadius.button),
+                          borderRadius: BorderRadius.circular(
+                            CatchRadius.button,
+                          ),
                         ),
                         child: const Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.check_rounded,
-                                size: 12, color: Colors.black),
+                            Icon(
+                              Icons.check_rounded,
+                              size: 12,
+                              color: Colors.black,
+                            ),
                             SizedBox(width: 4),
                             Text(
                               'JOINED',
@@ -390,18 +426,24 @@ class _DirectoryCard extends StatelessWidget {
                   Row(
                     children: [
                       Expanded(
-                        child: Text(club.name,
-                            style: CatchTextStyles.displaySm(context),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
+                        child: Text(
+                          club.name,
+                          style: CatchTextStyles.displaySm(context),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       if (club.rating > 0) ...[
                         const SizedBox(width: 6),
                         Icon(Icons.star_rounded, size: 13, color: t.gold),
                         const SizedBox(width: 2),
-                        Text(club.rating.toStringAsFixed(1),
-                            style:
-                                CatchTextStyles.caption(context, color: t.ink2)),
+                        Text(
+                          club.rating.toStringAsFixed(1),
+                          style: CatchTextStyles.caption(
+                            context,
+                            color: t.ink2,
+                          ),
+                        ),
                       ],
                     ],
                   ),
@@ -423,11 +465,7 @@ class _DirectoryCard extends StatelessWidget {
 // ── Avatar chip ───────────────────────────────────────────────────────────────
 
 class _AvatarChip extends StatelessWidget {
-  const _AvatarChip({
-    required this.club,
-    required this.isActive,
-    this.onTap,
-  });
+  const _AvatarChip({required this.club, required this.isActive, this.onTap});
 
   final RunClub club;
   final bool isActive;

@@ -75,8 +75,7 @@ class _RunClubsHeaderState extends ConsumerState<RunClubsHeader> {
                 ),
               ),
               IconBtn(
-                onTap: () =>
-                    context.pushNamed(Routes.createRunClubScreen.name),
+                onTap: () => context.pushNamed(Routes.createRunClubScreen.name),
                 child: Icon(Icons.add_rounded, size: 20, color: t.ink),
               ),
             ],
@@ -86,8 +85,9 @@ class _RunClubsHeaderState extends ConsumerState<RunClubsHeader> {
             children: [
               CityPicker(
                 selectedCity: selectedCity,
-                onSelected: (city) =>
-                    ref.read(selectedRunClubCityProvider.notifier).setCity(city),
+                onSelected: (city) => ref
+                    .read(selectedRunClubCityProvider.notifier)
+                    .setCity(city),
               ),
               gapW8,
               Expanded(

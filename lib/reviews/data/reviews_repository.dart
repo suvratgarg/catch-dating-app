@@ -7,12 +7,15 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'reviews_repository.g.dart';
 
 class ReviewsRepository {
-  ReviewsRepository(this._db);
+  const ReviewsRepository(this._db);
+
+  static const _collectionPath = 'reviews';
 
   final FirebaseFirestore _db;
 
-  CollectionReference<Review> get _reviewsRef =>
-      _db.collection('reviews').withConverter<Review>(
+  CollectionReference<Review> get _reviewsRef => _db
+      .collection(_collectionPath)
+      .withConverter<Review>(
         fromFirestore: (doc, _) =>
             Review.fromJson({...doc.data()!, 'id': doc.id}),
         toFirestore: (review, _) => review.toJson(),
@@ -65,10 +68,11 @@ class ReviewsRepository {
     return ref.set(review.copyWith(id: ref.id));
   }
 
-  Future<void> updateReview(Review review) => _reviewsRef.doc(review.id).update({
+  Future<void> updateReview(Review review) =>
+      _reviewsRef.doc(review.id).update({
         'rating': review.rating,
         'comment': review.comment,
-        'updatedAt': Timestamp.fromDate(DateTime.now()),
+        'updatedAt': FieldValue.serverTimestamp(),
       });
 
   Future<void> deleteReview(String reviewId) =>
@@ -77,7 +81,7 @@ class ReviewsRepository {
 
 // ── Providers ─────────────────────────────────────────────────────────────────
 
-@riverpod
+@Riverpod(keepAlive: true)
 ReviewsRepository reviewsRepository(Ref ref) =>
     ReviewsRepository(ref.watch(firebaseFirestoreProvider));
 
@@ -98,8 +102,9 @@ Stream<Review?> watchUserReviewForClub(
   Ref ref, {
   required String runClubId,
   required String reviewerUserId,
-}) =>
-    ref.watch(reviewsRepositoryProvider).watchUserReviewForClub(
-          runClubId: runClubId,
-          reviewerUserId: reviewerUserId,
-        );
+}) => ref
+    .watch(reviewsRepositoryProvider)
+    .watchUserReviewForClub(
+      runClubId: runClubId,
+      reviewerUserId: reviewerUserId,
+    );

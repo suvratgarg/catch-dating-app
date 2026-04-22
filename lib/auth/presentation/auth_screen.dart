@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
+import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
+import 'package:catch_dating_app/auth/presentation/auth_form_validators.dart';
 import 'package:catch_dating_app/auth/presentation/widgets/or_divider.dart';
 import 'package:catch_dating_app/common_widgets/app_form_layout.dart';
 import 'package:catch_dating_app/common_widgets/error_banner.dart';
@@ -34,16 +36,24 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   }
 
   void _submit(AuthState state) {
-    if (_formKey.currentState!.validate()) {
-      AuthController.submitMutation.run(ref, (transaction) async {
-        await transaction
-            .get(authControllerProvider(authState: state).notifier)
-            .submit(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            );
-      });
-    }
+    final formState = _formKey.currentState;
+    if (formState == null || !formState.validate()) return;
+
+    FocusScope.of(context).unfocus();
+
+    AuthController.submitMutation.run(ref, (transaction) async {
+      await transaction
+          .get(authControllerProvider(authState: state).notifier)
+          .submit(
+            email: _emailController.text,
+            password: _passwordController.text,
+          );
+    });
+  }
+
+  void _toggleAuthState(AuthController notifier) {
+    AuthController.submitMutation.reset(ref);
+    notifier.toggleAuthState();
   }
 
   @override
@@ -56,131 +66,123 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
     );
     final submitMutation = ref.watch(AuthController.submitMutation);
     final t = CatchTokens.of(context);
+    final isSigningIn = state == AuthState.signIn;
+    final isSubmitting = submitMutation.isPending;
+    final errorMessage = submitMutation.hasError
+        ? authErrorMessage((submitMutation as MutationError).error)
+        : null;
 
     return Scaffold(
-      body: AppFormLayout(
-        formKey: _formKey,
-        children: [
-          Text(
-            'Catch',
-            style: CatchTextStyles.displayMd(context, color: t.primary),
-            textAlign: TextAlign.center,
-          ),
-          gapH8,
-          Text(
-            switch (state) {
-              AuthState.signIn => 'Welcome back',
-              AuthState.signUp => 'Create your account',
-            },
-            style: CatchTextStyles.labelLg(context, color: t.ink2),
-            textAlign: TextAlign.center,
-          ),
-          gapH48,
-          TextFormField(
-            controller: _emailController,
-            decoration: const InputDecoration(
-              labelText: 'Email',
-              prefixIcon: Icon(Icons.email_outlined),
+      body: AutofillGroup(
+        child: AppFormLayout(
+          formKey: _formKey,
+          children: [
+            Text(
+              'Catch',
+              style: CatchTextStyles.displayMd(context, color: t.primary),
+              textAlign: TextAlign.center,
             ),
-            keyboardType: TextInputType.emailAddress,
-            autocorrect: false,
-            textCapitalization: TextCapitalization.none,
-            textInputAction: TextInputAction.next,
-            onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
-            validator: (value) {
-              if (value == null || value.trim().isEmpty) {
-                return 'Please enter your email';
-              }
-              if (!value.trim().contains('@')) {
-                return 'Please enter a valid email';
-              }
-              return null;
-            },
-          ),
-          gapH16,
-          TextFormField(
-            controller: _passwordController,
-            decoration: InputDecoration(
-              labelText: 'Password',
-              prefixIcon: const Icon(Icons.lock_outlined),
-              suffixIcon: IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_outlined
-                      : Icons.visibility_off_outlined,
+            gapH8,
+            Text(
+              isSigningIn ? 'Welcome back' : 'Create your account',
+              style: CatchTextStyles.labelLg(context, color: t.ink2),
+              textAlign: TextAlign.center,
+            ),
+            gapH48,
+            TextFormField(
+              controller: _emailController,
+              decoration: const InputDecoration(
+                labelText: 'Email',
+                prefixIcon: Icon(Icons.email_outlined),
+              ),
+              keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
+              autocorrect: false,
+              enableSuggestions: false,
+              textCapitalization: TextCapitalization.none,
+              textInputAction: TextInputAction.next,
+              onTapOutside: (_) => FocusScope.of(context).unfocus(),
+              onFieldSubmitted: (_) => FocusScope.of(context).nextFocus(),
+              validator: AuthFormValidators.email,
+            ),
+            gapH16,
+            TextFormField(
+              controller: _passwordController,
+              decoration: InputDecoration(
+                labelText: 'Password',
+                prefixIcon: const Icon(Icons.lock_outlined),
+                suffixIcon: IconButton(
+                  tooltip: _obscurePassword ? 'Show password' : 'Hide password',
+                  icon: Icon(
+                    _obscurePassword
+                        ? Icons.visibility_outlined
+                        : Icons.visibility_off_outlined,
+                  ),
+                  onPressed: () =>
+                      setState(() => _obscurePassword = !_obscurePassword),
                 ),
-                onPressed: () =>
-                    setState(() => _obscurePassword = !_obscurePassword),
+              ),
+              obscureText: _obscurePassword,
+              keyboardType: TextInputType.visiblePassword,
+              autofillHints: [
+                if (isSigningIn) AutofillHints.password,
+                if (!isSigningIn) AutofillHints.newPassword,
+              ],
+              autocorrect: false,
+              enableSuggestions: false,
+              textCapitalization: TextCapitalization.none,
+              textInputAction: TextInputAction.done,
+              onTapOutside: (_) => FocusScope.of(context).unfocus(),
+              onFieldSubmitted: (_) => _submit(state),
+              validator: (value) =>
+                  AuthFormValidators.password(value, isSignUp: !isSigningIn),
+            ),
+            if (errorMessage != null) ...[
+              gapH16,
+              ErrorBanner(message: errorMessage),
+            ],
+            gapH24,
+            FilledButton(
+              onPressed: isSubmitting ? null : () => _submit(state),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(isSigningIn ? 'Sign in' : 'Create account'),
+                  if (isSubmitting) ...[
+                    gapW8,
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    ),
+                  ],
+                ],
               ),
             ),
-            obscureText: _obscurePassword,
-            keyboardType: TextInputType.visiblePassword,
-            autocorrect: false,
-            textCapitalization: TextCapitalization.none,
-            textInputAction: TextInputAction.done,
-            onFieldSubmitted: (_) => _submit(state),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Please enter your password';
-              }
-              if (value.length < 8) {
-                return 'Password must be at least 8 characters';
-              }
-              return null;
-            },
-          ),
-          if (submitMutation.hasError) ...[
             gapH16,
-            ErrorBanner(
-              message: (submitMutation as MutationError).error.toString(),
+            TextButton(
+              onPressed: isSubmitting ? null : () => _toggleAuthState(notifier),
+              child: Text(
+                isSigningIn ? 'Create account with email' : 'Sign in instead',
+              ),
             ),
+            gapH24,
+            const OrDivider(),
+            gapH16,
+            OutlinedButton.icon(
+              onPressed: isSubmitting
+                  ? null
+                  : () => context.go(Routes.onboardingScreen.path),
+              icon: const Icon(Icons.phone_outlined),
+              label: const Text('Continue with phone'),
+              style: OutlinedButton.styleFrom(
+                minimumSize: const Size.fromHeight(48),
+              ),
+            ),
+            gapH48,
           ],
-          gapH24,
-          FilledButton(
-            onPressed: submitMutation.isPending ? null : () => _submit(state),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                switch (state) {
-                  AuthState.signIn => const Text('Sign in'),
-                  AuthState.signUp => const Text('Create account'),
-                },
-                if (submitMutation.isPending) ...[
-                  gapW8,
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ],
-              ],
-            ),
-          ),
-          gapH16,
-          TextButton(
-            onPressed:
-                submitMutation.isPending ? null : notifier.toggleAuthState,
-            child: switch (state) {
-              AuthState.signIn => const Text('Create account with email'),
-              AuthState.signUp => const Text('Sign in instead'),
-            },
-          ),
-          gapH24,
-          const OrDivider(),
-          gapH16,
-          OutlinedButton.icon(
-            onPressed: submitMutation.isPending
-                ? null
-                : () => context.go(Routes.onboardingScreen.path),
-            icon: const Icon(Icons.phone_outlined),
-            label: const Text('Continue with phone'),
-            style: OutlinedButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
-            ),
-          ),
-          gapH48,
-        ],
+        ),
       ),
     );
   }

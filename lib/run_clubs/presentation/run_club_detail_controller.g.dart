@@ -76,7 +76,7 @@ final class RunClubDetailViewModelProvider
 }
 
 String _$runClubDetailViewModelHash() =>
-    r'9f60a1d4826fc63935756e75607ca4b524074e4d';
+    r'd442a4adce675171c688046526359780966f227a';
 
 final class RunClubDetailViewModelFamily extends $Family
     with

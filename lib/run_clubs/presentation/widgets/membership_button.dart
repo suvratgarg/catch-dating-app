@@ -23,11 +23,11 @@ class MembershipButton extends ConsumerWidget {
           onPressed: isMutating
               ? null
               : () => RunClubDetailController.leaveMutation.run(
-                    ref,
-                    (tx) async => tx
-                        .get(runClubDetailControllerProvider.notifier)
-                        .leave(clubId),
-                  ),
+                  ref,
+                  (tx) async => tx
+                      .get(runClubDetailControllerProvider.notifier)
+                      .leave(clubId),
+                ),
           child: isMutating
               ? const SizedBox(
                   width: 18,
@@ -45,11 +45,11 @@ class MembershipButton extends ConsumerWidget {
         onPressed: isMutating
             ? null
             : () => RunClubDetailController.joinMutation.run(
-                  ref,
-                  (tx) async => tx
-                      .get(runClubDetailControllerProvider.notifier)
-                      .join(clubId),
-                ),
+                ref,
+                (tx) async => tx
+                    .get(runClubDetailControllerProvider.notifier)
+                    .join(clubId),
+              ),
         child: isMutating
             ? const SizedBox(
                 width: 18,

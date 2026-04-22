@@ -4,11 +4,7 @@ import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:flutter/material.dart';
 
 class ClubHeroAppBar extends StatelessWidget {
-  const ClubHeroAppBar({
-    super.key,
-    required this.club,
-    required this.isHost,
-  });
+  const ClubHeroAppBar({super.key, required this.club, required this.isHost});
 
   final RunClub club;
   final bool isHost;
@@ -29,8 +25,11 @@ class ClubHeroAppBar extends StatelessWidget {
         child: IconBtn(
           background: Colors.black.withValues(alpha: 0.35),
           onTap: () => Navigator.of(context).pop(),
-          child: const Icon(Icons.arrow_back_ios_new_rounded,
-              size: 18, color: Colors.white),
+          child: const Icon(
+            Icons.arrow_back_ios_new_rounded,
+            size: 18,
+            color: Colors.white,
+          ),
         ),
       ),
       actions: [
@@ -38,9 +37,16 @@ class ClubHeroAppBar extends StatelessWidget {
           padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
           child: IconBtn(
             background: Colors.black.withValues(alpha: 0.35),
-            onTap: () {},
-            child: const Icon(Icons.ios_share_rounded,
-                size: 18, color: Colors.white),
+            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Sharing for run clubs is coming soon.'),
+              ),
+            ),
+            child: const Icon(
+              Icons.ios_share_rounded,
+              size: 18,
+              color: Colors.white,
+            ),
           ),
         ),
       ],
@@ -53,8 +59,7 @@ class ClubHeroAppBar extends StatelessWidget {
                 ? Image.network(
                     club.imageUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) =>
-                        ClubGradientBg(name: club.name),
+                    errorBuilder: (_, _, _) => ClubGradientBg(name: club.name),
                   )
                 : ClubGradientBg(name: club.name),
             Positioned.fill(
@@ -84,11 +89,12 @@ class ClubHeroAppBar extends StatelessWidget {
                     Container(
                       margin: const EdgeInsets.only(bottom: 6),
                       padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 3),
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: t.primary,
-                        borderRadius:
-                            BorderRadius.circular(CatchRadius.button),
+                        borderRadius: BorderRadius.circular(CatchRadius.button),
                       ),
                       child: Text(
                         'HOST',
@@ -112,23 +118,33 @@ class ClubHeroAppBar extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      const Icon(Icons.location_on_outlined,
-                          size: 14, color: Colors.white70),
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 14,
+                        color: Colors.white70,
+                      ),
                       const SizedBox(width: 4),
                       Text(
                         club.location.label,
                         style: const TextStyle(
-                            fontSize: 13, color: Colors.white70),
+                          fontSize: 13,
+                          color: Colors.white70,
+                        ),
                       ),
                       if (club.rating > 0) ...[
                         const SizedBox(width: 12),
-                        const Icon(Icons.star_rounded,
-                            size: 14, color: Colors.amber),
+                        const Icon(
+                          Icons.star_rounded,
+                          size: 14,
+                          color: Colors.amber,
+                        ),
                         const SizedBox(width: 2),
                         Text(
                           club.rating.toStringAsFixed(1),
                           style: const TextStyle(
-                              fontSize: 13, color: Colors.white70),
+                            fontSize: 13,
+                            color: Colors.white70,
+                          ),
                         ),
                       ],
                     ],

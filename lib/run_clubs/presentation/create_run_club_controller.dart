@@ -32,7 +32,18 @@ class CreateRunClubController extends _$CreateRunClubController {
     final hostAvatarUrl = appUser.photoUrls.firstOrNull;
 
     final clubsRepo = ref.read(runClubsRepositoryProvider);
-    final clubId = await clubsRepo.createRunClub(
+    String? clubId;
+    String? imageUrl;
+
+    if (coverImage != null) {
+      clubId = clubsRepo.generateId();
+      imageUrl = await ref
+          .read(imageUploadRepositoryProvider)
+          .uploadRunClubCover(clubId: clubId, image: coverImage);
+    }
+
+    await clubsRepo.createRunClub(
+      clubId: clubId,
       name: name,
       description: description,
       location: location,
@@ -40,12 +51,7 @@ class CreateRunClubController extends _$CreateRunClubController {
       hostUserId: uid,
       hostName: hostName,
       hostAvatarUrl: hostAvatarUrl,
+      imageUrl: imageUrl,
     );
-    if (coverImage != null) {
-      final imageUrl = await ref
-          .read(imageUploadRepositoryProvider)
-          .uploadRunClubCover(clubId: clubId, image: coverImage);
-      await clubsRepo.updateImageUrl(clubId, imageUrl);
-    }
   }
 }

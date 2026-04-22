@@ -21,7 +21,7 @@ final class RunRepositoryProvider
         argument: null,
         retry: null,
         name: r'runRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class RunRepositoryProvider
   }
 }
 
-String _$runRepositoryHash() => r'efce1135c515bcbb4c8809e98b99f5f640c0bd9e';
+String _$runRepositoryHash() => r'575c538b2ab8ac560cbfcecc9d0ba8e2d5f41870';
 
 @ProviderFor(watchRun)
 final watchRunProvider = WatchRunFamily._();

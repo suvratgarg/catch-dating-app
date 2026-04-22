@@ -19,9 +19,9 @@ class RunClubsListScreen extends ConsumerWidget {
     ref.listen(RunClubsListController.followMutation, (previous, current) {
       if (previous?.isPending == true && current.hasError) {
         final error = current as MutationError;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(error.error.toString())),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(error.error.toString())));
       }
     });
 
@@ -34,8 +34,7 @@ class RunClubsListScreen extends ConsumerWidget {
             const RunClubsHeader(),
             Expanded(
               child: viewModelAsync.when(
-                loading: () =>
-                    const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator()),
                 error: (error, _) =>
                     Center(child: Text('Error loading clubs: $error')),
                 data: (viewModel) => RunClubsContent(

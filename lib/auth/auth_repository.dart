@@ -5,13 +5,15 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'auth_repository.g.dart';
 
 class AuthRepository {
-  AuthRepository(this._auth);
+  const AuthRepository(this._auth);
 
   final FirebaseAuth _auth;
 
   User? get currentUser => _auth.currentUser;
 
   Stream<User?> authStateChanges() => _auth.authStateChanges();
+
+  String _normalizeEmail(String email) => email.trim();
 
   // ── Email auth ────────────────────────────────────────────────────────────
 
@@ -20,7 +22,7 @@ class AuthRepository {
     required String password,
   }) async {
     await _auth.createUserWithEmailAndPassword(
-      email: email,
+      email: _normalizeEmail(email),
       password: password,
     );
   }
@@ -29,7 +31,10 @@ class AuthRepository {
     required String email,
     required String password,
   }) async {
-    await _auth.signInWithEmailAndPassword(email: email, password: password);
+    await _auth.signInWithEmailAndPassword(
+      email: _normalizeEmail(email),
+      password: password,
+    );
   }
 
   // ── Phone OTP auth ────────────────────────────────────────────────────────
@@ -38,11 +43,12 @@ class AuthRepository {
     required String phoneNumber,
     required void Function(String verificationId, int? resendToken) codeSent,
     required void Function(FirebaseAuthException e) verificationFailed,
-    required void Function(PhoneAuthCredential credential) autoVerified,
+    required void Function(PhoneAuthCredential credential)
+    verificationCompleted,
   }) async {
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
-      verificationCompleted: autoVerified,
+      verificationCompleted: verificationCompleted,
       verificationFailed: verificationFailed,
       codeSent: codeSent,
       codeAutoRetrievalTimeout: (_) {},
@@ -57,6 +63,10 @@ class AuthRepository {
       verificationId: verificationId,
       smsCode: smsCode,
     );
+    await signInWithCredential(credential);
+  }
+
+  Future<void> signInWithCredential(AuthCredential credential) async {
     await _auth.signInWithCredential(credential);
   }
 

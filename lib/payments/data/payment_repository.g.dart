@@ -26,7 +26,7 @@ final class PaymentRepositoryProvider
         argument: null,
         retry: null,
         name: r'paymentRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -54,4 +54,4 @@ final class PaymentRepositoryProvider
   }
 }
 
-String _$paymentRepositoryHash() => r'806fe1642eb28d635430bd37ceadf77fe00cc34f';
+String _$paymentRepositoryHash() => r'85de32794f34721e144913a0d0848363d1082e10';

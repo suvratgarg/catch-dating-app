@@ -23,10 +23,7 @@ class CityPicker extends StatelessWidget {
       onSelected: onSelected,
       itemBuilder: (context) => [
         for (final city in IndianCity.values)
-          PopupMenuItem<IndianCity>(
-            value: city,
-            child: Text(city.label),
-          ),
+          PopupMenuItem<IndianCity>(value: city, child: Text(city.label)),
       ],
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),

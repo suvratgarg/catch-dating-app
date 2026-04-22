@@ -22,10 +22,7 @@ class SectionHeader extends StatelessWidget {
       child: Row(
         children: [
           Expanded(
-            child: Text(
-              title,
-              style: CatchTextStyles.displaySm(context),
-            ),
+            child: Text(title, style: CatchTextStyles.displaySm(context)),
           ),
           if (trailing != null)
             Text(

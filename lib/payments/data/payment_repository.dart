@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/payments/env/env.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
@@ -86,11 +87,7 @@ class PaymentRepository {
       'currency': 'INR',
       'name': 'Catch',
       'description': description,
-      'prefill': {
-        'name': userName,
-        'email': userEmail,
-        'contact': userContact,
-      },
+      'prefill': {'name': userName, 'email': userEmail, 'contact': userContact},
       'theme': {'color': '#E8445A'},
     });
 
@@ -149,9 +146,9 @@ class PaymentRepository {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 PaymentRepository paymentRepository(Ref ref) {
-  final repo = PaymentRepository(FirebaseFunctions.instance);
+  final repo = PaymentRepository(ref.watch(firebaseFunctionsProvider));
   ref.onDispose(repo.dispose);
   return repo;
 }

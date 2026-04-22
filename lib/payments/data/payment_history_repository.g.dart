@@ -26,7 +26,7 @@ final class PaymentHistoryRepositoryProvider
         argument: null,
         retry: null,
         name: r'paymentHistoryRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,7 +55,7 @@ final class PaymentHistoryRepositoryProvider
 }
 
 String _$paymentHistoryRepositoryHash() =>
-    r'ef7852ab07a7d3f9357f0594a54845a4e3e3f85f';
+    r'f4635c7ef15e50e3bc68933627e632ec2873f0a4';
 
 @ProviderFor(paymentsForUser)
 final paymentsForUserProvider = PaymentsForUserFamily._();

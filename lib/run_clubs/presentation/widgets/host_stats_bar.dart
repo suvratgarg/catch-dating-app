@@ -12,14 +12,18 @@ class HostStatsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    final totalBooked =
-        runs.fold(0, (sum, r) => sum + r.signedUpUserIds.length);
-    final totalWaitlist =
-        runs.fold(0, (sum, r) => sum + r.waitlistUserIds.length);
+    final totalBooked = runs.fold(
+      0,
+      (sum, r) => sum + r.signedUpUserIds.length,
+    );
+    final totalWaitlist = runs.fold(
+      0,
+      (sum, r) => sum + r.waitlistUserIds.length,
+    );
     final revenueRupees = runs.fold(
-        0,
-        (sum, r) =>
-            sum + r.signedUpUserIds.length * (r.priceInPaise ~/ 100));
+      0,
+      (sum, r) => sum + r.signedUpUserIds.length * (r.priceInPaise ~/ 100),
+    );
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -35,8 +39,10 @@ class HostStatsBar extends StatelessWidget {
             children: [
               Icon(Icons.bar_chart_rounded, size: 16, color: t.primary),
               const SizedBox(width: 6),
-              Text('Your upcoming runs',
-                  style: CatchTextStyles.labelMd(context, color: t.primary)),
+              Text(
+                'Your upcoming runs',
+                style: CatchTextStyles.labelMd(context, color: t.primary),
+              ),
             ],
           ),
           const SizedBox(height: 12),
@@ -99,9 +105,11 @@ class HostStatChip extends StatelessWidget {
           Icon(icon, size: 16, color: t.primary),
           const SizedBox(height: 4),
           Text(value, style: CatchTextStyles.labelLg(context)),
-          Text(label,
-              style: CatchTextStyles.caption(context, color: t.ink3),
-              textAlign: TextAlign.center),
+          Text(
+            label,
+            style: CatchTextStyles.caption(context, color: t.ink3),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

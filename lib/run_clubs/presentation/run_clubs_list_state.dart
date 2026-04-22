@@ -2,20 +2,44 @@ import 'package:catch_dating_app/app_user/data/app_user_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+part 'run_clubs_list_state.freezed.dart';
 part 'run_clubs_list_state.g.dart';
 
-class RunClubsListViewModel {
-  const RunClubsListViewModel({
-    required this.joinedClubs,
-    required this.discoverClubs,
-  });
+@freezed
+abstract class RunClubsListViewModel with _$RunClubsListViewModel {
+  const RunClubsListViewModel._();
 
-  final List<RunClub> joinedClubs;
-  final List<RunClub> discoverClubs;
+  const factory RunClubsListViewModel({
+    required List<RunClub> joinedClubs,
+    required List<RunClub> discoverClubs,
+  }) = _RunClubsListViewModel;
 
   bool get isEmpty => joinedClubs.isEmpty && discoverClubs.isEmpty;
+
+  factory RunClubsListViewModel.partition({
+    required List<RunClub> clubs,
+    required String uid,
+    required Set<String> followedClubIds,
+  }) {
+    final joinedClubs = <RunClub>[];
+    final discoverClubs = <RunClub>[];
+
+    for (final club in clubs) {
+      if (club.hasMember(uid) || followedClubIds.contains(club.id)) {
+        joinedClubs.add(club);
+      } else {
+        discoverClubs.add(club);
+      }
+    }
+
+    return RunClubsListViewModel(
+      joinedClubs: List.unmodifiable(joinedClubs),
+      discoverClubs: List.unmodifiable(discoverClubs),
+    );
+  }
 }
 
 @Riverpod(keepAlive: true)
@@ -37,7 +61,10 @@ class RunClubSearchQuery extends _$RunClubSearchQuery {
   String build() => '';
 
   void setQuery(String query) {
-    if (state != query) state = query;
+    final normalizedQuery = query.trimLeft();
+    if (state != normalizedQuery) {
+      state = normalizedQuery;
+    }
   }
 
   void clear() => state = '';
@@ -52,9 +79,14 @@ AsyncValue<List<RunClub>> filteredRunClubs(Ref ref) {
   final clubsAsync = ref.watch(watchRunClubsByLocationProvider(city));
 
   return clubsAsync.whenData((clubs) {
-    if (query.isEmpty) return clubs;
-    final q = query.toLowerCase();
-    return clubs.where((c) => c.name.toLowerCase().contains(q)).toList();
+    final normalizedQuery = query.trim().toLowerCase();
+    if (normalizedQuery.isEmpty) {
+      return clubs;
+    }
+
+    return clubs
+        .where((club) => matchesRunClubSearchQuery(club, normalizedQuery))
+        .toList(growable: false);
   });
 }
 
@@ -84,19 +116,18 @@ AsyncValue<RunClubsListViewModel> runClubsListViewModel(Ref ref) {
   final followedClubIds = appUser?.followedRunClubIds.toSet() ?? <String>{};
   final clubs = filteredAsync.asData?.value ?? const <RunClub>[];
 
-  final joinedClubs = <RunClub>[];
-  final discoverClubs = <RunClub>[];
+  return AsyncData(
+    RunClubsListViewModel.partition(
+      clubs: clubs,
+      uid: uid,
+      followedClubIds: followedClubIds,
+    ),
+  );
+}
 
-  for (final club in clubs) {
-    if (club.memberUserIds.contains(uid) || followedClubIds.contains(club.id)) {
-      joinedClubs.add(club);
-    } else {
-      discoverClubs.add(club);
-    }
-  }
-
-  return AsyncData(RunClubsListViewModel(
-    joinedClubs: List.unmodifiable(joinedClubs),
-    discoverClubs: List.unmodifiable(discoverClubs),
-  ));
+bool matchesRunClubSearchQuery(RunClub club, String normalizedQuery) {
+  return club.name.toLowerCase().contains(normalizedQuery) ||
+      club.area.toLowerCase().contains(normalizedQuery) ||
+      club.hostName.toLowerCase().contains(normalizedQuery) ||
+      club.tags.any((tag) => tag.toLowerCase().contains(normalizedQuery));
 }

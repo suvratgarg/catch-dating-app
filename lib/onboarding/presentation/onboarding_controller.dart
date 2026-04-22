@@ -65,10 +65,9 @@ class OnboardingController extends _$OnboardingController {
         state = state.copyWith(verificationId: verificationId, step: 2);
       },
       verificationFailed: (e) => throw e,
-      autoVerified: (credential) async {
-        await ref.read(authRepositoryProvider).signInWithOtp(
-          verificationId: credential.verificationId!,
-          smsCode: credential.smsCode!,
+      verificationCompleted: (credential) async {
+        await ref.read(authRepositoryProvider).signInWithCredential(
+          credential,
         );
         state = state.copyWith(step: 3);
       },

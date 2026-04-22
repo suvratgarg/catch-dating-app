@@ -6,12 +6,15 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'payment_history_repository.g.dart';
 
 class PaymentHistoryRepository {
-  PaymentHistoryRepository(this._db);
+  const PaymentHistoryRepository(this._db);
+
+  static const _collectionPath = 'payments';
 
   final FirebaseFirestore _db;
 
-  CollectionReference<Payment> _getCollectionReference() =>
-      _db.collection('payments').withConverter<Payment>(
+  CollectionReference<Payment> get _paymentsRef => _db
+      .collection(_collectionPath)
+      .withConverter<Payment>(
         fromFirestore: (doc, _) =>
             Payment.fromJson({...doc.data()!, 'id': doc.id}),
         toFirestore: (payment, _) => payment.toJson(),
@@ -19,15 +22,14 @@ class PaymentHistoryRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Stream<List<Payment>> watchPaymentsForUser(String userId) =>
-      _getCollectionReference()
-          .where('userId', isEqualTo: userId)
-          .orderBy('createdAt', descending: true)
-          .snapshots()
-          .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<Payment>> watchPaymentsForUser(String userId) => _paymentsRef
+      .where('userId', isEqualTo: userId)
+      .orderBy('createdAt', descending: true)
+      .snapshots()
+      .map((snap) => snap.docs.map((d) => d.data()).toList());
 
   Future<List<Payment>> fetchPaymentsForUser(String userId) async {
-    final snap = await _getCollectionReference()
+    final snap = await _paymentsRef
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .get();
@@ -39,7 +41,7 @@ class PaymentHistoryRepository {
     required String userId,
     required String activityId,
   }) async {
-    final snap = await _getCollectionReference()
+    final snap = await _paymentsRef
         .where('userId', isEqualTo: userId)
         .where('activityId', isEqualTo: activityId)
         .where('status', isEqualTo: PaymentStatus.completed.name)
@@ -49,7 +51,7 @@ class PaymentHistoryRepository {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 PaymentHistoryRepository paymentHistoryRepository(Ref ref) =>
     PaymentHistoryRepository(ref.watch(firebaseFirestoreProvider));
 

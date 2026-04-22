@@ -4,20 +4,19 @@ import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+part 'run_detail_controller.freezed.dart';
 part 'run_detail_controller.g.dart';
 
-class RunDetailViewModel {
-  const RunDetailViewModel({
-    required this.run,
-    required this.appUser,
-    required this.reviews,
-  });
-
-  final Run run;
-  final AppUser appUser;
-  final List<Review> reviews;
+@freezed
+abstract class RunDetailViewModel with _$RunDetailViewModel {
+  const factory RunDetailViewModel({
+    required Run run,
+    required AppUser appUser,
+    required List<Review> reviews,
+  }) = _RunDetailViewModel;
 }
 
 @riverpod
@@ -29,11 +28,15 @@ AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
   if (runAsync.isLoading || appUserAsync.isLoading) return const AsyncLoading();
   if (runAsync.hasError) {
     return AsyncError(
-        runAsync.error!, runAsync.stackTrace ?? StackTrace.current);
+      runAsync.error!,
+      runAsync.stackTrace ?? StackTrace.current,
+    );
   }
   if (appUserAsync.hasError) {
     return AsyncError(
-        appUserAsync.error!, appUserAsync.stackTrace ?? StackTrace.current);
+      appUserAsync.error!,
+      appUserAsync.stackTrace ?? StackTrace.current,
+    );
   }
 
   final run = runAsync.asData?.value;
@@ -45,9 +48,7 @@ AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
 
   final reviews = reviewsAsync.asData?.value ?? const [];
 
-  return AsyncData(RunDetailViewModel(
-    run: run,
-    appUser: appUser,
-    reviews: reviews,
-  ));
+  return AsyncData(
+    RunDetailViewModel(run: run, appUser: appUser, reviews: reviews),
+  );
 }

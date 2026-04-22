@@ -1,42 +1,19 @@
-sealed class RunEligibility {
-  const RunEligibility();
-}
+import 'package:freezed_annotation/freezed_annotation.dart';
 
-final class Eligible extends RunEligibility {
-  const Eligible();
-}
+part 'run_eligibility.freezed.dart';
 
-final class AlreadySignedUp extends RunEligibility {
-  const AlreadySignedUp();
-}
+@freezed
+sealed class RunEligibility with _$RunEligibility {
+  const factory RunEligibility.eligible() = Eligible;
+  const factory RunEligibility.alreadySignedUp() = AlreadySignedUp;
+  const factory RunEligibility.onWaitlist() = OnWaitlist;
+  const factory RunEligibility.attended() = Attended;
+  const factory RunEligibility.runPast() = RunPast;
+  const factory RunEligibility.runFull() = RunFull;
 
-final class OnWaitlist extends RunEligibility {
-  const OnWaitlist();
-}
+  /// The user's gender cap for this run has been reached.
+  const factory RunEligibility.genderCapacityReached() = GenderCapacityReached;
 
-final class Attended extends RunEligibility {
-  const Attended();
-}
-
-final class RunPast extends RunEligibility {
-  const RunPast();
-}
-
-final class RunFull extends RunEligibility {
-  const RunFull();
-}
-
-/// The user's gender cap for this run has been reached.
-final class GenderCapacityReached extends RunEligibility {
-  const GenderCapacityReached();
-}
-
-final class AgeTooYoung extends RunEligibility {
-  const AgeTooYoung(this.minAge);
-  final int minAge;
-}
-
-final class AgeTooOld extends RunEligibility {
-  const AgeTooOld(this.maxAge);
-  final int maxAge;
+  const factory RunEligibility.ageTooYoung(int minAge) = AgeTooYoung;
+  const factory RunEligibility.ageTooOld(int maxAge) = AgeTooOld;
 }

@@ -3,12 +3,12 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/run_clubs/presentation/widgets/host_stats_bar.dart';
 import 'package:catch_dating_app/run_clubs/presentation/widgets/membership_button.dart';
-import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/run_clubs/presentation/widgets/stats_strip.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
@@ -51,13 +51,19 @@ class ClubDetailBody extends StatelessWidget {
             ClubHeroAppBar(club: runClub, isHost: isHost),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.screenH, 20, CatchSpacing.screenH, 0),
+                CatchSpacing.screenH,
+                20,
+                CatchSpacing.screenH,
+                0,
+              ),
               sliver: SliverList.list(
                 children: [
                   StatsStrip(club: runClub, upcomingCount: upcoming.length),
                   const SizedBox(height: 16),
-                  Text(runClub.description,
-                      style: CatchTextStyles.bodyMd(context, color: t.ink2)),
+                  Text(
+                    runClub.description,
+                    style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                  ),
                   const SizedBox(height: 20),
                   if (isHost) ...[
                     HostStatsBar(runs: upcoming),
@@ -79,8 +85,7 @@ class ClubDetailBody extends StatelessWidget {
                     isMember: isMember,
                   ),
                   const SizedBox(height: 24),
-                  Text('Schedule',
-                      style: CatchTextStyles.displaySm(context)),
+                  Text('Schedule', style: CatchTextStyles.displaySm(context)),
                   const SizedBox(height: 12),
                 ],
               ),
@@ -91,10 +96,7 @@ class ClubDetailBody extends StatelessWidget {
                 runs: runs,
                 onRunSelected: (run) => context.pushNamed(
                   Routes.runDetailScreen.name,
-                  pathParameters: {
-                    'runClubId': runClub.id,
-                    'runId': run.id,
-                  },
+                  pathParameters: {'runClubId': runClub.id, 'runId': run.id},
                 ),
               ),
             ),
@@ -114,8 +116,7 @@ class ClubDetailBody extends StatelessWidget {
                     pathParameters: {'runClubId': runClub.id},
                     extra: runClub,
                   ),
-                  child: Icon(Icons.add_rounded,
-                      size: 20, color: t.primaryInk),
+                  child: Icon(Icons.add_rounded, size: 20, color: t.primaryInk),
                 ),
               ),
             ),

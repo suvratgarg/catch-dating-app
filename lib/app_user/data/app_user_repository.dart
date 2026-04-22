@@ -7,47 +7,49 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'app_user_repository.g.dart';
 
 class AppUserRepository {
-  AppUserRepository(this._db);
+  const AppUserRepository(this._db);
+
+  static const _collectionPath = 'users';
 
   final FirebaseFirestore _db;
 
-  CollectionReference<AppUser> _getCollectionReference() =>
-      _db.collection('users').withConverter<AppUser>(
+  CollectionReference<AppUser> get _usersRef => _db
+      .collection(_collectionPath)
+      .withConverter<AppUser>(
         fromFirestore: (doc, _) =>
             AppUser.fromJson({...doc.data()!, 'uid': doc.id}),
         toFirestore: (user, _) => user.toJson(),
       );
 
-  DocumentReference<AppUser> _getDocumentReference(String uid) =>
-      _getCollectionReference().doc(uid);
+  DocumentReference<AppUser> _userRef(String uid) => _usersRef.doc(uid);
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
   Stream<AppUser?> watchAppUser({required String? uid}) {
     if (uid == null) return Stream.value(null);
-    return _getDocumentReference(uid)
-        .snapshots()
-        .map((snap) => snap.exists ? snap.data() : null);
+    return _userRef(
+      uid,
+    ).snapshots().map((snap) => snap.exists ? snap.data() : null);
   }
 
   Future<AppUser?> fetchAppUser({required String? uid}) async {
     if (uid == null) return null;
-    final doc = await _getDocumentReference(uid).get();
+    final doc = await _userRef(uid).get();
     return doc.exists ? doc.data() : null;
   }
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> setAppUser({required AppUser appUser}) =>
-      _getDocumentReference(appUser.uid).set(appUser);
+      _userRef(appUser.uid).set(appUser);
 
   Future<void> updatePhotoUrls({
     required String uid,
     required List<String> photoUrls,
-  }) => _getDocumentReference(uid).update({'photoUrls': photoUrls});
+  }) => _userRef(uid).update({'photoUrls': photoUrls});
 
   Future<void> setProfileComplete({required String uid}) =>
-      _getDocumentReference(uid).update({'profileComplete': true});
+      _userRef(uid).update({'profileComplete': true});
 }
 
 @Riverpod(keepAlive: true)
@@ -61,8 +63,10 @@ Stream<AppUser?> appUserStream(Ref ref) {
   return switch (uidAsync) {
     AsyncData(:final value) =>
       ref.watch(appUserRepositoryProvider).watchAppUser(uid: value),
-    AsyncError(:final error, :final stackTrace) =>
-      Stream.error(error, stackTrace),
+    AsyncError(:final error, :final stackTrace) => Stream.error(
+      error,
+      stackTrace,
+    ),
     _ => const Stream.empty(),
   };
 }

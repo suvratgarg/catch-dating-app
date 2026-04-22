@@ -9,30 +9,24 @@ import 'package:catch_dating_app/run_clubs/presentation/run_clubs_controller_uti
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+part 'run_club_detail_controller.freezed.dart';
 part 'run_club_detail_controller.g.dart';
 
-class RunClubDetailViewModel {
-  const RunClubDetailViewModel({
-    required this.runClub,
-    required this.isHost,
-    required this.isMember,
-    required this.upcomingRuns,
-    required this.allRuns,
-    required this.reviews,
-    required this.appUser,
-    required this.uid,
-  });
-
-  final RunClub runClub;
-  final bool isHost;
-  final bool isMember;
-  final List<Run> upcomingRuns;
-  final List<Run> allRuns;
-  final List<Review> reviews;
-  final AppUser? appUser;
-  final String? uid;
+@freezed
+abstract class RunClubDetailViewModel with _$RunClubDetailViewModel {
+  const factory RunClubDetailViewModel({
+    required RunClub runClub,
+    required bool isHost,
+    required bool isMember,
+    required List<Run> upcomingRuns,
+    required List<Run> allRuns,
+    required List<Review> reviews,
+    required AppUser? appUser,
+    required String? uid,
+  }) = _RunClubDetailViewModel;
 }
 
 @riverpod
@@ -46,14 +40,59 @@ AsyncValue<RunClubDetailViewModel?> runClubDetailViewModel(
   final appUserAsync = ref.watch(appUserStreamProvider);
   final uidAsync = ref.watch(uidProvider);
 
-  if (clubAsync.isLoading || runsAsync.isLoading) return const AsyncLoading();
+  return buildRunClubDetailViewModel(
+    clubAsync: clubAsync,
+    runsAsync: runsAsync,
+    reviewsAsync: reviewsAsync,
+    appUserAsync: appUserAsync,
+    uidAsync: uidAsync,
+  );
+}
+
+AsyncValue<RunClubDetailViewModel?> buildRunClubDetailViewModel({
+  required AsyncValue<RunClub?> clubAsync,
+  required AsyncValue<List<Run>> runsAsync,
+  required AsyncValue<List<Review>> reviewsAsync,
+  required AsyncValue<AppUser?> appUserAsync,
+  required AsyncValue<String?> uidAsync,
+  DateTime? now,
+}) {
+  if (clubAsync.isLoading ||
+      runsAsync.isLoading ||
+      reviewsAsync.isLoading ||
+      appUserAsync.isLoading ||
+      uidAsync.isLoading) {
+    return const AsyncLoading();
+  }
   if (clubAsync.hasError) {
     return AsyncError(
-        clubAsync.error!, clubAsync.stackTrace ?? StackTrace.current);
+      clubAsync.error!,
+      clubAsync.stackTrace ?? StackTrace.current,
+    );
   }
   if (runsAsync.hasError) {
     return AsyncError(
-        runsAsync.error!, runsAsync.stackTrace ?? StackTrace.current);
+      runsAsync.error!,
+      runsAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (reviewsAsync.hasError) {
+    return AsyncError(
+      reviewsAsync.error!,
+      reviewsAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (appUserAsync.hasError) {
+    return AsyncError(
+      appUserAsync.error!,
+      appUserAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (uidAsync.hasError) {
+    return AsyncError(
+      uidAsync.error!,
+      uidAsync.stackTrace ?? StackTrace.current,
+    );
   }
 
   final runClub = clubAsync.asData?.value;
@@ -63,18 +102,22 @@ AsyncValue<RunClubDetailViewModel?> runClubDetailViewModel(
   final reviews = reviewsAsync.asData?.value ?? const [];
   final appUser = appUserAsync.asData?.value;
   final uid = uidAsync.asData?.value;
-  final now = DateTime.now();
+  final effectiveNow = now ?? DateTime.now();
 
-  return AsyncData(RunClubDetailViewModel(
-    runClub: runClub,
-    isHost: uid != null && uid == runClub.hostUserId,
-    isMember: uid != null && runClub.memberUserIds.contains(uid),
-    upcomingRuns: runs.where((r) => r.startTime.isAfter(now)).toList(),
-    allRuns: runs,
-    reviews: reviews,
-    appUser: appUser,
-    uid: uid,
-  ));
+  return AsyncData(
+    RunClubDetailViewModel(
+      runClub: runClub,
+      isHost: uid != null && uid == runClub.hostUserId,
+      isMember: uid != null && runClub.hasMember(uid),
+      upcomingRuns: runs
+          .where((run) => run.startTime.isAfter(effectiveNow))
+          .toList(),
+      allRuns: runs,
+      reviews: reviews,
+      appUser: appUser,
+      uid: uid,
+    ),
+  );
 }
 
 @riverpod

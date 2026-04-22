@@ -25,20 +25,12 @@ class StatsStrip extends StatelessWidget {
       ),
       child: Row(
         children: [
-          StatCell(
-            value: '${club.memberCount}',
-            label: 'Members',
-          ),
+          StatCell(value: '${club.memberCount}', label: 'Members'),
+          Container(width: 1, height: 36, color: t.line),
+          StatCell(value: '$upcomingCount', label: 'Upcoming'),
           Container(width: 1, height: 36, color: t.line),
           StatCell(
-            value: '$upcomingCount',
-            label: 'Upcoming',
-          ),
-          Container(width: 1, height: 36, color: t.line),
-          StatCell(
-            value: club.rating > 0
-                ? club.rating.toStringAsFixed(1)
-                : '—',
+            value: club.rating > 0 ? club.rating.toStringAsFixed(1) : '—',
             label: 'Rating',
           ),
         ],
@@ -61,9 +53,11 @@ class StatCell extends StatelessWidget {
         children: [
           Text(value, style: CatchTextStyles.monoLg(context)),
           const SizedBox(height: 2),
-          Text(label,
-              style: CatchTextStyles.caption(context, color: t.ink3),
-              textAlign: TextAlign.center),
+          Text(
+            label,
+            style: CatchTextStyles.caption(context, color: t.ink3),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );

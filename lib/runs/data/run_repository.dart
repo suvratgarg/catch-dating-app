@@ -7,61 +7,59 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'run_repository.g.dart';
 
 class RunRepository {
-  RunRepository(this._db);
+  const RunRepository(this._db, this._functions);
+
+  static const _collectionPath = 'runs';
 
   final FirebaseFirestore _db;
+  final FirebaseFunctions _functions;
 
-  CollectionReference<Run> _getCollectionReference() =>
-      _db.collection('runs').withConverter<Run>(
-        fromFirestore: (doc, _) =>
-            Run.fromJson({...doc.data()!, 'id': doc.id}),
+  CollectionReference<Run> get _runsRef => _db
+      .collection(_collectionPath)
+      .withConverter<Run>(
+        fromFirestore: (doc, _) => Run.fromJson({...doc.data()!, 'id': doc.id}),
         toFirestore: (run, _) => run.toJson(),
       );
 
-  DocumentReference<Run> _getDocumentReference(String id) =>
-      _getCollectionReference().doc(id);
+  DocumentReference<Run> _runRef(String id) => _runsRef.doc(id);
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
   Future<Run?> fetchRun(String id) async {
-    final doc = await _getDocumentReference(id).get();
+    final doc = await _runRef(id).get();
     return doc.exists ? doc.data() : null;
   }
 
-  Stream<Run?> watchRun(String id) => _getDocumentReference(id)
+  Stream<Run?> watchRun(String id) =>
+      _runRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null);
+
+  Stream<List<Run>> watchRunsForClub({required String runClubId}) => _runsRef
+      .where('runClubId', isEqualTo: runClubId)
+      .orderBy('startTime')
       .snapshots()
-      .map((doc) => doc.exists ? doc.data() : null);
+      .map((snap) => snap.docs.map((d) => d.data()).toList());
 
-  Stream<List<Run>> watchRunsForClub({required String runClubId}) =>
-      _getCollectionReference()
-          .where('runClubId', isEqualTo: runClubId)
-          .orderBy('startTime')
-          .snapshots()
-          .map((snap) => snap.docs.map((d) => d.data()).toList());
-
-  Stream<List<Run>> watchAttendedRuns({required String uid}) =>
-      _getCollectionReference()
-          .where('attendedUserIds', arrayContains: uid)
-          .orderBy('startTime', descending: true)
-          .snapshots()
-          .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<Run>> watchAttendedRuns({required String uid}) => _runsRef
+      .where('attendedUserIds', arrayContains: uid)
+      .orderBy('startTime', descending: true)
+      .snapshots()
+      .map((snap) => snap.docs.map((d) => d.data()).toList());
 
   /// Streams upcoming runs the user has signed up for (paid / reserved a spot).
-  Stream<List<Run>> watchSignedUpRuns({required String uid}) =>
-      _getCollectionReference()
-          .where('signedUpUserIds', arrayContains: uid)
-          .orderBy('startTime')
-          .snapshots()
-          .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<Run>> watchSignedUpRuns({required String uid}) => _runsRef
+      .where('signedUpUserIds', arrayContains: uid)
+      .orderBy('startTime')
+      .snapshots()
+      .map((snap) => snap.docs.map((d) => d.data()).toList());
 
   /// Generates a new unique Firestore document ID for a run without writing it.
-  String generateId() => _getCollectionReference().doc().id;
+  String generateId() => _runsRef.doc().id;
 
   /// Fetches upcoming runs from the given club IDs (max 10 clubs, limit 10 runs).
   Future<List<Run>> fetchUpcomingRunsForClubs(List<String> runClubIds) async {
     if (runClubIds.isEmpty) return [];
     final now = Timestamp.now();
-    final snap = await _getCollectionReference()
+    final snap = await _runsRef
         .where('runClubId', whereIn: runClubIds.take(10).toList())
         .where('startTime', isGreaterThan: now)
         .orderBy('startTime')
@@ -72,13 +70,10 @@ class RunRepository {
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> createRun({required Run run}) =>
-      _getDocumentReference(run.id).set(run);
+  Future<void> createRun({required Run run}) => _runRef(run.id).set(run);
 
-  Future<void> signUpForRun({
-    required String runId,
-    required String userId,
-  }) => _getDocumentReference(runId).update({
+  Future<void> signUpForRun({required String runId, required String userId}) =>
+      _runRef(runId).update({
         'signedUpUserIds': FieldValue.arrayUnion([userId]),
       });
 
@@ -86,35 +81,29 @@ class RunRepository {
   /// Function, which atomically removes them from [signedUpUserIds] and
   /// decrements their gender count.
   Future<void> cancelSignUpViaFunction({required String runId}) =>
-      FirebaseFunctions.instance
-          .httpsCallable('cancelRunSignUp')
-          .call({'runId': runId});
+      _functions.httpsCallable('cancelRunSignUp').call({'runId': runId});
 
-  Future<void> joinWaitlist({
-    required String runId,
-    required String userId,
-  }) => _getDocumentReference(runId).update({
+  Future<void> joinWaitlist({required String runId, required String userId}) =>
+      _runRef(runId).update({
         'waitlistUserIds': FieldValue.arrayUnion([userId]),
       });
 
-  Future<void> leaveWaitlist({
-    required String runId,
-    required String userId,
-  }) => _getDocumentReference(runId).update({
+  Future<void> leaveWaitlist({required String runId, required String userId}) =>
+      _runRef(runId).update({
         'waitlistUserIds': FieldValue.arrayRemove([userId]),
       });
 
   /// Marks all signed-up users as attended via the [markRunAttendance] Cloud
   /// Function. Only callable by the run club's host.
   Future<void> markAttendance({required String runId}) =>
-      FirebaseFunctions.instance
-          .httpsCallable('markRunAttendance')
-          .call({'runId': runId});
+      _functions.httpsCallable('markRunAttendance').call({'runId': runId});
 }
 
-@riverpod
-RunRepository runRepository(Ref ref) =>
-    RunRepository(ref.watch(firebaseFirestoreProvider));
+@Riverpod(keepAlive: true)
+RunRepository runRepository(Ref ref) => RunRepository(
+  ref.watch(firebaseFirestoreProvider),
+  ref.watch(firebaseFunctionsProvider),
+);
 
 @riverpod
 Stream<Run?> watchRun(Ref ref, String runId) =>

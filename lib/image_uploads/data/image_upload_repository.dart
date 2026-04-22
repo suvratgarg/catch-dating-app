@@ -6,15 +6,18 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'image_upload_repository.g.dart';
 
 class ImageUploadRepository {
-  ImageUploadRepository(this._storage);
+  ImageUploadRepository(this._storage, {ImagePicker? picker})
+    : _picker = picker ?? ImagePicker();
 
   final FirebaseStorage _storage;
-  final _picker = ImagePicker();
+  final ImagePicker _picker;
 
   // ── Picking ───────────────────────────────────────────────────────────────
 
-  Future<XFile?> pickImage({int imageQuality = 85}) =>
-      _picker.pickImage(source: ImageSource.gallery, imageQuality: imageQuality);
+  Future<XFile?> pickImage({int imageQuality = 85}) => _picker.pickImage(
+    source: ImageSource.gallery,
+    imageQuality: imageQuality,
+  );
 
   // ── Generic upload ────────────────────────────────────────────────────────
 
@@ -40,18 +43,16 @@ class ImageUploadRepository {
     required String uid,
     required int index,
     required XFile image,
-  }) =>
-      upload(
-        storagePath:
-            'users/$uid/photos/${index}_${DateTime.now().millisecondsSinceEpoch}',
-        image: image,
-      );
+  }) => upload(
+    storagePath:
+        'users/$uid/photos/${index}_${DateTime.now().millisecondsSinceEpoch}',
+    image: image,
+  );
 
   Future<String> uploadRunClubCover({
     required String clubId,
     required XFile image,
-  }) =>
-      upload(storagePath: 'runClubs/$clubId/cover', image: image);
+  }) => upload(storagePath: 'runClubs/$clubId/cover', image: image);
 
   // ── Internal ──────────────────────────────────────────────────────────────
 
@@ -61,6 +62,6 @@ class ImageUploadRepository {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 ImageUploadRepository imageUploadRepository(Ref ref) =>
     ImageUploadRepository(ref.watch(firebaseStorageProvider));

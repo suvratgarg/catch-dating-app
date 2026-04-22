@@ -31,3 +31,33 @@ abstract class RunClub with _$RunClub {
   factory RunClub.fromJson(Map<String, dynamic> json) =>
       _$RunClubFromJson(json);
 }
+
+extension RunClubX on RunClub {
+  bool hasMember(String userId) => memberUserIds.contains(userId);
+
+  RunClub addMember(String userId) {
+    if (hasMember(userId)) {
+      return this;
+    }
+
+    final updatedMemberUserIds = [...memberUserIds, userId];
+    return copyWith(
+      memberUserIds: updatedMemberUserIds,
+      memberCount: updatedMemberUserIds.length,
+    );
+  }
+
+  RunClub removeMember(String userId) {
+    if (!hasMember(userId)) {
+      return this;
+    }
+
+    final updatedMemberUserIds = memberUserIds
+        .where((memberUserId) => memberUserId != userId)
+        .toList(growable: false);
+    return copyWith(
+      memberUserIds: updatedMemberUserIds,
+      memberCount: updatedMemberUserIds.length,
+    );
+  }
+}
