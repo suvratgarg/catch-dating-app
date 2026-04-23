@@ -14,6 +14,17 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Data-only processing (if needed) goes here.
 }
 
+String? chatRouteFromMessageData(Map<String, Object?> data) {
+  final matchId = data['matchId'];
+  if (matchId is! String || matchId.isEmpty) return null;
+  return '/chats/$matchId';
+}
+
+void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
+  final route = chatRouteFromMessageData(data);
+  if (route != null) router.go(route);
+}
+
 class FcmService {
   FcmService(this._db);
 
@@ -73,11 +84,7 @@ class FcmService {
   }
 
   void _handleTap(GoRouter router, RemoteMessage message) {
-    final matchId = message.data['matchId'] as String?;
-    if (matchId != null) {
-      // TODO(bug): route was '/matches/$matchId' but the GoRouter path is '/chats/$matchId' — fix to Routes.chatScreen
-      router.go('/chats/$matchId');
-    }
+    navigateToMessageRoute(router, message.data);
   }
 
   Future<void> _saveToken(String uid, String token) =>

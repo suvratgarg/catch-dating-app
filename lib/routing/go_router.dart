@@ -213,7 +213,9 @@ GoRouter goRouter(Ref ref) {
                     name: Routes.chatScreen.name,
                     builder: (context, state) => ChatScreen(
                       matchId: state.pathParameters['matchId']!,
-                      otherProfile: state.extra as PublicProfile?,
+                      otherProfile: state.extra is PublicProfile
+                          ? state.extra! as PublicProfile
+                          : null,
                     ),
                   ),
                 ],

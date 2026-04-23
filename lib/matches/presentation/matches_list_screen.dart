@@ -6,7 +6,6 @@ import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/presentation/chat_list_tile.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -23,31 +22,34 @@ class _MatchesListScreenState extends ConsumerState<MatchesListScreen> {
   @override
   Widget build(BuildContext context) {
     final uidAsync = ref.watch(uidProvider);
+    final uid = uidAsync.asData?.value;
     final t = CatchTokens.of(context);
+
+    if (uid != null) {
+      ref.listen(matchesForUserProvider(uid), (previous, next) {
+        if (!context.mounted) return;
+        if (previous == null || !previous.hasValue || !next.hasValue) {
+          return;
+        }
+        final prevIds = previous.value!.map((m) => m.id).toSet();
+        final newMatches = next.value!
+            .where((m) => !prevIds.contains(m.id))
+            .toList();
+        for (final match in newMatches) {
+          showMatchCelebration(context, ref, match, uid);
+        }
+      });
+    }
 
     return Scaffold(
       appBar: AppBar(title: const Text('Matches')),
       body: AsyncValueWidget(
         value: uidAsync,
-        data: (uid) {
-          if (uid == null) return const SizedBox.shrink();
-
-          ref.listen(matchesForUserProvider(uid), (previous, next) {
-            if (!context.mounted) return;
-            if (previous == null || !previous.hasValue || !next.hasValue) {
-              return;
-            }
-            final prevIds = previous.value!.map((m) => m.id).toSet();
-            final newMatches = next.value!
-                .where((m) => !prevIds.contains(m.id))
-                .toList();
-            for (final match in newMatches) {
-              showMatchCelebration(context, ref, match, uid);
-            }
-          });
+        data: (resolvedUid) {
+          if (resolvedUid == null) return const SizedBox.shrink();
 
           return AsyncValueWidget(
-            value: ref.watch(matchesForUserProvider(uid)),
+            value: ref.watch(matchesForUserProvider(resolvedUid)),
             data: (matches) => matches.isEmpty
                 ? Center(
                     child: Column(
@@ -72,17 +74,12 @@ class _MatchesListScreenState extends ConsumerState<MatchesListScreen> {
                     separatorBuilder: (_, _) => const Divider(height: 1),
                     itemBuilder: (context, i) {
                       final match = matches[i];
-                      final otherUid = match.otherId(uid);
-                      final profileAsync = ref.watch(
-                        publicProfileProvider(otherUid),
-                      );
                       return ChatListTile(
                         match: match,
-                        currentUid: uid,
+                        currentUid: resolvedUid,
                         onTap: () => context.goNamed(
                           Routes.chatScreen.name,
                           pathParameters: {'matchId': match.id},
-                          extra: profileAsync.asData?.value,
                         ),
                       );
                     },

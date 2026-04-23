@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "catch-dating-app-64e51"
+    "default": "catch-dating-app-64e51",
+    "dev": "catch-dating-app-64e51"
   }
 }

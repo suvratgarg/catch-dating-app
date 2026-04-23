@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -14,14 +15,26 @@ class MyApp extends ConsumerWidget {
     final forceUpdate = ref.watch(forceUpdateRequiredProvider);
 
     return MaterialApp.router(
-      title: 'Catch',
+      title: AppConfig.appTitle,
       debugShowCheckedModeBanner: false,
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       routerConfig: goRouter,
-      builder: forceUpdate
-          ? (context, _) => const UpdateRequiredScreen()
-          : null,
+      builder: (context, child) {
+        final content = forceUpdate
+            ? const UpdateRequiredScreen()
+            : (child ?? const SizedBox.shrink());
+
+        if (!AppConfig.shouldShowEnvironmentBanner) {
+          return content;
+        }
+
+        return Banner(
+          location: BannerLocation.topStart,
+          message: AppConfig.environmentBannerLabel,
+          child: content,
+        );
+      },
     );
   }
 }

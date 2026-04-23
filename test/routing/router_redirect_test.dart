@@ -140,5 +140,29 @@ void main() {
         isNull,
       );
     });
+
+    test('invalid from values are discarded on resume', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData('user-1'),
+          userProfileAsync: AsyncData(_completeUser()),
+          location: '/auth?from=chats/match-1',
+          matchedLocation: Routes.authScreen.path,
+        ),
+        '/',
+      );
+    });
+
+    test('transient pending destinations resume to dashboard', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData('user-1'),
+          userProfileAsync: AsyncData(_completeUser()),
+          location: '/loading?from=%2Fauth',
+          matchedLocation: Routes.loadingScreen.path,
+        ),
+        '/',
+      );
+    });
   });
 }

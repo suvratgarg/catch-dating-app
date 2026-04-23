@@ -13,20 +13,46 @@ class DashboardScreen extends ConsumerWidget {
     final userAsync = ref.watch(userProfileStreamProvider);
 
     return userAsync.when(
-      loading: () =>
-          const Scaffold(body: Center(child: CircularProgressIndicator())),
-      error: (e, _) => Scaffold(body: Center(child: Text('Error: $e'))),
+      loading: () => const _DashboardLoadingScreen(),
+      error: (e, _) => const _DashboardMessageScreen(
+        message: 'Unable to load your dashboard.',
+      ),
       data: (user) {
         if (user == null) return DashboardEmpty(user: null);
 
         final signedUpRunsAsync = ref.watch(signedUpRunsProvider(user.uid));
-        final hasBookedRun =
-            signedUpRunsAsync.asData?.value.isNotEmpty ?? false;
-
-        return hasBookedRun
-            ? DashboardFull(user: user)
-            : DashboardEmpty(user: user);
+        return signedUpRunsAsync.when(
+          loading: () => const _DashboardLoadingScreen(),
+          error: (e, _) => const _DashboardMessageScreen(
+            message: 'Unable to load your booked runs.',
+          ),
+          data: (signedUpRuns) => signedUpRuns.isEmpty
+              ? DashboardEmpty(user: user)
+              : DashboardFull(user: user, signedUpRuns: signedUpRuns),
+        );
       },
+    );
+  }
+}
+
+class _DashboardLoadingScreen extends StatelessWidget {
+  const _DashboardLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}
+
+class _DashboardMessageScreen extends StatelessWidget {
+  const _DashboardMessageScreen({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: Center(child: Text(message, textAlign: TextAlign.center)),
     );
   }
 }

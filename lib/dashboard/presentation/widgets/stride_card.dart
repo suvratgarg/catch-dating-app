@@ -1,15 +1,18 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class StrideCard extends ConsumerWidget {
-  const StrideCard({super.key, required this.tokens, required this.uid});
+class StrideCard extends StatelessWidget {
+  const StrideCard({
+    super.key,
+    required this.tokens,
+    required this.attendedRuns,
+  });
 
   final CatchTokens tokens;
-  final String uid;
+  final List<Run> attendedRuns;
 
   static const _days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
@@ -18,17 +21,15 @@ class StrideCard extends ConsumerWidget {
       DateTime(date.year, date.month, date.day - (date.weekday - 1));
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = tokens;
-    final attendedAsync = ref.watch(attendedRunsProvider(uid));
-    final attended = attendedAsync.asData?.value ?? [];
 
     final now = DateTime.now();
     final weekStart = _weekStart(now);
     final weekEnd = weekStart.add(const Duration(days: 7));
     final isToday = now.weekday - 1; // 0 = Mon
 
-    final thisWeek = attended
+    final thisWeek = attendedRuns
         .where(
           (r) =>
               r.startTime.isAfter(weekStart) && r.startTime.isBefore(weekEnd),

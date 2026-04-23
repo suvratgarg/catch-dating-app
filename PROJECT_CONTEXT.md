@@ -82,7 +82,8 @@ Entry points:
 
 Startup flow in [`lib/main.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/main.dart):
 
-- Initializes Firebase.
+- Resolves the app environment from `APP_ENV` (`dev`, `staging`, or `prod`).
+- Initializes Firebase from the matching `lib/firebase_options_<env>.dart` file.
 - Optionally points Auth, Firestore, Storage, and Functions at emulators.
 - Registers global error handlers.
 - Boots the app inside Riverpod `ProviderScope`.
@@ -500,6 +501,22 @@ Run app:
 flutter run
 ```
 
+Preferred environment-aware runs:
+
+```bash
+./tool/flutter_with_env.sh dev run
+./tool/flutter_with_env.sh staging run
+./tool/flutter_with_env.sh prod run
+```
+
+Switch active native/web Firebase files:
+
+```bash
+./tool/use_firebase_environment.sh dev
+./tool/use_firebase_environment.sh staging
+./tool/use_firebase_environment.sh prod
+```
+
 Use emulators:
 
 ```bash
@@ -525,11 +542,19 @@ cd functions
 npm install
 ```
 
+Firebase deploys by alias:
+
+```bash
+./tool/firebase_with_env.sh dev deploy --only functions,firestore,storage
+./tool/firebase_with_env.sh staging deploy --only functions
+```
+
 Useful local docs:
 
 - Repo readme: [`README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/README.md)
 - Test plan: [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md)
 - Audit tracker: [`CLAUDE.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/CLAUDE.md)
+- Firebase environments: [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md)
 
 ## 12. Generated files and codegen rules
 
@@ -672,6 +697,26 @@ Files:
 
 - [`lib/runs/presentation/widgets/run_detail_body.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/widgets/run_detail_body.dart)
 - [`lib/dashboard/presentation/widgets/quick_actions.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/dashboard/presentation/widgets/quick_actions.dart)
+
+### 14.8 `staging` and `prod` are scaffolded, not provisioned
+
+The repo now supports `dev`, `staging`, and `prod`, but only `dev` is fully
+configured today.
+
+Files involved:
+
+- [`lib/core/app_config.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/app_config.dart)
+- [`lib/firebase_options_staging.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_staging.dart)
+- [`lib/firebase_options_prod.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_prod.dart)
+- [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md)
+
+Impact:
+
+- Selecting `staging` or `prod` now fails explicitly instead of silently using
+  the dev Firebase project.
+- Native Firebase files must be switched with
+  `./tool/use_firebase_environment.sh <env>` before building a different
+  environment.
 
 ## 15. Testing status
 

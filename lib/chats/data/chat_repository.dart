@@ -6,6 +6,19 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'chat_repository.g.dart';
 
+String normalizeOutgoingChatText(String text) {
+  final normalized = text.trim();
+  if (normalized.isEmpty) {
+    throw ArgumentError.value(text, 'text', 'Message text must not be empty.');
+  }
+  return normalized;
+}
+
+String buildChatPreviewText(String text, {int maxLength = 80}) {
+  if (text.length <= maxLength) return text;
+  return '${text.substring(0, maxLength)}…';
+}
+
 class ChatRepository {
   const ChatRepository(this._db);
 
@@ -42,6 +55,7 @@ class ChatRepository {
     required String senderId,
     required String text,
   }) async {
+    final normalizedText = normalizeOutgoingChatText(text);
     final now = FieldValue.serverTimestamp();
     final batch = _db.batch();
 
@@ -52,13 +66,15 @@ class ChatRepository {
         .collection('messages')
         .doc();
 
-    batch.set(msgRef, {'senderId': senderId, 'text': text, 'sentAt': now});
+    batch.set(msgRef, {
+      'senderId': senderId,
+      'text': normalizedText,
+      'sentAt': now,
+    });
 
     batch.update(_matchRef(matchId), {
       'lastMessageAt': now,
-      'lastMessagePreview': text.length > 80
-          ? '${text.substring(0, 80)}…'
-          : text,
+      'lastMessagePreview': buildChatPreviewText(normalizedText),
       'lastMessageSenderId': senderId,
     });
 

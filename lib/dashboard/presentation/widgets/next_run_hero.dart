@@ -3,17 +3,15 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/static_map_dark.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class NextRunHero extends ConsumerWidget {
-  const NextRunHero({super.key, required this.tokens, required this.uid});
+class NextRunHero extends StatelessWidget {
+  const NextRunHero({super.key, required this.tokens, required this.nextRun});
 
   final CatchTokens tokens;
-  final String uid;
+  final Run nextRun;
 
   static String _countdown(DateTime startTime) {
     final diff = startTime.difference(DateTime.now());
@@ -26,21 +24,8 @@ class NextRunHero extends ConsumerWidget {
       DateFormat('EEE d MMM · h:mm a').format(dt);
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = tokens;
-    final runsAsync = ref.watch(signedUpRunsProvider(uid));
-
-    final Run? nextRun = runsAsync.asData?.value
-        .where((r) => r.isUpcoming)
-        .fold<Run?>(
-          null,
-          (best, r) =>
-              best == null || r.startTime.isBefore(best.startTime) ? r : best,
-        );
-
-    if (nextRun == null) {
-      return const SizedBox.shrink();
-    }
 
     return Container(
       padding: const EdgeInsets.all(Sizes.p18),

@@ -1,20 +1,20 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Shows a swipe-window callout for the most recent attended run that still
-/// has an open swipe window.
-/// Returns [SizedBox.shrink] when no active window exists.
-class CatchesCallout extends ConsumerWidget {
-  const CatchesCallout({super.key, required this.tokens, required this.uid});
+class CatchesCallout extends StatelessWidget {
+  const CatchesCallout({
+    super.key,
+    required this.tokens,
+    required this.activeRun,
+  });
 
   final CatchTokens tokens;
-  final String uid;
+  final Run activeRun;
 
   static String _formatCountdown(Duration remaining) {
     final h = remaining.inHours;
@@ -23,16 +23,10 @@ class CatchesCallout extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = tokens;
-    final attendedAsync = ref.watch(attendedRunsProvider(uid));
-    final attended = attendedAsync.asData?.value ?? [];
 
     final now = DateTime.now();
-    final activeRun = latestRunWithOpenSwipeWindow(attended, now: now);
-
-    if (activeRun == null) return const SizedBox.shrink();
-
     final windowClose = swipeWindowClosesAt(activeRun);
     final remaining = windowClose.difference(now);
 

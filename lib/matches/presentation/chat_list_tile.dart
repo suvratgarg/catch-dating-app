@@ -35,73 +35,62 @@ class ChatListTile extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final unreadCount = match.unreadCounts[currentUid] ?? 0;
     final hasUnread = unreadCount > 0;
+    final profile = profileAsync.asData?.value;
+    final name =
+        profile?.name ?? (profileAsync.isLoading ? 'Loading…' : 'Unknown');
+    final photoUrl = profile?.photoUrls.isNotEmpty == true
+        ? profile!.photoUrls.first
+        : null;
 
-    return profileAsync.when(
-      loading: () => const ListTile(
-        leading: CircleAvatar(child: Icon(Icons.person)),
-        title: Text('Loading…'),
+    final String previewText;
+    if (match.lastMessagePreview == null) {
+      previewText = 'You matched!';
+    } else if (match.lastMessageSenderId == currentUid) {
+      previewText = 'You: ${match.lastMessagePreview}';
+    } else {
+      previewText = match.lastMessagePreview!;
+    }
+
+    final avatar = CircleAvatar(
+      radius: 28,
+      backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+      backgroundColor: t.primarySoft,
+      child: photoUrl == null
+          ? Text(
+              name.isNotEmpty ? name[0].toUpperCase() : '?',
+              style: CatchTextStyles.labelMd(context, color: t.primary),
+            )
+          : null,
+    );
+
+    return ListTile(
+      onTap: onTap,
+      leading: hasUnread
+          ? Badge(label: Text('$unreadCount'), child: avatar)
+          : avatar,
+      title: Text(
+        name,
+        style: CatchTextStyles.labelLg(
+          context,
+        ).copyWith(fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600),
       ),
-      error: (_, _) => const SizedBox.shrink(),
-      data: (profile) {
-        final name = profile?.name ?? 'Unknown';
-        final photoUrl = profile?.photoUrls.isNotEmpty == true
-            ? profile!.photoUrls.first
-            : null;
-
-        final String previewText;
-        if (match.lastMessagePreview == null) {
-          previewText = 'You matched!';
-        } else if (match.lastMessageSenderId == currentUid) {
-          previewText = 'You: ${match.lastMessagePreview}';
-        } else {
-          previewText = match.lastMessagePreview!;
-        }
-
-        final avatar = CircleAvatar(
-          radius: 28,
-          backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-          backgroundColor: t.primarySoft,
-          child: photoUrl == null
-              ? Text(
-                  name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: CatchTextStyles.labelMd(context, color: t.primary),
-                )
-              : null,
-        );
-
-        return ListTile(
-          onTap: onTap,
-          leading: hasUnread
-              ? Badge(label: Text('$unreadCount'), child: avatar)
-              : avatar,
-          title: Text(
-            name,
-            style: CatchTextStyles.labelLg(context).copyWith(
-              fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600,
-            ),
-          ),
-          subtitle: Text(
-            previewText,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.bodySm(
-              context,
-              color: hasUnread ? t.ink : t.ink2,
-              weight: hasUnread ? FontWeight.w500 : FontWeight.w400,
-            ),
-          ),
-          trailing: Text(
-            _formatTime(match.lastMessageAt ?? match.createdAt),
-            style:
-                CatchTextStyles.caption(
-                  context,
-                  color: hasUnread ? t.primary : t.ink2,
-                ).copyWith(
-                  fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal,
-                ),
-          ),
-        );
-      },
+      subtitle: Text(
+        previewText,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: CatchTextStyles.bodySm(
+          context,
+          color: hasUnread ? t.ink : t.ink2,
+          weight: hasUnread ? FontWeight.w500 : FontWeight.w400,
+        ),
+      ),
+      trailing: Text(
+        _formatTime(match.lastMessageAt ?? match.createdAt),
+        style: CatchTextStyles.caption(
+          context,
+          color: hasUnread ? t.primary : t.ink2,
+        ).copyWith(fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal),
+      ),
     );
   }
 }

@@ -1,27 +1,18 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommend_card.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class Recommendations extends ConsumerWidget {
-  const Recommendations({super.key, required this.tokens});
+class Recommendations extends StatelessWidget {
+  const Recommendations({super.key, required this.tokens, required this.runs});
 
   final CatchTokens tokens;
+  final List<Run> runs;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = tokens;
-    final userAsync = ref.watch(userProfileStreamProvider);
-    final user = userAsync.asData?.value;
-
-    final clubIds = user?.joinedRunClubIds ?? [];
-    final runsAsync = ref.watch(recommendedRunsProvider(clubIds));
-    final runs = runsAsync.asData?.value ?? [];
-
-    if (runs.isEmpty) return const SizedBox.shrink();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

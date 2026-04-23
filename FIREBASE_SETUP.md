@@ -1,6 +1,10 @@
 # Firebase Setup
 
-Firebase project: `catch-dating-app-64e51`
+Firebase environments:
+
+- `dev` -> configured today and backed by `catch-dating-app-64e51`
+- `staging` -> scaffolded in code, not configured yet
+- `prod` -> scaffolded in code, not configured yet
 
 Supported Flutter platforms:
 - `android`
@@ -24,9 +28,13 @@ Firebase services used in-app:
 - [firebase.json](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase.json)
 - [.firebaserc](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/.firebaserc)
 - [lib/firebase_options.dart](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options.dart)
-- [android/app/google-services.json](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/android/app/google-services.json)
-- [ios/Runner/GoogleService-Info.plist](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/ios/Runner/GoogleService-Info.plist)
-- [macos/Runner/GoogleService-Info.plist](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/macos/Runner/GoogleService-Info.plist)
+- [lib/firebase_options_dev.dart](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_dev.dart)
+- [lib/firebase_options_staging.dart](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_staging.dart)
+- [lib/firebase_options_prod.dart](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_prod.dart)
+- [firebase/README.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md)
+- [tool/use_firebase_environment.sh](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/use_firebase_environment.sh)
+- [tool/flutter_with_env.sh](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/flutter_with_env.sh)
+- [tool/firebase_with_env.sh](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/firebase_with_env.sh)
 - [ios/Runner/Runner.entitlements](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/ios/Runner/Runner.entitlements)
 - [ios/Runner/Info.plist](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/ios/Runner/Info.plist)
 - [macos/Runner/DebugProfile.entitlements](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/macos/Runner/DebugProfile.entitlements)
@@ -36,10 +44,41 @@ Firebase services used in-app:
 
 ## Current Platform State
 
-- Android Firebase is configured through `google-services.json` and the Google Services Gradle plugin.
-- iOS Firebase is configured through `GoogleService-Info.plist`, `Runner.entitlements`, and `UIBackgroundModes` (`fetch`, `remote-notification`).
-- macOS Firebase is configured through `GoogleService-Info.plist`. FCM code is present, but APNs signing is still blocked by Apple Developer provisioning on this machine.
-- Web Firebase is configured through `firebase_options.dart`; web push also depends on `firebase-messaging-sw.js` and service worker registration in `index.html`.
+- The active app environment is selected by `APP_ENV` in `tool/dart_defines/<env>.json`.
+- Dart Firebase options now route through `lib/firebase_options.dart`, which chooses among `dev`, `staging`, and `prod`.
+- Android Firebase still depends on `google-services.json` plus the Google Services Gradle plugin.
+- iOS Firebase still depends on `GoogleService-Info.plist`, `Runner.entitlements`, and `UIBackgroundModes` (`fetch`, `remote-notification`).
+- macOS Firebase still depends on `GoogleService-Info.plist`. FCM code is present, but APNs signing is still blocked by Apple Developer provisioning on this machine.
+- Web Firebase still depends on both the Dart options file and `web/firebase-messaging-sw.js`.
+- `./tool/use_firebase_environment.sh <env>` is the switch point for native and web Firebase files.
+
+## Environment Workflow
+
+Activate an environment's native/web files:
+
+```bash
+./tool/use_firebase_environment.sh dev
+./tool/use_firebase_environment.sh staging
+./tool/use_firebase_environment.sh prod
+```
+
+Run Flutter with the matching `APP_ENV`:
+
+```bash
+./tool/flutter_with_env.sh dev run
+./tool/flutter_with_env.sh staging run
+./tool/flutter_with_env.sh prod build apk
+```
+
+Run Firebase CLI commands against the matching alias:
+
+```bash
+./tool/firebase_with_env.sh dev deploy --only functions,firestore,storage
+./tool/firebase_with_env.sh staging deploy --only functions
+```
+
+Today only `dev` is mapped in `.firebaserc`.
+Add `staging` and `prod` aliases after those Firebase projects exist.
 
 ## Push Notifications
 
@@ -81,17 +120,33 @@ Push messaging can be toggled explicitly:
 flutter run --dart-define=ENABLE_PUSH_MESSAGING=true
 ```
 
-## Re-running FlutterFire
+## Adding Staging Or Prod
 
-If Firebase app IDs or supported platforms change, rerun:
+1. Create the Firebase project plus Android, iOS, macOS, and web apps.
+2. Generate the environment's Dart Firebase options:
 
 ```bash
 flutterfire configure \
-  --project=catch-dating-app-64e51 \
-  --platforms=android,ios,macos,web
+  --project=<firebase-project-id> \
+  --platforms=android,ios,macos,web \
+  --out=lib/firebase_options_staging.dart
 ```
 
-After re-running, re-check these native customizations:
+3. Save the downloaded native Firebase files into:
+
+```text
+firebase/<env>/android/google-services.json
+firebase/<env>/ios/GoogleService-Info.plist
+firebase/<env>/macos/GoogleService-Info.plist
+firebase/<env>/web/firebase-messaging-sw.js
+```
+
+4. Add the Firebase CLI alias with `firebase use --add`.
+5. Run `./tool/use_firebase_environment.sh <env>` to activate it.
+
+If Firebase app IDs or supported platforms change for the existing dev project,
+rerun `flutterfire configure` for dev and then re-check these native
+customizations:
 
 - The precompiled Firestore overrides in [ios/Podfile](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/ios/Podfile) and [macos/Podfile](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/macos/Podfile)
 - The Razorpay iOS podspec override in [ios/PodspecOverrides/razorpay-core-pod.podspec.json](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/ios/PodspecOverrides/razorpay-core-pod.podspec.json)

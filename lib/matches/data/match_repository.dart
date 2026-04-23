@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart' show StreamProvider;
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'match_repository.g.dart';
@@ -33,6 +34,10 @@ class MatchRepository {
       .snapshots()
       .map((snap) => snap.docs.map((d) => d.data()).toList());
 
+  Stream<Match?> watchMatch({required String matchId}) => _matchRef(
+    matchId,
+  ).snapshots().map((doc) => doc.exists ? doc.data() : null);
+
   // ── Write ─────────────────────────────────────────────────────────────────
 
   /// Resets the unread count for [uid] in the given match to zero.
@@ -51,6 +56,13 @@ MatchRepository matchRepository(Ref ref) =>
 @riverpod
 Stream<List<Match>> matchesForUser(Ref ref, String uid) =>
     ref.watch(matchRepositoryProvider).watchMatchesForUser(uid: uid);
+
+final matchStreamProvider = StreamProvider.autoDispose.family<Match?, String>((
+  ref,
+  matchId,
+) {
+  return ref.watch(matchRepositoryProvider).watchMatch(matchId: matchId);
+});
 
 @riverpod
 int totalUnreadCount(Ref ref, String uid) {

@@ -1,0 +1,6 @@
+{
+  "APP_ENV": "prod",
+  "USE_FIREBASE_EMULATORS": "false",
+  "ENABLE_PUSH_MESSAGING": "true",
+  "FIREBASE_WEB_VAPID_KEY": ""
+}
