@@ -48,7 +48,7 @@ Firebase services used in-app:
 - Dart Firebase options now route through `lib/firebase_options.dart`, which chooses among `dev`, `staging`, and `prod`.
 - Android Firebase still depends on `google-services.json` plus the Google Services Gradle plugin.
 - iOS Firebase still depends on `GoogleService-Info.plist`, `Runner.entitlements`, and `UIBackgroundModes` (`fetch`, `remote-notification`).
-- macOS Firebase still depends on `GoogleService-Info.plist`. FCM code is present, but APNs signing is still blocked by Apple Developer provisioning on this machine.
+- macOS Firebase still depends on `GoogleService-Info.plist`. FCM code is present, but macOS push is intentionally disabled until macOS becomes a supported push target.
 - Web Firebase still depends on both the Dart options file and `web/firebase-messaging-sw.js`.
 - `./tool/use_firebase_environment.sh <env>` is the switch point for native and web Firebase files.
 
@@ -83,9 +83,18 @@ Add `staging` and `prod` aliases after those Firebase projects exist.
 ## Push Notifications
 
 - Android push is repo-complete. Runtime permission is requested in-app where needed.
-- iOS push is repo-complete for code/config, but APNs still requires Apple Developer + Firebase Console setup.
-- macOS push is not fully activated in-repo yet because the local Apple Developer provisioning profile does not currently include Push Notifications.
+- iOS push is repo-complete for code/config. Apple Developer has Push Notifications enabled for `com.example.catchDatingApp`, and Firebase Cloud Messaging has development and production APNs auth keys uploaded for the iOS app.
+- macOS push is intentionally disabled in app code and entitlements because macOS is only a debugging target right now.
 - Web push requires a VAPID key at runtime.
+
+## App Check / App Attest
+
+- Firebase App Check is registered for Android with Play Integrity.
+- Firebase App Check is registered for iOS with App Attest.
+- Apple Developer has App Attest enabled for bundle ID `com.example.catchDatingApp`.
+- `ios/Runner/Runner.entitlements` declares `com.apple.developer.devicecheck.appattest-environment = development` so development-signed iOS builds carry the App Attest entitlement.
+- Web App Check is not registered yet. Register the web app with reCAPTCHA Enterprise before enabling App Check enforcement for web clients.
+- The Firebase App Check API enforcement screen currently reports "Start using" for Firestore, Storage, Auth, and related APIs; do not turn on enforcement until live clients are known to attach valid App Check tokens in the target environment.
 
 Web push run example:
 
@@ -97,14 +106,14 @@ flutter run -d chrome \
 
 ## Apple FCM Checklist
 
-Still required outside the repo:
+Current state and remaining checks:
 
-1. In Apple Developer, enable Push Notifications for bundle ID `com.example.catchDatingApp`.
-2. In Firebase Console for project `catch-dating-app-64e51`, upload an APNs auth key in Cloud Messaging.
+1. Apple Developer Push Notifications are enabled for bundle ID `com.example.catchDatingApp`.
+2. Firebase Console project `catch-dating-app-64e51` has APNs auth keys uploaded for the iOS app.
 3. Accept the latest Apple Developer Program License Agreement for the team account if Xcode reports a PLA update is required.
-4. Regenerate or refresh the Apple provisioning profiles after Push Notifications is enabled.
+4. Regenerate or refresh Apple provisioning profiles after changing Apple capabilities such as App Attest.
 5. Test on a real iPhone for iOS push. The iOS simulator cannot receive APNs pushes.
-6. Re-enable the macOS APNs entitlement in `Runner/DebugProfile.entitlements` and `Runner/Release.entitlements`, then test on a signed macOS build with notification permission granted.
+6. If macOS ever becomes a supported push target, re-enable the macOS APNs entitlement in `Runner/DebugProfile.entitlements` and `Runner/Release.entitlements`, allow macOS in `AppConfig.supportsPushMessagingOnCurrentPlatform`, then test on a signed macOS build with notification permission granted.
 
 ## Emulator / Local Dev Flags
 

@@ -26,10 +26,29 @@ require File.expand_path(File.join('packages', 'flutter_tools', 'bin', 'podhelpe
 
 flutter_macos_podfile_setup
 
+def normalize_versioned_sdk_framework_paths(pods_project)
+  pods_project.objects.each do |object|
+    next unless object.respond_to?(:source_tree) && object.respond_to?(:path)
+    next unless object.source_tree == 'DEVELOPER_DIR' && object.path
+
+    object.path = object.path
+      .gsub(%r{Platforms/MacOSX\.platform/Developer/SDKs/MacOSX[^/]*\.sdk}, 'Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk')
+  end
+end
+
+def enforce_minimum_deployment_target(config, key, minimum_version)
+  current_version = config.build_settings[key]
+  if current_version.nil? || Gem::Version.new(current_version) < Gem::Version.new(minimum_version)
+    config.build_settings[key] = minimum_version
+  end
+rescue ArgumentError
+  config.build_settings[key] = minimum_version
+end
+
 target 'Runner' do
   use_frameworks!
 
-  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '12.9.0'
+  pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '12.12.0'
   flutter_install_all_macos_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do
     inherit! :search_paths
@@ -39,5 +58,12 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_macos_build_settings(target)
+    target.build_configurations.each do |config|
+      enforce_minimum_deployment_target(config, 'MACOSX_DEPLOYMENT_TARGET', '10.15')
+    end
   end
+
+  # CocoaPods/xcodeproj 1.27 emits versioned SDK framework paths that can lag
+  # behind the installed Xcode SDK and make the workspace lose destinations.
+  normalize_versioned_sdk_framework_paths(installer.pods_project)
 end

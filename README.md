@@ -97,10 +97,12 @@ Only the `dev` alias is wired today. Add `staging` and `prod` with
 
 - Paid Razorpay booking is enabled on Android and iOS only.
 - Web and macOS builds disable paid booking until a supported checkout flow is added for those platforms.
-- Push notifications are wired in-repo for Android, iOS, macOS, and web.
-  Apple push still needs APNs setup in Apple Developer and Firebase Console.
-  macOS push is additionally blocked until the Apple team provisioning profile includes Push Notifications.
+- Push notifications are wired in-repo for Android and iOS.
+  Apple Developer has Push Notifications enabled for `com.example.catchDatingApp`, and Firebase Cloud Messaging has APNs auth keys uploaded for the iOS app.
+  macOS push is intentionally disabled because macOS is only a debugging target right now.
   Web still needs a valid Firebase Web Push VAPID key.
+- Firebase App Check is registered for Android with Play Integrity and iOS with App Attest. Web App Check is not registered yet.
+- iOS App Attest is enabled on the Apple App ID and declared in `ios/Runner/Runner.entitlements` for development-signed builds.
 
 ## Verification
 
@@ -108,8 +110,10 @@ Commands used during this config pass:
 
 ```bash
 flutter analyze
-flutter build web --debug
-flutter build apk --debug
-flutter build macos --debug
-flutter build ios --simulator --no-codesign
+flutter build web --dart-define=APP_ENV=dev
+flutter build apk --dart-define=APP_ENV=dev
+flutter build macos --dart-define=APP_ENV=dev
+flutter build ios --simulator --no-codesign --dart-define=APP_ENV=dev
+flutter build ios --no-codesign --dart-define=APP_ENV=dev
+flutter build ios --dart-define=APP_ENV=dev
 ```

@@ -58,6 +58,19 @@ class AppConfig {
     defaultValue: true,
   );
 
+  static bool get supportsPushMessagingOnCurrentPlatform {
+    if (!enablePushMessaging) return false;
+
+    if (kIsWeb) {
+      return firebaseWebVapidKey.isNotEmpty;
+    }
+
+    return switch (defaultTargetPlatform) {
+      TargetPlatform.android || TargetPlatform.iOS => true,
+      _ => false,
+    };
+  }
+
   static const String firebaseWebVapidKey = String.fromEnvironment(
     'FIREBASE_WEB_VAPID_KEY',
     defaultValue: '',

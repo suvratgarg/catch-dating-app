@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -30,22 +30,8 @@ class FcmService {
 
   final FirebaseFirestore _db;
 
-  bool get isSupportedPlatform {
-    if (!AppConfig.enablePushMessaging) {
-      return false;
-    }
-
-    if (kIsWeb) {
-      return AppConfig.firebaseWebVapidKey.isNotEmpty;
-    }
-
-    return switch (defaultTargetPlatform) {
-      TargetPlatform.android ||
-      TargetPlatform.iOS ||
-      TargetPlatform.macOS => true,
-      _ => false,
-    };
-  }
+  bool get isSupportedPlatform =>
+      AppConfig.supportsPushMessagingOnCurrentPlatform;
 
   /// Call once when the authenticated shell mounts.
   Future<void> initialize({

@@ -41,7 +41,7 @@ Future<void> _initializeFirebaseServices() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _activateFirebaseAppCheck();
 
-  if (AppConfig.enablePushMessaging) {
+  if (AppConfig.supportsPushMessagingOnCurrentPlatform) {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
   }
 
