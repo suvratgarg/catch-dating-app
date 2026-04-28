@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
@@ -13,9 +15,13 @@ import 'package:catch_dating_app/runs/presentation/widgets/run_photo_header.dart
 import 'package:catch_dating_app/runs/presentation/widgets/run_stats_grid.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_where_card.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
+
+typedef RunShareHandler = Future<void> Function(BuildContext context, Run run);
 
 class RunDetailBody extends ConsumerWidget {
   const RunDetailBody({
@@ -24,18 +30,21 @@ class RunDetailBody extends ConsumerWidget {
     required this.userProfile,
     required this.runClubId,
     required this.reviews,
+    this.onShareRun,
   });
 
   final Run run;
   final UserProfile userProfile;
   final String runClubId;
   final List<Review> reviews;
+  final RunShareHandler? onShareRun;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final run = this.run;
     final userProfile = this.userProfile;
+    final isSaved = userProfile.savedRunIds.contains(run.id);
 
     ref.listen(RunBookingController.bookMutation, (prev, next) {
       if (prev?.isPending == true && next.isSuccess) {
@@ -76,24 +85,31 @@ class RunDetailBody extends ConsumerWidget {
             actions: [
               Padding(
                 padding: const EdgeInsets.all(8),
-                child: IconBtn(
-                  background: t.surface,
-                  // TODO: implement share. Use share_plus to share a deep-link
-                  // like https://catch.app/runs/${run.id}
-                  onTap: () {},
-                  child: Icon(Icons.ios_share_rounded, size: 18, color: t.ink),
+                child: Builder(
+                  builder: (buttonContext) => IconBtn(
+                    background: t.surface,
+                    onTap: () => unawaited(
+                      (onShareRun ?? _shareRun)(buttonContext, run),
+                    ),
+                    child: Icon(
+                      Icons.ios_share_rounded,
+                      size: 18,
+                      color: t.ink,
+                    ),
+                  ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
                 child: IconBtn(
                   background: t.surface,
-                  // TODO: implement bookmark/save. Decide whether this persists
-                  // to Firestore (savedRunIds on UserProfile) or local prefs, then
-                  // wire a toggle mutation and swap the icon to filled when saved.
-                  onTap: () {},
+                  onTap: () => unawaited(
+                    _toggleSavedRun(context, ref, run, userProfile, isSaved),
+                  ),
                   child: Icon(
-                    Icons.bookmark_border_rounded,
+                    isSaved
+                        ? Icons.bookmark_rounded
+                        : Icons.bookmark_border_rounded,
                     size: 18,
                     color: t.ink,
                   ),
@@ -163,6 +179,57 @@ class RunDetailBody extends ConsumerWidget {
         ],
       ),
       bottomNavigationBar: RunDetailCta(run: run, userProfile: userProfile),
+    );
+  }
+}
+
+Future<void> _shareRun(BuildContext context, Run run) async {
+  final box = context.findRenderObject() as RenderBox?;
+  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+  final uri = Uri.https(
+    'catchdates.com',
+    '/clubs/run-clubs/${run.runClubId}/runs/${run.id}',
+  );
+
+  try {
+    await SharePlus.instance.share(
+      ShareParams(
+        text:
+            'Join me for ${run.title} at ${run.meetingPoint}: ${uri.toString()}',
+        subject: run.title,
+        sharePositionOrigin: origin,
+      ),
+    );
+  } on Object {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Could not open share sheet.')),
+    );
+  }
+}
+
+Future<void> _toggleSavedRun(
+  BuildContext context,
+  WidgetRef ref,
+  Run run,
+  UserProfile userProfile,
+  bool isSaved,
+) async {
+  try {
+    final repository = ref.read(userProfileRepositoryProvider);
+    if (isSaved) {
+      await repository.unsaveRun(uid: userProfile.uid, runId: run.id);
+    } else {
+      await repository.saveRun(uid: userProfile.uid, runId: run.id);
+    }
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(isSaved ? 'Run removed.' : 'Run saved.')),
+    );
+  } on Object {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Could not update saved runs.')),
     );
   }
 }

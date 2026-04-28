@@ -1,24 +1,27 @@
+/* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import Razorpay from "razorpay";
 import {verifyRazorpayPaymentHandler} from "./verifyRazorpayPayment";
 
-test("verifyRazorpayPaymentHandler books the trusted run from Razorpay metadata", async () => {
-  const paymentDoc = createPaymentDocRecorder();
-  const signUpCalls: Array<{runId: string; userId: string}> = [];
-  const result = await verifyRazorpayPaymentHandler(
-    buildRequest({
-      auth: {uid: "runner-1"},
-      data: {
-        paymentId: "pay_123",
-        orderId: "order_123",
-        signature: "sig_123",
-      },
-    }),
-    {
-      firestore: () => createPaymentsFirestore(paymentDoc),
-      createClient: () =>
+test(
+  "verifyRazorpayPaymentHandler books trusted run from Razorpay metadata",
+  async () => {
+    const paymentDoc = createPaymentDocRecorder();
+    const signUpCalls: Array<{runId: string; userId: string}> = [];
+    const result = await verifyRazorpayPaymentHandler(
+      buildRequest({
+        auth: {uid: "runner-1"},
+        data: {
+          paymentId: "pay_123",
+          orderId: "order_123",
+          signature: "sig_123",
+        },
+      }),
+      {
+        firestore: () => createPaymentsFirestore(paymentDoc),
+        createClient: () =>
         ({
           orders: {
             fetch: async () => ({
@@ -47,49 +50,52 @@ test("verifyRazorpayPaymentHandler books the trusted run from Razorpay metadata"
             },
           },
         }) as unknown as Razorpay,
-      serverTimestamp: () => "server-now",
-      signUpForRun: async (_db, runId, userId) => {
-        signUpCalls.push({runId, userId});
-      },
-      verifySignature: () => true,
-    }
-  );
-
-  assert.deepEqual(signUpCalls, [{runId: "trusted-run", userId: "runner-1"}]);
-  assert.deepEqual(paymentDoc.setCalls, [
-    {
-      userId: "runner-1",
-      orderId: "order_123",
-      paymentId: "pay_123",
-      runId: "trusted-run",
-      amount: 25000,
-      currency: "INR",
-      status: "completed",
-      signUpFailed: false,
-      createdAt: "server-now",
-    },
-  ]);
-  assert.deepEqual(result, {verified: true, runId: "trusted-run"});
-});
-
-test("verifyRazorpayPaymentHandler records a refunded failure when sign-up loses the race", async () => {
-  const paymentDoc = createPaymentDocRecorder();
-  const refundCalls: Array<{paymentId: string; amount: number}> = [];
-
-  await assert.rejects(
-    verifyRazorpayPaymentHandler(
-      buildRequest({
-        auth: {uid: "runner-1"},
-        data: {
-          paymentId: "pay_123",
-          orderId: "order_123",
-          signature: "sig_123",
+        serverTimestamp: () => "server-now",
+        signUpForRun: async (_db, runId, userId) => {
+          signUpCalls.push({runId, userId});
         },
-      }),
+        verifySignature: () => true,
+      }
+    );
+
+    assert.deepEqual(signUpCalls, [{runId: "trusted-run", userId: "runner-1"}]);
+    assert.deepEqual(paymentDoc.setCalls, [
       {
-        firestore: () => createPaymentsFirestore(paymentDoc),
-        createClient: () =>
-        ({
+        userId: "runner-1",
+        orderId: "order_123",
+        paymentId: "pay_123",
+        runId: "trusted-run",
+        amount: 25000,
+        currency: "INR",
+        status: "completed",
+        signUpFailed: false,
+        createdAt: "server-now",
+      },
+    ]);
+    assert.deepEqual(result, {verified: true, runId: "trusted-run"});
+  }
+);
+
+test(
+  "verifyRazorpayPaymentHandler records refunded race-loss failure",
+  async () => {
+    const paymentDoc = createPaymentDocRecorder();
+    const refundCalls: Array<{paymentId: string; amount: number}> = [];
+
+    await assert.rejects(
+      verifyRazorpayPaymentHandler(
+        buildRequest({
+          auth: {uid: "runner-1"},
+          data: {
+            paymentId: "pay_123",
+            orderId: "order_123",
+            signature: "sig_123",
+          },
+        }),
+        {
+          firestore: () => createPaymentsFirestore(paymentDoc),
+          createClient: () =>
+          ({
             orders: {
               fetch: async () => ({
                 id: "order_123",
@@ -114,64 +120,71 @@ test("verifyRazorpayPaymentHandler records a refunded failure when sign-up loses
               }),
               refund: async (paymentId: string, data: {amount: number}) => {
                 refundCalls.push({paymentId, amount: data.amount});
+              },
             },
+          }) as unknown as Razorpay,
+          serverTimestamp: () => "server-now",
+          signUpForRun: async () => {
+            throw new HttpsError(
+              "failed-precondition",
+              "This run is now full."
+            );
           },
-        }) as unknown as Razorpay,
-        serverTimestamp: () => "server-now",
-        signUpForRun: async () => {
-          throw new HttpsError("failed-precondition", "This run is now full.");
-        },
-        verifySignature: () => true,
-      }
-    ),
-    isHttpsError("failed-precondition", "This run is now full.")
-  );
+          verifySignature: () => true,
+        }
+      ),
+      isHttpsError("failed-precondition", "This run is now full.")
+    );
 
-  assert.deepEqual(refundCalls, [{paymentId: "pay_123", amount: 25000}]);
-  assert.deepEqual(paymentDoc.setCalls, [
-    {
-      userId: "runner-1",
-      orderId: "order_123",
-      paymentId: "pay_123",
-      runId: "trusted-run",
-      amount: 25000,
-      currency: "INR",
-      status: "refunded",
-      signUpFailed: true,
-      createdAt: "server-now",
-    },
-  ]);
-});
-
-test("verifyRazorpayPaymentHandler rejects invalid signatures before fetching Razorpay", async () => {
-  const paymentDoc = createPaymentDocRecorder();
-
-  await assert.rejects(
-    verifyRazorpayPaymentHandler(
-      buildRequest({
-        auth: {uid: "runner-1"},
-        data: {
-          paymentId: "pay_123",
-          orderId: "order_123",
-          signature: "bad",
-        },
-      }),
+    assert.deepEqual(refundCalls, [{paymentId: "pay_123", amount: 25000}]);
+    assert.deepEqual(paymentDoc.setCalls, [
       {
-        firestore: () => createPaymentsFirestore(paymentDoc),
-        createClient: failOnClientUse,
-        serverTimestamp: () => "server-now",
-        signUpForRun: async () => undefined,
-        verifySignature: () => false,
-      }
-    ),
-    isHttpsError(
-      "invalid-argument",
-      "Payment signature verification failed."
-    )
-  );
+        userId: "runner-1",
+        orderId: "order_123",
+        paymentId: "pay_123",
+        runId: "trusted-run",
+        amount: 25000,
+        currency: "INR",
+        status: "refunded",
+        signUpFailed: true,
+        createdAt: "server-now",
+      },
+    ]);
+  }
+);
 
-  assert.deepEqual(paymentDoc.setCalls, []);
-});
+test(
+  "verifyRazorpayPaymentHandler rejects invalid signatures before fetching",
+  async () => {
+    const paymentDoc = createPaymentDocRecorder();
+
+    await assert.rejects(
+      verifyRazorpayPaymentHandler(
+        buildRequest({
+          auth: {uid: "runner-1"},
+          data: {
+            paymentId: "pay_123",
+            orderId: "order_123",
+            signature: "bad",
+          },
+        }),
+        {
+          firestore: () => createPaymentsFirestore(paymentDoc),
+          createClient: failOnClientUse,
+          serverTimestamp: () => "server-now",
+          signUpForRun: async () => undefined,
+          verifySignature: () => false,
+        }
+      ),
+      isHttpsError(
+        "invalid-argument",
+        "Payment signature verification failed."
+      )
+    );
+
+    assert.deepEqual(paymentDoc.setCalls, []);
+  }
+);
 
 function buildRequest({
   data,
@@ -182,9 +195,9 @@ function buildRequest({
 }): CallableRequest<Record<string, unknown> | null> {
   return {
     data,
-    auth: auth
-      ? ({uid: auth.uid, token: {}} as CallableRequest["auth"])
-      : undefined,
+    auth: auth ?
+      ({uid: auth.uid, token: {}} as CallableRequest["auth"]) :
+      undefined,
     rawRequest: {} as CallableRequest["rawRequest"],
     acceptsStreaming: false,
   };

@@ -85,10 +85,8 @@ class RunRepository {
   Future<void> cancelSignUpViaFunction({required String runId}) =>
       _functions.httpsCallable('cancelRunSignUp').call({'runId': runId});
 
-  Future<void> joinWaitlist({required String runId, required String userId}) =>
-      _runRef(runId).update({
-        'waitlistUserIds': FieldValue.arrayUnion([userId]),
-      });
+  Future<void> joinWaitlistViaFunction({required String runId}) =>
+      _functions.httpsCallable('joinRunWaitlist').call({'runId': runId});
 
   Future<void> leaveWaitlist({required String runId, required String userId}) =>
       _runRef(runId).update({

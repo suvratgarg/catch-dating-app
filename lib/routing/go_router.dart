@@ -10,6 +10,7 @@ import 'package:catch_dating_app/payments/presentation/payment_history_screen.da
 import 'package:catch_dating_app/profile/presentation/edit_profile_screen.dart';
 import 'package:catch_dating_app/profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_screen.dart';
@@ -17,6 +18,7 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_s
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
+import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -50,6 +52,8 @@ enum Routes {
   chatScreen('/chats/:matchId'),
   // You / Profile branch (index 4)
   profileScreen('/you'),
+  publicProfileScreen('/profiles/:uid'),
+  settingsScreen('/settings'),
   paymentHistoryScreen('/payment-history');
 
   const Routes(this.path);
@@ -113,6 +117,21 @@ GoRouter goRouter(Ref ref) {
         path: Routes.paymentHistoryScreen.path,
         name: Routes.paymentHistoryScreen.name,
         builder: (context, state) => const PaymentHistoryScreen(),
+      ),
+      GoRoute(
+        path: Routes.settingsScreen.path,
+        name: Routes.settingsScreen.name,
+        builder: (context, state) => const SettingsScreen(),
+      ),
+      GoRoute(
+        path: Routes.publicProfileScreen.path,
+        name: Routes.publicProfileScreen.name,
+        builder: (context, state) => PublicProfileScreen(
+          uid: state.pathParameters['uid']!,
+          initialProfile: state.extra is PublicProfile
+              ? state.extra! as PublicProfile
+              : null,
+        ),
       ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) =>

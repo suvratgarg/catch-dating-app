@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -37,6 +39,7 @@ Future<void> main() async {
 
 Future<void> _initializeFirebaseServices() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await _activateFirebaseAppCheck();
 
   if (AppConfig.enablePushMessaging) {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -47,8 +50,43 @@ Future<void> _initializeFirebaseServices() async {
     await FirebaseAuth.instance.useAuthEmulator(host, 9099);
     FirebaseFirestore.instance.useFirestoreEmulator(host, 8080);
     await FirebaseStorage.instance.useStorageEmulator(host, 9199);
-    FirebaseFunctions.instance.useFunctionsEmulator(host, 5001);
+    FirebaseFunctions.instanceFor(
+      region: firebaseFunctionsRegion,
+    ).useFunctionsEmulator(host, 5001);
   }
+}
+
+Future<void> _activateFirebaseAppCheck() async {
+  final debugToken = AppConfig.firebaseAppCheckDebugToken.trim();
+  final debugTokenOrNull = debugToken.isEmpty ? null : debugToken;
+  final useDebugProvider =
+      kDebugMode ||
+      AppConfig.useFirebaseEmulators ||
+      !AppConfig.environment.isProduction;
+
+  if (kIsWeb) {
+    final siteKey = AppConfig.firebaseAppCheckWebRecaptchaEnterpriseSiteKey
+        .trim();
+    if (useDebugProvider) {
+      await FirebaseAppCheck.instance.activate(
+        providerWeb: WebDebugProvider(debugToken: debugTokenOrNull),
+      );
+    } else if (siteKey.isNotEmpty) {
+      await FirebaseAppCheck.instance.activate(
+        providerWeb: ReCaptchaEnterpriseProvider(siteKey),
+      );
+    }
+    return;
+  }
+
+  await FirebaseAppCheck.instance.activate(
+    providerAndroid: useDebugProvider
+        ? AndroidDebugProvider(debugToken: debugTokenOrNull)
+        : const AndroidPlayIntegrityProvider(),
+    providerApple: useDebugProvider
+        ? AppleDebugProvider(debugToken: debugTokenOrNull)
+        : const AppleAppAttestProvider(),
+  );
 }
 
 /// Hooks into Flutter's error reporting pipeline so uncaught errors are

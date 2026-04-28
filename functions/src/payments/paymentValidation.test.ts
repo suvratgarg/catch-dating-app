@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
@@ -63,100 +64,106 @@ test("buildOrderCreatePayload rejects free runs", () => {
   );
 });
 
-test("verifyPaidRunBooking returns booking details from trusted Razorpay data", () => {
-  const booking = verifyPaidRunBooking({
-    order: {
-      id: "order_123",
-      amount: 25000,
-      currency: "INR",
-      amount_paid: 25000,
-      amount_due: 0,
-      notes: {
-        runId: "run-1",
-        userId: "runner-1",
+test(
+  "verifyPaidRunBooking returns booking details from trusted Razorpay data",
+  () => {
+    const booking = verifyPaidRunBooking({
+      order: {
+        id: "order_123",
+        amount: 25000,
+        currency: "INR",
+        amount_paid: 25000,
+        amount_due: 0,
+        notes: {
+          runId: "run-1",
+          userId: "runner-1",
+        },
       },
-    },
-    payment: {
-      id: "pay_123",
-      order_id: "order_123",
-      amount: 25000,
+      payment: {
+        id: "pay_123",
+        order_id: "order_123",
+        amount: 25000,
+        currency: "INR",
+        status: "captured",
+        refund_status: "null",
+      },
+      expectedUserId: "runner-1",
+    });
+
+    assert.deepEqual(booking, {
+      runId: "run-1",
+      userId: "runner-1",
+      amountInPaise: 25000,
       currency: "INR",
-      status: "captured",
-      refund_status: "null",
-    },
-    expectedUserId: "runner-1",
-  });
+    });
+  }
+);
 
-  assert.deepEqual(booking, {
-    runId: "run-1",
-    userId: "runner-1",
-    amountInPaise: 25000,
-    currency: "INR",
-  });
-});
-
-test("verifyPaidRunBooking rejects mismatched users and refunded payments", () => {
-  assert.throws(
-    () =>
-      verifyPaidRunBooking({
-        order: {
-          id: "order_123",
-          amount: 25000,
-          currency: "INR",
-          amount_paid: 25000,
-          amount_due: 0,
-          notes: {
-            runId: "run-1",
-            userId: "runner-2",
+test(
+  "verifyPaidRunBooking rejects mismatched users and refunded payments",
+  () => {
+    assert.throws(
+      () =>
+        verifyPaidRunBooking({
+          order: {
+            id: "order_123",
+            amount: 25000,
+            currency: "INR",
+            amount_paid: 25000,
+            amount_due: 0,
+            notes: {
+              runId: "run-1",
+              userId: "runner-2",
+            },
           },
-        },
-        payment: {
-          id: "pay_123",
-          order_id: "order_123",
-          amount: 25000,
-          currency: "INR",
-          status: "captured",
-          refund_status: "null",
-        },
-        expectedUserId: "runner-1",
-      }),
-    isHttpsError(
-      "permission-denied",
-      "This order does not belong to the signed-in user."
-    )
-  );
-
-  assert.throws(
-    () =>
-      verifyPaidRunBooking({
-        order: {
-          id: "order_123",
-          amount: 25000,
-          currency: "INR",
-          amount_paid: 25000,
-          amount_due: 0,
-          notes: {
-            runId: "run-1",
-            userId: "runner-1",
+          payment: {
+            id: "pay_123",
+            order_id: "order_123",
+            amount: 25000,
+            currency: "INR",
+            status: "captured",
+            refund_status: "null",
           },
-        },
-        payment: {
-          id: "pay_123",
-          order_id: "order_123",
-          amount: 25000,
-          currency: "INR",
-          status: "captured",
-          refund_status: "full",
-          amount_refunded: 25000,
-        },
-        expectedUserId: "runner-1",
-      }),
-    isHttpsError(
-      "failed-precondition",
-      "Refunded payments cannot be used for booking."
-    )
-  );
-});
+          expectedUserId: "runner-1",
+        }),
+      isHttpsError(
+        "permission-denied",
+        "This order does not belong to the signed-in user."
+      )
+    );
+
+    assert.throws(
+      () =>
+        verifyPaidRunBooking({
+          order: {
+            id: "order_123",
+            amount: 25000,
+            currency: "INR",
+            amount_paid: 25000,
+            amount_due: 0,
+            notes: {
+              runId: "run-1",
+              userId: "runner-1",
+            },
+          },
+          payment: {
+            id: "pay_123",
+            order_id: "order_123",
+            amount: 25000,
+            currency: "INR",
+            status: "captured",
+            refund_status: "full",
+            amount_refunded: 25000,
+          },
+          expectedUserId: "runner-1",
+        }),
+      isHttpsError(
+        "failed-precondition",
+        "Refunded payments cannot be used for booking."
+      )
+    );
+  }
+);
 
 test("buildPaymentRecord always writes signUpFailed explicitly", () => {
   assert.deepEqual(

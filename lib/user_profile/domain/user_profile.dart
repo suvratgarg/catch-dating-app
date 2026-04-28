@@ -210,6 +210,7 @@ abstract class UserProfile with _$UserProfile {
 
     // Matching preferences
     @Default([]) List<String> joinedRunClubIds,
+    @Default([]) List<String> savedRunIds,
     @Default([]) List<Gender> interestedInGenders,
     @Default(18) int minAgePreference,
     @Default(99) int maxAgePreference,

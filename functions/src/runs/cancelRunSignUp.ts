@@ -3,6 +3,7 @@ import * as admin from "firebase-admin";
 import {defineSecret} from "firebase-functions/params";
 import Razorpay from "razorpay";
 import {UserProfileDoc, PaymentDoc, RunDoc} from "../shared/firestore";
+import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 
 const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
 const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
@@ -81,13 +82,22 @@ export const cancelRunSignUp = onCall(
       newGenderCounts[cancellerGender] =
         (newGenderCounts[cancellerGender] ?? 1) - 1;
 
-      // Promote the first waitlist user who passes gender-cap constraints.
+      // Promote the first waitlist user who passes gender-cap and block checks.
       for (let i = 0; i < newWaitlistIds.length; i++) {
         const waitlistUserId = newWaitlistIds[i];
         const waitlistUserSnap = await tx.get(
           db.collection("users").doc(waitlistUserId)
         );
         if (!waitlistUserSnap.exists) continue;
+
+        if (await hasBlockingRelationshipInTransaction(
+          tx,
+          db,
+          waitlistUserId,
+          [...newSignedUpIds, ...(run.attendedUserIds ?? [])]
+        )) {
+          continue;
+        }
 
         const waitlistUser = waitlistUserSnap.data() as UserProfileDoc;
         const wGender = waitlistUser.gender;

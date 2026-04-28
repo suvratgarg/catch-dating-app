@@ -22,6 +22,10 @@ export const onMessageCreated = onDocumentCreated(
     if (!matchDoc.exists) return;
 
     const match = matchDoc.data() as MatchDoc;
+    if (match.status === "blocked") {
+      logger.info("Skipping notification for blocked match", {matchId});
+      return;
+    }
     const recipientId =
       match.user1Id === message.senderId ? match.user2Id : match.user1Id;
 

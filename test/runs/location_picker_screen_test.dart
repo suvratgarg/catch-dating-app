@@ -17,7 +17,10 @@ void main() {
     });
 
     testWidgets('starts without a selection', (tester) async {
-      await pumpRunsTestApp(tester, const LocationPickerScreen());
+      await pumpRunsTestApp(
+        tester,
+        const LocationPickerScreen(loadMapTiles: false),
+      );
 
       expect(find.text('Pick starting point'), findsOneWidget);
       expect(
@@ -35,7 +38,10 @@ void main() {
     testWidgets('updates the selected point when the map callback fires', (
       tester,
     ) async {
-      await pumpRunsTestApp(tester, const LocationPickerScreen());
+      await pumpRunsTestApp(
+        tester,
+        const LocationPickerScreen(loadMapTiles: false),
+      );
 
       final flutterMap = tester.widget<FlutterMap>(find.byType(FlutterMap));
       const selectedPoint = LatLng(19.11, 72.91);
@@ -69,6 +75,7 @@ void main() {
                         MaterialPageRoute<LatLng?>(
                           builder: (_) => const LocationPickerScreen(
                             initialLocation: LatLng(19.076, 72.8777),
+                            loadMapTiles: false,
                           ),
                         ),
                       );

@@ -20,9 +20,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
 class CreateRunScreen extends ConsumerStatefulWidget {
-  const CreateRunScreen({super.key, required this.runClub});
+  const CreateRunScreen({
+    super.key,
+    required this.runClub,
+    this.loadMapTiles = true,
+  });
 
   final RunClub runClub;
+
+  /// Tests can disable network tiles while still exercising map callbacks.
+  final bool loadMapTiles;
 
   @override
   ConsumerState<CreateRunScreen> createState() => _CreateRunScreenState();
@@ -150,7 +157,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   Future<void> _pickLocation() async {
     final result = await Navigator.of(context).push<LatLng>(
       MaterialPageRoute(
-        builder: (_) => LocationPickerScreen(initialLocation: _startingPoint),
+        builder: (_) => LocationPickerScreen(
+          initialLocation: _startingPoint,
+          loadMapTiles: widget.loadMapTiles,
+        ),
         fullscreenDialog: true,
       ),
     );

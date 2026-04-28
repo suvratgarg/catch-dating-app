@@ -42,7 +42,7 @@ final class RunBookingControllerProvider
 }
 
 String _$runBookingControllerHash() =>
-    r'3c9754ce0bd165309da97fd149d6c3f8d224273d';
+    r'ebcc1e476ab1d1532d750b6a9388327b233acb69';
 
 abstract class _$RunBookingController extends $Notifier<void> {
   void build();

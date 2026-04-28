@@ -7,30 +7,147 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isValidRunClubCreate() {
-      return request.resource.data.keys().hasOnly([
+    function blockDocId(blockerUid, blockedUid) {
+      return blockerUid + '__' + blockedUid;
+    }
+
+    function hasBlockBetween(uidA, uidB) {
+      return exists(/databases/$(database)/documents/blocks/$(blockDocId(uidA, uidB)))
+        || exists(/databases/$(database)/documents/blocks/$(blockDocId(uidB, uidA)));
+    }
+
+    function isDeletedUser(uid) {
+      return exists(/databases/$(database)/documents/deletedUsers/$(uid));
+    }
+
+    function hasValidRunClubShape(data) {
+      return data.keys().hasOnly([
           'name',
           'description',
           'location',
+          'area',
           'hostUserId',
+          'hostName',
+          'hostAvatarUrl',
           'createdAt',
           'imageUrl',
+          'tags',
           'memberUserIds',
+          'memberCount',
+          'rating',
+          'reviewCount',
+          'nextRunAt',
+          'nextRunLabel'
+        ])
+        && data.keys().hasAll([
+          'name',
+          'description',
+          'location',
+          'area',
+          'hostUserId',
+          'hostName',
+          'createdAt',
+          'tags',
+          'memberUserIds',
+          'memberCount',
           'rating',
           'reviewCount'
         ])
-        && request.resource.data.name is string
-        && request.resource.data.description is string
-        && request.resource.data.location is string
+        && data.name is string
+        && data.description is string
+        && data.location in [
+          'mumbai',
+          'delhi',
+          'bangalore',
+          'hyderabad',
+          'chennai',
+          'kolkata',
+          'pune',
+          'ahmedabad',
+          'indore'
+        ]
+        && data.area is string
+        && data.hostUserId is string
+        && data.hostName is string
+        && (data.hostAvatarUrl == null || data.hostAvatarUrl is string)
+        && data.createdAt is timestamp
+        && (data.imageUrl == null || data.imageUrl is string)
+        && data.tags is list
+        && data.memberUserIds is list
+        && data.memberCount is int
+        && data.memberCount == data.memberUserIds.size()
+        && data.rating is number
+        && data.rating >= 0
+        && data.rating <= 5
+        && data.reviewCount is int
+        && data.reviewCount >= 0
+        && (data.nextRunAt == null || data.nextRunAt is timestamp)
+        && (data.nextRunLabel == null || data.nextRunLabel is string);
+    }
+
+    function isValidRunClubCreate() {
+      return hasValidRunClubShape(request.resource.data)
         && request.resource.data.hostUserId == request.auth.uid
-        && request.resource.data.createdAt is timestamp
-        && (request.resource.data.imageUrl == null
-            || request.resource.data.imageUrl is string)
-        && request.resource.data.memberUserIds is list
         && request.resource.data.memberUserIds.size() == 1
         && request.resource.data.memberUserIds.hasAll([request.auth.uid])
+        && request.resource.data.memberCount == 1
         && request.resource.data.rating == 0
-        && request.resource.data.reviewCount == 0;
+        && request.resource.data.reviewCount == 0
+        && request.resource.data.nextRunAt == null
+        && request.resource.data.nextRunLabel == null;
+    }
+
+    function isValidRunClubHostUpdate() {
+      return resource.data.hostUserId == request.auth.uid
+        && hasValidRunClubShape(request.resource.data)
+        && request.resource.data.hostUserId == resource.data.hostUserId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.memberUserIds == resource.data.memberUserIds
+        && request.resource.data.memberCount == resource.data.memberCount
+        && request.resource.data.rating == resource.data.rating
+        && request.resource.data.reviewCount == resource.data.reviewCount
+        && request.resource.data.nextRunAt == resource.data.nextRunAt
+        && request.resource.data.nextRunLabel == resource.data.nextRunLabel
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'name',
+          'description',
+          'location',
+          'area',
+          'hostName',
+          'hostAvatarUrl',
+          'imageUrl',
+          'tags'
+        ]);
+    }
+
+    function isValidRunClubMembershipUpdate() {
+      return hasValidRunClubShape(request.resource.data)
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['memberUserIds', 'memberCount'])
+        && request.resource.data.hostUserId == resource.data.hostUserId
+        && request.resource.data.createdAt == resource.data.createdAt
+        && request.resource.data.memberCount
+          == request.resource.data.memberUserIds.size()
+        && (
+          // Adding only self.
+          (
+            request.resource.data.memberUserIds.size()
+              == resource.data.memberUserIds.size() + 1
+            && request.resource.data.memberUserIds
+                .hasAll(resource.data.memberUserIds)
+            && request.resource.data.memberUserIds
+                .hasAll([request.auth.uid])
+          )
+          ||
+          // Removing only self.
+          (
+            request.resource.data.memberUserIds.size()
+              == resource.data.memberUserIds.size() - 1
+            && resource.data.memberUserIds
+                .hasAll(request.resource.data.memberUserIds)
+            && resource.data.memberUserIds.hasAll([request.auth.uid])
+          )
+        );
     }
 
     function expectedReviewId() {
@@ -88,14 +205,39 @@ service cloud.firestore {
     // Any authenticated user can read profiles (needed for chat, matches).
     // Only the owner can write their own document.
     match /users/{uid} {
-      allow read: if isAuthed();
+      allow read: if isAuthed()
+        && !isDeletedUser(uid)
+        && !hasBlockBetween(request.auth.uid, uid);
       allow write: if request.auth.uid == uid;
+    }
+
+    // ── Blocks ───────────────────────────────────────────────────────────────
+    // Clients can read only block edges involving themselves. Mutations go
+    // through Cloud Functions so existing matches can be closed atomically.
+    match /blocks/{blockId} {
+      allow read: if isAuthed() && (
+        resource.data.blockerUserId == request.auth.uid
+        || resource.data.blockedUserId == request.auth.uid
+      );
+      allow write: if false;
+    }
+
+    // Written exclusively by the reportUser Cloud Function.
+    match /reports/{reportId} {
+      allow read, write: if false;
+    }
+
+    // Written exclusively by the account-deletion Cloud Function.
+    match /deletedUsers/{uid} {
+      allow read, write: if false;
     }
 
     // ── Public profiles ───────────────────────────────────────────────────────
     // Synced by the syncPublicProfile Cloud Function trigger. No client writes.
     match /publicProfiles/{uid} {
-      allow read: if isAuthed();
+      allow read: if isAuthed()
+        && !isDeletedUser(uid)
+        && !hasBlockBetween(request.auth.uid, uid);
       allow write: if false;
     }
 
@@ -109,37 +251,10 @@ service cloud.firestore {
 
       allow update: if isAuthed() && (
         // Host can edit club profile fields only.
-        (
-          resource.data.hostUserId == request.auth.uid
-          && request.resource.data.diff(resource.data).affectedKeys()
-              .hasOnly(['name', 'description', 'location', 'imageUrl'])
-        )
+        isValidRunClubHostUpdate()
 
-        // Non-hosts can only modify memberUserIds (join / leave).
-        || (
-          request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['memberUserIds'])
-          && (
-            // Adding only self.
-            (
-              request.resource.data.memberUserIds.size()
-                == resource.data.memberUserIds.size() + 1
-              && request.resource.data.memberUserIds
-                  .hasAll(resource.data.memberUserIds)
-              && request.resource.data.memberUserIds
-                  .hasAll([request.auth.uid])
-            )
-            ||
-            // Removing only self.
-            (
-              request.resource.data.memberUserIds.size()
-                == resource.data.memberUserIds.size() - 1
-              && resource.data.memberUserIds
-                  .hasAll(request.resource.data.memberUserIds)
-              && resource.data.memberUserIds.hasAll([request.auth.uid])
-            )
-          )
-        )
+        // Members can only join/leave themselves and keep memberCount aligned.
+        || isValidRunClubMembershipUpdate()
       );
 
       allow delete: if isAuthed()
@@ -165,29 +280,17 @@ service cloud.firestore {
               .hasAny(['signedUpUserIds', 'attendedUserIds', 'genderCounts'])
         )
 
-        // Users can join or leave the waitlist (only their own UID).
+        // Users can leave the waitlist directly. Joining goes through the
+        // joinRunWaitlist Cloud Function so block checks stay server-side.
         || (
           request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['waitlistUserIds'])
           && (
-            // Adding only self.
-            (
-              request.resource.data.waitlistUserIds.size()
-                == resource.data.waitlistUserIds.size() + 1
-              && request.resource.data.waitlistUserIds
-                  .hasAll(resource.data.waitlistUserIds)
-              && request.resource.data.waitlistUserIds
-                  .hasAll([request.auth.uid])
-            )
-            ||
-            // Removing only self.
-            (
-              request.resource.data.waitlistUserIds.size()
-                == resource.data.waitlistUserIds.size() - 1
-              && resource.data.waitlistUserIds
-                  .hasAll(request.resource.data.waitlistUserIds)
-              && resource.data.waitlistUserIds.hasAll([request.auth.uid])
-            )
+            request.resource.data.waitlistUserIds.size()
+              == resource.data.waitlistUserIds.size() - 1
+            && resource.data.waitlistUserIds
+                .hasAll(request.resource.data.waitlistUserIds)
+            && resource.data.waitlistUserIds.hasAll([request.auth.uid])
           )
         )
       );
@@ -227,27 +330,34 @@ service cloud.firestore {
     // ── Swipes ────────────────────────────────────────────────────────────────
     // Each user owns their outgoing swipes subcollection.
     match /swipes/{userId}/outgoing/{targetId} {
-      allow read, create: if request.auth.uid == userId;
+      allow read: if request.auth.uid == userId;
+      allow create: if request.auth.uid == userId
+        && !isDeletedUser(targetId)
+        && !hasBlockBetween(userId, targetId);
     }
 
     // ── Matches ───────────────────────────────────────────────────────────────
     // Created by the onSwipeCreated Cloud Function. Participants can read.
     match /matches/{matchId} {
       allow read: if isAuthed() && (
-        resource.data.user1Id == request.auth.uid
-        || resource.data.user2Id == request.auth.uid
-      );
+          resource.data.user1Id == request.auth.uid
+          || resource.data.user2Id == request.auth.uid
+        )
+        && resource.data.status != 'blocked'
+        && !hasBlockBetween(resource.data.user1Id, resource.data.user2Id);
       allow write: if false;
     }
 
     // ── Chat messages ─────────────────────────────────────────────────────────
     match /chats/{matchId}/messages/{messageId} {
       allow read: if isAuthed() && (
-        get(/databases/$(database)/documents/matches/$(matchId))
-            .data.user1Id == request.auth.uid
-        || get(/databases/$(database)/documents/matches/$(matchId))
-            .data.user2Id == request.auth.uid
-      );
+          get(/databases/$(database)/documents/matches/$(matchId))
+              .data.user1Id == request.auth.uid
+          || get(/databases/$(database)/documents/matches/$(matchId))
+              .data.user2Id == request.auth.uid
+        )
+        && get(/databases/$(database)/documents/matches/$(matchId))
+            .data.status != 'blocked';
       allow create: if isAuthed()
         && request.resource.data.senderId == request.auth.uid
         && (
@@ -255,7 +365,9 @@ service cloud.firestore {
               .data.user1Id == request.auth.uid
           || get(/databases/$(database)/documents/matches/$(matchId))
               .data.user2Id == request.auth.uid
-        );
+        )
+        && get(/databases/$(database)/documents/matches/$(matchId))
+            .data.status != 'blocked';
     }
 
     // ── App config (force-update gate) ────────────────────────────────────────

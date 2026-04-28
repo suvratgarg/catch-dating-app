@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
@@ -14,11 +15,13 @@ class SwipeCandidateRepository {
     this._runRepository,
     this._swipeRepository,
     this._publicProfileRepository,
+    [this._safetyRepository]
   );
 
   final RunRepository _runRepository;
   final SwipeRepository _swipeRepository;
   final PublicProfileRepository _publicProfileRepository;
+  final SafetyRepository? _safetyRepository;
 
   Future<List<PublicProfile>> fetchCandidates({
     required String runId,
@@ -38,8 +41,13 @@ class SwipeCandidateRepository {
     final swipedIds = await _swipeRepository.fetchSwipedUserIds(
       uid: currentUser.uid,
     );
+    final blockedIds = await _safetyRepository?.fetchBlockedUserIds(
+          uid: currentUser.uid,
+        ) ??
+        const <String>{};
     final candidateIds = attendedUserIds
         .where((id) => !swipedIds.contains(id))
+        .where((id) => !blockedIds.contains(id))
         .toList();
 
     if (candidateIds.isEmpty) return [];
@@ -89,4 +97,5 @@ SwipeCandidateRepository swipeCandidateRepository(Ref ref) =>
       ref.watch(runRepositoryProvider),
       ref.watch(swipeRepositoryProvider),
       ref.watch(publicProfileRepositoryProvider),
+      ref.watch(safetyRepositoryProvider),
     );

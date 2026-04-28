@@ -235,7 +235,10 @@ Future<void> _pumpCreateRunFlow(
                 onPressed: () {
                   Navigator.of(context).push(
                     MaterialPageRoute<void>(
-                      builder: (_) => CreateRunScreen(runClub: buildRunClub()),
+                      builder: (_) => CreateRunScreen(
+                        runClub: buildRunClub(),
+                        loadMapTiles: false,
+                      ),
                     ),
                   );
                 },

@@ -2,8 +2,34 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isImage() {
+      return request.resource != null
+        && request.resource.contentType.matches('image/.*')
+        && request.resource.size < 8 * 1024 * 1024;
+    }
+
+    match /users/{uid}/photos/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+        && request.auth.uid == uid
+        && isImage();
+    }
+
+    match /runClubs/{clubId}/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn()
+        && isImage()
+        && firestore.get(
+          /databases/(default)/documents/runClubs/$(clubId)
+        ).data.hostUserId == request.auth.uid;
+    }
+
     match /{allPaths=**} {
-      allow read, write: if request.auth != null;
+      allow read, write: if false;
     }
   }
 }

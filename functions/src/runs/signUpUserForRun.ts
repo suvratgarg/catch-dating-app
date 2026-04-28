@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {UserProfileDoc, RunDoc} from "../shared/firestore";
+import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid runs)
@@ -12,6 +13,10 @@ import {UserProfileDoc, RunDoc} from "../shared/firestore";
  *   3. Check overall capacity.
  *   4. Add the user to signedUpUserIds and increment genderCounts.
  *   5. Remove the user from waitlistUserIds if present.
+ *
+ * Enforces blocks against signed-up and attended participants inside this
+ * transaction. The error remains generic so callers cannot infer who blocked
+ * whom.
  *
  * Idempotent — calling it twice for the same user/run is safe.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
@@ -47,6 +52,11 @@ export async function signUpUserForRun(
     if (run.signedUpUserIds.includes(userId)) {
       return;
     }
+
+    await assertNoBlockingRelationshipInTransaction(tx, db, userId, [
+      ...run.signedUpUserIds,
+      ...(run.attendedUserIds ?? []),
+    ]);
 
     const constraints = run.constraints ?? {minAge: 0, maxAge: 99};
 

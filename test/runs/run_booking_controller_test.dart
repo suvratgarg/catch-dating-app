@@ -107,29 +107,20 @@ void main() {
       expect(fakeRunRepository.cancelledRunId, 'run-9');
     });
 
-    test('joinWaitlist uses the signed-in uid from auth', () async {
+    test('joinWaitlist delegates to the server-side waitlist function', () async {
       final fakeRunRepository = FakeRunRepository();
       final container = ProviderContainer(
         overrides: [
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
-          uidProvider.overrideWith((ref) => Stream.value('runner-42')),
         ],
       );
       addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
 
       await container
           .read(runBookingControllerProvider.notifier)
           .joinWaitlist(run: buildRun(id: 'run-42'));
 
       expect(fakeRunRepository.joinedWaitlistRunId, 'run-42');
-      expect(fakeRunRepository.joinedWaitlistUserId, 'runner-42');
     });
 
     test('leaveWaitlist uses the signed-in uid from auth', () async {
@@ -157,21 +148,15 @@ void main() {
       expect(fakeRunRepository.leftWaitlistUserId, 'runner-42');
     });
 
-    test('joinWaitlist throws when the user is not signed in', () async {
+    test('joinWaitlist surfaces repository errors', () async {
+      final fakeRunRepository = FakeRunRepository()
+        ..joinWaitlistError = StateError('not signed in');
       final container = ProviderContainer(
         overrides: [
-          runRepositoryProvider.overrideWith((ref) => FakeRunRepository()),
-          uidProvider.overrideWith((ref) => Stream.value(null)),
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
         ],
       );
       addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
 
       await expectLater(
         container

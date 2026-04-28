@@ -6,6 +6,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'firebase_providers.g.dart';
 
+const firebaseFunctionsRegion = 'asia-south1';
+
 @Riverpod(keepAlive: true)
 FirebaseFirestore firebaseFirestore(Ref ref) => FirebaseFirestore.instance;
 
@@ -16,4 +18,5 @@ FirebaseAuth firebaseAuth(Ref ref) => FirebaseAuth.instance;
 FirebaseStorage firebaseStorage(Ref ref) => FirebaseStorage.instance;
 
 @Riverpod(keepAlive: true)
-FirebaseFunctions firebaseFunctions(Ref ref) => FirebaseFunctions.instance;
+FirebaseFunctions firebaseFunctions(Ref ref) =>
+    FirebaseFunctions.instanceFor(region: firebaseFunctionsRegion);

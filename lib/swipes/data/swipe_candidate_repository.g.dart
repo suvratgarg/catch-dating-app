@@ -55,4 +55,4 @@ final class SwipeCandidateRepositoryProvider
 }
 
 String _$swipeCandidateRepositoryHash() =>
-    r'51eafa833c2bf0a4113ae4f5cce83b3f75f3688b';
+    r'45d0aed6d242de32ef3079a007242bd26643ae5a';

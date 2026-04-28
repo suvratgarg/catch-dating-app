@@ -12,7 +12,7 @@ class ChatInputBar extends StatelessWidget {
 
   final TextEditingController controller;
   final bool sending;
-  final VoidCallback onSend;
+  final VoidCallback? onSend;
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,8 @@ class ChatInputBar extends StatelessWidget {
                     vertical: Sizes.p10,
                   ),
                 ),
-                onSubmitted: (_) => onSend(),
+                enabled: onSend != null,
+                onSubmitted: (_) => onSend?.call(),
               ),
             ),
             gapW8,

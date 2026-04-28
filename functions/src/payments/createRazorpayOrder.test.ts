@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
@@ -28,7 +29,7 @@ function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
   };
 }
 
-test("createRazorpayOrderHandler uses trusted run price and notes", async () => {
+test("createRazorpayOrderHandler uses trusted order data", async () => {
   let capturedPayload: Record<string, unknown> | undefined;
   const order = await createRazorpayOrderHandler(
     buildRequest({
@@ -69,47 +70,50 @@ test("createRazorpayOrderHandler uses trusted run price and notes", async () => 
   });
 });
 
-test("createRazorpayOrderHandler rejects duplicate bookings and full runs", async () => {
-  await assert.rejects(
-    createRazorpayOrderHandler(
-      buildRequest({
-        data: {runId: "run-1"},
-        auth: {uid: "runner-1"},
-      }),
-      {
-        firestore: () =>
-          createRunFirestore(buildRunDoc({signedUpUserIds: ["runner-1"]})),
-        createClient: failOnClientUse,
-        now: () => 0,
-      }
-    ),
-    isHttpsError("already-exists", "You are already booked for this run.")
-  );
+test(
+  "createRazorpayOrderHandler rejects duplicate bookings and full runs",
+  async () => {
+    await assert.rejects(
+      createRazorpayOrderHandler(
+        buildRequest({
+          data: {runId: "run-1"},
+          auth: {uid: "runner-1"},
+        }),
+        {
+          firestore: () =>
+            createRunFirestore(buildRunDoc({signedUpUserIds: ["runner-1"]})),
+          createClient: failOnClientUse,
+          now: () => 0,
+        }
+      ),
+      isHttpsError("already-exists", "You are already booked for this run.")
+    );
 
-  await assert.rejects(
-    createRazorpayOrderHandler(
-      buildRequest({
-        data: {runId: "run-1"},
-        auth: {uid: "runner-1"},
-      }),
-      {
-        firestore: () =>
-          createRunFirestore(
-            buildRunDoc({
-              capacityLimit: 1,
-              signedUpUserIds: ["other-runner"],
-            })
-          ),
-        createClient: failOnClientUse,
-        now: () => 0,
-      }
-    ),
-    isHttpsError(
-      "failed-precondition",
-      "This run is full. You can join the waitlist instead."
-    )
-  );
-});
+    await assert.rejects(
+      createRazorpayOrderHandler(
+        buildRequest({
+          data: {runId: "run-1"},
+          auth: {uid: "runner-1"},
+        }),
+        {
+          firestore: () =>
+            createRunFirestore(
+              buildRunDoc({
+                capacityLimit: 1,
+                signedUpUserIds: ["other-runner"],
+              })
+            ),
+          createClient: failOnClientUse,
+          now: () => 0,
+        }
+      ),
+      isHttpsError(
+        "failed-precondition",
+        "This run is full. You can join the waitlist instead."
+      )
+    );
+  }
+);
 
 function buildRequest({
   data,
@@ -120,9 +124,9 @@ function buildRequest({
 }): CallableRequest<Record<string, unknown> | null> {
   return {
     data,
-    auth: auth
-      ? ({uid: auth.uid, token: {}} as CallableRequest["auth"])
-      : undefined,
+    auth: auth ?
+      ({uid: auth.uid, token: {}} as CallableRequest["auth"]) :
+      undefined,
     rawRequest: {} as CallableRequest["rawRequest"],
     acceptsStreaming: false,
   };

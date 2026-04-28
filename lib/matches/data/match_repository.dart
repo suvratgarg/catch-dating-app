@@ -32,7 +32,12 @@ class MatchRepository {
       .where('participantIds', arrayContains: uid)
       .orderBy('createdAt', descending: true)
       .snapshots()
-      .map((snap) => snap.docs.map((d) => d.data()).toList());
+      .map(
+        (snap) => snap.docs
+            .map((d) => d.data())
+            .where((match) => !match.isBlocked)
+            .toList(),
+      );
 
   Stream<Match?> watchMatch({required String matchId}) => _matchRef(
     matchId,
@@ -67,5 +72,7 @@ final matchStreamProvider = StreamProvider.autoDispose.family<Match?, String>((
 @riverpod
 int totalUnreadCount(Ref ref, String uid) {
   final matches = ref.watch(matchesForUserProvider(uid)).asData?.value ?? [];
-  return matches.fold(0, (total, m) => total + (m.unreadCounts[uid] ?? 0));
+  return matches
+      .where((match) => !match.isBlocked)
+      .fold(0, (total, m) => total + (m.unreadCounts[uid] ?? 0));
 }

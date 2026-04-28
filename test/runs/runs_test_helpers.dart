@@ -9,6 +9,7 @@ import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -65,6 +66,7 @@ UserProfile buildUser({
   DateTime? dateOfBirth,
   String phoneNumber = '+910000000000',
   List<String> joinedRunClubIds = const [],
+  List<String> savedRunIds = const [],
   List<String> photoUrls = const [],
 }) {
   return UserProfile(
@@ -78,6 +80,7 @@ UserProfile buildUser({
     phoneNumber: phoneNumber,
     profileComplete: true,
     joinedRunClubIds: joinedRunClubIds,
+    savedRunIds: savedRunIds,
     interestedInGenders: const [Gender.woman],
     photoUrls: photoUrls,
   );
@@ -171,7 +174,6 @@ class FakeRunRepository extends Fake implements RunRepository {
   Object? markAttendanceError;
   String? cancelledRunId;
   String? joinedWaitlistRunId;
-  String? joinedWaitlistUserId;
   String? leftWaitlistRunId;
   String? leftWaitlistUserId;
   String? markedAttendanceRunId;
@@ -227,15 +229,11 @@ class FakeRunRepository extends Fake implements RunRepository {
   }
 
   @override
-  Future<void> joinWaitlist({
-    required String runId,
-    required String userId,
-  }) async {
+  Future<void> joinWaitlistViaFunction({required String runId}) async {
     if (joinWaitlistError != null) {
       throw joinWaitlistError!;
     }
     joinedWaitlistRunId = runId;
-    joinedWaitlistUserId = userId;
   }
 
   @override
@@ -335,5 +333,24 @@ class FakePublicProfileRepository extends Fake
   Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) async {
     lastRequestedUids = uids;
     return profiles;
+  }
+}
+
+class FakeUserProfileRepository extends Fake implements UserProfileRepository {
+  String? savedUid;
+  String? savedRunId;
+  String? unsavedUid;
+  String? unsavedRunId;
+
+  @override
+  Future<void> saveRun({required String uid, required String runId}) async {
+    savedUid = uid;
+    savedRunId = runId;
+  }
+
+  @override
+  Future<void> unsaveRun({required String uid, required String runId}) async {
+    unsavedUid = uid;
+    unsavedRunId = runId;
   }
 }

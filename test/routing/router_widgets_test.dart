@@ -8,12 +8,8 @@ import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,7 +34,7 @@ class _FakeMatchRepository implements MatchRepository {
 
   @override
   Stream<List<Match>> watchMatchesForUser({required String uid}) =>
-      const Stream.value([]);
+      Stream.value([]);
 }
 
 class _FakeChatRepository implements ChatRepository {
@@ -53,24 +49,8 @@ class _FakeChatRepository implements ChatRepository {
 
   @override
   Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
-      const Stream.value([]);
+      Stream.value([]);
 }
-
-class _FakeFcmService implements FcmService {
-  @override
-  bool get isSupportedPlatform => false;
-
-  @override
-  Future<void> initialize({
-    required String uid,
-    required GoRouter router,
-  }) async {}
-}
-
-UserProfile _completeUser() => run_helpers.buildUser(
-  uid: 'runner-1',
-  name: 'Runner One',
-).copyWith(profileComplete: true);
 
 Match _buildMatch({
   String id = 'match-1',
@@ -93,17 +73,10 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-      userProfileStreamProvider.overrideWith(
-        (ref) => Stream.value(_completeUser()),
-      ),
-      signedUpRunsProvider('runner-1').overrideWith(
-        (ref) => Stream.value(const <Run>[]),
-      ),
       matchRepositoryProvider.overrideWithValue(
         _FakeMatchRepository(match: match),
       ),
       chatRepositoryProvider.overrideWithValue(_FakeChatRepository()),
-      fcmServiceProvider.overrideWithValue(_FakeFcmService()),
       if (streamedProfile != null)
         publicProfileProvider(streamedProfile.uid).overrideWith(
           (ref) => Stream.value(streamedProfile),
@@ -112,7 +85,21 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
   );
   addTearDown(container.dispose);
 
-  final router = container.read(goRouterProvider);
+  final router = GoRouter(
+    initialLocation: '/',
+    routes: [
+      GoRoute(path: '/', builder: (_, _) => const Scaffold()),
+      GoRoute(
+        path: '/chats/:matchId',
+        builder: (context, state) => ChatScreen(
+          matchId: state.pathParameters['matchId']!,
+          otherProfile: state.extra is PublicProfile
+              ? state.extra! as PublicProfile
+              : null,
+        ),
+      ),
+    ],
+  );
   addTearDown(router.dispose);
 
   await tester.pumpWidget(
@@ -124,16 +111,22 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await _pumpFrames(tester);
 
   if (routedProfile != null) {
     router.go('/chats/match-1', extra: routedProfile);
   } else {
     router.go('/chats/match-1', extra: 'unexpected-extra');
   }
-  await tester.pumpAndSettle();
+  await _pumpFrames(tester);
 
   return (container, router);
+}
+
+Future<void> _pumpFrames(WidgetTester tester, {int count = 60}) async {
+  for (var i = 0; i < count; i += 1) {
+    await tester.pump(const Duration(milliseconds: 16));
+  }
 }
 
 void main() {
@@ -210,10 +203,10 @@ void main() {
     final router = result.$2;
 
     router.go('/');
-    await tester.pumpAndSettle();
+    await _pumpFrames(tester);
 
     navigateToMessageRoute(router, {'matchId': 'match-1'});
-    await tester.pumpAndSettle();
+    await _pumpFrames(tester);
 
     expect(find.byType(ChatScreen), findsOneWidget);
     expect(find.text('Taylor'), findsOneWidget);

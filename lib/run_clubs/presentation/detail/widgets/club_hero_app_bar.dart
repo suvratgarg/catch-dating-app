@@ -1,13 +1,25 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:flutter/material.dart';
+import 'package:share_plus/share_plus.dart';
+
+typedef RunClubShareHandler =
+    Future<void> Function(BuildContext context, RunClub club);
 
 class ClubHeroAppBar extends StatelessWidget {
-  const ClubHeroAppBar({super.key, required this.club, required this.isHost});
+  const ClubHeroAppBar({
+    super.key,
+    required this.club,
+    required this.isHost,
+    this.onShareClub,
+  });
 
   final RunClub club;
   final bool isHost;
+  final RunClubShareHandler? onShareClub;
 
   static const _expandedHeight = 260.0;
 
@@ -35,17 +47,17 @@ class ClubHeroAppBar extends StatelessWidget {
       actions: [
         Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
-          child: IconBtn(
-            background: Colors.black.withValues(alpha: 0.35),
-            onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Sharing for run clubs is coming soon.'),
+          child: Builder(
+            builder: (buttonContext) => IconBtn(
+              background: Colors.black.withValues(alpha: 0.35),
+              onTap: () => unawaited(
+                (onShareClub ?? _shareRunClub)(buttonContext, club),
               ),
-            ),
-            child: const Icon(
-              Icons.ios_share_rounded,
-              size: 18,
-              color: Colors.white,
+              child: const Icon(
+                Icons.ios_share_rounded,
+                size: 18,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
@@ -155,6 +167,28 @@ class ClubHeroAppBar extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+Future<void> _shareRunClub(BuildContext context, RunClub club) async {
+  final box = context.findRenderObject() as RenderBox?;
+  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+  final uri = Uri.https('catchdates.com', '/clubs/run-clubs/${club.id}');
+
+  try {
+    await SharePlus.instance.share(
+      ShareParams(
+        text:
+            'Check out ${club.name}, a run club in ${club.area}, ${club.location.label}: ${uri.toString()}',
+        subject: club.name,
+        sharePositionOrigin: origin,
+      ),
+    );
+  } on Object {
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Could not open share sheet.')),
     );
   }
 }

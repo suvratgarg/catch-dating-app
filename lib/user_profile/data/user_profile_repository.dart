@@ -51,6 +51,16 @@ class UserProfileRepository {
 
   Future<void> setProfileComplete({required String uid}) =>
       _userRef(uid).update({'profileComplete': true});
+
+  Future<void> saveRun({required String uid, required String runId}) =>
+      _userRef(uid).update({
+        'savedRunIds': FieldValue.arrayUnion([runId]),
+      });
+
+  Future<void> unsaveRun({required String uid, required String runId}) =>
+      _userRef(uid).update({
+        'savedRunIds': FieldValue.arrayRemove([runId]),
+      });
 }
 
 @Riverpod(keepAlive: true)

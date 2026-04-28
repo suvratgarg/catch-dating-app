@@ -103,7 +103,7 @@ void main() {
         );
         expect(
           authErrorMessage(StateError('Unexpected')),
-          'Bad state: Unexpected',
+          'Unexpected',
         );
       },
     );

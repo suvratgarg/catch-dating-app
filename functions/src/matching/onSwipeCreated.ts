@@ -2,6 +2,7 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {MatchDoc, SwipeDoc} from "../shared/firestore";
+import {hasBlockingRelationship} from "../safety/blocking";
 
 export const onSwipeCreated = onDocumentCreated(
   "swipes/{swiperId}/outgoing/{targetId}",
@@ -22,6 +23,15 @@ export const onSwipeCreated = onDocumentCreated(
 
     const reverseSwipe = reverseSwipeDoc.data() as SwipeDoc | undefined;
     if (!reverseSwipeDoc.exists || reverseSwipe?.direction !== "like") {
+      return;
+    }
+
+    if (await hasBlockingRelationship(
+      admin.firestore(),
+      swiperId,
+      [targetId]
+    )) {
+      logger.info("Skipping blocked match", {swiperId, targetId});
       return;
     }
 
@@ -47,6 +57,7 @@ export const onSwipeCreated = onDocumentCreated(
       lastMessagePreview: null,
       lastMessageSenderId: null,
       unreadCounts: {[id1]: 0, [id2]: 0},
+      status: "active",
     };
 
     try {

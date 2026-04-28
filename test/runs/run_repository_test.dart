@@ -552,15 +552,12 @@ void main() {
       );
     });
 
-    test('joinWaitlist updates the waitlist user ids', () async {
-      final runDoc = runsCollection.doc('run-1') as TestRunDocumentReference;
+    test('joinWaitlistViaFunction calls the matching Cloud Function', () async {
+      await repository.joinWaitlistViaFunction(runId: 'run-1');
 
-      await repository.joinWaitlist(runId: 'run-1', userId: 'runner-1');
-
-      expect(
-        runDoc.updateCalls.single,
-        containsPair('waitlistUserIds', isA<FieldValue>()),
-      );
+      expect(functions.callables['joinRunWaitlist']!.calls, [
+        {'runId': 'run-1'},
+      ]);
     });
 
     test('leaveWaitlist removes the user from the waitlist', () async {

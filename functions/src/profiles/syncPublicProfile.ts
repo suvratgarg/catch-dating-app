@@ -38,6 +38,12 @@ export const syncPublicProfile = onDocumentWritten(
     const user = event.data.after.data() as UserProfileDoc | undefined;
     if (!user) return;
 
+    if (user.deleted) {
+      logger.info("Deleting public profile for deleted user", {userId});
+      await publicProfileRef.delete();
+      return;
+    }
+
     // Only sync once the profile is marked complete
     if (!user.profileComplete) return;
 

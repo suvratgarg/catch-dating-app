@@ -135,6 +135,9 @@ export interface UserProfileDoc {
   maxAgePreference: number;
   // Runtime — written by FcmService, not part of the profile form
   fcmToken?: string;
+  // Safety/account lifecycle fields written by account deletion flow.
+  deleted?: boolean;
+  deletedAt?: FirebaseFirestore.Timestamp;
   // Background (optional)
   height?: number;
   occupation?: string;
@@ -282,6 +285,36 @@ export interface MatchDoc {
   lastMessagePreview: string | null;
   lastMessageSenderId: string | null;
   unreadCounts: Record<string, number>; // { [uid]: unreadCount }
+  status?: "active" | "blocked";
+  blockedBy?: string;
+  blockedAt?: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * /blocks/{blockerUserId}__{blockedUserId}
+ * Server-enforced safety edge. Either direction blocks shared dating surfaces.
+ */
+export interface BlockDoc {
+  blockerUserId: string;
+  blockedUserId: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  source: "profile" | "chat" | "match" | "support";
+  reasonCode?: string;
+}
+
+/**
+ * /reports/{reportId}
+ * Server-owned safety report for abuse/moderation review.
+ */
+export interface ReportDoc {
+  reporterUserId: string;
+  targetUserId: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  source: "profile" | "chat" | "match" | "support";
+  status: "open" | "reviewed" | "dismissed";
+  reasonCode?: string;
+  contextId?: string;
+  notes?: string;
 }
 
 /**

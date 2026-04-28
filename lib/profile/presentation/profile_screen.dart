@@ -38,6 +38,11 @@ class ProfileScreen extends ConsumerWidget {
                   context.pushNamed(Routes.paymentHistoryScreen.name),
             ),
             IconButton(
+              icon: const Icon(Icons.settings_outlined),
+              tooltip: 'Settings',
+              onPressed: () => context.pushNamed(Routes.settingsScreen.name),
+            ),
+            IconButton(
               icon: const Icon(Icons.edit_outlined),
               tooltip: 'Edit profile',
               onPressed: () => context.pushNamed(Routes.editProfileScreen.name),

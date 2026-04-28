@@ -11,8 +11,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, required this.matchId, this.otherProfile});
@@ -137,6 +140,56 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  Future<void> _confirmBlock({
+    required String targetUserId,
+    required String targetName,
+  }) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Block $targetName?'),
+        content: const Text(
+          'You will stop seeing each other in chats, matches, swipes, and '
+          'future run slots where the other person is already booked.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Block'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true) return;
+
+    await ref
+        .read(safetyRepositoryProvider)
+        .blockUser(targetUserId: targetUserId, source: 'chat');
+    if (mounted) Navigator.of(context).pop();
+  }
+
+  Future<void> _reportUser({
+    required String targetUserId,
+    required String targetName,
+  }) async {
+    await ref
+        .read(safetyRepositoryProvider)
+        .reportUser(
+          targetUserId: targetUserId,
+          source: 'chat',
+          contextId: widget.matchId,
+          reasonCode: 'chat_safety_concern',
+        );
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Report submitted for $targetName.')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     ref.listen(uidProvider, (_, next) {
@@ -158,10 +211,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final uid = ref.watch(uidProvider).value;
     final messagesAsync = ref.watch(chatMessagesProvider(widget.matchId));
     final matchAsync = ref.watch(matchStreamProvider(widget.matchId));
+    final match = matchAsync.asData?.value;
     final t = CatchTokens.of(context);
-    final otherUid = uid == null
-        ? null
-        : matchAsync.asData?.value?.otherId(uid);
+    final otherUid = uid == null ? null : match?.otherId(uid);
     final otherProfileAsync = otherUid == null
         ? const AsyncData<PublicProfile?>(null)
         : ref.watch(publicProfileProvider(otherUid));
@@ -197,6 +249,35 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             Text(name),
           ],
         ),
+        actions: [
+          if (otherUid != null)
+            PopupMenuButton<String>(
+              onSelected: (value) {
+                if (value == 'profile') {
+                  context.pushNamed(
+                    Routes.publicProfileScreen.name,
+                    pathParameters: {'uid': otherUid},
+                    extra: profile,
+                  );
+                } else if (value == 'report') {
+                  _reportUser(
+                    targetUserId: otherUid,
+                    targetName: profile?.name ?? 'this person',
+                  );
+                } else if (value == 'block') {
+                  _confirmBlock(
+                    targetUserId: otherUid,
+                    targetName: profile?.name ?? 'this person',
+                  );
+                }
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(value: 'profile', child: Text('View profile')),
+                PopupMenuItem(value: 'report', child: Text('Report')),
+                PopupMenuItem(value: 'block', child: Text('Block')),
+              ],
+            ),
+        ],
       ),
       body: Column(
         children: [
@@ -242,7 +323,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           ChatInputBar(
             controller: _controller,
             sending: _sending,
-            onSend: _send,
+            onSend: match?.isBlocked == true ? null : _send,
           ),
         ],
       ),

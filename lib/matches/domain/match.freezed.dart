@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Match {
 
-@JsonKey(includeToJson: false) String get id; String get user1Id; String get user2Id; String get runId;@TimestampConverter() DateTime get createdAt;@NullableTimestampConverter() DateTime? get lastMessageAt; String? get lastMessagePreview; String? get lastMessageSenderId; Map<String, int> get unreadCounts;
+@JsonKey(includeToJson: false) String get id; String get user1Id; String get user2Id; String get runId;@TimestampConverter() DateTime get createdAt;@NullableTimestampConverter() DateTime? get lastMessageAt; String? get lastMessagePreview; String? get lastMessageSenderId; Map<String, int> get unreadCounts; String get status; String? get blockedBy;@NullableTimestampConverter() DateTime? get blockedAt;
 /// Create a copy of Match
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $MatchCopyWith<Match> get copyWith => _$MatchCopyWithImpl<Match>(this as Match, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Match&&(identical(other.id, id) || other.id == id)&&(identical(other.user1Id, user1Id) || other.user1Id == user1Id)&&(identical(other.user2Id, user2Id) || other.user2Id == user2Id)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&(identical(other.lastMessagePreview, lastMessagePreview) || other.lastMessagePreview == lastMessagePreview)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&const DeepCollectionEquality().equals(other.unreadCounts, unreadCounts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Match&&(identical(other.id, id) || other.id == id)&&(identical(other.user1Id, user1Id) || other.user1Id == user1Id)&&(identical(other.user2Id, user2Id) || other.user2Id == user2Id)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&(identical(other.lastMessagePreview, lastMessagePreview) || other.lastMessagePreview == lastMessagePreview)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&const DeepCollectionEquality().equals(other.unreadCounts, unreadCounts)&&(identical(other.status, status) || other.status == status)&&(identical(other.blockedBy, blockedBy) || other.blockedBy == blockedBy)&&(identical(other.blockedAt, blockedAt) || other.blockedAt == blockedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,user1Id,user2Id,runId,createdAt,lastMessageAt,lastMessagePreview,lastMessageSenderId,const DeepCollectionEquality().hash(unreadCounts));
+int get hashCode => Object.hash(runtimeType,id,user1Id,user2Id,runId,createdAt,lastMessageAt,lastMessagePreview,lastMessageSenderId,const DeepCollectionEquality().hash(unreadCounts),status,blockedBy,blockedAt);
 
 @override
 String toString() {
-  return 'Match(id: $id, user1Id: $user1Id, user2Id: $user2Id, runId: $runId, createdAt: $createdAt, lastMessageAt: $lastMessageAt, lastMessagePreview: $lastMessagePreview, lastMessageSenderId: $lastMessageSenderId, unreadCounts: $unreadCounts)';
+  return 'Match(id: $id, user1Id: $user1Id, user2Id: $user2Id, runId: $runId, createdAt: $createdAt, lastMessageAt: $lastMessageAt, lastMessagePreview: $lastMessagePreview, lastMessageSenderId: $lastMessageSenderId, unreadCounts: $unreadCounts, status: $status, blockedBy: $blockedBy, blockedAt: $blockedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $MatchCopyWith<$Res>  {
   factory $MatchCopyWith(Match value, $Res Function(Match) _then) = _$MatchCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String user1Id, String user2Id, String runId,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? lastMessageAt, String? lastMessagePreview, String? lastMessageSenderId, Map<String, int> unreadCounts
+@JsonKey(includeToJson: false) String id, String user1Id, String user2Id, String runId,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? lastMessageAt, String? lastMessagePreview, String? lastMessageSenderId, Map<String, int> unreadCounts, String status, String? blockedBy,@NullableTimestampConverter() DateTime? blockedAt
 });
 
 
@@ -65,7 +65,7 @@ class _$MatchCopyWithImpl<$Res>
 
 /// Create a copy of Match
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? user1Id = null,Object? user2Id = null,Object? runId = null,Object? createdAt = null,Object? lastMessageAt = freezed,Object? lastMessagePreview = freezed,Object? lastMessageSenderId = freezed,Object? unreadCounts = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? user1Id = null,Object? user2Id = null,Object? runId = null,Object? createdAt = null,Object? lastMessageAt = freezed,Object? lastMessagePreview = freezed,Object? lastMessageSenderId = freezed,Object? unreadCounts = null,Object? status = null,Object? blockedBy = freezed,Object? blockedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,user1Id: null == user1Id ? _self.user1Id : user1Id // ignore: cast_nullable_to_non_nullable
@@ -76,7 +76,10 @@ as DateTime,lastMessageAt: freezed == lastMessageAt ? _self.lastMessageAt : last
 as DateTime?,lastMessagePreview: freezed == lastMessagePreview ? _self.lastMessagePreview : lastMessagePreview // ignore: cast_nullable_to_non_nullable
 as String?,lastMessageSenderId: freezed == lastMessageSenderId ? _self.lastMessageSenderId : lastMessageSenderId // ignore: cast_nullable_to_non_nullable
 as String?,unreadCounts: null == unreadCounts ? _self.unreadCounts : unreadCounts // ignore: cast_nullable_to_non_nullable
-as Map<String, int>,
+as Map<String, int>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,blockedBy: freezed == blockedBy ? _self.blockedBy : blockedBy // ignore: cast_nullable_to_non_nullable
+as String?,blockedAt: freezed == blockedAt ? _self.blockedAt : blockedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -161,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String user1Id,  String user2Id,  String runId, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastMessageAt,  String? lastMessagePreview,  String? lastMessageSenderId,  Map<String, int> unreadCounts)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String user1Id,  String user2Id,  String runId, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastMessageAt,  String? lastMessagePreview,  String? lastMessageSenderId,  Map<String, int> unreadCounts,  String status,  String? blockedBy, @NullableTimestampConverter()  DateTime? blockedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Match() when $default != null:
-return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt,_that.lastMessageAt,_that.lastMessagePreview,_that.lastMessageSenderId,_that.unreadCounts);case _:
+return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt,_that.lastMessageAt,_that.lastMessagePreview,_that.lastMessageSenderId,_that.unreadCounts,_that.status,_that.blockedBy,_that.blockedAt);case _:
   return orElse();
 
 }
@@ -182,10 +185,10 @@ return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String user1Id,  String user2Id,  String runId, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastMessageAt,  String? lastMessagePreview,  String? lastMessageSenderId,  Map<String, int> unreadCounts)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String user1Id,  String user2Id,  String runId, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastMessageAt,  String? lastMessagePreview,  String? lastMessageSenderId,  Map<String, int> unreadCounts,  String status,  String? blockedBy, @NullableTimestampConverter()  DateTime? blockedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Match():
-return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt,_that.lastMessageAt,_that.lastMessagePreview,_that.lastMessageSenderId,_that.unreadCounts);case _:
+return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt,_that.lastMessageAt,_that.lastMessagePreview,_that.lastMessageSenderId,_that.unreadCounts,_that.status,_that.blockedBy,_that.blockedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +205,10 @@ return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String user1Id,  String user2Id,  String runId, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastMessageAt,  String? lastMessagePreview,  String? lastMessageSenderId,  Map<String, int> unreadCounts)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String user1Id,  String user2Id,  String runId, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? lastMessageAt,  String? lastMessagePreview,  String? lastMessageSenderId,  Map<String, int> unreadCounts,  String status,  String? blockedBy, @NullableTimestampConverter()  DateTime? blockedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Match() when $default != null:
-return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt,_that.lastMessageAt,_that.lastMessagePreview,_that.lastMessageSenderId,_that.unreadCounts);case _:
+return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt,_that.lastMessageAt,_that.lastMessagePreview,_that.lastMessageSenderId,_that.unreadCounts,_that.status,_that.blockedBy,_that.blockedAt);case _:
   return null;
 
 }
@@ -217,7 +220,7 @@ return $default(_that.id,_that.user1Id,_that.user2Id,_that.runId,_that.createdAt
 @JsonSerializable()
 
 class _Match extends Match {
-  const _Match({@JsonKey(includeToJson: false) required this.id, required this.user1Id, required this.user2Id, required this.runId, @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.lastMessageAt, this.lastMessagePreview, this.lastMessageSenderId, final  Map<String, int> unreadCounts = const {}}): _unreadCounts = unreadCounts,super._();
+  const _Match({@JsonKey(includeToJson: false) required this.id, required this.user1Id, required this.user2Id, required this.runId, @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.lastMessageAt, this.lastMessagePreview, this.lastMessageSenderId, final  Map<String, int> unreadCounts = const {}, this.status = 'active', this.blockedBy, @NullableTimestampConverter() this.blockedAt}): _unreadCounts = unreadCounts,super._();
   factory _Match.fromJson(Map<String, dynamic> json) => _$MatchFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -235,6 +238,9 @@ class _Match extends Match {
   return EqualUnmodifiableMapView(_unreadCounts);
 }
 
+@override@JsonKey() final  String status;
+@override final  String? blockedBy;
+@override@NullableTimestampConverter() final  DateTime? blockedAt;
 
 /// Create a copy of Match
 /// with the given fields replaced by the non-null parameter values.
@@ -249,16 +255,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Match&&(identical(other.id, id) || other.id == id)&&(identical(other.user1Id, user1Id) || other.user1Id == user1Id)&&(identical(other.user2Id, user2Id) || other.user2Id == user2Id)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&(identical(other.lastMessagePreview, lastMessagePreview) || other.lastMessagePreview == lastMessagePreview)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&const DeepCollectionEquality().equals(other._unreadCounts, _unreadCounts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Match&&(identical(other.id, id) || other.id == id)&&(identical(other.user1Id, user1Id) || other.user1Id == user1Id)&&(identical(other.user2Id, user2Id) || other.user2Id == user2Id)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.lastMessageAt, lastMessageAt) || other.lastMessageAt == lastMessageAt)&&(identical(other.lastMessagePreview, lastMessagePreview) || other.lastMessagePreview == lastMessagePreview)&&(identical(other.lastMessageSenderId, lastMessageSenderId) || other.lastMessageSenderId == lastMessageSenderId)&&const DeepCollectionEquality().equals(other._unreadCounts, _unreadCounts)&&(identical(other.status, status) || other.status == status)&&(identical(other.blockedBy, blockedBy) || other.blockedBy == blockedBy)&&(identical(other.blockedAt, blockedAt) || other.blockedAt == blockedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,user1Id,user2Id,runId,createdAt,lastMessageAt,lastMessagePreview,lastMessageSenderId,const DeepCollectionEquality().hash(_unreadCounts));
+int get hashCode => Object.hash(runtimeType,id,user1Id,user2Id,runId,createdAt,lastMessageAt,lastMessagePreview,lastMessageSenderId,const DeepCollectionEquality().hash(_unreadCounts),status,blockedBy,blockedAt);
 
 @override
 String toString() {
-  return 'Match(id: $id, user1Id: $user1Id, user2Id: $user2Id, runId: $runId, createdAt: $createdAt, lastMessageAt: $lastMessageAt, lastMessagePreview: $lastMessagePreview, lastMessageSenderId: $lastMessageSenderId, unreadCounts: $unreadCounts)';
+  return 'Match(id: $id, user1Id: $user1Id, user2Id: $user2Id, runId: $runId, createdAt: $createdAt, lastMessageAt: $lastMessageAt, lastMessagePreview: $lastMessagePreview, lastMessageSenderId: $lastMessageSenderId, unreadCounts: $unreadCounts, status: $status, blockedBy: $blockedBy, blockedAt: $blockedAt)';
 }
 
 
@@ -269,7 +275,7 @@ abstract mixin class _$MatchCopyWith<$Res> implements $MatchCopyWith<$Res> {
   factory _$MatchCopyWith(_Match value, $Res Function(_Match) _then) = __$MatchCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String user1Id, String user2Id, String runId,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? lastMessageAt, String? lastMessagePreview, String? lastMessageSenderId, Map<String, int> unreadCounts
+@JsonKey(includeToJson: false) String id, String user1Id, String user2Id, String runId,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? lastMessageAt, String? lastMessagePreview, String? lastMessageSenderId, Map<String, int> unreadCounts, String status, String? blockedBy,@NullableTimestampConverter() DateTime? blockedAt
 });
 
 
@@ -286,7 +292,7 @@ class __$MatchCopyWithImpl<$Res>
 
 /// Create a copy of Match
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? user1Id = null,Object? user2Id = null,Object? runId = null,Object? createdAt = null,Object? lastMessageAt = freezed,Object? lastMessagePreview = freezed,Object? lastMessageSenderId = freezed,Object? unreadCounts = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? user1Id = null,Object? user2Id = null,Object? runId = null,Object? createdAt = null,Object? lastMessageAt = freezed,Object? lastMessagePreview = freezed,Object? lastMessageSenderId = freezed,Object? unreadCounts = null,Object? status = null,Object? blockedBy = freezed,Object? blockedAt = freezed,}) {
   return _then(_Match(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,user1Id: null == user1Id ? _self.user1Id : user1Id // ignore: cast_nullable_to_non_nullable
@@ -297,7 +303,10 @@ as DateTime,lastMessageAt: freezed == lastMessageAt ? _self.lastMessageAt : last
 as DateTime?,lastMessagePreview: freezed == lastMessagePreview ? _self.lastMessagePreview : lastMessagePreview // ignore: cast_nullable_to_non_nullable
 as String?,lastMessageSenderId: freezed == lastMessageSenderId ? _self.lastMessageSenderId : lastMessageSenderId // ignore: cast_nullable_to_non_nullable
 as String?,unreadCounts: null == unreadCounts ? _self._unreadCounts : unreadCounts // ignore: cast_nullable_to_non_nullable
-as Map<String, int>,
+as Map<String, int>,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,blockedBy: freezed == blockedBy ? _self.blockedBy : blockedBy // ignore: cast_nullable_to_non_nullable
+as String?,blockedAt: freezed == blockedAt ? _self.blockedAt : blockedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

@@ -19,10 +19,15 @@ abstract class Match with _$Match {
     String? lastMessagePreview,
     String? lastMessageSenderId,
     @Default({}) Map<String, int> unreadCounts,
+    @Default('active') String status,
+    String? blockedBy,
+    @NullableTimestampConverter() DateTime? blockedAt,
   }) = _Match;
 
   factory Match.fromJson(Map<String, dynamic> json) => _$MatchFromJson(json);
 
   /// Returns the UID of the other participant in this match.
   String otherId(String myUid) => user1Id == myUid ? user2Id : user1Id;
+
+  bool get isBlocked => status == 'blocked';
 }

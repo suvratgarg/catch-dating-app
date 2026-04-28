@@ -24,6 +24,11 @@ _Match _$MatchFromJson(Map<String, dynamic> json) => _Match(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ) ??
       const {},
+  status: json['status'] as String? ?? 'active',
+  blockedBy: json['blockedBy'] as String?,
+  blockedAt: const NullableTimestampConverter().fromJson(
+    json['blockedAt'] as Timestamp?,
+  ),
 );
 
 Map<String, dynamic> _$MatchToJson(_Match instance) => <String, dynamic>{
@@ -37,4 +42,7 @@ Map<String, dynamic> _$MatchToJson(_Match instance) => <String, dynamic>{
   'lastMessagePreview': instance.lastMessagePreview,
   'lastMessageSenderId': instance.lastMessageSenderId,
   'unreadCounts': instance.unreadCounts,
+  'status': instance.status,
+  'blockedBy': instance.blockedBy,
+  'blockedAt': const NullableTimestampConverter().toJson(instance.blockedAt),
 };

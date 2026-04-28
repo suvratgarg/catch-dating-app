@@ -63,6 +63,17 @@ class AppConfig {
     defaultValue: '',
   );
 
+  static const String firebaseAppCheckDebugToken = String.fromEnvironment(
+    'FIREBASE_APP_CHECK_DEBUG_TOKEN',
+    defaultValue: '',
+  );
+
+  static const String firebaseAppCheckWebRecaptchaEnterpriseSiteKey =
+      String.fromEnvironment(
+        'FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY',
+        defaultValue: '',
+      );
+
   static String get firebaseEmulatorHost {
     if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
       return '10.0.2.2';

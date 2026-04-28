@@ -10,6 +10,7 @@ import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_body.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -252,7 +253,6 @@ void main() {
       await tester.pump();
 
       expect(fakeRunRepository.joinedWaitlistRunId, 'run-1');
-      expect(fakeRunRepository.joinedWaitlistUserId, 'runner-9');
       expect(fakeRunRepository.leftWaitlistRunId, 'run-1');
       expect(fakeRunRepository.leftWaitlistUserId, 'runner-9');
     });
@@ -412,11 +412,17 @@ void main() {
     testWidgets('top action buttons are tappable and the back button pops', (
       tester,
     ) async {
+      final fakeUserProfileRepository = FakeUserProfileRepository();
+      var sharedRunId = '';
+
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             paymentRepositoryProvider.overrideWithValue(
               FakePaymentRepository(),
+            ),
+            userProfileRepositoryProvider.overrideWithValue(
+              fakeUserProfileRepository,
             ),
           ],
           child: MaterialApp(
@@ -430,6 +436,9 @@ void main() {
                 userProfile: buildUser(),
                 runClubId: 'club-1',
                 reviews: const [],
+                onShareRun: (_, run) async {
+                  sharedRunId = run.id;
+                },
               ),
             },
           ),
@@ -446,7 +455,40 @@ void main() {
       await tester.tap(iconButtons.at(0));
       await tester.pump(const Duration(milliseconds: 400));
 
+      expect(sharedRunId, 'run-1');
+      expect(fakeUserProfileRepository.savedRunId, 'run-1');
       expect(find.text('Home'), findsOneWidget);
+    });
+
+    testWidgets('saved run button renders selected and unsaves', (
+      tester,
+    ) async {
+      final fakeUserProfileRepository = FakeUserProfileRepository();
+
+      await pumpRunsTestApp(
+        tester,
+        RunDetailBody(
+          run: buildRun(),
+          userProfile: buildUser(savedRunIds: const ['run-1']),
+          runClubId: 'club-1',
+          reviews: const [],
+        ),
+        overrides: [
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          userProfileRepositoryProvider.overrideWithValue(
+            fakeUserProfileRepository,
+          ),
+        ],
+      );
+
+      expect(find.byIcon(Icons.bookmark_rounded), findsOneWidget);
+
+      await tester.tap(find.byIcon(Icons.bookmark_rounded));
+      await tester.pump();
+
+      expect(fakeUserProfileRepository.unsavedUid, 'runner-1');
+      expect(fakeUserProfileRepository.unsavedRunId, 'run-1');
+      expect(find.text('Run removed.'), findsOneWidget);
     });
   });
 }

@@ -36,6 +36,12 @@ const defaultDeps: VerifyRazorpayPaymentDeps = {
   verifySignature: verifyPaymentSignature,
 };
 
+/**
+ * Verifies Razorpay payment truth, signs up the user, and records payment.
+ * @param {CallableRequest<Partial<VerifyPaymentData> | null>} request Callable.
+ * @param {VerifyRazorpayPaymentDeps} deps Injectable service dependencies.
+ * @return {Promise<{verified: boolean, runId: string}>} Verification result.
+ */
 export async function verifyRazorpayPaymentHandler(
   request: CallableRequest<Partial<VerifyPaymentData> | null>,
   deps: VerifyRazorpayPaymentDeps = defaultDeps

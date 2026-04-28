@@ -336,7 +336,11 @@ void main() {
       expect(find.text('4.7'), findsOneWidget);
     });
 
-    testWidgets('ClubHeroAppBar share button shows feedback', (tester) async {
+    testWidgets('ClubHeroAppBar share button invokes share handler', (
+      tester,
+    ) async {
+      var sharedClubId = '';
+
       await pumpTestApp(
         tester,
         CustomScrollView(
@@ -344,6 +348,9 @@ void main() {
             ClubHeroAppBar(
               club: buildRunClub(name: 'Stride Social'),
               isHost: true,
+              onShareClub: (_, club) async {
+                sharedClubId = club.id;
+              },
             ),
           ],
         ),
@@ -352,10 +359,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.ios_share_rounded));
       await tester.pumpAndSettle();
 
-      expect(
-        find.text('Sharing for run clubs is coming soon.'),
-        findsOneWidget,
-      );
+      expect(sharedClubId, 'club-1');
     });
 
     testWidgets(

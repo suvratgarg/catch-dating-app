@@ -30,6 +30,11 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
           ?.map((e) => e as String)
           .toList() ??
       const [],
+  savedRunIds:
+      (json['savedRunIds'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
   interestedInGenders:
       (json['interestedInGenders'] as List<dynamic>?)
           ?.map((e) => $enumDecode(_$GenderEnumMap, e))
@@ -84,6 +89,7 @@ Map<String, dynamic> _$UserProfileToJson(
   'photoUrls': instance.photoUrls,
   'city': _$IndianCityEnumMap[instance.city],
   'joinedRunClubIds': instance.joinedRunClubIds,
+  'savedRunIds': instance.savedRunIds,
   'interestedInGenders': instance.interestedInGenders
       .map((e) => _$GenderEnumMap[e]!)
       .toList(),

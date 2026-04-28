@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
@@ -9,6 +10,7 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class SwipeScreen extends ConsumerStatefulWidget {
   const SwipeScreen({super.key, required this.runId});
@@ -83,10 +85,17 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                               index,
                               horizontalOffsetPercentage,
                               verticalOffsetPercentage,
-                            ) => ProfileCard(
-                              profile: profiles[index],
-                              horizontalOffsetPercentage:
-                                  horizontalOffsetPercentage,
+                            ) => GestureDetector(
+                              onTap: () => context.pushNamed(
+                                Routes.publicProfileScreen.name,
+                                pathParameters: {'uid': profiles[index].uid},
+                                extra: profiles[index],
+                              ),
+                              child: ProfileCard(
+                                profile: profiles[index],
+                                horizontalOffsetPercentage:
+                                    horizontalOffsetPercentage,
+                              ),
                             ),
                       ),
                     ),

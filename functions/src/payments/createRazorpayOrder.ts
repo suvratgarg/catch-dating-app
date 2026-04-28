@@ -12,6 +12,7 @@ import {
   razorpayKeyId,
   razorpayKeySecret,
 } from "./razorpay";
+import {hasBlockingRelationship} from "../safety/blocking";
 
 interface CreateOrderData {
   runId: string;
@@ -29,6 +30,12 @@ const defaultDeps: CreateRazorpayOrderDeps = {
   now: () => Date.now(),
 };
 
+/**
+ * Creates a Razorpay order from trusted Firestore run data.
+ * @param {CallableRequest<Partial<CreateOrderData> | null>} request Callable.
+ * @param {CreateRazorpayOrderDeps} deps Injectable service dependencies.
+ * @return {Promise<{orderId: string, amount: number, currency: string}>} Order.
+ */
 export async function createRazorpayOrderHandler(
   request: CallableRequest<Partial<CreateOrderData> | null>,
   deps: CreateRazorpayOrderDeps = defaultDeps
@@ -65,6 +72,16 @@ export async function createRazorpayOrderHandler(
     throw new HttpsError(
       "failed-precondition",
       "This run is full. You can join the waitlist instead."
+    );
+  }
+
+  if (await hasBlockingRelationship(db, request.auth.uid, [
+    ...run.signedUpUserIds,
+    ...(run.attendedUserIds ?? []),
+  ])) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This run is unavailable."
     );
   }
 

@@ -51,10 +51,9 @@ class RunBookingController extends _$RunBookingController {
 
   /// Adds the user to the waitlist for a full run.
   Future<void> joinWaitlist({required Run run}) async {
-    final uid = requireSignedInUid(ref, action: 'join a waitlist');
     await ref
         .read(runRepositoryProvider)
-        .joinWaitlist(runId: run.id, userId: uid);
+        .joinWaitlistViaFunction(runId: run.id);
   }
 
   /// Removes the user from the waitlist.

@@ -7,6 +7,10 @@ export const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
 
 export const razorpayCurrency = "INR";
 
+/**
+ * Creates a Razorpay SDK client from configured Firebase secrets.
+ * @return {Razorpay} Razorpay SDK client.
+ */
 export function createRazorpayClient(): Razorpay {
   return new Razorpay({
     key_id: razorpayKeyId.value(),
@@ -14,6 +18,14 @@ export function createRazorpayClient(): Razorpay {
   });
 }
 
+/**
+ * Verifies the Razorpay payment signature for an order/payment pair.
+ * @param {object} params Signature verification parameters.
+ * @param {string} params.orderId Razorpay order id.
+ * @param {string} params.paymentId Razorpay payment id.
+ * @param {string} params.signature Client-returned signature.
+ * @return {boolean} Whether the signature matches.
+ */
 export function verifyPaymentSignature({
   orderId,
   paymentId,
