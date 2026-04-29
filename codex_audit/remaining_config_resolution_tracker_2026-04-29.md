@@ -181,7 +181,14 @@ Canonical next action:
   - Entitlements: `application-identifier = 2HQBK4UMUT.com.catchdates.app`, `aps-environment = development`, `com.apple.developer.devicecheck.appattest-environment = development`, `get-task-allow = true`
 - `./tool/flutter_with_env.sh prod build ipa --release` builds `build/ios/archive/Runner.xcarchive` at `250.1MB`; archive validation reports display name `Catch`, build number `1`, version `1.0.0`, deployment target `15.0`, and bundle ID `com.catchdates.app`.
 - The first IPA attempt exposed a wrapper bug: `tool/flutter_with_env.sh` did not auto-select native flavors for `build ipa`, causing Flutter to archive the default `Runner` scheme with a blank display name. The script now includes `ipa` in the flavor auto-selection list, and the rerun archive metadata is correct.
-- IPA export remains blocked by distribution signing. Export reports `No Accounts`, no signing certificate `"iOS Distribution"`, and no profiles for `com.catchdates.app`.
+- Xcode Settings > Accounts now shows a signed-in Apple account for `Suvrat Garg`, role `Admin`, with Certificates, Identifiers & Profiles checked and three provisioned devices available for development.
+- Xcode Manage Certificates shows local Apple Development certificates only. `security find-identity -v -p codesigning` also reports valid Apple Development identities and no Apple Distribution identity.
+- Apple Developer portal > Certificates shows four Development certificates and no Distribution certificate.
+- Apple Developer portal > Profiles shows no provisioning profiles.
+- In Xcode's iOS Runner Signing & Capabilities UI, dev/staging/prod bundle IDs are mapped to `com.catchdates.app.dev`, `com.catchdates.app.staging`, and `com.catchdates.app`; automatic signing is checked; team is `Suvrat Garg`; Push Notifications, Background Modes, Photo Library usage, and App Attest are present.
+- In Xcode's macOS Runner Signing & Capabilities UI, dev/staging/prod bundle IDs are mapped to the same three identifiers; automatic signing is checked; App Sandbox and network/photo-library entitlements are present; macOS push/App Attest are not present, matching the current debug/support-target decision.
+- IPA export remains blocked by distribution signing. `flutter build ipa` and a direct `xcodebuild -exportArchive -allowProvisioningUpdates` export both report `No Accounts`, no signing certificate `"iOS Distribution"`, and no profiles for `com.catchdates.app`.
+- Chrome is currently signed into the Apple Developer portal. Creating an Apple Distribution certificate/profile is still paused for explicit action-time confirmation because it creates persistent signing material.
 - `security find-identity -v -p codesigning` currently reports three valid `Apple Development: Suvrat Garg (2XD79W43F9)` identities and no Apple Distribution identity.
 - Verify Firebase App Check registrations for the exact dev/staging/prod iOS Firebase app IDs before enabling App Check enforcement.
 - Verify staging before treating it as a real Firebase environment.
@@ -208,28 +215,34 @@ Decision:
 
 ### 7. Physical iPhone Profile observability
 
-Status: checked current connectivity; blocked on physical device availability.
+Status: reachable; Profile attach works; app stops on Firebase/Auth runtime config.
 
 Evidence:
 - Earlier Profile run built, installed, launched, and `devicectl` showed `Runner.app/Runner` running on device, but Flutter did not discover the Dart VM Service after 60 seconds.
-- Current `flutter devices` sees only the iOS simulator, macOS, and Chrome.
-- Current `flutter devices` reports `Suvrat's iPhone` is not reachable and asks for the device to be unlocked, attached with a cable, or reachable on the same LAN with Developer Mode enabled.
-- Current `xcrun devicectl list devices` lists `Suvrat's iPhone` as `unavailable`.
+- Current `flutter devices` sees `Suvrat's iPhone` over USB, iOS `26.0.1`.
+- `flutter run -d 00008120-001A152E3EEB401E --profile --flavor dev --dart-define=APP_ENV=dev` built, installed, launched, and exposed a Dart VM Service / DevTools URL.
+- The run logs Firebase App Check API `SERVICE_DISABLED` for project `catchdates-dev` / project number `619661127800`.
+- After the App Check failures, the process stopped in FirebaseAuth iOS `PhoneAuthProvider.verifyPhoneNumber` with a Swift runtime nil-unwrap while starting phone verification. Treat this as a Firebase project/App Check/APNs/phone-auth setup issue until logs prove otherwise.
+- `gcloud` is not installed or not on this shell's PATH, so the Firebase App Check API could not be enabled via CLI in this pass.
 
 Canonical next action:
-- When the phone is unlocked and visible in `flutter devices`, rerun `flutter run -v -d <device-id> --profile --dart-define=APP_ENV=dev`.
-- Capture Flutter verbose output and device logs during launch.
-- Treat this as observability/runtime validation, not a source-code fix, until logs show an app-owned failure.
+- Enable Firebase App Check API for `catchdates-dev`, `catchdates-staging`, and `catch-dating-app-64e51`.
+- Register the printed dev-device App Check debug token in the dev Firebase project's App Check settings.
+- Verify or upload the APNs auth key for the dev and staging Firebase iOS apps, because iOS phone auth depends on APNs/reCAPTCHA fallback being correctly configured.
+- Rerun physical iPhone Profile after those Firebase config changes.
 
 ### 8. Apple `codesign --verify` trust-chain warning
 
-Status: intentionally deferred.
+Status: still open after Apple UI and artifact inspection.
 
 Evidence:
 - Current signed dev/staging/prod Profile builds succeed with automatic signing and team `2HQBK4UMUT`.
 - Strict local `codesign --verify --deep --strict --verbose=4 build/ios/iphoneos/Runner.app` still reported `CSSMERR_TP_NOT_TRUSTED`.
 - Prod archive creation succeeds, but App Store IPA export is blocked on missing Apple Distribution signing identity/profile.
+- macOS dev/staging/prod builds also succeed. Strict local `codesign --verify --deep --strict --verbose=4 build/macos/Build/Products/Release-prod/Catch.app` reports the same `CSSMERR_TP_NOT_TRUSTED` trust-chain error.
+- The source macOS `Runner/Release.entitlements` file contains only sandbox, network client, and photo-library entitlements. The built local macOS prod app includes `get-task-allow=true` because it is development-signed, not distribution-signed.
 
 Canonical next action:
-- First complete App Store distribution signing and IPA export.
+- First complete App Store distribution signing and IPA export for iOS.
 - Then verify the exported IPA. Inspect Keychain trust for Apple Worldwide Developer Relations / Apple Development / Apple Distribution certificate chains if strict verification still fails.
+- For macOS, defer distribution-grade signing/hardened runtime/notarization unless macOS stops being debug-only.

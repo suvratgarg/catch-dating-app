@@ -19,9 +19,11 @@ Primary tracker: [target_build_audit_2026-04-28.md](/Users/suvratgarg/Developmen
 | iOS dev signed Profile | Pass with warnings | `./tool/flutter_with_env.sh dev build ios --profile` -> `build/ios/iphoneos/Runner.app` at `62.8MB` | Explicit Xcode-managed profile `iOS Team Provisioning Profile: com.catchdates.app.dev`; entitlements include `aps-environment=development` and App Attest development. |
 | iOS staging signed Profile | Pass with warnings | `./tool/flutter_with_env.sh staging build ios --profile` -> `build/ios/iphoneos/Runner.app` at `62.8MB` | Explicit Xcode-managed profile `iOS Team Provisioning Profile: com.catchdates.app.staging`; embedded Firebase plist points at `catchdates-staging`. |
 | iOS prod signed Profile | Pass with warnings | `./tool/flutter_with_env.sh prod build ios --profile` -> `build/ios/iphoneos/Runner.app` at `62.8MB` | Explicit Xcode-managed profile `iOS Team Provisioning Profile: com.catchdates.app`; embedded Firebase plist points at `catch-dating-app-64e51`. |
-| iOS prod archive | Archive pass, IPA export blocked | `./tool/flutter_with_env.sh prod build ipa --release` -> `build/ios/archive/Runner.xcarchive` at `250.1MB`, then export failed | Archive metadata is correct: display name `Catch`, bundle `com.catchdates.app`, deployment target `15.0`. IPA export fails because this Mac has no Xcode Apple Account session, no `iOS Distribution` signing certificate, and no App Store/export profile for `com.catchdates.app`. |
-| iOS physical iPhone Profile run | Partial pass | `flutter run -d 00008120-001A152E3EEB401E --profile --dart-define=APP_ENV=dev` built, installed/launched, and `devicectl` showed `Runner.app/Runner` PID `19774` | Flutter did not discover the Dart VM Service after 60s. Process launch is proven; interactive observability/UI validation is not. |
-| macOS dev | Pass with warnings | `./tool/flutter_with_env.sh dev build macos` -> `build/macos/Build/Products/Release-dev/Catch Dev.app` at `116.1MB` | Built as `com.catchdates.app.dev` / `Catch Dev` and embedded the `catchdates-dev` Firebase plist. Remaining warnings are duplicate native linker flags from the dependency graph. |
+| iOS prod archive | Archive pass, IPA export blocked | `./tool/flutter_with_env.sh prod build ipa --release` -> `build/ios/archive/Runner.xcarchive` at `250.1MB`, then export failed | Archive metadata is correct: display name `Catch`, bundle `com.catchdates.app`, deployment target `15.0`. IPA export fails because this Mac still has no local `iOS Distribution`/Apple Distribution signing identity and no App Store/export profile for `com.catchdates.app`; Xcode's account UI is signed in for development signing, but CLI export still reports `No Accounts`. |
+| iOS physical iPhone Profile run | Partial pass, runtime config issue found | `flutter run -d 00008120-001A152E3EEB401E --profile --flavor dev --dart-define=APP_ENV=dev` built, installed/launched, and exposed the Dart VM Service | Earlier VM-service discovery is now fixed. The app then logged Firebase App Check API `SERVICE_DISABLED` for the dev project and stopped in FirebaseAuth iOS `PhoneAuthProvider.verifyPhoneNumber` while starting phone verification. This is now a Firebase/App Check/APNs/phone-auth config issue, not a build issue. |
+| macOS dev | Pass with warnings | `./tool/flutter_with_env.sh dev build macos` -> `build/macos/Build/Products/Release-dev/Catch Dev.app` at `116.5MB` | Built as `com.catchdates.app.dev` / `Catch Dev` and embedded the `catchdates-dev` Firebase plist. Remaining warnings are native dependency/plugin warnings from FlutterFire/CocoaPods. |
+| macOS staging | Pass with warnings | `./tool/flutter_with_env.sh staging build macos` -> `build/macos/Build/Products/Release-staging/Catch Staging.app` at `116.7MB` | Built as `com.catchdates.app.staging` / `Catch Staging` and embedded Firebase app ID `1:822303414140:ios:6bae8cc0e1781e890c76f9`. |
+| macOS prod | Pass with warnings | `./tool/flutter_with_env.sh prod build macos` -> `build/macos/Build/Products/Release-prod/Catch.app` at `116.7MB` | Built as `com.catchdates.app` / `Catch` and embedded Firebase app ID `1:574779808785:ios:49b1ce51418604b78ea5b0`. Strict local verification still reports `CSSMERR_TP_NOT_TRUSTED`, matching the iOS trust-chain warning. |
 | Firebase Functions TypeScript | Pass | `npm run build` | Re-run after Functions dependency update. |
 | Firebase Functions tests | Pass | `npm test` -> 18 tests passed | Covers payments and safety/blocking Functions tests. |
 
@@ -31,9 +33,10 @@ Primary tracker: [target_build_audit_2026-04-28.md](/Users/suvratgarg/Developmen
 
 1. App Store/TestFlight IPA export is blocked by distribution signing, not by app compilation.
    - Severity: High before iOS release.
-   - Evidence: `./tool/flutter_with_env.sh prod build ipa --release` builds `build/ios/archive/Runner.xcarchive`, then `exportArchive` reports `No Accounts`, no signing certificate `"iOS Distribution"`, and no profiles for `com.catchdates.app`.
-   - Meaning: Profile/device development signing is now healthy, but App Store export needs a local Apple Account session plus an Apple Distribution certificate and App Store provisioning profile.
-   - Next fix: complete Xcode Apple Account sign-in or create/import an Apple Distribution signing identity, then rerun the prod IPA export.
+   - Evidence: `./tool/flutter_with_env.sh prod build ipa --release` builds `build/ios/archive/Runner.xcarchive`, then `exportArchive` reports `No Accounts`, no signing certificate `"iOS Distribution"`, and no profiles for `com.catchdates.app`. A direct `xcodebuild -exportArchive -allowProvisioningUpdates` attempt with an export options plist fails the same way.
+   - Current account state: Xcode Settings > Accounts is signed in as `Suvrat Garg`, role `Admin`, and development signing/profile creation works. Xcode Manage Certificates shows only Apple Development certificates; the create-certificate menu has Apple Distribution disabled. Chrome is also signed into the Apple Developer portal; the portal Certificates list shows only Development certificates, and the Profiles list is empty.
+   - Meaning: Profile/device development signing is healthy, but App Store export needs a local Apple Distribution identity with private key plus an App Store provisioning profile for `com.catchdates.app`.
+   - Next fix: sign into Apple Developer in Chrome or otherwise create/import an Apple Distribution signing identity, create/fetch an App Store profile for `com.catchdates.app`, then rerun the prod IPA export.
 
 2. `codesign --verify --deep --strict --verbose=4 build/ios/iphoneos/Runner.app` still reports `CSSMERR_TP_NOT_TRUSTED`.
    - Severity: Medium before TestFlight/App Store work.
@@ -54,8 +57,8 @@ Primary tracker: [target_build_audit_2026-04-28.md](/Users/suvratgarg/Developmen
 
 5. Physical iPhone Profile launch is not fully clean yet.
    - Severity: Medium.
-   - Evidence: the Profile app built, installed/launched, and was running on device as PID `19774`; Flutter then failed to discover the Dart VM Service after 60 seconds.
-   - Next fix: rerun from Xcode or `flutter run -v --profile` with the phone unlocked and cabled, collect device logs while the process is running, and determine whether the missing VM service is a tooling attach issue or a runtime startup issue.
+   - Evidence: the latest dev Profile run on the physical iPhone built, installed/launched, and exposed the Dart VM Service/DevTools URL. It then logged Firebase App Check API `SERVICE_DISABLED` for `catchdates-dev` and stopped in FirebaseAuth iOS `PhoneAuthProvider.verifyPhoneNumber` during phone verification.
+   - Next fix: enable Firebase App Check API for the dev/staging/prod projects, register the local dev-device App Check debug token, verify APNs auth-key setup on the dev/staging iOS Firebase apps, then rerun phone auth on the physical iPhone.
 
 6. iOS Debug physical run hit native `EXC_BAD_ACCESS` in Flutter embedder/debug tooling.
    - Severity: Low for release, Medium for local debugging.
@@ -108,7 +111,13 @@ Primary tracker: [target_build_audit_2026-04-28.md](/Users/suvratgarg/Developmen
 
 2. macOS is currently a debug/support target, not a distribution target.
    - Severity: Low.
-   - If distribution is desired later, add macOS bundle ID, signing, notarization, hardened runtime, APNs decision, and Firebase macOS config validation.
+   - Current evidence: dev, staging, and prod macOS builds pass and embed the expected flavor Firebase plists. Release-prod uses `Runner/Release.entitlements` and does not declare debug-only entitlements in source, but the built local app is development-signed and includes `get-task-allow=true` because it is signed with Apple Development rather than a distribution identity.
+   - If distribution is desired later, add macOS distribution signing, hardened runtime, notarization, an APNs decision, and final Firebase macOS config validation.
+
+3. macOS strict code-sign verification reports `CSSMERR_TP_NOT_TRUSTED`.
+   - Severity: Low while macOS is debug-only; Medium if macOS distribution becomes real.
+   - Evidence: `codesign --verify --deep --strict --verbose=4 build/macos/Build/Products/Release-prod/Catch.app` reports `CSSMERR_TP_NOT_TRUSTED`.
+   - Next fix: resolve the local certificate trust chain or validate a properly distribution-signed/notarized macOS artifact if macOS ever becomes a shipped target.
 
 ### Firebase backend and Functions
 
@@ -149,6 +158,7 @@ Primary tracker: [target_build_audit_2026-04-28.md](/Users/suvratgarg/Developmen
 | Auto-selected native environment flavors for APK/App Bundle/iOS/macOS builds | `tool/flutter_with_env.sh` | Canonical | Keeps `APP_ENV`, native Firebase files, Android package IDs, and Apple bundle IDs aligned for common wrapper build commands. |
 | Added IPA flavor auto-selection | `tool/flutter_with_env.sh` | Canonical | `flutter build ipa` now uses the prod scheme/configuration instead of silently archiving the unflavored Runner scheme. This fixed the blank `CFBundleDisplayName` in the archive metadata. |
 | Registered dev/staging/prod Apple App IDs and refreshed Xcode-managed development profiles | Apple Developer + local Xcode profiles | Canonical | `com.catchdates.app.dev`, `com.catchdates.app.staging`, and `com.catchdates.app` now have explicit development profiles with Push and App Attest for device/Profile builds. |
+| Verified Xcode account, iOS signing UI, and macOS signing UI | Xcode Settings + iOS/macOS workspaces | Canonical inspection | Xcode is signed in as `Suvrat Garg` with Admin role. iOS Runner uses automatic signing with team `2HQBK4UMUT`, Push Notifications, Background Modes, and App Attest. macOS Runner uses automatic signing, App Sandbox, network/photo-library entitlements, and no macOS push/App Attest. |
 | Added iOS/macOS Firebase copy script inputs and outputs | `tool/configure_apple_flavors.rb`, iOS/macOS Xcode projects | Canonical | Xcode now understands when the copied Firebase plist is stale and no longer warns about an always-running script phase. |
 | Added macOS accent color asset | `macos/Runner/Assets.xcassets/AccentColor.colorset/Contents.json` | Canonical | The macOS target references `AccentColor`; adding the colorset removes the asset-catalog warning without changing generated dependency code. |
 
@@ -214,7 +224,7 @@ The worktree contains many unrelated in-progress app/UI/asset changes in additio
 
 ## Recommended Next Order
 
-1. Complete iOS App Store distribution signing: add/sign in to an Xcode Apple Account with App Store access, create/import an Apple Distribution certificate, create/fetch an App Store profile for `com.catchdates.app`, then rerun `./tool/flutter_with_env.sh prod build ipa --release`.
+1. Complete iOS App Store distribution signing: sign into the Apple Developer portal in Chrome or otherwise create/import an Apple Distribution identity with private key, create/fetch an App Store profile for `com.catchdates.app`, then rerun `./tool/flutter_with_env.sh prod build ipa --release`.
 2. Resolve `CSSMERR_TP_NOT_TRUSTED` or prove it harmless by verifying the final exported IPA with distribution signing.
 3. Validate physical iPhone Profile/Release run from Xcode or `flutter run -v --profile`, including UI startup and logs.
 4. Verify Firebase App Check registrations for the exact dev/staging/prod iOS app IDs before enabling enforcement.
