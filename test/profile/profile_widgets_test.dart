@@ -65,7 +65,12 @@ void main() {
     await tester.pump();
 
     expect(find.text('Email'), findsNothing);
+    expect(find.textContaining('Engineer'), findsOneWidget);
+    await tester.scrollUntilVisible(
+      find.text('+919876543210'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.text('+919876543210'), findsOneWidget);
-    expect(find.text('Engineer'), findsOneWidget);
   });
 }

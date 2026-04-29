@@ -340,7 +340,7 @@ void main() {
   });
 
   group('QuickActions', () {
-    testWidgets('marks unavailable actions as coming soon', (tester) async {
+    testWidgets('shows all primary dashboard actions', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
@@ -348,13 +348,13 @@ void main() {
         ),
       );
 
-      expect(find.text('Soon'), findsNWidgets(2));
+      expect(find.text('Soon'), findsNothing);
       expect(find.text('Browse runs'), findsOneWidget);
       expect(find.text('Map view'), findsOneWidget);
       expect(find.text('Calendar'), findsOneWidget);
     });
 
-    testWidgets('navigates for available actions only', (tester) async {
+    testWidgets('navigates for all primary actions', (tester) async {
       final router = GoRouter(
         initialLocation: '/',
         routes: [
@@ -367,6 +367,14 @@ void main() {
             path: Routes.runClubsListScreen.path,
             builder: (_, _) => const Scaffold(body: Text('Clubs screen')),
           ),
+          GoRoute(
+            path: Routes.runMapScreen.path,
+            builder: (_, _) => const Scaffold(body: Text('Map screen')),
+          ),
+          GoRoute(
+            path: Routes.calendarScreen.path,
+            builder: (_, _) => const Scaffold(body: Text('Calendar screen')),
+          ),
         ],
       );
 
@@ -378,13 +386,23 @@ void main() {
       await tester.tap(find.text('Map view'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Clubs screen'), findsNothing);
-      expect(find.text('Browse runs'), findsOneWidget);
+      expect(find.text('Map screen'), findsOneWidget);
+
+      router.go('/');
+      await tester.pumpAndSettle();
 
       await tester.tap(find.text('Browse runs'));
       await tester.pumpAndSettle();
 
       expect(find.text('Clubs screen'), findsOneWidget);
+
+      router.go('/');
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Calendar'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Calendar screen'), findsOneWidget);
     });
   });
 }

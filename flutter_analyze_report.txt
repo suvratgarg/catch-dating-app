@@ -1,5 +1,0 @@
-Analyzing catch_dating_app...                                   
-
-   info • Sort directive sections alphabetically • lib/run_clubs/presentation/widgets/club_detail_body.dart:11:1 • directives_ordering
-   info • Sort directive sections alphabetically • lib/run_clubs/presentation/widgets/club_detail_body.dart:11:1 • directives_ordering
-

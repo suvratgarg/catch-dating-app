@@ -55,7 +55,16 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     final currentUserAsync = ref.watch(userProfileStreamProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Discover')),
+      appBar: AppBar(
+        title: const Text('Discover'),
+        actions: [
+          IconButton(
+            tooltip: 'Filters',
+            icon: const Icon(Icons.tune_rounded),
+            onPressed: () => context.pushNamed(Routes.filtersScreen.name),
+          ),
+        ],
+      ),
       body: queueAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text(e.toString())),

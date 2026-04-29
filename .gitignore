@@ -26,6 +26,11 @@ migrate_working_dir/
 # Environment variables (secrets)
 .env
 .env.*
+*.local
+.runtimeconfig.json
+service-account*.json
+*-service-account.json
+google-application-credentials*.json
 
 # Signing keys and provisioning artifacts
 key.properties
@@ -47,12 +52,26 @@ key.properties
 /build/
 
 /coverage/
+**/coverage/
+lcov.info
+**/lcov.info
+
+# Test/build result bundles
+*.xcresult
+*.xcarchive
+*.ipa
+*.apk
+*.aab
+*.dSYM/
 
 # Symbolication related
 app.*.symbols
 
 # Obfuscation related
 app.*.map.json
+
+# Generated audit/report bundles
+codex_audit/*.zip
 
 # Android Studio will place build artifacts here
 /android/app/debug
@@ -64,6 +83,10 @@ ios/build/
 
 # Firebase cache
 .firebase/
+firebase-export-*/
+**/firebase-export-*/
+emulator-data/
+**/emulator-data/
 
 # Claude Code memory (internal tool state)
 .claude/

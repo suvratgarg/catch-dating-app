@@ -39,6 +39,7 @@ Important constraint: this document should not copy paid course material verbati
 ## Current Repo Baseline
 
 - App identity: Catch, a Flutter/Firebase run-club dating app focused on India.
+- Store listing name: `Catch Dating`, because `Catch` alone is short but not descriptive enough for App Store / Play Store discovery.
 - Environments: `APP_ENV` supports `dev`, `staging`, and `prod` through `lib/core/app_config.dart` and `lib/firebase_options_<env>.dart`.
 - Firebase: Auth, Firestore, Storage, Functions, Messaging, and App Check are already present.
 - App Check: debug providers are used outside production; production uses Play Integrity on Android and App Attest on Apple platforms.
@@ -49,7 +50,7 @@ Important constraint: this document should not copy paid course material verbati
 - In-app review: no `in_app_review` package is wired yet.
 - Accessibility: no dedicated `accessibility_tools` dependency or release accessibility audit is documented yet.
 - Security/privacy: Firestore rules, App Check, account deletion planning, and secret-ignore hardening exist from prior work, but no consolidated release security/privacy audit is documented yet.
-- Release verification: web, Android APK, macOS, iOS simulator, generic iOS, and signed iOS builds have recent audit notes in `codex_audit/target_build_audit_2026-04-28.md`.
+- Release verification: web, Android APK/App Bundle, macOS, iOS simulator, signed iOS dev/staging/prod Profile builds, and the prod iOS archive have recent audit notes in `codex_audit/target_build_audit_2026-04-28.md` and `codex_audit/build_readiness_dependency_report_2026-04-29.md`.
 - Dirty worktree at tracker creation: unrelated UI/audit edits already exist and must be preserved.
 
 ## Work Plan
@@ -75,7 +76,7 @@ Current evidence:
 - `assets/branding/catch_icon.png` is the 1024px generator source.
 - `flutter_launcher_icons` and `flutter_native_splash` are in `dev_dependencies`.
 - Generated resources were written under Android `res/`, iOS asset catalogs/storyboard, and web favicon/icons/splash files.
-- `ios/Runner/Info.plist` now uses `Catch` for `CFBundleDisplayName` and `CFBundleName`.
+- `ios/Runner/Info.plist` now uses `$(APP_DISPLAY_NAME)` for `CFBundleDisplayName` and `CFBundleName`; the flavor configs resolve this to `Catch Dev`, `Catch Staging`, or `Catch`.
 
 Teaching notes:
 
@@ -95,15 +96,15 @@ Verification:
 
 ### 2. Flavors And Runtime Environments
 
-Status: `blocked`
+Status: `in_progress`
 
 Why it matters: dev, staging, and production must not accidentally share credentials, Firebase projects, analytics streams, or app identities.
 
 Catch-specific tasks:
 
 - Audit current `APP_ENV` setup against Android package IDs, iOS bundle IDs, app names, and Firebase app IDs.
-- Decide whether current Dart-define environments are enough for first release or whether true platform flavors are required now.
-- Ensure prod/staging Firebase option files contain real project values before any store submission.
+- Decide whether current Dart-define environments are enough for first release or whether true platform flavors are required now. Decision: use true flavors for scalable side-by-side installs.
+- Ensure prod/staging Firebase option files contain real project values before any store submission. Done for Dart options and checked-in native/web config files.
 - Make environment selection obvious in local run, build scripts, README, and CI.
 - Ensure dev/staging builds cannot pollute production analytics or crash-reporting projects.
 
@@ -112,23 +113,54 @@ Current evidence:
 - `lib/core/app_config.dart` resolves `dev`, `staging`, and `prod`.
 - `tool/dart_defines/dev.json`, `tool/dart_defines/staging.json`, and `tool/dart_defines/prod.json` exist.
 - `FIREBASE_SETUP.md` documents Firebase environment selection.
-- Dev Firebase is configured against `catch-dating-app-64e51`.
-- Staging and prod Firebase option files intentionally throw `UnsupportedError` until real Firebase projects/apps are created.
-- Android, iOS, and macOS now use final local identifier `com.catchdates.app`.
-- Dev Firebase now has new Android and iOS app registrations for `com.catchdates.app`, and the active plus `firebase/dev` native config files were regenerated.
-- Apple Developer capabilities, Firebase App Check, APNs status, and Android SHA fingerprints still need to be rechecked against the new Firebase/native app identities.
+- Firebase aliases are now `dev` -> `catchdates-dev`, `staging` -> `catchdates-staging`, and `prod` -> `catch-dating-app-64e51`.
+- `lib/firebase_options_dev.dart`, `lib/firebase_options_staging.dart`, and `lib/firebase_options_prod.dart` now contain real Firebase options.
+- Android product flavors are wired:
+  - `dev`: app label `Catch Dev`, package `com.catchdates.app.dev`
+  - `staging`: app label `Catch Staging`, package `com.catchdates.app.staging`
+  - `prod`: app label `Catch`, package `com.catchdates.app`
+- Android flavor-specific Firebase config files live under `android/app/src/<flavor>/google-services.json`.
+- Environment source configs live under `firebase/<env>/` for Android, iOS, macOS, and web.
+- iOS and macOS flavor schemes/configurations are wired through `tool/configure_apple_flavors.rb`:
+  - `dev`: app label `Catch Dev`, bundle ID `com.catchdates.app.dev`, Firebase env `dev`
+  - `staging`: app label `Catch Staging`, bundle ID `com.catchdates.app.staging`, Firebase env `staging`
+  - `prod`: app label `Catch`, bundle ID `com.catchdates.app`, Firebase env `prod`
+- iOS/macOS builds copy the matching `firebase/<env>/<platform>/GoogleService-Info.plist` into the built app bundle through a build phase, so Xcode schemes and Firebase config stay aligned.
+- Android debug SHA-256 fingerprints were added to the dev and staging Firebase Android apps.
+- Apple Developer App IDs now exist for `com.catchdates.app.dev`, `com.catchdates.app.staging`, and `com.catchdates.app`, with Push Notifications and App Attest enabled.
+- Xcode-managed development/Profile provisioning profiles now exist for all three iOS bundle IDs.
+- Final Play app-signing fingerprints remain pending until Play Console enrollment.
+- iOS App Store IPA export remains pending until an Apple Distribution certificate/profile and a working Xcode Apple Account/export session are available locally.
 
 Teaching notes:
 
 - Dart defines choose runtime behavior inside Flutter.
-- Platform flavors/product flavors also change native app identity, bundle ID, icons, app name, and store-install coexistence. We should use them only if we need side-by-side installs or separate native app registrations.
+- Platform flavors/product flavors also change native app identity, bundle ID, icons, app name, and store-install coexistence. Catch now needs them because dev/staging/prod must not share Firebase data or store identities.
 
 Verification:
 
-- `flutter analyze`
-- `flutter build apk --dart-define=APP_ENV=dev`
-- `flutter build apk --dart-define=APP_ENV=prod`
-- iOS build with production define once production Firebase config is real.
+- `flutter analyze` passed.
+- `flutter build apk --debug --flavor dev --dart-define=APP_ENV=dev` passed.
+- `flutter build apk --debug --flavor staging --dart-define=APP_ENV=staging` passed.
+- `flutter build apk --debug --flavor prod --dart-define=APP_ENV=prod` passed.
+- APK metadata check confirmed `app-dev-debug.apk` package `com.catchdates.app.dev` and label `Catch Dev`.
+- APK metadata check confirmed `app-staging-debug.apk` package `com.catchdates.app.staging` and label `Catch Staging`.
+- APK metadata check confirmed `app-prod-debug.apk` package `com.catchdates.app` and label `Catch`.
+- Prod release APK/App Bundle builds now pass with the locally generated upload keystore. The keystore and `android/key.properties` are intentionally ignored by git.
+- `ruby tool/configure_apple_flavors.rb` passed.
+- `pod install` passed in `ios/`.
+- `pod install` passed in `macos/`.
+- `flutter build ios --simulator --no-codesign --flavor dev --dart-define=APP_ENV=dev` passed.
+- `flutter build ios --simulator --no-codesign --flavor staging --dart-define=APP_ENV=staging` passed; plist inspection confirmed label `Catch Staging`, bundle ID `com.catchdates.app.staging`, and Firebase project `catchdates-staging`.
+- `flutter build ios --simulator --no-codesign --flavor prod --dart-define=APP_ENV=prod` passed.
+- `./tool/flutter_with_env.sh dev build ios --profile` passed; signed artifact inspection confirmed explicit profile `iOS Team Provisioning Profile: com.catchdates.app.dev`, APNs development entitlement, App Attest development entitlement, and Firebase project `catchdates-dev`.
+- `./tool/flutter_with_env.sh staging build ios --profile` passed; signed artifact inspection confirmed explicit profile `iOS Team Provisioning Profile: com.catchdates.app.staging`, APNs development entitlement, App Attest development entitlement, and Firebase project `catchdates-staging`.
+- `./tool/flutter_with_env.sh prod build ios --profile` passed; signed artifact inspection confirmed explicit profile `iOS Team Provisioning Profile: com.catchdates.app`, APNs development entitlement, App Attest development entitlement, and Firebase project `catch-dating-app-64e51`.
+- `./tool/flutter_with_env.sh prod build ipa --release` now archives the flavored prod scheme and validates app settings: display name `Catch`, bundle ID `com.catchdates.app`, version `1.0.0`, build `1`, deployment target `15.0`.
+- The same IPA command still fails at App Store export because the Mac has no local Apple Distribution certificate, no App Store provisioning profile for `com.catchdates.app`, and Xcode export reports `No Accounts`.
+- `flutter build macos --debug --flavor dev --dart-define=APP_ENV=dev` passed; plist inspection confirmed label `Catch Dev`, bundle ID `com.catchdates.app.dev`, and Firebase project `catchdates-dev`.
+- `flutter build macos --debug --flavor staging --dart-define=APP_ENV=staging` passed; plist inspection confirmed label `Catch Staging`, bundle ID `com.catchdates.app.staging`, and Firebase project `catchdates-staging`.
+- `flutter build macos --debug --flavor prod --dart-define=APP_ENV=prod` passed; plist inspection confirmed label `Catch`, bundle ID `com.catchdates.app`, and Firebase project `catch-dating-app-64e51`.
 
 ### 3. Error Monitoring
 
@@ -609,19 +641,29 @@ Rationale: monitoring and analytics should exist before beta users arrive; Remot
 - Verification passed for `flutter analyze`, `flutter build web --dart-define=APP_ENV=dev`, and `flutter build apk --dart-define=APP_ENV=dev`.
 - iOS simulator verification initially failed outside the icon/splash change path with CocoaPods/Firestore: `leveldb-library/db/dbformat.h:16:9 'util/coding.h' file not found`.
 - Rechecked the iOS blocker after parallel build-fix work. `flutter build ios --simulator --no-codesign --dart-define=APP_ENV=dev` now passes and builds `build/ios/iphonesimulator/Runner.app` for `com.catchdates.app`.
-- Audited checklist item 2. Dart-level `APP_ENV` exists, staging/prod remain unconfigured, and the final local app identifier is now `com.catchdates.app` for Android/iOS/macOS. Dev Firebase app registrations/configs were created for the new ID; Apple/Play capabilities, App Check, APNs, and SHA fingerprints still need follow-up.
+- Audited checklist item 2. Dart-level `APP_ENV` exists, Firebase dev/staging/prod projects are now configured, and native identifiers are `com.catchdates.app.dev`, `com.catchdates.app.staging`, and `com.catchdates.app`. Apple/Play capabilities, App Check, APNs, and release SHA fingerprints still need follow-up.
 - Started checklist item 3. Added Firebase Crashlytics, kept app code behind `ErrorLogger`/`CrashReporter`, wired Flutter framework and platform dispatcher fatal handlers, preserved Riverpod async error observation, disabled native auto-collection by default, and enabled reporting only for production release builds.
 - Added focused error-logger tests and verified `flutter test test/exceptions/error_logger_test.dart`, `flutter analyze`, `flutter build web --dart-define=APP_ENV=dev`, and `flutter build apk --dart-define=APP_ENV=dev`.
 - Added the Android Crashlytics Gradle plugin. Official Firebase docs say Flutter Crashlytics setup should include the plugin, and Android Gradle plugin v3 requires Google Services `4.4.1+`; this repo now uses Crashlytics plugin `3.0.6` and Google Services `4.4.4`.
+- Clarified naming: product name is `Catch`, domain is `catchdates.com`, production app ID is `com.catchdates.app`, dev app ID is `com.catchdates.app.dev`, and staging app ID is `com.catchdates.app.staging`.
+- Store listing name decision: use `Catch Dating`; keep installed app labels as `Catch`, `Catch Dev`, and `Catch Staging`.
+- Created Firebase project `catchdates-dev` and Firebase project `catchdates-staging`. Existing project `catch-dating-app-64e51` remains the production candidate.
+- Registered dev/staging Android, iOS, and web Firebase apps; updated `.firebaserc`, `lib/firebase_options_<env>.dart`, `firebase/<env>/`, and Android flavor-specific `google-services.json` files.
+- Added Android product flavors for `dev`, `staging`, and `prod`; verified debug APKs for all three flavors, and confirmed APK labels/package IDs with `aapt dump badging`.
+- Release Android prod builds now pass with the locally generated upload keystore and ignored `android/key.properties`.
+- Added Apple flavor generation through `tool/configure_apple_flavors.rb`; generated iOS/macOS schemes and build configurations for `dev`, `staging`, and `prod`.
+- Fixed Apple Firebase bundling so the static source plist remains in the repo but the build product receives exactly one flavor-selected plist from `firebase/<env>/ios` or `firebase/<env>/macos`.
+- Verified iOS simulator flavor builds and macOS debug flavor builds after the Apple project changes. Local code is ready for side-by-side simulator/dev installs. Apple Developer now has explicit App IDs for `com.catchdates.app`, `com.catchdates.app.dev`, and `com.catchdates.app.staging`, each with Push Notifications and App Attest selected.
+- Signed iOS dev/staging/prod Profile builds now pass with explicit Xcode-managed development profiles. The prod archive also passes, and the wrapper now auto-selects the prod flavor for `build ipa`.
+- iOS App Store IPA export remains blocked on distribution signing: Xcode export reports `No Accounts`, no local `iOS Distribution` certificate, and no App Store provisioning profile for `com.catchdates.app`.
+- Re-ran `flutter analyze`; no issues found.
 
 ## Open Questions
 
-- Which crash/error provider should we use for first release: Firebase Crashlytics, Sentry, or both?
+- Which crash/error provider should we use long term if Firebase Crashlytics is not enough: Sentry, or Crashlytics only?
 - Do you want Crashlytics test-crash UI hidden behind a dev-only flag, or should we trigger the first dashboard event through a temporary local debug action that is never committed?
-- Which analytics provider should we use for first release: Firebase Analytics, Mixpanel, or both?
-- Are final prod/staging Firebase projects and app IDs already created, or should this remain blocked until you set them up?
-- Do we want side-by-side dev/staging/prod installs on the same phone? If yes, we should add platform flavors; if no, current Dart-define environments may be enough for now.
-- Should first release use `com.catchdates.app` for both dev and production, or should we introduce platform flavors later for side-by-side dev/staging/prod installs?
+- Do we want Firebase Analytics only for first release, or should Mixpanel be added later after the event taxonomy stabilizes?
+- Should we create/import an Apple Distribution certificate and App Store provisioning profile for `com.catchdates.app` from the Apple Developer portal, or should this be done through Xcode after Apple Account sign-in is fixed?
 - Is Shorebird acceptable for this app's release process, or should first release avoid code push?
 - Where will privacy policy, terms, account deletion, and support pages live publicly?
 - Should first release include a formal accessibility audit before TestFlight/internal testing, or should we run it immediately after observability is wired?

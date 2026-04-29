@@ -8,3 +8,8 @@ typings/
 # Node.js dependency directory
 node_modules/
 *.local
+
+# Local Firebase Functions config and test output
+.runtimeconfig.json
+coverage/
+lcov.info

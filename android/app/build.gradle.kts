@@ -13,8 +13,49 @@ plugins {
 
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
+val releaseBuildRequested = gradle.startParameter.taskNames.any {
+    it.contains("release", ignoreCase = true)
+}
+val requiredKeystoreProperties = listOf(
+    "storeFile",
+    "storePassword",
+    "keyAlias",
+    "keyPassword",
+)
+
 if (keystorePropertiesFile.exists()) {
     keystorePropertiesFile.inputStream().use(keystoreProperties::load)
+
+    val invalidKeystoreProperties = requiredKeystoreProperties.filter { key ->
+        val value = keystoreProperties.getProperty(key)?.trim()
+        value.isNullOrEmpty() || value == "change-me"
+    }
+
+    if (invalidKeystoreProperties.isNotEmpty()) {
+        throw GradleException(
+            "Invalid Android release signing config in ${keystorePropertiesFile.path}. " +
+                "Replace placeholder values for: ${invalidKeystoreProperties.joinToString()}."
+        )
+    }
+} else if (releaseBuildRequested) {
+    throw GradleException(
+        "Missing Android release signing config: ${keystorePropertiesFile.path}. " +
+            "Copy android/key.properties.example to android/key.properties, point it at a real " +
+            "upload keystore, and keep both files out of git."
+    )
+}
+
+val releaseStoreFile = if (keystorePropertiesFile.exists()) {
+    file(keystoreProperties.getProperty("storeFile"))
+} else {
+    null
+}
+
+if (releaseBuildRequested && releaseStoreFile != null && !releaseStoreFile.exists()) {
+    throw GradleException(
+        "Android release keystore does not exist: ${releaseStoreFile.path}. " +
+            "Create the upload keystore or update storeFile in ${keystorePropertiesFile.path}."
+    )
 }
 
 android {
@@ -39,23 +80,40 @@ android {
         versionName = flutter.versionName
     }
 
+    flavorDimensions += "environment"
+    productFlavors {
+        create("dev") {
+            dimension = "environment"
+            applicationIdSuffix = ".dev"
+            resValue("string", "app_name", "Catch Dev")
+        }
+        create("staging") {
+            dimension = "environment"
+            applicationIdSuffix = ".staging"
+            resValue("string", "app_name", "Catch Staging")
+        }
+        create("prod") {
+            dimension = "environment"
+            resValue("string", "app_name", "Catch")
+        }
+    }
+
     signingConfigs {
-        create("release") {
-            if (keystorePropertiesFile.exists()) {
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
-                storeFile = file(keystoreProperties["storeFile"] as String)
-                storePassword = keystoreProperties["storePassword"] as String
+        if (keystorePropertiesFile.exists()) {
+            create("release") {
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword")
+                storeFile = releaseStoreFile
+                storePassword = keystoreProperties.getProperty("storePassword")
             }
         }
     }
 
     buildTypes {
         release {
-            signingConfig = if (keystorePropertiesFile.exists()) {
+            if (keystorePropertiesFile.exists()) {
                 signingConfigs.getByName("release")
-            } else {
-                signingConfigs.getByName("debug")
+                    .also { signingConfig = it }
             }
         }
     }

@@ -21,7 +21,7 @@ See [FIREBASE_SETUP.md](/Users/suvratgarg/Development/catch-dating-app/catch_dat
 
    The committed dev copies live under `firebase/dev/`.
    See [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md) for the full multi-environment workflow.
-4. If you want Android release signing, copy `android/key.properties.example` to `android/key.properties` and fill in your real keystore values.
+4. If you want Android release signing, copy `android/key.properties.example` to `android/key.properties` and fill in your real keystore values. Release APK/App Bundle builds fail fast until this file points at a real upload keystore.
 
 ## Secret safety
 
@@ -38,6 +38,15 @@ Preferred environment-aware app runs:
 ./tool/flutter_with_env.sh dev run
 ./tool/flutter_with_env.sh staging run
 ./tool/flutter_with_env.sh prod run
+```
+
+Android, iOS, and macOS builds use native flavors. The environment wrapper automatically adds the matching flavor for APK, App Bundle, iOS, and macOS builds:
+
+```bash
+./tool/flutter_with_env.sh dev build apk --debug
+./tool/flutter_with_env.sh prod build appbundle
+./tool/flutter_with_env.sh dev build ios --simulator --no-codesign
+./tool/flutter_with_env.sh dev build macos
 ```
 
 Default dev run without the wrapper:
@@ -90,19 +99,22 @@ Run Firebase CLI commands against an environment alias:
 ./tool/firebase_with_env.sh prod deploy --only hosting
 ```
 
-Only the `dev` alias is wired today. Add `staging` and `prod` with
-`firebase use --add` once those Firebase projects exist.
+The `dev`, `staging`, and `prod` Firebase aliases are present in `.firebaserc`.
+Do not treat staging/prod as release-ready until their console-side App Check,
+APNs, signing, and release fingerprints have been verified.
 
 ## Platform notes
 
 - Paid Razorpay booking is enabled on Android and iOS only.
 - Web and macOS builds disable paid booking until a supported checkout flow is added for those platforms.
 - Push notifications are wired in-repo for Android and iOS.
-  The app now uses final mobile identifier `com.catchdates.app`; Firebase Cloud Messaging APNs and Firebase App Check are registered against that identifier, while Apple Developer Push/App Attest capabilities and provisioning still need final release verification.
+  Android now has `dev`, `staging`, and `prod` product flavors; the dev flavor uses `com.catchdates.app.dev`, while prod uses `com.catchdates.app`.
+  iOS/macOS now have matching `dev`, `staging`, and `prod` schemes/build configurations. Dev builds use `com.catchdates.app.dev`; prod builds use `com.catchdates.app`.
+  The production Apple Developer App ID `com.catchdates.app` is registered with Push Notifications and App Attest. Dev/staging Apple App IDs and refreshed provisioning profiles still need to be verified or created before real-device push/App Check can be considered complete for those bundle IDs.
   macOS push is intentionally disabled because macOS is only a debugging target right now.
   Web push has a dev Firebase Web Push VAPID key; staging/prod VAPID keys remain blank until those Firebase projects exist.
-- Firebase App Check is registered for the new `com.catchdates.app` Android/iOS Firebase apps. Web App Check is deferred until we decide whether to enable reCAPTCHA Enterprise for the web debugging target.
-- iOS App Attest is declared in `ios/Runner/Runner.entitlements`; the Apple App ID for `com.catchdates.app` still needs the matching capability enabled/refreshed.
+- Firebase App Check is registered for the configured native Firebase apps. Web App Check is deferred until we decide whether to enable reCAPTCHA Enterprise for the web debugging target.
+- iOS App Attest is declared in `ios/Runner/Runner.entitlements`; Apple Developer profiles still need to be refreshed for the exact bundle IDs used by the active native environment after capability changes.
 
 ## Verification
 
@@ -110,10 +122,11 @@ Commands used during this config pass:
 
 ```bash
 flutter analyze
-flutter build web --dart-define=APP_ENV=dev
-flutter build apk --dart-define=APP_ENV=dev
-flutter build macos --dart-define=APP_ENV=dev
-flutter build ios --simulator --no-codesign --dart-define=APP_ENV=dev
+./tool/flutter_with_env.sh dev build web
+./tool/flutter_with_env.sh dev build apk --debug
+./tool/flutter_with_env.sh prod build appbundle
+./tool/flutter_with_env.sh dev build macos
+./tool/flutter_with_env.sh dev build ios --simulator --no-codesign
 flutter build ios --no-codesign --dart-define=APP_ENV=dev
 flutter build ios --dart-define=APP_ENV=dev
 ```

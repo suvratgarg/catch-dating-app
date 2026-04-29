@@ -1,9 +1,67 @@
+// Firebase options for the prod environment.
+// ignore_for_file: type=lint
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 
 class DefaultFirebaseOptionsProd {
-  static FirebaseOptions get currentPlatform => throw UnsupportedError(
-    'Prod Firebase is not configured yet. Generate '
-    'lib/firebase_options_prod.dart and add the prod native Firebase files '
-    'under firebase/prod/. See firebase/README.md for the setup workflow.',
+  static FirebaseOptions get currentPlatform {
+    if (kIsWeb) {
+      return web;
+    }
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.android:
+        return android;
+      case TargetPlatform.iOS:
+        return ios;
+      case TargetPlatform.macOS:
+        return macos;
+      case TargetPlatform.windows:
+      case TargetPlatform.linux:
+        throw UnsupportedError(
+          'DefaultFirebaseOptionsProd are not configured for this platform. '
+          'Windows and Linux support have been removed from this app.',
+        );
+      default:
+        throw UnsupportedError(
+          'DefaultFirebaseOptionsProd are not supported for this platform.',
+        );
+    }
+  }
+
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBZUkQpo1xw1GYOLhdRh5RbVdy0wq8A644',
+    appId: '1:574779808785:web:0c3bd6aa7d98590f8ea5b0',
+    messagingSenderId: '574779808785',
+    projectId: 'catch-dating-app-64e51',
+    authDomain: 'catch-dating-app-64e51.firebaseapp.com',
+    storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
+    measurementId: 'G-CH7WMQY5FV',
+  );
+
+  static const FirebaseOptions android = FirebaseOptions(
+    apiKey: 'AIzaSyC6dvdBlfV8nU5RJvcQa6QTp8Ej25QhBV8',
+    appId: '1:574779808785:android:81edbfa0d4aba7c48ea5b0',
+    messagingSenderId: '574779808785',
+    projectId: 'catch-dating-app-64e51',
+    storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
+  );
+
+  static const FirebaseOptions ios = FirebaseOptions(
+    apiKey: 'AIzaSyCtL_D8Cf3OMBeL1ffnmKse4VI2i_WUq7E',
+    appId: '1:574779808785:ios:49b1ce51418604b78ea5b0',
+    messagingSenderId: '574779808785',
+    projectId: 'catch-dating-app-64e51',
+    storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
+    iosBundleId: 'com.catchdates.app',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCtL_D8Cf3OMBeL1ffnmKse4VI2i_WUq7E',
+    appId: '1:574779808785:ios:49b1ce51418604b78ea5b0',
+    messagingSenderId: '574779808785',
+    projectId: 'catch-dating-app-64e51',
+    storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
+    iosBundleId: 'com.catchdates.app',
   );
 }

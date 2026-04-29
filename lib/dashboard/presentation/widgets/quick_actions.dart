@@ -15,15 +15,15 @@ class QuickActions extends StatelessWidget {
       label: 'Browse runs',
       route: Routes.runClubsListScreen.path,
     ),
-    const _QuickAction(
+    _QuickAction(
       icon: Icons.map_outlined,
       label: 'Map view',
-      badge: 'Soon',
+      route: Routes.runMapScreen.path,
     ),
-    const _QuickAction(
+    _QuickAction(
       icon: Icons.calendar_month_outlined,
       label: 'Calendar',
-      badge: 'Soon',
+      route: Routes.calendarScreen.path,
     ),
   ];
 
@@ -69,27 +69,6 @@ class QuickActions extends StatelessWidget {
                               child: Icon(a.icon, color: t.primary, size: 18),
                             ),
                             const Spacer(),
-                            if (a.badge != null)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 2,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: t.raised,
-                                  borderRadius: BorderRadius.circular(
-                                    CatchRadius.button,
-                                  ),
-                                  border: Border.all(color: t.line2),
-                                ),
-                                child: Text(
-                                  a.badge!,
-                                  style: CatchTextStyles.caption(
-                                    context,
-                                    color: t.ink2,
-                                  ),
-                                ),
-                              ),
                           ],
                         ),
                         const SizedBox(height: 8),
@@ -112,15 +91,9 @@ class QuickActions extends StatelessWidget {
 }
 
 class _QuickAction {
-  const _QuickAction({
-    required this.icon,
-    required this.label,
-    this.route,
-    this.badge,
-  });
+  const _QuickAction({required this.icon, required this.label, this.route});
 
   final IconData icon;
   final String label;
   final String? route;
-  final String? badge;
 }

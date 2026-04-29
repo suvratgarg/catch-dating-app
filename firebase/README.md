@@ -24,10 +24,20 @@ firebase/<env>/web/firebase-messaging-sw.js
 
 Current state:
 
-- `dev` is fully configured from the existing Firebase project.
-- `staging` and `prod` are scaffolded in code, but their Firebase files and
-  FlutterFire option files still need to be generated once those Firebase
-  projects exist.
+- `dev` is configured from Firebase project `catchdates-dev`.
+- `staging` is configured from Firebase project `catchdates-staging`.
+- `prod` is configured from the existing Firebase project `catch-dating-app-64e51`.
+- Android product flavors are wired for `dev`, `staging`, and `prod`.
+- Android upload-key SHA-1/SHA-256 fingerprints are registered on the dev,
+  staging, and production Firebase Android apps. Add Play app-signing
+  certificate fingerprints after Play App Signing enrollment.
+- iOS/macOS schemes and build configurations are wired for `dev`, `staging`,
+  and `prod` through `tool/configure_apple_flavors.rb`.
+- Apple builds copy the matching `firebase/<env>/<platform>/GoogleService-Info.plist`
+  into the app bundle at build time.
+- The production Apple App ID `com.catchdates.app` is registered with Push
+  Notifications and App Attest. Dev/staging Apple App IDs and refreshed
+  provisioning profiles still need follow-up before real-device validation.
 
 ## Runtime source of truth
 
@@ -52,6 +62,27 @@ Run Flutter with the matching `APP_ENV` define file:
 ./tool/flutter_with_env.sh prod build apk
 ```
 
+Android, iOS, and macOS use native flavors. For `build apk`, `build appbundle`, `build ios`, and `build macos`, `tool/flutter_with_env.sh` automatically supplies the matching `--flavor <env>` argument when one is not already present. Web builds do not get a flavor argument.
+
+Explicit Apple examples:
+
+```bash
+flutter build ios --simulator --no-codesign --flavor dev --dart-define=APP_ENV=dev
+flutter build ios --simulator --no-codesign --flavor staging --dart-define=APP_ENV=staging
+flutter build ios --simulator --no-codesign --flavor prod --dart-define=APP_ENV=prod
+
+flutter build macos --debug --flavor dev --dart-define=APP_ENV=dev
+flutter build macos --debug --flavor staging --dart-define=APP_ENV=staging
+flutter build macos --debug --flavor prod --dart-define=APP_ENV=prod
+```
+
+Regenerate Apple flavor project files after changing app IDs, labels, or
+Firebase environment mappings:
+
+```bash
+ruby tool/configure_apple_flavors.rb
+```
+
 Run Firebase CLI commands against a configured alias:
 
 ```bash
@@ -59,7 +90,7 @@ Run Firebase CLI commands against a configured alias:
 ./tool/firebase_with_env.sh staging deploy --only functions
 ```
 
-## How to add staging or prod
+## How to refresh an environment
 
 1. Create the Firebase project and app registrations for Android, iOS, macOS,
    and web.
@@ -79,6 +110,6 @@ flutterfire configure --project=<firebase-project-id> --out=lib/firebase_options
 6. Re-run `./tool/use_firebase_environment.sh dev` if you want to restore the
    default dev files in the workspace after generating another environment.
 
-Until steps 2-5 are completed, selecting `staging` or `prod` will fail fast
-with an explicit Firebase configuration error instead of silently talking to the
-wrong backend.
+Do not copy one environment's config into another environment. If a Firebase app
+is recreated, refresh both the Dart options file and the native/web config file
+from the same Firebase project.

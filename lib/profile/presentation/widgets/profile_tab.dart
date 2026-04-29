@@ -4,9 +4,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_info_section.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class ProfileTab extends ConsumerWidget {
   const ProfileTab({super.key, required this.user, required this.uploadState});
@@ -120,10 +122,30 @@ class ProfileTab extends ConsumerWidget {
     ];
 
     return ListView(
-      padding: const EdgeInsets.all(Sizes.p24),
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.screenH,
+        Sizes.p8,
+        CatchSpacing.screenH,
+        Sizes.p32,
+      ),
       children: [
+        _ProfileHeroCard(user: user, tokens: t),
+        gapH14,
+        _ProfileStatsStrip(user: user, tokens: t),
+        if (user.bio.isNotEmpty) ...[
+          gapH14,
+          _PromptCard(eyebrow: 'On a perfect run', text: user.bio, tokens: t),
+        ],
+        gapH14,
         _RunningIdentityCard(user: user, tokens: t),
-        gapH20,
+        gapH14,
+        FilledButton.tonal(
+          onPressed: () => DefaultTabController.of(context).animateTo(1),
+          child: const Text('Preview as others see you'),
+        ),
+        gapH24,
+        Text('Photos', style: CatchTextStyles.displaySm(context)),
+        gapH12,
         PhotoGrid(
           photoUrls: user.photoUrls,
           loadingIndices: uploadState.loadingIndices,
@@ -131,25 +153,6 @@ class ProfileTab extends ConsumerWidget {
               .read(photoUploadControllerProvider.notifier)
               .pickAndUpload(index),
         ),
-        gapH20,
-        Center(
-          child: Text(
-            '${user.name}, ${user.age}',
-            style: CatchTextStyles.displayLg(
-              context,
-            ).copyWith(fontWeight: FontWeight.bold),
-          ),
-        ),
-        if (user.bio.isNotEmpty) ...[
-          gapH8,
-          Center(
-            child: Text(
-              user.bio,
-              textAlign: TextAlign.center,
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
-            ),
-          ),
-        ],
         gapH24,
         ProfileInfoSection(entries: basics),
         ProfileInfoSection(entries: background),
@@ -157,6 +160,206 @@ class ProfileTab extends ConsumerWidget {
         ProfileInfoSection(entries: lifestyle),
         gapH32,
       ],
+    );
+  }
+}
+
+class _ProfileHeroCard extends StatelessWidget {
+  const _ProfileHeroCard({required this.user, required this.tokens});
+
+  final UserProfile user;
+  final CatchTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = tokens;
+
+    return AspectRatio(
+      aspectRatio: 4 / 5,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          fit: StackFit.expand,
+          children: [
+            if (user.photoUrls.isNotEmpty)
+              Image.network(user.photoUrls.first, fit: BoxFit.cover)
+            else
+              DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [t.primary, t.accent, t.primarySoft],
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    user.name.characters.first.toUpperCase(),
+                    style: CatchTextStyles.displayLg(
+                      context,
+                      color: t.primaryInk,
+                    ).copyWith(fontSize: 80),
+                  ),
+                ),
+              ),
+            const DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0x1A000000),
+                    Color(0x00000000),
+                    Color(0xD9000000),
+                  ],
+                  stops: [0, 0.42, 1],
+                ),
+              ),
+            ),
+            Positioned(
+              top: 12,
+              right: 12,
+              child: TextButton.icon(
+                style: TextButton.styleFrom(
+                  backgroundColor: Colors.white.withValues(alpha: 0.92),
+                  foregroundColor: Colors.black,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  shape: const StadiumBorder(),
+                ),
+                onPressed: () =>
+                    context.pushNamed(Routes.editProfileScreen.name),
+                icon: const Icon(Icons.edit_outlined, size: 14),
+                label: const Text('Edit'),
+              ),
+            ),
+            Positioned(
+              left: 20,
+              right: 20,
+              bottom: 18,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${user.name}, ${user.age}',
+                    style: CatchTextStyles.displayLg(
+                      context,
+                      color: Colors.white,
+                    ),
+                  ),
+                  gapH4,
+                  Text(
+                    _profileSubtitle(user),
+                    style: CatchTextStyles.bodySm(
+                      context,
+                      color: Colors.white.withValues(alpha: 0.9),
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  static String _profileSubtitle(UserProfile user) {
+    final parts = [
+      if (user.occupation != null && user.occupation!.trim().isNotEmpty)
+        user.occupation!.trim(),
+      if (user.city != null) user.city!.label,
+      user.sexualOrientation.label.toLowerCase(),
+    ];
+    return parts.join(' · ');
+  }
+}
+
+class _ProfileStatsStrip extends StatelessWidget {
+  const _ProfileStatsStrip({required this.user, required this.tokens});
+
+  final UserProfile user;
+  final CatchTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final stats = [
+      ('Photos', '${user.photoUrls.length}/6'),
+      ('Pace', _RunningIdentityCard._paceRange(user)),
+      ('Runs', _RunningIdentityCard._distanceSummary(user)),
+    ];
+
+    return Container(
+      padding: const EdgeInsets.all(Sizes.p16),
+      decoration: BoxDecoration(
+        color: tokens.surface,
+        borderRadius: BorderRadius.circular(CatchRadius.card),
+        border: Border.all(color: tokens.line),
+      ),
+      child: Row(
+        children: [
+          for (var i = 0; i < stats.length; i++) ...[
+            Expanded(
+              child: Column(
+                children: [
+                  Text(
+                    stats[i].$2,
+                    style: CatchTextStyles.displaySm(context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  gapH2,
+                  Text(
+                    stats[i].$1.toUpperCase(),
+                    style: CatchTextStyles.labelSm(context, color: tokens.ink3),
+                  ),
+                ],
+              ),
+            ),
+            if (i < stats.length - 1)
+              Container(width: 1, height: 38, color: tokens.line),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _PromptCard extends StatelessWidget {
+  const _PromptCard({
+    required this.eyebrow,
+    required this.text,
+    required this.tokens,
+  });
+
+  final String eyebrow;
+  final String text;
+  final CatchTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(Sizes.p16),
+      decoration: BoxDecoration(
+        color: tokens.surface,
+        borderRadius: BorderRadius.circular(CatchRadius.card),
+        border: Border.all(color: tokens.line),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(eyebrow.toUpperCase(), style: CatchTextStyles.labelSm(context)),
+          gapH6,
+          Text(
+            text,
+            style: CatchTextStyles.displaySm(context).copyWith(height: 1.2),
+          ),
+        ],
+      ),
     );
   }
 }

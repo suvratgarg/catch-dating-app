@@ -17,6 +17,10 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _deleting = false;
+  bool _showOnMap = true;
+  bool _newCatches = true;
+  bool _runReminders = true;
+  bool _weeklyDigest = false;
 
   Future<void> _confirmDeleteAccount() async {
     final confirmed = await showDialog<bool>(
@@ -54,72 +58,194 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final t = CatchTokens.of(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
       body: ListView(
-        padding: const EdgeInsets.all(Sizes.p16),
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.screenH,
+          Sizes.p12,
+          CatchSpacing.screenH,
+          Sizes.p32,
+        ),
         children: [
-          Text('Payments', style: CatchTextStyles.displaySm(context)),
-          gapH12,
-          _SettingsCard(
+          SafeArea(
+            bottom: false,
+            child: Row(
+              children: [
+                IconButton.filledTonal(
+                  onPressed: () => context.pop(),
+                  icon: const Icon(Icons.arrow_back_rounded),
+                ),
+                gapW12,
+                Expanded(
+                  child: Text(
+                    'Settings',
+                    style: CatchTextStyles.displayMd(context),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          gapH20,
+          _SettingsGroup(
+            title: 'Account',
             children: [
-              ListTile(
-                leading: Icon(Icons.receipt_long_outlined, color: t.accent),
-                title: const Text('Payment history'),
-                subtitle: const Text('Bookings, refunds, and receipts.'),
-                trailing: const Icon(Icons.chevron_right_rounded),
+              _SettingsRow(
+                label: 'Phone',
+                value: '+91 connected',
+                icon: Icons.phone_outlined,
+                tokens: t,
+              ),
+              _SettingsRow(
+                label: 'Payment history',
+                value: 'Bookings and receipts',
+                icon: Icons.receipt_long_outlined,
+                tokens: t,
                 onTap: () =>
                     context.pushNamed(Routes.paymentHistoryScreen.name),
               ),
             ],
           ),
-          gapH24,
-          Text('Safety', style: CatchTextStyles.displaySm(context)),
-          gapH12,
-          const _BlockedAccountsSection(),
-          gapH24,
-          Text('Account', style: CatchTextStyles.displaySm(context)),
-          gapH12,
-          _SettingsCard(
+          gapH20,
+          _SettingsGroup(
+            title: 'Discovery',
             children: [
-              ListTile(
-                leading: Icon(Icons.notifications_outlined, color: t.ink2),
-                title: const Text('Notifications'),
-                subtitle: const Text('Catch alerts and run reminders.'),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 3,
-                  ),
-                  decoration: BoxDecoration(
-                    color: t.raised,
-                    borderRadius: BorderRadius.circular(CatchRadius.button),
-                    border: Border.all(color: t.line2),
-                  ),
-                  child: Text(
-                    'Soon',
-                    style: CatchTextStyles.caption(context, color: t.ink2),
-                  ),
+              _SettingsRow(
+                label: 'Who can see me',
+                value: 'Runners on my runs',
+                icon: Icons.visibility_outlined,
+                tokens: t,
+              ),
+              _SettingsRow(
+                label: 'Show me on map',
+                icon: Icons.map_outlined,
+                tokens: t,
+                trailing: Switch.adaptive(
+                  value: _showOnMap,
+                  onChanged: (value) => setState(() => _showOnMap = value),
                 ),
               ),
-              Divider(color: t.line, height: 1),
-              ListTile(
-                leading: Icon(Icons.delete_outline, color: t.primary),
-                title: const Text('Delete account'),
-                subtitle: const Text(
-                  'Remove your profile and sign out of Catch.',
+              _SettingsRow(
+                label: 'Snooze profile',
+                value: 'Off',
+                icon: Icons.bedtime_outlined,
+                tokens: t,
+              ),
+            ],
+          ),
+          gapH20,
+          _SettingsGroup(
+            title: 'Notifications',
+            children: [
+              _SettingsRow(
+                label: 'Activity',
+                value: 'Matches and run reminders',
+                icon: Icons.notifications_none_rounded,
+                tokens: t,
+                onTap: () => context.pushNamed(Routes.activityScreen.name),
+              ),
+              _SettingsRow(
+                label: 'New catches',
+                icon: Icons.favorite_outline,
+                tokens: t,
+                trailing: Switch.adaptive(
+                  value: _newCatches,
+                  onChanged: (value) => setState(() => _newCatches = value),
                 ),
+              ),
+              _SettingsRow(
+                label: 'Run reminders',
+                icon: Icons.directions_run_outlined,
+                tokens: t,
+                trailing: Switch.adaptive(
+                  value: _runReminders,
+                  onChanged: (value) => setState(() => _runReminders = value),
+                ),
+              ),
+              _SettingsRow(
+                label: 'Weekly digest',
+                icon: Icons.mark_email_read_outlined,
+                tokens: t,
+                trailing: Switch.adaptive(
+                  value: _weeklyDigest,
+                  onChanged: (value) => setState(() => _weeklyDigest = value),
+                ),
+              ),
+            ],
+          ),
+          gapH20,
+          Text('Safety', style: CatchTextStyles.labelSm(context)),
+          gapH8,
+          const _BlockedAccountsSection(),
+          gapH20,
+          _SettingsGroup(
+            title: 'About',
+            children: [
+              _SettingsRow(
+                label: 'Help & support',
+                value: 'Contact us',
+                icon: Icons.help_outline,
+                tokens: t,
+              ),
+              _SettingsRow(
+                label: 'Privacy',
+                value: 'Policy',
+                icon: Icons.lock_outline,
+                tokens: t,
+              ),
+              _SettingsRow(
+                label: 'Terms',
+                value: 'Legal',
+                icon: Icons.description_outlined,
+                tokens: t,
+              ),
+            ],
+          ),
+          gapH20,
+          _SettingsCard(
+            children: [
+              _SettingsRow(
+                label: 'Delete account',
+                value: 'Remove your profile',
+                icon: Icons.delete_outline,
+                tokens: t,
+                danger: true,
                 trailing: _deleting
                     ? const SizedBox.square(
                         dimension: 20,
                         child: CircularProgressIndicator(strokeWidth: 2),
                       )
-                    : const Icon(Icons.chevron_right_rounded),
+                    : null,
                 onTap: _deleting ? null : _confirmDeleteAccount,
               ),
             ],
           ),
+          gapH20,
+          Center(
+            child: Text(
+              'Catch v1.0 · made for runners in India',
+              style: CatchTextStyles.caption(context, color: t.ink3),
+            ),
+          ),
         ],
       ),
+    );
+  }
+}
+
+class _SettingsGroup extends StatelessWidget {
+  const _SettingsGroup({required this.title, required this.children});
+
+  final String title;
+  final List<Widget> children;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title.toUpperCase(), style: CatchTextStyles.labelSm(context)),
+        gapH8,
+        _SettingsCard(children: children),
+      ],
     );
   }
 }
@@ -140,6 +266,72 @@ class _SettingsCard extends StatelessWidget {
         border: Border.all(color: t.line),
       ),
       child: Column(children: children),
+    );
+  }
+}
+
+class _SettingsRow extends StatelessWidget {
+  const _SettingsRow({
+    required this.label,
+    required this.icon,
+    required this.tokens,
+    this.value,
+    this.trailing,
+    this.onTap,
+    this.danger = false,
+  });
+
+  final String label;
+  final String? value;
+  final IconData icon;
+  final CatchTokens tokens;
+  final Widget? trailing;
+  final VoidCallback? onTap;
+  final bool danger;
+
+  @override
+  Widget build(BuildContext context) {
+    final color = danger ? tokens.primary : tokens.ink;
+    final child = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
+      child: Row(
+        children: [
+          Icon(icon, color: danger ? tokens.primary : tokens.ink2, size: 22),
+          gapW12,
+          Expanded(
+            child: Text(
+              label,
+              style: CatchTextStyles.bodyMd(
+                context,
+                color: color,
+              ).copyWith(fontWeight: FontWeight.w600),
+            ),
+          ),
+          if (trailing != null)
+            trailing!
+          else ...[
+            if (value != null)
+              Flexible(
+                child: Text(
+                  value!,
+                  textAlign: TextAlign.right,
+                  style: CatchTextStyles.bodySm(context, color: tokens.ink2),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+            if (onTap != null) ...[
+              gapW6,
+              Icon(Icons.chevron_right_rounded, color: tokens.ink3),
+            ],
+          ],
+        ],
+      ),
+    );
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(onTap: onTap, child: child),
     );
   }
 }

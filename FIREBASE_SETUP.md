@@ -2,9 +2,9 @@
 
 Firebase environments:
 
-- `dev` -> configured today and backed by `catch-dating-app-64e51`
-- `staging` -> scaffolded in code, not configured yet
-- `prod` -> scaffolded in code, not configured yet
+- `dev` -> configured and backed by `catchdates-dev`
+- `staging` -> configured and backed by `catchdates-staging`
+- `prod` -> configured against the original `catch-dating-app-64e51` project
 
 Supported Flutter platforms:
 - `android`
@@ -46,9 +46,9 @@ Firebase services used in-app:
 
 - The active app environment is selected by `APP_ENV` in `tool/dart_defines/<env>.json`.
 - Dart Firebase options now route through `lib/firebase_options.dart`, which chooses among `dev`, `staging`, and `prod`.
-- Android Firebase still depends on `google-services.json` plus the Google Services Gradle plugin.
-- iOS Firebase still depends on `GoogleService-Info.plist`, `Runner.entitlements`, and `UIBackgroundModes` (`fetch`, `remote-notification`).
-- macOS Firebase still depends on `GoogleService-Info.plist`. FCM code is present, but macOS push is intentionally disabled until macOS becomes a supported push target.
+- Android Firebase still depends on `google-services.json` plus the Google Services Gradle plugin. Android now has `dev`, `staging`, and `prod` product flavors, so Android builds must use the matching flavor.
+- iOS Firebase still depends on `GoogleService-Info.plist`, `Runner.entitlements`, and `UIBackgroundModes` (`fetch`, `remote-notification`). iOS has `dev`, `staging`, and `prod` schemes/build configurations, and the build copies the matching `firebase/<env>/ios/GoogleService-Info.plist` into the app bundle.
+- macOS Firebase still depends on `GoogleService-Info.plist`. macOS has `dev`, `staging`, and `prod` schemes/build configurations, and the build copies the matching `firebase/<env>/macos/GoogleService-Info.plist` into the app bundle. FCM code is present, but macOS push is intentionally disabled until macOS becomes a supported push target.
 - Web Firebase still depends on both the Dart options file and `web/firebase-messaging-sw.js`.
 - `./tool/use_firebase_environment.sh <env>` is the switch point for native and web Firebase files.
 
@@ -70,6 +70,26 @@ Run Flutter with the matching `APP_ENV`:
 ./tool/flutter_with_env.sh prod build apk
 ```
 
+For Android APK/App Bundle, iOS, and macOS builds, `tool/flutter_with_env.sh` automatically adds `--flavor <env>` when you have not supplied a flavor yourself. Example: `./tool/flutter_with_env.sh dev build apk --debug` runs the `dev` Android flavor.
+
+Explicit Apple flavor examples:
+
+```bash
+flutter build ios --simulator --no-codesign --flavor dev --dart-define=APP_ENV=dev
+flutter build ios --simulator --no-codesign --flavor staging --dart-define=APP_ENV=staging
+flutter build ios --simulator --no-codesign --flavor prod --dart-define=APP_ENV=prod
+
+flutter build macos --debug --flavor dev --dart-define=APP_ENV=dev
+flutter build macos --debug --flavor staging --dart-define=APP_ENV=staging
+flutter build macos --debug --flavor prod --dart-define=APP_ENV=prod
+```
+
+Regenerate Apple schemes/configurations after changing app IDs, app names, or Firebase env mappings:
+
+```bash
+ruby tool/configure_apple_flavors.rb
+```
+
 Run Firebase CLI commands against the matching alias:
 
 ```bash
@@ -77,21 +97,20 @@ Run Firebase CLI commands against the matching alias:
 ./tool/firebase_with_env.sh staging deploy --only functions
 ```
 
-Today only `dev` is mapped in `.firebaserc`.
-Add `staging` and `prod` aliases after those Firebase projects exist.
+All three aliases are present in `.firebaserc`. Before enabling enforcement or sending test users to staging, finish the remaining console-side App Check, APNs, provisioning, and Play App Signing checks.
 
 ## Push Notifications
 
-- Android push is repo-complete. Runtime permission is requested in-app where needed.
-- Android debug SHA-1/SHA-256 fingerprints are registered on the new `com.catchdates.app` Firebase Android app. Release fingerprints still need to be added after Android release signing is finalized.
-- iOS push is repo-complete for code/config. The app now uses final bundle ID `com.catchdates.app`; the new Firebase iOS app has APNs key ID `78HUQYZ2ZR`, Team ID `2HQBK4UMUT`, uploaded for both development and production.
+- Android push is repo-complete for the dev/staging/prod flavors. Runtime permission is requested in-app where needed.
+- Android upload-key SHA-1/SHA-256 fingerprints are registered for the dev, staging, and production Firebase Android apps. After Play App Signing is enabled, also register the Play app-signing certificate fingerprints because Play-distributed installs are signed by that certificate.
+- iOS push is repo-complete in app code for the flavor bundle IDs. Apple Developer App IDs, Firebase iOS apps, and provisioning profiles must match the exact bundle ID selected for each environment before real-device push can work.
 - macOS push is intentionally disabled in app code and entitlements because macOS is only a debugging target right now.
-- Web push requires a VAPID key at runtime. Dev has a Firebase Web Push key pair and `tool/dart_defines/dev.json` contains the public VAPID key; staging/prod remain blank until those Firebase environments exist.
+- Web push requires a VAPID key at runtime. Dev has a Firebase Web Push key pair and `tool/dart_defines/dev.json` contains the public VAPID key; staging/prod keys still need to be generated and added.
 
 ## App Check / App Attest
 
-- Firebase App Check is registered for the new `com.catchdates.app` Android app with Play Integrity and the new `com.catchdates.app` iOS app with App Attest.
-- Apple Developer had App Attest enabled for the old bundle ID. Enable App Attest for bundle ID `com.catchdates.app` before relying on App Check for iOS.
+- Firebase App Check must be registered per native app ID/package. Verify Android Play Integrity and iOS App Attest for the exact dev/staging/prod identifiers before enabling enforcement.
+- The final production Apple App ID `com.catchdates.app` is registered with App Attest and Push Notifications. Enable/register matching App IDs for the separate dev/staging bundle IDs before relying on App Check for those iOS installs.
 - `ios/Runner/Runner.entitlements` declares `com.apple.developer.devicecheck.appattest-environment = development` so development-signed iOS builds carry the App Attest entitlement.
 - Web App Check is not registered yet. Register the web app with reCAPTCHA Enterprise before enabling App Check enforcement for web clients.
 - The Firebase App Check API enforcement screen currently reports "Start using" for Firestore, Storage, Auth, and related APIs; do not turn on enforcement until live clients are known to attach valid App Check tokens in the target environment.
@@ -108,7 +127,7 @@ flutter run -d chrome \
 
 Current state and remaining checks:
 
-1. Apple Developer Push Notifications must be enabled/refreshed for bundle ID `com.catchdates.app`.
+1. Apple Developer Push Notifications and App Attest are enabled for the production App ID `com.catchdates.app`; create/refresh the same capabilities for `com.catchdates.app.dev` and `com.catchdates.app.staging` if those bundle IDs will run on real devices.
 2. Accept the latest Apple Developer Program License Agreement for the team account if Xcode reports a PLA update is required.
 3. Regenerate or refresh Apple provisioning profiles after changing Apple capabilities such as App Attest.
 4. Test on a real iPhone for iOS push. The iOS simulator cannot receive APNs pushes.
@@ -128,7 +147,7 @@ Push messaging can be toggled explicitly:
 flutter run --dart-define=ENABLE_PUSH_MESSAGING=true
 ```
 
-## Adding Staging Or Prod
+## Adding Or Refreshing An Environment
 
 1. Create the Firebase project plus Android, iOS, macOS, and web apps.
 2. Generate the environment's Dart Firebase options:

@@ -1,7 +1,9 @@
+import 'package:catch_dating_app/activity/presentation/activity_screen.dart';
 import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
+import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
@@ -19,7 +21,10 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_s
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
+import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/run_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -37,6 +42,10 @@ enum Routes {
   authScreen('/auth'),
   onboardingScreen('/onboarding'),
   editProfileScreen('/edit-profile'),
+  calendarScreen('/calendar'),
+  activityScreen('/activity'),
+  filtersScreen('/filters'),
+  runMapScreen('/map'),
   // Home / Dashboard branch (index 0)
   dashboardScreen('/'),
   // Clubs branch (index 1)
@@ -48,6 +57,7 @@ enum Routes {
   // Catches branch (index 2)
   swipeHubScreen('/catches'),
   swipeRunScreen('/catches/:runId'),
+  runRecapScreen('/catches/:runId/recap'),
   // Chats branch (index 3)
   matchesListScreen('/chats'),
   chatScreen('/chats/:matchId'),
@@ -115,6 +125,26 @@ GoRouter goRouter(Ref ref) {
         path: Routes.editProfileScreen.path,
         name: Routes.editProfileScreen.name,
         builder: (context, state) => const EditProfileScreen(),
+      ),
+      GoRoute(
+        path: Routes.calendarScreen.path,
+        name: Routes.calendarScreen.name,
+        builder: (context, state) => const CalendarScreen(),
+      ),
+      GoRoute(
+        path: Routes.activityScreen.path,
+        name: Routes.activityScreen.name,
+        builder: (context, state) => const ActivityScreen(),
+      ),
+      GoRoute(
+        path: Routes.filtersScreen.path,
+        name: Routes.filtersScreen.name,
+        builder: (context, state) => const FiltersScreen(),
+      ),
+      GoRoute(
+        path: Routes.runMapScreen.path,
+        name: Routes.runMapScreen.name,
+        builder: (context, state) => const RunMapScreen(),
       ),
       GoRoute(
         path: Routes.paymentHistoryScreen.path,
@@ -213,6 +243,12 @@ GoRouter goRouter(Ref ref) {
                 name: Routes.swipeHubScreen.name,
                 builder: (context, state) => const SwipeHubScreen(),
                 routes: [
+                  GoRoute(
+                    path: ':runId/recap',
+                    name: Routes.runRecapScreen.name,
+                    builder: (context, state) =>
+                        RunRecapScreen(runId: state.pathParameters['runId']!),
+                  ),
                   GoRoute(
                     path: ':runId',
                     name: Routes.swipeRunScreen.name,

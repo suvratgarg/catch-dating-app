@@ -83,7 +83,15 @@ class AttendedRunTile extends StatelessWidget {
                     countdown,
                     style: CatchTextStyles.mono(context, color: t.ink),
                   ),
-                  gapH8,
+                  gapH4,
+                  TextButton(
+                    onPressed: () => context.pushNamed(
+                      Routes.runRecapScreen.name,
+                      pathParameters: {'runId': run.id},
+                    ),
+                    child: const Text('Recap'),
+                  ),
+                  gapH4,
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 12,

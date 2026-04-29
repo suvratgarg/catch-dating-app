@@ -1,13 +1,27 @@
+// ignore_for_file: scoped_providers_should_specify_dependencies
+
+import 'package:catch_dating_app/activity/presentation/activity_screen.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_tab.dart';
+import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
+import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
+import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/run_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,6 +32,27 @@ void main() {
     startTime: DateTime.now().subtract(const Duration(hours: 2)),
     endTime: DateTime.now().subtract(const Duration(hours: 1)),
     attendedUserIds: const ['runner-1', 'runner-2', 'runner-3', 'runner-4'],
+    startingPointLat: 19.0676,
+    startingPointLng: 72.8221,
+  );
+  final upcomingRun = _run(
+    id: 'run-upcoming',
+    startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+    distanceKm: 10,
+    pace: PaceLevel.moderate,
+    signedUpUserIds: const ['runner-1', 'runner-2'],
+    startingPointLat: 19.0760,
+    startingPointLng: 72.8777,
+  );
+  final match = Match(
+    id: 'match-1',
+    user1Id: 'runner-1',
+    user2Id: 'runner-2',
+    runId: liveRun.id,
+    createdAt: DateTime.now().subtract(const Duration(hours: 3)),
+    lastMessageAt: DateTime.now().subtract(const Duration(minutes: 18)),
+    lastMessagePreview: 'Coffee after the next 10K?',
+    unreadCounts: const {'runner-1': 2},
   );
 
   runApp(
@@ -27,6 +62,24 @@ void main() {
         attendedRunsProvider(
           'runner-1',
         ).overrideWithValue(AsyncData([liveRun])),
+        signedUpRunsProvider(
+          'runner-1',
+        ).overrideWithValue(AsyncData([upcomingRun])),
+        matchesForUserProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value([match])),
+        watchRunProvider(
+          liveRun.id,
+        ).overrideWith((ref) => Stream.value(liveRun)),
+        publicProfileProvider('runner-2').overrideWith(
+          (ref) => Stream.value(_publicProfile('runner-2', 'Riya')),
+        ),
+        publicProfileProvider('runner-3').overrideWith(
+          (ref) => Stream.value(_publicProfile('runner-3', 'Zoya')),
+        ),
+        publicProfileProvider('runner-4').overrideWith(
+          (ref) => Stream.value(_publicProfile('runner-4', 'Dev')),
+        ),
       ],
       child: VisualReviewApp(liveRun: liveRun),
     ),
@@ -76,6 +129,27 @@ class VisualReviewApp extends StatelessWidget {
                   label: 'Catches hub',
                   child: const SwipeHubScreen(),
                 ),
+                _PhoneFrame(label: 'Calendar', child: const CalendarScreen()),
+                _PhoneFrame(
+                  label: 'Map view',
+                  child: const RunMapScreen(enableNetworkTiles: false),
+                ),
+                _PhoneFrame(label: 'Activity', child: const ActivityScreen()),
+                _PhoneFrame(
+                  label: 'Filters',
+                  child: ProviderScope(
+                    overrides: [
+                      userProfileStreamProvider.overrideWith(
+                        (ref) => Stream.value(user),
+                      ),
+                    ],
+                    child: const FiltersScreen(),
+                  ),
+                ),
+                _PhoneFrame(
+                  label: 'Run recap',
+                  child: RunRecapScreen(runId: liveRun.id),
+                ),
                 _PhoneFrame(
                   label: 'Create success',
                   child: CreateRunSuccessScreen(
@@ -107,6 +181,17 @@ class VisualReviewApp extends StatelessWidget {
                     ),
                   ),
                 ),
+                _PhoneFrame(
+                  label: 'Settings',
+                  child: ProviderScope(
+                    overrides: [
+                      blockedUsersProvider.overrideWithValue(
+                        const AsyncData([]),
+                      ),
+                    ],
+                    child: const SettingsScreen(),
+                  ),
+                ),
               ],
             ),
           ),
@@ -136,28 +221,32 @@ class _PhoneFrame extends StatelessWidget {
             padding: const EdgeInsets.only(left: 8, bottom: 8),
             child: Text(label, style: Theme.of(context).textTheme.labelLarge),
           ),
-          Transform.scale(
-            scale: _scale,
-            alignment: Alignment.topLeft,
-            child: Container(
-              width: _phoneSize.width,
-              height: _phoneSize.height,
-              clipBehavior: Clip.antiAlias,
-              decoration: BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.circular(48),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Color(0x33000000),
-                    blurRadius: 30,
-                    offset: Offset(0, 18),
-                  ),
-                ],
-              ),
-              padding: const EdgeInsets.all(8),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(40),
-                child: child,
+          SizedBox(
+            width: _phoneSize.width * _scale,
+            height: _phoneSize.height * _scale,
+            child: FittedBox(
+              fit: BoxFit.contain,
+              alignment: Alignment.topLeft,
+              child: Container(
+                width: _phoneSize.width,
+                height: _phoneSize.height,
+                clipBehavior: Clip.antiAlias,
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(48),
+                  boxShadow: const [
+                    BoxShadow(
+                      color: Color(0x33000000),
+                      blurRadius: 30,
+                      offset: Offset(0, 18),
+                    ),
+                  ],
+                ),
+                padding: const EdgeInsets.all(8),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(40),
+                  child: child,
+                ),
               ),
             ),
           ),
@@ -178,6 +267,8 @@ Run _run({
   List<String> signedUpUserIds = const [],
   List<String> attendedUserIds = const [],
   List<String> waitlistUserIds = const [],
+  double? startingPointLat,
+  double? startingPointLng,
 }) {
   return Run(
     id: id,
@@ -185,6 +276,8 @@ Run _run({
     startTime: startTime,
     endTime: endTime ?? startTime.add(const Duration(hours: 1)),
     meetingPoint: 'Carter Road Amphitheatre',
+    startingPointLat: startingPointLat,
+    startingPointLng: startingPointLng,
     distanceKm: distanceKm,
     pace: pace,
     capacityLimit: capacityLimit,
@@ -225,5 +318,15 @@ UserProfile _user() {
     profileComplete: true,
     interestedInGenders: const [Gender.woman],
     photoUrls: const [],
+  );
+}
+
+PublicProfile _publicProfile(String uid, String name) {
+  return PublicProfile(
+    uid: uid,
+    name: name,
+    age: 27,
+    bio: 'Steady miles, good coffee, and Sunday long runs.',
+    gender: Gender.woman,
   );
 }

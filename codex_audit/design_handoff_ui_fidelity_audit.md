@@ -83,6 +83,23 @@ Verification:
 - `flutter build web -t tool/visual_review_app.dart`
 - Served `build/web` locally on `127.0.0.1:7360` and inspected the rendered surfaces in Chrome through Computer Use.
 
+### 2026-04-29 UI gap pass 3
+
+Addressed:
+- Profile self now follows the handoff composition more closely: large photo/identity hero, edit pill, profile stat strip, prompt/bio card, dark running identity card, preview action, and photo/detail sections below.
+- Settings now uses the handoff-style grouped structure: Account, Discovery, Notifications, Safety, About, and Delete account. Existing real actions for payment history, blocked users, unblock, and delete confirmation were preserved.
+- Added Settings to the visual-review harness alongside Catches, Create success, Host manage, and Profile.
+
+Verification:
+- `flutter analyze lib/profile/presentation/widgets/profile_tab.dart lib/safety/presentation/settings_screen.dart test/profile/profile_widgets_test.dart`
+- `flutter test test/profile/profile_widgets_test.dart`
+- `flutter analyze tool/visual_review_app.dart --no-fatal-warnings`
+- `flutter build web -t tool/visual_review_app.dart`
+
+Still open:
+- Settings notification/discovery toggles are local UI state only; persistence should wait for a real user-settings model.
+- Profile self still depends on whatever photos/user fields exist; richer run/catch stats require backend/user aggregate fields.
+
 ## What Matches Well
 
 - Sunset palette, typography helpers, spacing, radii, pill buttons, and card treatment are ported into Flutter.
@@ -130,21 +147,21 @@ Verification:
 | 06 Photos | Implemented with 6-slot grid | Good |
 | 07 Pace + distances | Implemented | Good |
 | 08 Home feed | Not clearly present as separate feed | Gap |
-| 09 Home map | Not implemented | Gap |
+| 09 Home map | Implemented after pass 8 as dashboard Map view | Medium |
 | 10 Run detail | Implemented | Good |
 | 11 Run clubs directory | Implemented through clubs list | Good |
 | 12 Club detail | Implemented | Good |
 | 13 Catches intro | Partially addressed in Catches hub | Partial |
 | 14 Swipe card | Implemented | Medium |
 | 15 Match modal | Implemented | Medium |
-| 16 Run recap | Not implemented | Gap |
+| 16 Run recap | Implemented after pass 7 from attended run data | Medium |
 | 17 Inbox | Improved with custom Catch header/cards | Medium-high |
 | 18 Chat | Implemented with shared-run context header | Medium |
 | 19 Profile self | Improved with running identity lead | Medium |
 | 20 Profile other | Implemented via profile card | Medium |
 | 21 Edit profile | Implemented | Medium |
-| 22 Filters | Not implemented | Gap |
-| 23 Notifications | Not implemented | Gap |
+| 22 Filters | Implemented after pass 6 for supported profile preferences | Medium-high |
+| 23 Notifications | Implemented after pass 5 as Activity from matches/runs | Medium-high |
 | 24 Settings | Improved grouping, still narrower | Medium |
 | 25 Dashboard | Implemented | Good |
 | 26 Dashboard empty | Implemented | Good |
@@ -154,16 +171,115 @@ Verification:
 | 30-33 Create run | Reordered toward handoff, still missing advanced controls | Medium |
 | 34 Create success | Implemented after pass 2 | Medium-high |
 | 35 Host manage | Implemented after pass 2, not routed/stream-backed | Medium |
-| 36 Calendar timeline | Not implemented | Gap |
-| 37 Calendar agenda | Not implemented | Gap |
+| 36 Calendar timeline | Implemented after pass 4 from signed-up runs | Medium-high |
+| 37 Calendar agenda | Implemented after pass 4 from signed-up runs | Medium-high |
+
+## 2026-04-29 UI Gap Pass 4
+
+### Calendar quick action and schedule surfaces
+
+- Added `CalendarScreen` at `lib/calendar/presentation/calendar_screen.dart`.
+- Wired `Routes.calendarScreen` and the dashboard Calendar quick action to a real route instead of a `Soon` badge.
+- Built both handoff modes:
+  - agenda view grouped by date, with joined run cards and empty/error/loading states
+  - timeline view with time rail and run summary cards
+- Reused existing signed-up runs provider and run formatters instead of introducing a mock data layer.
+- Updated `test/dashboard/dashboard_screen_test.dart` so QuickActions now verifies Map remains unavailable while Calendar navigates to the new route.
+
+Verification:
+
+- `dart format lib/calendar/presentation/calendar_screen.dart lib/routing/go_router.dart lib/dashboard/presentation/widgets/quick_actions.dart test/dashboard/dashboard_screen_test.dart`
+- `flutter analyze lib/calendar/presentation/calendar_screen.dart lib/routing/go_router.dart lib/dashboard/presentation/widgets/quick_actions.dart test/dashboard/dashboard_screen_test.dart`
+- `flutter test test/dashboard/dashboard_screen_test.dart`
+
+## 2026-04-29 UI Gap Pass 5
+
+### Activity / notifications
+
+- Added `ActivityScreen` at `lib/activity/presentation/activity_screen.dart`.
+- Wired `Routes.activityScreen` plus Profile and Settings entry points.
+- Matched the handoff's Activity structure without inventing fake notification storage:
+  - unread/new matches are derived from `matchesForUserProvider`
+  - upcoming run reminders are derived from `signedUpRunsProvider`
+  - Mark all read resets unread counts through `MatchRepository`
+- Added loading, empty, and error states so the surface is production-safe even before a dedicated notifications collection exists.
+
+Verification:
+
+- `dart format lib/activity/presentation/activity_screen.dart lib/routing/go_router.dart lib/profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart`
+- `flutter analyze lib/activity/presentation/activity_screen.dart lib/routing/go_router.dart lib/profile/presentation/profile_screen.dart lib/safety/presentation/settings_screen.dart`
+
+## 2026-04-29 UI Gap Pass 6
+
+### Filters
+
+- Added `FiltersScreen` at `lib/swipes/presentation/filters_screen.dart`.
+- Wired `Routes.filtersScreen` and added the entry point from `SwipeScreen`.
+- Implemented real persisted controls for the profile fields already used by matching:
+  - interested genders
+  - age range
+  - pace range
+  - preferred run distances
+- Kept the mockup's verified-runners row visually present but disabled because the app does not yet have a profile verification field or backend contract.
+
+Verification:
+
+- `dart format lib/swipes/presentation/filters_screen.dart lib/swipes/presentation/swipe_screen.dart lib/routing/go_router.dart`
+- `flutter analyze lib/swipes/presentation/filters_screen.dart lib/swipes/presentation/swipe_screen.dart lib/routing/go_router.dart`
+
+## 2026-04-29 UI Gap Pass 7
+
+### Post-run recap
+
+- Added `RunRecapScreen` at `lib/swipes/presentation/run_recap_screen.dart`.
+- Wired `Routes.runRecapScreen` at `/catches/:runId/recap`.
+- Added a Recap entry point to attended run tiles.
+- Kept recap data honest to the current backend:
+  - run distance, pace, date/time, checked-in count, and catch-window status come from `Run`
+  - attendee cards resolve through `publicProfileProvider`
+  - vibe selection is local only because there is no persisted recap/vibe contract yet
+- The primary CTA opens the existing catches deck for the same run.
+
+Verification:
+
+- `dart format lib/swipes/presentation/run_recap_screen.dart lib/swipes/presentation/widgets/attended_run_tile.dart lib/routing/go_router.dart`
+- `flutter analyze lib/swipes/presentation/run_recap_screen.dart lib/swipes/presentation/widgets/attended_run_tile.dart lib/routing/go_router.dart`
+
+## 2026-04-29 UI Gap Pass 8
+
+### Map view
+
+- Added `RunMapScreen` at `lib/runs/presentation/run_map_screen.dart`.
+- Wired `Routes.runMapScreen` and converted the dashboard Map quick action from `Soon` to a real route.
+- Used existing `Run.startingPointLat` / `startingPointLng` pins with `flutter_map`.
+- Combined signed-up runs and recommended club runs so the map remains useful from the dashboard without a new backend query.
+- Added a bottom run sheet with horizontal run selection and a `View run` CTA.
+- Added a no-network-tile mode for visual review/tests.
+
+Verification:
+
+- `dart format lib/runs/presentation/run_map_screen.dart lib/routing/go_router.dart lib/dashboard/presentation/widgets/quick_actions.dart test/dashboard/dashboard_screen_test.dart tool/visual_review_app.dart`
+- `flutter analyze lib/runs/presentation/run_map_screen.dart lib/routing/go_router.dart lib/dashboard/presentation/widgets/quick_actions.dart test/dashboard/dashboard_screen_test.dart --no-fatal-warnings`
+- `flutter test test/dashboard/dashboard_screen_test.dart`
 
 ## Recommended Fix Order
 
-1. Bring the visible tab surfaces to a consistent production standard: Catches hub, Matches inbox, Chat header/context, Profile self, Settings.
-2. Add the missing post-run flow: catches intro, run recap, and a more intentional empty/ended state.
-3. Rework create run toward the handoff: basics first, route/map second, when/capacity/price third, review fourth, then success.
-4. Decide whether calendar/filters/notifications are in MVP. If not, remove "Soon" affordances or hide them behind a clear internal flag.
-5. Add golden or screenshot tests for the most important 390 x 844 surfaces: dashboard empty, dashboard full, clubs, run detail, swipe card, chat, profile.
+1. Visually inspect the expanded `tool/visual_review_app.dart` gallery at 390 x 844 and tune spacing/overflow against the handoff.
+2. Add a backend contract if vibe selections from Run Recap should persist and influence swipe ranking.
+3. Add a dedicated notifications collection if Activity needs push-notification history beyond matches and run reminders.
+4. Add a better all-runs/map query if Map view should show runs outside the user's joined clubs or bookings.
+5. Add golden or screenshot tests for the most important 390 x 844 surfaces: dashboard empty, dashboard full, clubs, run detail, swipe card, chat, profile, activity, filters, calendar, recap, map.
+
+## Current Broad Verification
+
+- `flutter analyze lib/activity/presentation/activity_screen.dart lib/calendar/presentation/calendar_screen.dart lib/dashboard/presentation/widgets/quick_actions.dart lib/profile/presentation/profile_screen.dart lib/profile/presentation/widgets/profile_tab.dart lib/routing/go_router.dart lib/runs/presentation/run_map_screen.dart lib/safety/presentation/settings_screen.dart lib/swipes/presentation/filters_screen.dart lib/swipes/presentation/run_recap_screen.dart lib/swipes/presentation/swipe_hub_screen.dart lib/swipes/presentation/swipe_screen.dart lib/swipes/presentation/widgets/attended_run_tile.dart test/dashboard/dashboard_screen_test.dart test/profile/profile_widgets_test.dart`
+- `flutter test test/dashboard/dashboard_screen_test.dart test/profile/profile_widgets_test.dart test/swipes`
+- `flutter analyze tool/visual_review_app.dart --no-fatal-warnings`
+- `flutter build web -t tool/visual_review_app.dart`
+- Browser preview at `http://127.0.0.1:7361/` confirmed the visual harness renders the corrected 390 x 844 phone width without the earlier clipped/narrow text wrapping on the Catches hub frame.
+- Temporary preview server on port 7361 was stopped after browser QA.
+
+Note: `tool/visual_review_app.dart` still emits a non-fatal Riverpod lint warning for a preview-only scoped provider override used to seed `FiltersScreen`.
 
 ## Files Checked
 

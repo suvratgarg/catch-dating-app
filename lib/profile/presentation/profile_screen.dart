@@ -32,6 +32,11 @@ class ProfileScreen extends ConsumerWidget {
           title: const Text('Profile'),
           actions: [
             IconButton(
+              icon: const Icon(Icons.notifications_none_rounded),
+              tooltip: 'Activity',
+              onPressed: () => context.pushNamed(Routes.activityScreen.name),
+            ),
+            IconButton(
               icon: const Icon(Icons.receipt_long_outlined),
               tooltip: 'Payment history',
               onPressed: () =>

@@ -28,4 +28,24 @@ fi
 
 "$repo_root/tool/use_firebase_environment.sh" "$environment" >/dev/null
 
-exec flutter "$@" --dart-define-from-file="$define_file"
+flutter_args=("$@")
+
+if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
+  case "${flutter_args[1]}" in
+    apk|appbundle|ipa|ios|macos)
+      has_flavor=0
+      for arg in "${flutter_args[@]}"; do
+        if [[ "$arg" == "--flavor" || "$arg" == --flavor=* ]]; then
+          has_flavor=1
+          break
+        fi
+      done
+
+      if [[ $has_flavor -eq 0 ]]; then
+        flutter_args+=("--flavor" "$environment")
+      fi
+      ;;
+  esac
+fi
+
+exec flutter "${flutter_args[@]}" --dart-define-from-file="$define_file"

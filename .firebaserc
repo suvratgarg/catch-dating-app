@@ -1,6 +1,8 @@
 {
   "projects": {
     "default": "catch-dating-app-64e51",
-    "dev": "catch-dating-app-64e51"
+    "dev": "catchdates-dev",
+    "staging": "catchdates-staging",
+    "prod": "catch-dating-app-64e51"
   }
 }
