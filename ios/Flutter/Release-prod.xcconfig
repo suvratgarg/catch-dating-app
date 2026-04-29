@@ -3,3 +3,4 @@
 #include "Generated.xcconfig"
 APS_ENVIRONMENT=production
 APP_ATTEST_ENVIRONMENT=production
+FIREBASE_IOS_URL_SCHEME=app-1-574779808785-ios-49b1ce51418604b78ea5b0

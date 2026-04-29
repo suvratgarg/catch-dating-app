@@ -9,6 +9,7 @@ import 'package:catch_dating_app/public_profile/data/public_profile_repository.d
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
+import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -77,10 +78,11 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
         _FakeMatchRepository(match: match),
       ),
       chatRepositoryProvider.overrideWithValue(_FakeChatRepository()),
+      watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
       if (streamedProfile != null)
-        publicProfileProvider(streamedProfile.uid).overrideWith(
-          (ref) => Stream.value(streamedProfile),
-        ),
+        publicProfileProvider(
+          streamedProfile.uid,
+        ).overrideWith((ref) => Stream.value(streamedProfile)),
     ],
   );
   addTearDown(container.dispose);
@@ -105,10 +107,7 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp.router(
-        theme: AppTheme.light,
-        routerConfig: router,
-      ),
+      child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     ),
   );
   await _pumpFrames(tester);
@@ -153,7 +152,7 @@ void main() {
     await tester.pump();
     await tester.pump();
 
-    expect(find.text('Select a date'), findsOneWidget);
+    expect(find.text('Distance (km)'), findsOneWidget);
     expect(find.text('Run club not found.'), findsNothing);
   });
 

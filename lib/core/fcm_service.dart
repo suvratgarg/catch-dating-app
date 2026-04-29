@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart'
+    show TargetPlatform, defaultTargetPlatform, kIsWeb;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -47,14 +48,9 @@ class FcmService {
       sound: true,
     );
 
-    // Store the current token, then keep it up-to-date.
-    final token = kIsWeb
-        ? await FirebaseMessaging.instance.getToken(
-            vapidKey: AppConfig.firebaseWebVapidKey,
-          )
-        : await FirebaseMessaging.instance.getToken();
-    if (token != null) await _saveToken(uid, token);
     FirebaseMessaging.instance.onTokenRefresh.listen((t) => _saveToken(uid, t));
+    final token = await _currentToken();
+    if (token != null) await _saveToken(uid, token);
 
     // Foreground: the real-time Firestore stream updates the UI automatically.
     // We don't display an OS notification while the app is open, so no handler needed.
@@ -71,6 +67,34 @@ class FcmService {
 
   void _handleTap(GoRouter router, RemoteMessage message) {
     navigateToMessageRoute(router, message.data);
+  }
+
+  Future<String?> _currentToken() async {
+    if (kIsWeb) {
+      return FirebaseMessaging.instance.getToken(
+        vapidKey: AppConfig.firebaseWebVapidKey,
+      );
+    }
+
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      final apnsToken = await _waitForApnsToken();
+      if (apnsToken == null) return null;
+      await FirebaseMessaging.instance.setAutoInitEnabled(true);
+    }
+
+    return FirebaseMessaging.instance.getToken();
+  }
+
+  Future<String?> _waitForApnsToken({
+    Duration timeout = const Duration(seconds: 5),
+  }) async {
+    final deadline = DateTime.now().add(timeout);
+    while (DateTime.now().isBefore(deadline)) {
+      final token = await FirebaseMessaging.instance.getAPNSToken();
+      if (token != null) return token;
+      await Future<void>.delayed(const Duration(milliseconds: 250));
+    }
+    return FirebaseMessaging.instance.getAPNSToken();
   }
 
   Future<void> _saveToken(String uid, String token) =>

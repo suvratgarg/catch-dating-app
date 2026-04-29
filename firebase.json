@@ -4,14 +4,14 @@
       "android": {
         "default": {
           "projectId": "catch-dating-app-64e51",
-          "appId": "1:574779808785:android:8d7b61e9d54592f68ea5b0",
+          "appId": "1:574779808785:android:81edbfa0d4aba7c48ea5b0",
           "fileOutput": "android/app/google-services.json"
         }
       },
       "ios": {
         "default": {
           "projectId": "catch-dating-app-64e51",
-          "appId": "1:574779808785:ios:ee42e89efaf280f78ea5b0",
+          "appId": "1:574779808785:ios:49b1ce51418604b78ea5b0",
           "uploadDebugSymbols": false,
           "fileOutput": "ios/Runner/GoogleService-Info.plist"
         }
@@ -19,7 +19,7 @@
       "macos": {
         "default": {
           "projectId": "catch-dating-app-64e51",
-          "appId": "1:574779808785:ios:ee42e89efaf280f78ea5b0",
+          "appId": "1:574779808785:ios:49b1ce51418604b78ea5b0",
           "uploadDebugSymbols": false,
           "fileOutput": "macos/Runner/GoogleService-Info.plist"
         }
@@ -28,9 +28,9 @@
         "lib/firebase_options.dart": {
           "projectId": "catch-dating-app-64e51",
           "configurations": {
-            "android": "1:574779808785:android:8d7b61e9d54592f68ea5b0",
-            "ios": "1:574779808785:ios:ee42e89efaf280f78ea5b0",
-            "macos": "1:574779808785:ios:ee42e89efaf280f78ea5b0",
+            "android": "1:574779808785:android:81edbfa0d4aba7c48ea5b0",
+            "ios": "1:574779808785:ios:49b1ce51418604b78ea5b0",
+            "macos": "1:574779808785:ios:49b1ce51418604b78ea5b0",
             "web": "1:574779808785:web:0c3bd6aa7d98590f8ea5b0"
           }
         }

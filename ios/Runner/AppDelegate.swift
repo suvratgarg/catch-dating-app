@@ -1,4 +1,6 @@
 import Flutter
+import FirebaseAppCheck
+import FirebaseAuth
 import UIKit
 
 @main
@@ -10,7 +12,23 @@ import UIKit
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
+  override func application(
+    _ app: UIApplication,
+    open url: URL,
+    options: [UIApplication.OpenURLOptionsKey: Any] = [:]
+  ) -> Bool {
+    if Auth.auth().canHandle(url) {
+      return true
+    }
+
+    return super.application(app, open: url, options: options)
+  }
+
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
     GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
+
+    #if DEBUG
+      AppCheck.setAppCheckProviderFactory(AppCheckDebugProviderFactory())
+    #endif
   }
 }

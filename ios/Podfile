@@ -72,6 +72,12 @@ post_install do |installer|
     flutter_additional_ios_build_settings(target)
     target.build_configurations.each do |config|
       enforce_minimum_deployment_target(config, 'IPHONEOS_DEPLOYMENT_TARGET', '15.0')
+
+      # Suppress FlutterFire retroactive FlutterError:Error conformance warnings
+      # (upstream bug in firebase_storage, firebase_analytics, cloud_functions).
+      if %w[firebase_storage firebase_analytics cloud_functions].include?(target.name)
+        config.build_settings['SWIFT_SUPPRESS_WARNINGS'] = 'YES'
+      end
     end
   end
 

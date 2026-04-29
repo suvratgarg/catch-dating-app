@@ -1,5 +1,3 @@
-// ignore_for_file: scoped_providers_should_specify_dependencies
-
 import 'package:catch_dating_app/activity/presentation/activity_screen.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
@@ -54,11 +52,15 @@ void main() {
     lastMessagePreview: 'Coffee after the next 10K?',
     unreadCounts: const {'runner-1': 2},
   );
+  final user = _visualReviewUser();
 
   runApp(
     ProviderScope(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        userProfileRepositoryProvider.overrideWithValue(
+          _VisualReviewUserProfileRepository(user),
+        ),
         attendedRunsProvider(
           'runner-1',
         ).overrideWithValue(AsyncData([liveRun])),
@@ -103,15 +105,7 @@ class VisualReviewApp extends StatelessWidget {
       waitlistUserIds: const ['runner-5', 'runner-6'],
       priceInPaise: 24900,
     );
-    final user = _user().copyWith(
-      preferredDistances: const [
-        PreferredDistance.fiveK,
-        PreferredDistance.tenK,
-      ],
-      runningReasons: const [RunReason.community, RunReason.social],
-      paceMinSecsPerKm: 300,
-      paceMaxSecsPerKm: 390,
-    );
+    final user = _visualReviewUser();
 
     return MaterialApp(
       debugShowCheckedModeBanner: false,
@@ -135,17 +129,7 @@ class VisualReviewApp extends StatelessWidget {
                   child: const RunMapScreen(enableNetworkTiles: false),
                 ),
                 _PhoneFrame(label: 'Activity', child: const ActivityScreen()),
-                _PhoneFrame(
-                  label: 'Filters',
-                  child: ProviderScope(
-                    overrides: [
-                      userProfileStreamProvider.overrideWith(
-                        (ref) => Stream.value(user),
-                      ),
-                    ],
-                    child: const FiltersScreen(),
-                  ),
-                ),
+                _PhoneFrame(label: 'Filters', child: const FiltersScreen()),
                 _PhoneFrame(
                   label: 'Run recap',
                   child: RunRecapScreen(runId: liveRun.id),
@@ -199,6 +183,39 @@ class VisualReviewApp extends StatelessWidget {
       ),
     );
   }
+}
+
+final class _VisualReviewUserProfileRepository
+    implements UserProfileRepository {
+  const _VisualReviewUserProfileRepository(this._user);
+
+  final UserProfile _user;
+
+  @override
+  Stream<UserProfile?> watchUserProfile({required String? uid}) =>
+      Stream.value(uid == _user.uid ? _user : null);
+
+  @override
+  Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
+      uid == _user.uid ? _user : null;
+
+  @override
+  Future<void> setUserProfile({required UserProfile userProfile}) async {}
+
+  @override
+  Future<void> updatePhotoUrls({
+    required String uid,
+    required List<String> photoUrls,
+  }) async {}
+
+  @override
+  Future<void> setProfileComplete({required String uid}) async {}
+
+  @override
+  Future<void> saveRun({required String uid, required String runId}) async {}
+
+  @override
+  Future<void> unsaveRun({required String uid, required String runId}) async {}
 }
 
 class _PhoneFrame extends StatelessWidget {
@@ -318,6 +335,15 @@ UserProfile _user() {
     profileComplete: true,
     interestedInGenders: const [Gender.woman],
     photoUrls: const [],
+  );
+}
+
+UserProfile _visualReviewUser() {
+  return _user().copyWith(
+    preferredDistances: const [PreferredDistance.fiveK, PreferredDistance.tenK],
+    runningReasons: const [RunReason.community, RunReason.social],
+    paceMinSecsPerKm: 300,
+    paceMaxSecsPerKm: 390,
   );
 }
 

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -97,7 +99,13 @@ class OnboardingController extends _$OnboardingController {
       verificationId: null,
       profileDraft: state.profileDraft.copyWith(phoneNumber: phoneNumber),
     );
-    await ref
+
+    // verifyPhoneNumber's Future resolves when Firebase submits the request —
+    // before codeSent/verificationFailed fire. A Completer bridges those async
+    // callbacks back into this Future so the mutation catches errors correctly.
+    final completer = Completer<void>();
+
+    unawaited(ref
         .read(authRepositoryProvider)
         .verifyPhoneNumber(
           phoneNumber: _formatIndianPhoneNumber(phoneNumber),
@@ -106,18 +114,31 @@ class OnboardingController extends _$OnboardingController {
               verificationId: verificationId,
               step: OnboardingStep.otp,
             );
+            if (!completer.isCompleted) completer.complete();
           },
-          verificationFailed: (e) => throw e,
+          verificationFailed: (e) {
+            if (!completer.isCompleted) completer.completeError(e);
+          },
           verificationCompleted: (credential) async {
-            await ref
-                .read(authRepositoryProvider)
-                .signInWithCredential(credential);
-            state = state.copyWith(
-              step: OnboardingStep.nameDob,
-              phoneVerified: true,
-            );
+            try {
+              await ref
+                  .read(authRepositoryProvider)
+                  .signInWithCredential(credential);
+              state = state.copyWith(
+                step: OnboardingStep.nameDob,
+                phoneVerified: true,
+              );
+              if (!completer.isCompleted) completer.complete();
+            } catch (e, st) {
+              if (!completer.isCompleted) completer.completeError(e, st);
+            }
           },
-        );
+        )
+        .catchError((Object e, StackTrace st) {
+          if (!completer.isCompleted) completer.completeError(e, st);
+        }));
+
+    return completer.future;
   }
 
   Future<void> verifyOtp(String code) async {
