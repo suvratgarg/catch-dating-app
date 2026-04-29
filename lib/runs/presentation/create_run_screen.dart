@@ -39,6 +39,8 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   static const _totalSteps = 4;
   final _pageController = PageController();
   int _currentStep = 0;
+  Run? _createdRun;
+  bool _showHostManage = false;
 
   final _step0Key = GlobalKey<FormState>();
   final _step1Key = GlobalKey<FormState>();
@@ -76,9 +78,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   final _maxWomenController = TextEditingController();
 
   GlobalKey<FormState> get _currentStepKey => switch (_currentStep) {
-    0 => _step0Key,
+    0 => _step2Key,
     1 => _step1Key,
-    2 => _step2Key,
+    2 => _step0Key,
     _ => _step3Key,
   };
 
@@ -203,7 +205,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       _currentStepKey.currentState?.validate() ?? true;
 
   bool _validateCurrentSchedule() {
-    if (_currentStep != 0) return true;
+    if (_currentStep != 2) return true;
 
     final startTime = _selectedStartDateTime;
     if (startTime == null) return false;
@@ -218,7 +220,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     final endTime = startTime.add(Duration(minutes: _durationMinutes));
 
     CreateRunController.submitMutation.run(ref, (tx) async {
-      await tx
+      final createdRun = await tx
           .get(createRunControllerProvider.notifier)
           .submit(
             runClubId: widget.runClub.id,
@@ -236,6 +238,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                 .round(),
             constraints: _constraints,
           );
+      if (mounted) {
+        setState(() => _createdRun = createdRun);
+      }
+      return createdRun;
     });
   }
 
@@ -245,10 +251,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   }
 
   static String _stepTitle(int step) => switch (step) {
-    0 => 'When is the run?',
-    1 => 'Where does it start?',
-    2 => 'Tell us about the run',
-    _ => 'Any rules? (optional)',
+    0 => 'Run basics',
+    1 => 'Route & meet point',
+    2 => 'When is the run?',
+    _ => 'Review & rules',
   };
 
   @override
@@ -256,11 +262,21 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     final t = CatchTokens.of(context);
     final submitMutation = ref.watch(CreateRunController.submitMutation);
 
-    ref.listen(CreateRunController.submitMutation, (prev, next) {
-      if (prev?.isPending == true && next.isSuccess) {
-        Navigator.of(context).pop();
-      }
-    });
+    final createdRun = _createdRun;
+    if (createdRun != null) {
+      return _showHostManage
+          ? HostRunManageScreen(
+              runClub: widget.runClub,
+              run: createdRun,
+              onBackToSuccess: () => setState(() => _showHostManage = false),
+            )
+          : CreateRunSuccessScreen(
+              runClub: widget.runClub,
+              run: createdRun,
+              onManageRun: () => setState(() => _showHostManage = true),
+              onDone: () => Navigator.of(context).pop(),
+            );
+    }
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -325,6 +341,22 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
+                  RunDetailsStep(
+                    formKey: _step2Key,
+                    distanceController: _distanceController,
+                    capacityController: _capacityController,
+                    priceController: _priceController,
+                    descriptionController: _descriptionController,
+                    selectedPace: _selectedPace,
+                    onPaceChanged: (p) => setState(() => _selectedPace = p),
+                  ),
+                  WhereStep(
+                    formKey: _step1Key,
+                    meetingPointController: _meetingPointController,
+                    locationDetailsController: _locationDetailsController,
+                    startingPoint: _startingPoint,
+                    onPickLocation: _pickLocation,
+                  ),
                   WhenStep(
                     formKey: _step0Key,
                     dateController: _dateController,
@@ -336,22 +368,6 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                     onIncreaseDuration: _increaseDurationCallback,
                     formatDuration: RunFormatters.durationMinutes,
                     scheduleErrorText: _scheduleErrorText,
-                  ),
-                  WhereStep(
-                    formKey: _step1Key,
-                    meetingPointController: _meetingPointController,
-                    locationDetailsController: _locationDetailsController,
-                    startingPoint: _startingPoint,
-                    onPickLocation: _pickLocation,
-                  ),
-                  RunDetailsStep(
-                    formKey: _step2Key,
-                    distanceController: _distanceController,
-                    capacityController: _capacityController,
-                    priceController: _priceController,
-                    descriptionController: _descriptionController,
-                    selectedPace: _selectedPace,
-                    onPaceChanged: (p) => setState(() => _selectedPace = p),
                   ),
                   EligibilityStep(
                     formKey: _step3Key,
@@ -375,6 +391,461 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
           ],
         ),
       ),
+    );
+  }
+}
+
+class CreateRunSuccessScreen extends StatelessWidget {
+  const CreateRunSuccessScreen({
+    super.key,
+    required this.runClub,
+    required this.run,
+    required this.onManageRun,
+    required this.onDone,
+  });
+
+  final RunClub runClub;
+  final Run run;
+  final VoidCallback onManageRun;
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(gradient: t.heroGrad),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(CatchSpacing.screenH),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: IconBtn(
+                    background: Colors.white.withValues(alpha: 0.18),
+                    onTap: onDone,
+                    child: const Icon(Icons.close_rounded, color: Colors.white),
+                  ),
+                ),
+                const Spacer(),
+                Container(
+                  width: 78,
+                  height: 78,
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.18),
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.28),
+                    ),
+                  ),
+                  child: const Icon(
+                    Icons.check_rounded,
+                    color: Colors.white,
+                    size: 38,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'Your run is live.',
+                  style: CatchTextStyles.displayXl(
+                    context,
+                    color: Colors.white,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  '${run.title} is now visible to ${runClub.memberCount} runners following ${runClub.name}.',
+                  style: CatchTextStyles.bodyLg(
+                    context,
+                    color: Colors.white.withValues(alpha: 0.88),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.16),
+                    borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+                    border: Border.all(
+                      color: Colors.white.withValues(alpha: 0.18),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(
+                        Icons.bolt_rounded,
+                        color: Colors.white,
+                        size: 18,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          '0 people booked so far. Keep an eye on roster and waitlist from host manage.',
+                          style: CatchTextStyles.bodySm(
+                            context,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 28),
+                FilledButton(
+                  onPressed: onManageRun,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: Colors.white,
+                    foregroundColor: t.ink,
+                  ),
+                  child: const Text('Manage run'),
+                ),
+                const SizedBox(height: 10),
+                TextButton(
+                  onPressed: onDone,
+                  child: Text(
+                    'Back to club',
+                    style: CatchTextStyles.labelLg(
+                      context,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class HostRunManageScreen extends StatelessWidget {
+  const HostRunManageScreen({
+    super.key,
+    required this.runClub,
+    required this.run,
+    required this.onBackToSuccess,
+  });
+
+  final RunClub runClub;
+  final Run run;
+  final VoidCallback onBackToSuccess;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final revenueRupees = run.signedUpCount * (run.priceInPaise ~/ 100);
+
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: SafeArea(
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.screenH,
+            12,
+            CatchSpacing.screenH,
+            24,
+          ),
+          children: [
+            Row(
+              children: [
+                IconBtn(
+                  onTap: onBackToSuccess,
+                  child: Icon(
+                    Icons.arrow_back_ios_new_rounded,
+                    size: 18,
+                    color: t.ink,
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'HOST MANAGE',
+                        style: CatchTextStyles.labelSm(context, color: t.ink3)
+                            .copyWith(
+                              fontWeight: FontWeight.w700,
+                              letterSpacing: 1.2,
+                            ),
+                      ),
+                      Text(
+                        run.title,
+                        style: CatchTextStyles.displaySm(context),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 18),
+            if (run.isFull) ...[
+              Container(
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: t.ink,
+                  borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.lock_rounded, color: t.surface, size: 18),
+                    const SizedBox(width: 10),
+                    Text(
+                      'FULL',
+                      style: CatchTextStyles.labelLg(context, color: t.surface),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
+            Row(
+              children: [
+                _HostManageStat(
+                  label: 'Booked',
+                  value: '${run.signedUpCount}/${run.capacityLimit}',
+                  icon: Icons.check_circle_outline_rounded,
+                ),
+                const SizedBox(width: 8),
+                _HostManageStat(
+                  label: 'Waitlist',
+                  value: '${run.waitlistUserIds.length}',
+                  icon: Icons.access_time_rounded,
+                ),
+                const SizedBox(width: 8),
+                _HostManageStat(
+                  label: 'Revenue',
+                  value: revenueRupees > 0 ? '₹$revenueRupees' : '—',
+                  icon: Icons.currency_rupee_rounded,
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            _HostRunSummaryCard(runClub: runClub, run: run),
+            const SizedBox(height: 20),
+            Text('Roster', style: CatchTextStyles.displaySm(context)),
+            const SizedBox(height: 10),
+            _HostUserList(
+              userIds: run.signedUpUserIds,
+              emptyText: 'No bookings yet.',
+              trailingLabel: run.isFree ? 'FREE' : 'PAID',
+            ),
+            const SizedBox(height: 20),
+            Text('Waitlist', style: CatchTextStyles.displaySm(context)),
+            const SizedBox(height: 10),
+            _HostUserList(
+              userIds: run.waitlistUserIds,
+              emptyText: 'No one is waiting.',
+              trailingLabel: 'WAITLIST',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HostManageStat extends StatelessWidget {
+  const _HostManageStat({
+    required this.label,
+    required this.value,
+    required this.icon,
+  });
+
+  final String label;
+  final String value;
+  final IconData icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        decoration: BoxDecoration(
+          color: t.surface,
+          borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+          border: Border.all(color: t.line),
+        ),
+        child: Column(
+          children: [
+            Icon(icon, color: t.primary, size: 18),
+            const SizedBox(height: 6),
+            Text(value, style: CatchTextStyles.labelLg(context)),
+            const SizedBox(height: 2),
+            Text(label, style: CatchTextStyles.caption(context)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _HostRunSummaryCard extends StatelessWidget {
+  const _HostRunSummaryCard({required this.runClub, required this.run});
+
+  final RunClub runClub;
+  final Run run;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final price = run.isFree ? 'Free' : '₹${run.priceInPaise ~/ 100}';
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: t.surface,
+        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        border: Border.all(color: t.line),
+      ),
+      child: Column(
+        children: [
+          _HostSummaryRow(
+            icon: Icons.groups_rounded,
+            label: 'Club',
+            value: runClub.name,
+          ),
+          _HostSummaryRow(
+            icon: Icons.location_on_outlined,
+            label: 'Meet',
+            value: run.meetingPoint,
+          ),
+          _HostSummaryRow(
+            icon: Icons.route_rounded,
+            label: 'Run',
+            value:
+                '${run.distanceKm.toStringAsFixed(1)} km · ${run.pace.label}',
+          ),
+          _HostSummaryRow(
+            icon: Icons.payments_outlined,
+            label: 'Price',
+            value: price,
+            showDivider: false,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HostSummaryRow extends StatelessWidget {
+  const _HostSummaryRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    this.showDivider = true,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final bool showDivider;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            Icon(icon, color: t.ink2, size: 18),
+            const SizedBox(width: 10),
+            Text(label, style: CatchTextStyles.bodySm(context, color: t.ink2)),
+            const Spacer(),
+            Flexible(
+              child: Text(
+                value,
+                style: CatchTextStyles.labelMd(context),
+                textAlign: TextAlign.right,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        if (showDivider) ...[
+          const SizedBox(height: 12),
+          Divider(color: t.line, height: 1),
+          const SizedBox(height: 12),
+        ],
+      ],
+    );
+  }
+}
+
+class _HostUserList extends StatelessWidget {
+  const _HostUserList({
+    required this.userIds,
+    required this.emptyText,
+    required this.trailingLabel,
+  });
+
+  final List<String> userIds;
+  final String emptyText;
+  final String trailingLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Container(
+      decoration: BoxDecoration(
+        color: t.surface,
+        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        border: Border.all(color: t.line),
+      ),
+      child: userIds.isEmpty
+          ? Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(
+                emptyText,
+                style: CatchTextStyles.bodyMd(context, color: t.ink2),
+              ),
+            )
+          : Column(
+              children: [
+                for (var i = 0; i < userIds.length; i++) ...[
+                  ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: t.primarySoft,
+                      child: Text(
+                        userIds[i].characters.first.toUpperCase(),
+                        style: CatchTextStyles.labelMd(
+                          context,
+                          color: t.primary,
+                        ),
+                      ),
+                    ),
+                    title: Text('Runner ${i + 1}'),
+                    subtitle: Text(userIds[i]),
+                    trailing: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 9,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: t.primarySoft,
+                        borderRadius: BorderRadius.circular(CatchRadius.button),
+                      ),
+                      child: Text(
+                        trailingLabel,
+                        style: CatchTextStyles.labelSm(
+                          context,
+                          color: t.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  if (i < userIds.length - 1) Divider(color: t.line, height: 1),
+                ],
+              ],
+            ),
     );
   }
 }

@@ -12,10 +12,13 @@ import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 class ChatScreen extends ConsumerStatefulWidget {
   const ChatScreen({super.key, required this.matchId, this.otherProfile});
@@ -212,6 +215,9 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final messagesAsync = ref.watch(chatMessagesProvider(widget.matchId));
     final matchAsync = ref.watch(matchStreamProvider(widget.matchId));
     final match = matchAsync.asData?.value;
+    final runAsync = match == null
+        ? const AsyncData<Run?>(null)
+        : ref.watch(watchRunProvider(match.runId));
     final t = CatchTokens.of(context);
     final otherUid = uid == null ? null : match?.otherId(uid);
     final otherProfileAsync = otherUid == null
@@ -281,6 +287,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       ),
       body: Column(
         children: [
+          _RunContextHeader(run: runAsync.asData?.value),
           Expanded(
             child: messagesAsync.when(
               loading: () => const Center(child: CircularProgressIndicator()),
@@ -324,6 +331,68 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             controller: _controller,
             sending: _sending,
             onSend: match?.isBlocked == true ? null : _send,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RunContextHeader extends StatelessWidget {
+  const _RunContextHeader({required this.run});
+
+  final Run? run;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final title = run?.title ?? 'the same run';
+    final date = run == null
+        ? null
+        : DateFormat('EEE d MMM').format(run!.startTime);
+
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(Sizes.p12, Sizes.p8, Sizes.p12, 0),
+      padding: const EdgeInsets.all(Sizes.p12),
+      decoration: BoxDecoration(
+        color: t.primarySoft,
+        borderRadius: BorderRadius.circular(CatchRadius.card),
+        border: Border.all(color: t.line),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 36,
+            height: 36,
+            decoration: BoxDecoration(color: t.surface, shape: BoxShape.circle),
+            child: Icon(Icons.directions_run_rounded, color: t.primary),
+          ),
+          gapW10,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'YOU BOTH RAN',
+                  style: CatchTextStyles.labelSm(
+                    context,
+                    color: t.primary,
+                  ).copyWith(fontWeight: FontWeight.w800),
+                ),
+                gapH2,
+                Text(
+                  date == null ? title : '$title · $date',
+                  style: CatchTextStyles.bodySm(
+                    context,
+                    color: t.ink,
+                    weight: FontWeight.w600,
+                  ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
           ),
         ],
       ),

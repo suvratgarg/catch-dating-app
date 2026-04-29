@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
@@ -24,11 +25,15 @@ Future<void> main() async {
   await _initializeFirebaseServices();
 
   final errorLogger = ErrorLogger();
+  await errorLogger.initialize();
+  final analytics = AppAnalytics();
+  await analytics.initialize();
 
   _registerErrorHandlers(errorLogger);
 
   runApp(
     ProviderScope(
+      overrides: [appAnalyticsProvider.overrideWithValue(analytics)],
       observers: [AsyncErrorLogger(errorLogger)],
       child: const MyApp(),
     ),
@@ -90,17 +95,17 @@ Future<void> _activateFirebaseAppCheck() async {
 }
 
 /// Hooks into Flutter's error reporting pipeline so uncaught errors are
-/// logged (and eventually sent to a crash-reporting service).
+/// logged and sent to Crashlytics in production release builds.
 void _registerErrorHandlers(ErrorLogger errorLogger) {
   // Flutter framework errors (widget build failures, layout overflow, etc.)
   FlutterError.onError = (details) {
     FlutterError.presentError(details);
-    errorLogger.logError(details.exception, details.stack);
+    errorLogger.logFlutterError(details, fatal: true);
   };
 
   // Errors from the underlying platform / Dart isolate
   PlatformDispatcher.instance.onError = (error, stack) {
-    errorLogger.logError(error, stack);
+    errorLogger.logError(error, stack, fatal: true);
     return true;
   };
 

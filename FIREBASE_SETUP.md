@@ -83,15 +83,15 @@ Add `staging` and `prod` aliases after those Firebase projects exist.
 ## Push Notifications
 
 - Android push is repo-complete. Runtime permission is requested in-app where needed.
-- iOS push is repo-complete for code/config. Apple Developer has Push Notifications enabled for `com.example.catchDatingApp`, and Firebase Cloud Messaging has development and production APNs auth keys uploaded for the iOS app.
+- Android debug SHA-1/SHA-256 fingerprints are registered on the new `com.catchdates.app` Firebase Android app. Release fingerprints still need to be added after Android release signing is finalized.
+- iOS push is repo-complete for code/config. The app now uses final bundle ID `com.catchdates.app`; the new Firebase iOS app has APNs key ID `78HUQYZ2ZR`, Team ID `2HQBK4UMUT`, uploaded for both development and production.
 - macOS push is intentionally disabled in app code and entitlements because macOS is only a debugging target right now.
-- Web push requires a VAPID key at runtime.
+- Web push requires a VAPID key at runtime. Dev has a Firebase Web Push key pair and `tool/dart_defines/dev.json` contains the public VAPID key; staging/prod remain blank until those Firebase environments exist.
 
 ## App Check / App Attest
 
-- Firebase App Check is registered for Android with Play Integrity.
-- Firebase App Check is registered for iOS with App Attest.
-- Apple Developer has App Attest enabled for bundle ID `com.example.catchDatingApp`.
+- Firebase App Check is registered for the new `com.catchdates.app` Android app with Play Integrity and the new `com.catchdates.app` iOS app with App Attest.
+- Apple Developer had App Attest enabled for the old bundle ID. Enable App Attest for bundle ID `com.catchdates.app` before relying on App Check for iOS.
 - `ios/Runner/Runner.entitlements` declares `com.apple.developer.devicecheck.appattest-environment = development` so development-signed iOS builds carry the App Attest entitlement.
 - Web App Check is not registered yet. Register the web app with reCAPTCHA Enterprise before enabling App Check enforcement for web clients.
 - The Firebase App Check API enforcement screen currently reports "Start using" for Firestore, Storage, Auth, and related APIs; do not turn on enforcement until live clients are known to attach valid App Check tokens in the target environment.
@@ -108,12 +108,11 @@ flutter run -d chrome \
 
 Current state and remaining checks:
 
-1. Apple Developer Push Notifications are enabled for bundle ID `com.example.catchDatingApp`.
-2. Firebase Console project `catch-dating-app-64e51` has APNs auth keys uploaded for the iOS app.
-3. Accept the latest Apple Developer Program License Agreement for the team account if Xcode reports a PLA update is required.
-4. Regenerate or refresh Apple provisioning profiles after changing Apple capabilities such as App Attest.
-5. Test on a real iPhone for iOS push. The iOS simulator cannot receive APNs pushes.
-6. If macOS ever becomes a supported push target, re-enable the macOS APNs entitlement in `Runner/DebugProfile.entitlements` and `Runner/Release.entitlements`, allow macOS in `AppConfig.supportsPushMessagingOnCurrentPlatform`, then test on a signed macOS build with notification permission granted.
+1. Apple Developer Push Notifications must be enabled/refreshed for bundle ID `com.catchdates.app`.
+2. Accept the latest Apple Developer Program License Agreement for the team account if Xcode reports a PLA update is required.
+3. Regenerate or refresh Apple provisioning profiles after changing Apple capabilities such as App Attest.
+4. Test on a real iPhone for iOS push. The iOS simulator cannot receive APNs pushes.
+5. If macOS ever becomes a supported push target, re-enable the macOS APNs entitlement in `Runner/DebugProfile.entitlements` and `Runner/Release.entitlements`, allow macOS in `AppConfig.supportsPushMessagingOnCurrentPlatform`, then test on a signed macOS build with notification permission granted.
 
 ## Emulator / Local Dev Flags
 
@@ -158,6 +157,6 @@ rerun `flutterfire configure` for dev and then re-check these native
 customizations:
 
 - The precompiled Firestore overrides in [ios/Podfile](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/ios/Podfile) and [macos/Podfile](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/macos/Podfile)
-- The Razorpay iOS podspec override in [ios/PodspecOverrides/razorpay-core-pod.podspec.json](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/ios/PodspecOverrides/razorpay-core-pod.podspec.json)
+- The iOS Razorpay pods in [ios/Podfile.lock](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/ios/Podfile.lock), which should resolve from Razorpay's published CocoaPods specs rather than a local podspec override.
 
 Those Apple-native changes are not part of FlutterFire itself, but they are required for this repo's current build stability.

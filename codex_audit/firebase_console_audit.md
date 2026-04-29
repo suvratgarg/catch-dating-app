@@ -34,19 +34,21 @@ reauthentication.
 | Cloud Firestore | Initialized on 2026-04-28 as the default database in `asia-south1` (Mumbai), Standard edition, production mode. Firestore rules and indexes were deployed from this repo. | Database creation and rules/index deployment blockers are closed. |
 | Cloud Storage | Initialized with bucket `catch-dating-app-64e51.firebasestorage.app`; top-level `users/` folder exists. Hardened repo rules were deployed after the console inspection. | Initial broad/test-mode rules gap is closed by CLI deploy. Recheck console Rules tab after future deploys. |
 | Cloud Functions | All 17 expected repo Functions are deployed in `asia-south1`, verified by `firebase functions:list`. | Core backend is live. Live product smoke tests are still needed for payments, booking, blocking, reports, and account deletion. |
-| Cloud Messaging | FCM HTTP v1 API is enabled. Sender ID is `574779808785`. APNs auth key exists for the iOS app in both development and production. Legacy API is disabled. | Mobile messaging foundation exists. Web Push certificates appear empty, so web push is not ready. |
+| Cloud Messaging | FCM HTTP v1 API is enabled. Sender ID is `574779808785`. APNs auth key ID `78HUQYZ2ZR` with Team ID `2HQBK4UMUT` is uploaded for both development and production on the old iOS app and the new `com.catchdates.app` iOS app. Dev Web Push has a VAPID key. | Validate production push on a real signed iPhone build after Apple Developer capabilities/provisioning are refreshed for `com.catchdates.app`. |
 | Hosting | Hosting is deployed. Current release hash visible as `843463`, deployed by `Suvrat.garg@gmail.com` on 2026-03-02 at 3:08 PM. Default Firebase domains and `catchdates.com` are connected. | Marketing/hosting surface exists. The `/api/join-waitlist` rewrite now points at the deployed `joinWaitlist` Function in `asia-south1`. |
-| App Check | iOS is registered with App Attest. Android is registered with Play Integrity using the local debug SHA-256. Flutter now initializes `firebase_app_check` for native and web targets. Web and the stale Windows web app remain unregistered. | Provider setup is partially complete. Do not enable enforcement until web reCAPTCHA Enterprise is configured if web debugging matters, debug tokens are registered from real dev devices, and live smoke tests pass. |
-| Registered apps | Android, iOS, web, and a web-style `windows` app are registered. | Windows registration looks stale or unexplained now that Windows is not a supported target. |
+| App Check | New Android app `com.catchdates.app` is registered with Play Integrity. New iOS app `com.catchdates.app` is registered with App Attest. Flutter initializes `firebase_app_check` for native and web targets. Web and the stale Windows web app remain unregistered. | Do not enable enforcement until web reCAPTCHA Enterprise is decided, debug tokens are registered from real devices, and live smoke tests pass. |
+| Registered apps | Original Android/iOS apps, new `com.catchdates.app` Android/iOS dev apps, web, and a web-style `windows` app are registered. | Windows registration looks stale or unexplained now that Windows is not a supported target. |
 
 ## Registered Apps
 
-- Android: `catch_dating_app (android)`, package `com.example.catch_dating_app`, app ID `1:574779808785:android:8d7b61e9d54592f68ea5b0`.
-- iOS: `catch_dating_app (ios)`, bundle ID `com.example.catchDatingApp`.
+- Android: `Catch dev Android`, package `com.catchdates.app`, app ID `1:574779808785:android:81edbfa0d4aba7c48ea5b0`.
+- iOS: `Catch dev iOS`, bundle ID `com.catchdates.app`, app ID `1:574779808785:ios:49b1ce51418604b78ea5b0`.
+- Original Android: `catch_dating_app (android)`, package `com.example.catch_dating_app`, app ID `1:574779808785:android:8d7b61e9d54592f68ea5b0`.
+- Original iOS: `catch_dating_app (ios)`, bundle ID `com.example.catchDatingApp`.
 - Web: `catch_dating_app (web)`.
 - Web-style Windows app: `catch_dating_app (windows)`.
 
-Android debug fingerprints registered on 2026-04-28:
+Android debug fingerprints registered on the original Android app on 2026-04-28 and copied to the new `com.catchdates.app` Android app on 2026-04-29:
 - SHA-1: `6F:D9:D4:35:F1:8A:53:43:81:F3:E8:C0:43:60:3C:A5:98:7A:5D:A0`
 - SHA-256: `F0:E1:D3:E1:2C:44:3C:00:EC:AC:33:45:96:46:73:D5:B3:A1:F4:6F:1D:59:AB:AD:CD:19:CF:14:26:F2:30:02`
 

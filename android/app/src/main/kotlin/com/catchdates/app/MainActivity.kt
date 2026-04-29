@@ -1,4 +1,4 @@
-package com.example.catch_dating_app
+package com.catchdates.app
 
 import io.flutter.embedding.android.FlutterActivity
 

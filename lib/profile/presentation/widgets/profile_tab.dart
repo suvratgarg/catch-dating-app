@@ -122,6 +122,8 @@ class ProfileTab extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.all(Sizes.p24),
       children: [
+        _RunningIdentityCard(user: user, tokens: t),
+        gapH20,
         PhotoGrid(
           photoUrls: user.photoUrls,
           loadingIndices: uploadState.loadingIndices,
@@ -155,6 +157,129 @@ class ProfileTab extends ConsumerWidget {
         ProfileInfoSection(entries: lifestyle),
         gapH32,
       ],
+    );
+  }
+}
+
+class _RunningIdentityCard extends StatelessWidget {
+  const _RunningIdentityCard({required this.user, required this.tokens});
+
+  final UserProfile user;
+  final CatchTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = tokens;
+
+    return Container(
+      padding: const EdgeInsets.all(Sizes.p18),
+      decoration: BoxDecoration(
+        color: t.ink,
+        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'RUN PROFILE',
+            style: CatchTextStyles.labelSm(
+              context,
+              color: t.surface.withValues(alpha: 0.72),
+            ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.2),
+          ),
+          gapH8,
+          Text(
+            '${user.name.split(' ').first} runs ${_paceRange(user)}',
+            style: CatchTextStyles.displayMd(context, color: t.surface),
+          ),
+          gapH14,
+          Row(
+            children: [
+              _RunStatPill(label: 'Pace', value: _paceRange(user), tokens: t),
+              gapW8,
+              _RunStatPill(
+                label: 'Distance',
+                value: _distanceSummary(user),
+                tokens: t,
+              ),
+            ],
+          ),
+          if (user.runningReasons.isNotEmpty) ...[
+            gapH12,
+            Text(
+              user.runningReasons.map((reason) => reason.label).join(' · '),
+              style: CatchTextStyles.bodySm(
+                context,
+                color: t.surface.withValues(alpha: 0.76),
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  static String _paceRange(UserProfile user) {
+    return '${_formatPace(user.paceMinSecsPerKm)}-${_formatPace(user.paceMaxSecsPerKm)}/km';
+  }
+
+  static String _formatPace(int secsPerKm) {
+    final minutes = secsPerKm ~/ 60;
+    final seconds = secsPerKm % 60;
+    return '$minutes:${seconds.toString().padLeft(2, '0')}';
+  }
+
+  static String _distanceSummary(UserProfile user) {
+    if (user.preferredDistances.isEmpty) return 'Any run';
+    return user.preferredDistances.map((d) => d.label).take(2).join(', ');
+  }
+}
+
+class _RunStatPill extends StatelessWidget {
+  const _RunStatPill({
+    required this.label,
+    required this.value,
+    required this.tokens,
+  });
+
+  final String label;
+  final String value;
+  final CatchTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = tokens;
+
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              label,
+              style: CatchTextStyles.caption(
+                context,
+                color: t.surface.withValues(alpha: 0.64),
+              ),
+            ),
+            gapH2,
+            Text(
+              value,
+              style: CatchTextStyles.mono(context, color: t.surface),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

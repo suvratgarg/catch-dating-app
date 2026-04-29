@@ -41,7 +41,7 @@ class DefaultFirebaseOptionsDev {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC6dvdBlfV8nU5RJvcQa6QTp8Ej25QhBV8',
-    appId: '1:574779808785:android:8d7b61e9d54592f68ea5b0',
+    appId: '1:574779808785:android:81edbfa0d4aba7c48ea5b0',
     messagingSenderId: '574779808785',
     projectId: 'catch-dating-app-64e51',
     storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
@@ -49,19 +49,19 @@ class DefaultFirebaseOptionsDev {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCtL_D8Cf3OMBeL1ffnmKse4VI2i_WUq7E',
-    appId: '1:574779808785:ios:ee42e89efaf280f78ea5b0',
+    appId: '1:574779808785:ios:49b1ce51418604b78ea5b0',
     messagingSenderId: '574779808785',
     projectId: 'catch-dating-app-64e51',
     storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
-    iosBundleId: 'com.example.catchDatingApp',
+    iosBundleId: 'com.catchdates.app',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCtL_D8Cf3OMBeL1ffnmKse4VI2i_WUq7E',
-    appId: '1:574779808785:ios:ee42e89efaf280f78ea5b0',
+    appId: '1:574779808785:ios:49b1ce51418604b78ea5b0',
     messagingSenderId: '574779808785',
     projectId: 'catch-dating-app-64e51',
     storageBucket: 'catch-dating-app-64e51.firebasestorage.app',
-    iosBundleId: 'com.example.catchDatingApp',
+    iosBundleId: 'com.catchdates.app',
   );
 }

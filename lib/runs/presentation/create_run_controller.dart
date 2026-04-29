@@ -8,12 +8,12 @@ part 'create_run_controller.g.dart';
 
 @riverpod
 class CreateRunController extends _$CreateRunController {
-  static final submitMutation = Mutation<void>();
+  static final submitMutation = Mutation<Run>();
 
   @override
   void build() {}
 
-  Future<void> submit({
+  Future<Run> submit({
     required String runClubId,
     required DateTime startTime,
     required DateTime endTime,
@@ -76,24 +76,24 @@ class CreateRunController extends _$CreateRunController {
     }
 
     final runRepo = ref.read(runRepositoryProvider);
-    await runRepo.createRun(
-      run: Run(
-        id: runRepo.generateId(),
-        runClubId: normalizedRunClubId,
-        startTime: startTime,
-        endTime: endTime,
-        meetingPoint: normalizedMeetingPoint,
-        startingPointLat: startingPointLat,
-        startingPointLng: startingPointLng,
-        locationDetails: normalizedLocationDetails,
-        distanceKm: distanceKm,
-        pace: pace,
-        capacityLimit: capacityLimit,
-        description: normalizedDescription,
-        priceInPaise: priceInPaise,
-        constraints: constraints,
-      ),
+    final run = Run(
+      id: runRepo.generateId(),
+      runClubId: normalizedRunClubId,
+      startTime: startTime,
+      endTime: endTime,
+      meetingPoint: normalizedMeetingPoint,
+      startingPointLat: startingPointLat,
+      startingPointLng: startingPointLng,
+      locationDetails: normalizedLocationDetails,
+      distanceKm: distanceKm,
+      pace: pace,
+      capacityLimit: capacityLimit,
+      description: normalizedDescription,
+      priceInPaise: priceInPaise,
+      constraints: constraints,
     );
+    await runRepo.createRun(run: run);
+    return run;
   }
 
   static String _trimmedRequired({

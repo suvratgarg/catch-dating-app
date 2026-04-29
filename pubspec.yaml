@@ -58,6 +58,8 @@ dependencies:
   google_fonts: ^6.2.1
   firebase_app_check: ^0.4.3
   share_plus: ^12.0.2
+  firebase_crashlytics: ^5.2.0
+  firebase_analytics: ^12.3.0
 
 
 dev_dependencies:
@@ -76,6 +78,31 @@ dev_dependencies:
   envied_generator: ^1.1.0
   freezed: ^3.0.0
   json_serializable: ^6.9.0
+  flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: assets/branding/catch_icon.png
+  remove_alpha_ios: true
+  web:
+    generate: true
+    image_path: assets/branding/catch_icon.png
+    background_color: "#FF4E1F"
+    theme_color: "#FF4E1F"
+
+flutter_native_splash:
+  color: "#FBF3E9"
+  color_dark: "#120D09"
+  image: assets/branding/catch_icon.png
+  android: true
+  ios: true
+  web: true
+  android_12:
+    color: "#FBF3E9"
+    color_dark: "#120D09"
+    image: assets/branding/catch_icon.png
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

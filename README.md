@@ -98,11 +98,11 @@ Only the `dev` alias is wired today. Add `staging` and `prod` with
 - Paid Razorpay booking is enabled on Android and iOS only.
 - Web and macOS builds disable paid booking until a supported checkout flow is added for those platforms.
 - Push notifications are wired in-repo for Android and iOS.
-  Apple Developer has Push Notifications enabled for `com.example.catchDatingApp`, and Firebase Cloud Messaging has APNs auth keys uploaded for the iOS app.
+  The app now uses final mobile identifier `com.catchdates.app`; Firebase Cloud Messaging APNs and Firebase App Check are registered against that identifier, while Apple Developer Push/App Attest capabilities and provisioning still need final release verification.
   macOS push is intentionally disabled because macOS is only a debugging target right now.
-  Web still needs a valid Firebase Web Push VAPID key.
-- Firebase App Check is registered for Android with Play Integrity and iOS with App Attest. Web App Check is not registered yet.
-- iOS App Attest is enabled on the Apple App ID and declared in `ios/Runner/Runner.entitlements` for development-signed builds.
+  Web push has a dev Firebase Web Push VAPID key; staging/prod VAPID keys remain blank until those Firebase projects exist.
+- Firebase App Check is registered for the new `com.catchdates.app` Android/iOS Firebase apps. Web App Check is deferred until we decide whether to enable reCAPTCHA Enterprise for the web debugging target.
+- iOS App Attest is declared in `ios/Runner/Runner.entitlements`; the Apple App ID for `com.catchdates.app` still needs the matching capability enabled/refreshed.
 
 ## Verification
 

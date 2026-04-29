@@ -267,7 +267,7 @@ class RecordedUpdateCall {
   const RecordedUpdateCall({required this.document, required this.data});
 
   final Object document;
-  final Map<String, dynamic> data;
+  final Map<Object, Object?> data;
 }
 
 class TestWriteBatch extends Fake implements WriteBatch {
@@ -283,7 +283,7 @@ class TestWriteBatch extends Fake implements WriteBatch {
   }
 
   @override
-  void update(DocumentReference document, Map<String, dynamic> data) {
+  void update(DocumentReference document, Map<Object, Object?> data) {
     updateCalls.add(RecordedUpdateCall(document: document, data: data));
   }
 

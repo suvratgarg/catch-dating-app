@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
@@ -73,6 +74,7 @@ const _fromQueryParam = 'from';
 @Riverpod(keepAlive: true)
 GoRouter goRouter(Ref ref) {
   final notifier = _RouterRefreshNotifier();
+  final analytics = ref.read(appAnalyticsProvider);
 
   ref.listen(uidProvider, (_, _) => notifier.notify());
   ref.listen(userProfileStreamProvider, (_, _) => notifier.notify());
@@ -83,6 +85,7 @@ GoRouter goRouter(Ref ref) {
     navigatorKey: _rootNavigatorKey,
     initialLocation: Routes.dashboardScreen.path,
     refreshListenable: notifier,
+    observers: [AnalyticsRouteObserver(analytics)],
     redirect: (context, state) {
       return appRedirect(
         uidAsync: ref.read(uidProvider),
@@ -140,6 +143,7 @@ GoRouter goRouter(Ref ref) {
           // ── Branch 0: Home / Dashboard ───────────────────────────────
           StatefulShellBranch(
             navigatorKey: _dashboardShellKey,
+            observers: [AnalyticsRouteObserver(analytics)],
             routes: [
               GoRoute(
                 path: Routes.dashboardScreen.path,
@@ -152,6 +156,7 @@ GoRouter goRouter(Ref ref) {
           // ── Branch 1: Clubs ──────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _clubsShellKey,
+            observers: [AnalyticsRouteObserver(analytics)],
             routes: [
               GoRoute(
                 path: Routes.runClubsListScreen.path,
@@ -201,6 +206,7 @@ GoRouter goRouter(Ref ref) {
           // ── Branch 2: Catches (swipe) ────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _catchesShellKey,
+            observers: [AnalyticsRouteObserver(analytics)],
             routes: [
               GoRoute(
                 path: Routes.swipeHubScreen.path,
@@ -221,6 +227,7 @@ GoRouter goRouter(Ref ref) {
           // ── Branch 3: Chats ──────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _chatsShellKey,
+            observers: [AnalyticsRouteObserver(analytics)],
             routes: [
               GoRoute(
                 path: Routes.matchesListScreen.path,
@@ -245,6 +252,7 @@ GoRouter goRouter(Ref ref) {
           // ── Branch 4: You / Profile ──────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _profileShellKey,
+            observers: [AnalyticsRouteObserver(analytics)],
             routes: [
               GoRoute(
                 path: Routes.profileScreen.path,

@@ -51,7 +51,6 @@ target 'Runner' do
   use_frameworks!
 
   pod 'FirebaseFirestore', :git => 'https://github.com/invertase/firestore-ios-sdk-frameworks.git', :tag => '12.12.0'
-  pod 'razorpay-core-pod', :podspec => File.join(__dir__, 'PodspecOverrides', 'razorpay-core-pod.podspec.json')
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
   target 'RunnerTests' do

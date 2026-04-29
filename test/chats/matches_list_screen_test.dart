@@ -93,8 +93,13 @@ void main() {
 
     await tester.pumpAndSettle();
 
-    expect(find.text('No matches yet'), findsOneWidget);
-    expect(find.text('Keep swiping to find your match!'), findsOneWidget);
+    expect(find.text('No catches yet'), findsOneWidget);
+    expect(
+      find.text(
+        'When someone catches you back after a shared run, the conversation opens here with that run as context.',
+      ),
+      findsOneWidget,
+    );
   });
 
   testWidgets('navigates from matches list to chat without route extra', (

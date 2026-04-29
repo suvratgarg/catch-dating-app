@@ -9,7 +9,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.example.catchDatingApp</string>
+	<string>com.catchdates.app</string>
 	<key>PROJECT_ID</key>
 	<string>catch-dating-app-64e51</string>
 	<key>STORAGE_BUCKET</key>
@@ -25,6 +25,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:574779808785:ios:ee42e89efaf280f78ea5b0</string>
+	<string>1:574779808785:ios:49b1ce51418604b78ea5b0</string>
 </dict>
 </plist>

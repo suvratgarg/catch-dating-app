@@ -13,7 +13,7 @@ import 'runs_test_helpers.dart';
 
 void main() {
   group('CreateRunScreen', () {
-    testWidgets('validates the first step when date and time are missing', (
+    testWidgets('validates the first step when basics are missing', (
       tester,
     ) async {
       await _pumpCreateRunFlow(tester);
@@ -23,8 +23,8 @@ void main() {
       await _tapPrimaryButton(tester, 'Next');
       await tester.pump();
 
-      expect(find.text('Please select a date'), findsOneWidget);
-      expect(find.text('Required'), findsOneWidget);
+      expect(find.text('Required'), findsNWidgets(3));
+      expect(find.text('Select a pace'), findsOneWidget);
     });
 
     testWidgets(
@@ -40,14 +40,10 @@ void main() {
         await tester.tap(find.text('Open'));
         await tester.pumpAndSettle();
 
-        await _pickFutureDate(tester);
-        await _acceptInitialTime(tester);
-        await tester.tap(find.byIcon(Icons.add_rounded));
-        await tester.tap(find.byIcon(Icons.remove_rounded));
-        await tester.pump();
+        await _fillBasicsStep(tester);
+
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
-
         await _tapPrimaryButton(tester, 'Next');
         await tester.pump();
         expect(find.text('Required'), findsOneWidget);
@@ -61,22 +57,15 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
 
-        await _tapPrimaryButton(tester, 'Next');
+        await _pickFutureDate(tester);
+        await _acceptInitialTime(tester);
+        await tester.tap(find.byIcon(Icons.add_rounded));
+        await tester.tap(find.byIcon(Icons.remove_rounded));
         await tester.pump();
-        expect(find.text('Select a pace'), findsOneWidget);
-
-        await tester.enterText(find.byType(TextFormField).at(0), '7.5');
-        await tester.enterText(find.byType(TextFormField).at(1), '18');
-        await tester.enterText(find.byType(TextFormField).at(2), '249.5');
-        await tester.tap(find.text('MODERATE'));
-        await tester.enterText(
-          find.byType(TextFormField).at(3),
-          'Social pacing with a coffee stop.',
-        );
-        await tester.pumpAndSettle();
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
 
+        expect(find.text('Review & rules'), findsOneWidget);
         await tester.enterText(find.byType(TextFormField).at(0), '40');
         await tester.enterText(find.byType(TextFormField).at(1), '30');
         await tester.pumpAndSettle();
@@ -94,7 +83,8 @@ void main() {
         await _tapPrimaryButton(tester, 'Schedule run');
         await tester.pumpAndSettle();
 
-        expect(find.text('Open'), findsOneWidget);
+        expect(find.text('Your run is live.'), findsOneWidget);
+        expect(find.text('Manage run'), findsOneWidget);
         expect(fakeRunRepository.createdRun, isNotNull);
         expect(fakeRunRepository.createdRun!.runClubId, 'club-1');
         expect(fakeRunRepository.createdRun!.meetingPoint, 'Bandra Fort');
@@ -110,6 +100,12 @@ void main() {
         expect(fakeRunRepository.createdRun!.constraints.maxAge, 35);
         expect(fakeRunRepository.createdRun!.constraints.maxMen, 9);
         expect(fakeRunRepository.createdRun!.constraints.maxWomen, 9);
+
+        await tester.tap(find.text('Manage run'));
+        await tester.pumpAndSettle();
+
+        expect(find.text('HOST MANAGE'), findsOneWidget);
+        expect(find.text('Roster'), findsOneWidget);
       },
     );
 
@@ -118,6 +114,15 @@ void main() {
       (tester) async {
         await _pumpCreateRunFlow(tester, alwaysUse24HourFormat: true);
         await tester.tap(find.text('Open'));
+        await tester.pumpAndSettle();
+
+        await _fillBasicsStep(tester);
+        await _tapPrimaryButton(tester, 'Next');
+        await tester.pumpAndSettle();
+
+        await tester.enterText(find.byType(TextFormField).at(0), 'Bandra Fort');
+        await tester.pumpAndSettle();
+        await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
 
         await tester.tap(find.byIcon(Icons.add_rounded));
@@ -139,7 +144,7 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
 
-        expect(find.text('Meeting point'), findsOneWidget);
+        expect(find.text('Review & rules'), findsOneWidget);
       },
     );
 
@@ -150,8 +155,7 @@ void main() {
       await tester.tap(find.text('Open'));
       await tester.pumpAndSettle();
 
-      await _pickFutureDate(tester);
-      await _acceptInitialTime(tester);
+      await _fillBasicsStep(tester);
       await _tapPrimaryButton(tester, 'Next');
       await tester.pumpAndSettle();
 
@@ -172,7 +176,7 @@ void main() {
 
       await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
       await tester.pumpAndSettle();
-      expect(find.text('Date'), findsOneWidget);
+      expect(find.text('Run basics'), findsOneWidget);
 
       await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
       await tester.pumpAndSettle();
@@ -254,8 +258,7 @@ Future<void> _pumpCreateRunFlow(
 }
 
 Future<void> _submitValidRun(WidgetTester tester) async {
-  await _pickFutureDate(tester);
-  await _acceptInitialTime(tester);
+  await _fillBasicsStep(tester);
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
 
@@ -265,15 +268,8 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
 
-  await tester.enterText(find.byType(TextFormField).at(0), '7.5');
-  await tester.enterText(find.byType(TextFormField).at(1), '18');
-  await tester.enterText(find.byType(TextFormField).at(2), '249.5');
-  await tester.tap(find.text('MODERATE'));
-  await tester.enterText(
-    find.byType(TextFormField).at(3),
-    'Social pacing with a coffee stop.',
-  );
-  await tester.pumpAndSettle();
+  await _pickFutureDate(tester);
+  await _acceptInitialTime(tester);
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
 
@@ -283,6 +279,18 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await tester.enterText(find.byType(TextFormField).at(3), '9');
   await tester.pumpAndSettle();
   await _tapPrimaryButton(tester, 'Schedule run');
+  await tester.pumpAndSettle();
+}
+
+Future<void> _fillBasicsStep(WidgetTester tester) async {
+  await tester.enterText(find.byType(TextFormField).at(0), '7.5');
+  await tester.enterText(find.byType(TextFormField).at(1), '18');
+  await tester.enterText(find.byType(TextFormField).at(2), '249.5');
+  await tester.tap(find.text('MODERATE'));
+  await tester.enterText(
+    find.byType(TextFormField).at(3),
+    'Social pacing with a coffee stop.',
+  );
   await tester.pumpAndSettle();
 }
 
