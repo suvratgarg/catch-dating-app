@@ -9,6 +9,9 @@ class ImageUploadRepository {
   ImageUploadRepository(this._storage, {ImagePicker? picker})
     : _picker = picker ?? ImagePicker();
 
+  static const double _maxPickedImageWidth = 1600;
+  static const double _maxPickedImageHeight = 2133;
+
   final FirebaseStorage _storage;
   final ImagePicker _picker;
 
@@ -16,7 +19,10 @@ class ImageUploadRepository {
 
   Future<XFile?> pickImage({int imageQuality = 85}) => _picker.pickImage(
     source: ImageSource.gallery,
+    maxWidth: _maxPickedImageWidth,
+    maxHeight: _maxPickedImageHeight,
     imageQuality: imageQuality,
+    requestFullMetadata: false,
   );
 
   // ── Generic upload ────────────────────────────────────────────────────────
