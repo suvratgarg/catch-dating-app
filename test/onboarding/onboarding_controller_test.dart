@@ -90,6 +90,35 @@ void main() {
         OnboardingStep.photos,
       );
     });
+
+    test(
+      'requires phone verification for signed-in users without a phone',
+      () async {
+        final repository = FakeAuthRepository()
+          ..currentUserValue = TestUser(uid: 'runner-1');
+        final container = createOnboardingTestContainer(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(repository),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          ],
+        );
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        await primeOnboardingAsyncProviders(container);
+
+        container.read(onboardingControllerProvider.notifier).initStep();
+
+        expect(
+          container.read(onboardingControllerProvider).step,
+          OnboardingStep.phone,
+        );
+        expect(
+          container.read(onboardingControllerProvider).phoneVerified,
+          isFalse,
+        );
+      },
+    );
   });
 
   group('OnboardingController.sendOtp', () {
@@ -283,7 +312,7 @@ void main() {
       final repository = FakeAuthRepository()
         ..currentUserValue = TestUser(
           uid: 'runner-1',
-          email: 'runner@example.com',
+          phoneNumber: '+919876543210',
         );
       final userProfileRepository = FakeOnboardingUserProfileRepository();
       final container = createOnboardingTestContainer(
@@ -301,6 +330,7 @@ void main() {
       await primeOnboardingAsyncProviders(container);
 
       final notifier = container.read(onboardingControllerProvider.notifier);
+      notifier.initStep();
       notifier.setNameDob(
         firstName: 'Asha',
         lastName: 'Runner',
@@ -317,7 +347,7 @@ void main() {
 
       expect(userProfileRepository.lastSavedUser, isNotNull);
       expect(userProfileRepository.lastSavedUser!.uid, 'runner-1');
-      expect(userProfileRepository.lastSavedUser!.email, 'runner@example.com');
+      expect(userProfileRepository.lastSavedUser!.email, isEmpty);
       expect(userProfileRepository.lastSavedUser!.name, 'Asha Runner');
       expect(userProfileRepository.lastSavedUser!.phoneNumber, '+919876543210');
       expect(userProfileRepository.lastSavedUser!.profileComplete, isFalse);

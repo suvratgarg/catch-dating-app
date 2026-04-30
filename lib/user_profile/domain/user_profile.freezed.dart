@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$UserProfile {
 
 // Core (required at sign-up)
-@JsonKey(includeToJson: false) String get uid; String get name;@TimestampConverter() DateTime get dateOfBirth; Gender get gender; SexualOrientation get sexualOrientation; String get phoneNumber; bool get profileComplete;// Filled in via edit profile or email sign-up
+@JsonKey(includeToJson: false) String get uid; String get name;@TimestampConverter() DateTime get dateOfBirth; Gender get gender; SexualOrientation get sexualOrientation; String get phoneNumber; bool get profileComplete;// Optional profile/contact field. Authentication is phone-only.
  String get email; String get bio;// Photos
  List<String> get photoUrls;// Location
 @JsonKey(unknownEnumValue: null) IndianCity? get city;// Matching preferences
@@ -260,7 +260,7 @@ class _UserProfile extends UserProfile {
 @override final  SexualOrientation sexualOrientation;
 @override final  String phoneNumber;
 @override final  bool profileComplete;
-// Filled in via edit profile or email sign-up
+// Optional profile/contact field. Authentication is phone-only.
 @override@JsonKey() final  String email;
 @override@JsonKey() final  String bio;
 // Photos

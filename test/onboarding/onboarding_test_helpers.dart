@@ -21,13 +21,10 @@ typedef VerifyPhoneNumberHandler =
     });
 
 class TestUser extends Fake implements User {
-  TestUser({required this.uid, this.email, this.phoneNumber});
+  TestUser({required this.uid, this.phoneNumber});
 
   @override
   final String uid;
-
-  @override
-  final String? email;
 
   @override
   final String? phoneNumber;

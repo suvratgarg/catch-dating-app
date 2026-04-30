@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
@@ -6,21 +7,29 @@ import 'package:catch_dating_app/onboarding/presentation/pages/otp_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/phone_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:go_router/go_router.dart';
 
 import '../runs/runs_test_helpers.dart';
 import 'onboarding_test_helpers.dart';
 
+FakeAuthRepository _phoneAuthRepository() => FakeAuthRepository()
+  ..onVerifyPhoneNumber =
+      ({
+        required verificationCompleted,
+        required verificationFailed,
+        required codeSent,
+        required codeAutoRetrievalTimeout,
+      }) {
+        codeSent('verification-id', 11);
+      };
+
 void main() {
   group('WelcomePage', () {
-    testWidgets('Get started advances onboarding to the phone step', (
+    testWidgets('Continue with phone advances onboarding to the phone step', (
       tester,
     ) async {
       final container = createOnboardingTestContainer();
@@ -32,7 +41,9 @@ void main() {
         child: const WelcomePage(),
       );
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Get started'));
+      await tester.tap(
+        find.widgetWithText(FilledButton, 'Continue with phone'),
+      );
       await tester.pumpAndSettle();
 
       expect(
@@ -41,74 +52,17 @@ void main() {
       );
     });
 
-    testWidgets('Sign in routes to the auth screen', (tester) async {
+    testWidgets('does not offer a second sign-in method', (tester) async {
       final container = createOnboardingTestContainer();
       addTearDown(container.dispose);
-      final router = GoRouter(
-        initialLocation: '/onboarding',
-        routes: [
-          GoRoute(
-            path: '/onboarding',
-            builder: (_, _) => const Scaffold(body: WelcomePage()),
-          ),
-          GoRoute(
-            path: '/auth',
-            builder: (_, _) => const Scaffold(body: Text('Auth screen')),
-          ),
-        ],
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const WelcomePage(),
       );
-      addTearDown(router.dispose);
 
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp.router(
-            theme: AppTheme.light,
-            routerConfig: router,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Already have an account? Sign in'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Auth screen'), findsOneWidget);
-    });
-
-    testWidgets('Sign in preserves the pending destination', (tester) async {
-      final container = createOnboardingTestContainer();
-      addTearDown(container.dispose);
-      final router = GoRouter(
-        initialLocation: '/onboarding?from=%2Fchats%2Fmatch-1',
-        routes: [
-          GoRoute(
-            path: '/onboarding',
-            builder: (_, _) => const Scaffold(body: WelcomePage()),
-          ),
-          GoRoute(
-            path: '/auth',
-            builder: (_, state) => Scaffold(body: Text(state.uri.toString())),
-          ),
-        ],
-      );
-      addTearDown(router.dispose);
-
-      await tester.pumpWidget(
-        UncontrolledProviderScope(
-          container: container,
-          child: MaterialApp.router(
-            theme: AppTheme.light,
-            routerConfig: router,
-          ),
-        ),
-      );
-      await tester.pumpAndSettle();
-
-      await tester.tap(find.text('Already have an account? Sign in'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('/auth?from=%2Fchats%2Fmatch-1'), findsOneWidget);
+      expect(find.text('Already have an account? Sign in'), findsNothing);
     });
   });
 
@@ -179,7 +133,7 @@ void main() {
   });
 
   group('NameDobPage', () {
-    testWidgets('manual phone entry requires 10 digits', (tester) async {
+    testWidgets('requires a verified phone before continuing', (tester) async {
       final container = createOnboardingTestContainer();
       addTearDown(container.dispose);
 
@@ -201,26 +155,30 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Mobile number'),
-        '12345',
-      );
 
       await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
       await tester.pumpAndSettle();
 
-      expect(find.text('Please enter a valid 10-digit number'), findsOneWidget);
+      expect(
+        find.text('Please verify your phone number before continuing.'),
+        findsOneWidget,
+      );
       expect(
         container.read(onboardingControllerProvider).step,
         OnboardingStep.welcome,
       );
     });
 
-    testWidgets('valid manual phone entry advances to the next step', (
-      tester,
-    ) async {
-      final container = createOnboardingTestContainer();
+    testWidgets('verified phone advances to the next step', (tester) async {
+      final repository = _phoneAuthRepository();
+      final container = createOnboardingTestContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(repository.dispose);
       addTearDown(container.dispose);
+      final notifier = container.read(onboardingControllerProvider.notifier);
+      await notifier.sendOtp('9876543210');
+      await notifier.verifyOtp('123456');
 
       await pumpOnboardingPage(
         tester,
@@ -240,10 +198,6 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Mobile number'),
-        '9876543210',
-      );
 
       await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
       await tester.pumpAndSettle();
@@ -258,12 +212,18 @@ void main() {
       );
     });
 
-    testWidgets('restores saved values and keeps manual phone editable', (
+    testWidgets('restores saved values and keeps verified phone read-only', (
       tester,
     ) async {
-      final container = createOnboardingTestContainer();
+      final repository = _phoneAuthRepository();
+      final container = createOnboardingTestContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(repository.dispose);
       addTearDown(container.dispose);
       final notifier = container.read(onboardingControllerProvider.notifier);
+      await notifier.sendOtp('9876543210');
+      await notifier.verifyOtp('123456');
       notifier.setNameDob(
         firstName: 'Asha',
         lastName: 'Runner',
@@ -282,16 +242,16 @@ void main() {
       expect(find.text('15/04/1997'), findsOneWidget);
       expect(find.text('9876543210'), findsOneWidget);
 
-      await tester.enterText(
-        find.widgetWithText(TextFormField, 'Mobile number'),
-        '9123456780',
-      );
-      await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
-      await tester.pumpAndSettle();
-
       expect(
-        container.read(onboardingControllerProvider).phoneNumber,
-        '9123456780',
+        tester
+            .widget<EditableText>(
+              find.descendant(
+                of: find.widgetWithText(TextFormField, 'Mobile number'),
+                matching: find.byType(EditableText),
+              ),
+            )
+            .readOnly,
+        isTrue,
       );
     });
   });

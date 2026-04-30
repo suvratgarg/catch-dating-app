@@ -5,7 +5,6 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class NameDobPage extends ConsumerStatefulWidget {
@@ -22,7 +21,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
   final _phoneController = TextEditingController();
   final _dateController = TextEditingController();
   DateTime? _selectedDate;
-  bool _phoneReadOnly = false;
+  bool _phoneVerified = false;
 
   @override
   void initState() {
@@ -67,9 +66,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
         ? _formatDate(data.dateOfBirth!)
         : '';
 
-    final hasVerifiedPhone = data.phoneVerified;
     _phoneController.text = data.phoneNumber;
-    _phoneReadOnly = hasVerifiedPhone;
+    _phoneVerified = data.phoneVerified;
   }
 
   String _formatDate(DateTime date) {
@@ -161,29 +159,20 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             gapH24,
             TextFormField(
               controller: _phoneController,
-              readOnly: _phoneReadOnly,
+              readOnly: true,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.telephoneNumberNational],
-              inputFormatters: _phoneReadOnly
-                  ? null
-                  : [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(10),
-                    ],
               decoration: InputDecoration(
                 labelText: 'Mobile number',
                 prefixIcon: const Icon(Icons.phone_outlined),
                 prefixText: '+91 ',
-                helperText: _phoneReadOnly ? 'Verified via OTP' : null,
+                helperText: _phoneVerified ? 'Verified via OTP' : null,
                 helperStyle: TextStyle(color: t.primary),
               ),
               validator: (v) {
-                if (v == null || v.trim().isEmpty) {
-                  return 'Please enter your phone number';
-                }
-                if (!_phoneReadOnly && v.trim().length != 10) {
-                  return 'Please enter a valid 10-digit number';
+                if (!_phoneVerified || v == null || v.trim().isEmpty) {
+                  return 'Please verify your phone number before continuing.';
                 }
                 return null;
               },

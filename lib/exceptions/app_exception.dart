@@ -13,28 +13,6 @@ sealed class AppException implements Exception {
   String toString() => message;
 }
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
-
-class EmailAlreadyInUseException extends AppException {
-  const EmailAlreadyInUseException()
-    : super('email-already-in-use', 'That email address is already in use.');
-}
-
-class WeakPasswordException extends AppException {
-  const WeakPasswordException()
-    : super('weak-password', 'Password must be at least 8 characters.');
-}
-
-class WrongPasswordException extends AppException {
-  const WrongPasswordException()
-    : super('wrong-password', 'Incorrect password. Please try again.');
-}
-
-class UserNotFoundException extends AppException {
-  const UserNotFoundException()
-    : super('user-not-found', 'No account found for that email address.');
-}
-
 // ── Payments ──────────────────────────────────────────────────────────────────
 
 class PaymentCancelledException extends AppException {

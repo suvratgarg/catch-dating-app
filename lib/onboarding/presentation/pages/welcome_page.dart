@@ -4,22 +4,9 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.d
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class WelcomePage extends ConsumerWidget {
   const WelcomePage({super.key});
-
-  static const _authPath = '/auth';
-
-  void _goToAuth(BuildContext context) {
-    final from = GoRouterState.of(context).uri.queryParameters['from'];
-    context.go(
-      Uri(
-        path: _authPath,
-        queryParameters: {if (from != null && from.isNotEmpty) 'from': from},
-      ).toString(),
-    );
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -66,22 +53,15 @@ class WelcomePage extends ConsumerWidget {
             textAlign: TextAlign.center,
           ),
           const Spacer(flex: 3),
-          FilledButton(
+          FilledButton.icon(
             onPressed: () => ref
                 .read(onboardingControllerProvider.notifier)
                 .goToStep(OnboardingStep.phone),
             style: FilledButton.styleFrom(
               minimumSize: const Size.fromHeight(52),
             ),
-            child: const Text('Get started'),
-          ),
-          const SizedBox(height: 12),
-          TextButton(
-            onPressed: () => _goToAuth(context),
-            child: Text(
-              'Already have an account? Sign in',
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
-            ),
+            icon: const Icon(Icons.phone_outlined),
+            label: const Text('Continue with phone'),
           ),
           const SizedBox(height: 32),
         ],

@@ -198,7 +198,7 @@ abstract class UserProfile with _$UserProfile {
     required String phoneNumber,
     required bool profileComplete,
 
-    // Filled in via edit profile or email sign-up
+    // Optional profile/contact field. Authentication is phone-only.
     @Default('') String email,
     @Default('') String bio,
 

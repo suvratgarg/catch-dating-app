@@ -9,7 +9,7 @@ import 'auth_test_helpers.dart';
 void main() {
   group('AuthRepository', () {
     test('currentUser exposes the FirebaseAuth current user', () {
-      final user = TestUser(uid: 'user-1', email: 'runner@example.com');
+      final user = TestUser(uid: 'user-1', phoneNumber: '+919999999999');
       final auth = TestFirebaseAuth(currentUser: user);
       addTearDown(auth.dispose);
 
@@ -17,40 +17,6 @@ void main() {
 
       expect(repository.currentUser, same(user));
     });
-
-    test(
-      'createUserWithEmailAndPassword trims the email before delegating',
-      () async {
-        final auth = TestFirebaseAuth();
-        addTearDown(auth.dispose);
-        final repository = AuthRepository(auth);
-
-        await repository.createUserWithEmailAndPassword(
-          email: '  runner@example.com  ',
-          password: 'secret123',
-        );
-
-        expect(auth.createdEmail, 'runner@example.com');
-        expect(auth.createdPassword, 'secret123');
-      },
-    );
-
-    test(
-      'signInWithEmailAndPassword trims the email before delegating',
-      () async {
-        final auth = TestFirebaseAuth();
-        addTearDown(auth.dispose);
-        final repository = AuthRepository(auth);
-
-        await repository.signInWithEmailAndPassword(
-          email: '  runner@example.com  ',
-          password: 'secret123',
-        );
-
-        expect(auth.signedInEmail, 'runner@example.com');
-        expect(auth.signedInPassword, 'secret123');
-      },
-    );
 
     test('verifyPhoneNumber forwards callbacks to FirebaseAuth', () async {
       final auth = TestFirebaseAuth()
@@ -118,9 +84,9 @@ void main() {
       final auth = TestFirebaseAuth();
       addTearDown(auth.dispose);
       final repository = AuthRepository(auth);
-      final credential = EmailAuthProvider.credential(
-        email: 'runner@example.com',
-        password: 'secret123',
+      final credential = PhoneAuthProvider.credential(
+        verificationId: 'verification-id',
+        smsCode: '123456',
       );
 
       await repository.signInWithCredential(credential);

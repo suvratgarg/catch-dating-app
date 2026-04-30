@@ -103,12 +103,12 @@ File: `test/routing/router_redirect_test.dart`
 
 | # | Type | What to test | Done |
 |---|------|-------------|------|
-| 32 | unit | Unauthenticated user (`uid == null`) visiting `/` redirects to `/auth` | [ ] |
+| 32 | unit | Unauthenticated user (`uid == null`) visiting `/` redirects to `/onboarding` | [ ] |
 | 33 | unit | Authenticated user with no profile doc visiting `/` redirects to `/onboarding` | [ ] |
 | 34 | unit | Authenticated user with `profileComplete = false` visiting `/` redirects to `/onboarding` | [ ] |
-| 35 | unit | Fully set-up user visiting `/auth` redirects to `/` | [ ] |
+| 35 | unit | Fully set-up user visiting legacy `/auth` redirects to `/` | [ ] |
 | 36 | unit | Fully set-up user visiting `/` does not redirect | [ ] |
-| 37 | unit | Unauthenticated user can stay on `/auth` (no redirect loop) | [ ] |
+| 37 | unit | Unauthenticated legacy `/auth` links redirect to `/onboarding` without an email/password screen | [ ] |
 
 ---
 
@@ -300,7 +300,7 @@ File: `test/routing/auth_redirect_flow_test.dart`
 
 | # | Type | What to test | Done |
 |---|------|-------------|------|
-| 94 | flow | App starts unauthenticated → lands on `AuthScreen` | [ ] |
+| 94 | flow | App starts unauthenticated → lands on onboarding phone auth | [ ] |
 | 95 | flow | `uidProvider` emitting a uid with complete profile → redirects to `/` (DashboardScreen) | [ ] |
 | 96 | flow | `uidProvider` emitting a uid with `profileComplete = false` → redirects to `/onboarding` | [ ] |
 

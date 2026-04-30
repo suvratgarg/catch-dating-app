@@ -8,7 +8,7 @@ Catch is a Flutter app for meeting people through run clubs.
 
 Core product loop:
 
-1. A user signs in with email/password or phone OTP.
+1. A user signs in with a verified phone OTP.
 2. The user completes an onboarding flow with dating + running preferences.
 3. The user browses run clubs by city, joins clubs, and views scheduled runs.
 4. A club host creates clubs and creates runs.
@@ -96,12 +96,14 @@ Auth repository:
 
 Auth UI:
 
-- Email/password screen: [`lib/auth/presentation/auth_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/auth/presentation/auth_screen.dart)
-- Auth controller: [`lib/auth/presentation/auth_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/auth/presentation/auth_controller.dart)
+- Phone entry and OTP verification live inside onboarding:
+  - [`lib/onboarding/presentation/pages/phone_page.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/onboarding/presentation/pages/phone_page.dart)
+  - [`lib/onboarding/presentation/pages/otp_page.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/onboarding/presentation/pages/otp_page.dart)
 
 Router rules:
 
-- Unauthenticated users are sent to `/auth`.
+- Unauthenticated users are sent directly to `/onboarding`.
+- `/auth` is kept only as a legacy redirect to `/onboarding`.
 - Authenticated users with no usable profile doc are sent to `/onboarding`.
 - Users with `profileComplete == false` are also sent to `/onboarding`.
 - Fully set up users are sent to `/`.
@@ -112,7 +114,7 @@ Defined in [`lib/routing/go_router.dart`](/Users/suvratgarg/Development/catch-da
 
 Standalone routes:
 
-- `/auth`
+- `/auth` → legacy redirect to `/onboarding`
 - `/onboarding`
 - `/edit-profile`
 - `/payment-history`
@@ -655,19 +657,11 @@ Impact:
 - Run-level reviews still reuse that same club-scoped ID.
 - If product intent is “one review per run”, the ID strategy, repo, and rules all need to change.
 
-### 14.3 Auth bootstrap likely does not match `UserProfile` decoding
+### 14.3 Auth is phone-only and onboarding owns profile creation
 
-`createUserDocument` writes a minimal `users/{uid}` document, but `UserProfile.fromJson` expects many required fields.
-
-Files:
-
-- Trigger: [`functions/src/index.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/index.ts)
-- App user model: [`lib/user_profile/domain/user_profile.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/user_profile/domain/user_profile.dart)
-- App user repo: [`lib/user_profile/data/user_profile_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/user_profile/data/user_profile_repository.dart)
-
-Impact:
-
-- Email sign-up and partially created user docs may be fragile until this contract is made explicit.
+Firebase phone OTP signs the user in first. Onboarding then writes the full
+`users/{uid}` profile document once the required profile fields are collected.
+The profile `email` field is optional and defaults to an empty string.
 
 ### 14.4 Attendance is manual, not automatic
 

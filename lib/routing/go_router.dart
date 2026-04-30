@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/activity/presentation/activity_screen.dart';
 import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
-import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
@@ -39,7 +37,7 @@ part 'go_router.g.dart';
 
 enum Routes {
   loadingScreen('/loading'),
-  authScreen('/auth'),
+  legacyAuthRedirect('/auth'),
   onboardingScreen('/onboarding'),
   editProfileScreen('/edit-profile'),
   calendarScreen('/calendar'),
@@ -111,10 +109,15 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => const _RouterLoadingScreen(),
       ),
       GoRoute(
-        path: Routes.authScreen.path,
-        name: Routes.authScreen.name,
-        builder: (context, state) =>
-            const AuthScreen(authState: AuthState.signIn),
+        path: Routes.legacyAuthRedirect.path,
+        name: Routes.legacyAuthRedirect.name,
+        redirect: (context, state) => _locationWithFrom(
+          Routes.onboardingScreen.path,
+          from: _pendingDestination(
+            uri: state.uri,
+            matchedLocation: state.matchedLocation,
+          ),
+        ),
       ),
       GoRoute(
         path: Routes.onboardingScreen.path,
@@ -311,7 +314,7 @@ String? appRedirect({
 }) {
   final onLoading = matchedLocation == Routes.loadingScreen.path;
   final onOnboarding = matchedLocation == Routes.onboardingScreen.path;
-  final onAuth = matchedLocation == Routes.authScreen.path;
+  final onLegacyAuth = matchedLocation == Routes.legacyAuthRedirect.path;
 
   final isWaitingOnAuth = uidAsync.isLoading;
   final isWaitingOnProfile =
@@ -329,9 +332,9 @@ String? appRedirect({
   final userProfile = userProfileAsync.value;
 
   if (uid == null) {
-    if (onAuth || onOnboarding) return null;
+    if (onOnboarding) return null;
     return _locationWithFrom(
-      Routes.authScreen.path,
+      Routes.onboardingScreen.path,
       from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
     );
   }
@@ -344,7 +347,7 @@ String? appRedirect({
     );
   }
 
-  if (onLoading || onAuth || onOnboarding) {
+  if (onLoading || onLegacyAuth || onOnboarding) {
     return _resumeDestination(uri);
   }
 
@@ -391,7 +394,7 @@ String? _sanitizeFrom(String? from) {
 
 bool _isTransientRoute(String path) =>
     path == Routes.loadingScreen.path ||
-    path == Routes.authScreen.path ||
+    path == Routes.legacyAuthRedirect.path ||
     path == Routes.onboardingScreen.path;
 
 class _RouterLoadingScreen extends StatelessWidget {

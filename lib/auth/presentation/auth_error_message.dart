@@ -3,11 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 String authErrorMessage(Object error) {
   if (error is FirebaseAuthException) {
     return switch (error.code) {
-      'email-already-in-use' => 'An account already exists for that email.',
-      'invalid-credential' ||
-      'wrong-password' ||
-      'user-not-found' => 'Incorrect email or password.',
-      'invalid-email' => 'Please enter a valid email address.',
       'invalid-phone-number' => 'Please enter a valid phone number.',
       'invalid-verification-code' => 'That code is invalid. Please try again.',
       'session-expired' ||
@@ -18,7 +13,6 @@ String authErrorMessage(Object error) {
       'too-many-requests' =>
         'Too many attempts. Please wait a bit and try again.',
       'user-disabled' => 'This account has been disabled.',
-      'weak-password' => 'Password must be at least 6 characters.',
       _ => error.message ?? 'Something went wrong. Please try again.',
     };
   }

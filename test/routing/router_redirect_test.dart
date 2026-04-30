@@ -43,7 +43,7 @@ String? _redirect({
 void main() {
   group('appRedirect', () {
     test(
-      'unauthenticated users are sent to auth and keep their destination',
+      'unauthenticated users are sent to onboarding and keep their destination',
       () {
         expect(
           _redirect(
@@ -52,7 +52,7 @@ void main() {
             location: '/chats/match-1',
             matchedLocation: Routes.chatScreen.path,
           ),
-          '/auth?from=%2Fchats%2Fmatch-1',
+          '/onboarding?from=%2Fchats%2Fmatch-1',
         );
       },
     );
@@ -80,7 +80,7 @@ void main() {
             uidAsync: const AsyncData('user-1'),
             userProfileAsync: AsyncData(_incompleteUser()),
             location: '/auth?from=%2Fchats%2Fmatch-1',
-            matchedLocation: Routes.authScreen.path,
+            matchedLocation: Routes.legacyAuthRedirect.path,
           ),
           '/onboarding?from=%2Fchats%2Fmatch-1',
         );
@@ -115,29 +115,29 @@ void main() {
     );
 
     test(
-      'fully set-up users visiting auth without a pending route land on dashboard',
+      'fully set-up users visiting the legacy auth route land on dashboard',
       () {
         expect(
           _redirect(
             uidAsync: const AsyncData('user-1'),
             userProfileAsync: AsyncData(_completeUser()),
             location: '/auth',
-            matchedLocation: Routes.authScreen.path,
+            matchedLocation: Routes.legacyAuthRedirect.path,
           ),
           '/',
         );
       },
     );
 
-    test('unauthenticated users already on auth are not redirected again', () {
+    test('legacy auth links send signed-out users to phone onboarding', () {
       expect(
         _redirect(
           uidAsync: const AsyncData(null),
           userProfileAsync: const AsyncData(null),
           location: '/auth?from=%2Fchats%2Fmatch-1',
-          matchedLocation: Routes.authScreen.path,
+          matchedLocation: Routes.legacyAuthRedirect.path,
         ),
-        isNull,
+        '/onboarding?from=%2Fchats%2Fmatch-1',
       );
     });
 
@@ -147,7 +147,7 @@ void main() {
           uidAsync: const AsyncData('user-1'),
           userProfileAsync: AsyncData(_completeUser()),
           location: '/auth?from=chats/match-1',
-          matchedLocation: Routes.authScreen.path,
+          matchedLocation: Routes.legacyAuthRedirect.path,
         ),
         '/',
       );

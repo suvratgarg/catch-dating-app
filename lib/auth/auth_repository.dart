@@ -13,30 +13,6 @@ class AuthRepository {
 
   Stream<User?> authStateChanges() => _auth.authStateChanges();
 
-  String _normalizeEmail(String email) => email.trim();
-
-  // ── Email auth ────────────────────────────────────────────────────────────
-
-  Future<void> createUserWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    await _auth.createUserWithEmailAndPassword(
-      email: _normalizeEmail(email),
-      password: password,
-    );
-  }
-
-  Future<void> signInWithEmailAndPassword({
-    required String email,
-    required String password,
-  }) async {
-    await _auth.signInWithEmailAndPassword(
-      email: _normalizeEmail(email),
-      password: password,
-    );
-  }
-
   // ── Phone OTP auth ────────────────────────────────────────────────────────
 
   Future<void> verifyPhoneNumber({

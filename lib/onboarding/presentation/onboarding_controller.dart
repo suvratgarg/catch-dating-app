@@ -65,19 +65,25 @@ class OnboardingController extends _$OnboardingController {
     }
 
     if (userProfile == null) {
+      final phoneNumber = _authPhoneNumber;
+      if (phoneNumber.isEmpty) {
+        _setStateIfChanged(
+          state.copyWith(step: OnboardingStep.phone, phoneVerified: false),
+        );
+        return;
+      }
+
       if (state.step.index > OnboardingStep.nameDob.index) {
         return;
       }
 
-      // Authenticated (email or phone) but no profile doc yet.
+      // Authenticated by phone OTP but no profile doc yet.
       _setStateIfChanged(
         state.copyWith(
           step: OnboardingStep.nameDob,
-          phoneVerified: _authPhoneNumber.isNotEmpty,
+          phoneVerified: true,
           profileDraft: state.profileDraft.copyWith(
-            phoneNumber: state.phoneNumber.isNotEmpty
-                ? state.phoneNumber
-                : _stripIndianCountryCode(_authPhoneNumber),
+            phoneNumber: _stripIndianCountryCode(phoneNumber),
           ),
         ),
       );
@@ -105,38 +111,40 @@ class OnboardingController extends _$OnboardingController {
     // callbacks back into this Future so the mutation catches errors correctly.
     final completer = Completer<void>();
 
-    unawaited(ref
-        .read(authRepositoryProvider)
-        .verifyPhoneNumber(
-          phoneNumber: _formatIndianPhoneNumber(phoneNumber),
-          codeSent: (verificationId, _) {
-            state = state.copyWith(
-              verificationId: verificationId,
-              step: OnboardingStep.otp,
-            );
-            if (!completer.isCompleted) completer.complete();
-          },
-          verificationFailed: (e) {
-            if (!completer.isCompleted) completer.completeError(e);
-          },
-          verificationCompleted: (credential) async {
-            try {
-              await ref
-                  .read(authRepositoryProvider)
-                  .signInWithCredential(credential);
+    unawaited(
+      ref
+          .read(authRepositoryProvider)
+          .verifyPhoneNumber(
+            phoneNumber: _formatIndianPhoneNumber(phoneNumber),
+            codeSent: (verificationId, _) {
               state = state.copyWith(
-                step: OnboardingStep.nameDob,
-                phoneVerified: true,
+                verificationId: verificationId,
+                step: OnboardingStep.otp,
               );
               if (!completer.isCompleted) completer.complete();
-            } catch (e, st) {
-              if (!completer.isCompleted) completer.completeError(e, st);
-            }
-          },
-        )
-        .catchError((Object e, StackTrace st) {
-          if (!completer.isCompleted) completer.completeError(e, st);
-        }));
+            },
+            verificationFailed: (e) {
+              if (!completer.isCompleted) completer.completeError(e);
+            },
+            verificationCompleted: (credential) async {
+              try {
+                await ref
+                    .read(authRepositoryProvider)
+                    .signInWithCredential(credential);
+                state = state.copyWith(
+                  step: OnboardingStep.nameDob,
+                  phoneVerified: true,
+                );
+                if (!completer.isCompleted) completer.complete();
+              } catch (e, st) {
+                if (!completer.isCompleted) completer.completeError(e, st);
+              }
+            },
+          )
+          .catchError((Object e, StackTrace st) {
+            if (!completer.isCompleted) completer.completeError(e, st);
+          }),
+    );
 
     return completer.future;
   }
@@ -190,14 +198,12 @@ class OnboardingController extends _$OnboardingController {
   Future<void> saveProfile() async {
     final uid = _requireSignedInUid();
     final draft = _requireProfileDraft();
-    final email = ref.read(authRepositoryProvider).currentUser?.email ?? '';
 
     await ref
         .read(userProfileRepositoryProvider)
         .setUserProfile(
           userProfile: UserProfile(
             uid: uid,
-            email: email,
             name: draft.fullName,
             dateOfBirth: draft.dateOfBirth!,
             gender: draft.gender!,
@@ -273,6 +279,10 @@ class OnboardingController extends _$OnboardingController {
 
     if (draft.phoneNumber.isEmpty) {
       throw StateError('Please add a valid phone number before continuing.');
+    }
+
+    if (!state.phoneVerified) {
+      throw StateError('Please verify your phone number before continuing.');
     }
 
     return draft.copyWith(
