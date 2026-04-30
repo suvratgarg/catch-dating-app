@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "619661127800",
-    "project_id": "catchdates-dev",
-    "storage_bucket": "catchdates-dev.firebasestorage.app"
+    "project_number": "574779808785",
+    "project_id": "catch-dating-app-64e51",
+    "storage_bucket": "catch-dating-app-64e51.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:619661127800:android:d90f9bb4d89afbd7077d8d",
+        "mobilesdk_app_id": "1:574779808785:android:81edbfa0d4aba7c48ea5b0",
         "android_client_info": {
-          "package_name": "com.catchdates.app.dev"
+          "package_name": "com.catchdates.app"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCpzFHkPnvzLf9ti3JJ3dytrZ0ZiKxzWuY"
+          "current_key": "AIzaSyC6dvdBlfV8nU5RJvcQa6QTp8Ej25QhBV8"
         }
       ],
       "services": {

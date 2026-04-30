@@ -129,6 +129,6 @@ export async function verifyRazorpayPaymentHandler(
 }
 
 export const verifyRazorpayPayment = onCall(
-  {secrets: [razorpayKeyId, razorpayKeySecret]},
+  {enforceAppCheck: true, secrets: [razorpayKeyId, razorpayKeySecret]},
   (request) => verifyRazorpayPaymentHandler(request)
 );

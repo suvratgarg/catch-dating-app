@@ -11,7 +11,9 @@ interface JoinRunWaitlistData {
  * Adds a user to a run waitlist after applying the same block boundary as
  * booking. Kept server-side so block state is not exposed through rules.
  */
-export const joinRunWaitlist = onCall(async (request) => {
+export const joinRunWaitlist = onCall({enforceAppCheck: true}, async (
+  request
+) => {
   if (!request.auth) {
     throw new HttpsError(
       "unauthenticated",

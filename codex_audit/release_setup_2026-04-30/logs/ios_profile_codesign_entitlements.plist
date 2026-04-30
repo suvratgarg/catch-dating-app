@@ -1,0 +1,3 @@
+Executable=/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/build/ios/iphoneos/Runner.app/Runner
+warning: Specifying ':' in the path is deprecated and will not work in a future release
+warning: binary contains an invalid entitlements blob. The OS will ignore these entitlements.

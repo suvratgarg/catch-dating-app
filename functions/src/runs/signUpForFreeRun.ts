@@ -7,7 +7,9 @@ interface SignUpForFreeRunData {
   runId: string;
 }
 
-export const signUpForFreeRun = onCall(async (request) => {
+export const signUpForFreeRun = onCall({enforceAppCheck: true}, async (
+  request
+) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be signed in to book a run.");
   }

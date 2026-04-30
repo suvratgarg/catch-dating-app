@@ -372,7 +372,7 @@ service cloud.firestore {
 
     // ── App config (force-update gate) ────────────────────────────────────────
     match /config/{document} {
-      allow read: if isAuthed();
+      allow read: if document == 'app_config';
       allow write: if false;
     }
   }

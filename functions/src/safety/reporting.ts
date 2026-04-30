@@ -76,4 +76,6 @@ export async function reportUserHandler(
   return {reported: true};
 }
 
-export const reportUser = onCall((request) => reportUserHandler(request));
+export const reportUser = onCall({enforceAppCheck: true}, (request) =>
+  reportUserHandler(request)
+);

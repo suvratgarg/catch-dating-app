@@ -103,6 +103,6 @@ export async function createRazorpayOrderHandler(
 }
 
 export const createRazorpayOrder = onCall(
-  {secrets: [razorpayKeyId, razorpayKeySecret]},
+  {enforceAppCheck: true, secrets: [razorpayKeyId, razorpayKeySecret]},
   (request) => createRazorpayOrderHandler(request)
 );

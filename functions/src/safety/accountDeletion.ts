@@ -110,6 +110,8 @@ export function storagePathFromDownloadUrl(url: string): string | null {
   }
 }
 
-export const requestAccountDeletion = onCall((request) =>
+export const requestAccountDeletion = onCall({enforceAppCheck: true}, (
+  request
+) =>
   requestAccountDeletionHandler(request as CallableRequest<null>)
 );

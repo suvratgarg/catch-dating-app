@@ -239,9 +239,13 @@ async function closeMatchesForBlockedPair({
   }
 }
 
-export const blockUser = onCall((request) => blockUserHandler(request));
+export const blockUser = onCall({enforceAppCheck: true}, (request) =>
+  blockUserHandler(request)
+);
 
-export const unblockUser = onCall((request) => unblockUserHandler(request));
+export const unblockUser = onCall({enforceAppCheck: true}, (request) =>
+  unblockUserHandler(request)
+);
 
 export const onBlockCreated = onDocumentCreated(
   "blocks/{blockId}",

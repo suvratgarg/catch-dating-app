@@ -30,20 +30,42 @@ fi
 
 flutter_args=("$@")
 
+has_flavor=0
+for arg in "${flutter_args[@]}"; do
+  if [[ "$arg" == "--flavor" || "$arg" == --flavor=* ]]; then
+    has_flavor=1
+    break
+  fi
+done
+
 if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
   case "${flutter_args[1]}" in
     apk|appbundle|ipa|ios|macos)
-      has_flavor=0
-      for arg in "${flutter_args[@]}"; do
-        if [[ "$arg" == "--flavor" || "$arg" == --flavor=* ]]; then
-          has_flavor=1
-          break
-        fi
-      done
-
       if [[ $has_flavor -eq 0 ]]; then
         flutter_args+=("--flavor" "$environment")
       fi
+      ;;
+  esac
+elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" && $has_flavor -eq 0 ]]; then
+  target_device=""
+  for ((i = 0; i < ${#flutter_args[@]}; i++)); do
+    case "${flutter_args[$i]}" in
+      -d|--device-id)
+        if (( i + 1 < ${#flutter_args[@]} )); then
+          target_device="${flutter_args[$((i + 1))]}"
+        fi
+        ;;
+      --device-id=*)
+        target_device="${flutter_args[$i]#--device-id=}"
+        ;;
+    esac
+  done
+
+  case "$target_device" in
+    chrome|edge|web-server)
+      ;;
+    *)
+      flutter_args+=("--flavor" "$environment")
       ;;
   esac
 fi

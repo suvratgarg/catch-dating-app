@@ -64,10 +64,7 @@ Future<void> _initializeFirebaseServices() async {
 Future<void> _activateFirebaseAppCheck() async {
   final debugToken = AppConfig.firebaseAppCheckDebugToken.trim();
   final debugTokenOrNull = debugToken.isEmpty ? null : debugToken;
-  final useDebugProvider =
-      kDebugMode ||
-      AppConfig.useFirebaseEmulators ||
-      !AppConfig.environment.isProduction;
+  final useDebugProvider = kDebugMode || AppConfig.useFirebaseEmulators;
 
   if (kIsWeb) {
     final siteKey = AppConfig.firebaseAppCheckWebRecaptchaEnterpriseSiteKey

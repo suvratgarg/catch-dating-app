@@ -10,7 +10,9 @@ import {RunDoc} from "../shared/firestore";
  *
  * Idempotent — calling it multiple times is safe; it uses arrayUnion.
  */
-export const markRunAttendance = onCall(async (request) => {
+export const markRunAttendance = onCall({enforceAppCheck: true}, async (
+  request
+) => {
   if (!request.auth) {
     throw new HttpsError("unauthenticated", "Must be signed in.");
   }

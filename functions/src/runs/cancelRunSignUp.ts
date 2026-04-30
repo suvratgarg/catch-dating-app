@@ -21,7 +21,7 @@ interface CancelData {
  * - Idempotent — calling it when the user is already not signed up is a no-op.
  */
 export const cancelRunSignUp = onCall(
-  {secrets: [razorpayKeyId, razorpayKeySecret]},
+  {enforceAppCheck: true, secrets: [razorpayKeyId, razorpayKeySecret]},
   async (request) => {
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Must be signed in to cancel.");
