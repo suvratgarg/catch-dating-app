@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/force_update/data/app_version_repository.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -21,9 +22,7 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       routerConfig: goRouter,
       builder: (context, child) {
-        final content = forceUpdate
-            ? const UpdateRequiredScreen()
-            : (child ?? const SizedBox.shrink());
+        final content = _buildForceUpdateGate(ref, forceUpdate, child);
 
         if (!AppConfig.shouldShowEnvironmentBanner) {
           return content;
@@ -35,6 +34,94 @@ class MyApp extends ConsumerWidget {
           child: content,
         );
       },
+    );
+  }
+
+  Widget _buildForceUpdateGate(
+    WidgetRef ref,
+    AsyncValue<bool> forceUpdate,
+    Widget? child,
+  ) {
+    if (forceUpdate.hasValue) {
+      return forceUpdate.requireValue
+          ? const UpdateRequiredScreen()
+          : (child ?? const SizedBox.shrink());
+    }
+
+    if (forceUpdate.hasError) {
+      return _ForceUpdateCheckErrorScreen(
+        error: forceUpdate.error,
+        onRetry: () {
+          ref.invalidate(watchAppVersionConfigProvider);
+          ref.invalidate(currentAppVersionProvider);
+          ref.invalidate(currentAppBuildNumberProvider);
+          ref.invalidate(forceUpdateRequiredProvider);
+        },
+      );
+    }
+
+    return const _ForceUpdateCheckLoadingScreen();
+  }
+}
+
+class _ForceUpdateCheckLoadingScreen extends StatelessWidget {
+  const _ForceUpdateCheckLoadingScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+  }
+}
+
+class _ForceUpdateCheckErrorScreen extends StatelessWidget {
+  const _ForceUpdateCheckErrorScreen({
+    required this.error,
+    required this.onRetry,
+  });
+
+  final Object? error;
+  final VoidCallback onRetry;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 420),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  const Icon(Icons.cloud_off_outlined, size: 48),
+                  const SizedBox(height: 24),
+                  Text(
+                    'Could not verify app version',
+                    style: textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    'Check your connection and try again.',
+                    style: textTheme.bodyMedium,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 24),
+                  FilledButton.icon(
+                    onPressed: onRetry,
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Try again'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

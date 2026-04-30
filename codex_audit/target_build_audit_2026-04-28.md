@@ -1,5 +1,14 @@
 # Target Build Audit - 2026-04-28
 
+Status: historical build audit. It records the original cross-platform build
+debugging trail. For current setup, start with
+[`README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/README.md),
+[`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md),
+and [`codex_audit/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/README.md).
+For current build/signing/distribution readiness, use
+[`release_setup_2026-04-30/current_release_setup_audit.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/release_setup_2026-04-30/current_release_setup_audit.md);
+the blocker language below is preserved as historical evidence only.
+
 Scope:
 - Verify current Web, Android, iOS, and macOS builds from the repo state.
 - Inspect platform-specific config for non-standard workarounds, missing setup,

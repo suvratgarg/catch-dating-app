@@ -15,6 +15,20 @@ bool isUpdateRequired({required String current, required String minimum}) {
   return false; // equal → no update needed
 }
 
+/// Returns true when the current platform build number is below the configured
+/// minimum build. A minimum of zero disables build-number gating.
+bool isBuildUpdateRequired({
+  required String currentBuild,
+  required int minimumBuild,
+}) {
+  if (minimumBuild <= 0) return false;
+
+  final current = int.tryParse(currentBuild.trim());
+  if (current == null) return true;
+
+  return current < minimumBuild;
+}
+
 List<int> _parse(String version) {
   try {
     final parts = version.split('.');

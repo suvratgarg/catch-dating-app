@@ -4,6 +4,7 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {BlockDoc, MatchDoc} from "../shared/firestore";
+import {appCheckCallableOptions} from "../shared/callableOptions";
 
 const BLOCKS_COLLECTION = "blocks";
 const MATCHES_COLLECTION = "matches";
@@ -239,11 +240,11 @@ async function closeMatchesForBlockedPair({
   }
 }
 
-export const blockUser = onCall({enforceAppCheck: true}, (request) =>
+export const blockUser = onCall(appCheckCallableOptions, (request) =>
   blockUserHandler(request)
 );
 
-export const unblockUser = onCall({enforceAppCheck: true}, (request) =>
+export const unblockUser = onCall(appCheckCallableOptions, (request) =>
   unblockUserHandler(request)
 );
 

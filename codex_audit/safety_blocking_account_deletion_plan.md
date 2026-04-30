@@ -196,6 +196,9 @@ Add rules tests before deploying:
 9. [x] Add other-profile block/report entry point after the other-user profile
    screen exists.
 10. [x] Deploy rules/functions to the intended Firebase project.
+11. [x] Anonymize the retained `users/{uid}` document on account deletion,
+    including date of birth, saved runs, background fields, running preferences,
+    notification token, and profile photo fields.
 
 ## Reporting Slice Added
 

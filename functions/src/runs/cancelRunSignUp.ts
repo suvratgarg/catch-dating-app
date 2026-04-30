@@ -1,12 +1,15 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {defineSecret} from "firebase-functions/params";
-import Razorpay from "razorpay";
 import {UserProfileDoc, PaymentDoc, RunDoc} from "../shared/firestore";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
-
-const razorpayKeyId = defineSecret("RAZORPAY_KEY_ID");
-const razorpayKeySecret = defineSecret("RAZORPAY_KEY_SECRET");
+import {
+  appCheckCallableOptionsWithSecrets,
+} from "../shared/callableOptions";
+import {
+  createRazorpayClient,
+  razorpayKeyId,
+  razorpayKeySecret,
+} from "../payments/razorpay";
 
 interface CancelData {
   runId: string;
@@ -21,7 +24,7 @@ interface CancelData {
  * - Idempotent — calling it when the user is already not signed up is a no-op.
  */
 export const cancelRunSignUp = onCall(
-  {enforceAppCheck: true, secrets: [razorpayKeyId, razorpayKeySecret]},
+  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
   async (request) => {
     if (!request.auth) {
       throw new HttpsError("unauthenticated", "Must be signed in to cancel.");
@@ -125,10 +128,7 @@ export const cancelRunSignUp = onCall(
     // Issue a refund outside the transaction if the run was paid.
     if (paymentDoc) {
       const payment = paymentDoc.data() as PaymentDoc;
-      const razorpay = new Razorpay({
-        key_id: razorpayKeyId.value(),
-        key_secret: razorpayKeySecret.value(),
-      });
+      const razorpay = createRazorpayClient();
 
       try {
         await razorpay.payments.refund(payment.paymentId, {

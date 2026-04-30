@@ -35,9 +35,23 @@ Current state:
   and `prod` through `tool/configure_apple_flavors.rb`.
 - Apple builds copy the matching `firebase/<env>/<platform>/GoogleService-Info.plist`
   into the app bundle at build time.
-- The production Apple App ID `com.catchdates.app` is registered with Push
-  Notifications and App Attest. Dev/staging Apple App IDs and refreshed
-  provisioning profiles still need follow-up before real-device validation.
+- App Check is registered for Android, iOS/macOS, and web in all three Firebase
+  projects. Firestore, Storage, Auth, and callable Functions enforce App Check.
+- Local web debug App Check follows Firebase's documented debug-provider flow:
+  `web/index.html` sets `self.FIREBASE_APPCHECK_DEBUG_TOKEN = true` only on
+  localhost/loopback origins, and the generated local browser token is
+  registered on the dev web app. Do not commit raw debug tokens.
+- Firestore rules are deployed and aligned across dev, staging, and prod. The
+  checked-in rules allow public reads of `config/app_config` for the
+  force-update gate while keeping all other client access governed by the
+  normal auth/ownership rules.
+- Production now has only the current app registrations active:
+  `Catch Prod Android`, `Catch Prod iOS`, and `Catch Prod Web`. The old
+  `com.example.*` Android/iOS registrations and the old Windows web
+  registration were removed on 2026-04-30 and are pending Firebase's normal
+  30-day permanent deletion window.
+- Dev and staging Functions reuse the current prod Razorpay test-mode secrets.
+  Replace this with environment-owned secrets before live Razorpay payments.
 
 ## Runtime source of truth
 
@@ -45,6 +59,9 @@ Current state:
 - Checked-in defaults live in `tool/dart_defines/dev.json`,
   `tool/dart_defines/staging.json`, and `tool/dart_defines/prod.json`.
 - Native Firebase files are activated by `./tool/use_firebase_environment.sh`.
+- The active root Firebase files are mutable working copies. Validate them with
+  `./tool/validate_firebase_environment.sh <env>` before debugging runtime
+  Firebase issues.
 
 ## Common commands
 
@@ -62,7 +79,13 @@ Run Flutter with the matching `APP_ENV` define file:
 ./tool/flutter_with_env.sh prod build apk
 ```
 
-Android, iOS, and macOS use native flavors. For `build apk`, `build appbundle`, `build ios`, and `build macos`, `tool/flutter_with_env.sh` automatically supplies the matching `--flavor <env>` argument when one is not already present. Web builds do not get a flavor argument.
+Android, iOS, and macOS use native flavors. For `build apk`,
+`build appbundle`, `build ipa`, `build ios`, and `build macos`,
+`tool/flutter_with_env.sh` automatically supplies the matching
+`--flavor <env>` argument when one is not already present. Web builds do not get
+a flavor argument.
+For `flutter run`, the wrapper also supplies the matching flavor unless the
+target device is a web target.
 
 Explicit Apple examples:
 

@@ -2,6 +2,9 @@
 
 Date: 2026-04-29
 
+Status reviewed: 2026-04-30. Earlier progress-log entries are chronological.
+Use the screen matrix and recommended fix order for current UI status.
+
 Scope:
 - Design reference: `design_handoff_catch_dating_app/`
 - Flutter UI: `lib/core`, `lib/theme`, `lib/onboarding`, `lib/dashboard`, `lib/run_clubs`, `lib/runs`, `lib/swipes`, `lib/matches`, `lib/chats`, `lib/profile`, `lib/safety`
@@ -113,9 +116,13 @@ Still open:
 
 ### P0 / P1 Product-Surface Gaps
 
-- Calendar screens 36 and 37 are not implemented or routed. The design expects a timeline and agenda; the app only shows a disabled "Calendar Soon" quick action.
-- Filters screen 22 and notifications/activity screen 23 are not implemented or routed.
-- Catches flow is still incomplete compared with screens 13 to 16. The tab now has an intentional hub and active-window intro card, but a distinct one-time per-run intro and run recap are still missing.
+- Calendar screens 36 and 37 are implemented and routed. They still need
+  broader visual QA and live-data smoke testing.
+- Filters screen 22 and activity/notifications screen 23 are implemented and
+  routed for the supported backend data.
+- Catches flow has the hub, deck, match modal, and recap surface. It still needs
+  a live post-run smoke test and a decision on whether recap vibe selections
+  should persist.
 - Host manage screen 35 and create-run success screen 34 are now partially implemented after pass 2. The success and manage surfaces exist, but host manage is not yet routed/stream-backed for existing runs.
 - Create run now follows the broad mockup order: basics, route, when, review/rules. It still lacks cover upload, recurring, waitlist, price pills, fee math, and follower notification controls.
 
@@ -125,7 +132,9 @@ Still open:
 - Catches hub, matches inbox, chat, profile, and settings are improved after pass 1, but still need visual screenshot review against the mockups.
 - Chat now includes a shared-run context header, but the header should be visually verified with real run data and may need richer roster/run metadata.
 - Profile self view now leads with running identity, but the full profile composition still differs from the mockup.
-- Settings is more grouped after pass 1, but notifications remain a placeholder and the full settings/activity surface is not complete.
+- Settings is grouped and Activity now exists. Remaining work is persistence for
+  real user-settings controls, final legal/support links, and store-facing
+  polish.
 - The custom design top bar/status bar primitive is not consistently used; many screens rely on Flutter AppBar.
 
 ### P2 Polish / Consistency Gaps

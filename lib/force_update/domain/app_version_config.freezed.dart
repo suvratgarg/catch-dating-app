@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AppVersionConfig {
 
- String get minVersion; String get storeUrlAndroid; String get storeUrlIos;
+ String get minVersion; int get minBuildAndroid; int get minBuildIos; int get minBuildWeb; int get minBuildMacos; String get storeUrlAndroid; String get storeUrlIos;
 /// Create a copy of AppVersionConfig
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AppVersionConfigCopyWith<AppVersionConfig> get copyWith => _$AppVersionConfigCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.minBuildAndroid, minBuildAndroid) || other.minBuildAndroid == minBuildAndroid)&&(identical(other.minBuildIos, minBuildIos) || other.minBuildIos == minBuildIos)&&(identical(other.minBuildWeb, minBuildWeb) || other.minBuildWeb == minBuildWeb)&&(identical(other.minBuildMacos, minBuildMacos) || other.minBuildMacos == minBuildMacos)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,minVersion,storeUrlAndroid,storeUrlIos);
+int get hashCode => Object.hash(runtimeType,minVersion,minBuildAndroid,minBuildIos,minBuildWeb,minBuildMacos,storeUrlAndroid,storeUrlIos);
 
 @override
 String toString() {
-  return 'AppVersionConfig(minVersion: $minVersion, storeUrlAndroid: $storeUrlAndroid, storeUrlIos: $storeUrlIos)';
+  return 'AppVersionConfig(minVersion: $minVersion, minBuildAndroid: $minBuildAndroid, minBuildIos: $minBuildIos, minBuildWeb: $minBuildWeb, minBuildMacos: $minBuildMacos, storeUrlAndroid: $storeUrlAndroid, storeUrlIos: $storeUrlIos)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AppVersionConfigCopyWith<$Res>  {
   factory $AppVersionConfigCopyWith(AppVersionConfig value, $Res Function(AppVersionConfig) _then) = _$AppVersionConfigCopyWithImpl;
 @useResult
 $Res call({
- String minVersion, String storeUrlAndroid, String storeUrlIos
+ String minVersion, int minBuildAndroid, int minBuildIos, int minBuildWeb, int minBuildMacos, String storeUrlAndroid, String storeUrlIos
 });
 
 
@@ -65,10 +65,14 @@ class _$AppVersionConfigCopyWithImpl<$Res>
 
 /// Create a copy of AppVersionConfig
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? minVersion = null,Object? storeUrlAndroid = null,Object? storeUrlIos = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? minVersion = null,Object? minBuildAndroid = null,Object? minBuildIos = null,Object? minBuildWeb = null,Object? minBuildMacos = null,Object? storeUrlAndroid = null,Object? storeUrlIos = null,}) {
   return _then(_self.copyWith(
 minVersion: null == minVersion ? _self.minVersion : minVersion // ignore: cast_nullable_to_non_nullable
-as String,storeUrlAndroid: null == storeUrlAndroid ? _self.storeUrlAndroid : storeUrlAndroid // ignore: cast_nullable_to_non_nullable
+as String,minBuildAndroid: null == minBuildAndroid ? _self.minBuildAndroid : minBuildAndroid // ignore: cast_nullable_to_non_nullable
+as int,minBuildIos: null == minBuildIos ? _self.minBuildIos : minBuildIos // ignore: cast_nullable_to_non_nullable
+as int,minBuildWeb: null == minBuildWeb ? _self.minBuildWeb : minBuildWeb // ignore: cast_nullable_to_non_nullable
+as int,minBuildMacos: null == minBuildMacos ? _self.minBuildMacos : minBuildMacos // ignore: cast_nullable_to_non_nullable
+as int,storeUrlAndroid: null == storeUrlAndroid ? _self.storeUrlAndroid : storeUrlAndroid // ignore: cast_nullable_to_non_nullable
 as String,storeUrlIos: null == storeUrlIos ? _self.storeUrlIos : storeUrlIos // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -155,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String minVersion,  String storeUrlAndroid,  String storeUrlIos)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String minVersion,  int minBuildAndroid,  int minBuildIos,  int minBuildWeb,  int minBuildMacos,  String storeUrlAndroid,  String storeUrlIos)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AppVersionConfig() when $default != null:
-return $default(_that.minVersion,_that.storeUrlAndroid,_that.storeUrlIos);case _:
+return $default(_that.minVersion,_that.minBuildAndroid,_that.minBuildIos,_that.minBuildWeb,_that.minBuildMacos,_that.storeUrlAndroid,_that.storeUrlIos);case _:
   return orElse();
 
 }
@@ -176,10 +180,10 @@ return $default(_that.minVersion,_that.storeUrlAndroid,_that.storeUrlIos);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String minVersion,  String storeUrlAndroid,  String storeUrlIos)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String minVersion,  int minBuildAndroid,  int minBuildIos,  int minBuildWeb,  int minBuildMacos,  String storeUrlAndroid,  String storeUrlIos)  $default,) {final _that = this;
 switch (_that) {
 case _AppVersionConfig():
-return $default(_that.minVersion,_that.storeUrlAndroid,_that.storeUrlIos);case _:
+return $default(_that.minVersion,_that.minBuildAndroid,_that.minBuildIos,_that.minBuildWeb,_that.minBuildMacos,_that.storeUrlAndroid,_that.storeUrlIos);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +200,10 @@ return $default(_that.minVersion,_that.storeUrlAndroid,_that.storeUrlIos);case _
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String minVersion,  String storeUrlAndroid,  String storeUrlIos)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String minVersion,  int minBuildAndroid,  int minBuildIos,  int minBuildWeb,  int minBuildMacos,  String storeUrlAndroid,  String storeUrlIos)?  $default,) {final _that = this;
 switch (_that) {
 case _AppVersionConfig() when $default != null:
-return $default(_that.minVersion,_that.storeUrlAndroid,_that.storeUrlIos);case _:
+return $default(_that.minVersion,_that.minBuildAndroid,_that.minBuildIos,_that.minBuildWeb,_that.minBuildMacos,_that.storeUrlAndroid,_that.storeUrlIos);case _:
   return null;
 
 }
@@ -211,10 +215,14 @@ return $default(_that.minVersion,_that.storeUrlAndroid,_that.storeUrlIos);case _
 @JsonSerializable()
 
 class _AppVersionConfig implements AppVersionConfig {
-  const _AppVersionConfig({this.minVersion = '0.0.0', this.storeUrlAndroid = '', this.storeUrlIos = ''});
+  const _AppVersionConfig({this.minVersion = '0.0.0', this.minBuildAndroid = 0, this.minBuildIos = 0, this.minBuildWeb = 0, this.minBuildMacos = 0, this.storeUrlAndroid = '', this.storeUrlIos = ''});
   factory _AppVersionConfig.fromJson(Map<String, dynamic> json) => _$AppVersionConfigFromJson(json);
 
 @override@JsonKey() final  String minVersion;
+@override@JsonKey() final  int minBuildAndroid;
+@override@JsonKey() final  int minBuildIos;
+@override@JsonKey() final  int minBuildWeb;
+@override@JsonKey() final  int minBuildMacos;
 @override@JsonKey() final  String storeUrlAndroid;
 @override@JsonKey() final  String storeUrlIos;
 
@@ -231,16 +239,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.minBuildAndroid, minBuildAndroid) || other.minBuildAndroid == minBuildAndroid)&&(identical(other.minBuildIos, minBuildIos) || other.minBuildIos == minBuildIos)&&(identical(other.minBuildWeb, minBuildWeb) || other.minBuildWeb == minBuildWeb)&&(identical(other.minBuildMacos, minBuildMacos) || other.minBuildMacos == minBuildMacos)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,minVersion,storeUrlAndroid,storeUrlIos);
+int get hashCode => Object.hash(runtimeType,minVersion,minBuildAndroid,minBuildIos,minBuildWeb,minBuildMacos,storeUrlAndroid,storeUrlIos);
 
 @override
 String toString() {
-  return 'AppVersionConfig(minVersion: $minVersion, storeUrlAndroid: $storeUrlAndroid, storeUrlIos: $storeUrlIos)';
+  return 'AppVersionConfig(minVersion: $minVersion, minBuildAndroid: $minBuildAndroid, minBuildIos: $minBuildIos, minBuildWeb: $minBuildWeb, minBuildMacos: $minBuildMacos, storeUrlAndroid: $storeUrlAndroid, storeUrlIos: $storeUrlIos)';
 }
 
 
@@ -251,7 +259,7 @@ abstract mixin class _$AppVersionConfigCopyWith<$Res> implements $AppVersionConf
   factory _$AppVersionConfigCopyWith(_AppVersionConfig value, $Res Function(_AppVersionConfig) _then) = __$AppVersionConfigCopyWithImpl;
 @override @useResult
 $Res call({
- String minVersion, String storeUrlAndroid, String storeUrlIos
+ String minVersion, int minBuildAndroid, int minBuildIos, int minBuildWeb, int minBuildMacos, String storeUrlAndroid, String storeUrlIos
 });
 
 
@@ -268,10 +276,14 @@ class __$AppVersionConfigCopyWithImpl<$Res>
 
 /// Create a copy of AppVersionConfig
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? minVersion = null,Object? storeUrlAndroid = null,Object? storeUrlIos = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? minVersion = null,Object? minBuildAndroid = null,Object? minBuildIos = null,Object? minBuildWeb = null,Object? minBuildMacos = null,Object? storeUrlAndroid = null,Object? storeUrlIos = null,}) {
   return _then(_AppVersionConfig(
 minVersion: null == minVersion ? _self.minVersion : minVersion // ignore: cast_nullable_to_non_nullable
-as String,storeUrlAndroid: null == storeUrlAndroid ? _self.storeUrlAndroid : storeUrlAndroid // ignore: cast_nullable_to_non_nullable
+as String,minBuildAndroid: null == minBuildAndroid ? _self.minBuildAndroid : minBuildAndroid // ignore: cast_nullable_to_non_nullable
+as int,minBuildIos: null == minBuildIos ? _self.minBuildIos : minBuildIos // ignore: cast_nullable_to_non_nullable
+as int,minBuildWeb: null == minBuildWeb ? _self.minBuildWeb : minBuildWeb // ignore: cast_nullable_to_non_nullable
+as int,minBuildMacos: null == minBuildMacos ? _self.minBuildMacos : minBuildMacos // ignore: cast_nullable_to_non_nullable
+as int,storeUrlAndroid: null == storeUrlAndroid ? _self.storeUrlAndroid : storeUrlAndroid // ignore: cast_nullable_to_non_nullable
 as String,storeUrlIos: null == storeUrlIos ? _self.storeUrlIos : storeUrlIos // ignore: cast_nullable_to_non_nullable
 as String,
   ));

@@ -12,6 +12,55 @@ interface JoinWaitlistBody {
 }
 
 const allowedRoles = new Set(["runner", "host", "both"]);
+const localOrigins = [
+  "http://localhost:5000",
+  "http://localhost:8123",
+  "http://127.0.0.1:5000",
+  "http://127.0.0.1:8123",
+];
+
+/**
+ * Returns the browser origins allowed to submit launch waitlist requests.
+ * @param {string} projectId The active Google Cloud project id.
+ * @return {Set<string>} Allowed origins for the project.
+ */
+export function waitlistAllowedOrigins(projectId: string): Set<string> {
+  const firebaseHostingOrigins = [
+    `https://${projectId}.web.app`,
+    `https://${projectId}.firebaseapp.com`,
+  ];
+
+  if (projectId === "catch-dating-app-64e51") {
+    return new Set([
+      "https://catchdates.com",
+      "https://www.catchdates.com",
+      ...firebaseHostingOrigins,
+      ...localOrigins,
+    ]);
+  }
+
+  return new Set([
+    ...firebaseHostingOrigins,
+    ...localOrigins,
+  ]);
+}
+
+/**
+ * Resolves a request origin to a CORS response origin when allowed.
+ * @param {string|undefined} origin The request Origin header.
+ * @param {string} projectId The active Google Cloud project id.
+ * @return {string|null} The allowed origin, or null.
+ */
+export function resolveWaitlistCorsOrigin(
+  origin: string | undefined,
+  projectId: string
+): string | null {
+  if (!origin) {
+    return null;
+  }
+
+  return waitlistAllowedOrigins(projectId).has(origin) ? origin : null;
+}
 
 /**
  * Parses the incoming request body regardless of whether it arrives as JSON
@@ -90,17 +139,29 @@ function normalizeInstagram(value: unknown): string | null {
 }
 
 /**
- * Sets permissive CORS headers for the waitlist endpoint.
+ * Sets CORS headers for the waitlist endpoint.
+ * @param {Object} request The request-like object.
  * @param {Object} response The response-like object.
- * @return {void}
+ * @return {boolean} Whether the request origin is allowed.
  */
-function setCorsHeaders(response: {
+function setCorsHeaders(request: {
+  get: (header: string) => string | undefined;
+}, response: {
   set: (header: string, value: string) => void;
-}) {
-  response.set("Access-Control-Allow-Origin", "*");
+}): boolean {
+  const origin = request.get("origin");
+  const projectId = process.env.GCLOUD_PROJECT ?? process.env.GCP_PROJECT ?? "";
+  const allowedOrigin = resolveWaitlistCorsOrigin(origin, projectId);
+
+  if (allowedOrigin) {
+    response.set("Access-Control-Allow-Origin", allowedOrigin);
+  }
+
   response.set("Access-Control-Allow-Methods", "POST, OPTIONS");
   response.set("Access-Control-Allow-Headers", "Content-Type");
   response.set("Vary", "Origin");
+
+  return !origin || allowedOrigin !== null;
 }
 
 /**
@@ -109,7 +170,10 @@ function setCorsHeaders(response: {
 export const joinWaitlist = onRequest(
   {region: "asia-south1"},
   async (request, response) => {
-    setCorsHeaders(response);
+    if (!setCorsHeaders(request, response)) {
+      response.status(403).json({error: "Origin not allowed."});
+      return;
+    }
 
     if (request.method === "OPTIONS") {
       response.status(204).send("");

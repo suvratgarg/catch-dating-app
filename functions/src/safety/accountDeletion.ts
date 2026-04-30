@@ -1,6 +1,7 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {appCheckCallableOptions} from "../shared/callableOptions";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -55,16 +56,35 @@ export async function requestAccountDeletionHandler(
     deletedAt: now,
     email: "",
     name: "Deleted user",
+    dateOfBirth: admin.firestore.Timestamp.fromMillis(0),
     bio: "",
     gender: "other",
     sexualOrientation: "other",
     phoneNumber: "",
     profileComplete: false,
     photoUrls: [],
+    city: admin.firestore.FieldValue.delete(),
     joinedRunClubIds: [],
+    savedRunIds: [],
     interestedInGenders: [],
     minAgePreference: 18,
-    maxAgePreference: 80,
+    maxAgePreference: 99,
+    height: admin.firestore.FieldValue.delete(),
+    occupation: admin.firestore.FieldValue.delete(),
+    company: admin.firestore.FieldValue.delete(),
+    education: admin.firestore.FieldValue.delete(),
+    religion: admin.firestore.FieldValue.delete(),
+    languages: [],
+    relationshipGoal: admin.firestore.FieldValue.delete(),
+    drinking: admin.firestore.FieldValue.delete(),
+    smoking: admin.firestore.FieldValue.delete(),
+    workout: admin.firestore.FieldValue.delete(),
+    diet: admin.firestore.FieldValue.delete(),
+    children: admin.firestore.FieldValue.delete(),
+    paceMinSecsPerKm: 300,
+    paceMaxSecsPerKm: 420,
+    preferredDistances: [],
+    runningReasons: [],
     fcmToken: admin.firestore.FieldValue.delete(),
   }, {merge: true});
 
@@ -110,7 +130,7 @@ export function storagePathFromDownloadUrl(url: string): string | null {
   }
 }
 
-export const requestAccountDeletion = onCall({enforceAppCheck: true}, (
+export const requestAccountDeletion = onCall(appCheckCallableOptions, (
   request
 ) =>
   requestAccountDeletionHandler(request as CallableRequest<null>)

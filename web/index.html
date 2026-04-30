@@ -105,6 +105,15 @@
     });
   </script>
   <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+  <script>
+    if (
+      self.location.hostname === 'localhost' ||
+      self.location.hostname === '127.0.0.1' ||
+      self.location.hostname === '::1'
+    ) {
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    }
+  </script>
 </head>
 <body>
   <picture id="splash">

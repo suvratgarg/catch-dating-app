@@ -13,6 +13,7 @@ import {
   razorpayKeySecret,
 } from "./razorpay";
 import {hasBlockingRelationship} from "../safety/blocking";
+import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 
 interface CreateOrderData {
   runId: string;
@@ -103,6 +104,6 @@ export async function createRazorpayOrderHandler(
 }
 
 export const createRazorpayOrder = onCall(
-  {enforceAppCheck: true, secrets: [razorpayKeyId, razorpayKeySecret]},
+  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
   (request) => createRazorpayOrderHandler(request)
 );

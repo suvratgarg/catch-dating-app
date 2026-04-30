@@ -2,6 +2,7 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {ReportDoc} from "../shared/firestore";
+import {appCheckCallableOptions} from "../shared/callableOptions";
 
 type ReportSource = ReportDoc["source"];
 
@@ -76,6 +77,6 @@ export async function reportUserHandler(
   return {reported: true};
 }
 
-export const reportUser = onCall({enforceAppCheck: true}, (request) =>
+export const reportUser = onCall(appCheckCallableOptions, (request) =>
   reportUserHandler(request)
 );

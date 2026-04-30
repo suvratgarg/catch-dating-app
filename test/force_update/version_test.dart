@@ -1,4 +1,7 @@
+import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
+import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:catch_dating_app/force_update/domain/version.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -34,6 +37,87 @@ void main() {
       expect(
         isUpdateRequired(current: '1.0.0', minimum: 'bad-version'),
         isFalse,
+      );
+    });
+  });
+
+  group('isBuildUpdateRequired', () {
+    test('minimum build zero disables build gate', () {
+      expect(
+        isBuildUpdateRequired(currentBuild: '1', minimumBuild: 0),
+        isFalse,
+      );
+    });
+
+    test('lower build requires update', () {
+      expect(
+        isBuildUpdateRequired(currentBuild: '41', minimumBuild: 42),
+        isTrue,
+      );
+    });
+
+    test('same or newer build does not require update', () {
+      expect(
+        isBuildUpdateRequired(currentBuild: '42', minimumBuild: 42),
+        isFalse,
+      );
+      expect(
+        isBuildUpdateRequired(currentBuild: '43', minimumBuild: 42),
+        isFalse,
+      );
+    });
+
+    test('non-numeric current build fails closed when gate is configured', () {
+      expect(
+        isBuildUpdateRequired(currentBuild: 'local', minimumBuild: 42),
+        isTrue,
+      );
+    });
+  });
+
+  group('minimumBuildForCurrentPlatform', () {
+    const config = AppVersionConfig(
+      minBuildAndroid: 10,
+      minBuildIos: 20,
+      minBuildWeb: 30,
+      minBuildMacos: 40,
+    );
+
+    test('uses web gate before target platform', () {
+      expect(
+        minimumBuildForCurrentPlatform(
+          config,
+          platform: TargetPlatform.iOS,
+          isWeb: true,
+        ),
+        30,
+      );
+    });
+
+    test('selects native platform gates', () {
+      expect(
+        minimumBuildForCurrentPlatform(
+          config,
+          platform: TargetPlatform.android,
+          isWeb: false,
+        ),
+        10,
+      );
+      expect(
+        minimumBuildForCurrentPlatform(
+          config,
+          platform: TargetPlatform.iOS,
+          isWeb: false,
+        ),
+        20,
+      );
+      expect(
+        minimumBuildForCurrentPlatform(
+          config,
+          platform: TargetPlatform.macOS,
+          isWeb: false,
+        ),
+        40,
       );
     });
   });

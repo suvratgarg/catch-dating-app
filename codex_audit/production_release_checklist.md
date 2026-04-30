@@ -1,6 +1,7 @@
 # Production Release Checklist
 
 Created: 2026-04-29
+Last updated: 2026-05-01
 
 Purpose: track the work needed to make Catch production-ready for store distribution, using Code With Andrea's public "Flutter in Production" curriculum as the learning path and translating each topic into repo-specific implementation tasks.
 
@@ -42,16 +43,28 @@ Important constraint: this document should not copy paid course material verbati
 - Store listing name: `Catch Dating`, because `Catch` alone is short but not descriptive enough for App Store / Play Store discovery.
 - Environments: `APP_ENV` supports `dev`, `staging`, and `prod` through `lib/core/app_config.dart` and `lib/firebase_options_<env>.dart`.
 - Firebase: Auth, Firestore, Storage, Functions, Messaging, and App Check are already present.
-- App Check: debug providers are used outside production; production uses Play Integrity on Android and App Attest on Apple platforms.
-- Push: native Android/iOS push support exists; web requires a VAPID key.
-- Error logging: `lib/exceptions/error_logger.dart` currently prints to debug output and explicitly needs Sentry or Crashlytics before production.
-- Analytics: no dedicated analytics package or event taxonomy is wired yet.
-- Force update: no `upgrader`, Firebase Remote Config, or custom force-update layer is wired yet.
+- App Check: Android uses Play Integrity, iOS/macOS uses App Attest, and web uses reCAPTCHA Enterprise. Firestore, Storage, Auth, and callable Functions now enforce App Check in dev, staging, and prod.
+- Push: native Android/iOS push support exists; web public VAPID keys are present in the checked-in dart-define files. macOS push remains intentionally disabled.
+- Error logging: Firebase Crashlytics is wired behind `ErrorLogger`; dashboard
+  visibility and symbolication still need release-build verification.
+- Analytics: Firebase Analytics is wired behind `AppAnalytics` with an event
+  taxonomy and route observers. Dashboard/DebugView verification is still
+  needed before beta users.
+- Force update: a Firestore-backed force-update provider, platform-specific
+  minimum build gates, semantic-version fallback, and blocking update screen
+  exist. Dev, staging, and prod have `config/app_config` seeded for the current
+  `1.0.0+1` build. The startup gate now surfaces loading/error states instead
+  of silently allowing startup when the config check fails.
 - In-app review: no `in_app_review` package is wired yet.
 - Accessibility: no dedicated `accessibility_tools` dependency or release accessibility audit is documented yet.
-- Security/privacy: Firestore rules, App Check, account deletion planning, and secret-ignore hardening exist from prior work, but no consolidated release security/privacy audit is documented yet.
+- Security/privacy: Firestore rules, Storage rules, App Check enforcement, callable App Check guards, blocking/reporting/account deletion, and secret-ignore hardening exist. A final privacy/store-form audit is still needed.
 - Release verification: web, Android APK/App Bundle, macOS dev/staging/prod, iOS simulator, signed iOS dev/staging/prod Profile builds, and the prod iOS archive have recent audit notes in `codex_audit/target_build_audit_2026-04-28.md` and `codex_audit/build_readiness_dependency_report_2026-04-29.md`.
-- Apple signing status: Xcode is signed in as `Suvrat Garg` with Admin role and development/Profile signing works. App Store/TestFlight IPA export is still blocked because this Mac has no local Apple Distribution identity/private key and no App Store provisioning profile for `com.catchdates.app`.
+- Apple signing status: iOS App Store IPA export now passes from the active
+  release tracker; keep using that tracker for the freshest signing and
+  notarization state.
+- macOS direct distribution status: Developer ID signing, secure timestamp,
+  notarization, stapling, and Gatekeeper validation now pass from the active
+  release tracker. macOS minimum deployment target is 11.0.
 - Dirty worktree at tracker creation: unrelated UI/audit edits already exist and must be preserved.
 
 ## Work Plan
@@ -113,7 +126,7 @@ Current evidence:
 
 - `lib/core/app_config.dart` resolves `dev`, `staging`, and `prod`.
 - `tool/dart_defines/dev.json`, `tool/dart_defines/staging.json`, and `tool/dart_defines/prod.json` exist.
-- `FIREBASE_SETUP.md` documents Firebase environment selection.
+- `firebase/README.md` documents Firebase environment selection.
 - Firebase aliases are now `dev` -> `catchdates-dev`, `staging` -> `catchdates-staging`, and `prod` -> `catch-dating-app-64e51`.
 - `lib/firebase_options_dev.dart`, `lib/firebase_options_staging.dart`, and `lib/firebase_options_prod.dart` now contain real Firebase options.
 - Android product flavors are wired:
@@ -131,7 +144,8 @@ Current evidence:
 - Apple Developer App IDs now exist for `com.catchdates.app.dev`, `com.catchdates.app.staging`, and `com.catchdates.app`, with Push Notifications and App Attest enabled.
 - Xcode-managed development/Profile provisioning profiles now exist for all three iOS bundle IDs.
 - Final Play app-signing fingerprints remain pending until Play Console enrollment.
-- iOS App Store IPA export remains pending until an Apple Distribution certificate/private key and App Store provisioning profile are available locally.
+- iOS App Store IPA export now passes for prod; TestFlight upload/install
+  validation is still pending.
 
 Teaching notes:
 
@@ -158,12 +172,18 @@ Verification:
 - `./tool/flutter_with_env.sh staging build ios --profile` passed; signed artifact inspection confirmed explicit profile `iOS Team Provisioning Profile: com.catchdates.app.staging`, APNs development entitlement, App Attest development entitlement, and Firebase project `catchdates-staging`.
 - `./tool/flutter_with_env.sh prod build ios --profile` passed; signed artifact inspection confirmed explicit profile `iOS Team Provisioning Profile: com.catchdates.app`, APNs development entitlement, App Attest development entitlement, and Firebase project `catch-dating-app-64e51`.
 - `./tool/flutter_with_env.sh prod build ipa --release` now archives the flavored prod scheme and validates app settings: display name `Catch`, bundle ID `com.catchdates.app`, version `1.0.0`, build `1`, deployment target `15.0`.
-- The same IPA command still fails at App Store export because the Mac has no local Apple Distribution certificate/private key, no App Store provisioning profile for `com.catchdates.app`, and Xcode export reports `No Accounts`.
-- Xcode Settings > Accounts is signed in as `Suvrat Garg`, role `Admin`, and the iOS/macOS Signing & Capabilities UI is correct for development signing. Xcode Manage Certificates and `security find-identity` show Apple Development identities only.
+- iOS App Store IPA export now passes with `ios/ExportOptions.prod.plist`; the
+  exported IPA is App Store signed for `com.catchdates.app` with production APNs,
+  production App Attest, and `get-task-allow=false`.
+- Xcode Settings > Accounts is signed in as `Suvrat Garg`, role `Admin`, and the iOS/macOS Signing & Capabilities UI is correct for development signing. Historical keychain notes that only Apple Development identities existed are superseded by the active release tracker: Apple Distribution export and Developer ID direct distribution now both validate.
 - `flutter build macos --debug --flavor dev --dart-define=APP_ENV=dev` passed; plist inspection confirmed label `Catch Dev`, bundle ID `com.catchdates.app.dev`, and Firebase project `catchdates-dev`.
 - `flutter build macos --debug --flavor staging --dart-define=APP_ENV=staging` passed; plist inspection confirmed label `Catch Staging`, bundle ID `com.catchdates.app.staging`, and Firebase project `catchdates-staging`.
 - `flutter build macos --debug --flavor prod --dart-define=APP_ENV=prod` passed; plist inspection confirmed label `Catch`, bundle ID `com.catchdates.app`, and Firebase project `catch-dating-app-64e51`.
 - `./tool/flutter_with_env.sh dev build macos`, `./tool/flutter_with_env.sh staging build macos`, and `./tool/flutter_with_env.sh prod build macos` all passed. The built release-flavor macOS app bundles also inspect correctly for app name, bundle ID, and embedded Firebase app ID.
+- The production macOS build path now targets macOS 11.0 and supports direct
+  distribution through Developer ID, hardened runtime, secure timestamp,
+  notarization, stapling, and Gatekeeper validation. See the active release
+  tracker for the exact artifact and notarization submission IDs.
 
 ### 3. Error Monitoring
 
@@ -267,22 +287,36 @@ Verification:
 
 ### 5. Force Update
 
-Status: `todo`
+Status: `in_progress`
 
 Why it matters: once the app talks to real backend contracts, old clients may become unsafe or incompatible.
 
 Recommended default for Catch:
 
-- Use Firebase Remote Config for minimum supported versions by platform/environment.
-- Show a blocking update screen only when the installed version is below the minimum supported version.
+- Keep the current Firestore `config/app_config` version endpoint for minimum
+  supported builds. Add Firebase Remote Config later if broader feature toggles
+  need console-editable rollout controls.
+- Show a blocking update screen only when the installed build is below the
+  minimum supported build for that platform.
 
 Catch-specific tasks:
 
-- Add Remote Config or a small Functions/Firestore-backed version endpoint.
-- Define per-platform fields: `ios_min_build`, `android_min_build`, optional `recommended_build`, and store URLs.
-- Add startup check after Firebase initialization and before normal app shell use.
-- Design a blocking update UI and a non-blocking recommended update UI.
+- Add Remote Config or a small Functions/Firestore-backed version endpoint. Done with Firestore `config/app_config`.
+- Define per-platform fields and store URLs. Done with `minBuildAndroid`,
+  `minBuildIos`, `minBuildWeb`, `minBuildMacos`, `storeUrlAndroid`, and
+  `storeUrlIos`; legacy `minVersion` remains as a backward-compatible fallback.
+- Add startup check after Firebase initialization and before normal app shell use. Done through `forceUpdateRequiredProvider`.
+- Design a blocking update UI and a non-blocking recommended update UI. Blocking `UpdateRequiredScreen` exists; recommended update UI is not implemented.
 - Ensure dev/staging can override values safely.
+
+Current evidence:
+
+- `lib/force_update/data/app_version_repository.dart`
+- `lib/force_update/data/force_update_provider.dart`
+- `lib/force_update/domain/app_version_config.dart`
+- `lib/force_update/domain/version.dart`
+- `lib/force_update/presentation/update_required_screen.dart`
+- `test/force_update/version_test.dart`
 
 Teaching notes:
 
@@ -291,9 +325,31 @@ Teaching notes:
 
 Verification:
 
-- Simulate current build below minimum and confirm app blocks use.
-- Simulate current build above minimum and confirm normal startup.
+- `flutter test test/force_update/version_test.dart` passed for semantic
+  version fallback, per-platform build selection, and build-number comparison.
+- Live Firestore `config/app_config` was created and read back in dev, staging,
+  and prod on 2026-05-01 with `minVersion: 1.0.0` and all platform
+  `minBuild*` values set to `1`.
+- Local dev web runtime verification passed on 2026-05-01: raising dev
+  `minBuildWeb`/`minVersion` above the current build showed the blocking
+  update-required screen, and resetting them to `minBuildWeb: 1` and
+  `minVersion: 1.0.0` restored normal onboarding startup.
+- Dev and staging Firestore rules were deployed on 2026-05-01 after verifying
+  their live rulesets were stale and missing the public `config/app_config`
+  read rule. Dev, staging, and prod active rulesets now all include the
+  checked-in force-update config rule.
 - Widget tests for blocking/recommended/current states.
+
+Backend verification on 2026-05-01:
+
+- `flutter test --concurrency=1` passed across the repo.
+- `npm --prefix functions run lint` passed.
+- `npm --prefix functions test` passed.
+- `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"` passed.
+- `firebase deploy --only functions` completed for `catchdates-dev`,
+  `catchdates-staging`, and `catch-dating-app-64e51`.
+- `firebase functions:list` verified the same 17 deployed v2 Node.js 24
+  functions in `asia-south1` for dev, staging, and prod.
 
 ### 6. In-App Reviews
 
@@ -350,18 +406,24 @@ Verification:
 
 ### 8. About And Settings Page
 
-Status: `todo`
+Status: `in_progress`
 
 Why it matters: production users and store reviewers need a predictable place to find app metadata, legal links, OSS licenses, support, account controls, and preference toggles.
 
 Catch-specific tasks:
 
-- Decide whether this belongs under the existing profile/settings surface or a dedicated about/settings screen.
-- Add links to the app website, privacy policy, terms of use, support/contact, and account deletion instructions.
+- Decide whether this belongs under the existing profile/settings surface or a dedicated about/settings screen. Done: settings live under the profile/You surface.
+- Add links to the app website, privacy policy, terms of use, support/contact, and account deletion instructions. Partially done; final public legal/support URLs still need confirmation.
 - Add a "Rate Catch" / store listing action after store IDs exist.
 - Show open source licenses through Flutter's license page.
 - Add user-facing app configuration controls that we genuinely support, such as analytics opt-out, notification settings, or theme mode.
 - Ensure settings links open reliably on Android, iOS, and web.
+
+Current evidence:
+
+- `lib/safety/presentation/settings_screen.dart`
+- `lib/activity/presentation/activity_screen.dart`
+- safety/account-deletion flows are implemented in the app and Functions
 
 Teaching notes:
 
@@ -460,8 +522,14 @@ Catch-specific tasks:
 
 Current evidence:
 
-- Recent signed iOS build passed after App Attest entitlement work.
-- Physical-device profile runtime still needs follow-up validation if device connectivity is available.
+- App Store IPA export passes for prod using
+  `./tool/flutter_with_env.sh prod build ipa --release --export-options-plist=ios/ExportOptions.prod.plist`.
+- Exported IPA artifact: `build/ios/ipa/Catch.ipa`.
+- Exported IPA entitlements are production-correct: bundle
+  `com.catchdates.app`, production APNs, production App Attest, and
+  `get-task-allow=false`.
+- Physical-device profile runtime has been verified on the available iPhone in
+  this setup pass; broader TestFlight install validation is still pending.
 
 Teaching notes:
 
@@ -490,8 +558,16 @@ Catch-specific tasks:
 
 Current evidence:
 
-- Recent Android release APK builds pass for dev.
-- `android/key.properties.example` and secret-ignore hardening exist from earlier release-readiness work.
+- Current prod release APK and App Bundle builds pass with the ignored local
+  upload keystore.
+- Fresh Play upload artifact:
+  `build/app/outputs/bundle/prodRelease/app-prod-release.aab`.
+- `apksigner verify --print-certs` passes for
+  `build/app/outputs/flutter-apk/app-prod-release.apk`; upload-key SHA-256 is
+  `3088f763a60fd9f7ca99204d6a68ef93a30263a697e563ef883b29dbbc7ae23e`.
+- `android/key.properties.example` and secret-ignore hardening exist from
+  earlier release-readiness work.
+- Play app-signing fingerprints remain pending until Play Console enrollment.
 
 Teaching notes:
 
@@ -658,19 +734,65 @@ Rationale: monitoring and analytics should exist before beta users arrive; Remot
 - Fixed Apple Firebase bundling so the static source plist remains in the repo but the build product receives exactly one flavor-selected plist from `firebase/<env>/ios` or `firebase/<env>/macos`.
 - Verified iOS simulator flavor builds and macOS debug flavor builds after the Apple project changes. Local code is ready for side-by-side simulator/dev installs. Apple Developer now has explicit App IDs for `com.catchdates.app`, `com.catchdates.app.dev`, and `com.catchdates.app.staging`, each with Push Notifications and App Attest selected.
 - Signed iOS dev/staging/prod Profile builds now pass with explicit Xcode-managed development profiles. The prod archive also passes, and the wrapper now auto-selects the prod flavor for `build ipa`.
-- iOS App Store IPA export remains blocked on distribution signing: Xcode export reports `No Accounts`, no local `iOS Distribution` certificate, and no App Store provisioning profile for `com.catchdates.app`.
+- Historical blocker resolved: iOS App Store IPA export no longer fails on
+  `No Accounts` / missing distribution signing. The active release tracker is
+  now canonical for iOS signing/export status.
 - Xcode UI recheck passed for development signing: Xcode is signed in as `Suvrat Garg` with Admin role; iOS Runner has automatic signing, Push Notifications, Background Modes, Photo Library usage, and App Attest across dev/staging/prod; macOS Runner has automatic signing, App Sandbox, and network/photo-library entitlements.
-- Xcode Manage Certificates, Apple Developer portal Certificates, and `security find-identity` show Apple Development identities only. No Apple Distribution identity/private key exists locally yet. Apple Developer portal Profiles is empty.
-- Rebuilt macOS dev/staging/prod through `./tool/flutter_with_env.sh`; all pass and inspect correctly for app name, bundle ID, and embedded Firebase app ID. Strict local macOS code-sign verification still reports `CSSMERR_TP_NOT_TRUSTED`, matching the iOS trust-chain warning.
+- Historical keychain note superseded: later release setup installed the needed
+  Apple distribution identities and verified the current signed artifacts.
+- Historical macOS build note superseded: current production macOS now goes
+  further than compile/signing inspection and passes Developer ID signing,
+  secure timestamp, hardened runtime, notarization, stapling, and Gatekeeper.
 - Physical iPhone dev Profile now builds, installs, launches, and exposes the Dart VM Service. The remaining device-run blocker is Firebase runtime configuration: `catchdates-dev` has Firebase App Check API disabled, and phone verification then stops inside FirebaseAuth iOS.
 - Re-ran `flutter analyze`; no issues found.
+
+### 2026-04-30
+
+- Firebase/App Check cleanup pass completed: dev, staging, and prod have
+  Android, iOS/macOS, and web App Check providers; Firestore, Storage, Auth, and
+  callable Functions enforce App Check; Functions are deployed in all three
+  environments.
+- Removed the legacy prod Firebase app registrations for
+  `com.example.catch_dating_app`, `com.example.catchDatingApp`, and the old
+  Windows web app. They are in Firebase's normal 30-day restorable removal
+  window.
+- Consolidated documentation so current Firebase state lives in
+  `codex_audit/firebase_environment_current_state.md`, environment workflow
+  lives in `firebase/README.md`, Functions defaults live in `functions/README.md`,
+  and historical trackers are indexed from `codex_audit/README.md`.
+
+### 2026-05-01
+
+- Seeded live Firestore `config/app_config` in dev, staging, and prod for the
+  current `1.0.0+1` build.
+- Verified the serialized Flutter test suite, Functions lint/tests, and
+  Firestore rules tests.
+- Redeployed Functions to dev, staging, and prod, then confirmed each project
+  exposes the same 17 v2 Node.js 24 functions in `asia-south1`.
+- Registered the Firebase-documented local web App Check debug token generated
+  by the dev browser. The raw token is not stored in the repo.
+- Deployed Firestore rules to dev and staging to align the live rulesets with
+  the checked-in rules. Prod already had the current `config/app_config` rule.
+- Verified local dev web with App Check enforcement: elevated force-update
+  config showed the update-required screen, then reset config showed normal
+  onboarding startup.
+- Android physical runtime smoke remains blocked by no connected Android device;
+  iPhone, Chrome, and macOS targets are available for the next runtime pass.
+- Release setup consolidation pass completed: the active release tracker now
+  supersedes older config/signing blocker language across the edited markdown
+  files.
+- iOS App Store IPA export now passes; the old `No Accounts` / missing
+  distribution certificate/profile blocker is resolved for the current local
+  setup.
+- macOS direct distribution now passes after Developer ID setup, secure
+  timestamping, notarization, stapling, Gatekeeper validation, and raising the
+  macOS deployment target to 11.0.
 
 ## Open Questions
 
 - Which crash/error provider should we use long term if Firebase Crashlytics is not enough: Sentry, or Crashlytics only?
 - Do you want Crashlytics test-crash UI hidden behind a dev-only flag, or should we trigger the first dashboard event through a temporary local debug action that is never committed?
 - Do we want Firebase Analytics only for first release, or should Mixpanel be added later after the event taxonomy stabilizes?
-- Should we create/import an Apple Distribution certificate and App Store provisioning profile for `com.catchdates.app` from the Apple Developer portal on this Mac, or should the distribution identity be managed on another trusted Mac and imported here?
 - Is Shorebird acceptable for this app's release process, or should first release avoid code push?
 - Where will privacy policy, terms, account deletion, and support pages live publicly?
 - Should first release include a formal accessibility audit before TestFlight/internal testing, or should we run it immediately after observability is wired?

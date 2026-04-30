@@ -2,6 +2,7 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {RunDoc} from "../shared/firestore";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
+import {appCheckCallableOptions} from "../shared/callableOptions";
 
 interface JoinRunWaitlistData {
   runId: string;
@@ -11,7 +12,7 @@ interface JoinRunWaitlistData {
  * Adds a user to a run waitlist after applying the same block boundary as
  * booking. Kept server-side so block state is not exposed through rules.
  */
-export const joinRunWaitlist = onCall({enforceAppCheck: true}, async (
+export const joinRunWaitlist = onCall(appCheckCallableOptions, async (
   request
 ) => {
   if (!request.auth) {

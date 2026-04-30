@@ -1,6 +1,7 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {RunDoc} from "../shared/firestore";
+import {appCheckCallableOptions} from "../shared/callableOptions";
 
 /**
  * Callable function that copies signedUpUserIds → attendedUserIds for a run.
@@ -10,7 +11,7 @@ import {RunDoc} from "../shared/firestore";
  *
  * Idempotent — calling it multiple times is safe; it uses arrayUnion.
  */
-export const markRunAttendance = onCall({enforceAppCheck: true}, async (
+export const markRunAttendance = onCall(appCheckCallableOptions, async (
   request
 ) => {
   if (!request.auth) {

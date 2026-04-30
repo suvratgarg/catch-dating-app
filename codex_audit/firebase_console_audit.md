@@ -2,6 +2,11 @@
 
 Date: 2026-04-28
 
+Status: historical snapshot. For current Firebase/App Check/Functions state,
+read
+[`firebase_environment_current_state.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/firebase_environment_current_state.md)
+and [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md).
+
 Project inspected in Chrome:
 - Project ID: `catch-dating-app-64e51`
 - Project name: `catch-dating-app`
@@ -78,15 +83,20 @@ The console is now aligned with the repo for the app's core backend surface.
 Firestore and Storage rules, Firestore indexes, Razorpay Functions secrets, and
 Cloud Functions were deployed/configured after Firebase CLI reauthentication.
 
-## Launch-Critical Actions
+## Historical Launch-Critical Actions
 
-1. Resolve the Google Cloud console account verification warning.
-2. Add Android release SHA-1/SHA-256 fingerprints once release signing is finalized.
-3. Register App Check web provider with reCAPTCHA Enterprise if web debugging should hit protected Firebase services.
-4. Register debug App Check tokens from real development devices/simulators before enforcing.
-5. Generate/import Web Push certificates if web notification debugging is in scope.
-6. Set the Firebase project environment type intentionally, likely `Development` for this dev project.
-7. Remove or document the stale `catch_dating_app (windows)` app registration.
+Several items in the original list have since been closed:
+
+- Dev, staging, and prod Firebase projects now exist.
+- Web App Check providers and Web Push public VAPID keys are configured in the
+  dart-define files for all three environments.
+- Firestore, Storage, Auth, and callable Functions enforce App Check.
+- The stale prod `com.example.*` and Windows web app registrations were removed
+  on 2026-04-30.
+
+Still-current follow-ups live in
+[`production_release_checklist.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/production_release_checklist.md)
+and the active release setup tracker.
 
 ## Important Constraint
 

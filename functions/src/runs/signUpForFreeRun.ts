@@ -2,12 +2,13 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {RunDoc} from "../shared/firestore";
 import {signUpUserForRun} from "./signUpUserForRun";
+import {appCheckCallableOptions} from "../shared/callableOptions";
 
 interface SignUpForFreeRunData {
   runId: string;
 }
 
-export const signUpForFreeRun = onCall({enforceAppCheck: true}, async (
+export const signUpForFreeRun = onCall(appCheckCallableOptions, async (
   request
 ) => {
   if (!request.auth) {

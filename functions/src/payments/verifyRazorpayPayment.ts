@@ -13,6 +13,7 @@ import {
   razorpayKeySecret,
   verifyPaymentSignature,
 } from "./razorpay";
+import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 
 interface VerifyPaymentData {
   paymentId: string;
@@ -129,6 +130,6 @@ export async function verifyRazorpayPaymentHandler(
 }
 
 export const verifyRazorpayPayment = onCall(
-  {enforceAppCheck: true, secrets: [razorpayKeyId, razorpayKeySecret]},
+  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
   (request) => verifyRazorpayPaymentHandler(request)
 );

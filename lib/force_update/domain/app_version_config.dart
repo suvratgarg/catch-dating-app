@@ -8,12 +8,20 @@ part 'app_version_config.g.dart';
 /// Fields:
 /// - [minVersion]       — oldest version allowed to run (e.g. "1.2.0").
 ///                        Users on an older version see the update screen.
+/// - [minBuildAndroid]  — oldest Android build number allowed to run.
+/// - [minBuildIos]      — oldest iOS build number allowed to run.
+/// - [minBuildWeb]      — oldest web build number allowed to run.
+/// - [minBuildMacos]    — oldest macOS build number allowed to run.
 /// - [storeUrlAndroid]  — Play Store URL for the app.
 /// - [storeUrlIos]      — App Store URL for the app.
 @freezed
 abstract class AppVersionConfig with _$AppVersionConfig {
   const factory AppVersionConfig({
     @Default('0.0.0') String minVersion,
+    @Default(0) int minBuildAndroid,
+    @Default(0) int minBuildIos,
+    @Default(0) int minBuildWeb,
+    @Default(0) int minBuildMacos,
     @Default('') String storeUrlAndroid,
     @Default('') String storeUrlIos,
   }) = _AppVersionConfig;

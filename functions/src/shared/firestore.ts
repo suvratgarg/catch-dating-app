@@ -94,6 +94,17 @@ export type ChildrenStatus =
 
 export type PaceLevel = "easy" | "moderate" | "fast" | "competitive";
 
+export type PreferredDistance = "fiveK" | "tenK" | "halfMarathon" | "marathon";
+
+export type RunReason =
+  | "fitness"
+  | "community"
+  | "mindfulness"
+  | "challenge"
+  | "weightLoss"
+  | "raceTraining"
+  | "social";
+
 export type SwipeDirection = "like" | "pass";
 
 export type IndianCity =
@@ -130,6 +141,7 @@ export interface UserProfileDoc {
   city?: IndianCity;
   // Matching preferences
   joinedRunClubIds: string[];
+  savedRunIds: string[];
   interestedInGenders: Gender[];
   minAgePreference: number;
   maxAgePreference: number;
@@ -153,6 +165,11 @@ export interface UserProfileDoc {
   workout?: WorkoutFrequency;
   diet?: DietaryPreference;
   children?: ChildrenStatus;
+  // Running preferences
+  paceMinSecsPerKm: number;
+  paceMaxSecsPerKm: number;
+  preferredDistances: PreferredDistance[];
+  runningReasons: RunReason[];
 }
 
 /**
@@ -190,12 +207,19 @@ export interface RunClubDoc {
   name: string;
   description: string;
   location: IndianCity;
+  area: string;
   hostUserId: string;
+  hostName: string;
+  hostAvatarUrl?: string | null;
   createdAt: FirebaseFirestore.Timestamp;
-  imageUrl?: string;
+  imageUrl?: string | null;
+  tags: string[];
   memberUserIds: string[];
+  memberCount: number;
   rating: number;
   reviewCount: number;
+  nextRunAt?: FirebaseFirestore.Timestamp | null;
+  nextRunLabel?: string | null;
 }
 
 /**
@@ -219,6 +243,9 @@ export interface RunDoc {
   startTime: FirebaseFirestore.Timestamp;
   endTime: FirebaseFirestore.Timestamp;
   meetingPoint: string;
+  startingPointLat?: number | null;
+  startingPointLng?: number | null;
+  locationDetails?: string | null;
   distanceKm: number;
   pace: PaceLevel;
   capacityLimit: number;

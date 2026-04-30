@@ -1,5 +1,11 @@
 # Remaining Config Resolution Tracker - 2026-04-29
 
+Status: historical tracker. Many Firebase/App Check items in this file were
+resolved after it was written. For current Firebase status, read
+[`firebase_environment_current_state.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/firebase_environment_current_state.md).
+For current build/signing/distribution readiness, read
+[`release_setup_2026-04-30/current_release_setup_audit.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/release_setup_2026-04-30/current_release_setup_audit.md).
+
 Scope: resolve the non-native-build remaining issues from the build readiness report, easiest to hardest, using canonical fixes and avoiding pod/native rebuild churn where possible.
 
 ## Order
@@ -26,10 +32,14 @@ Evidence:
 - `AppConfig.supportsPushMessagingOnCurrentPlatform` disables web push when the VAPID key is blank, so blank local dev values fail closed.
 - Firebase Console generated a Web Push certificate key pair on 2026-04-29.
 - The public VAPID key was added to `tool/dart_defines/dev.json`.
-- `tool/dart_defines/staging.json` and `tool/dart_defines/prod.json` remain blank because staging/prod Firebase environments are not real yet.
+- Historical note: at the time of this tracker, `tool/dart_defines/staging.json`
+  and `tool/dart_defines/prod.json` still had blank Web Push values. This has
+  since been superseded; current dart-define files contain environment-specific
+  Web Push and web App Check public keys.
 
 Canonical next action:
-- When staging/prod Firebase projects exist, create/import the relevant Web Push key pairs there and fill only the matching public keys into the matching dart-define files.
+- Current follow-up: keep only public VAPID keys in repo, and rotate/update them
+  through the matching Firebase environment if app domains or projects change.
 - Do not store any private key material in the repo.
 
 Risk/confirmation:

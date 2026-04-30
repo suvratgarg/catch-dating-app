@@ -1,5 +1,14 @@
 # Build Readiness and Dependency Report - 2026-04-29
 
+Status: historical build snapshot. Use it as evidence for the 2026-04-29 build
+hardening pass. Current release status lives in
+[`production_release_checklist.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/production_release_checklist.md),
+[`firebase_environment_current_state.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/firebase_environment_current_state.md),
+and the active release setup tracker.
+For current build/signing/distribution readiness, use
+[`release_setup_2026-04-30/current_release_setup_audit.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/release_setup_2026-04-30/current_release_setup_audit.md);
+older blocker text below is retained as historical evidence only.
+
 This report summarizes the current cross-target build state, remaining build/release issues, dependency posture, and the fixes applied during the build-hardening pass.
 
 Primary tracker: [target_build_audit_2026-04-28.md](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/target_build_audit_2026-04-28.md)

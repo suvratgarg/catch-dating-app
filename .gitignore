@@ -72,6 +72,7 @@ app.*.map.json
 
 # Generated audit/report bundles
 codex_audit/*.zip
+codex_audit/**/logs/
 
 # Android Studio will place build artifacts here
 /android/app/debug

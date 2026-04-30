@@ -1,5 +1,10 @@
 # iOS Release Readiness Audit - 2026-04-30
 
+Status: recent iOS evidence snapshot. Keep this for device/signing/runtime
+details. The active release setup tracker remains
+[`release_setup_2026-04-30/current_release_setup_audit.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/release_setup_2026-04-30/current_release_setup_audit.md)
+and is the current source of truth for the latest signing/export verdict.
+
 ## Goal
 
 Run a comprehensive iOS verification pass for the Catch Flutter app: project config, signing, Pods, simulator build/run, no-codesign build, signed build, physical-device availability, runtime logs, notification-related entitlements, and any non-canonical Apple toolchain setup.

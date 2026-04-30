@@ -88,6 +88,12 @@ Startup flow in [`lib/main.dart`](/Users/suvratgarg/Development/catch-dating-app
 - Registers global error handlers.
 - Boots the app inside Riverpod `ProviderScope`.
 
+Firebase App Check is activated immediately after Firebase initialization.
+Debug Flutter builds use debug providers; production web uses reCAPTCHA
+Enterprise, Android uses Play Integrity, and iOS/macOS uses App Attest. Local
+web debug runs also set Firebase's documented `FIREBASE_APPCHECK_DEBUG_TOKEN`
+flag in `web/index.html` for localhost/loopback origins only.
+
 ### 4.2 Auth and routing
 
 Auth repository:
@@ -332,8 +338,17 @@ Force update:
 Behavior:
 
 - Reads `config/app_config`.
-- Compares running app version with remote `minVersion`.
+- Compares the running build number with the platform-specific remote minimum:
+  `minBuildAndroid`, `minBuildIos`, `minBuildWeb`, or `minBuildMacos`.
+- Falls back to semantic `minVersion` only when the current platform has no
+  minimum build configured.
 - If below minimum, the app renders `UpdateRequiredScreen`.
+- If the remote config/version check is loading or fails, the app shell blocks
+  normal startup with a loading indicator or retry screen instead of silently
+  bypassing the compatibility gate.
+- As of 2026-05-01, dev, staging, and prod all have `config/app_config` seeded
+  with `minVersion: 1.0.0` and all platform minimum builds set to `1`, matching
+  the current `1.0.0+1` app build.
 
 ### 6.10 Push notifications
 
@@ -500,7 +515,7 @@ flutter test
 Run app:
 
 ```bash
-flutter run
+./tool/flutter_with_env.sh dev run
 ```
 
 Preferred environment-aware runs:
@@ -549,14 +564,16 @@ Firebase deploys by alias:
 ```bash
 ./tool/firebase_with_env.sh dev deploy --only functions,firestore,storage
 ./tool/firebase_with_env.sh staging deploy --only functions
+./tool/firebase_with_env.sh prod deploy --only functions
 ```
 
 Useful local docs:
 
 - Repo readme: [`README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/README.md)
 - Test plan: [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md)
-- Audit tracker: [`CLAUDE.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/CLAUDE.md)
 - Firebase environments: [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md)
+- Functions runbook: [`functions/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/README.md)
+- Audit/doc index: [`codex_audit/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/README.md)
 
 ## 12. Generated files and codegen rules
 
@@ -621,9 +638,10 @@ If you need to change force-update:
 
 These are the most important things for future Codex sessions to know before editing.
 
-### 14.1 `runClubs` schema is out of sync across client, rules, and TS types
+### 14.1 Keep `runClubs` schema aligned across client, rules, and Functions
 
-The current Dart `RunClub` model contains fields such as:
+The current Dart `RunClub` model, Firestore rules, rules tests, and Functions
+shared TS interface are aligned for fields such as:
 
 - `area`
 - `hostName`
@@ -632,18 +650,18 @@ The current Dart `RunClub` model contains fields such as:
 - `nextRunAt`
 - `nextRunLabel`
 
-But the current Firestore rules and TS interface still reflect an older shape.
-
 Files involved:
 
 - Dart model: [`lib/run_clubs/domain/run_club.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/domain/run_club.dart)
 - Rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
-- TS types: [`functions/src/types/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/types/firestore.ts)
+- TS types: [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
+- Rules tests: [`functions/test/firestore.rules.test.cjs`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/test/firestore.rules.test.cjs)
 
 Impact:
 
-- Creating/updating clubs may fail against real rules unless the deployed rules are newer than this file.
 - Future backend changes can easily drift if the TS types are not updated.
+- When changing `RunClub`, update the Dart model, rules shape validation,
+  Functions TS type, and rules tests in the same pass.
 
 ### 14.2 Review identity is club-scoped, not truly run-scoped
 
@@ -671,52 +689,72 @@ Impact:
 
 - If hosts do not mark attendance, swiping and attendance-based features appear empty.
 
-### 14.6 Firestore indexes file is empty
+### 14.6 Firestore indexes are repo-managed
 
-[`firestore.indexes.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.indexes.json) currently has no composite indexes, but the app uses several queries that typically require them.
+[`firestore.indexes.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.indexes.json) contains the app's known composite indexes and should be deployed with the rules/storage runbook.
 
 Impact:
 
-- Real environments may rely on indexes created manually in Firebase Console and not exported back into the repo.
+- If a query fails in a real environment with an index error, add the generated index definition to this file rather than relying on a console-only index.
 
-### 14.7 A few UI actions are intentionally unfinished
+### 14.7 Previously stubbed UI actions are now routed or backed by data
 
-Known stubs:
+Current status:
 
-- Share button on run detail
-- Bookmark/save button on run detail
-- Dashboard quick actions for Map view and Calendar
+- Share button on run detail opens the native share sheet.
+- Bookmark/save button on run detail writes `users/{uid}.savedRunIds`.
+- Dashboard quick actions for Map view and Calendar route to real screens.
 
 Files:
 
 - [`lib/runs/presentation/widgets/run_detail_body.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/widgets/run_detail_body.dart)
 - [`lib/dashboard/presentation/widgets/quick_actions.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/dashboard/presentation/widgets/quick_actions.dart)
 
-### 14.8 `staging` and `prod` are scaffolded, not provisioned
+### 14.8 Firebase environments are real, but root config files are mutable
 
-The repo now supports `dev`, `staging`, and `prod`, but only `dev` is fully
-configured today.
+The repo now supports real `dev`, `staging`, and `prod` Firebase projects:
+
+- `dev`: `catchdates-dev`
+- `staging`: `catchdates-staging`
+- `prod`: `catch-dating-app-64e51`
+
+All three have Android, iOS/macOS, and web app registrations, App Check
+providers, App Check enforcement for Firestore, Storage, Auth, and callable
+Functions, and the same 17 deployed v2 Node.js 24 Functions in `asia-south1`.
+Those Functions were redeployed and re-listed across dev, staging, and prod on
+2026-05-01. Firestore rules are also deployed and aligned across all three
+projects; dev and staging were updated on 2026-05-01 after their live rulesets
+were found to be missing the checked-in `config/app_config` read rule.
 
 Files involved:
 
 - [`lib/core/app_config.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/app_config.dart)
+- [`tool/dart_defines/dev.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/dart_defines/dev.json)
+- [`tool/dart_defines/staging.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/dart_defines/staging.json)
+- [`tool/dart_defines/prod.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/dart_defines/prod.json)
+- [`lib/firebase_options_dev.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_dev.dart)
 - [`lib/firebase_options_staging.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_staging.dart)
 - [`lib/firebase_options_prod.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/firebase_options_prod.dart)
 - [`firebase/README.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firebase/README.md)
+- [`tool/use_firebase_environment.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/use_firebase_environment.sh)
+- [`tool/validate_firebase_environment.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/validate_firebase_environment.sh)
 
 Impact:
 
-- Selecting `staging` or `prod` now fails explicitly instead of silently using
-  the dev Firebase project.
-- Native Firebase files must be switched with
-  `./tool/use_firebase_environment.sh <env>` before building a different
-  environment.
+- The root native/web Firebase files are working copies. Always use
+  `./tool/flutter_with_env.sh <env> ...` or
+  `./tool/use_firebase_environment.sh <env>` before environment-specific
+  debugging.
+- Run `./tool/validate_firebase_environment.sh <env>` when Firebase runtime
+  behavior looks wrong.
+- Dev and staging currently reuse prod Razorpay test-mode secrets. Replace them
+  with environment-owned secrets before live payments.
 
 ## 15. Testing status
 
-- There is a strong test plan in [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md).
-- Many planned tests are still unchecked.
-- Existing repo analysis output in [`flutter_analyze_report.txt`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/flutter_analyze_report.txt) shows only directive-ordering infos at the time it was generated.
+- [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md) now tracks the current test-suite inventory instead of the old aspirational checklist.
+- Recent broad verification included `flutter analyze`, `flutter test --concurrency=1`, Functions lint/tests, Firestore rules tests, live Functions deploy/list checks, and Firebase environment validation.
+- Default fully parallel `flutter test` has previously exposed a `two_dimensional_scrollables`/TableView isolation issue in a run-clubs widget test; use the documented serialized command for broad verification until that is resolved.
 
 ## 16. Suggested workflow for future Codex prompts
 
