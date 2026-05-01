@@ -26,7 +26,7 @@ class _ScrollCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             SizedBox(
-              height: 110,
+              height: 104,
               child: Stack(
                 fit: StackFit.expand,
                 children: [
@@ -68,6 +68,8 @@ class _ScrollCard extends StatelessWidget {
                     Text(
                       club.nextRunLabel ?? 'Next run coming up',
                       style: CatchTextStyles.caption(context, color: t.primary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ],

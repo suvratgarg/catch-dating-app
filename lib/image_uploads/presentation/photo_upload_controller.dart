@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'photo_upload_controller.g.dart';
@@ -10,18 +11,33 @@ typedef PhotoUploadState = ({Set<int> loadingIndices, Object? uploadError});
 @riverpod
 class PhotoUploadController extends _$PhotoUploadController {
   Future<void> _pendingPhotoWrite = Future.value();
+  bool _isPickingImage = false;
 
   @override
   PhotoUploadState build() => (loadingIndices: {}, uploadError: null);
 
   Future<void> pickAndUpload(int index) async {
+    if (_isPickingImage || state.loadingIndices.contains(index)) return;
+
     final repo = ref.read(imageUploadRepositoryProvider);
     final userProfileRepository = ref.read(userProfileRepositoryProvider);
 
-    final photo = await repo.pickImage();
-    if (photo == null || !ref.mounted) return;
-
     _markUploading(index);
+
+    final XFile? photo;
+    try {
+      photo = await _pickImage(repo);
+    } catch (e) {
+      if (!ref.mounted) return;
+      _failUploading(index, e);
+      return;
+    }
+    if (!ref.mounted) return;
+    if (photo == null) {
+      _finishUploading(index);
+      return;
+    }
+
     try {
       final uid = requireSignedInUid(ref, action: 'upload photos');
       final url = await repo.uploadUserPhoto(
@@ -41,6 +57,15 @@ class PhotoUploadController extends _$PhotoUploadController {
     } catch (e) {
       if (!ref.mounted) return;
       _failUploading(index, e);
+    }
+  }
+
+  Future<XFile?> _pickImage(ImageUploadRepository repo) async {
+    _isPickingImage = true;
+    try {
+      return await repo.pickImage();
+    } finally {
+      _isPickingImage = false;
     }
   }
 

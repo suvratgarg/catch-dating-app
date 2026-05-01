@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -26,18 +28,67 @@ class MatchRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  /// Streams all matches where the given user is a participant.
-  /// Relies on the Cloud Function writing a `participantIds` array field.
-  Stream<List<Match>> watchMatchesForUser({required String uid}) => _matchesRef
-      .where('participantIds', arrayContains: uid)
+  /// Streams all active matches where the given user is a participant.
+  ///
+  /// This intentionally uses two equality queries instead of the denormalized
+  /// `participantIds` array. Firestore rules can prove `user1Id == uid` and
+  /// `user2Id == uid` list queries directly, while the array query is not
+  /// accepted by the rules engine for this rule shape.
+  Stream<List<Match>> watchMatchesForUser({required String uid}) {
+    late final StreamSubscription<List<Match>> user1Subscription;
+    late final StreamSubscription<List<Match>> user2Subscription;
+    List<Match>? user1Matches;
+    List<Match>? user2Matches;
+
+    return Stream.multi((controller) {
+      void emitIfReady() {
+        final first = user1Matches;
+        final second = user2Matches;
+        if (first == null || second == null) return;
+
+        final byId = <String, Match>{};
+        for (final match in [...first, ...second]) {
+          byId[match.id] = match;
+        }
+
+        final matches = byId.values.toList()
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+        controller.add(matches);
+      }
+
+      user1Subscription =
+          _watchActiveMatchesByParticipantField(
+            field: 'user1Id',
+            uid: uid,
+          ).listen((matches) {
+            user1Matches = matches;
+            emitIfReady();
+          }, onError: controller.addError);
+      user2Subscription =
+          _watchActiveMatchesByParticipantField(
+            field: 'user2Id',
+            uid: uid,
+          ).listen((matches) {
+            user2Matches = matches;
+            emitIfReady();
+          }, onError: controller.addError);
+
+      controller.onCancel = () async {
+        await user1Subscription.cancel();
+        await user2Subscription.cancel();
+      };
+    });
+  }
+
+  Stream<List<Match>> _watchActiveMatchesByParticipantField({
+    required String field,
+    required String uid,
+  }) => _matchesRef
+      .where(field, isEqualTo: uid)
+      .where('status', isEqualTo: 'active')
       .orderBy('createdAt', descending: true)
       .snapshots()
-      .map(
-        (snap) => snap.docs
-            .map((d) => d.data())
-            .where((match) => !match.isBlocked)
-            .toList(),
-      );
+      .map((snap) => snap.docs.map((d) => d.data()).toList());
 
   Stream<Match?> watchMatch({required String matchId}) => _matchRef(
     matchId,

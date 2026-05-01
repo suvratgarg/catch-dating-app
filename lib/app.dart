@@ -4,6 +4,7 @@ import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -85,6 +86,7 @@ class _ForceUpdateCheckErrorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final diagnostic = forceUpdateDevelopmentDiagnostic(error);
 
     return Scaffold(
       body: SafeArea(
@@ -110,6 +112,16 @@ class _ForceUpdateCheckErrorScreen extends StatelessWidget {
                     style: textTheme.bodyMedium,
                     textAlign: TextAlign.center,
                   ),
+                  if (diagnostic != null) ...[
+                    const SizedBox(height: 12),
+                    Text(
+                      diagnostic,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ],
                   const SizedBox(height: 24),
                   FilledButton.icon(
                     onPressed: onRetry,
@@ -124,4 +136,19 @@ class _ForceUpdateCheckErrorScreen extends StatelessWidget {
       ),
     );
   }
+}
+
+@visibleForTesting
+String? forceUpdateDevelopmentDiagnostic(Object? error) {
+  if (AppConfig.environment.isProduction || error == null) {
+    return null;
+  }
+
+  if (error is FirebaseException &&
+      error.plugin == 'cloud_firestore' &&
+      error.code == 'permission-denied') {
+    return 'Dev diagnostic: config/app_config was denied. Check deployed Firestore rules and App Check for ${AppConfig.environmentName}; for a physical debug iPhone, register the printed App Check debug token in Firebase Console.';
+  }
+
+  return 'Dev diagnostic: ${error.runtimeType}: $error';
 }

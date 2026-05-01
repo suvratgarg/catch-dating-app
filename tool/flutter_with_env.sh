@@ -70,4 +70,17 @@ elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" && $has_flavo
   esac
 fi
 
+extra_dart_defines=()
+if [[ -n "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" ]]; then
+  extra_dart_defines+=(
+    "--dart-define=FIREBASE_APP_CHECK_DEBUG_TOKEN=${FIREBASE_APP_CHECK_DEBUG_TOKEN}"
+  )
+fi
+
+if [[ ${#extra_dart_defines[@]} -gt 0 ]]; then
+  exec flutter "${flutter_args[@]}" \
+    --dart-define-from-file="$define_file" \
+    "${extra_dart_defines[@]}"
+fi
+
 exec flutter "${flutter_args[@]}" --dart-define-from-file="$define_file"

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
@@ -52,7 +53,7 @@ void main() {
       );
     });
 
-    testWidgets('does not offer a second sign-in method', (tester) async {
+    testWidgets('does not offer a second auth CTA', (tester) async {
       final container = createOnboardingTestContainer();
       addTearDown(container.dispose);
 
@@ -62,8 +63,42 @@ void main() {
         child: const WelcomePage(),
       );
 
-      expect(find.text('Already have an account? Sign in'), findsNothing);
+      expect(
+        find.widgetWithText(FilledButton, 'Continue with phone'),
+        findsOneWidget,
+      );
+      expect(find.byType(TextButton), findsNothing);
+      expect(find.text('Already a runner? Sign in'), findsNothing);
     });
+  });
+
+  group('OnboardingScreen', () {
+    testWidgets(
+      'back button returns editable onboarding steps to previous step',
+      (tester) async {
+        final container = createOnboardingTestContainer();
+        addTearDown(container.dispose);
+
+        await pumpOnboardingScreen(
+          tester,
+          container: container,
+          child: const OnboardingScreen(),
+        );
+
+        container
+            .read(onboardingControllerProvider.notifier)
+            .goToStep(OnboardingStep.genderInterest);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byTooltip('Back'));
+        await tester.pumpAndSettle();
+
+        expect(
+          container.read(onboardingControllerProvider).step,
+          OnboardingStep.nameDob,
+        );
+      },
+    );
   });
 
   group('PhonePage', () {
@@ -112,6 +147,85 @@ void main() {
   });
 
   group('OtpPage', () {
+    testWidgets('renders six digit boxes and submits completed code', (
+      tester,
+    ) async {
+      final repository = _phoneAuthRepository();
+      final container = createOnboardingTestContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      await container
+          .read(onboardingControllerProvider.notifier)
+          .sendOtp('9876543210');
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const OtpPage(),
+      );
+
+      for (var i = 0; i < 6; i++) {
+        expect(find.byKey(ValueKey('otp_digit_$i')), findsOneWidget);
+      }
+
+      await tester.enterText(find.byType(TextField), '123456');
+      await tester.pumpAndSettle();
+
+      expect(repository.otpVerificationId, 'verification-id');
+      expect(repository.otpSmsCode, '123456');
+    });
+
+    testWidgets('shows resend countdown before allowing another OTP', (
+      tester,
+    ) async {
+      final repository = _phoneAuthRepository();
+      final container = createOnboardingTestContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      addTearDown(() async {
+        await tester.pumpWidget(const SizedBox.shrink());
+        await tester.pump();
+      });
+
+      await container
+          .read(onboardingControllerProvider.notifier)
+          .sendOtp('9876543210');
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const OtpPage(),
+      );
+
+      expect(repository.verifyPhoneNumberCallCount, 1);
+      expect(find.text('Resend OTP in 60s'), findsOneWidget);
+      expect(
+        tester
+            .widget<TextButton>(
+              find.widgetWithText(TextButton, 'Resend OTP in 60s'),
+            )
+            .onPressed,
+        isNull,
+      );
+
+      await tester.pump(const Duration(seconds: 30));
+      expect(find.text('Resend OTP in 30s'), findsOneWidget);
+
+      await tester.pump(const Duration(seconds: 30));
+      expect(find.text('Resend OTP'), findsOneWidget);
+
+      await tester.tap(find.widgetWithText(TextButton, 'Resend OTP'));
+      await tester.pump();
+
+      expect(repository.verifyPhoneNumberCallCount, 2);
+      expect(find.text('Resend OTP in 60s'), findsOneWidget);
+    });
+
     testWidgets('Change number returns to the phone step', (tester) async {
       final container = createOnboardingTestContainer();
       addTearDown(container.dispose);

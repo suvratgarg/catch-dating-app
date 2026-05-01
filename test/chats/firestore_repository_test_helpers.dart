@@ -6,7 +6,8 @@ import 'package:flutter_test/flutter_test.dart';
 class TestFirebaseFirestore extends Fake implements FirebaseFirestore {
   TestFirebaseFirestore({required this.collectionsByPath, this.batchValue});
 
-  final Map<String, CollectionReference<Map<String, dynamic>>> collectionsByPath;
+  final Map<String, CollectionReference<Map<String, dynamic>>>
+  collectionsByPath;
   TestWriteBatch? batchValue;
 
   @override
@@ -87,15 +88,21 @@ class TestRawDocumentReference extends Fake
 
 class TestTypedCollection<T extends Object?> extends Fake
     implements CollectionReference<T> {
-  TestTypedCollection({required this.pathPrefix, this.autoDocId = 'generated-id'});
+  TestTypedCollection({
+    required this.pathPrefix,
+    this.autoDocId = 'generated-id',
+  });
 
   final String pathPrefix;
   final String autoDocId;
   final docsById = <String, TestTypedDocumentReference<T>>{};
+  final nextWhereResults = <Query<T>>[];
+  final whereCalls = <RecordedWhereCall>[];
   Query<T>? nextWhereResult;
   Query<T>? nextOrderByResult;
   Object? lastWhereField;
   Object? lastArrayContains;
+  Object? lastWhereEqualTo;
   Object? lastOrderByField;
   bool? lastOrderByDescending;
 
@@ -128,6 +135,17 @@ class TestTypedCollection<T extends Object?> extends Fake
   }) {
     lastWhereField = field;
     lastArrayContains = arrayContains;
+    lastWhereEqualTo = isEqualTo;
+    whereCalls.add(
+      RecordedWhereCall(
+        field: field,
+        isEqualTo: isEqualTo,
+        arrayContains: arrayContains,
+      ),
+    );
+    if (nextWhereResults.isNotEmpty) {
+      return nextWhereResults.removeAt(0);
+    }
     return nextWhereResult!;
   }
 
@@ -230,12 +248,46 @@ class TestTypedQuerySnapshot<T extends Object?> extends Fake
   List<QueryDocumentSnapshot<T>> get docs => docsValue;
 }
 
+class RecordedWhereCall {
+  const RecordedWhereCall({
+    required this.field,
+    this.isEqualTo,
+    this.arrayContains,
+  });
+
+  final Object field;
+  final Object? isEqualTo;
+  final Object? arrayContains;
+}
+
 class TestTypedQuery<T extends Object?> extends Fake implements Query<T> {
   TestTypedQuery({required this.snapshotStream});
 
   final Stream<QuerySnapshot<T>> snapshotStream;
+  Object? lastWhereField;
+  Object? lastWhereEqualTo;
   Object? lastOrderByField;
   bool? lastOrderByDescending;
+
+  @override
+  Query<T> where(
+    Object field, {
+    Object? isEqualTo,
+    Object? isNotEqualTo,
+    Object? isLessThan,
+    Object? isLessThanOrEqualTo,
+    Object? isGreaterThan,
+    Object? isGreaterThanOrEqualTo,
+    Object? arrayContains,
+    Iterable<Object?>? arrayContainsAny,
+    Iterable<Object?>? whereIn,
+    Iterable<Object?>? whereNotIn,
+    bool? isNull,
+  }) {
+    lastWhereField = field;
+    lastWhereEqualTo = isEqualTo;
+    return this;
+  }
 
   @override
   Query<T> orderBy(Object field, {bool descending = false}) {

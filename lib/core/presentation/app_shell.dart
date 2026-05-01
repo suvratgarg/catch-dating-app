@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -38,7 +40,23 @@ class _AppShellState extends ConsumerState<AppShell> {
       return;
     }
     _fcmInitialized = true;
-    fcmService.initialize(uid: uid, router: ref.read(goRouterProvider));
+    unawaited(
+      fcmService
+          .initialize(uid: uid, router: ref.read(goRouterProvider))
+          .catchError((Object error, StackTrace stackTrace) {
+            if (mounted) _fcmInitialized = false;
+            FlutterError.reportError(
+              FlutterErrorDetails(
+                exception: error,
+                stack: stackTrace,
+                library: 'catch_fcm',
+                context: ErrorDescription(
+                  'while initializing Firebase Messaging',
+                ),
+              ),
+            );
+          }),
+    );
   }
 
   @override

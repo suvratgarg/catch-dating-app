@@ -217,6 +217,7 @@ GoRouter goRouter(Ref ref) {
                       GoRoute(
                         path: 'create-run',
                         name: Routes.createRunScreen.name,
+                        parentNavigatorKey: _rootNavigatorKey,
                         builder: (context, state) => CreateRunRouteScreen(
                           runClubId: state.pathParameters['runClubId']!,
                           initialRunClub: state.extra is RunClub
@@ -229,6 +230,7 @@ GoRouter goRouter(Ref ref) {
                   GoRoute(
                     path: 'create-run-club',
                     name: Routes.createRunClubScreen.name,
+                    parentNavigatorKey: _rootNavigatorKey,
                     builder: (context, state) => const CreateRunClubScreen(),
                   ),
                 ],

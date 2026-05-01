@@ -93,16 +93,14 @@ flutter_launcher_icons:
     theme_color: "#FF4E1F"
 
 flutter_native_splash:
-  color: "#FBF3E9"
-  color_dark: "#120D09"
-  image: assets/branding/catch_icon.png
+  color: "#FF4E1F"
+  color_dark: "#FF4E1F"
   android: true
   ios: true
   web: true
   android_12:
-    color: "#FBF3E9"
-    color_dark: "#120D09"
-    image: assets/branding/catch_icon.png
+    color: "#FF4E1F"
+    color_dark: "#FF4E1F"
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

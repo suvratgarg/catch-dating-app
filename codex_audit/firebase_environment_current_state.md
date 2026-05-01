@@ -67,6 +67,12 @@ Local web debug runs follow Firebase's documented debug-provider flow:
 `localhost`, `127.0.0.1`, and `::1`. The generated browser debug token was
 registered on the dev web app on 2026-05-01. Do not commit raw debug tokens.
 
+Local physical iPhone debug runs use the Apple debug App Check provider. The
+debug token printed by Flutter must be registered on the matching dev iOS app in
+Firebase Console. `./tool/flutter_with_env.sh` also forwards a local
+`FIREBASE_APP_CHECK_DEBUG_TOKEN` environment variable as a Dart define so a
+registered token can be reused without committing it.
+
 Firestore rules are deployed and aligned across all three projects as of
 2026-05-01. The live dev and staging rules were stale before this pass and did
 not allow the public `config/app_config` force-update read; both now include the

@@ -54,6 +54,18 @@ class ControlledImageUploadRepository extends Fake
   }
 }
 
+class SlowPickingImageUploadRepository extends Fake
+    implements ImageUploadRepository {
+  final pickCompleter = Completer<XFile?>();
+  int pickImageCallCount = 0;
+
+  @override
+  Future<XFile?> pickImage({int imageQuality = 85}) {
+    pickImageCallCount += 1;
+    return pickCompleter.future;
+  }
+}
+
 void main() {
   test(
     'serializes overlapping photo writes so newer state is preserved',
@@ -83,10 +95,17 @@ void main() {
         fireImmediately: true,
       );
       addTearDown(uidSubscription.close);
+      final uploadSubscription = container.listen(
+        photoUploadControllerProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uploadSubscription.close);
       await container.pump();
 
       final controller = container.read(photoUploadControllerProvider.notifier);
       final firstUpload = controller.pickAndUpload(0);
+      await container.pump();
       final secondUpload = controller.pickAndUpload(1);
       await container.pump();
 
@@ -117,6 +136,57 @@ void main() {
     },
   );
 
+  test('ignores a second picker request while the first is open', () async {
+    final userProfileRepository = FakePhotoUserProfileRepository(
+      buildUser(uid: 'runner-1'),
+    );
+    final imageUploadRepository = SlowPickingImageUploadRepository();
+    final container = ProviderContainer(
+      overrides: [
+        userProfileRepositoryProvider.overrideWith(
+          (ref) => userProfileRepository,
+        ),
+        imageUploadRepositoryProvider.overrideWith(
+          (ref) => imageUploadRepository,
+        ),
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+      ],
+    );
+    addTearDown(container.dispose);
+    final uidSubscription = container.listen(
+      uidProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(uidSubscription.close);
+    final uploadSubscription = container.listen(
+      photoUploadControllerProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(uploadSubscription.close);
+    await container.pump();
+
+    final controller = container.read(photoUploadControllerProvider.notifier);
+    final firstPick = controller.pickAndUpload(0);
+    await container.pump();
+    final ignoredPick = controller.pickAndUpload(1);
+    await container.pump();
+
+    expect(imageUploadRepository.pickImageCallCount, 1);
+    expect(container.read(photoUploadControllerProvider).loadingIndices, {0});
+
+    imageUploadRepository.pickCompleter.complete(null);
+
+    await Future.wait([firstPick, ignoredPick]);
+
+    expect(
+      container.read(photoUploadControllerProvider).loadingIndices,
+      isEmpty,
+    );
+    expect(userProfileRepository.updatedPhotoUrls, isEmpty);
+  });
+
   test('completes safely if the provider is disposed mid-upload', () async {
     final userProfileRepository = FakePhotoUserProfileRepository(
       buildUser(uid: 'runner-1'),
@@ -138,6 +208,11 @@ void main() {
       (_, _) {},
       fireImmediately: true,
     );
+    final uploadSubscription = container.listen(
+      photoUploadControllerProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
     await container.pump();
 
     final controller = container.read(photoUploadControllerProvider.notifier);
@@ -147,6 +222,7 @@ void main() {
 
     container.dispose();
     uidSubscription.close();
+    uploadSubscription.close();
     imageUploadRepository.uploadCompleters.single.complete(
       'https://img.example/disposed.jpg',
     );

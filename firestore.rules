@@ -16,6 +16,17 @@ service cloud.firestore {
         || exists(/databases/$(database)/documents/blocks/$(blockDocId(uidB, uidA)));
     }
 
+    function hasParticipantId(matchData, uid) {
+      return matchData.participantIds is list
+        && uid in matchData.participantIds;
+    }
+
+    function isMatchParticipant(matchData, uid) {
+      return hasParticipantId(matchData, uid)
+        || matchData.user1Id == uid
+        || matchData.user2Id == uid;
+    }
+
     function isDeletedUser(uid) {
       return exists(/databases/$(database)/documents/deletedUsers/$(uid));
     }
@@ -339,32 +350,33 @@ service cloud.firestore {
     // ── Matches ───────────────────────────────────────────────────────────────
     // Created by the onSwipeCreated Cloud Function. Participants can read.
     match /matches/{matchId} {
-      allow read: if isAuthed() && (
-          resource.data.user1Id == request.auth.uid
-          || resource.data.user2Id == request.auth.uid
-        )
+      allow get: if isAuthed()
+        && isMatchParticipant(resource.data, request.auth.uid)
         && resource.data.status != 'blocked'
         && !hasBlockBetween(resource.data.user1Id, resource.data.user2Id);
+      allow list: if isAuthed()
+        && resource.data.user1Id == request.auth.uid
+        && resource.data.status == 'active';
+      allow list: if isAuthed()
+        && resource.data.user2Id == request.auth.uid
+        && resource.data.status == 'active';
       allow write: if false;
     }
 
     // ── Chat messages ─────────────────────────────────────────────────────────
     match /chats/{matchId}/messages/{messageId} {
-      allow read: if isAuthed() && (
-          get(/databases/$(database)/documents/matches/$(matchId))
-              .data.user1Id == request.auth.uid
-          || get(/databases/$(database)/documents/matches/$(matchId))
-              .data.user2Id == request.auth.uid
+      allow read: if isAuthed()
+        && isMatchParticipant(
+          get(/databases/$(database)/documents/matches/$(matchId)).data,
+          request.auth.uid
         )
         && get(/databases/$(database)/documents/matches/$(matchId))
             .data.status != 'blocked';
       allow create: if isAuthed()
         && request.resource.data.senderId == request.auth.uid
-        && (
-          get(/databases/$(database)/documents/matches/$(matchId))
-              .data.user1Id == request.auth.uid
-          || get(/databases/$(database)/documents/matches/$(matchId))
-              .data.user2Id == request.auth.uid
+        && isMatchParticipant(
+          get(/databases/$(database)/documents/matches/$(matchId)).data,
+          request.auth.uid
         )
         && get(/databases/$(database)/documents/matches/$(matchId))
             .data.status != 'blocked';

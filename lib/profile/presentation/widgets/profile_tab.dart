@@ -306,11 +306,18 @@ class _ProfileStatsStrip extends StatelessWidget {
             Expanded(
               child: Column(
                 children: [
-                  Text(
-                    stats[i].$2,
-                    style: CatchTextStyles.displaySm(context),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  SizedBox(
+                    width: double.infinity,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        stats[i].$2,
+                        style: CatchTextStyles.displaySm(context),
+                        maxLines: 1,
+                        textAlign: TextAlign.center,
+                        softWrap: false,
+                      ),
+                    ),
                   ),
                   gapH2,
                   Text(

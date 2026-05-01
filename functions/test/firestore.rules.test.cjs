@@ -8,10 +8,15 @@ const {
 } = require("@firebase/rules-unit-testing");
 const {
   Timestamp,
+  collection,
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
+  orderBy,
+  query,
   setDoc,
+  where,
 } = require("firebase/firestore");
 
 const projectRoot = path.resolve(__dirname, "..", "..");
@@ -213,10 +218,52 @@ describe("firestore.rules", () => {
       await seed(["matches", "match-1"], {
         user1Id: "user-1",
         user2Id: "user-2",
+        participantIds: ["user-1", "user-2"],
         status: "blocked",
       });
 
       await assertFails(getDoc(doc(authedDb("user-1"), "matches", "match-1")));
+    });
+
+    it("allows participants to query their active matches by user fields", async () => {
+      await seed(["matches", "match-1"], {
+        user1Id: "user-1",
+        user2Id: "user-2",
+        participantIds: ["user-1", "user-2"],
+        status: "active",
+        createdAt: Timestamp.fromDate(new Date("2026-04-28T10:00:00.000Z")),
+      });
+
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("user-1"), "matches"),
+            where("user1Id", "==", "user-1"),
+            where("status", "==", "active"),
+            orderBy("createdAt", "desc"),
+          ),
+        ),
+      );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("user-2"), "matches"),
+            where("user2Id", "==", "user-2"),
+            where("status", "==", "active"),
+            orderBy("createdAt", "desc"),
+          ),
+        ),
+      );
+      await assertFails(
+        getDocs(
+          query(
+            collection(authedDb("user-3"), "matches"),
+            where("user1Id", "==", "user-1"),
+            where("status", "==", "active"),
+            orderBy("createdAt", "desc"),
+          ),
+        ),
+      );
     });
   });
 

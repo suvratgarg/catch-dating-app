@@ -35,11 +35,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     final data = ref.watch(onboardingControllerProvider);
     final t = CatchTokens.of(context);
     final minStep = data.step.minimumBackStep;
+    final previousStep = data.step.previousWithin(minStep);
+    final currentStep = KeyedSubtree(
+      key: ValueKey(data.step),
+      child: _buildStep(data.step),
+    );
 
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (_, _) {
-        final previousStep = data.step.previousWithin(minStep);
         if (previousStep != null) {
           ref
               .read(onboardingControllerProvider.notifier)
@@ -47,22 +51,27 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
         }
       },
       child: Scaffold(
-        body: SafeArea(
-          child: Column(
-            children: [
-              if (data.step.showsProgress) ...[
-                _ProgressBar(step: data.step, tokens: t),
-                const SizedBox(height: 8),
-              ],
-              Expanded(
-                child: KeyedSubtree(
-                  key: ValueKey(data.step),
-                  child: _buildStep(data.step),
+        body: data.step == OnboardingStep.welcome
+            ? currentStep
+            : SafeArea(
+                child: Column(
+                  children: [
+                    if (data.step.showsProgress) ...[
+                      _OnboardingTopBar(
+                        step: data.step,
+                        tokens: t,
+                        onBack: previousStep == null
+                            ? null
+                            : () => ref
+                                  .read(onboardingControllerProvider.notifier)
+                                  .goToStep(previousStep),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                    Expanded(child: currentStep),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
       ),
     );
   }
@@ -80,6 +89,50 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   }
 }
 
+class _OnboardingTopBar extends StatelessWidget {
+  const _OnboardingTopBar({
+    required this.step,
+    required this.tokens,
+    required this.onBack,
+  });
+
+  final OnboardingStep step;
+  final CatchTokens tokens;
+  final VoidCallback? onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 12, 20, 8),
+      child: Row(
+        children: [
+          SizedBox.square(
+            dimension: 44,
+            child: onBack == null
+                ? const SizedBox.shrink()
+                : IconButton(
+                    tooltip: 'Back',
+                    onPressed: onBack,
+                    style: IconButton.styleFrom(
+                      backgroundColor: tokens.surface,
+                      foregroundColor: tokens.ink,
+                    ),
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 18,
+                    ),
+                  ),
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: _ProgressBar(step: step, tokens: tokens),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ProgressBar extends StatelessWidget {
   const _ProgressBar({required this.step, required this.tokens});
 
@@ -90,25 +143,22 @@ class _ProgressBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = OnboardingStep.values.length;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      child: Row(
-        children: [
-          for (int i = 1; i < total; i++) ...[
-            Expanded(
-              child: AnimatedContainer(
-                duration: const Duration(milliseconds: 200),
-                height: 3,
-                decoration: BoxDecoration(
-                  color: i <= step.index ? tokens.primary : tokens.line,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+    return Row(
+      children: [
+        for (int i = 1; i < total; i++) ...[
+          Expanded(
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              height: 3,
+              decoration: BoxDecoration(
+                color: i <= step.index ? tokens.primary : tokens.line,
+                borderRadius: BorderRadius.circular(2),
               ),
             ),
-            if (i < total - 1) const SizedBox(width: 4),
-          ],
+          ),
+          if (i < total - 1) const SizedBox(width: 4),
         ],
-      ),
+      ],
     );
   }
 }

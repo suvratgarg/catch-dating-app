@@ -47,6 +47,16 @@ Preferred environment-aware app runs:
 ./tool/flutter_with_env.sh prod run
 ```
 
+Physical iPhone debug runs require a Firebase App Check debug token when App
+Check enforcement is enabled. Register the printed token in Firebase Console
+under App Check > Catch Dev iOS > Manage debug tokens. To reuse a stable local
+token without committing it, export it before running the wrapper:
+
+```bash
+export FIREBASE_APP_CHECK_DEBUG_TOKEN=your_registered_debug_token
+./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
+```
+
 Android, iOS, and macOS builds use native flavors. The environment wrapper automatically adds the matching flavor for APK, App Bundle, iOS, and macOS builds:
 
 ```bash

@@ -39,6 +39,7 @@ class FakeAuthRepository extends Fake implements AuthRepository {
   String? otpSmsCode;
   AuthCredential? credential;
   String? verifiedPhoneNumber;
+  int verifyPhoneNumberCallCount = 0;
   VerifyPhoneNumberHandler? onVerifyPhoneNumber;
 
   @override
@@ -55,6 +56,7 @@ class FakeAuthRepository extends Fake implements AuthRepository {
     required void Function(PhoneAuthCredential credential)
     verificationCompleted,
   }) async {
+    verifyPhoneNumberCallCount += 1;
     verifiedPhoneNumber = phoneNumber;
     await onVerifyPhoneNumber?.call(
       verificationCompleted: verificationCompleted,
