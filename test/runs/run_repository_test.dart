@@ -3,6 +3,7 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -351,11 +352,11 @@ void main() {
 
         final fromFirestore = rawRunsCollection.lastFromFirestore!;
         final toFirestore = rawRunsCollection.lastToFirestore!;
-        final rawRun = buildRun(id: 'run-88');
-        final encoded = {
-          ...toFirestore(rawRun, null),
-          'constraints': rawRun.constraints.toJson(),
-        };
+        final rawRun = buildRun(
+          id: 'run-88',
+          constraints: const RunConstraints(minAge: 21, maxWomen: 6),
+        );
+        final encoded = toFirestore(rawRun, null);
         final decoded = fromFirestore(
           TestMapDocumentSnapshot(idValue: 'run-77', dataValue: encoded),
           null,
@@ -365,6 +366,13 @@ void main() {
         expect(decoded.meetingPoint, 'Carter Road');
         expect(encoded.containsKey('id'), isFalse);
         expect(encoded['runClubId'], 'club-1');
+        expect(encoded['constraints'], {
+          'minAge': 21,
+          'maxAge': 99,
+          'maxMen': null,
+          'maxWomen': 6,
+        });
+        expect(decoded.constraints, rawRun.constraints);
       },
     );
 

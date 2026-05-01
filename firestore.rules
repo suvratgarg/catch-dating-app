@@ -157,6 +157,7 @@ service cloud.firestore {
             && resource.data.memberUserIds
                 .hasAll(request.resource.data.memberUserIds)
             && resource.data.memberUserIds.hasAll([request.auth.uid])
+            && !request.resource.data.memberUserIds.hasAll([request.auth.uid])
           )
         );
     }
@@ -302,6 +303,7 @@ service cloud.firestore {
             && resource.data.waitlistUserIds
                 .hasAll(request.resource.data.waitlistUserIds)
             && resource.data.waitlistUserIds.hasAll([request.auth.uid])
+            && !request.resource.data.waitlistUserIds.hasAll([request.auth.uid])
           )
         )
       );

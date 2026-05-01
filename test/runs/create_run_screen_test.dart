@@ -85,6 +85,15 @@ void main() {
 
         expect(find.text('Your run is live.'), findsOneWidget);
         expect(find.text('Manage run'), findsOneWidget);
+        expect(
+          find.textContaining('is now listed on Stride Social'),
+          findsOneWidget,
+        );
+        expect(
+          find.textContaining('Followers can discover it from their home feed'),
+          findsOneWidget,
+        );
+        expect(find.textContaining('visible to'), findsNothing);
         expect(fakeRunRepository.createdRun, isNotNull);
         expect(fakeRunRepository.createdRun!.runClubId, 'club-1');
         expect(fakeRunRepository.createdRun!.meetingPoint, 'Bandra Fort');
@@ -112,7 +121,12 @@ void main() {
     testWidgets(
       'shows the past-time validation, clears it on repick, and renders mixed durations',
       (tester) async {
-        await _pumpCreateRunFlow(tester, alwaysUse24HourFormat: true);
+        final now = DateTime(2026, 5, 1, 14);
+        await _pumpCreateRunFlow(
+          tester,
+          alwaysUse24HourFormat: true,
+          now: () => now,
+        );
         await tester.tap(find.text('Open'));
         await tester.pumpAndSettle();
 
@@ -131,15 +145,16 @@ void main() {
 
         expect(find.text('1h 30m'), findsOneWidget);
 
-        await _pickTodayDate(tester);
+        await _pickTodayDate(tester, today: now);
         await _pickTimeInInputMode(tester, hour: '00', minute: '01');
-        await _tapPrimaryButton(tester, 'Next');
 
-        expect(find.text('Start time must be in the future'), findsOneWidget);
+        expect(find.text('Choose a start time later than now'), findsOneWidget);
+        expect(find.text('Select start time'), findsOneWidget);
 
         await _pickFutureDate(tester);
+        await _acceptInitialTime(tester);
 
-        expect(find.text('Start time must be in the future'), findsNothing);
+        expect(find.text('Choose a start time later than now'), findsNothing);
 
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
@@ -220,6 +235,7 @@ Future<void> _pumpCreateRunFlow(
   WidgetTester tester, {
   Iterable overrides = const [],
   bool alwaysUse24HourFormat = false,
+  DateTime Function()? now,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -242,6 +258,7 @@ Future<void> _pumpCreateRunFlow(
                       builder: (_) => CreateRunScreen(
                         runClub: buildRunClub(),
                         loadMapTiles: false,
+                        now: now ?? DateTime.now,
                       ),
                     ),
                   );
@@ -307,10 +324,10 @@ Future<void> _dismissKeyboard(WidgetTester tester) async {
   await tester.pump();
 }
 
-Future<void> _pickTodayDate(WidgetTester tester) async {
+Future<void> _pickTodayDate(WidgetTester tester, {DateTime? today}) async {
   await tester.tap(find.byIcon(Icons.calendar_today_outlined));
   await tester.pumpAndSettle();
-  await tester.tap(find.text('${DateTime.now().day}').last);
+  await tester.tap(find.text('${(today ?? DateTime.now()).day}').last);
   await tester.pumpAndSettle();
   await tester.tap(find.text('OK'));
   await tester.pumpAndSettle();

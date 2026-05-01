@@ -2,6 +2,7 @@ import {CallableOptions} from "firebase-functions/v2/https";
 
 export const appCheckCallableOptions: CallableOptions = {
   enforceAppCheck: true,
+  invoker: "public",
 };
 
 /**

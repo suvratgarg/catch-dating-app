@@ -2,12 +2,14 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -44,7 +46,9 @@ class RunDetailCta extends ConsumerWidget {
       children: [
         if (errorMutation.hasError)
           CatchErrorBanner(
-            message: (errorMutation as MutationError).error.toString(),
+            message: runBookingErrorMessage(
+              (errorMutation as MutationError).error,
+            ),
           ),
         switch (status) {
           RunSignUpStatus.eligible => BottomCTA(
@@ -127,6 +131,26 @@ class RunDetailCta extends ConsumerWidget {
       ],
     );
   }
+}
+
+String runBookingErrorMessage(Object error) {
+  if (error is AppException) {
+    return error.message;
+  }
+  if (error is FirebaseFunctionsException) {
+    if (error.code == 'unauthenticated') {
+      return const SignInRequiredException('book a run').message;
+    }
+
+    final message = error.message;
+    if (message != null && message.trim().isNotEmpty) {
+      return message.trim();
+    }
+  }
+  if (error is StateError && error.message.isNotEmpty) {
+    return error.message;
+  }
+  return 'Unable to update this booking right now.';
 }
 
 class PriceLeading extends StatelessWidget {

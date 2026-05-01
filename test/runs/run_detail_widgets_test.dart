@@ -151,7 +151,7 @@ void main() {
       expect(uncaughtError, isA<StateError>());
       await tester.pump();
 
-      expect(find.text('Bad state: booking failed'), findsOneWidget);
+      expect(find.text('booking failed'), findsOneWidget);
     });
 
     testWidgets('disables paid bookings when the platform is unsupported', (

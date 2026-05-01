@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Run {
 
-@JsonKey(includeToJson: false) String get id; String get runClubId;@TimestampConverter() DateTime get startTime;@TimestampConverter() DateTime get endTime; String get meetingPoint; double? get startingPointLat; double? get startingPointLng; String? get locationDetails; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise; List<String> get signedUpUserIds; List<String> get attendedUserIds; List<String> get waitlistUserIds; RunConstraints get constraints;// Denormalized gender counts maintained atomically by Cloud Functions.
+@JsonKey(includeToJson: false) String get id; String get runClubId;@TimestampConverter() DateTime get startTime;@TimestampConverter() DateTime get endTime; String get meetingPoint; double? get startingPointLat; double? get startingPointLng; String? get locationDetails; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise; List<String> get signedUpUserIds; List<String> get attendedUserIds; List<String> get waitlistUserIds;@JsonKey(toJson: _runConstraintsToJson) RunConstraints get constraints;// Denormalized gender counts maintained atomically by Cloud Functions.
 // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
  Map<String, int> get genderCounts;
 /// Create a copy of Run
@@ -50,7 +50,7 @@ abstract mixin class $RunCopyWith<$Res>  {
   factory $RunCopyWith(Run value, $Res Function(Run) _then) = _$RunCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String runClubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, List<String> signedUpUserIds, List<String> attendedUserIds, List<String> waitlistUserIds, RunConstraints constraints, Map<String, int> genderCounts
+@JsonKey(includeToJson: false) String id, String runClubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, List<String> signedUpUserIds, List<String> attendedUserIds, List<String> waitlistUserIds,@JsonKey(toJson: _runConstraintsToJson) RunConstraints constraints, Map<String, int> genderCounts
 });
 
 
@@ -181,7 +181,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds, @JsonKey(toJson: _runConstraintsToJson)  RunConstraints constraints,  Map<String, int> genderCounts)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Run() when $default != null:
 return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
@@ -202,7 +202,7 @@ return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.mee
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds, @JsonKey(toJson: _runConstraintsToJson)  RunConstraints constraints,  Map<String, int> genderCounts)  $default,) {final _that = this;
 switch (_that) {
 case _Run():
 return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
@@ -222,7 +222,7 @@ return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.mee
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds, @JsonKey(toJson: _runConstraintsToJson)  RunConstraints constraints,  Map<String, int> genderCounts)?  $default,) {final _that = this;
 switch (_that) {
 case _Run() when $default != null:
 return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
@@ -237,7 +237,7 @@ return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.mee
 @JsonSerializable()
 
 class _Run extends Run {
-  const _Run({@JsonKey(includeToJson: false) required this.id, required this.runClubId, @TimestampConverter() required this.startTime, @TimestampConverter() required this.endTime, required this.meetingPoint, this.startingPointLat, this.startingPointLng, this.locationDetails, required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, final  List<String> signedUpUserIds = const [], final  List<String> attendedUserIds = const [], final  List<String> waitlistUserIds = const [], this.constraints = const RunConstraints(), final  Map<String, int> genderCounts = const {}}): _signedUpUserIds = signedUpUserIds,_attendedUserIds = attendedUserIds,_waitlistUserIds = waitlistUserIds,_genderCounts = genderCounts,super._();
+  const _Run({@JsonKey(includeToJson: false) required this.id, required this.runClubId, @TimestampConverter() required this.startTime, @TimestampConverter() required this.endTime, required this.meetingPoint, this.startingPointLat, this.startingPointLng, this.locationDetails, required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, final  List<String> signedUpUserIds = const [], final  List<String> attendedUserIds = const [], final  List<String> waitlistUserIds = const [], @JsonKey(toJson: _runConstraintsToJson) this.constraints = const RunConstraints(), final  Map<String, int> genderCounts = const {}}): _signedUpUserIds = signedUpUserIds,_attendedUserIds = attendedUserIds,_waitlistUserIds = waitlistUserIds,_genderCounts = genderCounts,super._();
   factory _Run.fromJson(Map<String, dynamic> json) => _$RunFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -274,7 +274,7 @@ class _Run extends Run {
   return EqualUnmodifiableListView(_waitlistUserIds);
 }
 
-@override@JsonKey() final  RunConstraints constraints;
+@override@JsonKey(toJson: _runConstraintsToJson) final  RunConstraints constraints;
 // Denormalized gender counts maintained atomically by Cloud Functions.
 // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
  final  Map<String, int> _genderCounts;
@@ -320,7 +320,7 @@ abstract mixin class _$RunCopyWith<$Res> implements $RunCopyWith<$Res> {
   factory _$RunCopyWith(_Run value, $Res Function(_Run) _then) = __$RunCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String runClubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, List<String> signedUpUserIds, List<String> attendedUserIds, List<String> waitlistUserIds, RunConstraints constraints, Map<String, int> genderCounts
+@JsonKey(includeToJson: false) String id, String runClubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, List<String> signedUpUserIds, List<String> attendedUserIds, List<String> waitlistUserIds,@JsonKey(toJson: _runConstraintsToJson) RunConstraints constraints, Map<String, int> genderCounts
 });
 
 

@@ -19,17 +19,23 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+DateTime _systemNow() => DateTime.now();
+
 class CreateRunScreen extends ConsumerStatefulWidget {
   const CreateRunScreen({
     super.key,
     required this.runClub,
     this.loadMapTiles = true,
+    this.now = _systemNow,
   });
 
   final RunClub runClub;
 
   /// Tests can disable network tiles while still exercising map callbacks.
   final bool loadMapTiles;
+
+  /// Current time source, injectable so same-day time validation is testable.
+  final DateTime Function() now;
 
   @override
   ConsumerState<CreateRunScreen> createState() => _CreateRunScreenState();
@@ -58,6 +64,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   static const _minDuration = 30;
   static const _maxDuration = 240;
   static const _durationStep = 15;
+  static const _futureStartError = 'Choose a start time later than now';
 
   // Step 1 — Where
   final _meetingPointController = TextEditingController();
@@ -125,18 +132,24 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   }
 
   Future<void> _pickDate() async {
+    final today = DateUtils.dateOnly(widget.now());
     final picked = await showDatePicker(
       context: context,
-      initialDate: _selectedDate ?? DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.now().add(const Duration(days: 365)),
+      initialDate: _selectedDate ?? today,
+      firstDate: today,
+      lastDate: today.add(const Duration(days: 365)),
     );
     if (picked != null) {
+      final scheduleError = _scheduleErrorFor(picked, _selectedStartTime);
       setState(() {
-        _scheduleErrorText = null;
         _selectedDate = picked;
         _dateController.text =
             '${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}';
+        _scheduleErrorText = scheduleError;
+        if (scheduleError != null) {
+          _selectedStartTime = null;
+          _startTimeController.clear();
+        }
       });
     }
   }
@@ -144,10 +157,17 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   Future<void> _pickStartTime() async {
     final picked = await showTimePicker(
       context: context,
-      initialTime: _selectedStartTime ?? const TimeOfDay(hour: 7, minute: 0),
+      initialTime: _selectedStartTime ?? _initialStartTime(),
     );
     if (picked != null) {
+      final scheduleError = _scheduleErrorFor(_selectedDate, picked);
       setState(() {
+        if (scheduleError != null) {
+          _scheduleErrorText = scheduleError;
+          _selectedStartTime = null;
+          _startTimeController.clear();
+          return;
+        }
         _scheduleErrorText = null;
         _selectedStartTime = picked;
         _startTimeController.text =
@@ -192,6 +212,25 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   DateTime _combine(DateTime date, TimeOfDay time) =>
       DateTime(date.year, date.month, date.day, time.hour, time.minute);
 
+  TimeOfDay _initialStartTime() {
+    final selectedDate = _selectedDate;
+    final now = widget.now();
+    if (selectedDate != null && DateUtils.isSameDay(selectedDate, now)) {
+      final soon = now.add(const Duration(minutes: 5));
+      if (DateUtils.isSameDay(selectedDate, soon)) {
+        return TimeOfDay(hour: soon.hour, minute: soon.minute);
+      }
+    }
+    return const TimeOfDay(hour: 7, minute: 0);
+  }
+
+  String? _scheduleErrorFor(DateTime? date, TimeOfDay? startTime) {
+    if (date == null || startTime == null) return null;
+    return _combine(date, startTime).isAfter(widget.now())
+        ? null
+        : _futureStartError;
+  }
+
   void _goToStep(int step) {
     setState(() => _currentStep = step);
     _pageController.animateToPage(
@@ -209,9 +248,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
 
     final startTime = _selectedStartDateTime;
     if (startTime == null) return false;
-    if (startTime.isAfter(DateTime.now())) return true;
+    if (startTime.isAfter(widget.now())) return true;
 
-    setState(() => _scheduleErrorText = 'Start time must be in the future');
+    setState(() => _scheduleErrorText = _futureStartError);
     return false;
   }
 
@@ -411,40 +450,43 @@ class CreateRunSuccessScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
+    const successInk = Color(0xFF1A1410);
 
     return Scaffold(
       body: Container(
-        decoration: BoxDecoration(gradient: t.heroGrad),
+        decoration: BoxDecoration(gradient: CatchTokens.sunsetLight.heroGrad),
         child: SafeArea(
           child: Padding(
             padding: const EdgeInsets.all(CatchSpacing.screenH),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Align(
                   alignment: Alignment.centerRight,
                   child: IconBtn(
-                    background: Colors.white.withValues(alpha: 0.18),
+                    background: successInk.withValues(alpha: 0.16),
                     onTap: onDone,
-                    child: const Icon(Icons.close_rounded, color: Colors.white),
+                    child: const Icon(Icons.close_rounded, color: successInk),
                   ),
                 ),
                 const Spacer(),
-                Container(
-                  width: 78,
-                  height: 78,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.18),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.28),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Container(
+                    width: 78,
+                    height: 78,
+                    decoration: BoxDecoration(
+                      color: successInk.withValues(alpha: 0.12),
+                      shape: BoxShape.circle,
+                      border: Border.all(
+                        color: successInk.withValues(alpha: 0.18),
+                      ),
                     ),
-                  ),
-                  child: const Icon(
-                    Icons.check_rounded,
-                    color: Colors.white,
-                    size: 38,
+                    child: const Icon(
+                      Icons.check_rounded,
+                      color: successInk,
+                      size: 38,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -457,36 +499,33 @@ class CreateRunSuccessScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  '${run.title} is now visible to ${runClub.memberCount} runners following ${runClub.name}.',
-                  style: CatchTextStyles.bodyLg(
-                    context,
-                    color: Colors.white.withValues(alpha: 0.88),
-                  ),
+                  '${run.title} is now listed on ${runClub.name}. Followers can discover it from their home feed.',
+                  style: CatchTextStyles.bodyLg(context, color: Colors.white),
                 ),
                 const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.16),
+                    color: successInk.withValues(alpha: 0.14),
                     borderRadius: BorderRadius.circular(CatchRadius.cardLg),
                     border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.18),
+                      color: successInk.withValues(alpha: 0.18),
                     ),
                   ),
                   child: Row(
                     children: [
                       const Icon(
                         Icons.bolt_rounded,
-                        color: Colors.white,
+                        color: successInk,
                         size: 18,
                       ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
-                          '0 people booked so far. Keep an eye on roster and waitlist from host manage.',
+                          'Bookings, waitlist, and attendance are tracked from Manage run.',
                           style: CatchTextStyles.bodySm(
                             context,
-                            color: Colors.white,
+                            color: successInk,
                           ),
                         ),
                       ),
@@ -498,19 +537,21 @@ class CreateRunSuccessScreen extends StatelessWidget {
                   onPressed: onManageRun,
                   style: FilledButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: t.ink,
+                    foregroundColor: successInk,
                   ),
                   child: const Text('Manage run'),
                 ),
                 const SizedBox(height: 10),
-                TextButton(
+                OutlinedButton(
                   onPressed: onDone,
+                  style: OutlinedButton.styleFrom(
+                    backgroundColor: Colors.white.withValues(alpha: 0.72),
+                    foregroundColor: successInk,
+                    side: BorderSide(color: successInk.withValues(alpha: 0.20)),
+                  ),
                   child: Text(
                     'Back to club',
-                    style: CatchTextStyles.labelLg(
-                      context,
-                      color: Colors.white,
-                    ),
+                    style: CatchTextStyles.labelLg(context, color: successInk),
                   ),
                 ),
               ],

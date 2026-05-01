@@ -67,7 +67,9 @@ abstract class Run with _$Run {
     @Default([]) List<String> signedUpUserIds,
     @Default([]) List<String> attendedUserIds,
     @Default([]) List<String> waitlistUserIds,
-    @Default(RunConstraints()) RunConstraints constraints,
+    @JsonKey(toJson: _runConstraintsToJson)
+    @Default(RunConstraints())
+    RunConstraints constraints,
     // Denormalized gender counts maintained atomically by Cloud Functions.
     // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
     @Default({}) Map<String, int> genderCounts,
@@ -136,3 +138,6 @@ abstract class Run with _$Run {
     return '$weekday $period Run';
   }
 }
+
+Map<String, dynamic> _runConstraintsToJson(RunConstraints constraints) =>
+    constraints.toJson();

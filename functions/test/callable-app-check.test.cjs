@@ -37,3 +37,13 @@ test("callable functions use shared App Check enforcement options", () => {
 
   assert.deepEqual(missing, []);
 });
+
+test("shared callable options declare App Check and public invoker intent", () => {
+  const source = fs.readFileSync(
+    path.join(sourceRoot, "shared", "callableOptions.ts"),
+    "utf8",
+  );
+
+  assert.match(source, /enforceAppCheck:\s*true/);
+  assert.match(source, /invoker:\s*"public"/);
+});

@@ -13,6 +13,13 @@ sealed class AppException implements Exception {
   String toString() => message;
 }
 
+// ── Auth/session ─────────────────────────────────────────────────────────────
+
+class SignInRequiredException extends AppException {
+  const SignInRequiredException(String action)
+    : super('sign-in-required', 'You need to be signed in to $action.');
+}
+
 // ── Payments ──────────────────────────────────────────────────────────────────
 
 class PaymentCancelledException extends AppException {
@@ -41,4 +48,9 @@ class PaidBookingUnsupportedException extends AppException {
         'paid-booking-unsupported',
         'Paid bookings are only available on Android and iOS.',
       );
+}
+
+class RunBookingFailedException extends AppException {
+  const RunBookingFailedException(String message)
+    : super('run-booking-failed', message);
 }

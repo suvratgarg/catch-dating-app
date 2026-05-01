@@ -111,8 +111,16 @@ class PaymentRepository {
 
   /// Signs the current user up for a free run via the [signUpForFreeRun]
   /// Cloud Function, which validates the run is free and checks capacity.
-  Future<void> bookFreeRun({required String runId}) =>
-      _functions.httpsCallable('signUpForFreeRun').call({'runId': runId});
+  Future<void> bookFreeRun({required String runId}) async {
+    try {
+      await _functions.httpsCallable('signUpForFreeRun').call({'runId': runId});
+    } on FirebaseFunctionsException catch (error) {
+      throw _normalizeRunBookingError(
+        error,
+        fallbackMessage: 'Unable to book this run right now.',
+      );
+    }
+  }
 
   // ── Razorpay callbacks ────────────────────────────────────────────────────
 
@@ -206,6 +214,26 @@ class PaymentRepository {
       return PaymentFailedException(error.message ?? fallbackMessage);
     }
     return PaymentFailedException(error.toString());
+  }
+
+  AppException _normalizeRunBookingError(
+    Object error, {
+    required String fallbackMessage,
+  }) {
+    if (error is AppException) {
+      return error;
+    }
+    if (error is FirebaseFunctionsException) {
+      if (error.code == 'unauthenticated') {
+        return const SignInRequiredException('book a run');
+      }
+
+      final message = error.message;
+      return RunBookingFailedException(
+        message == null || message.isEmpty ? fallbackMessage : message,
+      );
+    }
+    return RunBookingFailedException(fallbackMessage);
   }
 
   AppException _mapCheckoutFailure(PaymentFailureResponse response) {

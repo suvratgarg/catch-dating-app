@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -25,6 +26,7 @@ class RunBookingController extends _$RunBookingController {
   /// For paid runs, opens the Razorpay checkout sheet; on success the
   /// [verifyRazorpayPayment] Cloud Function atomically signs the user up.
   Future<void> book({required Run run, required UserProfile user}) async {
+    _requireSignedIn(action: 'book a run');
     final paymentRepo = ref.read(paymentRepositoryProvider);
 
     if (run.isFree) {
@@ -44,6 +46,7 @@ class RunBookingController extends _$RunBookingController {
   /// Function, which atomically removes them from [signedUpUserIds] and
   /// decrements their gender count.
   Future<void> cancelBooking({required Run run}) async {
+    _requireSignedIn(action: 'cancel a booking');
     await ref
         .read(runRepositoryProvider)
         .cancelSignUpViaFunction(runId: run.id);
@@ -51,6 +54,7 @@ class RunBookingController extends _$RunBookingController {
 
   /// Adds the user to the waitlist for a full run.
   Future<void> joinWaitlist({required Run run}) async {
+    _requireSignedIn(action: 'join a waitlist');
     await ref
         .read(runRepositoryProvider)
         .joinWaitlistViaFunction(runId: run.id);
@@ -58,9 +62,17 @@ class RunBookingController extends _$RunBookingController {
 
   /// Removes the user from the waitlist.
   Future<void> leaveWaitlist({required Run run}) async {
-    final uid = requireSignedInUid(ref, action: 'leave a waitlist');
+    final uid = _requireSignedIn(action: 'leave a waitlist');
     await ref
         .read(runRepositoryProvider)
         .leaveWaitlist(runId: run.id, userId: uid);
+  }
+
+  String _requireSignedIn({required String action}) {
+    try {
+      return requireSignedInUid(ref, action: action);
+    } on StateError {
+      throw SignInRequiredException(action);
+    }
   }
 }

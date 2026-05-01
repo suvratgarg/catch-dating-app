@@ -18,9 +18,21 @@ onCall(appCheckCallableOptions, handler)
 onCall(appCheckCallableOptionsWithSecrets([...]), handler)
 ```
 
-Do not inline `{enforceAppCheck: true}` in individual function files. The
-default `npm test` suite includes a guard test that fails when an exported
-callable does not use the shared App Check options.
+Do not inline `{enforceAppCheck: true, invoker: "public"}` in individual
+function files. Firebase callable Gen 2 functions must be publicly invokable at
+the Cloud Run/IAM layer so client SDK calls can reach the callable adapter; App
+Check and Firebase Auth are then enforced by the shared callable options and
+each handler. The shared options declare this intent, and the default `npm test`
+suite includes a guard test that fails when an exported callable does not use
+the shared App Check options.
+
+After deploying callable Functions, run `npm run sync:callable-invokers -- \
+<project-id> [...]`. Current callable deployment manifests do not reliably
+propagate `invoker` onto the underlying Cloud Run services, and a missing
+binding shows up as a Cloud Run/GFE HTML 401/403 before Firebase callable
+handling. The sync command grants `allUsers` only the `roles/run.invoker`
+permission on the callable Cloud Run services; it does not bypass Firebase Auth
+or App Check.
 
 The public `joinWaitlist` endpoint is an HTTPS endpoint for the marketing site,
 not a Firebase callable function. It uses an explicit CORS origin allowlist for
@@ -50,4 +62,5 @@ npm test
 ./tool/firebase_with_env.sh dev deploy --only functions
 ./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions
+npm run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
 ```

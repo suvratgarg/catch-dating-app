@@ -8,6 +8,16 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'runs_test_helpers.dart';
 
+Future<void> primeUidProvider(ProviderContainer container) async {
+  final uidSubscription = container.listen(
+    uidProvider,
+    (_, _) {},
+    fireImmediately: true,
+  );
+  addTearDown(uidSubscription.close);
+  await container.pump();
+}
+
 void main() {
   group('RunBookingController.book', () {
     test('books a free run through the payment repository', () async {
@@ -15,9 +25,11 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
         ],
       );
       addTearDown(container.dispose);
+      await primeUidProvider(container);
 
       final controller = container.read(runBookingControllerProvider.notifier);
       await controller.book(run: buildRun(), user: buildUser());
@@ -32,9 +44,11 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-7')),
         ],
       );
       addTearDown(container.dispose);
+      await primeUidProvider(container);
 
       final run = buildRun(
         id: 'paid-run',
@@ -76,9 +90,11 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
         ],
       );
       addTearDown(container.dispose);
+      await primeUidProvider(container);
 
       final controller = container.read(runBookingControllerProvider.notifier);
 
@@ -86,6 +102,27 @@ void main() {
         controller.book(run: buildRun(priceInPaise: 50000), user: buildUser()),
         throwsA(isA<PaidBookingUnsupportedException>()),
       );
+      expect(fakePaymentRepository.processPaymentCalled, isFalse);
+    });
+
+    test('throws before booking when the user is not signed in', () async {
+      final fakePaymentRepository = FakePaymentRepository();
+      final container = ProviderContainer(
+        overrides: [
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await expectLater(
+        container
+            .read(runBookingControllerProvider.notifier)
+            .book(run: buildRun(), user: buildUser()),
+        throwsA(isA<SignInRequiredException>()),
+      );
+      expect(fakePaymentRepository.bookFreeRunCalled, isFalse);
       expect(fakePaymentRepository.processPaymentCalled, isFalse);
     });
   });
@@ -96,9 +133,11 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
         ],
       );
       addTearDown(container.dispose);
+      await primeUidProvider(container);
 
       await container
           .read(runBookingControllerProvider.notifier)
@@ -107,21 +146,26 @@ void main() {
       expect(fakeRunRepository.cancelledRunId, 'run-9');
     });
 
-    test('joinWaitlist delegates to the server-side waitlist function', () async {
-      final fakeRunRepository = FakeRunRepository();
-      final container = ProviderContainer(
-        overrides: [
-          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'joinWaitlist delegates to the server-side waitlist function',
+      () async {
+        final fakeRunRepository = FakeRunRepository();
+        final container = ProviderContainer(
+          overrides: [
+            runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          ],
+        );
+        addTearDown(container.dispose);
+        await primeUidProvider(container);
 
-      await container
-          .read(runBookingControllerProvider.notifier)
-          .joinWaitlist(run: buildRun(id: 'run-42'));
+        await container
+            .read(runBookingControllerProvider.notifier)
+            .joinWaitlist(run: buildRun(id: 'run-42'));
 
-      expect(fakeRunRepository.joinedWaitlistRunId, 'run-42');
-    });
+        expect(fakeRunRepository.joinedWaitlistRunId, 'run-42');
+      },
+    );
 
     test('leaveWaitlist uses the signed-in uid from auth', () async {
       final fakeRunRepository = FakeRunRepository();
@@ -132,13 +176,7 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
+      await primeUidProvider(container);
 
       await container
           .read(runBookingControllerProvider.notifier)
@@ -154,9 +192,11 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
         ],
       );
       addTearDown(container.dispose);
+      await primeUidProvider(container);
 
       await expectLater(
         container
@@ -174,19 +214,13 @@ void main() {
         ],
       );
       addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
+      await primeUidProvider(container);
 
       await expectLater(
         container
             .read(runBookingControllerProvider.notifier)
             .leaveWaitlist(run: buildRun()),
-        throwsA(isA<StateError>()),
+        throwsA(isA<SignInRequiredException>()),
       );
     });
   });

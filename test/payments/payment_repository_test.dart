@@ -141,6 +141,60 @@ void main() {
       },
     );
 
+    test('bookFreeRun calls the free-run booking function', () async {
+      await repository.bookFreeRun(runId: 'run-1');
+
+      expect(functions.callables['signUpForFreeRun']!.calls.single, {
+        'runId': 'run-1',
+      });
+    });
+
+    test(
+      'bookFreeRun maps unauthenticated callable failures to sign-in errors',
+      () async {
+        functions.callables['signUpForFreeRun'] =
+            TestHttpsCallable('signUpForFreeRun')
+              ..error = TestFirebaseFunctionsException(
+                code: 'unauthenticated',
+                message: 'UNAUTHENTICATED',
+              );
+
+        await expectLater(
+          repository.bookFreeRun(runId: 'run-1'),
+          throwsA(
+            isA<SignInRequiredException>().having(
+              (error) => error.message,
+              'message',
+              'You need to be signed in to book a run.',
+            ),
+          ),
+        );
+      },
+    );
+
+    test(
+      'bookFreeRun preserves server-side booking failure messages',
+      () async {
+        functions.callables['signUpForFreeRun'] =
+            TestHttpsCallable('signUpForFreeRun')
+              ..error = TestFirebaseFunctionsException(
+                code: 'failed-precondition',
+                message: 'Run is full.',
+              );
+
+        await expectLater(
+          repository.bookFreeRun(runId: 'run-1'),
+          throwsA(
+            isA<RunBookingFailedException>().having(
+              (error) => error.message,
+              'message',
+              'Run is full.',
+            ),
+          ),
+        );
+      },
+    );
+
     test(
       'processPayment maps callable startup failures to PaymentFailedException',
       () async {

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -154,14 +155,37 @@ Future<void> pumpRunsTestApp(
   WidgetTester tester,
   Widget child, {
   Iterable overrides = const [],
+  String? signedInUid = 'runner-1',
 }) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [...overrides],
-      child: MaterialApp(theme: AppTheme.light, home: child),
+      overrides: [
+        if (signedInUid != null)
+          uidProvider.overrideWith((ref) => Stream.value(signedInUid)),
+        ...overrides,
+      ],
+      child: _RunTestProviderPrimer(
+        primeUid: signedInUid != null,
+        child: MaterialApp(theme: AppTheme.light, home: child),
+      ),
     ),
   );
   await tester.pump();
+}
+
+class _RunTestProviderPrimer extends ConsumerWidget {
+  const _RunTestProviderPrimer({required this.primeUid, required this.child});
+
+  final bool primeUid;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (primeUid) {
+      ref.watch(uidProvider);
+    }
+    return child;
+  }
 }
 
 class FakeRunRepository extends Fake implements RunRepository {

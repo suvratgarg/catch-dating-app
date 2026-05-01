@@ -55,6 +55,29 @@ function runClub(overrides = {}) {
   };
 }
 
+function run(overrides = {}) {
+  return {
+    runClubId: "club-1",
+    startTime: Timestamp.fromDate(new Date("2026-05-02T01:30:00.000Z")),
+    endTime: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+    meetingPoint: "Carter Road",
+    startingPointLat: null,
+    startingPointLng: null,
+    locationDetails: null,
+    distanceKm: 5,
+    pace: "easy",
+    capacityLimit: 20,
+    description: "Easy seaside run.",
+    priceInPaise: 0,
+    signedUpUserIds: [],
+    attendedUserIds: [],
+    waitlistUserIds: [],
+    constraints: {},
+    genderCounts: {},
+    ...overrides,
+  };
+}
+
 async function seed(pathSegments, data) {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), ...pathSegments), data);
@@ -145,6 +168,74 @@ describe("firestore.rules", () => {
             memberUserIds: ["host-1", "runner-1"],
             memberCount: 1,
           }),
+        ),
+      );
+    });
+
+    it("allows members to remove themselves from a club", async () => {
+      await seed(
+        ["runClubs", "club-1"],
+        runClub({
+          memberUserIds: ["host-1", "runner-1", "runner-2"],
+          memberCount: 3,
+        }),
+      );
+
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-1"), "runClubs", "club-1"),
+          runClub({
+            memberUserIds: ["host-1", "runner-2"],
+            memberCount: 2,
+          }),
+        ),
+      );
+    });
+
+    it("rejects members removing another club member", async () => {
+      await seed(
+        ["runClubs", "club-1"],
+        runClub({
+          memberUserIds: ["host-1", "runner-1", "runner-2"],
+          memberCount: 3,
+        }),
+      );
+
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "runClubs", "club-1"),
+          runClub({
+            memberUserIds: ["host-1", "runner-1"],
+            memberCount: 2,
+          }),
+        ),
+      );
+    });
+  });
+
+  describe("runs", () => {
+    it("allows waitlisted users to remove themselves", async () => {
+      await seed(["runs", "run-1"], run({
+        waitlistUserIds: ["runner-1", "runner-2"],
+      }));
+
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-1"), "runs", "run-1"),
+          run({waitlistUserIds: ["runner-2"]}),
+        ),
+      );
+    });
+
+    it("rejects waitlisted users removing another waitlisted user", async () => {
+      await seed(["runs", "run-1"], run({
+        waitlistUserIds: ["runner-1", "runner-2"],
+      }));
+
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "runs", "run-1"),
+          run({waitlistUserIds: ["runner-1"]}),
         ),
       );
     });

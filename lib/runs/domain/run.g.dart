@@ -63,7 +63,7 @@ Map<String, dynamic> _$RunToJson(_Run instance) => <String, dynamic>{
   'signedUpUserIds': instance.signedUpUserIds,
   'attendedUserIds': instance.attendedUserIds,
   'waitlistUserIds': instance.waitlistUserIds,
-  'constraints': instance.constraints,
+  'constraints': _runConstraintsToJson(instance.constraints),
   'genderCounts': instance.genderCounts,
 };
 
