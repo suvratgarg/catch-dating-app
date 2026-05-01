@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -140,22 +141,27 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           if (verifyMutation.isPending)
             const Center(child: CircularProgressIndicator()),
           gapH16,
-          TextButton(
-            onPressed: canResend ? _resendOtp : null,
-            child: Text(_resendButtonLabel(sendMutation.isPending)),
+          Center(
+            child: CatchButton(
+              label: _resendButtonLabel(sendMutation.isPending),
+              onPressed: canResend ? _resendOtp : null,
+              variant: CatchButtonVariant.ghost,
+              size: CatchButtonSize.sm,
+              foregroundColor: t.primary,
+            ),
           ),
           gapH8,
-          TextButton(
-            onPressed: verifyMutation.isPending || sendMutation.isPending
-                ? null
-                : () => ref
-                      .read(onboardingControllerProvider.notifier)
-                      .goToStep(OnboardingStep.phone),
-            child: Text(
-              'Change number',
-              style: Theme.of(
-                context,
-              ).textTheme.bodyMedium?.copyWith(color: t.ink2),
+          Center(
+            child: CatchButton(
+              label: 'Change number',
+              onPressed: verifyMutation.isPending || sendMutation.isPending
+                  ? null
+                  : () => ref
+                        .read(onboardingControllerProvider.notifier)
+                        .goToStep(OnboardingStep.phone),
+              variant: CatchButtonVariant.ghost,
+              size: CatchButtonSize.sm,
+              foregroundColor: t.ink2,
             ),
           ),
           const Spacer(),

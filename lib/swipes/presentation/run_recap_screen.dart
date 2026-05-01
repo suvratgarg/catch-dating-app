@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -47,9 +48,9 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
 
             return ListView(
               padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 Sizes.p8,
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 Sizes.p24,
               ),
               children: [
@@ -59,12 +60,12 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
                 gapH24,
                 Text(
                   'Who brought the vibe?',
-                  style: CatchTextStyles.displaySm(context),
+                  style: CatchTextStyles.titleL(context),
                 ),
                 gapH4,
                 Text(
                   "Tap people you remember. They'll be easier to spot when you open the catches deck.",
-                  style: CatchTextStyles.bodySm(context, color: t.ink2),
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
                 ),
                 gapH14,
                 if (attendeeIds.isEmpty)
@@ -95,12 +96,13 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
                     },
                   ),
                 gapH24,
-                FilledButton(
+                CatchButton(
+                  label: 'Open catches deck',
                   onPressed: () => context.goNamed(
                     Routes.swipeRunScreen.name,
                     pathParameters: {'runId': run.id},
                   ),
-                  child: const Text('Open catches deck'),
+                  fullWidth: true,
                 ),
               ],
             );
@@ -126,7 +128,7 @@ class _RecapHeader extends StatelessWidget {
         ),
         gapW12,
         Expanded(
-          child: Text('Run recap', style: CatchTextStyles.displayMd(context)),
+          child: Text('Run recap', style: CatchTextStyles.displayM(context)),
         ),
       ],
     );
@@ -157,7 +159,7 @@ class _RecapHero extends StatelessWidget {
         children: [
           Text(
             '${run.title.toUpperCase()} · COMPLETE',
-            style: CatchTextStyles.labelSm(
+            style: CatchTextStyles.labelM(
               context,
               color: tokens.surface.withValues(alpha: 0.68),
             ).copyWith(letterSpacing: 1.1),
@@ -165,12 +167,12 @@ class _RecapHero extends StatelessWidget {
           gapH10,
           Text(
             RunFormatters.distanceKm(run.distanceKm),
-            style: CatchTextStyles.displayLg(context, color: tokens.surface),
+            style: CatchTextStyles.displayL(context, color: tokens.surface),
           ),
           gapH4,
           Text(
             '${run.pace.label} pace · ${run.attendedUserIds.length} checked in',
-            style: CatchTextStyles.bodySm(
+            style: CatchTextStyles.bodyS(
               context,
               color: tokens.surface.withValues(alpha: 0.76),
             ),
@@ -206,7 +208,7 @@ class _RecapStat extends StatelessWidget {
           children: [
             Text(
               label.toUpperCase(),
-              style: CatchTextStyles.caption(
+              style: CatchTextStyles.bodyS(
                 context,
                 color: t.surface.withValues(alpha: 0.56),
               ),
@@ -214,7 +216,7 @@ class _RecapStat extends StatelessWidget {
             gapH3,
             Text(
               value,
-              style: CatchTextStyles.labelSm(context, color: t.surface),
+              style: CatchTextStyles.labelM(context, color: t.surface),
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
             ),
@@ -247,7 +249,7 @@ class _VibeTile extends ConsumerWidget {
         duration: const Duration(milliseconds: 180),
         decoration: BoxDecoration(
           color: t.surface,
-          borderRadius: BorderRadius.circular(CatchRadius.card),
+          borderRadius: BorderRadius.circular(CatchRadius.md),
           border: Border.all(
             color: selected ? t.primary : t.line,
             width: selected ? 3 : 1,
@@ -276,7 +278,7 @@ class _VibeTile extends ConsumerWidget {
               bottom: 8,
               child: Text(
                 profile?.name ?? 'Runner',
-                style: CatchTextStyles.labelSm(context, color: Colors.white),
+                style: CatchTextStyles.labelM(context, color: Colors.white),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -334,12 +336,12 @@ class _EmptyRoster extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p18),
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
         border: Border.all(color: tokens.line),
       ),
       child: Text(
         'No other checked-in runners are attached to this run yet.',
-        style: CatchTextStyles.bodySm(context, color: tokens.ink2),
+        style: CatchTextStyles.bodyS(context, color: tokens.ink2),
         textAlign: TextAlign.center,
       ),
     );

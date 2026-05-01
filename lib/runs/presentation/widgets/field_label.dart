@@ -10,9 +10,6 @@ class FieldLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Text(
     label,
-    style: CatchTextStyles.labelMd(
-      context,
-      color: CatchTokens.of(context).ink2,
-    ),
+    style: CatchTextStyles.labelL(context, color: CatchTokens.of(context).ink2),
   );
 }

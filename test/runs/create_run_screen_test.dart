@@ -1,5 +1,7 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
@@ -48,9 +50,12 @@ void main() {
         await tester.pump();
         expect(find.text('Required'), findsOneWidget);
 
-        await tester.enterText(find.byType(TextFormField).at(0), 'Bandra Fort');
         await tester.enterText(
-          find.byType(TextFormField).at(1),
+          find.byType(CatchTextField).at(0),
+          'Bandra Fort',
+        );
+        await tester.enterText(
+          find.byType(CatchTextField).at(1),
           'Meet at the gate',
         );
         await tester.pumpAndSettle();
@@ -66,8 +71,8 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.text('Review & rules'), findsOneWidget);
-        await tester.enterText(find.byType(TextFormField).at(0), '40');
-        await tester.enterText(find.byType(TextFormField).at(1), '30');
+        await tester.enterText(find.byType(CatchTextField).at(0), '40');
+        await tester.enterText(find.byType(CatchTextField).at(1), '30');
         await tester.pumpAndSettle();
         await _tapPrimaryButton(tester, 'Schedule run');
         await tester.pump();
@@ -75,10 +80,10 @@ void main() {
         expect(find.text('<= max'), findsOneWidget);
         expect(find.text('>= min'), findsOneWidget);
 
-        await tester.enterText(find.byType(TextFormField).at(0), '21');
-        await tester.enterText(find.byType(TextFormField).at(1), '35');
-        await tester.enterText(find.byType(TextFormField).at(2), '9');
-        await tester.enterText(find.byType(TextFormField).at(3), '9');
+        await tester.enterText(find.byType(CatchTextField).at(0), '21');
+        await tester.enterText(find.byType(CatchTextField).at(1), '35');
+        await tester.enterText(find.byType(CatchTextField).at(2), '9');
+        await tester.enterText(find.byType(CatchTextField).at(3), '9');
         await tester.pumpAndSettle();
         await _tapPrimaryButton(tester, 'Schedule run');
         await tester.pumpAndSettle();
@@ -134,7 +139,10 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
 
-        await tester.enterText(find.byType(TextFormField).at(0), 'Bandra Fort');
+        await tester.enterText(
+          find.byType(CatchTextField).at(0),
+          'Bandra Fort',
+        );
         await tester.pumpAndSettle();
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
@@ -184,7 +192,7 @@ void main() {
         selectedPoint,
       );
       await tester.pump();
-      await tester.tap(find.widgetWithText(TextButton, 'Confirm'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Confirm'));
       await tester.pumpAndSettle();
 
       expect(find.text('19.12345, 72.98765'), findsOneWidget);
@@ -279,8 +287,8 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
 
-  await tester.enterText(find.byType(TextFormField).at(0), 'Bandra Fort');
-  await tester.enterText(find.byType(TextFormField).at(1), 'Meet at the gate');
+  await tester.enterText(find.byType(CatchTextField).at(0), 'Bandra Fort');
+  await tester.enterText(find.byType(CatchTextField).at(1), 'Meet at the gate');
   await tester.pumpAndSettle();
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
@@ -290,22 +298,22 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
 
-  await tester.enterText(find.byType(TextFormField).at(0), '21');
-  await tester.enterText(find.byType(TextFormField).at(1), '35');
-  await tester.enterText(find.byType(TextFormField).at(2), '9');
-  await tester.enterText(find.byType(TextFormField).at(3), '9');
+  await tester.enterText(find.byType(CatchTextField).at(0), '21');
+  await tester.enterText(find.byType(CatchTextField).at(1), '35');
+  await tester.enterText(find.byType(CatchTextField).at(2), '9');
+  await tester.enterText(find.byType(CatchTextField).at(3), '9');
   await tester.pumpAndSettle();
   await _tapPrimaryButton(tester, 'Schedule run');
   await tester.pumpAndSettle();
 }
 
 Future<void> _fillBasicsStep(WidgetTester tester) async {
-  await tester.enterText(find.byType(TextFormField).at(0), '7.5');
-  await tester.enterText(find.byType(TextFormField).at(1), '18');
-  await tester.enterText(find.byType(TextFormField).at(2), '249.5');
+  await tester.enterText(find.byType(CatchTextField).at(0), '7.5');
+  await tester.enterText(find.byType(CatchTextField).at(1), '18');
+  await tester.enterText(find.byType(CatchTextField).at(2), '249.5');
   await tester.tap(find.text('MODERATE'));
   await tester.enterText(
-    find.byType(TextFormField).at(3),
+    find.byType(CatchTextField).at(3),
     'Social pacing with a coffee stop.',
   );
   await tester.pumpAndSettle();
@@ -313,7 +321,7 @@ Future<void> _fillBasicsStep(WidgetTester tester) async {
 
 Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {
   await _dismissKeyboard(tester);
-  final buttonFinder = find.widgetWithText(FilledButton, label);
+  final buttonFinder = find.widgetWithText(CatchButton, label);
   await tester.ensureVisible(buttonFinder);
   await tester.tap(buttonFinder, warnIfMissed: false);
   await tester.pumpAndSettle();

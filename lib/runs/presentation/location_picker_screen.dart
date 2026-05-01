@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -40,11 +42,17 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
       appBar: AppBar(
         title: const Text('Pick starting point'),
         actions: [
-          TextButton(
-            onPressed: _selected == null
-                ? null
-                : () => Navigator.of(context).pop(_selected),
-            child: const Text('Confirm'),
+          Padding(
+            padding: const EdgeInsets.only(right: CatchSpacing.s2),
+            child: CatchButton(
+              label: 'Confirm',
+              onPressed: _selected == null
+                  ? null
+                  : () => Navigator.of(context).pop(_selected),
+              variant: CatchButtonVariant.ghost,
+              size: CatchButtonSize.sm,
+              foregroundColor: t.primary,
+            ),
           ),
         ],
       ),
@@ -84,20 +92,20 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
             bottom: 16,
             left: 16,
             right: 16,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: _selected == null
-                    ? const Text(
-                        'Tap on the map to set the starting point',
-                        textAlign: TextAlign.center,
-                      )
-                    : Text(
-                        '${_selected!.latitude.toStringAsFixed(6)}, '
-                        '${_selected!.longitude.toStringAsFixed(6)}',
-                        textAlign: TextAlign.center,
-                      ),
-              ),
+            child: CatchSurface(
+              padding: const EdgeInsets.all(12),
+              elevation: CatchSurfaceElevation.overlay,
+              borderColor: t.line,
+              child: _selected == null
+                  ? const Text(
+                      'Tap on the map to set the starting point',
+                      textAlign: TextAlign.center,
+                    )
+                  : Text(
+                      '${_selected!.latitude.toStringAsFixed(6)}, '
+                      '${_selected!.longitude.toStringAsFixed(6)}',
+                      textAlign: TextAlign.center,
+                    ),
             ),
           ),
         ],

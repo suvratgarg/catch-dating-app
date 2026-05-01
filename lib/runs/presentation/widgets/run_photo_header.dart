@@ -37,7 +37,7 @@ class RunPhotoHeader extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
               color: t.primary,
-              borderRadius: BorderRadius.circular(CatchRadius.button),
+              borderRadius: BorderRadius.circular(CatchRadius.pill),
             ),
             child: Text(
               '${run.signedUpCount}/${run.capacityLimit} spots',
@@ -50,8 +50,8 @@ class RunPhotoHeader extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: CatchSpacing.screenH,
-          right: CatchSpacing.screenH,
+          left: CatchSpacing.s5,
+          right: CatchSpacing.s5,
           bottom: 16,
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -90,7 +90,7 @@ class RunPhotoHeader extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.15),
-                  borderRadius: BorderRadius.circular(CatchRadius.button),
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
                   border: Border.all(
                     color: Colors.white.withValues(alpha: 0.3),
                     width: 1,

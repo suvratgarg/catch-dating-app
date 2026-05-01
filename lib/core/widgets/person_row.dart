@@ -101,7 +101,7 @@ class PersonRow extends StatelessWidget {
         color: data.isFresh ? t.primarySoft : Colors.transparent,
         child: Padding(
           padding: const EdgeInsets.symmetric(
-            horizontal: CatchSpacing.screenH,
+            horizontal: CatchSpacing.s5,
             vertical: 10,
           ),
           child: Row(
@@ -151,13 +151,13 @@ class _ChatLayout extends StatelessWidget {
             Expanded(
               child: Text(
                 data.name,
-                style: CatchTextStyles.labelLg(context),
+                style: CatchTextStyles.titleM(context),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
             ),
             if (data.timestamp != null)
-              Text(data.timestamp!, style: CatchTextStyles.caption(context)),
+              Text(data.timestamp!, style: CatchTextStyles.bodyS(context)),
           ],
         ),
         // Run context with route icon
@@ -170,7 +170,7 @@ class _ChatLayout extends StatelessWidget {
               Expanded(
                 child: Text(
                   data.contextLine!,
-                  style: CatchTextStyles.caption(context),
+                  style: CatchTextStyles.bodyS(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -185,11 +185,15 @@ class _ChatLayout extends StatelessWidget {
             Expanded(
               child: Text(
                 data.isTyping ? 'Typing…' : data.lastMessage!,
-                style: CatchTextStyles.bodySm(
-                  context,
-                  color: data.isTyping ? t.primary : t.ink2,
-                  weight: data.isTyping ? FontWeight.w500 : FontWeight.w400,
-                ),
+                style:
+                    CatchTextStyles.bodyS(
+                      context,
+                      color: data.isTyping ? t.primary : t.ink2,
+                    ).copyWith(
+                      fontWeight: data.isTyping
+                          ? FontWeight.w500
+                          : FontWeight.w400,
+                    ),
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -200,7 +204,7 @@ class _ChatLayout extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
                 decoration: BoxDecoration(
                   color: t.primary,
-                  borderRadius: BorderRadius.circular(CatchRadius.button),
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
                 ),
                 child: Text(
                   '${data.unreadCount}',
@@ -233,7 +237,7 @@ class _RosterLayout extends StatelessWidget {
       children: [
         Text(
           data.name,
-          style: CatchTextStyles.labelLg(context),
+          style: CatchTextStyles.titleM(context),
           maxLines: 1,
           overflow: TextOverflow.ellipsis,
         ),
@@ -241,7 +245,7 @@ class _RosterLayout extends StatelessWidget {
           const SizedBox(height: 3),
           Text(
             data.metaLine!,
-            style: CatchTextStyles.bodySm(context),
+            style: CatchTextStyles.bodyS(context),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -259,7 +263,7 @@ class _RosterLayout extends StatelessWidget {
               Expanded(
                 child: Text(
                   data.contextLine!,
-                  style: CatchTextStyles.caption(context),
+                  style: CatchTextStyles.bodyS(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

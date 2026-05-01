@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
 
@@ -46,19 +47,16 @@ class StrideCard extends StatelessWidget {
     final totalKm = kmPerDay.fold<double>(0, (s, v) => s + v);
     final maxKm = kmPerDay.fold<double>(0, (m, v) => v > m ? v : m);
 
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p18),
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border.all(color: t.line),
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-      ),
+      borderColor: t.line,
+      backgroundColor: t.surface,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'Your stride · this week',
-            style: CatchTextStyles.displaySm(context),
+            style: CatchTextStyles.titleL(context),
           ),
           gapH8,
           Row(
@@ -67,14 +65,14 @@ class StrideCard extends StatelessWidget {
             children: [
               Text(
                 totalKm.toStringAsFixed(1),
-                style: CatchTextStyles.displayXl(
+                style: CatchTextStyles.displayXL(
                   context,
                 ).copyWith(fontSize: 36, letterSpacing: -1),
               ),
               gapW6,
               Text(
                 'km · ${thisWeek.length} run${thisWeek.length == 1 ? '' : 's'}',
-                style: CatchTextStyles.bodySm(context),
+                style: CatchTextStyles.bodyS(context),
               ),
             ],
           ),

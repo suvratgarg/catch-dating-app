@@ -20,7 +20,7 @@ class StatsStrip extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
         color: t.raised,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
         border: Border.all(color: t.line),
       ),
       child: Row(
@@ -51,11 +51,11 @@ class StatCell extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Text(value, style: CatchTextStyles.monoLg(context)),
+          Text(value, style: CatchTextStyles.mono(context)),
           const SizedBox(height: 2),
           Text(
             label,
-            style: CatchTextStyles.caption(context, color: t.ink3),
+            style: CatchTextStyles.bodyS(context, color: t.ink3),
             textAlign: TextAlign.center,
           ),
         ],

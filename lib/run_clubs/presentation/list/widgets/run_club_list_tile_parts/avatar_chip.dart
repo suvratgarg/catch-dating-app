@@ -36,7 +36,7 @@ class _AvatarChip extends StatelessWidget {
             const SizedBox(height: 4),
             Text(
               club.name,
-              style: CatchTextStyles.labelSm(
+              style: CatchTextStyles.labelM(
                 context,
                 color: isActive ? t.primary : t.ink2,
               ),

@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class ProfileSectionCard extends StatelessWidget {
@@ -14,14 +16,12 @@ class ProfileSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return CatchSurface(
       margin: margin,
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white.withAlpha(14),
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withAlpha(28)),
-      ),
+      backgroundColor: Colors.white.withAlpha(14),
+      borderColor: Colors.white.withAlpha(28),
+      radius: CatchRadius.md,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

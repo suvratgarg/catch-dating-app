@@ -29,7 +29,7 @@ class CityPicker extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: t.surface,
-          borderRadius: BorderRadius.circular(CatchRadius.button),
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
           border: Border.all(color: t.line),
         ),
         child: Row(
@@ -39,7 +39,7 @@ class CityPicker extends StatelessWidget {
             const SizedBox(width: 6),
             Text(
               selectedCity.label,
-              style: CatchTextStyles.labelMd(context, color: t.ink),
+              style: CatchTextStyles.labelL(context, color: t.ink),
             ),
             const SizedBox(width: 4),
             Icon(Icons.expand_more_rounded, size: 18, color: t.ink2),

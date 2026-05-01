@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -13,12 +15,10 @@ class EmptyHeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = tokens;
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p20),
-      decoration: BoxDecoration(
-        gradient: t.heroGrad as LinearGradient,
-        borderRadius: BorderRadius.circular(22),
-      ),
+      radius: 22,
+      gradient: t.heroGrad,
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
@@ -35,7 +35,7 @@ class EmptyHeroCard extends StatelessWidget {
             children: [
               Text(
                 '● NO RUNS BOOKED',
-                style: CatchTextStyles.labelSm(
+                style: CatchTextStyles.labelM(
                   context,
                   color: Colors.white,
                 ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.4),
@@ -43,7 +43,7 @@ class EmptyHeroCard extends StatelessWidget {
               gapH10,
               Text(
                 'Your catches unlock\nafter your first run.',
-                style: CatchTextStyles.displayLg(
+                style: CatchTextStyles.displayL(
                   context,
                   color: Colors.white,
                 ).copyWith(letterSpacing: -0.52, height: 1.1),
@@ -51,26 +51,20 @@ class EmptyHeroCard extends StatelessWidget {
               gapH8,
               Text(
                 "Book a group run. Show up. Meet people.\nThen we'll hand you the roster.",
-                style: CatchTextStyles.bodySm(
+                style: CatchTextStyles.bodyS(
                   context,
                   color: Colors.white,
                 ).copyWith(height: 1.5),
               ),
               gapH16,
-              FilledButton(
+              CatchButton(
+                label: 'Find a run near me',
                 onPressed: () => context.go(Routes.runClubsListScreen.path),
-                style: FilledButton.styleFrom(
-                  backgroundColor: Colors.white,
-                  foregroundColor: t.ink,
-                  minimumSize: const Size(double.infinity, 52),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(CatchRadius.button),
-                  ),
-                ),
-                child: Text(
-                  'Find a run near me',
-                  style: CatchTextStyles.labelLg(context, color: t.ink),
-                ),
+                size: CatchButtonSize.lg,
+                fullWidth: true,
+                backgroundColor: Colors.white,
+                foregroundColor: t.ink,
+                borderColor: Colors.transparent,
               ),
             ],
           ),

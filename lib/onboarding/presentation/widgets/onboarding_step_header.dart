@@ -17,16 +17,13 @@ class OnboardingStepHeader extends StatelessWidget {
       children: [
         Text(
           title,
-          style: CatchTextStyles.displaySm(
+          style: CatchTextStyles.titleL(
             context,
           ).copyWith(fontWeight: FontWeight.bold, color: t.ink),
         ),
         if (subtitle != null && subtitle!.isNotEmpty) ...[
           const SizedBox(height: 8),
-          Text(
-            subtitle!,
-            style: CatchTextStyles.bodyMd(context, color: t.ink2),
-          ),
+          Text(subtitle!, style: CatchTextStyles.bodyM(context, color: t.ink2)),
         ],
       ],
     );

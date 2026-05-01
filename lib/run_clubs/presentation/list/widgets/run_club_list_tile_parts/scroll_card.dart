@@ -11,72 +11,66 @@ class _ScrollCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return GestureDetector(
+    return CatchSurface(
       onTap: onTap,
-      child: Container(
-        width: 220,
-        decoration: BoxDecoration(
-          color: t.surface,
-          border: Border.all(color: t.line),
-          borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            SizedBox(
-              height: 104,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  _ClubImage(imageUrl: club.imageUrl, seed: club.id),
-                  if (isJoined)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        width: 24,
-                        height: 24,
-                        decoration: BoxDecoration(
-                          color: Colors.white.withValues(alpha: 0.95),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          Icons.check_rounded,
-                          size: 14,
-                          color: Colors.black,
-                        ),
+      width: 220,
+      borderColor: t.line,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SizedBox(
+            height: 104,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _ClubImage(imageUrl: club.imageUrl, seed: club.id),
+                if (isJoined)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      width: 24,
+                      height: 24,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.95),
+                        shape: BoxShape.circle,
+                      ),
+                      child: const Icon(
+                        Icons.check_rounded,
+                        size: 14,
+                        color: Colors.black,
                       ),
                     ),
-                ],
-              ),
+                  ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  club.name,
+                  style: CatchTextStyles.titleM(context),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                if (isJoined) ...[
+                  const SizedBox(height: 2),
                   Text(
-                    club.name,
-                    style: CatchTextStyles.labelLg(context),
+                    club.nextRunLabel ?? 'Next run coming up',
+                    style: CatchTextStyles.bodyS(context, color: t.primary),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  if (isJoined) ...[
-                    const SizedBox(height: 2),
-                    Text(
-                      club.nextRunLabel ?? 'Next run coming up',
-                      style: CatchTextStyles.caption(context, color: t.primary),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
                 ],
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

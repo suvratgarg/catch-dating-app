@@ -33,7 +33,7 @@ class SwipeStamp extends StatelessWidget {
         ),
         child: Text(
           kind.label,
-          style: CatchTextStyles.displayLg(
+          style: CatchTextStyles.displayL(
             context,
             color: color,
           ).copyWith(fontWeight: FontWeight.w900, letterSpacing: 2),

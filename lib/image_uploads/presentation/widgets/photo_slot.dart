@@ -41,7 +41,7 @@ class PhotoSlot extends StatelessWidget {
     return GestureDetector(
       onTap: isActive && !isLoading ? onTap : null,
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
         child: Stack(
           fit: StackFit.expand,
           children: [

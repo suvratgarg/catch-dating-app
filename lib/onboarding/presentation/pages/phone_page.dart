@@ -2,6 +2,8 @@ import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -67,39 +69,37 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               subtitle: "We'll send you a one-time code to verify.",
             ),
             const SizedBox(height: 40),
-            TextFormField(
+            CatchTextField(
+              label: 'Mobile number',
               controller: _phoneController,
               autofocus: shouldAutofocus,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.telephoneNumberNational],
-              onFieldSubmitted: (_) => _submit(),
+              onSubmitted: (_) => _submit(),
               onChanged: (_) => OnboardingController.sendOtpMutation.reset(ref),
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),
               ],
-              decoration: InputDecoration(
-                prefixIcon: Container(
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 14,
-                  ),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: t.surface,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    '+91',
-                    style: CatchTextStyles.bodyMd(context, color: t.ink),
-                  ),
+              hintText: '98765 43210',
+              prefixIcon: Container(
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 14,
                 ),
-                hintText: '98765 43210',
-                labelText: 'Mobile number',
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 2,
+                ),
+                decoration: BoxDecoration(
+                  color: t.surface,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  '+91',
+                  style: CatchTextStyles.bodyM(context, color: t.ink),
+                ),
               ),
               validator: (v) {
                 if (v == null || v.trim().length != 10) {
@@ -115,18 +115,12 @@ class _PhonePageState extends ConsumerState<PhonePage> {
               ),
             ],
             const Spacer(),
-            FilledButton(
-              onPressed: mutation.isPending ? null : _submit,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
-              child: mutation.isPending
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : const Text('Send code'),
+            CatchButton(
+              label: 'Send code',
+              onPressed: _submit,
+              isLoading: mutation.isPending,
+              fullWidth: true,
+              size: CatchButtonSize.lg,
             ),
             const SizedBox(height: 32),
           ],

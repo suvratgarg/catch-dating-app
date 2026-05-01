@@ -29,8 +29,8 @@ class ProfileInfoTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: CatchTextStyles.caption(context)),
-                Text(value, style: CatchTextStyles.bodyLg(context)),
+                Text(label, style: CatchTextStyles.bodyS(context)),
+                Text(value, style: CatchTextStyles.bodyL(context)),
               ],
             ),
           ),

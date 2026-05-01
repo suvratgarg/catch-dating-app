@@ -123,14 +123,14 @@ class RunDetailBody extends ConsumerWidget {
           ),
           SliverPadding(
             padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.screenH,
+              CatchSpacing.s5,
               20,
-              CatchSpacing.screenH,
+              CatchSpacing.s5,
               32,
             ),
             sliver: SliverList.list(
               children: [
-                Text(run.title, style: CatchTextStyles.displayLg(context)),
+                Text(run.title, style: CatchTextStyles.displayL(context)),
                 const SizedBox(height: 6),
                 Row(
                   children: [
@@ -138,7 +138,7 @@ class RunDetailBody extends ConsumerWidget {
                     const SizedBox(width: 6),
                     Text(
                       run.shortDateLabel,
-                      style: CatchTextStyles.bodySm(context, color: t.ink2),
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -150,7 +150,7 @@ class RunDetailBody extends ConsumerWidget {
                   const SizedBox(height: 16),
                   Text(
                     run.description,
-                    style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                    style: CatchTextStyles.bodyM(context, color: t.ink2),
                   ),
                 ],
                 if (run.hasRequirements) ...[

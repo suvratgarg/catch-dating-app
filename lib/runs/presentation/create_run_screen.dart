@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
@@ -324,9 +325,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 12,
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 0,
               ),
               child: Row(
@@ -346,27 +347,27 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                       children: [
                         Text(
                           _stepTitle(_currentStep),
-                          style: CatchTextStyles.displaySm(context),
+                          style: CatchTextStyles.titleL(context),
                         ),
                         Text(
                           widget.runClub.name,
-                          style: CatchTextStyles.bodySm(context, color: t.ink2),
+                          style: CatchTextStyles.bodyS(context, color: t.ink2),
                         ),
                       ],
                     ),
                   ),
                   Text(
                     '${_currentStep + 1}/$_totalSteps',
-                    style: CatchTextStyles.labelMd(context, color: t.ink2),
+                    style: CatchTextStyles.labelL(context, color: t.ink2),
                   ),
                 ],
               ),
             ),
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 12,
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 0,
               ),
               child: StepProgressBar(
@@ -457,7 +458,7 @@ class CreateRunSuccessScreen extends StatelessWidget {
         decoration: BoxDecoration(gradient: CatchTokens.sunsetLight.heroGrad),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(CatchSpacing.screenH),
+            padding: const EdgeInsets.all(CatchSpacing.s5),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
@@ -492,7 +493,7 @@ class CreateRunSuccessScreen extends StatelessWidget {
                 const SizedBox(height: 20),
                 Text(
                   'Your run is live.',
-                  style: CatchTextStyles.displayXl(
+                  style: CatchTextStyles.displayXL(
                     context,
                     color: Colors.white,
                   ),
@@ -500,14 +501,14 @@ class CreateRunSuccessScreen extends StatelessWidget {
                 const SizedBox(height: 10),
                 Text(
                   '${run.title} is now listed on ${runClub.name}. Followers can discover it from their home feed.',
-                  style: CatchTextStyles.bodyLg(context, color: Colors.white),
+                  style: CatchTextStyles.bodyL(context, color: Colors.white),
                 ),
                 const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: successInk.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+                    borderRadius: BorderRadius.circular(CatchRadius.lg),
                     border: Border.all(
                       color: successInk.withValues(alpha: 0.18),
                     ),
@@ -523,7 +524,7 @@ class CreateRunSuccessScreen extends StatelessWidget {
                       Expanded(
                         child: Text(
                           'Bookings, waitlist, and attendance are tracked from Manage run.',
-                          style: CatchTextStyles.bodySm(
+                          style: CatchTextStyles.bodyS(
                             context,
                             color: successInk,
                           ),
@@ -533,26 +534,23 @@ class CreateRunSuccessScreen extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 28),
-                FilledButton(
+                CatchButton(
+                  label: 'Manage run',
                   onPressed: onManageRun,
-                  style: FilledButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: successInk,
-                  ),
-                  child: const Text('Manage run'),
+                  fullWidth: true,
+                  backgroundColor: Colors.white,
+                  foregroundColor: successInk,
+                  borderColor: Colors.transparent,
                 ),
                 const SizedBox(height: 10),
-                OutlinedButton(
+                CatchButton(
+                  label: 'Back to club',
                   onPressed: onDone,
-                  style: OutlinedButton.styleFrom(
-                    backgroundColor: Colors.white.withValues(alpha: 0.72),
-                    foregroundColor: successInk,
-                    side: BorderSide(color: successInk.withValues(alpha: 0.20)),
-                  ),
-                  child: Text(
-                    'Back to club',
-                    style: CatchTextStyles.labelLg(context, color: successInk),
-                  ),
+                  variant: CatchButtonVariant.secondary,
+                  fullWidth: true,
+                  backgroundColor: Colors.white.withValues(alpha: 0.72),
+                  foregroundColor: successInk,
+                  borderColor: successInk.withValues(alpha: 0.20),
                 ),
               ],
             ),
@@ -585,9 +583,9 @@ class HostRunManageScreen extends StatelessWidget {
       body: SafeArea(
         child: ListView(
           padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.screenH,
+            CatchSpacing.s5,
             12,
-            CatchSpacing.screenH,
+            CatchSpacing.s5,
             24,
           ),
           children: [
@@ -608,16 +606,13 @@ class HostRunManageScreen extends StatelessWidget {
                     children: [
                       Text(
                         'HOST MANAGE',
-                        style: CatchTextStyles.labelSm(context, color: t.ink3)
+                        style: CatchTextStyles.labelM(context, color: t.ink3)
                             .copyWith(
                               fontWeight: FontWeight.w700,
                               letterSpacing: 1.2,
                             ),
                       ),
-                      Text(
-                        run.title,
-                        style: CatchTextStyles.displaySm(context),
-                      ),
+                      Text(run.title, style: CatchTextStyles.titleL(context)),
                     ],
                   ),
                 ),
@@ -629,7 +624,7 @@ class HostRunManageScreen extends StatelessWidget {
                 padding: const EdgeInsets.all(14),
                 decoration: BoxDecoration(
                   color: t.ink,
-                  borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+                  borderRadius: BorderRadius.circular(CatchRadius.lg),
                 ),
                 child: Row(
                   children: [
@@ -637,7 +632,7 @@ class HostRunManageScreen extends StatelessWidget {
                     const SizedBox(width: 10),
                     Text(
                       'FULL',
-                      style: CatchTextStyles.labelLg(context, color: t.surface),
+                      style: CatchTextStyles.titleM(context, color: t.surface),
                     ),
                   ],
                 ),
@@ -668,7 +663,7 @@ class HostRunManageScreen extends StatelessWidget {
             const SizedBox(height: 20),
             _HostRunSummaryCard(runClub: runClub, run: run),
             const SizedBox(height: 20),
-            Text('Roster', style: CatchTextStyles.displaySm(context)),
+            Text('Roster', style: CatchTextStyles.titleL(context)),
             const SizedBox(height: 10),
             _HostUserList(
               userIds: run.signedUpUserIds,
@@ -676,7 +671,7 @@ class HostRunManageScreen extends StatelessWidget {
               trailingLabel: run.isFree ? 'FREE' : 'PAID',
             ),
             const SizedBox(height: 20),
-            Text('Waitlist', style: CatchTextStyles.displaySm(context)),
+            Text('Waitlist', style: CatchTextStyles.titleL(context)),
             const SizedBox(height: 10),
             _HostUserList(
               userIds: run.waitlistUserIds,
@@ -710,16 +705,16 @@ class _HostManageStat extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
         decoration: BoxDecoration(
           color: t.surface,
-          borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+          borderRadius: BorderRadius.circular(CatchRadius.lg),
           border: Border.all(color: t.line),
         ),
         child: Column(
           children: [
             Icon(icon, color: t.primary, size: 18),
             const SizedBox(height: 6),
-            Text(value, style: CatchTextStyles.labelLg(context)),
+            Text(value, style: CatchTextStyles.titleM(context)),
             const SizedBox(height: 2),
-            Text(label, style: CatchTextStyles.caption(context)),
+            Text(label, style: CatchTextStyles.bodyS(context)),
           ],
         ),
       ),
@@ -742,7 +737,7 @@ class _HostRunSummaryCard extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
         border: Border.all(color: t.line),
       ),
       child: Column(
@@ -798,12 +793,12 @@ class _HostSummaryRow extends StatelessWidget {
           children: [
             Icon(icon, color: t.ink2, size: 18),
             const SizedBox(width: 10),
-            Text(label, style: CatchTextStyles.bodySm(context, color: t.ink2)),
+            Text(label, style: CatchTextStyles.bodyS(context, color: t.ink2)),
             const Spacer(),
             Flexible(
               child: Text(
                 value,
-                style: CatchTextStyles.labelMd(context),
+                style: CatchTextStyles.labelL(context),
                 textAlign: TextAlign.right,
                 overflow: TextOverflow.ellipsis,
               ),
@@ -838,7 +833,7 @@ class _HostUserList extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
         border: Border.all(color: t.line),
       ),
       child: userIds.isEmpty
@@ -846,7 +841,7 @@ class _HostUserList extends StatelessWidget {
               padding: const EdgeInsets.all(16),
               child: Text(
                 emptyText,
-                style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                style: CatchTextStyles.bodyM(context, color: t.ink2),
               ),
             )
           : Column(
@@ -857,7 +852,7 @@ class _HostUserList extends StatelessWidget {
                       backgroundColor: t.primarySoft,
                       child: Text(
                         userIds[i].characters.first.toUpperCase(),
-                        style: CatchTextStyles.labelMd(
+                        style: CatchTextStyles.labelL(
                           context,
                           color: t.primary,
                         ),
@@ -872,11 +867,11 @@ class _HostUserList extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: t.primarySoft,
-                        borderRadius: BorderRadius.circular(CatchRadius.button),
+                        borderRadius: BorderRadius.circular(CatchRadius.pill),
                       ),
                       child: Text(
                         trailingLabel,
-                        style: CatchTextStyles.labelSm(
+                        style: CatchTextStyles.labelM(
                           context,
                           color: t.primary,
                         ),

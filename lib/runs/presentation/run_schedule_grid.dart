@@ -124,7 +124,7 @@ class RunScheduleGrid extends StatelessWidget {
                 padding: const EdgeInsets.only(right: 6, top: 4),
                 child: Text(
                   '${hour.toString().padLeft(2, '0')}:00',
-                  style: CatchTextStyles.labelSm(context, color: t.ink2),
+                  style: CatchTextStyles.labelM(context, color: t.ink2),
                   textAlign: TextAlign.right,
                 ),
               ),

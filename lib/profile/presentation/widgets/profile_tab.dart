@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_info_section.dart';
@@ -123,9 +124,9 @@ class ProfileTab extends ConsumerWidget {
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p8,
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p32,
       ),
       children: [
@@ -139,12 +140,14 @@ class ProfileTab extends ConsumerWidget {
         gapH14,
         _RunningIdentityCard(user: user, tokens: t),
         gapH14,
-        FilledButton.tonal(
+        CatchButton(
+          label: 'Preview as others see you',
           onPressed: () => DefaultTabController.of(context).animateTo(1),
-          child: const Text('Preview as others see you'),
+          variant: CatchButtonVariant.secondary,
+          fullWidth: true,
         ),
         gapH24,
-        Text('Photos', style: CatchTextStyles.displaySm(context)),
+        Text('Photos', style: CatchTextStyles.titleL(context)),
         gapH12,
         PhotoGrid(
           photoUrls: user.photoUrls,
@@ -195,7 +198,7 @@ class _ProfileHeroCard extends StatelessWidget {
                 child: Center(
                   child: Text(
                     user.name.characters.first.toUpperCase(),
-                    style: CatchTextStyles.displayLg(
+                    style: CatchTextStyles.displayL(
                       context,
                       color: t.primaryInk,
                     ).copyWith(fontSize: 80),
@@ -219,20 +222,15 @@ class _ProfileHeroCard extends StatelessWidget {
             Positioned(
               top: 12,
               right: 12,
-              child: TextButton.icon(
-                style: TextButton.styleFrom(
-                  backgroundColor: Colors.white.withValues(alpha: 0.92),
-                  foregroundColor: Colors.black,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 12,
-                    vertical: 8,
-                  ),
-                  shape: const StadiumBorder(),
-                ),
+              child: CatchButton(
+                label: 'Edit',
                 onPressed: () =>
                     context.pushNamed(Routes.editProfileScreen.name),
                 icon: const Icon(Icons.edit_outlined, size: 14),
-                label: const Text('Edit'),
+                size: CatchButtonSize.sm,
+                backgroundColor: Colors.white.withValues(alpha: 0.92),
+                foregroundColor: Colors.black,
+                borderColor: Colors.transparent,
               ),
             ),
             Positioned(
@@ -244,7 +242,7 @@ class _ProfileHeroCard extends StatelessWidget {
                 children: [
                   Text(
                     '${user.name}, ${user.age}',
-                    style: CatchTextStyles.displayLg(
+                    style: CatchTextStyles.displayL(
                       context,
                       color: Colors.white,
                     ),
@@ -252,7 +250,7 @@ class _ProfileHeroCard extends StatelessWidget {
                   gapH4,
                   Text(
                     _profileSubtitle(user),
-                    style: CatchTextStyles.bodySm(
+                    style: CatchTextStyles.bodyS(
                       context,
                       color: Colors.white.withValues(alpha: 0.9),
                     ),
@@ -297,7 +295,7 @@ class _ProfileStatsStrip extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p16),
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
         border: Border.all(color: tokens.line),
       ),
       child: Row(
@@ -312,7 +310,7 @@ class _ProfileStatsStrip extends StatelessWidget {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         stats[i].$2,
-                        style: CatchTextStyles.displaySm(context),
+                        style: CatchTextStyles.titleL(context),
                         maxLines: 1,
                         textAlign: TextAlign.center,
                         softWrap: false,
@@ -322,7 +320,7 @@ class _ProfileStatsStrip extends StatelessWidget {
                   gapH2,
                   Text(
                     stats[i].$1.toUpperCase(),
-                    style: CatchTextStyles.labelSm(context, color: tokens.ink3),
+                    style: CatchTextStyles.labelM(context, color: tokens.ink3),
                   ),
                 ],
               ),
@@ -353,17 +351,17 @@ class _PromptCard extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p16),
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
         border: Border.all(color: tokens.line),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(eyebrow.toUpperCase(), style: CatchTextStyles.labelSm(context)),
+          Text(eyebrow.toUpperCase(), style: CatchTextStyles.labelM(context)),
           gapH6,
           Text(
             text,
-            style: CatchTextStyles.displaySm(context).copyWith(height: 1.2),
+            style: CatchTextStyles.titleL(context).copyWith(height: 1.2),
           ),
         ],
       ),
@@ -385,14 +383,14 @@ class _RunningIdentityCard extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p18),
       decoration: BoxDecoration(
         color: t.ink,
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             'RUN PROFILE',
-            style: CatchTextStyles.labelSm(
+            style: CatchTextStyles.labelM(
               context,
               color: t.surface.withValues(alpha: 0.72),
             ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.2),
@@ -400,7 +398,7 @@ class _RunningIdentityCard extends StatelessWidget {
           gapH8,
           Text(
             '${user.name.split(' ').first} runs ${_paceRange(user)}',
-            style: CatchTextStyles.displayMd(context, color: t.surface),
+            style: CatchTextStyles.displayM(context, color: t.surface),
           ),
           gapH14,
           Row(
@@ -418,7 +416,7 @@ class _RunningIdentityCard extends StatelessWidget {
             gapH12,
             Text(
               user.runningReasons.map((reason) => reason.label).join(' · '),
-              style: CatchTextStyles.bodySm(
+              style: CatchTextStyles.bodyS(
                 context,
                 color: t.surface.withValues(alpha: 0.76),
               ),
@@ -475,7 +473,7 @@ class _RunStatPill extends StatelessWidget {
           children: [
             Text(
               label,
-              style: CatchTextStyles.caption(
+              style: CatchTextStyles.bodyS(
                 context,
                 color: t.surface.withValues(alpha: 0.64),
               ),

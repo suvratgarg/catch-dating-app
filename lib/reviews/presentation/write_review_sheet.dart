@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
@@ -110,7 +112,7 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
         children: [
           Text(
             _isEdit ? 'Edit review' : 'Write a review',
-            style: CatchTextStyles.displaySm(
+            style: CatchTextStyles.titleL(
               context,
             ).copyWith(fontWeight: FontWeight.bold),
           ),
@@ -120,31 +122,23 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
             onChanged: (r) => setState(() => _rating = r),
           ),
           gapH16,
-          TextField(
+          CatchTextField(
+            label: 'Review',
             controller: _commentController,
             maxLines: 3,
-            decoration: const InputDecoration(
-              hintText: 'Share your experience (optional)',
-              border: OutlineInputBorder(),
-            ),
+            hintText: 'Share your experience (optional)',
+            textCapitalization: TextCapitalization.sentences,
           ),
           if (mutation.hasError) ...[
             gapH12,
             ErrorBanner(message: (mutation as MutationError).error.toString()),
           ],
           gapH20,
-          SizedBox(
-            width: double.infinity,
-            child: FilledButton(
-              onPressed: _rating == 0 || mutation.isPending ? null : _submit,
-              child: mutation.isPending
-                  ? const SizedBox(
-                      width: 18,
-                      height: 18,
-                      child: CircularProgressIndicator(strokeWidth: 2),
-                    )
-                  : Text(_isEdit ? 'Save' : 'Submit'),
-            ),
+          CatchButton(
+            label: _isEdit ? 'Save' : 'Submit',
+            onPressed: _rating == 0 ? null : _submit,
+            isLoading: mutation.isPending,
+            fullWidth: true,
           ),
         ],
       ),

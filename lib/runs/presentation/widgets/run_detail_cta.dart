@@ -164,10 +164,10 @@ class PriceLeading extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        Text(price, style: CatchTextStyles.displaySm(context)),
+        Text(price, style: CatchTextStyles.titleL(context)),
         Text(
           'per person',
-          style: CatchTextStyles.caption(
+          style: CatchTextStyles.bodyS(
             context,
             color: CatchTokens.of(context).ink2,
           ),
@@ -188,7 +188,7 @@ class BookedLeading extends StatelessWidget {
       children: [
         Icon(Icons.check_circle_rounded, color: t.primary, size: 18),
         const SizedBox(width: 6),
-        Text("You're in!", style: CatchTextStyles.labelMd(context)),
+        Text("You're in!", style: CatchTextStyles.labelL(context)),
       ],
     );
   }
@@ -205,7 +205,7 @@ class AttendedLeading extends StatelessWidget {
       children: [
         Icon(Icons.directions_run_rounded, color: t.primary, size: 18),
         const SizedBox(width: 6),
-        Text('Completed', style: CatchTextStyles.labelMd(context)),
+        Text('Completed', style: CatchTextStyles.labelL(context)),
       ],
     );
   }

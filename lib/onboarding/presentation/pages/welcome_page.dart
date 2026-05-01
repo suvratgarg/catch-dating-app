@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ class WelcomePage extends ConsumerWidget {
                   children: [
                     Text(
                       '● CATCH',
-                      style: CatchTextStyles.labelSm(context).copyWith(
+                      style: CatchTextStyles.labelM(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 2,
@@ -38,7 +39,7 @@ class WelcomePage extends ConsumerWidget {
                     const Spacer(),
                     Text(
                       'Love arrives\nat mile\nthree.',
-                      style: CatchTextStyles.displayXl(context).copyWith(
+                      style: CatchTextStyles.displayXL(context).copyWith(
                         color: Colors.white,
                         fontSize: 48,
                         fontWeight: FontWeight.w800,
@@ -50,22 +51,21 @@ class WelcomePage extends ConsumerWidget {
                     Text(
                       'Meet someone on a group run. Swipe on people you '
                       'actually ran with - not strangers 30 miles away.',
-                      style: CatchTextStyles.bodyMd(context).copyWith(
+                      style: CatchTextStyles.bodyM(context).copyWith(
                         color: Colors.white.withValues(alpha: 0.88),
                         height: 1.35,
                       ),
                     ),
                     const SizedBox(height: 26),
-                    FilledButton(
+                    CatchButton(
+                      label: 'Continue with phone',
                       onPressed: () =>
                           controller.goToStep(OnboardingStep.phone),
-                      style: FilledButton.styleFrom(
-                        minimumSize: const Size.fromHeight(56),
-                        backgroundColor: Colors.white,
-                        foregroundColor: t.primary,
-                        textStyle: CatchTextStyles.labelLg(context),
-                      ),
-                      child: const Text('Continue with phone'),
+                      size: CatchButtonSize.lg,
+                      fullWidth: true,
+                      backgroundColor: Colors.white,
+                      foregroundColor: t.primary,
+                      borderColor: Colors.transparent,
                     ),
                   ],
                 ),

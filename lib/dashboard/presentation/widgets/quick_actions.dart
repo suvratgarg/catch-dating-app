@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -42,44 +43,36 @@ class QuickActions extends StatelessWidget {
             padding: EdgeInsets.only(right: a == _actions.last ? 0 : 10),
             child: Opacity(
               opacity: a.route == null ? 0.7 : 1,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: a.route == null ? null : () => _onTap(context, a),
-                  borderRadius: BorderRadius.circular(16),
-                  child: Ink(
-                    padding: const EdgeInsets.all(14),
-                    decoration: BoxDecoration(
-                      color: t.surface,
-                      border: Border.all(color: t.line),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              child: CatchSurface(
+                onTap: a.route == null ? null : () => _onTap(context, a),
+                padding: const EdgeInsets.all(14),
+                radius: 16,
+                borderColor: t.line,
+                backgroundColor: t.surface,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 36,
-                              height: 36,
-                              decoration: BoxDecoration(
-                                color: t.primarySoft,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Icon(a.icon, color: t.primary, size: 18),
-                            ),
-                            const Spacer(),
-                          ],
+                        Container(
+                          width: 36,
+                          height: 36,
+                          decoration: BoxDecoration(
+                            color: t.primarySoft,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Icon(a.icon, color: t.primary, size: 18),
                         ),
-                        const SizedBox(height: 8),
-                        Text(
-                          a.label,
-                          style: CatchTextStyles.labelMd(context),
-                          maxLines: 2,
-                        ),
+                        const Spacer(),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: 8),
+                    Text(
+                      a.label,
+                      style: CatchTextStyles.labelL(context),
+                      maxLines: 2,
+                    ),
+                  ],
                 ),
               ),
             ),

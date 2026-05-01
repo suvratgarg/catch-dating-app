@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -29,7 +30,7 @@ void main() {
       );
       expect(
         tester
-            .widget<TextButton>(find.widgetWithText(TextButton, 'Confirm'))
+            .widget<CatchButton>(find.widgetWithText(CatchButton, 'Confirm'))
             .onPressed,
         isNull,
       );
@@ -54,7 +55,7 @@ void main() {
       expect(find.text('19.110000, 72.910000'), findsOneWidget);
       expect(
         tester
-            .widget<TextButton>(find.widgetWithText(TextButton, 'Confirm'))
+            .widget<CatchButton>(find.widgetWithText(CatchButton, 'Confirm'))
             .onPressed,
         isNotNull,
       );
@@ -95,12 +96,12 @@ void main() {
         expect(find.text('19.076000, 72.877700'), findsOneWidget);
         expect(
           tester
-              .widget<TextButton>(find.widgetWithText(TextButton, 'Confirm'))
+              .widget<CatchButton>(find.widgetWithText(CatchButton, 'Confirm'))
               .onPressed,
           isNotNull,
         );
 
-        await tester.tap(find.widgetWithText(TextButton, 'Confirm'));
+        await tester.tap(find.widgetWithText(CatchButton, 'Confirm'));
         await tester.pumpAndSettle();
 
         expect(find.text('Open'), findsOneWidget);

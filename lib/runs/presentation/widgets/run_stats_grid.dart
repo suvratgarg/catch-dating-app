@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
@@ -13,13 +14,11 @@ class RunStatsGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
-      decoration: BoxDecoration(
-        color: t.raised,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
-        border: Border.all(color: t.line),
-      ),
+      tone: CatchSurfaceTone.raised,
+      radius: CatchRadius.md,
+      borderColor: t.line,
       child: Row(
         children: [
           RunStatCell(
@@ -60,20 +59,17 @@ class RunStatCell extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
             children: [
-              Text(value, style: CatchTextStyles.monoLg(context)),
+              Text(value, style: CatchTextStyles.mono(context)),
               if (unit.isNotEmpty) ...[
                 const SizedBox(width: 2),
-                Text(
-                  unit,
-                  style: CatchTextStyles.monoSm(context, color: t.ink2),
-                ),
+                Text(unit, style: CatchTextStyles.mono(context, color: t.ink2)),
               ],
             ],
           ),
           const SizedBox(height: 2),
           Text(
             label,
-            style: CatchTextStyles.caption(context, color: t.ink3),
+            style: CatchTextStyles.bodyS(context, color: t.ink3),
             textAlign: TextAlign.center,
           ),
         ],

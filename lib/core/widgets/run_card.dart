@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/status_chip.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
@@ -141,54 +143,48 @@ class _CompactCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return InkWell(
+    return CatchSurface(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(CatchRadius.card),
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: t.surface,
-          border: Border.all(color: t.line),
-          borderRadius: BorderRadius.circular(CatchRadius.card),
-        ),
-        child: Row(
-          children: [
-            // Distance badge
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: t.primarySoft,
-                borderRadius: BorderRadius.circular(10),
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                data.distanceLabel,
-                style: CatchTextStyles.displaySm(context, color: t.primary),
+      radius: CatchRadius.md,
+      borderColor: t.line,
+      padding: const EdgeInsets.all(12),
+      child: Row(
+        children: [
+          // Distance badge
+          Container(
+            width: 52,
+            height: 52,
+            decoration: BoxDecoration(
+              color: t.primarySoft,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            alignment: Alignment.center,
+            child: Text(
+              data.distanceLabel,
+              style: CatchTextStyles.titleL(context, color: t.primary),
+            ),
+          ),
+          const SizedBox(width: 12),
+          // When + location
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(data.dateTime, style: CatchTextStyles.titleM(context)),
+                const SizedBox(height: 2),
+                Text(data.location, style: CatchTextStyles.bodyS(context)),
+              ],
+            ),
+          ),
+          if (showPrice)
+            Text(
+              data.price,
+              style: CatchTextStyles.titleM(
+                context,
+                color: data.price == 'Free' ? t.accent : t.ink,
               ),
             ),
-            const SizedBox(width: 12),
-            // When + location
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(data.dateTime, style: CatchTextStyles.labelLg(context)),
-                  const SizedBox(height: 2),
-                  Text(data.location, style: CatchTextStyles.bodySm(context)),
-                ],
-              ),
-            ),
-            if (showPrice)
-              Text(
-                data.price,
-                style: CatchTextStyles.labelLg(
-                  context,
-                  color: data.price == 'Free' ? t.accent : t.ink,
-                ),
-              ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -212,86 +208,79 @@ class _StandardCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return InkWell(
+    return CatchSurface(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-      child: Container(
-        decoration: BoxDecoration(
-          color: t.surface,
-          border: Border.all(color: t.line),
-          borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // ── Photo / map header ──────────────────────────────────────────
-            _PhotoHeader(data: data, height: 160),
-            // ── Info body ───────────────────────────────────────────────────
-            Padding(
-              padding: const EdgeInsets.all(CatchSpacing.cardH),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          data.clubName,
-                          style: CatchTextStyles.displaySm(context),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
+      borderColor: t.line,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          // ── Photo / map header ──────────────────────────────────────────
+          _PhotoHeader(data: data, height: 160),
+          // ── Info body ───────────────────────────────────────────────────
+          Padding(
+            padding: const EdgeInsets.all(CatchSpacing.s4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        data.clubName,
+                        style: CatchTextStyles.titleL(context),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      if (showPrice) ...[
-                        const SizedBox(width: 8),
-                        Text(
-                          data.price,
-                          style: CatchTextStyles.labelLg(
-                            context,
-                            color: data.price == 'Free' ? t.accent : t.ink,
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                  const SizedBox(height: 6),
-                  // Location + time row
-                  Row(
-                    children: [
-                      Icon(Icons.location_on_outlined, size: 13, color: t.ink2),
-                      const SizedBox(width: 3),
-                      Flexible(
-                        child: Text(
-                          data.location,
-                          style: CatchTextStyles.bodySm(context),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Icon(Icons.access_time_rounded, size: 13, color: t.ink2),
-                      const SizedBox(width: 3),
-                      Flexible(
-                        child: Text(
-                          data.dateTime,
-                          style: CatchTextStyles.bodySm(context),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                    ),
+                    if (showPrice) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        data.price,
+                        style: CatchTextStyles.titleM(
+                          context,
+                          color: data.price == 'Free' ? t.accent : t.ink,
                         ),
                       ),
                     ],
-                  ),
-                  if (showRoster) ...[
-                    const SizedBox(height: 14),
-                    _RosterRow(data: data),
                   ],
+                ),
+                const SizedBox(height: 6),
+                // Location + time row
+                Row(
+                  children: [
+                    Icon(Icons.location_on_outlined, size: 13, color: t.ink2),
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        data.location,
+                        style: CatchTextStyles.bodyS(context),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Icon(Icons.access_time_rounded, size: 13, color: t.ink2),
+                    const SizedBox(width: 3),
+                    Flexible(
+                      child: Text(
+                        data.dateTime,
+                        style: CatchTextStyles.bodyS(context),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                if (showRoster) ...[
+                  const SizedBox(height: 14),
+                  _RosterRow(data: data),
                 ],
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -315,89 +304,80 @@ class _HeroCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return InkWell(
+    return CatchSurface(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-      child: Container(
-        decoration: BoxDecoration(
-          color: t.surface,
-          border: Border.all(color: t.line),
-          borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _PhotoHeader(data: data, height: 220),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.cardH,
-                16,
-                CatchSpacing.cardH,
-                16,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Club + vibe tags
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          data.clubName,
-                          style: CatchTextStyles.displayMd(context),
-                          maxLines: 2,
+      borderColor: t.line,
+      clipBehavior: Clip.antiAlias,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _PhotoHeader(data: data, height: 220),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s4,
+              16,
+              CatchSpacing.s4,
+              16,
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Club + vibe tags
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        data.clubName,
+                        style: CatchTextStyles.displayM(context),
+                        maxLines: 2,
+                      ),
+                    ),
+                    if (showPrice) ...[
+                      const SizedBox(width: 8),
+                      Text(
+                        data.price,
+                        style: CatchTextStyles.titleL(
+                          context,
+                          color: data.price == 'Free' ? t.accent : t.ink,
                         ),
                       ),
-                      if (showPrice) ...[
-                        const SizedBox(width: 8),
-                        Text(
-                          data.price,
-                          style: CatchTextStyles.displaySm(
-                            context,
-                            color: data.price == 'Free' ? t.accent : t.ink,
-                          ),
-                        ),
-                      ],
                     ],
+                  ],
+                ),
+                if (data.vibes.isNotEmpty) ...[
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    children: data.vibes.map((v) => VibeTag(label: v)).toList(),
                   ),
-                  if (data.vibes.isNotEmpty) ...[
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 6,
-                      children: data.vibes
-                          .map((v) => VibeTag(label: v))
-                          .toList(),
+                ],
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Icon(Icons.location_on_outlined, size: 14, color: t.ink2),
+                    const SizedBox(width: 3),
+                    Text(
+                      data.location,
+                      style: CatchTextStyles.bodyM(context, color: t.ink2),
+                    ),
+                    const SizedBox(width: 12),
+                    Icon(Icons.access_time_rounded, size: 14, color: t.ink2),
+                    const SizedBox(width: 3),
+                    Text(
+                      data.dateTime,
+                      style: CatchTextStyles.bodyM(context, color: t.ink2),
                     ),
                   ],
-                  const SizedBox(height: 10),
-                  Row(
-                    children: [
-                      Icon(Icons.location_on_outlined, size: 14, color: t.ink2),
-                      const SizedBox(width: 3),
-                      Text(
-                        data.location,
-                        style: CatchTextStyles.bodyMd(context, color: t.ink2),
-                      ),
-                      const SizedBox(width: 12),
-                      Icon(Icons.access_time_rounded, size: 14, color: t.ink2),
-                      const SizedBox(width: 3),
-                      Text(
-                        data.dateTime,
-                        style: CatchTextStyles.bodyMd(context, color: t.ink2),
-                      ),
-                    ],
-                  ),
-                  if (showRoster) ...[
-                    const SizedBox(height: 16),
-                    _RosterRow(data: data),
-                  ],
+                ),
+                if (showRoster) ...[
+                  const SizedBox(height: 16),
+                  _RosterRow(data: data),
                 ],
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -414,7 +394,6 @@ class _PhotoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return SizedBox(
       height: height,
       child: Stack(
@@ -438,15 +417,13 @@ class _PhotoHeader extends StatelessWidget {
               spacing: 6,
               children: [
                 if (data.spotsLeft != null)
-                  _Badge(
+                  CatchBadge(
                     label: '🔥 ${data.spotsLeft} SPOTS LEFT',
-                    bg: t.ink,
-                    fg: t.surface,
+                    tone: CatchBadgeTone.solid,
                   ),
-                _Badge(
+                CatchBadge(
                   label: '${data.distanceLabel} · ${data.paceLabel}',
-                  bg: Colors.white.withValues(alpha: 0.9),
-                  fg: t.ink,
+                  tone: CatchBadgeTone.neutral,
                 ),
               ],
             ),
@@ -473,31 +450,6 @@ class _PhotoHeader extends StatelessWidget {
       ),
     );
   }
-}
-
-class _Badge extends StatelessWidget {
-  const _Badge({required this.label, required this.bg, required this.fg});
-  final String label;
-  final Color bg;
-  final Color fg;
-
-  @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-    decoration: BoxDecoration(
-      color: bg,
-      borderRadius: BorderRadius.circular(CatchRadius.button),
-    ),
-    child: Text(
-      label,
-      style: TextStyle(
-        fontSize: 11,
-        fontWeight: FontWeight.w700,
-        letterSpacing: 0.4,
-        color: fg,
-      ),
-    ),
-  );
 }
 
 /// Stacked circular avatars with overflow count — matches the design.
@@ -560,7 +512,7 @@ class _RosterRow extends StatelessWidget {
         Expanded(
           child: RichText(
             text: TextSpan(
-              style: CatchTextStyles.bodySm(context),
+              style: CatchTextStyles.bodyS(context),
               children: [
                 TextSpan(
                   text: '${data.attendeeCount}/${data.capacity} runners',
@@ -573,7 +525,7 @@ class _RosterRow extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
           decoration: BoxDecoration(
             color: t.primary,
-            borderRadius: BorderRadius.circular(CatchRadius.button),
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
           ),
           child: Text(
             'Join →',

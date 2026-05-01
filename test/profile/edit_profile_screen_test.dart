@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_controller.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_screen.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
@@ -43,9 +45,9 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     addTearDown(tester.view.resetDevicePixelRatio);
 
-    final minAgeField = find.widgetWithText(TextFormField, 'Min age').first;
-    final maxAgeField = find.widgetWithText(TextFormField, 'Max age').first;
-    final saveButton = find.widgetWithText(FilledButton, 'Save changes').first;
+    final minAgeField = find.widgetWithText(CatchTextField, 'Min age').first;
+    final maxAgeField = find.widgetWithText(CatchTextField, 'Max age').first;
+    final saveButton = find.widgetWithText(CatchButton, 'Save changes').first;
 
     final repository = FakeUserProfileRepository();
     final container = ProviderContainer(

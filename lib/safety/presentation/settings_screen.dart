@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -32,13 +34,17 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           'minimal records required for safety and payment history.',
         ),
         actions: [
-          TextButton(
+          CatchButton(
+            label: 'Cancel',
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            variant: CatchButtonVariant.ghost,
+            size: CatchButtonSize.sm,
           ),
-          FilledButton(
+          CatchButton(
+            label: 'Delete',
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Delete'),
+            variant: CatchButtonVariant.danger,
+            size: CatchButtonSize.sm,
           ),
         ],
       ),
@@ -60,9 +66,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     return Scaffold(
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           Sizes.p12,
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           Sizes.p32,
         ),
         children: [
@@ -78,7 +84,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 Expanded(
                   child: Text(
                     'Settings',
-                    style: CatchTextStyles.displayMd(context),
+                    style: CatchTextStyles.displayM(context),
                   ),
                 ),
               ],
@@ -172,7 +178,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             ],
           ),
           gapH20,
-          Text('Safety', style: CatchTextStyles.labelSm(context)),
+          Text('Safety', style: CatchTextStyles.labelM(context)),
           gapH8,
           const _BlockedAccountsSection(),
           gapH20,
@@ -222,7 +228,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Center(
             child: Text(
               'Catch v1.0 · made for runners in India',
-              style: CatchTextStyles.caption(context, color: t.ink3),
+              style: CatchTextStyles.bodyS(context, color: t.ink3),
             ),
           ),
         ],
@@ -242,7 +248,7 @@ class _SettingsGroup extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(title.toUpperCase(), style: CatchTextStyles.labelSm(context)),
+        Text(title.toUpperCase(), style: CatchTextStyles.labelM(context)),
         gapH8,
         _SettingsCard(children: children),
       ],
@@ -259,12 +265,8 @@ class _SettingsCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-        border: Border.all(color: t.line),
-      ),
+    return CatchSurface(
+      borderColor: t.line,
       child: Column(children: children),
     );
   }
@@ -301,7 +303,7 @@ class _SettingsRow extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: CatchTextStyles.bodyMd(
+              style: CatchTextStyles.bodyM(
                 context,
                 color: color,
               ).copyWith(fontWeight: FontWeight.w600),
@@ -315,7 +317,7 @@ class _SettingsRow extends StatelessWidget {
                 child: Text(
                   value!,
                   textAlign: TextAlign.right,
-                  style: CatchTextStyles.bodySm(context, color: tokens.ink2),
+                  style: CatchTextStyles.bodyS(context, color: tokens.ink2),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -355,7 +357,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
             padding: const EdgeInsets.all(Sizes.p16),
             child: Text(
               'Unable to load blocked accounts.',
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
+              style: CatchTextStyles.bodyM(context, color: t.ink2),
             ),
           ),
           data: (blockedUsers) {
@@ -364,7 +366,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
                 padding: const EdgeInsets.all(Sizes.p16),
                 child: Text(
                   'No blocked accounts.',
-                  style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                  style: CatchTextStyles.bodyM(context, color: t.ink2),
                 ),
               );
             }
@@ -398,11 +400,13 @@ class _BlockedAccountTile extends ConsumerWidget {
       ),
       title: Text(profile?.name ?? 'Blocked account'),
       subtitle: Text(blockedUser.source),
-      trailing: TextButton(
+      trailing: CatchButton(
+        label: 'Unblock',
         onPressed: () => ref
             .read(safetyRepositoryProvider)
             .unblockUser(targetUserId: blockedUser.uid),
-        child: const Text('Unblock'),
+        variant: CatchButtonVariant.ghost,
+        size: CatchButtonSize.sm,
       ),
     );
   }

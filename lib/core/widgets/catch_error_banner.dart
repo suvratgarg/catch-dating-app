@@ -14,15 +14,15 @@ class CatchErrorBanner extends StatelessWidget {
       color: t.surface,
       child: Container(
         margin: const EdgeInsets.fromLTRB(
-          CatchSpacing.cardH,
+          CatchSpacing.s4,
           8,
-          CatchSpacing.cardH,
+          CatchSpacing.s4,
           0,
         ),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         decoration: BoxDecoration(
           color: const Color(0xFFFFEEEE),
-          borderRadius: BorderRadius.circular(CatchRadius.card),
+          borderRadius: BorderRadius.circular(CatchRadius.md),
           border: Border.all(color: const Color(0xFFFFCCCC)),
         ),
         child: Row(
@@ -36,7 +36,7 @@ class CatchErrorBanner extends StatelessWidget {
             Expanded(
               child: Text(
                 message,
-                style: CatchTextStyles.bodySm(
+                style: CatchTextStyles.bodyS(
                   context,
                   color: const Color(0xFFCC3333),
                 ),

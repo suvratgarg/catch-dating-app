@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -104,9 +106,9 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.screenH,
+                    CatchSpacing.s5,
                     Sizes.p8,
-                    CatchSpacing.screenH,
+                    CatchSpacing.s5,
                     Sizes.p10,
                   ),
                   child: Row(
@@ -119,12 +121,14 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                       Expanded(
                         child: Text(
                           'Filters',
-                          style: CatchTextStyles.displayMd(context),
+                          style: CatchTextStyles.displayM(context),
                         ),
                       ),
-                      TextButton(
+                      CatchButton(
+                        label: 'Reset',
                         onPressed: _saving ? null : () => _reset(user),
-                        child: const Text('Reset'),
+                        variant: CatchButtonVariant.ghost,
+                        size: CatchButtonSize.sm,
                       ),
                     ],
                   ),
@@ -132,9 +136,9 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                 Expanded(
                   child: ListView(
                     padding: const EdgeInsets.fromLTRB(
-                      CatchSpacing.screenH,
+                      CatchSpacing.s5,
                       0,
-                      CatchSpacing.screenH,
+                      CatchSpacing.s5,
                       Sizes.p20,
                     ),
                     children: [
@@ -193,13 +197,13 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                           runSpacing: 8,
                           children: [
                             for (final gender in Gender.values)
-                              FilterChip(
-                                label: Text(gender.label),
-                                selected: interestedIn.contains(gender),
-                                onSelected: (selected) => setState(() {
-                                  selected
-                                      ? interestedIn.add(gender)
-                                      : interestedIn.remove(gender);
+                              CatchChip(
+                                label: gender.label,
+                                active: interestedIn.contains(gender),
+                                onTap: () => setState(() {
+                                  interestedIn.contains(gender)
+                                      ? interestedIn.remove(gender)
+                                      : interestedIn.add(gender);
                                 }),
                               ),
                           ],
@@ -212,13 +216,13 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                           runSpacing: 8,
                           children: [
                             for (final distance in PreferredDistance.values)
-                              FilterChip(
-                                label: Text(distance.label),
-                                selected: distances.contains(distance),
-                                onSelected: (selected) => setState(() {
-                                  selected
-                                      ? distances.add(distance)
-                                      : distances.remove(distance);
+                              CatchChip(
+                                label: distance.label,
+                                active: distances.contains(distance),
+                                onTap: () => setState(() {
+                                  distances.contains(distance)
+                                      ? distances.remove(distance)
+                                      : distances.add(distance);
                                 }),
                               ),
                           ],
@@ -231,7 +235,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                             Expanded(
                               child: Text(
                                 'Coming with profile verification. Current matching remains based on shared run attendance.',
-                                style: CatchTextStyles.bodySm(
+                                style: CatchTextStyles.bodyS(
                                   context,
                                   color: t.ink2,
                                 ),
@@ -246,26 +250,20 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                 ),
                 Container(
                   padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.screenH,
+                    CatchSpacing.s5,
                     Sizes.p12,
-                    CatchSpacing.screenH,
+                    CatchSpacing.s5,
                     Sizes.p20,
                   ),
                   decoration: BoxDecoration(
                     color: t.surface,
                     border: Border(top: BorderSide(color: t.line)),
                   ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: FilledButton(
-                      onPressed: _saving ? null : () => _save(user),
-                      child: _saving
-                          ? const SizedBox.square(
-                              dimension: 18,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : const Text('Apply filters'),
-                    ),
+                  child: CatchButton(
+                    label: 'Apply filters',
+                    onPressed: () => _save(user),
+                    isLoading: _saving,
+                    fullWidth: true,
                   ),
                 ),
               ],
@@ -317,7 +315,7 @@ class _FilterSection extends StatelessWidget {
         children: [
           Text(
             title.toUpperCase(),
-            style: CatchTextStyles.labelSm(
+            style: CatchTextStyles.labelM(
               context,
               color: t.ink3,
             ).copyWith(letterSpacing: 0.7),
@@ -337,6 +335,6 @@ class _FilterValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(value, style: CatchTextStyles.displaySm(context));
+    return Text(value, style: CatchTextStyles.titleL(context));
   }
 }

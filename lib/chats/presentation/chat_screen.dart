@@ -8,6 +8,7 @@ import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart'
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -156,13 +157,17 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           'future run slots where the other person is already booked.',
         ),
         actions: [
-          TextButton(
+          CatchButton(
+            label: 'Cancel',
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            variant: CatchButtonVariant.ghost,
+            size: CatchButtonSize.sm,
           ),
-          FilledButton(
+          CatchButton(
+            label: 'Block',
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Block'),
+            variant: CatchButtonVariant.danger,
+            size: CatchButtonSize.sm,
           ),
         ],
       ),
@@ -247,7 +252,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               child: photoUrl == null
                   ? Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: CatchTextStyles.labelMd(context, color: t.primary),
+                      style: CatchTextStyles.labelL(context, color: t.primary),
                     )
                   : null,
             ),
@@ -294,7 +299,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
               error: (e, _) => Center(
                 child: Text(
                   'Unable to load messages.',
-                  style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                  style: CatchTextStyles.bodyM(context, color: t.ink2),
                 ),
               ),
               data: (messages) {
@@ -302,7 +307,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   return Center(
                     child: Text(
                       'Say hi to ${profile?.name ?? 'your match'}!',
-                      style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                      style: CatchTextStyles.bodyM(context, color: t.ink2),
                     ),
                   );
                 }
@@ -357,7 +362,7 @@ class _RunContextHeader extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p12),
       decoration: BoxDecoration(
         color: t.primarySoft,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
         border: Border.all(color: t.line),
       ),
       child: Row(
@@ -375,7 +380,7 @@ class _RunContextHeader extends StatelessWidget {
               children: [
                 Text(
                   'YOU BOTH RAN',
-                  style: CatchTextStyles.labelSm(
+                  style: CatchTextStyles.labelM(
                     context,
                     color: t.primary,
                   ).copyWith(fontWeight: FontWeight.w800),
@@ -383,11 +388,10 @@ class _RunContextHeader extends StatelessWidget {
                 gapH2,
                 Text(
                   date == null ? title : '$title · $date',
-                  style: CatchTextStyles.bodySm(
+                  style: CatchTextStyles.bodyS(
                     context,
                     color: t.ink,
-                    weight: FontWeight.w600,
-                  ),
+                  ).copyWith(fontWeight: FontWeight.w600),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),

@@ -90,8 +90,8 @@ class ClubHeroAppBar extends StatelessWidget {
               ),
             ),
             Positioned(
-              left: CatchSpacing.screenH,
-              right: CatchSpacing.screenH,
+              left: CatchSpacing.s5,
+              right: CatchSpacing.s5,
               bottom: 16,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -106,7 +106,7 @@ class ClubHeroAppBar extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: t.primary,
-                        borderRadius: BorderRadius.circular(CatchRadius.button),
+                        borderRadius: BorderRadius.circular(CatchRadius.pill),
                       ),
                       child: Text(
                         'HOST',

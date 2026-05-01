@@ -47,9 +47,9 @@ class DashboardEmpty extends StatelessWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 Sizes.p8,
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 Sizes.p10,
               ),
               child: Row(
@@ -60,7 +60,7 @@ class DashboardEmpty extends StatelessWidget {
                       children: [
                         Text(
                           'WELCOME TO CATCH',
-                          style: CatchTextStyles.labelSm(context, color: t.ink3)
+                          style: CatchTextStyles.labelM(context, color: t.ink3)
                               .copyWith(
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1.0,
@@ -69,7 +69,7 @@ class DashboardEmpty extends StatelessWidget {
                         gapH2,
                         Text(
                           "Let's find your first run",
-                          style: CatchTextStyles.displayLg(context),
+                          style: CatchTextStyles.displayL(context),
                         ),
                       ],
                     ),
@@ -86,9 +86,9 @@ class DashboardEmpty extends StatelessWidget {
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.screenH,
+                  CatchSpacing.s5,
                   Sizes.p4,
-                  CatchSpacing.screenH,
+                  CatchSpacing.s5,
                   Sizes.p24,
                 ),
                 children: [
@@ -96,7 +96,7 @@ class DashboardEmpty extends StatelessWidget {
                   gapH20,
                   Text(
                     'How Catch works',
-                    style: CatchTextStyles.displaySm(context),
+                    style: CatchTextStyles.titleL(context),
                   ),
                   gapH10,
                   ...List.generate(_steps.length, (i) {
@@ -124,12 +124,12 @@ class DashboardEmpty extends StatelessWidget {
                                   children: [
                                     Text(
                                       s.$2,
-                                      style: CatchTextStyles.labelLg(context),
+                                      style: CatchTextStyles.titleM(context),
                                     ),
                                     gapH3,
                                     Text(
                                       s.$3,
-                                      style: CatchTextStyles.bodySm(context),
+                                      style: CatchTextStyles.bodyS(context),
                                     ),
                                   ],
                                 ),

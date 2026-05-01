@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
@@ -99,7 +100,6 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
         (data) => data.step == OnboardingStep.nameDob,
       ),
     );
-    final t = CatchTokens.of(context);
     final age = _age();
 
     return SingleChildScrollView(
@@ -115,25 +115,25 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             Row(
               children: [
                 Expanded(
-                  child: TextFormField(
+                  child: CatchTextField(
+                    label: 'First name',
                     controller: _firstNameController,
                     autofocus: shouldAutofocus,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.givenName],
-                    decoration: const InputDecoration(labelText: 'First name'),
                     validator: (v) =>
                         v == null || v.trim().isEmpty ? 'Required' : null,
                   ),
                 ),
                 gapW12,
                 Expanded(
-                  child: TextFormField(
+                  child: CatchTextField(
+                    label: 'Last name',
                     controller: _lastNameController,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.familyName],
-                    decoration: const InputDecoration(labelText: 'Last name'),
                     validator: (v) =>
                         v == null || v.trim().isEmpty ? 'Required' : null,
                   ),
@@ -141,15 +141,13 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               ],
             ),
             gapH24,
-            TextFormField(
+            CatchTextField(
+              label: 'Date of birth',
               controller: _dateController,
               readOnly: true,
               onTap: _pickDate,
-              decoration: InputDecoration(
-                labelText: 'Date of birth',
-                prefixIcon: const Icon(Icons.calendar_today_outlined),
-                suffixText: age != null ? 'Age $age' : null,
-              ),
+              prefixIcon: const Icon(Icons.calendar_today_outlined),
+              suffixText: age != null ? 'Age $age' : null,
               validator: (v) => v == null || v.isEmpty
                   ? 'Please select your date of birth'
                   : _selectedDate == null || !isAtLeastAge(_selectedDate!)
@@ -157,19 +155,17 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                   : null,
             ),
             gapH24,
-            TextFormField(
+            CatchTextField(
+              label: 'Mobile number',
               controller: _phoneController,
               readOnly: true,
               keyboardType: TextInputType.phone,
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.telephoneNumberNational],
-              decoration: InputDecoration(
-                labelText: 'Mobile number',
-                prefixIcon: const Icon(Icons.phone_outlined),
-                prefixText: '+91 ',
-                helperText: _phoneVerified ? 'Verified via OTP' : null,
-                helperStyle: TextStyle(color: t.primary),
-              ),
+              prefixIcon: const Icon(Icons.phone_outlined),
+              prefixText: '+91 ',
+              helperText: _phoneVerified ? 'Verified via OTP' : null,
+              helperTone: CatchTextFieldSupportTone.brand,
               validator: (v) {
                 if (!_phoneVerified || v == null || v.trim().isEmpty) {
                   return 'Please verify your phone number before continuing.';
@@ -178,12 +174,11 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               },
             ),
             const SizedBox(height: 40),
-            FilledButton(
+            CatchButton(
+              label: 'Continue',
               onPressed: _submit,
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(52),
-              ),
-              child: const Text('Continue'),
+              fullWidth: true,
+              size: CatchButtonSize.lg,
             ),
             const SizedBox(height: 32),
           ],

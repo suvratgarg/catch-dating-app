@@ -21,7 +21,7 @@ class RequirementsRow extends StatelessWidget {
       children: [
         Text(
           'Requirements',
-          style: CatchTextStyles.labelMd(context, color: t.ink2),
+          style: CatchTextStyles.labelL(context, color: t.ink2),
         ),
         const SizedBox(height: 8),
         Wrap(

@@ -38,13 +38,13 @@ class IconBtn extends StatelessWidget {
   /// Diameter of the button circle. Defaults to 40.
   final double size;
 
-  /// Override shape radius. Defaults to [CatchRadius.button] (full circle).
+  /// Override shape radius. Defaults to [CatchRadius.pill] (full circle).
   final double? borderRadius;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final radius = borderRadius ?? CatchRadius.button;
+    final radius = borderRadius ?? CatchRadius.pill;
     final bg = background ?? t.raised;
 
     return Material(

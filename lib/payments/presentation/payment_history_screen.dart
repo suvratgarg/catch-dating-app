@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -92,17 +93,17 @@ class _PaymentTile extends ConsumerWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(runTitle, style: CatchTextStyles.bodyMd(context)),
+                Text(runTitle, style: CatchTextStyles.bodyM(context)),
                 gapH4,
                 Text(
                   _dateFormat.format(payment.createdAt),
-                  style: CatchTextStyles.caption(context, color: t.ink2),
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
                 ),
                 if (statusPresentation.detail case final detail?) ...[
                   gapH4,
                   Text(
                     detail,
-                    style: CatchTextStyles.caption(context, color: t.ink2),
+                    style: CatchTextStyles.bodyS(context, color: t.ink2),
                   ),
                 ],
               ],
@@ -113,14 +114,14 @@ class _PaymentTile extends ConsumerWidget {
             children: [
               Text(
                 _formattedAmount(payment),
-                style: CatchTextStyles.bodyMd(
+                style: CatchTextStyles.bodyM(
                   context,
                 ).copyWith(fontWeight: FontWeight.w600),
               ),
               gapH4,
-              _StatusChip(
+              CatchBadge(
                 label: statusPresentation.label,
-                color: statusPresentation.color,
+                tone: statusPresentation.tone,
               ),
             ],
           ),
@@ -129,19 +130,19 @@ class _PaymentTile extends ConsumerWidget {
     );
   }
 
-  ({String label, Color color, String? detail}) _statusPresentation(
+  ({String label, CatchBadgeTone tone, String? detail}) _statusPresentation(
     Payment payment,
   ) {
     if (payment.signUpFailed) {
       return switch (payment.status) {
         PaymentStatus.refunded => (
           label: 'Refunded',
-          color: Colors.blue.shade700,
+          tone: CatchBadgeTone.brand,
           detail: 'Booking failed, but your payment was refunded.',
         ),
         _ => (
           label: 'Booking failed',
-          color: Colors.orange.shade700,
+          tone: CatchBadgeTone.warning,
           detail: 'No spot was reserved. Refund may still be pending.',
         ),
       };
@@ -150,46 +151,24 @@ class _PaymentTile extends ConsumerWidget {
     return switch (payment.status) {
       PaymentStatus.completed => (
         label: 'Paid',
-        color: Colors.green.shade700,
+        tone: CatchBadgeTone.success,
         detail: null,
       ),
       PaymentStatus.refunded => (
         label: 'Refunded',
-        color: Colors.blue.shade700,
+        tone: CatchBadgeTone.brand,
         detail: null,
       ),
       PaymentStatus.failed => (
         label: 'Failed',
-        color: Colors.red.shade700,
+        tone: CatchBadgeTone.danger,
         detail: null,
       ),
       PaymentStatus.pending => (
         label: 'Pending',
-        color: Colors.orange.shade700,
+        tone: CatchBadgeTone.warning,
         detail: null,
       ),
     };
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.label, required this.color});
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: Sizes.p8,
-        vertical: Sizes.p2,
-      ),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(Sizes.p4),
-      ),
-      child: Text(label, style: CatchTextStyles.caption(context, color: color)),
-    );
   }
 }

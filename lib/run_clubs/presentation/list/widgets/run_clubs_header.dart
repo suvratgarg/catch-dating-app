@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
@@ -47,9 +48,9 @@ class _RunClubsHeaderState extends ConsumerState<RunClubsHeader> {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p8,
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p12,
       ),
       child: Column(
@@ -62,14 +63,11 @@ class _RunClubsHeaderState extends ConsumerState<RunClubsHeader> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Run clubs',
-                      style: CatchTextStyles.displayLg(context),
-                    ),
+                    Text('Run clubs', style: CatchTextStyles.displayL(context)),
                     gapH4,
                     Text(
                       'Find your people. Catch your person.',
-                      style: CatchTextStyles.bodySm(context),
+                      style: CatchTextStyles.bodyS(context),
                     ),
                   ],
                 ),
@@ -120,44 +118,24 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return TextField(
+    return CatchTextField(
+      label: 'Search clubs',
+      showLabel: false,
       controller: controller,
       onChanged: onChanged,
       textInputAction: TextInputAction.search,
-      decoration: InputDecoration(
-        hintText: 'Search clubs',
-        hintStyle: CatchTextStyles.bodyMd(context, color: t.ink3),
-        prefixIcon: Icon(Icons.search_rounded, size: 18, color: t.ink2),
-        suffixIcon: ValueListenableBuilder(
-          valueListenable: controller,
-          builder: (_, value, _) => value.text.isNotEmpty
-              ? IconButton(
-                  icon: Icon(Icons.close_rounded, size: 16, color: t.ink2),
-                  onPressed: onClear,
-                )
-              : const SizedBox.shrink(),
-        ),
-        isDense: true,
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: Sizes.p12,
-          vertical: Sizes.p10,
-        ),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.button),
-          borderSide: BorderSide(color: t.line),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.button),
-          borderSide: BorderSide(color: t.line),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.button),
-          borderSide: BorderSide(color: t.primary, width: 1.5),
-        ),
-        filled: true,
-        fillColor: t.surface,
+      hintText: 'Search clubs',
+      size: CatchTextFieldSize.compact,
+      shape: CatchTextFieldShape.pill,
+      prefixIcon: const Icon(Icons.search_rounded, size: 18),
+      suffixIcon: ValueListenableBuilder(
+        valueListenable: controller,
+        builder: (_, value, _) => value.text.isNotEmpty
+            ? IconButton(
+                icon: const Icon(Icons.close_rounded, size: 16),
+                onPressed: onClear,
+              )
+            : const SizedBox.shrink(),
       ),
     );
   }

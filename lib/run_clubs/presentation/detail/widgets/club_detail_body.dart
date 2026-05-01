@@ -51,9 +51,9 @@ class ClubDetailBody extends StatelessWidget {
             ClubHeroAppBar(club: runClub, isHost: isHost),
             SliverPadding(
               padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 20,
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 0,
               ),
               sliver: SliverList.list(
@@ -62,7 +62,7 @@ class ClubDetailBody extends StatelessWidget {
                   const SizedBox(height: 16),
                   Text(
                     runClub.description,
-                    style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                    style: CatchTextStyles.bodyM(context, color: t.ink2),
                   ),
                   const SizedBox(height: 20),
                   if (isHost) ...[
@@ -85,7 +85,7 @@ class ClubDetailBody extends StatelessWidget {
                     isMember: isMember,
                   ),
                   const SizedBox(height: 24),
-                  Text('Schedule', style: CatchTextStyles.displaySm(context)),
+                  Text('Schedule', style: CatchTextStyles.titleL(context)),
                   const SizedBox(height: 12),
                 ],
               ),

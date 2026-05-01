@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -76,8 +77,8 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
                               ),
                             ),
                             Positioned(
-                              left: CatchSpacing.screenH,
-                              right: CatchSpacing.screenH,
+                              left: CatchSpacing.s5,
+                              right: CatchSpacing.s5,
                               bottom: Sizes.p20,
                               child: _MapRunSheet(
                                 runs: runs,
@@ -121,9 +122,9 @@ class _MapHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p8,
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p10,
       ),
       child: Row(
@@ -134,7 +135,7 @@ class _MapHeader extends StatelessWidget {
           ),
           gapW12,
           Expanded(
-            child: Text('Map view', style: CatchTextStyles.displayMd(context)),
+            child: Text('Map view', style: CatchTextStyles.displayM(context)),
           ),
         ],
       ),
@@ -236,7 +237,7 @@ class _MapRunSheet extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p14),
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
         border: Border.all(color: tokens.line),
         boxShadow: const [
           BoxShadow(
@@ -250,7 +251,7 @@ class _MapRunSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Nearby runs', style: CatchTextStyles.labelSm(context)),
+          Text('Nearby runs', style: CatchTextStyles.labelM(context)),
           gapH10,
           SizedBox(
             height: 96,
@@ -270,7 +271,8 @@ class _MapRunSheet extends StatelessWidget {
             ),
           ),
           gapH12,
-          FilledButton(
+          CatchButton(
+            label: 'View run',
             onPressed: () => context.pushNamed(
               Routes.runDetailScreen.name,
               pathParameters: {
@@ -278,7 +280,7 @@ class _MapRunSheet extends StatelessWidget {
                 'runId': highlightedRun.id,
               },
             ),
-            child: const Text('View run'),
+            fullWidth: true,
           ),
         ],
       ),
@@ -302,13 +304,13 @@ class _RunMapChip extends StatelessWidget {
     final t = CatchTokens.of(context);
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(CatchRadius.card),
+      borderRadius: BorderRadius.circular(CatchRadius.md),
       child: Container(
         width: 180,
         padding: const EdgeInsets.all(Sizes.p12),
         decoration: BoxDecoration(
           color: selected ? t.primarySoft : t.raised,
-          borderRadius: BorderRadius.circular(CatchRadius.card),
+          borderRadius: BorderRadius.circular(CatchRadius.md),
           border: Border.all(color: selected ? t.primary : t.line),
         ),
         child: Column(
@@ -316,24 +318,24 @@ class _RunMapChip extends StatelessWidget {
           children: [
             Text(
               run.meetingPoint,
-              style: CatchTextStyles.labelMd(context),
+              style: CatchTextStyles.labelL(context),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
             ),
             gapH6,
             Text(
               '${run.shortDateLabel} · ${run.compactTimeRangeLabel}',
-              style: CatchTextStyles.caption(context, color: t.ink2),
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
             ),
             gapH4,
             Text(
               '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label}',
-              style: CatchTextStyles.caption(context, color: t.ink2),
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
             ),
             if (run.startingPointLat == null || run.startingPointLng == null)
               Text(
                 'No exact pin',
-                style: CatchTextStyles.caption(context, color: t.primary),
+                style: CatchTextStyles.bodyS(context, color: t.primary),
               ),
           ],
         ),
@@ -351,10 +353,10 @@ class _MapEmptyState extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: Padding(
-        padding: const EdgeInsets.all(CatchSpacing.screenH),
+        padding: const EdgeInsets.all(CatchSpacing.s5),
         child: Text(
           'Join clubs or book runs to see mapped starting points here.',
-          style: CatchTextStyles.bodyMd(context, color: tokens.ink2),
+          style: CatchTextStyles.bodyM(context, color: tokens.ink2),
           textAlign: TextAlign.center,
         ),
       ),

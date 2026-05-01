@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -66,9 +67,9 @@ class _ActivityContent extends ConsumerWidget {
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p8,
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p24,
       ),
       children: [
@@ -137,17 +138,14 @@ class _ActivityHeader extends StatelessWidget {
         ),
         gapW12,
         Expanded(
-          child: Text('Activity', style: CatchTextStyles.displayMd(context)),
+          child: Text('Activity', style: CatchTextStyles.displayM(context)),
         ),
-        TextButton(
+        CatchButton(
+          label: 'Mark all read',
           onPressed: onMarkAllRead,
-          child: Text(
-            'Mark all read',
-            style: CatchTextStyles.labelSm(
-              context,
-              color: onMarkAllRead == null ? tokens.ink3 : tokens.primary,
-            ),
-          ),
+          variant: CatchButtonVariant.ghost,
+          size: CatchButtonSize.sm,
+          foregroundColor: onMarkAllRead == null ? tokens.ink3 : tokens.primary,
         ),
       ],
     );
@@ -166,7 +164,7 @@ class _ActivityTile extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: item.route == null ? null : () => context.push(item.route!),
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
           child: Row(
@@ -192,7 +190,7 @@ class _ActivityTile extends StatelessWidget {
                   children: [
                     Text(
                       item.title,
-                      style: CatchTextStyles.bodyMd(context, color: tokens.ink)
+                      style: CatchTextStyles.bodyM(context, color: tokens.ink)
                           .copyWith(
                             fontWeight: item.isPrimary
                                 ? FontWeight.w800
@@ -202,10 +200,7 @@ class _ActivityTile extends StatelessWidget {
                     gapH4,
                     Text(
                       item.subtitle,
-                      style: CatchTextStyles.bodySm(
-                        context,
-                        color: tokens.ink2,
-                      ),
+                      style: CatchTextStyles.bodyS(context, color: tokens.ink2),
                     ),
                   ],
                 ),
@@ -213,7 +208,7 @@ class _ActivityTile extends StatelessWidget {
               gapW8,
               Text(
                 item.timeLabel,
-                style: CatchTextStyles.caption(context, color: tokens.ink3),
+                style: CatchTextStyles.bodyS(context, color: tokens.ink3),
               ),
             ],
           ),
@@ -233,7 +228,7 @@ class _ActivitySectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       label.toUpperCase(),
-      style: CatchTextStyles.labelSm(
+      style: CatchTextStyles.labelM(
         context,
         color: tokens.ink3,
       ).copyWith(letterSpacing: 0.7),
@@ -260,19 +255,19 @@ class _ActivityMessage extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p20),
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
         border: Border.all(color: tokens.line),
       ),
       child: Column(
         children: [
           Icon(icon, color: tokens.primary, size: 34),
           gapH12,
-          Text(title, style: CatchTextStyles.displaySm(context)),
+          Text(title, style: CatchTextStyles.titleL(context)),
           gapH6,
           Text(
             body,
             textAlign: TextAlign.center,
-            style: CatchTextStyles.bodySm(context, color: tokens.ink2),
+            style: CatchTextStyles.bodyS(context, color: tokens.ink2),
           ),
         ],
       ),
@@ -295,7 +290,7 @@ class _ActivitySkeleton extends StatelessWidget {
           margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
             color: t.surface,
-            borderRadius: BorderRadius.circular(CatchRadius.card),
+            borderRadius: BorderRadius.circular(CatchRadius.md),
             border: Border.all(color: t.line),
           ),
         ),

@@ -2,6 +2,8 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -65,9 +67,9 @@ class _CatchesHubContent extends StatelessWidget {
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           Sizes.p8,
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           Sizes.p24,
         ),
         children: [
@@ -88,7 +90,7 @@ class _CatchesHubContent extends StatelessWidget {
               Expanded(
                 child: Text(
                   'Open catch windows',
-                  style: CatchTextStyles.displaySm(context),
+                  style: CatchTextStyles.titleL(context),
                 ),
               ),
               Text(
@@ -125,13 +127,13 @@ class _CatchesHeader extends StatelessWidget {
             children: [
               Text(
                 'CATCHES',
-                style: CatchTextStyles.labelSm(
+                style: CatchTextStyles.labelM(
                   context,
                   color: t.ink3,
                 ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
               ),
               gapH2,
-              Text('After the run', style: CatchTextStyles.displayLg(context)),
+              Text('After the run', style: CatchTextStyles.displayL(context)),
             ],
           ),
         ),
@@ -166,85 +168,81 @@ class _CatchesIntroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = tokens;
 
-    return GestureDetector(
+    return CatchSurface(
       onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(Sizes.p20),
-        decoration: BoxDecoration(
-          gradient: t.heroGrad,
-          borderRadius: BorderRadius.circular(24),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          children: [
-            Positioned(
-              right: -34,
-              top: -42,
-              child: Icon(
-                Icons.favorite_rounded,
-                size: 156,
-                color: Colors.white.withValues(alpha: 0.13),
+      padding: const EdgeInsets.all(Sizes.p20),
+      gradient: t.heroGrad,
+      borderWidth: 0,
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
+        children: [
+          Positioned(
+            right: -34,
+            top: -42,
+            child: Icon(
+              Icons.favorite_rounded,
+              size: 156,
+              color: Colors.white.withValues(alpha: 0.13),
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '24H WINDOW OPEN',
+                style: CatchTextStyles.labelM(
+                  context,
+                  color: Colors.white,
+                ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.4),
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '24H WINDOW OPEN',
-                  style: CatchTextStyles.labelSm(
-                    context,
-                    color: Colors.white,
-                  ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.4),
+              gapH10,
+              Text(
+                "You ran together.\nNow it's okay to swipe.",
+                style: CatchTextStyles.displayL(
+                  context,
+                  color: Colors.white,
+                ).copyWith(height: 1.08),
+              ),
+              gapH10,
+              Text(
+                'Only checked-in runners from ${run.title} are here.',
+                style: CatchTextStyles.bodyS(
+                  context,
+                  color: Colors.white.withValues(alpha: 0.9),
                 ),
-                gapH10,
-                Text(
-                  "You ran together.\nNow it's okay to swipe.",
-                  style: CatchTextStyles.displayLg(
-                    context,
-                    color: Colors.white,
-                  ).copyWith(height: 1.08),
-                ),
-                gapH10,
-                Text(
-                  'Only checked-in runners from ${run.title} are here.',
-                  style: CatchTextStyles.bodySm(
-                    context,
-                    color: Colors.white.withValues(alpha: 0.9),
+              ),
+              gapH18,
+              Row(
+                children: [
+                  _PillStat(
+                    label: 'Closes in',
+                    value: _formatCountdown(remaining),
+                    tokens: t,
                   ),
-                ),
-                gapH18,
-                Row(
-                  children: [
-                    _PillStat(
-                      label: 'Closes in',
-                      value: _formatCountdown(remaining),
-                      tokens: t,
-                    ),
-                    gapW10,
-                    _PillStat(
-                      label: 'Roster',
-                      value: '${run.attendedUserIds.length}',
-                      tokens: t,
-                    ),
-                  ],
-                ),
-                gapH18,
-                Container(
-                  height: 50,
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(CatchRadius.button),
+                  gapW10,
+                  _PillStat(
+                    label: 'Roster',
+                    value: '${run.attendedUserIds.length}',
+                    tokens: t,
                   ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    'Start catching',
-                    style: CatchTextStyles.labelLg(context, color: t.ink),
-                  ),
+                ],
+              ),
+              gapH18,
+              Container(
+                height: 50,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(CatchRadius.pill),
                 ),
-              ],
-            ),
-          ],
-        ),
+                alignment: Alignment.center,
+                child: Text(
+                  'Start catching',
+                  style: CatchTextStyles.titleM(context, color: t.ink),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -271,19 +269,17 @@ class _PillStat extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
+      child: CatchSurface(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.17),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-        ),
+        radius: CatchRadius.md,
+        backgroundColor: Colors.white.withValues(alpha: 0.17),
+        borderColor: Colors.white.withValues(alpha: 0.18),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
               label,
-              style: CatchTextStyles.caption(
+              style: CatchTextStyles.bodyS(
                 context,
                 color: Colors.white.withValues(alpha: 0.78),
               ),
@@ -312,21 +308,17 @@ class _CatchesEmptyState extends StatelessWidget {
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           Sizes.p8,
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           Sizes.p24,
         ),
         children: [
           _CatchesHeader(tokens: t),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.12),
-          Container(
+          CatchSurface(
             padding: const EdgeInsets.all(Sizes.p20),
-            decoration: BoxDecoration(
-              color: t.surface,
-              border: Border.all(color: t.line),
-              borderRadius: BorderRadius.circular(24),
-            ),
+            borderColor: t.line,
             child: Column(
               children: [
                 Container(
@@ -345,31 +337,29 @@ class _CatchesEmptyState extends StatelessWidget {
                 gapH18,
                 Text(
                   'No active catches',
-                  style: CatchTextStyles.displayMd(context),
+                  style: CatchTextStyles.displayM(context),
                   textAlign: TextAlign.center,
                 ),
                 gapH8,
                 Text(
                   'Book a group run, show up, and your 24-hour catch window opens here after check-in.',
-                  style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                  style: CatchTextStyles.bodyM(context, color: t.ink2),
                   textAlign: TextAlign.center,
                 ),
                 gapH18,
-                OutlinedButton(
+                CatchButton(
+                  label: 'Find a run',
                   onPressed: () => context.go(Routes.runClubsListScreen.path),
-                  child: const Text('Find a run'),
+                  variant: CatchButtonVariant.secondary,
                 ),
               ],
             ),
           ),
           gapH18,
-          Container(
+          CatchSurface(
             padding: const EdgeInsets.all(Sizes.p16),
-            decoration: BoxDecoration(
-              color: t.raised,
-              borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-              border: Border.all(color: t.line),
-            ),
+            tone: CatchSurfaceTone.raised,
+            borderColor: t.line,
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -378,7 +368,7 @@ class _CatchesEmptyState extends StatelessWidget {
                 Expanded(
                   child: Text(
                     'Dating stays locked until you actually run together. No cold swiping strangers.',
-                    style: CatchTextStyles.bodySm(context, color: t.ink2),
+                    style: CatchTextStyles.bodyS(context, color: t.ink2),
                   ),
                 ),
               ],

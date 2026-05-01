@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
 
 class ChatInputBar extends StatelessWidget {
@@ -31,24 +32,18 @@ class ChatInputBar extends StatelessWidget {
         child: Row(
           children: [
             Expanded(
-              child: TextField(
+              child: CatchTextField(
+                label: 'Message',
+                showLabel: false,
                 controller: controller,
                 textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.send,
                 minLines: 1,
                 maxLines: 4,
-                decoration: InputDecoration(
-                  hintText: 'Message…',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(CatchRadius.button),
-                    borderSide: BorderSide.none,
-                  ),
-                  filled: true,
-                  fillColor: t.raised,
-                  contentPadding: const EdgeInsets.symmetric(
-                    horizontal: Sizes.p16,
-                    vertical: Sizes.p10,
-                  ),
-                ),
+                hintText: 'Message...',
+                size: CatchTextFieldSize.compact,
+                shape: CatchTextFieldShape.pill,
+                tone: CatchTextFieldTone.raised,
                 enabled: onSend != null,
                 onSubmitted: (_) => onSend?.call(),
               ),

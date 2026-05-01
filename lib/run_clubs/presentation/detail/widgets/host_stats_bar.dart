@@ -29,7 +29,7 @@ class HostStatsBar extends StatelessWidget {
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: t.primarySoft,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
         border: Border.all(color: t.primary.withValues(alpha: 0.2)),
       ),
       child: Column(
@@ -41,7 +41,7 @@ class HostStatsBar extends StatelessWidget {
               const SizedBox(width: 6),
               Text(
                 'Your upcoming runs',
-                style: CatchTextStyles.labelMd(context, color: t.primary),
+                style: CatchTextStyles.labelL(context, color: t.primary),
               ),
             ],
           ),
@@ -104,10 +104,10 @@ class HostStatChip extends StatelessWidget {
         children: [
           Icon(icon, size: 16, color: t.primary),
           const SizedBox(height: 4),
-          Text(value, style: CatchTextStyles.labelLg(context)),
+          Text(value, style: CatchTextStyles.titleM(context)),
           Text(
             label,
-            style: CatchTextStyles.caption(context, color: t.ink3),
+            style: CatchTextStyles.bodyS(context, color: t.ink3),
             textAlign: TextAlign.center,
           ),
         ],

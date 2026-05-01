@@ -22,7 +22,7 @@ class Recommendations extends StatelessWidget {
             Expanded(
               child: Text(
                 'Recommended runs',
-                style: CatchTextStyles.displaySm(context),
+                style: CatchTextStyles.titleL(context),
               ),
             ),
           ],

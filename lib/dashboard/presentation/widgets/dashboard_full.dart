@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
@@ -62,9 +63,9 @@ class DashboardFull extends ConsumerWidget {
           children: [
             Padding(
               padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 Sizes.p8,
-                CatchSpacing.screenH,
+                CatchSpacing.s5,
                 Sizes.p10,
               ),
               child: Row(
@@ -75,7 +76,7 @@ class DashboardFull extends ConsumerWidget {
                       children: [
                         Text(
                           dayCity(user.city?.label).toUpperCase(),
-                          style: CatchTextStyles.labelSm(context, color: t.ink3)
+                          style: CatchTextStyles.labelM(context, color: t.ink3)
                               .copyWith(
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 1.0,
@@ -84,7 +85,7 @@ class DashboardFull extends ConsumerWidget {
                         gapH2,
                         Text(
                           '${greeting()}, $firstName',
-                          style: CatchTextStyles.displayLg(context),
+                          style: CatchTextStyles.displayL(context),
                         ),
                       ],
                     ),
@@ -102,9 +103,9 @@ class DashboardFull extends ConsumerWidget {
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.screenH,
+                  CatchSpacing.s5,
                   Sizes.p4,
-                  CatchSpacing.screenH,
+                  CatchSpacing.s5,
                   Sizes.p24,
                 ),
                 children: [
@@ -203,13 +204,9 @@ class _DashboardSectionStateCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p16),
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border.all(color: t.line),
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
-      ),
+      borderColor: t.line,
       child: Row(
         children: [
           if (isLoading) ...[
@@ -225,7 +222,7 @@ class _DashboardSectionStateCard extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: CatchTextStyles.bodySm(context, color: t.ink2),
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
             ),
           ),
         ],

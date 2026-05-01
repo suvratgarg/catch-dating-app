@@ -31,9 +31,7 @@ class HorizontalClubSection extends StatelessWidget {
           height: height,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.screenH,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
             itemCount: clubs.length,
             separatorBuilder: (_, _) => const SizedBox(width: 10),
             itemBuilder: (context, index) => RunClubListTile(

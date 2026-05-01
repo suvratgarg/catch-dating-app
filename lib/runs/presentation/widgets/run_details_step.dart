@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
@@ -32,86 +33,62 @@ class RunDetailsStep extends StatelessWidget {
       key: formKey,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           16,
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           24,
         ),
         children: [
           Row(
             children: [
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const FieldLabel('Distance (km)'),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: distanceController,
-                      decoration: InputDecoration(
-                        hintText: '10',
-                        prefixIcon: Icon(
-                          Icons.straighten_outlined,
-                          color: t.ink2,
-                        ),
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d*\.?\d*'),
-                        ),
-                      ],
-                      textInputAction: TextInputAction.next,
-                      validator: (v) {
-                        if (v == null || v.trim().isEmpty) return 'Required';
-                        final distance = double.tryParse(v.trim());
-                        if (distance == null) return 'Invalid';
-                        if (distance <= 0) return 'Must be > 0';
-                        return null;
-                      },
-                    ),
+                child: CatchTextField(
+                  label: 'Distance (km)',
+                  controller: distanceController,
+                  hintText: '10',
+                  prefixIcon: const Icon(Icons.straighten_outlined),
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                  ),
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
                   ],
+                  textInputAction: TextInputAction.next,
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Required';
+                    final distance = double.tryParse(v.trim());
+                    if (distance == null) return 'Invalid';
+                    if (distance <= 0) return 'Must be > 0';
+                    return null;
+                  },
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const FieldLabel('Max runners'),
-                    const SizedBox(height: 8),
-                    TextFormField(
-                      controller: capacityController,
-                      decoration: InputDecoration(
-                        hintText: '20',
-                        prefixIcon: Icon(Icons.people_outline, color: t.ink2),
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      textInputAction: TextInputAction.next,
-                      validator: (v) {
-                        if (v == null || v.trim().isEmpty) return 'Required';
-                        final n = int.tryParse(v.trim());
-                        if (n == null || n < 1) return 'Min 1';
-                        return null;
-                      },
-                    ),
-                  ],
+                child: CatchTextField(
+                  label: 'Max runners',
+                  controller: capacityController,
+                  hintText: '20',
+                  prefixIcon: const Icon(Icons.people_outline),
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  textInputAction: TextInputAction.next,
+                  validator: (v) {
+                    if (v == null || v.trim().isEmpty) return 'Required';
+                    final n = int.tryParse(v.trim());
+                    if (n == null || n < 1) return 'Min 1';
+                    return null;
+                  },
                 ),
               ),
             ],
           ),
           const SizedBox(height: 20),
-          const FieldLabel('Price (₹) — enter 0 for free'),
-          const SizedBox(height: 8),
-          TextFormField(
+          CatchTextField(
+            label: 'Price (₹) — enter 0 for free',
             controller: priceController,
-            decoration: InputDecoration(
-              hintText: '0',
-              prefixIcon: Icon(Icons.currency_rupee_outlined, color: t.ink2),
-            ),
+            hintText: '0',
+            prefixIcon: const Icon(Icons.currency_rupee_outlined),
             keyboardType: const TextInputType.numberWithOptions(decimal: true),
             inputFormatters: [
               FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
@@ -163,15 +140,11 @@ class RunDetailsStep extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 20),
-          const FieldLabel('Description (optional)'),
-          const SizedBox(height: 8),
-          TextFormField(
+          CatchTextField(
+            label: 'Description (optional)',
             controller: descriptionController,
-            decoration: InputDecoration(
-              hintText: 'What should runners expect? Any tips for the route?',
-              alignLabelWithHint: true,
-              prefixIcon: Icon(Icons.edit_note_outlined, color: t.ink2),
-            ),
+            hintText: 'What should runners expect? Any tips for the route?',
+            prefixIcon: const Icon(Icons.edit_note_outlined),
             maxLines: 4,
             textCapitalization: TextCapitalization.sentences,
             textInputAction: TextInputAction.newline,

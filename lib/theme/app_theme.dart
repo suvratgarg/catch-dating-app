@@ -37,17 +37,17 @@ abstract final class AppTheme {
 
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: tokens.raised,
+        fillColor: tokens.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.card),
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
           borderSide: BorderSide(color: tokens.line2),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.card),
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
           borderSide: BorderSide(color: tokens.line2),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.card),
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
           borderSide: BorderSide(color: tokens.primary, width: 1.5),
         ),
         hintStyle: TextStyle(color: tokens.ink3),
@@ -58,13 +58,14 @@ abstract final class AppTheme {
         style: FilledButton.styleFrom(
           backgroundColor: tokens.primary,
           foregroundColor: tokens.primaryInk,
-          minimumSize: const Size(double.infinity, 52),
+          minimumSize: const Size(double.infinity, 48),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CatchRadius.button),
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 15,
             fontWeight: FontWeight.w600,
+            letterSpacing: 0,
           ),
         ),
       ),
@@ -73,13 +74,14 @@ abstract final class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: tokens.primary,
           side: BorderSide(color: tokens.primary),
-          minimumSize: const Size(double.infinity, 52),
+          minimumSize: const Size(double.infinity, 48),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(CatchRadius.button),
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
           ),
           textStyle: GoogleFonts.inter(
             fontSize: 15,
             fontWeight: FontWeight.w600,
+            letterSpacing: 0,
           ),
         ),
       ),
@@ -123,7 +125,7 @@ abstract final class AppTheme {
         color: tokens.surface,
         surfaceTintColor: Colors.transparent,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.card),
+          borderRadius: BorderRadius.circular(CatchRadius.md),
         ),
         elevation: 0,
       ),
@@ -138,7 +140,7 @@ abstract final class AppTheme {
         ),
         side: BorderSide(color: tokens.line2),
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(CatchRadius.button),
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
         ),
       ),
     );

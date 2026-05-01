@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class DurationStepper extends StatelessWidget {
@@ -19,13 +20,11 @@ class DurationStepper extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-      decoration: BoxDecoration(
-        color: t.raised,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
-        border: Border.all(color: t.line),
-      ),
+      tone: CatchSurfaceTone.raised,
+      radius: CatchRadius.md,
+      borderColor: t.line,
       child: Row(
         children: [
           IconButton(
@@ -37,7 +36,7 @@ class DurationStepper extends StatelessWidget {
             child: Center(
               child: Text(
                 formatDuration(minutes),
-                style: CatchTextStyles.monoLg(context),
+                style: CatchTextStyles.mono(context),
               ),
             ),
           ),

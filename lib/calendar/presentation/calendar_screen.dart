@@ -90,9 +90,9 @@ class _CalendarHeader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p8,
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p12,
       ),
       child: Column(
@@ -105,10 +105,10 @@ class _CalendarHeader extends StatelessWidget {
                   children: [
                     Text(
                       _monthLabel(sortedRuns),
-                      style: CatchTextStyles.labelSm(context),
+                      style: CatchTextStyles.labelM(context),
                     ),
                     gapH2,
-                    Text('Calendar', style: CatchTextStyles.displayMd(context)),
+                    Text('Calendar', style: CatchTextStyles.displayM(context)),
                   ],
                 ),
               ),
@@ -126,7 +126,7 @@ class _CalendarHeader extends StatelessWidget {
             padding: const EdgeInsets.all(Sizes.p14),
             decoration: BoxDecoration(
               color: tokens.surface,
-              borderRadius: BorderRadius.circular(CatchRadius.card),
+              borderRadius: BorderRadius.circular(CatchRadius.md),
               border: Border.all(color: tokens.line),
             ),
             child: Row(
@@ -233,7 +233,7 @@ class _ModeButton extends StatelessWidget {
         ),
         child: Text(
           label,
-          style: CatchTextStyles.caption(
+          style: CatchTextStyles.bodyS(
             context,
             color: selected ? tokens.surface : tokens.ink2,
           ).copyWith(fontWeight: FontWeight.w700),
@@ -304,7 +304,7 @@ class _WeekDay extends StatelessWidget {
         children: [
           Text(
             day,
-            style: CatchTextStyles.caption(
+            style: CatchTextStyles.bodyS(
               context,
               color: active
                   ? tokens.surface.withValues(alpha: 0.72)
@@ -314,7 +314,7 @@ class _WeekDay extends StatelessWidget {
           gapH2,
           Text(
             '${date.day}',
-            style: CatchTextStyles.labelMd(
+            style: CatchTextStyles.labelL(
               context,
               color: active ? tokens.surface : tokens.ink,
             ),
@@ -346,16 +346,16 @@ class _AgendaView extends StatelessWidget {
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p4,
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p24,
       ),
       children: [
         for (final entry in grouped.entries) ...[
           Text(
             _dayLabel(entry.key).toUpperCase(),
-            style: CatchTextStyles.labelSm(
+            style: CatchTextStyles.labelM(
               context,
               color: DateUtils.isSameDay(entry.key, DateTime.now())
                   ? tokens.primary
@@ -386,7 +386,7 @@ class _AgendaRunCard extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p14),
       decoration: BoxDecoration(
         color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
         border: Border.all(color: tokens.line),
       ),
       child: Row(
@@ -406,19 +406,19 @@ class _AgendaRunCard extends StatelessWidget {
               children: [
                 Text(
                   RunFormatters.time(run.startTime),
-                  style: CatchTextStyles.labelSm(context),
+                  style: CatchTextStyles.labelM(context),
                 ),
                 gapH4,
                 Text(
                   run.meetingPoint,
-                  style: CatchTextStyles.labelMd(context),
+                  style: CatchTextStyles.labelL(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 gapH4,
                 Text(
                   '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label} · ${run.signedUpUserIds.length}/${run.capacityLimit}',
-                  style: CatchTextStyles.bodySm(context, color: tokens.ink2),
+                  style: CatchTextStyles.bodyS(context, color: tokens.ink2),
                 ),
               ],
             ),
@@ -428,11 +428,11 @@ class _AgendaRunCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
             decoration: BoxDecoration(
               color: tokens.primarySoft,
-              borderRadius: BorderRadius.circular(CatchRadius.button),
+              borderRadius: BorderRadius.circular(CatchRadius.pill),
             ),
             child: Text(
               'JOINED',
-              style: CatchTextStyles.labelSm(context, color: tokens.primary),
+              style: CatchTextStyles.labelM(context, color: tokens.primary),
             ),
           ),
         ],
@@ -454,13 +454,13 @@ class _TimelineView extends StatelessWidget {
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p8,
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         Sizes.p24,
       ),
       children: [
-        Text('Day timeline', style: CatchTextStyles.labelSm(context)),
+        Text('Day timeline', style: CatchTextStyles.labelM(context)),
         gapH12,
         for (final run in sorted) _TimelineRun(run: run, tokens: tokens),
       ],
@@ -484,7 +484,7 @@ class _TimelineRun extends StatelessWidget {
             width: 56,
             child: Text(
               RunFormatters.time(run.startTime),
-              style: CatchTextStyles.caption(context, color: tokens.ink3),
+              style: CatchTextStyles.bodyS(context, color: tokens.ink3),
             ),
           ),
           Column(
@@ -508,14 +508,14 @@ class _TimelineRun extends StatelessWidget {
                 padding: const EdgeInsets.all(Sizes.p14),
                 decoration: BoxDecoration(
                   color: tokens.primary,
-                  borderRadius: BorderRadius.circular(CatchRadius.card),
+                  borderRadius: BorderRadius.circular(CatchRadius.md),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       run.meetingPoint,
-                      style: CatchTextStyles.labelMd(
+                      style: CatchTextStyles.labelL(
                         context,
                         color: tokens.primaryInk,
                       ),
@@ -523,7 +523,7 @@ class _TimelineRun extends StatelessWidget {
                     gapH4,
                     Text(
                       '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label}',
-                      style: CatchTextStyles.bodySm(
+                      style: CatchTextStyles.bodyS(
                         context,
                         color: tokens.primaryInk.withValues(alpha: 0.84),
                       ),
@@ -556,11 +556,11 @@ class _HeaderStat extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(label.toUpperCase(), style: CatchTextStyles.labelSm(context)),
+          Text(label.toUpperCase(), style: CatchTextStyles.labelM(context)),
           gapH2,
           Text(
             value,
-            style: CatchTextStyles.displaySm(context),
+            style: CatchTextStyles.titleL(context),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -611,12 +611,12 @@ class _CalendarMessage extends StatelessWidget {
               size: 44,
             ),
             gapH12,
-            Text(title, style: CatchTextStyles.displaySm(context)),
+            Text(title, style: CatchTextStyles.titleL(context)),
             gapH6,
             Text(
               body,
               textAlign: TextAlign.center,
-              style: CatchTextStyles.bodyMd(context, color: tokens.ink2),
+              style: CatchTextStyles.bodyM(context, color: tokens.ink2),
             ),
           ],
         ),

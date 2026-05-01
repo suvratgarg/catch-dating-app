@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
@@ -35,13 +37,11 @@ class RecommendCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = tokens;
-    return Container(
+    return CatchSurface(
       width: 180,
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border.all(color: t.line),
-        borderRadius: BorderRadius.circular(CatchRadius.card),
-      ),
+      radius: CatchRadius.md,
+      borderColor: t.line,
+      backgroundColor: t.surface,
       clipBehavior: Clip.antiAlias,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -55,23 +55,7 @@ class RecommendCard extends StatelessWidget {
                 Positioned(
                   top: 8,
                   left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: Sizes.p8,
-                      vertical: Sizes.p3,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withValues(alpha: 0.95),
-                      borderRadius: BorderRadius.circular(CatchRadius.button),
-                    ),
-                    child: Text(
-                      dist,
-                      style: CatchTextStyles.labelSm(
-                        context,
-                        color: Colors.black,
-                      ).copyWith(letterSpacing: 0.3),
-                    ),
-                  ),
+                  child: CatchBadge(label: dist, tone: CatchBadgeTone.neutral),
                 ),
               ],
             ),
@@ -83,12 +67,12 @@ class RecommendCard extends StatelessWidget {
               children: [
                 Text(
                   club,
-                  style: CatchTextStyles.labelMd(context),
+                  style: CatchTextStyles.labelL(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 gapH2,
-                Text(when, style: CatchTextStyles.caption(context)),
+                Text(when, style: CatchTextStyles.bodyS(context)),
               ],
             ),
           ),

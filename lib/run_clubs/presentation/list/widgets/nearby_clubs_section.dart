@@ -22,7 +22,7 @@ class NearbyClubsSection extends StatelessWidget {
       children: [
         const SectionHeader(title: 'Nearby'),
         Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.screenH),
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
           child: Column(
             children: [
               for (var i = 0; i < clubs.length; i++) ...[

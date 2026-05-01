@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
-import 'package:catch_dating_app/core/widgets/enum_dropdown.dart';
+import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
 
 class CreateRunClubDetailsFields extends StatelessWidget {
@@ -23,12 +24,10 @@ class CreateRunClubDetailsFields extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        TextFormField(
+        CatchTextField(
+          label: 'Club name',
           controller: nameController,
-          decoration: const InputDecoration(
-            labelText: 'Club name',
-            prefixIcon: Icon(Icons.group_outlined),
-          ),
+          prefixIcon: const Icon(Icons.group_outlined),
           textCapitalization: TextCapitalization.words,
           textInputAction: TextInputAction.next,
           validator: (value) {
@@ -39,23 +38,21 @@ class CreateRunClubDetailsFields extends StatelessWidget {
           },
         ),
         gapH16,
-        EnumDropdownField<IndianCity>(
+        CatchDropdownField<IndianCity>(
           values: IndianCity.values,
           label: 'City',
           prefixIcon: const Icon(Icons.location_city_outlined),
-          initialValue: selectedCity,
+          value: selectedCity,
           onChanged: onCityChanged,
           validator: (_) =>
               selectedCity == null ? 'Please select a city' : null,
         ),
         gapH16,
-        TextFormField(
+        CatchTextField(
+          label: 'Area / neighbourhood',
           controller: areaController,
-          decoration: const InputDecoration(
-            labelText: 'Area / neighbourhood',
-            prefixIcon: Icon(Icons.location_on_outlined),
-            hintText: 'e.g. Bandra, Koramangala',
-          ),
+          prefixIcon: const Icon(Icons.location_on_outlined),
+          hintText: 'e.g. Bandra, Koramangala',
           textCapitalization: TextCapitalization.words,
           textInputAction: TextInputAction.next,
           validator: (value) {
@@ -66,13 +63,10 @@ class CreateRunClubDetailsFields extends StatelessWidget {
           },
         ),
         gapH16,
-        TextFormField(
+        CatchTextField(
+          label: 'Description',
           controller: descriptionController,
-          decoration: const InputDecoration(
-            labelText: 'Description',
-            prefixIcon: Icon(Icons.edit_note_outlined),
-            alignLabelWithHint: true,
-          ),
+          prefixIcon: const Icon(Icons.edit_note_outlined),
           maxLines: 4,
           textCapitalization: TextCapitalization.sentences,
           textInputAction: TextInputAction.newline,

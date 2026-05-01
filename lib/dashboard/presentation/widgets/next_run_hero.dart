@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/static_map_dark.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -27,12 +28,10 @@ class NextRunHero extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = tokens;
 
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p18),
-      decoration: BoxDecoration(
-        color: t.ink,
-        borderRadius: BorderRadius.circular(22),
-      ),
+      backgroundColor: t.ink,
+      radius: 22,
       clipBehavior: Clip.antiAlias,
       child: Stack(
         children: [
@@ -44,7 +43,7 @@ class NextRunHero extends StatelessWidget {
             children: [
               Text(
                 '● NEXT RUN · ${_countdown(nextRun.startTime)}',
-                style: CatchTextStyles.labelSm(
+                style: CatchTextStyles.labelM(
                   context,
                   color: t.surface.withValues(alpha: 0.75),
                 ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.4),
@@ -52,7 +51,7 @@ class NextRunHero extends StatelessWidget {
               gapH8,
               Text(
                 nextRun.title,
-                style: CatchTextStyles.displayLg(context, color: t.surface),
+                style: CatchTextStyles.displayL(context, color: t.surface),
               ),
               gapH10,
               Row(
@@ -61,7 +60,7 @@ class NextRunHero extends StatelessWidget {
                   gapW4,
                   Text(
                     _formatTime(nextRun.startTime),
-                    style: CatchTextStyles.caption(
+                    style: CatchTextStyles.bodyS(
                       context,
                       color: t.surface.withValues(alpha: 0.85),
                     ),
@@ -72,7 +71,7 @@ class NextRunHero extends StatelessWidget {
                   Flexible(
                     child: Text(
                       nextRun.meetingPoint,
-                      style: CatchTextStyles.caption(
+                      style: CatchTextStyles.bodyS(
                         context,
                         color: t.surface.withValues(alpha: 0.85),
                       ),
@@ -114,7 +113,7 @@ class NextRunHero extends StatelessWidget {
                   Flexible(
                     child: Text(
                       '${nextRun.signedUpCount} runner${nextRun.signedUpCount == 1 ? '' : 's'} confirmed',
-                      style: CatchTextStyles.caption(
+                      style: CatchTextStyles.bodyS(
                         context,
                         color: t.surface.withValues(alpha: 0.85),
                       ),

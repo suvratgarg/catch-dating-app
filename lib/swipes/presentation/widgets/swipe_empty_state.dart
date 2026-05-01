@@ -21,11 +21,11 @@ class SwipeEmptyState extends StatelessWidget {
           children: [
             Icon(content.icon, size: 72, color: t.line2),
             gapH16,
-            Text(content.title, style: CatchTextStyles.displayLg(context)),
+            Text(content.title, style: CatchTextStyles.displayL(context)),
             gapH8,
             Text(
               content.message,
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
+              style: CatchTextStyles.bodyM(context, color: t.ink2),
               textAlign: TextAlign.center,
             ),
           ],

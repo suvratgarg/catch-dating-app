@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:flutter/material.dart';
 
 /// Run / roster status badge.
@@ -21,37 +21,20 @@ class StatusChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final (label, bg, fg) = _resolve(status, t, waitlistPosition);
+    final (label, tone) = _resolve(status, waitlistPosition);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: BorderRadius.circular(CatchRadius.button),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w700,
-          letterSpacing: 0.5,
-          color: fg,
-          height: 1.2,
-        ),
-      ),
-    );
+    return CatchBadge(label: label, tone: tone, uppercase: true);
   }
 
-  static (String, Color, Color) _resolve(RunStatus s, CatchTokens t, int? pos) {
+  static (String, CatchBadgeTone) _resolve(RunStatus s, int? pos) {
     return switch (s) {
-      RunStatus.joined => ('JOINED', t.accent, t.accentInk),
-      RunStatus.paid => ('PAID', t.accent, t.accentInk),
-      RunStatus.waitlist => ('WAITLIST #${pos ?? '?'}', t.gold, t.surface),
-      RunStatus.pending => ('PENDING', t.raised, t.ink2),
-      RunStatus.full => ('FULL', t.ink, t.surface),
-      RunStatus.interested => ('INTERESTED', t.primarySoft, t.primary),
-      RunStatus.open => ('OPEN', t.primarySoft, t.primary),
+      RunStatus.joined => ('joined', CatchBadgeTone.brand),
+      RunStatus.paid => ('paid', CatchBadgeTone.success),
+      RunStatus.waitlist => ('waitlist #${pos ?? '?'}', CatchBadgeTone.solid),
+      RunStatus.pending => ('pending', CatchBadgeTone.neutral),
+      RunStatus.full => ('full', CatchBadgeTone.solid),
+      RunStatus.interested => ('interested', CatchBadgeTone.brand),
+      RunStatus.open => ('open', CatchBadgeTone.brand),
     };
   }
 }

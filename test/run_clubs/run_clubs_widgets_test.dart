@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -172,7 +174,7 @@ void main() {
         RunClubListTile(club: buildRunClub(), onJoin: () => didJoin = true),
       );
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Join'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Join'));
       await tester.pump();
 
       expect(didJoin, isTrue);
@@ -187,7 +189,7 @@ void main() {
       );
 
       expect(find.text('Next run coming up'), findsOneWidget);
-      expect(find.widgetWithText(OutlinedButton, 'Joined'), findsOneWidget);
+      expect(find.widgetWithText(CatchButton, 'Joined'), findsOneWidget);
     });
 
     testWidgets('directory and avatar chip variants render club metadata', (
@@ -242,7 +244,17 @@ void main() {
         );
 
         expect(find.text('Join club'), findsOneWidget);
-        expect(find.byType(CircularProgressIndicator), findsOneWidget);
+        expect(
+          tester
+              .widget<CatchButton>(
+                find.byWidgetPredicate(
+                  (widget) =>
+                      widget is CatchButton && widget.label == 'Leave club',
+                ),
+              )
+              .isLoading,
+          isTrue,
+        );
       },
     );
 
@@ -648,7 +660,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(OutlinedButton, 'Join'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Join'));
       await tester.pumpAndSettle();
 
       expect(fakeRepository.joinedClubId, 'club-99');
@@ -1045,21 +1057,23 @@ void main() {
         expect(find.text('Please add a description'), findsOneWidget);
 
         await tester.enterText(
-          find.widgetWithText(TextFormField, 'Club name'),
+          find.widgetWithText(CatchTextField, 'Club name'),
           'Sunset Striders',
         );
         await tester.enterText(
-          find.widgetWithText(TextFormField, 'Area / neighbourhood'),
+          find.widgetWithText(CatchTextField, 'Area / neighbourhood'),
           'Bandra',
         );
         await tester.enterText(
-          find.widgetWithText(TextFormField, 'Description'),
+          find.widgetWithText(CatchTextField, 'Description'),
           'Easy social club',
         );
 
-        await tester.tap(
-          find.byWidgetPredicate((widget) => widget is DropdownButtonFormField),
-        );
+        tester.testTextInput.hide();
+        await tester.pump();
+        final cityDropdownIcon = find.byIcon(Icons.keyboard_arrow_down_rounded);
+        await tester.ensureVisible(cityDropdownIcon);
+        await tester.tap(cityDropdownIcon);
         await tester.pumpAndSettle();
         await tester.tap(find.text('Mumbai').last);
         await tester.pumpAndSettle();

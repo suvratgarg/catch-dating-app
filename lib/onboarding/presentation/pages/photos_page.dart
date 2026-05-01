@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -72,16 +73,15 @@ class PhotosPage extends ConsumerWidget {
                 .pickAndUpload(index),
           ),
           gapH24,
-          FilledButton(
+          CatchButton(
+            label: 'Continue',
             onPressed: canContinue
                 ? () => ref
                       .read(onboardingControllerProvider.notifier)
                       .goToStep(OnboardingStep.runningPrefs)
                 : null,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
-            ),
-            child: const Text('Continue'),
+            fullWidth: true,
+            size: CatchButtonSize.lg,
           ),
           if (continueHint != null) ...[
             gapH12,

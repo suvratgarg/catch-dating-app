@@ -42,10 +42,10 @@ class MessageBubble extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isMe ? t.primary : t.raised,
                 borderRadius: BorderRadius.only(
-                  topLeft: const Radius.circular(CatchRadius.cardLg),
-                  topRight: const Radius.circular(CatchRadius.cardLg),
-                  bottomLeft: Radius.circular(isMe ? CatchRadius.cardLg : 4),
-                  bottomRight: Radius.circular(isMe ? 4 : CatchRadius.cardLg),
+                  topLeft: const Radius.circular(CatchRadius.lg),
+                  topRight: const Radius.circular(CatchRadius.lg),
+                  bottomLeft: Radius.circular(isMe ? CatchRadius.lg : 4),
+                  bottomRight: Radius.circular(isMe ? 4 : CatchRadius.lg),
                 ),
               ),
               child: Column(
@@ -55,7 +55,7 @@ class MessageBubble extends StatelessWidget {
                 children: [
                   Text(
                     text,
-                    style: CatchTextStyles.bodyMd(
+                    style: CatchTextStyles.bodyM(
                       context,
                       color: isMe ? t.primaryInk : t.ink,
                     ),
@@ -63,7 +63,7 @@ class MessageBubble extends StatelessWidget {
                   gapH2,
                   Text(
                     timeStr,
-                    style: CatchTextStyles.caption(
+                    style: CatchTextStyles.bodyS(
                       context,
                       color: isMe ? t.primaryInk.withAlpha(180) : t.ink2,
                     ),

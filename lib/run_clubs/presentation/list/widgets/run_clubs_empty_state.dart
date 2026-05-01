@@ -12,7 +12,7 @@ class RunClubsEmptyState extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(
         vertical: 60,
-        horizontal: CatchSpacing.screenH,
+        horizontal: CatchSpacing.s5,
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -21,13 +21,13 @@ class RunClubsEmptyState extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             'No run clubs in this city yet',
-            style: CatchTextStyles.displaySm(context),
+            style: CatchTextStyles.titleL(context),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 8),
           Text(
             'Be the first to create one!',
-            style: CatchTextStyles.bodySm(context),
+            style: CatchTextStyles.bodyS(context),
             textAlign: TextAlign.center,
           ),
         ],

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -62,7 +63,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
 
     return Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(CatchRadius.cardLg),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
       ),
       child: Padding(
         padding: const EdgeInsets.all(Sizes.p24),
@@ -76,7 +77,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
               child: photoUrl == null
                   ? Text(
                       name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: CatchTextStyles.displayXl(
+                      style: CatchTextStyles.displayXL(
                         context,
                         color: t.primary,
                       ),
@@ -86,24 +87,27 @@ class MatchCelebrationDialog extends ConsumerWidget {
             gapH20,
             Text(
               "It's a match! 🎉",
-              style: CatchTextStyles.displayLg(context, color: t.primary),
+              style: CatchTextStyles.displayL(context, color: t.primary),
             ),
             gapH8,
             Text(
               'You and $name both liked each other.',
               textAlign: TextAlign.center,
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
+              style: CatchTextStyles.bodyM(context, color: t.ink2),
             ),
             gapH24,
-            FilledButton.icon(
+            CatchButton(
+              label: 'Send a message',
               onPressed: onSendMessage,
               icon: const Icon(Icons.send_rounded),
-              label: const Text('Send a message'),
+              fullWidth: true,
             ),
             gapH12,
-            TextButton(
+            CatchButton(
+              label: 'Keep swiping',
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Keep swiping'),
+              variant: CatchButtonVariant.ghost,
+              fullWidth: true,
             ),
           ],
         ),

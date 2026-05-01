@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
@@ -253,7 +254,12 @@ void main() {
       expect(find.text('2/20'), findsWidgets);
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('Schedule run'), findsNothing);
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(
+        find.byWidgetPredicate(
+          (widget) => widget is CatchButton && widget.isLoading,
+        ),
+        findsOneWidget,
+      );
 
       await tester.tap(find.text('7km · Easy').first);
       await tester.tap(find.text('Next'));
@@ -300,7 +306,7 @@ void main() {
       expect(tappedRunId, run.id);
     });
 
-    testWidgets('run photo header repaints when the token palette changes', (
+    testWidgets('run photo header repaints when the token mode changes', (
       tester,
     ) async {
       final run = buildRun();
@@ -317,7 +323,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          theme: ThemeData(extensions: const [CatchTokens.editorialLight]),
+          theme: ThemeData(extensions: const [CatchTokens.sunsetDark]),
           home: Scaffold(
             body: SizedBox(height: 320, child: RunPhotoHeader(run: run)),
           ),

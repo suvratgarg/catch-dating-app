@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -51,21 +53,20 @@ class EligibilityStep extends StatelessWidget {
       key: formKey,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           16,
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           24,
         ),
         children: [
-          Container(
+          CatchSurface(
             padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: t.primarySoft,
-              borderRadius: BorderRadius.circular(CatchRadius.card),
-            ),
+            tone: CatchSurfaceTone.primarySoft,
+            radius: CatchRadius.md,
+            borderWidth: 0,
             child: Text(
               'Leave fields empty to apply no restriction. These filters help curate a safe, balanced run.',
-              style: CatchTextStyles.bodySm(context, color: t.primary),
+              style: CatchTextStyles.bodyS(context, color: t.primary),
             ),
           ),
           const SizedBox(height: 20),
@@ -74,12 +75,11 @@ class EligibilityStep extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TextFormField(
+                child: CatchTextField(
+                  label: 'Min age',
                   controller: minAgeController,
-                  decoration: InputDecoration(
-                    hintText: 'Min (e.g. 18)',
-                    prefixIcon: Icon(Icons.cake_outlined, color: t.ink2),
-                  ),
+                  hintText: 'Min (e.g. 18)',
+                  prefixIcon: const Icon(Icons.cake_outlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -92,12 +92,11 @@ class EligibilityStep extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: TextFormField(
+                child: CatchTextField(
+                  label: 'Max age',
                   controller: maxAgeController,
-                  decoration: InputDecoration(
-                    hintText: 'Max (e.g. 35)',
-                    prefixIcon: Icon(Icons.cake_outlined, color: t.ink2),
-                  ),
+                  hintText: 'Max (e.g. 35)',
+                  prefixIcon: const Icon(Icons.cake_outlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -116,12 +115,11 @@ class EligibilityStep extends StatelessWidget {
           Row(
             children: [
               Expanded(
-                child: TextFormField(
+                child: CatchTextField(
+                  label: 'Max men',
                   controller: maxMenController,
-                  decoration: InputDecoration(
-                    hintText: 'Max men',
-                    prefixIcon: Icon(Icons.male_outlined, color: t.ink2),
-                  ),
+                  hintText: 'Max men',
+                  prefixIcon: const Icon(Icons.male_outlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.next,
@@ -135,12 +133,11 @@ class EligibilityStep extends StatelessWidget {
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: TextFormField(
+                child: CatchTextField(
+                  label: 'Max women',
                   controller: maxWomenController,
-                  decoration: InputDecoration(
-                    hintText: 'Max women',
-                    prefixIcon: Icon(Icons.female_outlined, color: t.ink2),
-                  ),
+                  hintText: 'Max women',
+                  prefixIcon: const Icon(Icons.female_outlined),
                   keyboardType: TextInputType.number,
                   inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                   textInputAction: TextInputAction.done,

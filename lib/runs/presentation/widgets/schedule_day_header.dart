@@ -19,7 +19,7 @@ class ScheduleDayHeader extends StatelessWidget {
       children: [
         Text(
           RunFormatters.shortWeekday(day),
-          style: CatchTextStyles.labelSm(
+          style: CatchTextStyles.labelM(
             context,
             color: isToday ? t.primary : t.ink2,
           ).copyWith(fontWeight: isToday ? FontWeight.bold : FontWeight.normal),
@@ -31,7 +31,7 @@ class ScheduleDayHeader extends StatelessWidget {
           child: Text(
             '${day.day}',
             style:
-                CatchTextStyles.labelMd(
+                CatchTextStyles.labelL(
                   context,
                   color: isToday ? t.primaryInk : t.ink,
                 ).copyWith(

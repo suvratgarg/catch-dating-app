@@ -20,66 +20,53 @@ class _RowTile extends StatelessWidget {
         ? (club.nextRunLabel ?? 'Next run coming up')
         : '${club.area} · ${club.memberCount} runners';
 
-    return InkWell(
+    return CatchSurface(
       onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: SizedBox(
-                width: 54,
-                height: 54,
-                child: _ClubImage(imageUrl: club.imageUrl, seed: club.id),
-              ),
+      tone: CatchSurfaceTone.transparent,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      borderWidth: 0,
+      radius: CatchRadius.md,
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: SizedBox(
+              width: 54,
+              height: 54,
+              child: _ClubImage(imageUrl: club.imageUrl, seed: club.id),
             ),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    club.name,
-                    style: CatchTextStyles.labelLg(context),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 2),
-                  Text(
-                    subtitle,
-                    style: CatchTextStyles.caption(context),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  club.name,
+                  style: CatchTextStyles.titleM(context),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: CatchTextStyles.bodyS(context),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            const SizedBox(width: 8),
-            OutlinedButton(
-              onPressed: isJoined ? null : onJoin,
-              style: OutlinedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 6,
-                ),
-                minimumSize: Size.zero,
-                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                side: BorderSide(color: t.line2),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(CatchRadius.button),
-                ),
-              ),
-              child: Text(
-                isJoined ? 'Joined' : 'Join',
-                style: CatchTextStyles.labelMd(
-                  context,
-                  color: isJoined ? t.ink3 : t.ink2,
-                ),
-              ),
-            ),
-          ],
-        ),
+          ),
+          const SizedBox(width: 8),
+          CatchButton(
+            label: isJoined ? 'Joined' : 'Join',
+            onPressed: isJoined ? null : onJoin,
+            variant: CatchButtonVariant.secondary,
+            size: CatchButtonSize.sm,
+            foregroundColor: isJoined ? t.ink3 : t.ink2,
+            borderColor: t.line2,
+          ),
+        ],
       ),
     );
   }

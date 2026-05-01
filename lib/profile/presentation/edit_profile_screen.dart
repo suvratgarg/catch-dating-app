@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/widgets/app_form_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
-import 'package:catch_dating_app/core/widgets/enum_dropdown.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_controller.dart';
 import 'package:catch_dating_app/profile/presentation/edit_profile_form_data.dart';
@@ -190,12 +192,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
             children: [
               EditProfileSection(
                 children: [
-                  TextFormField(
+                  CatchTextField(
+                    label: 'Name',
                     controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Name',
-                      prefixIcon: Icon(Icons.person_outlined),
-                    ),
+                    prefixIcon: const Icon(Icons.person_outlined),
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     validator: (v) => v == null || v.trim().isEmpty
@@ -203,14 +203,12 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         : null,
                   ),
                   gapH16,
-                  TextFormField(
+                  CatchTextField(
+                    label: 'Date of birth',
                     controller: _dateController,
                     readOnly: true,
                     onTap: _pickDate,
-                    decoration: const InputDecoration(
-                      labelText: 'Date of birth',
-                      prefixIcon: Icon(Icons.calendar_today_outlined),
-                    ),
+                    prefixIcon: const Icon(Icons.calendar_today_outlined),
                     validator: (v) {
                       if (v == null || v.isEmpty) {
                         return 'Please select your date of birth';
@@ -251,12 +249,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                     ),
                   ),
                   gapH16,
-                  TextFormField(
+                  CatchTextField(
+                    label: 'Phone number',
                     controller: _phoneController,
-                    decoration: const InputDecoration(
-                      labelText: 'Phone number',
-                      prefixIcon: Icon(Icons.phone_outlined),
-                    ),
+                    prefixIcon: const Icon(Icons.phone_outlined),
                     keyboardType: TextInputType.phone,
                     textInputAction: TextInputAction.next,
                     validator: (v) => v == null || v.trim().isEmpty
@@ -264,13 +260,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                         : null,
                   ),
                   gapH16,
-                  TextFormField(
+                  CatchTextField(
+                    label: 'Bio',
                     controller: _bioController,
-                    decoration: const InputDecoration(
-                      labelText: 'Bio',
-                      prefixIcon: Icon(Icons.edit_note_outlined),
-                      alignLabelWithHint: true,
-                    ),
+                    prefixIcon: const Icon(Icons.edit_note_outlined),
                     maxLines: 4,
                     textCapitalization: TextCapitalization.sentences,
                     validator: (v) => v == null || v.trim().isEmpty
@@ -294,12 +287,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   Row(
                     children: [
                       Expanded(
-                        child: TextFormField(
+                        child: CatchTextField(
+                          label: 'Min age',
                           controller: _minAgeController,
-                          decoration: const InputDecoration(
-                            labelText: 'Min age',
-                            prefixIcon: Icon(Icons.cake_outlined),
-                          ),
+                          prefixIcon: const Icon(Icons.cake_outlined),
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
@@ -314,12 +305,10 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       ),
                       gapW12,
                       Expanded(
-                        child: TextFormField(
+                        child: CatchTextField(
+                          label: 'Max age',
                           controller: _maxAgeController,
-                          decoration: const InputDecoration(
-                            labelText: 'Max age',
-                            prefixIcon: Icon(Icons.cake_outlined),
-                          ),
+                          prefixIcon: const Icon(Icons.cake_outlined),
                           keyboardType: TextInputType.number,
                           inputFormatters: [
                             FilteringTextInputFormatter.digitsOnly,
@@ -340,59 +329,53 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 title: 'About you',
                 showDivider: true,
                 children: [
-                  EnumDropdownField<RelationshipGoal>(
+                  CatchDropdownField<RelationshipGoal>(
                     values: RelationshipGoal.values,
                     label: 'Looking for',
                     prefixIcon: const Icon(Icons.favorite_outline),
-                    initialValue: _selectedGoal,
+                    value: _selectedGoal,
                     onChanged: (v) => setState(() => _selectedGoal = v),
                   ),
                   gapH16,
-                  TextFormField(
+                  CatchTextField(
+                    label: 'Height',
                     controller: _heightController,
-                    decoration: const InputDecoration(
-                      labelText: 'Height',
-                      prefixIcon: Icon(Icons.height_outlined),
-                      suffixText: 'cm',
-                    ),
+                    prefixIcon: const Icon(Icons.height_outlined),
+                    suffixText: 'cm',
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textInputAction: TextInputAction.next,
                   ),
                   gapH16,
-                  TextFormField(
+                  CatchTextField(
+                    label: 'Job title',
                     controller: _occupationController,
-                    decoration: const InputDecoration(
-                      labelText: 'Job title',
-                      prefixIcon: Icon(Icons.work_outline),
-                    ),
+                    prefixIcon: const Icon(Icons.work_outline),
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                   ),
                   gapH16,
-                  TextFormField(
+                  CatchTextField(
+                    label: 'Company',
                     controller: _companyController,
-                    decoration: const InputDecoration(
-                      labelText: 'Company',
-                      prefixIcon: Icon(Icons.business_outlined),
-                    ),
+                    prefixIcon: const Icon(Icons.business_outlined),
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                   ),
                   gapH16,
-                  EnumDropdownField<EducationLevel>(
+                  CatchDropdownField<EducationLevel>(
                     values: EducationLevel.values,
                     label: 'Education',
                     prefixIcon: const Icon(Icons.school_outlined),
-                    initialValue: _selectedEducation,
+                    value: _selectedEducation,
                     onChanged: (v) => setState(() => _selectedEducation = v),
                   ),
                   gapH16,
-                  EnumDropdownField<Religion>(
+                  CatchDropdownField<Religion>(
                     values: Religion.values,
                     label: 'Religion',
                     prefixIcon: const Icon(Icons.volunteer_activism_outlined),
-                    initialValue: _selectedReligion,
+                    value: _selectedReligion,
                     onChanged: (v) => setState(() => _selectedReligion = v),
                   ),
                   gapH16,
@@ -409,43 +392,43 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 title: 'Lifestyle',
                 showDivider: true,
                 children: [
-                  EnumDropdownField<DrinkingHabit>(
+                  CatchDropdownField<DrinkingHabit>(
                     values: DrinkingHabit.values,
                     label: 'Drinking',
                     prefixIcon: const Icon(Icons.local_bar_outlined),
-                    initialValue: _selectedDrinking,
+                    value: _selectedDrinking,
                     onChanged: (v) => setState(() => _selectedDrinking = v),
                   ),
                   gapH16,
-                  EnumDropdownField<SmokingHabit>(
+                  CatchDropdownField<SmokingHabit>(
                     values: SmokingHabit.values,
                     label: 'Smoking',
                     prefixIcon: const Icon(Icons.smoke_free_outlined),
-                    initialValue: _selectedSmoking,
+                    value: _selectedSmoking,
                     onChanged: (v) => setState(() => _selectedSmoking = v),
                   ),
                   gapH16,
-                  EnumDropdownField<WorkoutFrequency>(
+                  CatchDropdownField<WorkoutFrequency>(
                     values: WorkoutFrequency.values,
                     label: 'Workout',
                     prefixIcon: const Icon(Icons.fitness_center_outlined),
-                    initialValue: _selectedWorkout,
+                    value: _selectedWorkout,
                     onChanged: (v) => setState(() => _selectedWorkout = v),
                   ),
                   gapH16,
-                  EnumDropdownField<DietaryPreference>(
+                  CatchDropdownField<DietaryPreference>(
                     values: DietaryPreference.values,
                     label: 'Diet',
                     prefixIcon: const Icon(Icons.restaurant_outlined),
-                    initialValue: _selectedDiet,
+                    value: _selectedDiet,
                     onChanged: (v) => setState(() => _selectedDiet = v),
                   ),
                   gapH16,
-                  EnumDropdownField<ChildrenStatus>(
+                  CatchDropdownField<ChildrenStatus>(
                     values: ChildrenStatus.values,
                     label: 'Children',
                     prefixIcon: const Icon(Icons.child_care_outlined),
-                    initialValue: _selectedChildren,
+                    value: _selectedChildren,
                     onChanged: (v) => setState(() => _selectedChildren = v),
                   ),
                 ],
@@ -457,23 +440,11 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 ),
               ],
               gapH24,
-              FilledButton(
-                onPressed: submitMutation.isPending ? null : _submit,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text('Save changes'),
-                    if (submitMutation.isPending) ...[
-                      gapW8,
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      ),
-                    ],
-                  ],
-                ),
+              CatchButton(
+                label: 'Save changes',
+                onPressed: _submit,
+                isLoading: submitMutation.isPending,
+                fullWidth: true,
               ),
               gapH48,
             ],

@@ -37,9 +37,9 @@ class WhenStep extends StatelessWidget {
       key: formKey,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           16,
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           24,
         ),
         children: [

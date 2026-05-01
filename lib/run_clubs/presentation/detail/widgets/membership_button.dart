@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -17,47 +18,29 @@ class MembershipButton extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     if (isMember) {
-      return SizedBox(
-        width: double.infinity,
-        child: OutlinedButton(
-          onPressed: isMutating
-              ? null
-              : () => RunClubMembershipController.leaveMutation.run(
-                  ref,
-                  (tx) async => tx
-                      .get(runClubMembershipControllerProvider.notifier)
-                      .leave(clubId),
-                ),
-          child: isMutating
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Leave club'),
+      return CatchButton(
+        label: 'Leave club',
+        onPressed: () => RunClubMembershipController.leaveMutation.run(
+          ref,
+          (tx) async => tx
+              .get(runClubMembershipControllerProvider.notifier)
+              .leave(clubId),
         ),
+        variant: CatchButtonVariant.secondary,
+        isLoading: isMutating,
+        fullWidth: true,
       );
     }
 
-    return SizedBox(
-      width: double.infinity,
-      child: FilledButton(
-        onPressed: isMutating
-            ? null
-            : () => RunClubMembershipController.joinMutation.run(
-                ref,
-                (tx) async => tx
-                    .get(runClubMembershipControllerProvider.notifier)
-                    .join(clubId),
-              ),
-        child: isMutating
-            ? const SizedBox(
-                width: 18,
-                height: 18,
-                child: CircularProgressIndicator(strokeWidth: 2),
-              )
-            : const Text('Join club'),
+    return CatchButton(
+      label: 'Join club',
+      onPressed: () => RunClubMembershipController.joinMutation.run(
+        ref,
+        (tx) async =>
+            tx.get(runClubMembershipControllerProvider.notifier).join(clubId),
       ),
+      isLoading: isMutating,
+      fullWidth: true,
     );
   }
 }

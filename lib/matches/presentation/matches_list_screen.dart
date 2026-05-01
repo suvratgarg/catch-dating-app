@@ -55,9 +55,9 @@ class _MatchesListScreenState extends ConsumerState<MatchesListScreen> {
                 : SafeArea(
                     child: ListView(
                       padding: const EdgeInsets.fromLTRB(
-                        CatchSpacing.screenH,
+                        CatchSpacing.s5,
                         Sizes.p8,
-                        CatchSpacing.screenH,
+                        CatchSpacing.s5,
                         Sizes.p24,
                       ),
                       children: [
@@ -69,7 +69,7 @@ class _MatchesListScreenState extends ConsumerState<MatchesListScreen> {
                               color: t.surface,
                               border: Border.all(color: t.line),
                               borderRadius: BorderRadius.circular(
-                                CatchRadius.cardLg,
+                                CatchRadius.lg,
                               ),
                             ),
                             child: ChatListTile(
@@ -111,13 +111,13 @@ class _MatchesHeader extends StatelessWidget {
             children: [
               Text(
                 'CHATS',
-                style: CatchTextStyles.labelSm(
+                style: CatchTextStyles.labelM(
                   context,
                   color: t.ink3,
                 ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
               ),
               gapH2,
-              Text('Your catches', style: CatchTextStyles.displayLg(context)),
+              Text('Your catches', style: CatchTextStyles.displayL(context)),
             ],
           ),
         ),
@@ -125,11 +125,11 @@ class _MatchesHeader extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
           decoration: BoxDecoration(
             color: t.primarySoft,
-            borderRadius: BorderRadius.circular(CatchRadius.button),
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
           ),
           child: Text(
             '$count active',
-            style: CatchTextStyles.labelMd(context, color: t.primary),
+            style: CatchTextStyles.labelL(context, color: t.primary),
           ),
         ),
       ],
@@ -149,9 +149,9 @@ class _MatchesEmptyState extends StatelessWidget {
     return SafeArea(
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           Sizes.p8,
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           Sizes.p24,
         ),
         children: [
@@ -182,13 +182,13 @@ class _MatchesEmptyState extends StatelessWidget {
                 gapH18,
                 Text(
                   'No catches yet',
-                  style: CatchTextStyles.displayMd(context),
+                  style: CatchTextStyles.displayM(context),
                   textAlign: TextAlign.center,
                 ),
                 gapH8,
                 Text(
                   'When someone catches you back after a shared run, the conversation opens here with that run as context.',
-                  style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                  style: CatchTextStyles.bodyM(context, color: t.ink2),
                   textAlign: TextAlign.center,
                 ),
               ],

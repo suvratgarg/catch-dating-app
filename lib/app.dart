@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/force_update/data/app_version_repository.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
@@ -123,10 +124,11 @@ class _ForceUpdateCheckErrorScreen extends StatelessWidget {
                     ),
                   ],
                   const SizedBox(height: 24),
-                  FilledButton.icon(
+                  CatchButton(
+                    label: 'Try again',
                     onPressed: onRetry,
                     icon: const Icon(Icons.refresh),
-                    label: const Text('Try again'),
+                    fullWidth: true,
                   ),
                 ],
               ),

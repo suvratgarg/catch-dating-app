@@ -1,4 +1,7 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -42,9 +45,7 @@ void main() {
         child: const WelcomePage(),
       );
 
-      await tester.tap(
-        find.widgetWithText(FilledButton, 'Continue with phone'),
-      );
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue with phone'));
       await tester.pumpAndSettle();
 
       expect(
@@ -64,7 +65,7 @@ void main() {
       );
 
       expect(
-        find.widgetWithText(FilledButton, 'Continue with phone'),
+        find.widgetWithText(CatchButton, 'Continue with phone'),
         findsOneWidget,
       );
       expect(find.byType(TextButton), findsNothing);
@@ -206,8 +207,8 @@ void main() {
       expect(find.text('Resend OTP in 60s'), findsOneWidget);
       expect(
         tester
-            .widget<TextButton>(
-              find.widgetWithText(TextButton, 'Resend OTP in 60s'),
+            .widget<CatchButton>(
+              find.widgetWithText(CatchButton, 'Resend OTP in 60s'),
             )
             .onPressed,
         isNull,
@@ -219,7 +220,7 @@ void main() {
       await tester.pump(const Duration(seconds: 30));
       expect(find.text('Resend OTP'), findsOneWidget);
 
-      await tester.tap(find.widgetWithText(TextButton, 'Resend OTP'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Resend OTP'));
       await tester.pump();
 
       expect(repository.verifyPhoneNumberCallCount, 2);
@@ -258,19 +259,19 @@ void main() {
       );
 
       await tester.enterText(
-        find.widgetWithText(TextFormField, 'First name'),
+        find.widgetWithText(CatchTextField, 'First name'),
         'Asha',
       );
       await tester.enterText(
-        find.widgetWithText(TextFormField, 'Last name'),
+        find.widgetWithText(CatchTextField, 'Last name'),
         'Runner',
       );
-      await tester.tap(find.widgetWithText(TextFormField, 'Date of birth'));
+      await tester.tap(find.widgetWithText(CatchTextField, 'Date of birth'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
       await tester.pumpAndSettle();
 
       expect(
@@ -301,19 +302,19 @@ void main() {
       );
 
       await tester.enterText(
-        find.widgetWithText(TextFormField, 'First name'),
+        find.widgetWithText(CatchTextField, 'First name'),
         'Asha',
       );
       await tester.enterText(
-        find.widgetWithText(TextFormField, 'Last name'),
+        find.widgetWithText(CatchTextField, 'Last name'),
         'Runner',
       );
-      await tester.tap(find.widgetWithText(TextFormField, 'Date of birth'));
+      await tester.tap(find.widgetWithText(CatchTextField, 'Date of birth'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('OK'));
       await tester.pumpAndSettle();
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
       await tester.pumpAndSettle();
 
       expect(
@@ -360,7 +361,7 @@ void main() {
         tester
             .widget<EditableText>(
               find.descendant(
-                of: find.widgetWithText(TextFormField, 'Mobile number'),
+                of: find.widgetWithText(CatchTextField, 'Mobile number'),
                 matching: find.byType(EditableText),
               ),
             )
@@ -383,7 +384,7 @@ void main() {
         child: const GenderInterestPage(),
       );
 
-      await tester.tap(find.widgetWithText(FilledButton, 'Continue'));
+      await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
       await tester.pumpAndSettle();
 
       expect(find.text('Please select your gender'), findsOneWidget);
@@ -411,20 +412,20 @@ void main() {
 
       expect(
         tester
-            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Woman').first)
-            .selected,
+            .widget<CatchChip>(find.widgetWithText(CatchChip, 'Woman').first)
+            .active,
         isTrue,
       );
       expect(
         tester
-            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Straight'))
-            .selected,
+            .widget<CatchChip>(find.widgetWithText(CatchChip, 'Straight'))
+            .active,
         isTrue,
       );
       expect(
         tester
-            .widget<FilterChip>(find.widgetWithText(FilterChip, 'Man').last)
-            .selected,
+            .widget<CatchChip>(find.widgetWithText(CatchChip, 'Man').last)
+            .active,
         isTrue,
       );
     });
@@ -458,9 +459,7 @@ void main() {
         expect(find.text('Add 2 more photos to continue.'), findsOneWidget);
         expect(
           tester
-              .widget<FilledButton>(
-                find.widgetWithText(FilledButton, 'Continue'),
-              )
+              .widget<CatchButton>(find.widgetWithText(CatchButton, 'Continue'))
               .onPressed,
           isNull,
         );

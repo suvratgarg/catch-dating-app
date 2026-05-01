@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -47,12 +48,12 @@ class WhoIsRunning extends ConsumerWidget {
             Expanded(
               child: Text(
                 "Who's running",
-                style: CatchTextStyles.displaySm(context),
+                style: CatchTextStyles.titleL(context),
               ),
             ),
             Text(
               '$total/${run.capacityLimit}',
-              style: CatchTextStyles.labelMd(context, color: t.ink2),
+              style: CatchTextStyles.labelL(context, color: t.ink2),
             ),
           ],
         ),
@@ -60,7 +61,7 @@ class WhoIsRunning extends ConsumerWidget {
         if (total == 0)
           Text(
             'No one has booked yet — be the first!',
-            style: CatchTextStyles.bodySm(context, color: t.ink2),
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
           )
         else ...[
           Wrap(
@@ -112,12 +113,11 @@ class _SwipeWindowBanner extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: t.primarySoft,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
-      ),
+      tone: CatchSurfaceTone.primarySoft,
+      radius: CatchRadius.md,
+      borderWidth: 0,
       child: Row(
         children: [
           Icon(icon, size: 16, color: t.primary),
@@ -125,7 +125,7 @@ class _SwipeWindowBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: CatchTextStyles.bodySm(context, color: t.primary),
+              style: CatchTextStyles.bodyS(context, color: t.primary),
             ),
           ),
         ],

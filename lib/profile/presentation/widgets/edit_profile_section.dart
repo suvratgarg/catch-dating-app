@@ -23,7 +23,7 @@ class EditProfileSection extends StatelessWidget {
         if (title != null) ...[
           Text(
             title!,
-            style: CatchTextStyles.displaySm(
+            style: CatchTextStyles.titleL(
               context,
             ).copyWith(fontWeight: FontWeight.bold),
           ),

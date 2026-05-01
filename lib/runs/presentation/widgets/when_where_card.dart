@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
@@ -14,13 +15,11 @@ class WhenWhereCard extends StatelessWidget {
     final t = CatchTokens.of(context);
     final start = run.startTime;
 
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: t.raised,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
-        border: Border.all(color: t.line),
-      ),
+      tone: CatchSurfaceTone.raised,
+      radius: CatchRadius.md,
+      borderColor: t.line,
       child: Column(
         children: [
           Row(
@@ -63,12 +62,12 @@ class WhenWhereCard extends StatelessWidget {
                   children: [
                     Text(
                       run.timeRangeLabel,
-                      style: CatchTextStyles.labelLg(context),
+                      style: CatchTextStyles.titleM(context),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       run.longDateLabel,
-                      style: CatchTextStyles.bodySm(context, color: t.ink2),
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -102,14 +101,14 @@ class WhenWhereCard extends StatelessWidget {
                   children: [
                     Text(
                       run.meetingPoint,
-                      style: CatchTextStyles.labelLg(context),
+                      style: CatchTextStyles.titleM(context),
                     ),
                     if (run.locationDetails != null &&
                         run.locationDetails!.isNotEmpty) ...[
                       const SizedBox(height: 2),
                       Text(
                         run.locationDetails!,
-                        style: CatchTextStyles.bodySm(context, color: t.ink2),
+                        style: CatchTextStyles.bodyS(context, color: t.ink2),
                       ),
                     ],
                   ],

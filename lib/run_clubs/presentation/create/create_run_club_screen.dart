@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/app_form_layout.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
@@ -94,13 +95,13 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
         children: [
           Text(
             'Start a club',
-            style: CatchTextStyles.displaySm(context, color: t.primary),
+            style: CatchTextStyles.titleL(context, color: t.primary),
             textAlign: TextAlign.center,
           ),
           gapH8,
           Text(
             'Tell runners what your club is about',
-            style: CatchTextStyles.bodyMd(context, color: t.ink2),
+            style: CatchTextStyles.bodyM(context, color: t.ink2),
             textAlign: TextAlign.center,
           ),
           gapH48,
@@ -121,23 +122,11 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
             ErrorBanner(message: mutationError),
           ],
           gapH24,
-          FilledButton(
-            onPressed: submitMutation.isPending ? null : _submit,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text('Create club'),
-                if (submitMutation.isPending) ...[
-                  gapW8,
-                  const SizedBox(
-                    width: 16,
-                    height: 16,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  ),
-                ],
-              ],
-            ),
+          CatchButton(
+            label: 'Create club',
+            onPressed: _submit,
+            isLoading: submitMutation.isPending,
+            fullWidth: true,
           ),
           gapH48,
         ],

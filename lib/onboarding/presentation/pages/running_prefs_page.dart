@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -153,18 +154,12 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
             ),
           ],
           const SizedBox(height: 40),
-          FilledButton(
-            onPressed: mutation.isPending ? null : _submit,
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
-            ),
-            child: mutation.isPending
-                ? const SizedBox(
-                    width: 20,
-                    height: 20,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Text('Start catching'),
+          CatchButton(
+            label: 'Start catching',
+            onPressed: _submit,
+            isLoading: mutation.isPending,
+            fullWidth: true,
+            size: CatchButtonSize.lg,
           ),
           const SizedBox(height: 32),
         ],

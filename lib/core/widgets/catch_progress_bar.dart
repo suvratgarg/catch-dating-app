@@ -27,7 +27,7 @@ class CatchProgressBar extends StatelessWidget {
           height: 4,
           decoration: BoxDecoration(
             color: t.line2,
-            borderRadius: BorderRadius.circular(CatchRadius.button),
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
           ),
           child: Align(
             alignment: Alignment.centerLeft,
@@ -38,7 +38,7 @@ class CatchProgressBar extends StatelessWidget {
               height: 4,
               decoration: BoxDecoration(
                 color: t.primary,
-                borderRadius: BorderRadius.circular(CatchRadius.button),
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
               ),
             ),
           ),

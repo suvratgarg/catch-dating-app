@@ -58,7 +58,7 @@ class ChatListTile extends ConsumerWidget {
       child: photoUrl == null
           ? Text(
               name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: CatchTextStyles.labelMd(context, color: t.primary),
+              style: CatchTextStyles.labelL(context, color: t.primary),
             )
           : null,
     );
@@ -70,7 +70,7 @@ class ChatListTile extends ConsumerWidget {
           : avatar,
       title: Text(
         name,
-        style: CatchTextStyles.labelLg(
+        style: CatchTextStyles.titleM(
           context,
         ).copyWith(fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600),
       ),
@@ -78,15 +78,14 @@ class ChatListTile extends ConsumerWidget {
         previewText,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
-        style: CatchTextStyles.bodySm(
+        style: CatchTextStyles.bodyS(
           context,
           color: hasUnread ? t.ink : t.ink2,
-          weight: hasUnread ? FontWeight.w500 : FontWeight.w400,
-        ),
+        ).copyWith(fontWeight: hasUnread ? FontWeight.w500 : FontWeight.w400),
       ),
       trailing: Text(
         _formatTime(match.lastMessageAt ?? match.createdAt),
-        style: CatchTextStyles.caption(
+        style: CatchTextStyles.bodyS(
           context,
           color: hasUnread ? t.primary : t.ink2,
         ).copyWith(fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal),

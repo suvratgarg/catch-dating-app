@@ -2,6 +2,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:flutter/material.dart';
 
 /// A chip selector that works for both single-select and multi-select use cases.
@@ -33,7 +34,6 @@ class ChipField<T extends Labelled> extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final colorScheme = Theme.of(context).colorScheme;
 
     return FormField<Set<T>>(
       initialValue: selected,
@@ -43,9 +43,9 @@ class ChipField<T extends Labelled> extends StatelessWidget {
         children: [
           Text(
             label,
-            style: CatchTextStyles.bodySm(
+            style: CatchTextStyles.labelM(
               context,
-              color: field.hasError ? colorScheme.error : t.ink2,
+              color: field.hasError ? t.danger : t.ink2,
             ),
           ),
           gapH8,
@@ -53,13 +53,14 @@ class ChipField<T extends Labelled> extends StatelessWidget {
             spacing: Sizes.p8,
             runSpacing: Sizes.p8,
             children: values.map((v) {
-              return FilterChip(
-                label: Text(v.label),
-                selected: selected.contains(v),
-                onSelected: (checked) {
+              final isSelected = selected.contains(v);
+              return CatchChip(
+                label: v.label,
+                active: isSelected,
+                onTap: () {
                   final next = Set<T>.from(selected);
                   if (!multiSelect) next.clear();
-                  checked ? next.add(v) : next.remove(v);
+                  isSelected ? next.remove(v) : next.add(v);
                   onChanged(next);
                   field.didChange(next);
                 },
@@ -70,7 +71,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
             gapH8,
             Text(
               field.errorText!,
-              style: CatchTextStyles.bodySm(context, color: colorScheme.error),
+              style: CatchTextStyles.bodyS(context, color: t.danger),
             ),
           ],
         ],

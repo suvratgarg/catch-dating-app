@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -58,7 +59,7 @@ class ReviewsSection extends StatelessWidget {
           children: [
             Text(
               'All reviews (${reviews.length})',
-              style: CatchTextStyles.displaySm(context),
+              style: CatchTextStyles.titleL(context),
             ),
             const SizedBox(height: 16),
             ...reviews.map(
@@ -90,14 +91,14 @@ class ReviewsSection extends StatelessWidget {
         Row(
           children: [
             Expanded(
-              child: Text('Reviews', style: CatchTextStyles.displaySm(context)),
+              child: Text('Reviews', style: CatchTextStyles.titleL(context)),
             ),
             if (avgRating != null) ...[
               StarRating(rating: avgRating.round(), size: 14),
               const SizedBox(width: 4),
               Text(
                 '${avgRating.toStringAsFixed(1)} · ${reviews.length}',
-                style: CatchTextStyles.bodySm(context, color: t.ink2),
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
               ),
             ],
           ],
@@ -108,7 +109,7 @@ class ReviewsSection extends StatelessWidget {
         if (reviews.isEmpty)
           Text(
             'No reviews yet — be the first!',
-            style: CatchTextStyles.bodySm(context, color: t.ink2),
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
           )
         else ...[
           ...reviews
@@ -134,7 +135,7 @@ class ReviewsSection extends StatelessWidget {
               onTap: () => _showAllReviews(context),
               child: Text(
                 'See all ${reviews.length} reviews',
-                style: CatchTextStyles.labelMd(context, color: t.primary),
+                style: CatchTextStyles.labelL(context, color: t.primary),
               ),
             ),
           ],
@@ -148,20 +149,19 @@ class ReviewsSection extends StatelessWidget {
             !isHost &&
             (runId != null ? hasAttended : isMember)) ...[
           const SizedBox(height: 12),
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: () => showWriteReviewSheet(
-                context: context,
-                runClubId: runClubId,
-                runId: runId,
-                reviewer: userProfile!,
-                existingReview: existingReview,
-              ),
-              child: Text(
-                existingReview != null ? 'Edit your review' : 'Write a review',
-              ),
+          CatchButton(
+            label: existingReview != null
+                ? 'Edit your review'
+                : 'Write a review',
+            onPressed: () => showWriteReviewSheet(
+              context: context,
+              runClubId: runClubId,
+              runId: runId,
+              reviewer: userProfile!,
+              existingReview: existingReview,
             ),
+            variant: CatchButtonVariant.secondary,
+            fullWidth: true,
           ),
         ],
       ],
@@ -200,7 +200,7 @@ class ReviewCard extends StatelessWidget {
                   children: [
                     Text(
                       isOwn ? 'You' : review.reviewerName,
-                      style: CatchTextStyles.labelMd(context),
+                      style: CatchTextStyles.labelL(context),
                     ),
                     StarRating(rating: review.rating, size: 12),
                   ],
@@ -217,7 +217,7 @@ class ReviewCard extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               review.comment,
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
+              style: CatchTextStyles.bodyM(context, color: t.ink2),
             ),
           ],
           const SizedBox(height: 10),

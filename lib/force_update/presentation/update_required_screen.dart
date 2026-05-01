@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/force_update/data/app_version_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,7 +30,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
               gapH32,
               Text(
                 'Update required',
-                style: CatchTextStyles.displayLg(
+                style: CatchTextStyles.displayL(
                   context,
                 ).copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
@@ -38,11 +39,12 @@ class UpdateRequiredScreen extends ConsumerWidget {
               Text(
                 'A new version of Catch is available. '
                 'Please update to continue.',
-                style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                style: CatchTextStyles.bodyM(context, color: t.ink2),
                 textAlign: TextAlign.center,
               ),
               gapH48,
-              FilledButton.icon(
+              CatchButton(
+                label: 'Update now',
                 onPressed: config != null
                     ? () => _openStore(
                         context,
@@ -51,7 +53,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
                       )
                     : null,
                 icon: const Icon(Icons.open_in_new),
-                label: const Text('Update now'),
+                fullWidth: true,
               ),
             ],
           ),

@@ -14,20 +14,18 @@ class SectionHeader extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         14,
-        CatchSpacing.screenH,
+        CatchSpacing.s5,
         8,
       ),
       child: Row(
         children: [
-          Expanded(
-            child: Text(title, style: CatchTextStyles.displaySm(context)),
-          ),
+          Expanded(child: Text(title, style: CatchTextStyles.titleL(context))),
           if (trailing != null)
             Text(
               trailing!,
-              style: CatchTextStyles.labelMd(context, color: t.ink2),
+              style: CatchTextStyles.labelL(context, color: t.ink2),
             ),
         ],
       ),

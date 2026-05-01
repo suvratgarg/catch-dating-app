@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/map_pin_tile.dart';
 import 'package:flutter/material.dart';
@@ -22,25 +23,21 @@ class WhereStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return Form(
       key: formKey,
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           16,
-          CatchSpacing.screenH,
+          CatchSpacing.s5,
           24,
         ),
         children: [
-          const FieldLabel('Meeting point'),
-          const SizedBox(height: 8),
-          TextFormField(
+          CatchTextField(
+            label: 'Meeting point',
             controller: meetingPointController,
-            decoration: InputDecoration(
-              hintText: 'e.g. Bandstand Promenade, Bandra',
-              prefixIcon: Icon(Icons.location_on_outlined, color: t.ink2),
-            ),
+            hintText: 'e.g. Bandstand Promenade, Bandra',
+            prefixIcon: const Icon(Icons.location_on_outlined),
             textCapitalization: TextCapitalization.words,
             textInputAction: TextInputAction.next,
             validator: (v) => v == null || v.trim().isEmpty ? 'Required' : null,
@@ -50,15 +47,11 @@ class WhereStep extends StatelessWidget {
           const SizedBox(height: 8),
           MapPinTile(startingPoint: startingPoint, onTap: onPickLocation),
           const SizedBox(height: 20),
-          const FieldLabel('Extra directions (optional)'),
-          const SizedBox(height: 8),
-          TextFormField(
+          CatchTextField(
+            label: 'Extra directions (optional)',
             controller: locationDetailsController,
-            decoration: InputDecoration(
-              hintText: 'e.g. Meet outside the blue gate, third entrance',
-              prefixIcon: Icon(Icons.info_outline, color: t.ink2),
-              alignLabelWithHint: true,
-            ),
+            hintText: 'e.g. Meet outside the blue gate, third entrance',
+            prefixIcon: const Icon(Icons.info_outline),
             maxLines: 3,
             textCapitalization: TextCapitalization.sentences,
             textInputAction: TextInputAction.done,

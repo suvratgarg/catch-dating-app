@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -36,13 +37,17 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
           'future run slots where the other person is already booked.',
         ),
         actions: [
-          TextButton(
+          CatchButton(
+            label: 'Cancel',
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            variant: CatchButtonVariant.ghost,
+            size: CatchButtonSize.sm,
           ),
-          FilledButton(
+          CatchButton(
+            label: 'Block',
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Block'),
+            variant: CatchButtonVariant.danger,
+            size: CatchButtonSize.sm,
           ),
         ],
       ),
@@ -82,7 +87,7 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
             children: [
               Text(
                 'Report ${profile.name}',
-                style: CatchTextStyles.displaySm(context),
+                style: CatchTextStyles.titleL(context),
               ),
               gapH12,
               _ReportReasonTile(
@@ -159,7 +164,7 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
             padding: const EdgeInsets.all(Sizes.p24),
             child: Text(
               'Unable to load this profile.',
-              style: CatchTextStyles.bodyMd(context, color: t.ink2),
+              style: CatchTextStyles.bodyM(context, color: t.ink2),
               textAlign: TextAlign.center,
             ),
           ),
@@ -171,7 +176,7 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
                 padding: const EdgeInsets.all(Sizes.p24),
                 child: Text(
                   'This profile is unavailable.',
-                  style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                  style: CatchTextStyles.bodyM(context, color: t.ink2),
                   textAlign: TextAlign.center,
                 ),
               ),

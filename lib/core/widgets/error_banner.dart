@@ -15,7 +15,7 @@ class ErrorBanner extends StatelessWidget {
       padding: const EdgeInsets.all(Sizes.p12),
       decoration: BoxDecoration(
         color: colorScheme.errorContainer,
-        borderRadius: BorderRadius.circular(CatchRadius.card),
+        borderRadius: BorderRadius.circular(CatchRadius.md),
       ),
       child: Row(
         children: [
@@ -28,7 +28,7 @@ class ErrorBanner extends StatelessWidget {
           Expanded(
             child: Text(
               message,
-              style: CatchTextStyles.bodySm(
+              style: CatchTextStyles.bodyS(
                 context,
                 color: colorScheme.onErrorContainer,
               ),

@@ -24,7 +24,7 @@ class CreateRunClubCoverPicker extends StatelessWidget {
       child: AspectRatio(
         aspectRatio: 16 / 9,
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(CatchRadius.card),
+          borderRadius: BorderRadius.circular(CatchRadius.md),
           child: coverImageBytes != null
               ? Stack(
                   fit: StackFit.expand,
@@ -61,11 +61,11 @@ class CreateRunClubCoverPicker extends StatelessWidget {
                       gapH8,
                       Text(
                         'Add cover photo',
-                        style: CatchTextStyles.bodyMd(context, color: t.ink2),
+                        style: CatchTextStyles.bodyM(context, color: t.ink2),
                       ),
                       Text(
                         'Optional',
-                        style: CatchTextStyles.caption(context, color: t.ink3),
+                        style: CatchTextStyles.bodyS(context, color: t.ink3),
                       ),
                     ],
                   ),
