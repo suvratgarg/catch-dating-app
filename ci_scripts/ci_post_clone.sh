@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
+trap 'status=$?; echo "ci_post_clone.sh failed at line $LINENO: $BASH_COMMAND"; exit $status' ERR
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
@@ -51,7 +52,15 @@ flutter build ios \
 
 if ! command -v pod >/dev/null 2>&1; then
   echo "Installing CocoaPods"
-  brew install cocoapods
+  if command -v brew >/dev/null 2>&1; then
+    brew install cocoapods
+  elif command -v gem >/dev/null 2>&1 && command -v ruby >/dev/null 2>&1; then
+    gem install --user-install cocoapods
+    export PATH="$(ruby -r rubygems -e 'puts Gem.user_dir')/bin:$PATH"
+  else
+    echo "Neither CocoaPods, Homebrew, nor RubyGems is available on this runner."
+    exit 127
+  fi
 fi
 
 cd ios
