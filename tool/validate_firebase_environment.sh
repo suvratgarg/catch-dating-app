@@ -25,7 +25,8 @@ if [[ ! -f "$define_file" ]]; then
   exit 1
 fi
 
-node - "$define_file" "$environment" <<'NODE'
+if command -v node >/dev/null 2>&1; then
+  node - "$define_file" "$environment" <<'NODE'
 const fs = require("fs");
 
 const [defineFile, expectedEnvironment] = process.argv.slice(2);
@@ -45,6 +46,25 @@ if (!defines.FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY) {
   process.exit(1);
 }
 NODE
+elif command -v ruby >/dev/null 2>&1; then
+  ruby -rjson -e '
+    define_file, expected_environment = ARGV
+    defines = JSON.parse(File.read(define_file))
+
+    if defines["APP_ENV"] != expected_environment
+      warn "APP_ENV mismatch in #{define_file}: expected #{expected_environment}, got #{defines["APP_ENV"]}"
+      exit 1
+    end
+
+    unless defines["FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY"]
+      warn "Missing FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY in #{define_file}"
+      exit 1
+    end
+  ' "$define_file" "$environment"
+else
+  echo "Firebase dart define validation requires node or ruby."
+  exit 127
+fi
 
 copy_specs=(
   "firebase/$environment/android/google-services.json|android/app/google-services.json"
