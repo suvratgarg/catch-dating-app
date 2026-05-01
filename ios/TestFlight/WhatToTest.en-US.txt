@@ -1,0 +1,1 @@
+Please test onboarding, phone sign-in, profile setup, browsing runs and clubs, joining flows, catches, chats, notifications, and general stability. Send feedback through TestFlight screenshots or directly to Suvrat.
