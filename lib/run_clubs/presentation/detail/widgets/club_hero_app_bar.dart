@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -67,9 +68,9 @@ class ClubHeroAppBar extends StatelessWidget {
                 ? Image.network(
                     club.imageUrl!,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, _, _) => ClubGradientBg(name: club.name),
+                    errorBuilder: (_, _, _) => RunClubCoverFallback(club: club),
                   )
-                : ClubGradientBg(name: club.name),
+                : RunClubCoverFallback(club: club),
             Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
@@ -185,45 +186,6 @@ Future<void> _shareRunClub(BuildContext context, RunClub club) async {
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Could not open share sheet.')),
-    );
-  }
-}
-
-class ClubGradientBg extends StatelessWidget {
-  const ClubGradientBg({super.key, required this.name});
-
-  final String name;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final hash = name.codeUnits.fold(0, (a, b) => a + b);
-    final gradients = [
-      [const Color(0xFF1A2E2A), const Color(0xFF0F3020)],
-      [const Color(0xFF1E2A3A), const Color(0xFF0A1828)],
-      [const Color(0xFF2A1A1A), const Color(0xFF3D0F0F)],
-      [const Color(0xFF1A1A2E), const Color(0xFF0F0F3D)],
-    ];
-    final pair = gradients[hash % gradients.length];
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: pair,
-        ),
-      ),
-      child: Center(
-        child: Text(
-          name.split(' ').take(2).map((w) => w.isNotEmpty ? w[0] : '').join(),
-          style: TextStyle(
-            fontSize: 80,
-            fontWeight: FontWeight.w700,
-            color: t.primary.withValues(alpha: 0.3),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -29,9 +29,7 @@ class _AvatarChip extends StatelessWidget {
                 ),
               ),
               padding: EdgeInsets.all(isActive ? 2 : 0),
-              child: ClipOval(
-                child: _ClubImage(imageUrl: club.imageUrl, seed: club.id),
-              ),
+              child: ClipOval(child: _ClubImage(club: club)),
             ),
             const SizedBox(height: 4),
             Text(

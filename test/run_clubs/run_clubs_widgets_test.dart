@@ -29,6 +29,7 @@ import 'package:catch_dating_app/run_clubs/presentation/list/widgets/nearby_club
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_content.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_header.dart';
+import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
@@ -426,6 +427,26 @@ void main() {
       },
     );
 
+    testWidgets('ClubHeroAppBar uses branded fallback without a cover image', (
+      tester,
+    ) async {
+      await pumpTestApp(
+        tester,
+        CustomScrollView(
+          slivers: [
+            ClubHeroAppBar(
+              club: buildRunClub(name: 'Morning Miles', imageUrl: null),
+              isHost: false,
+            ),
+          ],
+        ),
+      );
+
+      expect(find.byType(RunClubCoverFallback), findsOneWidget);
+      expect(find.text('MM'), findsOneWidget);
+      expect(find.text('Mumbai'), findsWidgets);
+    });
+
     testWidgets(
       'Horizontal and nearby sections render separators for multiple clubs',
       (tester) async {
@@ -519,6 +540,22 @@ void main() {
       await pumpVariant(RunClubListTileVariant.directory, isJoined: true);
       await pumpVariant(RunClubListTileVariant.avatarChip, isActive: true);
     });
+
+    testWidgets(
+      'RunClubListTile uses club cover fallback when image is absent',
+      (tester) async {
+        await pumpTestApp(
+          tester,
+          RunClubListTile(
+            club: buildRunClub(name: 'No Cover Club', imageUrl: null),
+            variant: RunClubListTileVariant.directory,
+          ),
+        );
+
+        expect(find.byType(RunClubCoverFallback), findsOneWidget);
+        expect(find.text('NC'), findsOneWidget);
+      },
+    );
 
     testWidgets('ClubDetailBody host view exposes edit and create navigation', (
       tester,

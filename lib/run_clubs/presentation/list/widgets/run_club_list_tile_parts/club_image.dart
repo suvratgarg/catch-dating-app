@@ -1,16 +1,16 @@
 part of '../run_club_list_tile.dart';
 
 class _ClubImage extends StatelessWidget {
-  const _ClubImage({required this.imageUrl, required this.seed});
+  const _ClubImage({required this.club});
 
-  final String? imageUrl;
-  final String seed;
+  final RunClub club;
 
   @override
   Widget build(BuildContext context) {
-    if (imageUrl != null && imageUrl!.isNotEmpty) {
+    final imageUrl = club.imageUrl;
+    if (imageUrl != null && imageUrl.isNotEmpty) {
       return Image.network(
-        imageUrl!,
+        imageUrl,
         fit: BoxFit.cover,
         errorBuilder: (_, _, _) => _placeholder(),
       );
@@ -18,5 +18,5 @@ class _ClubImage extends StatelessWidget {
     return _placeholder();
   }
 
-  Widget _placeholder() => PersonAvatar(size: double.infinity, name: seed);
+  Widget _placeholder() => RunClubCoverFallback(club: club, compact: true);
 }

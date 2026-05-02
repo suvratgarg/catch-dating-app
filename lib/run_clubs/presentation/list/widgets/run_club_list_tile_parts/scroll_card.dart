@@ -25,7 +25,7 @@ class _ScrollCard extends StatelessWidget {
             child: Stack(
               fit: StackFit.expand,
               children: [
-                _ClubImage(imageUrl: club.imageUrl, seed: club.id),
+                _ClubImage(club: club),
                 if (isJoined)
                   Positioned(
                     top: 8,

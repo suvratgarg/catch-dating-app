@@ -33,7 +33,7 @@ class _RowTile extends StatelessWidget {
             child: SizedBox(
               width: 54,
               height: 54,
-              child: _ClubImage(imageUrl: club.imageUrl, seed: club.id),
+              child: _ClubImage(club: club),
             ),
           ),
           const SizedBox(width: 12),
