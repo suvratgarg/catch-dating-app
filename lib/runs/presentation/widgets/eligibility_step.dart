@@ -77,6 +77,7 @@ class EligibilityStep extends StatelessWidget {
               Expanded(
                 child: CatchTextField(
                   label: 'Min age',
+                  isOptional: true,
                   controller: minAgeController,
                   hintText: 'Min (e.g. 18)',
                   prefixIcon: const Icon(Icons.cake_outlined),
@@ -94,6 +95,7 @@ class EligibilityStep extends StatelessWidget {
               Expanded(
                 child: CatchTextField(
                   label: 'Max age',
+                  isOptional: true,
                   controller: maxAgeController,
                   hintText: 'Max (e.g. 35)',
                   prefixIcon: const Icon(Icons.cake_outlined),
@@ -117,6 +119,7 @@ class EligibilityStep extends StatelessWidget {
               Expanded(
                 child: CatchTextField(
                   label: 'Max men',
+                  isOptional: true,
                   controller: maxMenController,
                   hintText: 'Max men',
                   prefixIcon: const Icon(Icons.male_outlined),
@@ -135,6 +138,7 @@ class EligibilityStep extends StatelessWidget {
               Expanded(
                 child: CatchTextField(
                   label: 'Max women',
+                  isOptional: true,
                   controller: maxWomenController,
                   hintText: 'Max women',
                   prefixIcon: const Icon(Icons.female_outlined),

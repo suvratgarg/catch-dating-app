@@ -141,7 +141,8 @@ class RunDetailsStep extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           CatchTextField(
-            label: 'Description (optional)',
+            label: 'Description',
+            isOptional: true,
             controller: descriptionController,
             hintText: 'What should runners expect? Any tips for the route?',
             prefixIcon: const Icon(Icons.edit_note_outlined),

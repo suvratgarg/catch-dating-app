@@ -117,6 +117,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           // ── Distances ─────────────────────────────────────────────────────
           ChipField<PreferredDistance>(
             label: 'Preferred distances',
+            isOptional: true,
             values: PreferredDistance.values,
             selected: _distances,
             multiSelect: true,
@@ -134,6 +135,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           // ── Run reasons ───────────────────────────────────────────────────
           ChipField<RunReason>(
             label: 'Why do you run?',
+            isOptional: true,
             values: RunReason.values,
             selected: _reasons,
             multiSelect: true,

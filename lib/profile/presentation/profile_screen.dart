@@ -30,7 +30,7 @@ class ProfileScreen extends ConsumerWidget {
       length: 2,
       child: Scaffold(
         appBar: CatchTopBar(
-          title: 'Profile',
+          title: 'You',
           showBackButton: false,
           actions: [
             CatchTopBarIconAction(
@@ -48,8 +48,6 @@ class ProfileScreen extends ConsumerWidget {
               onSelected: (value) {
                 if (value == 'payments') {
                   context.pushNamed(Routes.paymentHistoryScreen.name);
-                } else if (value == 'edit') {
-                  context.pushNamed(Routes.editProfileScreen.name);
                 } else if (value == 'signOut') {
                   ref.read(authRepositoryProvider).signOut();
                 }
@@ -59,7 +57,6 @@ class ProfileScreen extends ConsumerWidget {
                   value: 'payments',
                   child: Text('Payment history'),
                 ),
-                PopupMenuItem(value: 'edit', child: Text('Edit profile')),
                 PopupMenuItem(value: 'signOut', child: Text('Sign out')),
               ],
             ),

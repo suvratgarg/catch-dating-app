@@ -15,6 +15,7 @@ class QuickActions extends StatelessWidget {
       icon: Icons.grid_view_rounded,
       label: 'Browse runs',
       route: Routes.runClubsListScreen.path,
+      opensRootTab: true,
     ),
     _QuickAction(
       icon: Icons.map_outlined,
@@ -30,7 +31,11 @@ class QuickActions extends StatelessWidget {
 
   void _onTap(BuildContext context, _QuickAction action) {
     if (action.route == null) return;
-    context.go(action.route!);
+    if (action.opensRootTab) {
+      context.go(action.route!);
+    } else {
+      context.push(action.route!);
+    }
   }
 
   @override
@@ -84,9 +89,15 @@ class QuickActions extends StatelessWidget {
 }
 
 class _QuickAction {
-  const _QuickAction({required this.icon, required this.label, this.route});
+  const _QuickAction({
+    required this.icon,
+    required this.label,
+    this.route,
+    this.opensRootTab = false,
+  });
 
   final IconData icon;
   final String label;
   final String? route;
+  final bool opensRootTab;
 }

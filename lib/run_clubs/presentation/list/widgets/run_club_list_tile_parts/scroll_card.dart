@@ -14,14 +14,14 @@ class _ScrollCard extends StatelessWidget {
     return CatchSurface(
       onTap: onTap,
       width: 220,
+      height: 168,
       borderColor: t.line,
       clipBehavior: Clip.antiAlias,
       child: Column(
-        mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(
-            height: 104,
+            height: 96,
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -47,27 +47,31 @@ class _ScrollCard extends StatelessWidget {
               ],
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  club.name,
-                  style: CatchTextStyles.titleM(context),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                if (isJoined) ...[
-                  const SizedBox(height: 2),
+          SizedBox(
+            height: 70,
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 8),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                   Text(
-                    club.nextRunLabel ?? 'Next run coming up',
-                    style: CatchTextStyles.bodyS(context, color: t.primary),
+                    club.name,
+                    style: CatchTextStyles.titleM(context),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  if (isJoined) ...[
+                    const SizedBox(height: 2),
+                    Text(
+                      club.nextRunLabel ?? 'Next run coming up',
+                      style: CatchTextStyles.bodyS(context, color: t.primary),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         ],

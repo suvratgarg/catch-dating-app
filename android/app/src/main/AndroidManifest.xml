@@ -40,10 +40,6 @@
                     android:scheme="https"
                     android:host="catchdates.com"
                     android:pathPrefix="/clubs/run-clubs"/>
-                <data
-                    android:scheme="https"
-                    android:host="www.catchdates.com"
-                    android:pathPrefix="/clubs/run-clubs"/>
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

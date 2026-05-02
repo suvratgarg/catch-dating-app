@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
 import 'package:flutter/material.dart';
@@ -52,9 +53,8 @@ class ClubHeroAppBar extends StatelessWidget {
               tooltip: 'Share club',
               backgroundColor: Colors.black.withValues(alpha: 0.35),
               foregroundColor: Colors.white,
-              onPressed: () => unawaited(
-                (onShareClub ?? _shareRunClub)(buttonContext, club),
-              ),
+              onPressed: () =>
+                  unawaited((onShareClub ?? shareRunClub)(buttonContext, club)),
             ),
           ),
         ),
@@ -168,10 +168,10 @@ class ClubHeroAppBar extends StatelessWidget {
   }
 }
 
-Future<void> _shareRunClub(BuildContext context, RunClub club) async {
+Future<void> shareRunClub(BuildContext context, RunClub club) async {
   final box = context.findRenderObject() as RenderBox?;
   final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  final uri = Uri.https('catchdates.com', '/clubs/run-clubs/${club.id}');
+  final uri = AppDeepLinks.runClub(club.id);
 
   try {
     await SharePlus.instance.share(

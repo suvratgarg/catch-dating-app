@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,6 +13,7 @@ class CatchTextField extends StatefulWidget {
   const CatchTextField({
     super.key,
     required this.label,
+    this.isOptional = false,
     this.showLabel = true,
     this.controller,
     this.initialValue,
@@ -44,6 +46,7 @@ class CatchTextField extends StatefulWidget {
   });
 
   final String label;
+  final bool isOptional;
   final bool showLabel;
   final TextEditingController? controller;
   final String? initialValue;
@@ -230,12 +233,10 @@ class _CatchTextFieldState extends State<CatchTextField> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (widget.showLabel) ...[
-              Text(
-                widget.label,
-                style: CatchTextStyles.labelM(
-                  context,
-                  color: hasError ? t.danger : t.ink2,
-                ),
+              CatchFormFieldLabel(
+                label: widget.label,
+                isOptional: widget.isOptional,
+                hasError: hasError,
               ),
               const SizedBox(height: CatchSpacing.s2),
             ],

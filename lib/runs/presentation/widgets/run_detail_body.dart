@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
@@ -180,10 +181,7 @@ class RunDetailBody extends ConsumerWidget {
 Future<void> _shareRun(BuildContext context, Run run) async {
   final box = context.findRenderObject() as RenderBox?;
   final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  final uri = Uri.https(
-    'catchdates.com',
-    '/clubs/run-clubs/${run.runClubId}/runs/${run.id}',
-  );
+  final uri = AppDeepLinks.run(runClubId: run.runClubId, runId: run.id);
 
   try {
     await SharePlus.instance.share(

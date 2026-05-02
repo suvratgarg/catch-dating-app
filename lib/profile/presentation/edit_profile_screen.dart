@@ -279,6 +279,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                 children: [
                   ChipField<Gender>(
                     label: 'Interested in',
+                    isOptional: true,
                     values: Gender.values,
                     selected: _interestedInGenders,
                     multiSelect: true,
@@ -290,6 +291,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       Expanded(
                         child: CatchTextField(
                           label: 'Min age',
+                          isOptional: true,
                           controller: _minAgeController,
                           prefixIcon: const Icon(Icons.cake_outlined),
                           keyboardType: TextInputType.number,
@@ -308,6 +310,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                       Expanded(
                         child: CatchTextField(
                           label: 'Max age',
+                          isOptional: true,
                           controller: _maxAgeController,
                           prefixIcon: const Icon(Icons.cake_outlined),
                           keyboardType: TextInputType.number,
@@ -333,6 +336,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   CatchDropdownField<RelationshipGoal>(
                     values: RelationshipGoal.values,
                     label: 'Looking for',
+                    isOptional: true,
                     prefixIcon: const Icon(Icons.favorite_outline),
                     value: _selectedGoal,
                     onChanged: (v) => setState(() => _selectedGoal = v),
@@ -340,6 +344,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   gapH16,
                   CatchTextField(
                     label: 'Height',
+                    isOptional: true,
                     controller: _heightController,
                     prefixIcon: const Icon(Icons.height_outlined),
                     suffixText: 'cm',
@@ -350,6 +355,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   gapH16,
                   CatchTextField(
                     label: 'Job title',
+                    isOptional: true,
                     controller: _occupationController,
                     prefixIcon: const Icon(Icons.work_outline),
                     textCapitalization: TextCapitalization.words,
@@ -358,6 +364,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   gapH16,
                   CatchTextField(
                     label: 'Company',
+                    isOptional: true,
                     controller: _companyController,
                     prefixIcon: const Icon(Icons.business_outlined),
                     textCapitalization: TextCapitalization.words,
@@ -367,6 +374,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   CatchDropdownField<EducationLevel>(
                     values: EducationLevel.values,
                     label: 'Education',
+                    isOptional: true,
                     prefixIcon: const Icon(Icons.school_outlined),
                     value: _selectedEducation,
                     onChanged: (v) => setState(() => _selectedEducation = v),
@@ -375,6 +383,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   CatchDropdownField<Religion>(
                     values: Religion.values,
                     label: 'Religion',
+                    isOptional: true,
                     prefixIcon: const Icon(Icons.volunteer_activism_outlined),
                     value: _selectedReligion,
                     onChanged: (v) => setState(() => _selectedReligion = v),
@@ -382,6 +391,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   gapH16,
                   ChipField<Language>(
                     label: 'Languages',
+                    isOptional: true,
                     values: Language.values,
                     selected: _selectedLanguages,
                     multiSelect: true,
@@ -396,6 +406,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   CatchDropdownField<DrinkingHabit>(
                     values: DrinkingHabit.values,
                     label: 'Drinking',
+                    isOptional: true,
                     prefixIcon: const Icon(Icons.local_bar_outlined),
                     value: _selectedDrinking,
                     onChanged: (v) => setState(() => _selectedDrinking = v),
@@ -404,6 +415,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   CatchDropdownField<SmokingHabit>(
                     values: SmokingHabit.values,
                     label: 'Smoking',
+                    isOptional: true,
                     prefixIcon: const Icon(Icons.smoke_free_outlined),
                     value: _selectedSmoking,
                     onChanged: (v) => setState(() => _selectedSmoking = v),
@@ -412,6 +424,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   CatchDropdownField<WorkoutFrequency>(
                     values: WorkoutFrequency.values,
                     label: 'Workout',
+                    isOptional: true,
                     prefixIcon: const Icon(Icons.fitness_center_outlined),
                     value: _selectedWorkout,
                     onChanged: (v) => setState(() => _selectedWorkout = v),
@@ -420,6 +433,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   CatchDropdownField<DietaryPreference>(
                     values: DietaryPreference.values,
                     label: 'Diet',
+                    isOptional: true,
                     prefixIcon: const Icon(Icons.restaurant_outlined),
                     value: _selectedDiet,
                     onChanged: (v) => setState(() => _selectedDiet = v),
@@ -428,6 +442,7 @@ class _EditProfileScreenState extends ConsumerState<EditProfileScreen> {
                   CatchDropdownField<ChildrenStatus>(
                     values: ChildrenStatus.values,
                     label: 'Children',
+                    isOptional: true,
                     prefixIcon: const Icon(Icons.child_care_outlined),
                     value: _selectedChildren,
                     onChanged: (v) => setState(() => _selectedChildren = v),

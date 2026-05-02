@@ -485,6 +485,36 @@ void main() {
       },
     );
 
+    testWidgets('Joined horizontal card fits the production section height', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(390, 844);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      await pumpTestApp(
+        tester,
+        HorizontalClubSection(
+          title: 'Your clubs',
+          height: 170,
+          clubs: [
+            buildRunClub(
+              id: 'joined-1',
+              name: 'Very Long Morning Run Club Name',
+              nextRunLabel: 'Tomorrow 6:30 AM at Carter Road',
+            ),
+          ],
+          variant: RunClubListTileVariant.scrollCard,
+          isJoined: true,
+        ),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Very Long Morning Run Club Name'), findsOneWidget);
+      expect(find.text('Tomorrow 6:30 AM at Carter Road'), findsOneWidget);
+    });
+
     testWidgets('RunClubListTile variants navigate to detail routes', (
       tester,
     ) async {
@@ -606,8 +636,13 @@ void main() {
 
       expect(find.text('Booked'), findsOneWidget);
       expect(find.text('Join club'), findsNothing);
+      expect(find.text('HOST TOOLS'), findsOneWidget);
+      expect(find.byIcon(Icons.ios_share_rounded), findsOneWidget);
+      expect(find.text('Share'), findsNothing);
+      expect(find.text('Edit club'), findsOneWidget);
+      expect(find.text('Add run'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.edit_outlined).first);
+      await tester.tap(find.text('Edit club'));
       await tester.pumpAndSettle();
 
       expect(find.text('Edit club-host'), findsOneWidget);
@@ -615,7 +650,7 @@ void main() {
       router.go('/');
       await tester.pumpAndSettle();
 
-      await tester.tap(find.byIcon(Icons.add_rounded));
+      await tester.tap(find.text('Add run'));
       await tester.pumpAndSettle();
 
       expect(find.text('Create club-host'), findsOneWidget);

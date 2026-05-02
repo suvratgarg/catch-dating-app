@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:flutter/material.dart';
 
 /// A chip selector that works for both single-select and multi-select use cases.
@@ -18,6 +19,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
     required this.selected,
     required this.multiSelect,
     required this.onChanged,
+    this.isOptional = false,
     this.validator,
   });
 
@@ -29,6 +31,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
 
   final bool multiSelect;
   final void Function(Set<T> next) onChanged;
+  final bool isOptional;
   final FormFieldValidator<Set<T>>? validator;
 
   @override
@@ -41,12 +44,10 @@ class ChipField<T extends Labelled> extends StatelessWidget {
       builder: (field) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: CatchTextStyles.labelM(
-              context,
-              color: field.hasError ? t.danger : t.ink2,
-            ),
+          CatchFormFieldLabel(
+            label: label,
+            isOptional: isOptional,
+            hasError: field.hasError,
           ),
           gapH8,
           Wrap(

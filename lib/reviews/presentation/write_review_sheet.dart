@@ -124,9 +124,10 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
           gapH16,
           CatchTextField(
             label: 'Review',
+            isOptional: true,
             controller: _commentController,
             maxLines: 3,
-            hintText: 'Share your experience (optional)',
+            hintText: 'Share your experience',
             textCapitalization: TextCapitalization.sentences,
           ),
           if (mutation.hasError) ...[

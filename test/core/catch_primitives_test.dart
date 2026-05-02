@@ -243,6 +243,28 @@ void main() {
     },
   );
 
+  testWidgets('CatchTextField renders optional field marker', (tester) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchTextField(
+          label: 'Bio',
+          isOptional: true,
+          hintText: 'Share a little about yourself',
+        ),
+      ),
+    );
+
+    expect(find.text('Bio'), findsOneWidget);
+    expect(find.text('Optional'), findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is Semantics && widget.properties.label == 'Bio, optional',
+      ),
+      findsOneWidget,
+    );
+  });
+
   testWidgets('CatchDropdownField validates and reports selection changes', (
     tester,
   ) async {

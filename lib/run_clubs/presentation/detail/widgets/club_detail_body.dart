@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -44,109 +45,129 @@ class ClubDetailBody extends StatelessWidget {
     final t = CatchTokens.of(context);
     final showMembershipControls = !isHost && uid != null;
 
-    return Stack(
-      children: [
-        CustomScrollView(
-          slivers: [
-            ClubHeroAppBar(club: runClub, isHost: isHost),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                20,
-                CatchSpacing.s5,
-                0,
+    return CustomScrollView(
+      slivers: [
+        ClubHeroAppBar(club: runClub, isHost: isHost),
+        SliverPadding(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            20,
+            CatchSpacing.s5,
+            0,
+          ),
+          sliver: SliverList.list(
+            children: [
+              if (isHost) ...[
+                _HostActionPanel(runClub: runClub, tokens: t),
+                const SizedBox(height: 16),
+              ],
+              StatsStrip(club: runClub, upcomingCount: upcoming.length),
+              const SizedBox(height: 16),
+              Text(
+                runClub.description,
+                style: CatchTextStyles.bodyM(context, color: t.ink2),
               ),
-              sliver: SliverList.list(
-                children: [
-                  StatsStrip(club: runClub, upcomingCount: upcoming.length),
-                  const SizedBox(height: 16),
-                  Text(
-                    runClub.description,
-                    style: CatchTextStyles.bodyM(context, color: t.ink2),
-                  ),
-                  const SizedBox(height: 20),
-                  if (isHost) ...[
-                    HostStatsBar(runs: upcoming),
-                    const SizedBox(height: 20),
-                  ],
-                  if (showMembershipControls)
-                    MembershipButton(
-                      clubId: runClub.id,
-                      isMember: isMember,
-                      isMutating: isMutating,
-                    ),
-                  if (showMembershipControls) const SizedBox(height: 24),
-                  ReviewsSection(
-                    runClubId: runClub.id,
-                    reviews: reviews,
-                    currentUid: uid,
-                    userProfile: userProfile,
-                    isHost: isHost,
-                    isMember: isMember,
-                  ),
-                  const SizedBox(height: 24),
-                  Text('Schedule', style: CatchTextStyles.titleL(context)),
-                  const SizedBox(height: 12),
-                ],
-              ),
-            ),
-            SliverFillRemaining(
-              hasScrollBody: true,
-              child: RunScheduleGrid(
-                runs: runs,
-                onRunSelected: (run) => context.pushNamed(
-                  Routes.runDetailScreen.name,
-                  pathParameters: {'runClubId': runClub.id, 'runId': run.id},
+              const SizedBox(height: 20),
+              if (isHost) ...[
+                HostStatsBar(runs: upcoming),
+                const SizedBox(height: 20),
+              ],
+              if (showMembershipControls)
+                MembershipButton(
+                  clubId: runClub.id,
+                  isMember: isMember,
+                  isMutating: isMutating,
                 ),
+              if (showMembershipControls) const SizedBox(height: 24),
+              ReviewsSection(
+                runClubId: runClub.id,
+                reviews: reviews,
+                currentUid: uid,
+                userProfile: userProfile,
+                isHost: isHost,
+                isMember: isMember,
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              Text('Schedule', style: CatchTextStyles.titleL(context)),
+              const SizedBox(height: 12),
+            ],
+          ),
         ),
-        if (isHost)
-          Positioned(
-            top: MediaQuery.paddingOf(context).top + 56,
-            right: 8,
-            child: Builder(
-              builder: (ctx) => Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: IconBtn(
-                      background: Colors.black.withValues(alpha: 0.35),
-                      onTap: () => ctx.pushNamed(
-                        Routes.editRunClubScreen.name,
-                        pathParameters: {'runClubId': runClub.id},
-                        extra: runClub,
-                      ),
-                      child: const Icon(
-                        Icons.edit_outlined,
-                        size: 20,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: IconBtn(
-                      background: t.primary,
-                      onTap: () => ctx.pushNamed(
-                        Routes.createRunScreen.name,
-                        pathParameters: {'runClubId': runClub.id},
-                        extra: runClub,
-                      ),
-                      child: Icon(
-                        Icons.add_rounded,
-                        size: 20,
-                        color: t.primaryInk,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+        SliverFillRemaining(
+          hasScrollBody: true,
+          child: RunScheduleGrid(
+            runs: runs,
+            onRunSelected: (run) => context.pushNamed(
+              Routes.runDetailScreen.name,
+              pathParameters: {'runClubId': runClub.id, 'runId': run.id},
             ),
           ),
+        ),
       ],
+    );
+  }
+}
+
+class _HostActionPanel extends StatelessWidget {
+  const _HostActionPanel({required this.runClub, required this.tokens});
+
+  final RunClub runClub;
+  final CatchTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = tokens;
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'HOST TOOLS',
+            style: CatchTextStyles.labelM(
+              context,
+              color: t.ink3,
+            ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            'Manage this club and publish upcoming runs.',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              CatchButton(
+                label: 'Edit club',
+                onPressed: () => context.pushNamed(
+                  Routes.editRunClubScreen.name,
+                  pathParameters: {'runClubId': runClub.id},
+                  extra: runClub,
+                ),
+                icon: const Icon(Icons.edit_outlined, size: 14),
+                size: CatchButtonSize.sm,
+                variant: CatchButtonVariant.secondary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: CatchButton(
+                  label: 'Add run',
+                  onPressed: () => context.pushNamed(
+                    Routes.createRunScreen.name,
+                    pathParameters: {'runClubId': runClub.id},
+                    extra: runClub,
+                  ),
+                  icon: const Icon(Icons.add_rounded, size: 14),
+                  size: CatchButtonSize.sm,
+                  fullWidth: true,
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

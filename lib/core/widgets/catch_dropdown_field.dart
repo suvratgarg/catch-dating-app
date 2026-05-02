@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical Catch single-select dropdown field for labelled enum-like values.
@@ -9,6 +10,7 @@ class CatchDropdownField<T extends Labelled> extends StatefulWidget {
     super.key,
     required this.values,
     required this.label,
+    this.isOptional = false,
     this.value,
     this.hintText,
     this.prefixIcon,
@@ -19,6 +21,7 @@ class CatchDropdownField<T extends Labelled> extends StatefulWidget {
 
   final List<T> values;
   final String label;
+  final bool isOptional;
   final T? value;
   final String? hintText;
   final Widget? prefixIcon;
@@ -81,12 +84,10 @@ class _CatchDropdownFieldState<T extends Labelled>
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.label,
-              style: CatchTextStyles.labelM(
-                context,
-                color: hasError ? t.danger : t.ink2,
-              ),
+            CatchFormFieldLabel(
+              label: widget.label,
+              isOptional: widget.isOptional,
+              hasError: hasError,
             ),
             const SizedBox(height: CatchSpacing.s2),
             AnimatedContainer(

@@ -72,6 +72,30 @@ void main() {
       },
     );
 
+    test('run club detail deep links are preserved through onboarding', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/clubs/run-clubs/club-1',
+          matchedLocation: Routes.runClubDetailScreen.path,
+        ),
+        '/onboarding?from=%2Fclubs%2Frun-clubs%2Fclub-1',
+      );
+    });
+
+    test('run detail deep links are preserved through onboarding', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/clubs/run-clubs/club-1/runs/run-1',
+          matchedLocation: Routes.runDetailScreen.path,
+        ),
+        '/onboarding?from=%2Fclubs%2Frun-clubs%2Fclub-1%2Fruns%2Frun-1',
+      );
+    });
+
     test(
       'incomplete profiles stay in onboarding and preserve the pending route',
       () {

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_info_section.dart';
@@ -130,7 +131,7 @@ class ProfileTab extends ConsumerWidget {
         Sizes.p32,
       ),
       children: [
-        _ProfileHeroCard(user: user, tokens: t),
+        _ProfileOverviewCard(user: user, tokens: t),
         gapH14,
         _ProfileStatsStrip(user: user, tokens: t),
         if (user.bio.isNotEmpty) ...[
@@ -167,8 +168,8 @@ class ProfileTab extends ConsumerWidget {
   }
 }
 
-class _ProfileHeroCard extends StatelessWidget {
-  const _ProfileHeroCard({required this.user, required this.tokens});
+class _ProfileOverviewCard extends StatelessWidget {
+  const _ProfileOverviewCard({required this.user, required this.tokens});
 
   final UserProfile user;
   final CatchTokens tokens;
@@ -177,91 +178,50 @@ class _ProfileHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = tokens;
 
-    return AspectRatio(
-      aspectRatio: 4 / 5,
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            if (user.photoUrls.isNotEmpty)
-              Image.network(user.photoUrls.first, fit: BoxFit.cover)
-            else
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: [t.primary, t.accent, t.primarySoft],
-                  ),
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(Sizes.p16),
+      child: Row(
+        children: [
+          _ProfileAvatar(user: user, tokens: t),
+          gapW14,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'YOUR PROFILE',
+                  style: CatchTextStyles.labelM(
+                    context,
+                    color: t.ink3,
+                  ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
                 ),
-                child: Center(
-                  child: Text(
-                    user.name.characters.first.toUpperCase(),
-                    style: CatchTextStyles.displayL(
-                      context,
-                      color: t.primaryInk,
-                    ).copyWith(fontSize: 80),
-                  ),
+                gapH4,
+                Text(
+                  '${user.name}, ${user.age}',
+                  style: CatchTextStyles.displayM(context),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-            const DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Color(0x1A000000),
-                    Color(0x00000000),
-                    Color(0xD9000000),
-                  ],
-                  stops: [0, 0.42, 1],
+                gapH4,
+                Text(
+                  _profileSubtitle(user),
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
+              ],
             ),
-            Positioned(
-              top: 12,
-              right: 12,
-              child: CatchButton(
-                label: 'Edit',
-                onPressed: () =>
-                    context.pushNamed(Routes.editProfileScreen.name),
-                icon: const Icon(Icons.edit_outlined, size: 14),
-                size: CatchButtonSize.sm,
-                backgroundColor: Colors.white.withValues(alpha: 0.92),
-                foregroundColor: Colors.black,
-                borderColor: Colors.transparent,
-              ),
-            ),
-            Positioned(
-              left: 20,
-              right: 20,
-              bottom: 18,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '${user.name}, ${user.age}',
-                    style: CatchTextStyles.displayL(
-                      context,
-                      color: Colors.white,
-                    ),
-                  ),
-                  gapH4,
-                  Text(
-                    _profileSubtitle(user),
-                    style: CatchTextStyles.bodyS(
-                      context,
-                      color: Colors.white.withValues(alpha: 0.9),
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
+          gapW12,
+          CatchButton(
+            label: 'Edit',
+            onPressed: () => context.pushNamed(Routes.editProfileScreen.name),
+            icon: const Icon(Icons.edit_outlined, size: 14),
+            size: CatchButtonSize.sm,
+            variant: CatchButtonVariant.secondary,
+          ),
+        ],
       ),
     );
   }
@@ -274,6 +234,45 @@ class _ProfileHeroCard extends StatelessWidget {
       user.sexualOrientation.label.toLowerCase(),
     ];
     return parts.join(' · ');
+  }
+}
+
+class _ProfileAvatar extends StatelessWidget {
+  const _ProfileAvatar({required this.user, required this.tokens});
+
+  final UserProfile user;
+  final CatchTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = tokens;
+
+    return ClipOval(
+      child: SizedBox(
+        width: 72,
+        height: 72,
+        child: user.photoUrls.isNotEmpty
+            ? Image.network(user.photoUrls.first, fit: BoxFit.cover)
+            : DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                    colors: [t.primary, t.accent, t.primarySoft],
+                  ),
+                ),
+                child: Center(
+                  child: Text(
+                    user.name.characters.first.toUpperCase(),
+                    style: CatchTextStyles.displayM(
+                      context,
+                      color: t.primaryInk,
+                    ),
+                  ),
+                ),
+              ),
+      ),
+    );
   }
 }
 
