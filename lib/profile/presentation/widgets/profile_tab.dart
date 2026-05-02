@@ -1,16 +1,15 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/profile/presentation/widgets/profile_edit_sheet.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_info_section.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class ProfileTab extends ConsumerWidget {
   const ProfileTab({super.key, required this.user, required this.uploadState});
@@ -23,14 +22,67 @@ class ProfileTab extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final basics = [
       ProfileInfoEntry(
-        icon: Icons.wc_outlined,
-        label: 'Gender',
-        value: user.gender.label,
+        icon: Icons.person_outlined,
+        label: 'Name',
+        value: user.name,
+        onTap: () => showTextEditSheet(
+          context: context,
+          ref: ref,
+          title: 'Name',
+          currentValue: user.name,
+          applyEdit: (u, v) => u.copyWith(name: v),
+        ),
       ),
       ProfileInfoEntry(
         icon: Icons.cake_outlined,
-        label: 'Age',
-        value: '${user.age} years old',
+        label: 'Date of birth',
+        value:
+            '${user.dateOfBirth.day.toString().padLeft(2, '0')}/${user.dateOfBirth.month.toString().padLeft(2, '0')}/${user.dateOfBirth.year}  (${user.age} years)',
+        onTap: () => showDateOfBirthEdit(
+          context: context,
+          ref: ref,
+          currentDate: user.dateOfBirth,
+          firstDate: DateTime(1920),
+          lastDate: latestAllowedDateOfBirth(),
+        ),
+      ),
+      ProfileInfoEntry(
+        icon: Icons.wc_outlined,
+        label: 'Gender',
+        value: user.gender.label,
+        onTap: () => showSingleEnumSheet<Gender>(
+          context: context,
+          ref: ref,
+          title: 'Gender',
+          values: Gender.values,
+          currentValue: user.gender,
+          applyEdit: (u, v) => u.copyWith(gender: v),
+        ),
+      ),
+      ProfileInfoEntry(
+        icon: Icons.favorite_outline,
+        label: 'Orientation',
+        value: user.sexualOrientation.label,
+        onTap: () => showSingleEnumSheet<SexualOrientation>(
+          context: context,
+          ref: ref,
+          title: 'Sexual orientation',
+          values: SexualOrientation.values,
+          currentValue: user.sexualOrientation,
+          applyEdit: (u, v) => u.copyWith(sexualOrientation: v),
+        ),
+      ),
+      ProfileInfoEntry(
+        icon: Icons.phone_outlined,
+        label: 'Phone',
+        value: user.phoneNumber,
+        onTap: () => showTextEditSheet(
+          context: context,
+          ref: ref,
+          title: 'Phone number',
+          currentValue: user.phoneNumber,
+          applyEdit: (u, v) => u.copyWith(phoneNumber: v),
+        ),
       ),
       if (user.email.isNotEmpty)
         ProfileInfoEntry(
@@ -38,16 +90,18 @@ class ProfileTab extends ConsumerWidget {
           label: 'Email',
           value: user.email,
         ),
-      ProfileInfoEntry(
-        icon: Icons.phone_outlined,
-        label: 'Phone',
-        value: user.phoneNumber,
-      ),
       if (user.height != null)
         ProfileInfoEntry(
           icon: Icons.height_outlined,
           label: 'Height',
           value: '${user.height} cm',
+          onTap: () => showIntEditSheet(
+            context: context,
+            ref: ref,
+            title: 'Height',
+            currentValue: user.height,
+            applyEdit: (u, v) => u.copyWith(height: v),
+          ),
         ),
     ];
     final background = [
@@ -56,30 +110,68 @@ class ProfileTab extends ConsumerWidget {
           icon: Icons.work_outline,
           label: 'Job title',
           value: user.occupation!,
+          onTap: () => showTextEditSheet(
+            context: context,
+            ref: ref,
+            title: 'Job title',
+            currentValue: user.occupation!,
+            applyEdit: (u, v) => u.copyWith(occupation: v),
+          ),
         ),
       if (user.company != null)
         ProfileInfoEntry(
           icon: Icons.business_outlined,
           label: 'Company',
           value: user.company!,
+          onTap: () => showTextEditSheet(
+            context: context,
+            ref: ref,
+            title: 'Company',
+            currentValue: user.company!,
+            applyEdit: (u, v) => u.copyWith(company: v),
+          ),
         ),
       if (user.education != null)
         ProfileInfoEntry(
           icon: Icons.school_outlined,
           label: 'Education',
           value: user.education!.label,
+          onTap: () => showSingleEnumSheet<EducationLevel>(
+            context: context,
+            ref: ref,
+            title: 'Education',
+            values: EducationLevel.values,
+            currentValue: user.education!,
+            applyEdit: (u, v) => u.copyWith(education: v),
+          ),
         ),
       if (user.religion != null)
         ProfileInfoEntry(
           icon: Icons.volunteer_activism_outlined,
           label: 'Religion',
           value: user.religion!.label,
+          onTap: () => showSingleEnumSheet<Religion>(
+            context: context,
+            ref: ref,
+            title: 'Religion',
+            values: Religion.values,
+            currentValue: user.religion!,
+            applyEdit: (u, v) => u.copyWith(religion: v),
+          ),
         ),
       if (user.languages.isNotEmpty)
         ProfileInfoEntry(
           icon: Icons.language_outlined,
           label: 'Languages',
           value: user.languages.map((l) => l.label).join(', '),
+          onTap: () => showMultiEnumSheet<Language>(
+            context: context,
+            ref: ref,
+            title: 'Languages',
+            values: Language.values,
+            currentValues: user.languages,
+            applyEdit: (u, v) => u.copyWith(languages: v),
+          ),
         ),
     ];
     final intentions = [
@@ -88,6 +180,14 @@ class ProfileTab extends ConsumerWidget {
           icon: Icons.favorite_outline,
           label: 'Looking for',
           value: user.relationshipGoal!.label,
+          onTap: () => showSingleEnumSheet<RelationshipGoal>(
+            context: context,
+            ref: ref,
+            title: 'Looking for',
+            values: RelationshipGoal.values,
+            currentValue: user.relationshipGoal!,
+            applyEdit: (u, v) => u.copyWith(relationshipGoal: v),
+          ),
         ),
     ];
     final lifestyle = [
@@ -96,31 +196,99 @@ class ProfileTab extends ConsumerWidget {
           icon: Icons.local_bar_outlined,
           label: 'Drinking',
           value: user.drinking!.label,
+          onTap: () => showSingleEnumSheet<DrinkingHabit>(
+            context: context,
+            ref: ref,
+            title: 'Drinking',
+            values: DrinkingHabit.values,
+            currentValue: user.drinking!,
+            applyEdit: (u, v) => u.copyWith(drinking: v),
+          ),
         ),
       if (user.smoking != null)
         ProfileInfoEntry(
           icon: Icons.smoke_free_outlined,
           label: 'Smoking',
           value: user.smoking!.label,
+          onTap: () => showSingleEnumSheet<SmokingHabit>(
+            context: context,
+            ref: ref,
+            title: 'Smoking',
+            values: SmokingHabit.values,
+            currentValue: user.smoking!,
+            applyEdit: (u, v) => u.copyWith(smoking: v),
+          ),
         ),
       if (user.workout != null)
         ProfileInfoEntry(
           icon: Icons.fitness_center_outlined,
           label: 'Workout',
           value: user.workout!.label,
+          onTap: () => showSingleEnumSheet<WorkoutFrequency>(
+            context: context,
+            ref: ref,
+            title: 'Workout',
+            values: WorkoutFrequency.values,
+            currentValue: user.workout!,
+            applyEdit: (u, v) => u.copyWith(workout: v),
+          ),
         ),
       if (user.diet != null)
         ProfileInfoEntry(
           icon: Icons.restaurant_outlined,
           label: 'Diet',
           value: user.diet!.label,
+          onTap: () => showSingleEnumSheet<DietaryPreference>(
+            context: context,
+            ref: ref,
+            title: 'Diet',
+            values: DietaryPreference.values,
+            currentValue: user.diet!,
+            applyEdit: (u, v) => u.copyWith(diet: v),
+          ),
         ),
       if (user.children != null)
         ProfileInfoEntry(
           icon: Icons.child_care_outlined,
           label: 'Children',
           value: user.children!.label,
+          onTap: () => showSingleEnumSheet<ChildrenStatus>(
+            context: context,
+            ref: ref,
+            title: 'Children',
+            values: ChildrenStatus.values,
+            currentValue: user.children!,
+            applyEdit: (u, v) => u.copyWith(children: v),
+          ),
         ),
+    ];
+    final discovery = [
+      ProfileInfoEntry(
+        icon: Icons.people_outline,
+        label: 'Interested in',
+        value: user.interestedInGenders.isEmpty
+            ? 'Everyone'
+            : user.interestedInGenders.map((g) => g.label).join(', '),
+        onTap: () => showMultiEnumSheet<Gender>(
+          context: context,
+          ref: ref,
+          title: 'Interested in',
+          values: Gender.values,
+          currentValues: user.interestedInGenders,
+          applyEdit: (u, v) => u.copyWith(interestedInGenders: v),
+        ),
+      ),
+      ProfileInfoEntry(
+        icon: Icons.cake_outlined,
+        label: 'Age range',
+        value: '${user.minAgePreference} – ${user.maxAgePreference}',
+        onTap: () => showAgeRangeSheet(
+          context: context,
+          ref: ref,
+          currentMin: user.minAgePreference,
+          currentMax: user.maxAgePreference,
+        ),
+      ),
     ];
 
     return ListView(
@@ -136,17 +304,23 @@ class ProfileTab extends ConsumerWidget {
         _ProfileStatsStrip(user: user, tokens: t),
         if (user.bio.isNotEmpty) ...[
           gapH14,
-          _PromptCard(eyebrow: 'On a perfect run', text: user.bio, tokens: t),
+          GestureDetector(
+            onTap: () => showTextEditSheet(
+              context: context,
+              ref: ref,
+              title: 'Bio',
+              currentValue: user.bio,
+              applyEdit: (u, v) => u.copyWith(bio: v),
+            ),
+            child: _PromptCard(
+              eyebrow: 'On a perfect run',
+              text: user.bio,
+              tokens: t,
+            ),
+          ),
         ],
         gapH14,
         _RunningIdentityCard(user: user, tokens: t),
-        gapH14,
-        CatchButton(
-          label: 'Preview as others see you',
-          onPressed: () => DefaultTabController.of(context).animateTo(1),
-          variant: CatchButtonVariant.secondary,
-          fullWidth: true,
-        ),
         gapH24,
         Text('Photos', style: CatchTextStyles.titleL(context)),
         gapH12,
@@ -160,6 +334,7 @@ class ProfileTab extends ConsumerWidget {
         gapH24,
         ProfileInfoSection(entries: basics),
         ProfileInfoSection(entries: background),
+        ProfileInfoSection(entries: discovery),
         ProfileInfoSection(entries: intentions),
         ProfileInfoSection(entries: lifestyle),
         gapH32,
@@ -212,14 +387,6 @@ class _ProfileOverviewCard extends StatelessWidget {
                 ),
               ],
             ),
-          ),
-          gapW12,
-          CatchButton(
-            label: 'Edit',
-            onPressed: () => context.pushNamed(Routes.editProfileScreen.name),
-            icon: const Icon(Icons.edit_outlined, size: 14),
-            size: CatchButtonSize.sm,
-            variant: CatchButtonVariant.secondary,
           ),
         ],
       ),

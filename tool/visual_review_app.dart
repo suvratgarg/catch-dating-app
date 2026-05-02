@@ -216,6 +216,15 @@ final class _VisualReviewUserProfileRepository
 
   @override
   Future<void> unsaveRun({required String uid, required String runId}) async {}
+
+  @override
+  Future<void> updatePreferences({
+    required String uid,
+    bool? prefsNewCatches,
+    bool? prefsRunReminders,
+    bool? prefsWeeklyDigest,
+    bool? prefsShowOnMap,
+  }) async {}
 }
 
 class _PhoneFrame extends StatelessWidget {

@@ -15,6 +15,7 @@ import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ClubDetailBody extends StatelessWidget {
   const ClubDetailBody({
@@ -68,6 +69,12 @@ class ClubDetailBody extends StatelessWidget {
                 style: CatchTextStyles.bodyM(context, color: t.ink2),
               ),
               const SizedBox(height: 20),
+              if (runClub.instagramHandle != null ||
+                  runClub.phoneNumber != null ||
+                  runClub.email != null) ...[
+                _ClubContactSection(runClub: runClub, tokens: t),
+                const SizedBox(height: 20),
+              ],
               if (isHost) ...[
                 HostStatsBar(runs: upcoming),
                 const SizedBox(height: 20),
@@ -167,6 +174,104 @@ class _HostActionPanel extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _ClubContactSection extends StatelessWidget {
+  const _ClubContactSection({required this.runClub, required this.tokens});
+
+  final RunClub runClub;
+  final CatchTokens tokens;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = tokens;
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'CONTACT',
+            style: CatchTextStyles.labelM(
+              context,
+              color: t.ink3,
+            ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
+          ),
+          const SizedBox(height: 12),
+          if (runClub.instagramHandle != null)
+            _ContactRow(
+              icon: Icons.alternate_email_rounded,
+              label: runClub.instagramHandle!,
+              onTap: () => _launchUrl(
+                'https://instagram.com/${runClub.instagramHandle!.replaceFirst('@', '')}',
+              ),
+            ),
+          if (runClub.phoneNumber != null)
+            _ContactRow(
+              icon: Icons.call_outlined,
+              label: runClub.phoneNumber!,
+              onTap: () => _launchUrl('tel:${runClub.phoneNumber}'),
+            ),
+          if (runClub.email != null)
+            _ContactRow(
+              icon: Icons.email_outlined,
+              label: runClub.email!,
+              onTap: () => _launchUrl('mailto:${runClub.email}'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _launchUrl(String urlString) async {
+    final uri = Uri.parse(urlString);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    }
+  }
+}
+
+class _ContactRow extends StatelessWidget {
+  const _ContactRow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              Icon(icon, size: 18, color: t.primary),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  label,
+                  style: CatchTextStyles.bodyM(context, color: t.ink),
+                ),
+              ),
+              Icon(Icons.open_in_new_rounded, size: 14, color: t.ink3),
+            ],
+          ),
+        ),
       ),
     );
   }

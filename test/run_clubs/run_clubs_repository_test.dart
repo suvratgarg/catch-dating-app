@@ -531,6 +531,55 @@ void main() {
       expect(batch.commitCalled, isTrue);
     });
 
+    test('createRunClub passes contact fields through to Firestore', () async {
+      final batch = TestWriteBatch();
+      firestore.batchValue = batch;
+      runClubsCollection.docsById['club-42'] = TestRunClubDocumentReference(
+        'club-42',
+      );
+
+      await repository.createRunClub(
+        clubId: 'club-42',
+        name: 'Contact Club',
+        description: 'A club with contact info.',
+        location: IndianCity.mumbai,
+        area: 'Bandra',
+        hostUserId: 'host-1',
+        hostName: 'Priya',
+        instagramHandle: '@contactclub',
+        phoneNumber: '+91 99999 99999',
+        email: 'hello@contactclub.com',
+      );
+
+      final createdClub = batch.setCalls.first.data as RunClub;
+      expect(createdClub.instagramHandle, '@contactclub');
+      expect(createdClub.phoneNumber, '+91 99999 99999');
+      expect(createdClub.email, 'hello@contactclub.com');
+    });
+
+    test('createRunClub stores null for absent contact fields', () async {
+      final batch = TestWriteBatch();
+      firestore.batchValue = batch;
+      runClubsCollection.docsById['club-42'] = TestRunClubDocumentReference(
+        'club-42',
+      );
+
+      await repository.createRunClub(
+        clubId: 'club-42',
+        name: 'No Contact Club',
+        description: 'A club without contact info.',
+        location: IndianCity.mumbai,
+        area: 'Bandra',
+        hostUserId: 'host-1',
+        hostName: 'Priya',
+      );
+
+      final createdClub = batch.setCalls.first.data as RunClub;
+      expect(createdClub.instagramHandle, isNull);
+      expect(createdClub.phoneNumber, isNull);
+      expect(createdClub.email, isNull);
+    });
+
     test('updateRunClub overwrites the club document', () async {
       final clubDoc =
           runClubsCollection.doc('club-1') as TestRunClubDocumentReference;

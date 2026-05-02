@@ -7,8 +7,9 @@ import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
+import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
+import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/profile/presentation/edit_profile_screen.dart';
 import 'package:catch_dating_app/profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
@@ -39,7 +40,6 @@ enum Routes {
   loadingScreen('/loading'),
   legacyAuthRedirect('/auth'),
   onboardingScreen('/onboarding'),
-  editProfileScreen('/edit-profile'),
   calendarScreen('/calendar'),
   activityScreen('/activity'),
   filtersScreen('/filters'),
@@ -64,7 +64,8 @@ enum Routes {
   profileScreen('/you'),
   publicProfileScreen('/profiles/:uid'),
   settingsScreen('/settings'),
-  paymentHistoryScreen('/payment-history');
+  paymentHistoryScreen('/payment-history'),
+  paymentConfirmationScreen('/payment-confirmation');
 
   const Routes(this.path);
   final String path;
@@ -126,11 +127,6 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => const OnboardingScreen(),
       ),
       GoRoute(
-        path: Routes.editProfileScreen.path,
-        name: Routes.editProfileScreen.name,
-        builder: (context, state) => const EditProfileScreen(),
-      ),
-      GoRoute(
         path: Routes.calendarScreen.path,
         name: Routes.calendarScreen.name,
         builder: (context, state) => const CalendarScreen(),
@@ -154,6 +150,14 @@ GoRouter goRouter(Ref ref) {
         path: Routes.paymentHistoryScreen.path,
         name: Routes.paymentHistoryScreen.name,
         builder: (context, state) => const PaymentHistoryScreen(),
+      ),
+      GoRoute(
+        path: Routes.paymentConfirmationScreen.path,
+        name: Routes.paymentConfirmationScreen.name,
+        builder: (context, state) {
+          final data = state.extra! as PaymentConfirmationData;
+          return PaymentConfirmationScreen(data: data);
+        },
       ),
       GoRoute(
         path: Routes.settingsScreen.path,

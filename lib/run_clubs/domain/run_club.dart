@@ -26,6 +26,9 @@ abstract class RunClub with _$RunClub {
     @Default(0) int reviewCount,
     @TimestampConverter() DateTime? nextRunAt,
     String? nextRunLabel,
+    String? instagramHandle,
+    String? phoneNumber,
+    String? email,
   }) = _RunClub;
 
   factory RunClub.fromJson(Map<String, dynamic> json) =>

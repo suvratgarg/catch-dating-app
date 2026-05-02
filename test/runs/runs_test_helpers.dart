@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -291,6 +292,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
   String? bookedFreeRunId;
   bool processPaymentCalled = false;
   ProcessPaymentCall? lastProcessPaymentCall;
+  PaymentConfirmationData? processPaymentResult;
 
   @override
   bool get supportsPaidBookings => supportsPaid;
@@ -305,7 +307,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
   }
 
   @override
-  Future<void> processPayment({
+  Future<PaymentConfirmationData> processPayment({
     required String runId,
     required String description,
     required String userName,
@@ -326,6 +328,13 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
       userEmail: userEmail,
       userContact: userContact,
     );
+    return processPaymentResult ??
+        PaymentConfirmationData(
+          paymentId: 'pay_test',
+          orderId: 'order_test',
+          amountInPaise: 0,
+          runId: runId,
+        );
   }
 
   @override

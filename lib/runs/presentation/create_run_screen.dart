@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -14,6 +15,9 @@ import 'package:catch_dating_app/runs/presentation/widgets/run_details_step.dart
 import 'package:catch_dating_app/runs/presentation/widgets/step_progress_bar.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_step.dart';
+import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
+import 'package:catch_dating_app/runs/domain/run_draft.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/where_step.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -48,6 +52,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   int _currentStep = 0;
   Run? _createdRun;
   bool _showHostManage = false;
+
+  // Draft support
+  String? _activeDraftId;
+  bool _checkedDrafts = false;
 
   final _step0Key = GlobalKey<FormState>();
   final _step1Key = GlobalKey<FormState>();
@@ -113,6 +121,17 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   VoidCallback? get _increaseDurationCallback => _durationMinutes < _maxDuration
       ? () => setState(() => _durationMinutes += _durationStep)
       : null;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_checkedDrafts) {
+        _checkedDrafts = true;
+        _checkForDrafts();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -195,6 +214,8 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   void _back() {
     if (_currentStep > 0) {
       _goToStep(_currentStep - 1);
+    } else if (_hasUnsavedChanges) {
+      _showUnsavedChangesDialog();
     } else {
       Navigator.of(context).pop();
     }
@@ -281,7 +302,209 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       if (mounted) {
         setState(() => _createdRun = createdRun);
       }
+
+      // Delete the restored-from draft after successful submission.
+      final draftId = _activeDraftId;
+      if (draftId != null) {
+        final uid = ref.read(uidProvider).asData?.value;
+        if (uid != null) {
+          await ref.read(runDraftRepositoryProvider).deleteDraft(
+                runClubId: widget.runClub.id,
+                userId: uid,
+                draftId: draftId,
+              );
+        }
+      }
+
       return createdRun;
+    });
+  }
+
+  bool get _hasUnsavedChanges =>
+      _activeDraftId == null &&
+      (_trimmedTextOrNull(_distanceController) != null ||
+          _trimmedTextOrNull(_capacityController) != null ||
+          _trimmedTextOrNull(_priceController) != null ||
+          _trimmedTextOrNull(_descriptionController) != null ||
+          _selectedPace != null ||
+          _trimmedTextOrNull(_meetingPointController) != null ||
+          _trimmedTextOrNull(_locationDetailsController) != null ||
+          _startingPoint != null ||
+          _selectedDate != null ||
+          _selectedStartTime != null ||
+          _durationMinutes != 60 ||
+          _trimmedTextOrNull(_minAgeController) != null ||
+          _trimmedTextOrNull(_maxAgeController) != null ||
+          _trimmedTextOrNull(_maxMenController) != null ||
+          _trimmedTextOrNull(_maxWomenController) != null);
+
+  Future<void> _checkForDrafts() async {
+    final uid = ref.read(uidProvider).asData?.value;
+    if (uid == null) return;
+
+    final drafts = await ref.read(runDraftRepositoryProvider).loadDrafts(
+          runClubId: widget.runClub.id,
+          userId: uid,
+        );
+    if (!mounted || drafts.isEmpty) return;
+
+    final picked = await showDraftPickerSheet(
+      context: context,
+      drafts: drafts,
+    );
+    if (!mounted) return;
+
+    if (picked != null) {
+      _restoreFromDraft(picked);
+    }
+  }
+
+  void _restoreFromDraft(RunDraft draft) {
+    _activeDraftId = draft.id;
+
+    setState(() {
+      // Run details
+      if (draft.distance != null) {
+        _distanceController.text = draft.distance!;
+      }
+      if (draft.capacity != null) {
+        _capacityController.text = draft.capacity!;
+      }
+      if (draft.price != null) {
+        _priceController.text = draft.price!;
+      }
+      if (draft.description != null) {
+        _descriptionController.text = draft.description!;
+      }
+      if (draft.paceName != null) {
+        try {
+          _selectedPace = PaceLevel.values.byName(draft.paceName!);
+        } catch (_) {}
+      }
+
+      // Where
+      if (draft.meetingPoint != null) {
+        _meetingPointController.text = draft.meetingPoint!;
+      }
+      if (draft.locationDetails != null) {
+        _locationDetailsController.text = draft.locationDetails!;
+      }
+      if (draft.startingPointLat != null && draft.startingPointLng != null) {
+        _startingPoint = LatLng(
+          draft.startingPointLat!,
+          draft.startingPointLng!,
+        );
+      }
+
+      // When
+      if (draft.selectedDateMillis != null) {
+        final date =
+            DateTime.fromMillisecondsSinceEpoch(draft.selectedDateMillis!);
+        _selectedDate = date;
+        _dateController.text =
+            '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+      }
+      if (draft.selectedStartHour != null &&
+          draft.selectedStartMinute != null) {
+        _selectedStartTime = TimeOfDay(
+          hour: draft.selectedStartHour!,
+          minute: draft.selectedStartMinute!,
+        );
+        _startTimeController.text =
+            '${draft.selectedStartHour.toString().padLeft(2, '0')}:${draft.selectedStartMinute.toString().padLeft(2, '0')}';
+      }
+      _durationMinutes = draft.durationMinutes;
+
+      // Rules
+      if (draft.minAge != null) {
+        _minAgeController.text = draft.minAge!;
+      }
+      if (draft.maxAge != null) {
+        _maxAgeController.text = draft.maxAge!;
+      }
+      if (draft.maxMen != null) {
+        _maxMenController.text = draft.maxMen!;
+      }
+      if (draft.maxWomen != null) {
+        _maxWomenController.text = draft.maxWomen!;
+      }
+    });
+  }
+
+  Future<void> _saveDraft() async {
+    final uid = ref.read(uidProvider).asData?.value;
+    if (uid == null) return;
+
+    final draft = RunDraft(
+      id: _activeDraftId ?? DateTime.now().millisecondsSinceEpoch.toString(),
+      runClubId: widget.runClub.id,
+      savedAt: DateTime.now(),
+      distance: _trimmedTextOrNull(_distanceController),
+      capacity: _trimmedTextOrNull(_capacityController),
+      price: _trimmedTextOrNull(_priceController),
+      description: _trimmedTextOrNull(_descriptionController),
+      paceName: _selectedPace?.name,
+      meetingPoint: _trimmedTextOrNull(_meetingPointController),
+      locationDetails: _trimmedTextOrNull(_locationDetailsController),
+      startingPointLat: _startingPoint?.latitude,
+      startingPointLng: _startingPoint?.longitude,
+      selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
+      selectedStartHour: _selectedStartTime?.hour,
+      selectedStartMinute: _selectedStartTime?.minute,
+      durationMinutes: _durationMinutes,
+      minAge: _trimmedTextOrNull(_minAgeController),
+      maxAge: _trimmedTextOrNull(_maxAgeController),
+      maxMen: _trimmedTextOrNull(_maxMenController),
+      maxWomen: _trimmedTextOrNull(_maxWomenController),
+    );
+
+    if (draft.isEmpty) return;
+
+    await ref
+        .read(runDraftRepositoryProvider)
+        .saveDraft(userId: uid, draft: draft);
+    _activeDraftId = draft.id;
+
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          _activeDraftId != null ? 'Draft updated' : 'Draft saved',
+        ),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _showUnsavedChangesDialog() {
+    showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Unsaved changes'),
+        content: const Text(
+          'You have unsaved changes. Would you like to save a draft?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('Discard'),
+          ),
+          FilledButton(
+            onPressed: () {
+              Navigator.of(ctx).pop(true);
+            },
+            child: const Text('Save Draft'),
+          ),
+        ],
+      ),
+    ).then((save) async {
+      if (!mounted) return;
+      if (save == true) {
+        await _saveDraft();
+        if (mounted) Navigator.of(context).pop();
+      } else if (save == false) {
+        if (mounted) Navigator.of(context).pop();
+      }
     });
   }
 
@@ -427,6 +650,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
               isLastStep: _currentStep == _totalSteps - 1,
               isLoading: submitMutation.isPending,
               onNext: _next,
+              onSaveDraft: _saveDraft,
             ),
           ],
         ),

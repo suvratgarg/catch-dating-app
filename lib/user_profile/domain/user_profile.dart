@@ -238,6 +238,12 @@ abstract class UserProfile with _$UserProfile {
     @Default(420) int paceMaxSecsPerKm,
     @Default([]) List<PreferredDistance> preferredDistances,
     @Default([]) List<RunReason> runningReasons,
+
+    // Notification / discovery preferences
+    @Default(true) bool prefsNewCatches,
+    @Default(true) bool prefsRunReminders,
+    @Default(false) bool prefsWeeklyDigest,
+    @Default(true) bool prefsShowOnMap,
   }) = _UserProfile;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>

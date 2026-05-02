@@ -7,11 +7,13 @@ class ProfileInfoEntry {
     required this.icon,
     required this.label,
     required this.value,
+    this.onTap,
   });
 
   final IconData icon;
   final String label;
   final String value;
+  final VoidCallback? onTap;
 }
 
 class ProfileInfoSection extends StatelessWidget {
@@ -35,6 +37,7 @@ class ProfileInfoSection extends StatelessWidget {
             icon: entry.icon,
             label: entry.label,
             value: entry.value,
+            onTap: entry.onTap,
           ),
       ],
     );

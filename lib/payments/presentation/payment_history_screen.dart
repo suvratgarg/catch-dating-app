@@ -70,7 +70,7 @@ class _PaymentTile extends ConsumerWidget {
 
   final Payment payment;
 
-  static final _dateFormat = DateFormat('d MMM yyyy');
+  static final _dateFormat = DateFormat('d MMM yyyy · HH:mm');
 
   String _formattedAmount(Payment payment) {
     final rupees = payment.amount / 100;
@@ -86,48 +86,164 @@ class _PaymentTile extends ConsumerWidget {
     final runTitle = runAsync.asData?.value?.title ?? 'Run booking';
     final statusPresentation = _statusPresentation(payment);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: Sizes.p12),
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(runTitle, style: CatchTextStyles.bodyM(context)),
-                gapH4,
-                Text(
-                  _dateFormat.format(payment.createdAt),
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
-                ),
-                if (statusPresentation.detail case final detail?) ...[
+    return GestureDetector(
+      onTap: () => _showDetailSheet(context, ref, runTitle),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: Sizes.p12),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(runTitle, style: CatchTextStyles.bodyM(context)),
                   gapH4,
                   Text(
-                    detail,
+                    _dateFormat.format(payment.createdAt),
                     style: CatchTextStyles.bodyS(context, color: t.ink2),
                   ),
+                  if (statusPresentation.detail case final detail?) ...[
+                    gapH4,
+                    Text(
+                      detail,
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
+                  ],
                 ],
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Text(
+                  _formattedAmount(payment),
+                  style: CatchTextStyles.bodyM(
+                    context,
+                  ).copyWith(fontWeight: FontWeight.w600),
+                ),
+                gapH4,
+                CatchBadge(
+                  label: statusPresentation.label,
+                  tone: statusPresentation.tone,
+                ),
               ],
             ),
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Text(
-                _formattedAmount(payment),
-                style: CatchTextStyles.bodyM(
-                  context,
-                ).copyWith(fontWeight: FontWeight.w600),
-              ),
-              gapH4,
-              CatchBadge(
-                label: statusPresentation.label,
-                tone: statusPresentation.tone,
-              ),
-            ],
-          ),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  void _showDetailSheet(
+    BuildContext context,
+    WidgetRef ref,
+    String runTitle,
+  ) {
+    final t = CatchTokens.of(context);
+    final bottomPadding = MediaQuery.paddingOf(context).bottom;
+    final statusPresentation = _statusPresentation(payment);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: t.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: SingleChildScrollView(
+            padding: EdgeInsets.fromLTRB(
+              Sizes.p20,
+              Sizes.p20,
+              Sizes.p20,
+              Sizes.p20 + bottomPadding,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              // Grabber
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: t.line2,
+                    borderRadius: BorderRadius.circular(CatchRadius.pill),
+                  ),
+                ),
+              ),
+              gapH16,
+              // Header
+              Text(runTitle, style: CatchTextStyles.titleL(context)),
+              gapH8,
+              Row(
+                children: [
+                  CatchBadge(
+                    label: statusPresentation.label,
+                    tone: statusPresentation.tone,
+                    size: CatchBadgeSize.md,
+                  ),
+                  const Spacer(),
+                  Text(
+                    _formattedAmount(payment),
+                    style: CatchTextStyles.displayS(context),
+                  ),
+                ],
+              ),
+              gapH20,
+              Divider(color: t.line, height: 1),
+              gapH20,
+              // Detail rows
+              _DetailRow(label: 'Payment ID', value: payment.paymentId),
+              gapH12,
+              _DetailRow(label: 'Order ID', value: payment.orderId),
+              gapH12,
+              _DetailRow(label: 'Run ID', value: payment.runId),
+              gapH12,
+              _DetailRow(
+                label: 'Date',
+                value: _dateFormat.format(payment.createdAt),
+              ),
+              if (statusPresentation.detail case final detail?) ...[
+                gapH12,
+                _DetailRow(label: 'Status', value: detail),
+              ],
+              if (payment.signUpFailed) ...[
+                gapH20,
+                Divider(color: t.line, height: 1),
+                gapH16,
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            'Please contact Catch support for assistance with this booking.',
+                          ),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.help_outline_rounded, size: 18),
+                    label: const Text('Get help with this booking'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: t.warning,
+                      side: BorderSide(color: t.warning.withValues(alpha: 0.4)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(CatchRadius.pill),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                  ),
+                ),
+              ],
+            ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -171,5 +287,37 @@ class _PaymentTile extends ConsumerWidget {
         detail: null,
       ),
     };
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  const _DetailRow({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        SizedBox(
+          width: 90,
+          child: Text(
+            label,
+            style: CatchTextStyles.bodyS(context, color: t.ink3),
+          ),
+        ),
+        Expanded(
+          child: Text(
+            value,
+            style: CatchTextStyles.bodyS(context, color: t.ink).copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    );
   }
 }

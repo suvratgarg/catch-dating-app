@@ -21,7 +21,7 @@ class RunClubsContent extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (viewModel.isEmpty) {
-      return const RunClubsEmptyState();
+      return Center(child: RunClubsEmptyState());
     }
 
     return ListView(
@@ -30,7 +30,6 @@ class RunClubsContent extends StatelessWidget {
         if (viewModel.joinedClubs.isNotEmpty) ...[
           HorizontalClubSection(
             title: 'Your clubs',
-            trailing: 'See all (${viewModel.joinedClubs.length})',
             height: 170,
             clubs: viewModel.joinedClubs,
             variant: RunClubListTileVariant.scrollCard,
@@ -41,7 +40,6 @@ class RunClubsContent extends StatelessWidget {
         if (viewModel.discoverClubs.isNotEmpty) ...[
           HorizontalClubSection(
             title: 'For you',
-            trailing: 'See all',
             height: 172,
             clubs: viewModel.discoverClubs,
             variant: RunClubListTileVariant.portraitCard,

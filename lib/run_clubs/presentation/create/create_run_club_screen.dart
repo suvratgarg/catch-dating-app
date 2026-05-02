@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_run_club_contact_fields.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_run_club_cover_picker.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_run_club_details_fields.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +34,9 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
   final _nameController = TextEditingController();
   final _areaController = TextEditingController();
   final _descriptionController = TextEditingController();
+  final _instagramController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _emailController = TextEditingController();
   IndianCity? _selectedCity;
   XFile? _coverImage;
   Uint8List? _coverImageBytes;
@@ -51,6 +55,9 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
     _areaController.text = club.area;
     _descriptionController.text = club.description;
     _selectedCity = club.location;
+    _instagramController.text = club.instagramHandle ?? '';
+    _phoneController.text = club.phoneNumber ?? '';
+    _emailController.text = club.email ?? '';
   }
 
   @override
@@ -58,6 +65,9 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
     _nameController.dispose();
     _areaController.dispose();
     _descriptionController.dispose();
+    _instagramController.dispose();
+    _phoneController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -90,6 +100,15 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
               description: _descriptionController.text.trim(),
               existingRunClub: widget.initialRunClub,
               coverImage: _coverImage,
+              instagramHandle: _instagramController.text.trim().isEmpty
+                  ? null
+                  : _instagramController.text.trim(),
+              phoneNumber: _phoneController.text.trim().isEmpty
+                  ? null
+                  : _phoneController.text.trim(),
+              email: _emailController.text.trim().isEmpty
+                  ? null
+                  : _emailController.text.trim(),
             );
       });
     }
@@ -142,6 +161,12 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
             onCityChanged: (city) => setState(() => _selectedCity = city),
             areaController: _areaController,
             descriptionController: _descriptionController,
+          ),
+          gapH24,
+          CreateRunClubContactFields(
+            instagramController: _instagramController,
+            phoneController: _phoneController,
+            emailController: _emailController,
           ),
           if (mutationError != null) ...[
             gapH16,

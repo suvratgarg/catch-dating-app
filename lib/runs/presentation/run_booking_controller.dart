@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
@@ -25,14 +26,21 @@ class RunBookingController extends _$RunBookingController {
   /// For free runs, calls the [signUpForFreeRun] Cloud Function directly.
   /// For paid runs, opens the Razorpay checkout sheet; on success the
   /// [verifyRazorpayPayment] Cloud Function atomically signs the user up.
-  Future<void> book({required Run run, required UserProfile user}) async {
+  ///
+  /// Returns [PaymentConfirmationData] for paid runs so the caller can
+  /// navigate to the confirmation screen. Returns `null` for free runs.
+  Future<PaymentConfirmationData?> book({
+    required Run run,
+    required UserProfile user,
+  }) async {
     _requireSignedIn(action: 'book a run');
     final paymentRepo = ref.read(paymentRepositoryProvider);
 
     if (run.isFree) {
       await paymentRepo.bookFreeRun(runId: run.id);
+      return null;
     } else {
-      await paymentRepo.processPayment(
+      return paymentRepo.processPayment(
         runId: run.id,
         description: '${run.title} · ${run.shortDateLabel}',
         userName: user.name,

@@ -73,6 +73,10 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
           ?.map((e) => $enumDecode(_$RunReasonEnumMap, e))
           .toList() ??
       const [],
+  prefsNewCatches: json['prefsNewCatches'] as bool? ?? true,
+  prefsRunReminders: json['prefsRunReminders'] as bool? ?? true,
+  prefsWeeklyDigest: json['prefsWeeklyDigest'] as bool? ?? false,
+  prefsShowOnMap: json['prefsShowOnMap'] as bool? ?? true,
 );
 
 Map<String, dynamic> _$UserProfileToJson(
@@ -115,6 +119,10 @@ Map<String, dynamic> _$UserProfileToJson(
   'runningReasons': instance.runningReasons
       .map((e) => _$RunReasonEnumMap[e]!)
       .toList(),
+  'prefsNewCatches': instance.prefsNewCatches,
+  'prefsRunReminders': instance.prefsRunReminders,
+  'prefsWeeklyDigest': instance.prefsWeeklyDigest,
+  'prefsShowOnMap': instance.prefsShowOnMap,
 };
 
 const _$GenderEnumMap = {

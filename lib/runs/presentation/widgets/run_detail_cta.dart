@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
@@ -13,6 +14,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class RunDetailCta extends ConsumerWidget {
   const RunDetailCta({super.key, required this.run, required this.userProfile});
@@ -59,12 +61,23 @@ class RunDetailCta extends ConsumerWidget {
                 : 'Unavailable on this platform',
             onPressed: bookMutation.isPending || (!run.isFree && !supportsPaid)
                 ? null
-                : () => RunBookingController.bookMutation.run(
-                    ref,
-                    (tx) async => tx
-                        .get(runBookingControllerProvider.notifier)
-                        .book(run: run, user: userProfile),
-                  ),
+                : () {
+                    final router = GoRouter.of(context);
+                    RunBookingController.bookMutation.run(
+                      ref,
+                      (tx) async {
+                        final data = await tx
+                            .get(runBookingControllerProvider.notifier)
+                            .book(run: run, user: userProfile);
+                        if (data != null && context.mounted) {
+                          router.pushNamed(
+                            Routes.paymentConfirmationScreen.name,
+                            extra: data,
+                          );
+                        }
+                      },
+                    );
+                  },
             isLoading: bookMutation.isPending,
             leadingContent: run.isFree
                 ? null

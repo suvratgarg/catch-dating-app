@@ -35,6 +35,9 @@ _RunClub _$RunClubFromJson(Map<String, dynamic> json) => _RunClub(
     const TimestampConverter().fromJson,
   ),
   nextRunLabel: json['nextRunLabel'] as String?,
+  instagramHandle: json['instagramHandle'] as String?,
+  phoneNumber: json['phoneNumber'] as String?,
+  email: json['email'] as String?,
 );
 
 Map<String, dynamic> _$RunClubToJson(_RunClub instance) => <String, dynamic>{
@@ -57,6 +60,9 @@ Map<String, dynamic> _$RunClubToJson(_RunClub instance) => <String, dynamic>{
     const TimestampConverter().toJson,
   ),
   'nextRunLabel': instance.nextRunLabel,
+  'instagramHandle': instance.instagramHandle,
+  'phoneNumber': instance.phoneNumber,
+  'email': instance.email,
 };
 
 const _$IndianCityEnumMap = {

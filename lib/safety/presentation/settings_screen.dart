@@ -11,6 +11,7 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -21,11 +22,23 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _deleting = false;
-  // TODO: these toggles are local UI state only — persist to Firestore user prefs
   bool _showOnMap = true;
   bool _newCatches = true;
   bool _runReminders = true;
   bool _weeklyDigest = false;
+  bool _didSeedFromProfile = false;
+
+  Future<void> _savePref(String key, bool value) async {
+    final uid = ref.read(userProfileStreamProvider).asData?.value?.uid;
+    if (uid == null) return;
+    await ref.read(userProfileRepositoryProvider).updatePreferences(
+      uid: uid,
+      prefsNewCatches: key == 'prefsNewCatches' ? value : null,
+      prefsRunReminders: key == 'prefsRunReminders' ? value : null,
+      prefsWeeklyDigest: key == 'prefsWeeklyDigest' ? value : null,
+      prefsShowOnMap: key == 'prefsShowOnMap' ? value : null,
+    );
+  }
 
   Future<void> _confirmDeleteAccount() async {
     final confirmed = await showDialog<bool>(
@@ -65,8 +78,16 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final phoneNumber =
-        ref.watch(userProfileStreamProvider).asData?.value?.phoneNumber ?? '';
+    final userProfile = ref.watch(userProfileStreamProvider).asData?.value;
+    final phoneNumber = userProfile?.phoneNumber ?? '';
+
+    if (!_didSeedFromProfile && userProfile != null) {
+      _didSeedFromProfile = true;
+      _showOnMap = userProfile.prefsShowOnMap;
+      _newCatches = userProfile.prefsNewCatches;
+      _runReminders = userProfile.prefsRunReminders;
+      _weeklyDigest = userProfile.prefsWeeklyDigest;
+    }
 
     return Scaffold(
       appBar: const CatchTopBar(title: 'Settings'),
@@ -101,7 +122,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _SettingsGroup(
             title: 'Discovery',
             children: [
-              // TODO: wire up visibility/privacy controls
               _SettingsRow(
                 label: 'Who can see me',
                 value: 'Runners on my runs',
@@ -114,15 +134,11 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 tokens: t,
                 trailing: Switch.adaptive(
                   value: _showOnMap,
-                  onChanged: (value) => setState(() => _showOnMap = value),
+                  onChanged: (value) {
+                    setState(() => _showOnMap = value);
+                    _savePref('prefsShowOnMap', value);
+                  },
                 ),
-              ),
-              // TODO: implement snooze profile functionality
-              _SettingsRow(
-                label: 'Snooze profile',
-                value: 'Off',
-                icon: Icons.bedtime_outlined,
-                tokens: t,
               ),
             ],
           ),
@@ -143,7 +159,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 tokens: t,
                 trailing: Switch.adaptive(
                   value: _newCatches,
-                  onChanged: (value) => setState(() => _newCatches = value),
+                  onChanged: (value) {
+                    setState(() => _newCatches = value);
+                    _savePref('prefsNewCatches', value);
+                  },
                 ),
               ),
               _SettingsRow(
@@ -152,7 +171,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 tokens: t,
                 trailing: Switch.adaptive(
                   value: _runReminders,
-                  onChanged: (value) => setState(() => _runReminders = value),
+                  onChanged: (value) {
+                    setState(() => _runReminders = value);
+                    _savePref('prefsRunReminders', value);
+                  },
                 ),
               ),
               _SettingsRow(
@@ -161,7 +183,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 tokens: t,
                 trailing: Switch.adaptive(
                   value: _weeklyDigest,
-                  onChanged: (value) => setState(() => _weeklyDigest = value),
+                  onChanged: (value) {
+                    setState(() => _weeklyDigest = value);
+                    _savePref('prefsWeeklyDigest', value);
+                  },
                 ),
               ),
             ],
@@ -174,24 +199,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _SettingsGroup(
             title: 'About',
             children: [
-              // TODO: add onTap handlers — open help center / privacy policy / terms URLs
               _SettingsRow(
                 label: 'Help & support',
                 value: 'Contact us',
                 icon: Icons.help_outline,
                 tokens: t,
+                onTap: () => launchUrl(
+                  Uri.parse('https://catchdates.com/help'),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
               _SettingsRow(
                 label: 'Privacy',
                 value: 'Policy',
                 icon: Icons.lock_outline,
                 tokens: t,
+                onTap: () => launchUrl(
+                  Uri.parse('https://catchdates.com/privacy'),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
               _SettingsRow(
                 label: 'Terms',
                 value: 'Legal',
                 icon: Icons.description_outlined,
                 tokens: t,
+                onTap: () => launchUrl(
+                  Uri.parse('https://catchdates.com/terms'),
+                  mode: LaunchMode.externalApplication,
+                ),
               ),
             ],
           ),
@@ -363,8 +399,11 @@ class _BlockedAccountsSection extends ConsumerWidget {
 
             return Column(
               children: [
-                for (final blockedUser in blockedUsers)
-                  _BlockedAccountTile(blockedUser: blockedUser),
+                for (var i = 0; i < blockedUsers.length; i++) ...[
+                  _BlockedAccountTile(blockedUser: blockedUsers[i]),
+                  if (i < blockedUsers.length - 1)
+                    Divider(color: t.line, height: 1),
+                ],
               ],
             );
           },

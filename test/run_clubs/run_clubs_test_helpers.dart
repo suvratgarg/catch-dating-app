@@ -30,6 +30,9 @@ RunClub buildRunClub({
   int reviewCount = 0,
   DateTime? nextRunAt,
   String? nextRunLabel,
+  String? instagramHandle,
+  String? phoneNumber,
+  String? email,
 }) {
   return RunClub(
     id: id,
@@ -49,6 +52,9 @@ RunClub buildRunClub({
     reviewCount: reviewCount,
     nextRunAt: nextRunAt,
     nextRunLabel: nextRunLabel,
+    instagramHandle: instagramHandle,
+    phoneNumber: phoneNumber,
+    email: email,
   );
 }
 
@@ -165,6 +171,9 @@ class FakeRunClubsRepository implements RunClubsRepository {
     required String hostName,
     String? hostAvatarUrl,
     String? imageUrl,
+    String? instagramHandle,
+    String? phoneNumber,
+    String? email,
   }) async {
     if (createError != null) {
       throw createError!;
@@ -180,6 +189,9 @@ class FakeRunClubsRepository implements RunClubsRepository {
       hostName: hostName,
       hostAvatarUrl: hostAvatarUrl,
       imageUrl: imageUrl,
+      instagramHandle: instagramHandle,
+      phoneNumber: phoneNumber,
+      email: email,
     );
     return resolvedClubId;
   }
@@ -250,6 +262,9 @@ class CreateRunClubCall {
     required this.hostName,
     this.hostAvatarUrl,
     this.imageUrl,
+    this.instagramHandle,
+    this.phoneNumber,
+    this.email,
   });
 
   final String clubId;
@@ -261,6 +276,9 @@ class CreateRunClubCall {
   final String hostName;
   final String? hostAvatarUrl;
   final String? imageUrl;
+  final String? instagramHandle;
+  final String? phoneNumber;
+  final String? email;
 }
 
 class FakeImageUploadRepository implements ImageUploadRepository {

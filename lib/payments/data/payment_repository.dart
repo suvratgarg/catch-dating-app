@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/env/env.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/foundation.dart';
@@ -34,7 +35,11 @@ class PaymentRepository {
   final TargetPlatform? _targetPlatformOverride;
   Razorpay? _razorpay;
 
-  Completer<void>? _completer;
+  Completer<PaymentConfirmationData>? _completer;
+
+  /// Captured order data used to build the confirmation payload on success.
+  String? _pendingRunId;
+  int? _pendingAmountInPaise;
 
   bool get supportsPaidBookings {
     if (_isWebOverride ?? kIsWeb) return false;
@@ -53,7 +58,10 @@ class PaymentRepository {
   ///
   /// On success the Cloud Function [verifyRazorpayPayment] atomically verifies
   /// the payment and adds [userId] to [runs/{runId}.signedUpUserIds].
-  Future<void> processPayment({
+  ///
+  /// Returns [PaymentConfirmationData] with the payment details for the
+  /// confirmation screen.
+  Future<PaymentConfirmationData> processPayment({
     required String runId,
     required String description,
     required String userName,
@@ -75,8 +83,10 @@ class PaymentRepository {
     final order = _parseOrderResponse(orderResult.data);
 
     // Step 2: Open the Razorpay checkout sheet.
-    final completer = Completer<void>();
+    final completer = Completer<PaymentConfirmationData>();
     _completer = completer;
+    _pendingRunId = runId;
+    _pendingAmountInPaise = order.amountInPaise;
 
     try {
       _razorpay!.open({
@@ -91,11 +101,22 @@ class PaymentRepository {
           'email': userEmail,
           'contact': userContact,
         },
-        'theme': {'color': '#E8445A'},
+        'theme': {'color': '#FF4E1F'},
       });
 
-      // Step 3: Wait for the Razorpay callback.
-      await completer.future;
+      // Step 3: Wait for the Razorpay callback with a timeout so a hung
+      // sheet doesn't permanently block future payments.
+      return await completer.future.timeout(
+        const Duration(seconds: 60),
+        onTimeout: () {
+          if (identical(_completer, completer)) {
+            _completer = null;
+          }
+          throw const PaymentFailedException(
+            'The payment took too long. Please try again.',
+          );
+        },
+      );
     } catch (error) {
       if (identical(_completer, completer)) {
         _completer = null;
@@ -143,7 +164,14 @@ class PaymentRepository {
         'orderId': orderId,
         'signature': signature,
       });
-      completer.complete();
+      completer.complete(
+        PaymentConfirmationData(
+          paymentId: paymentId,
+          orderId: orderId,
+          amountInPaise: _pendingAmountInPaise ?? 0,
+          runId: _pendingRunId ?? '',
+        ),
+      );
     } catch (e) {
       completer.completeError(
         _normalizePaymentError(
@@ -197,7 +225,7 @@ class PaymentRepository {
     return (orderId: orderId, amountInPaise: amount, currency: currency);
   }
 
-  Completer<void>? _takeCompleter() {
+  Completer<PaymentConfirmationData>? _takeCompleter() {
     final completer = _completer;
     _completer = null;
     return completer;

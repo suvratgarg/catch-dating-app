@@ -102,7 +102,6 @@ void main() {
     expect(tester.takeException(), isNull);
     expect(find.text('YOUR PROFILE'), findsOneWidget);
     expect(find.text('Suvrat Garg, 30'), findsOneWidget);
-    expect(find.text('Edit'), findsOneWidget);
     expect(find.text('Photos'), findsOneWidget);
   });
 }

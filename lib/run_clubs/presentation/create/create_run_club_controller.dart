@@ -24,6 +24,9 @@ class CreateRunClubController extends _$CreateRunClubController {
     required String description,
     RunClub? existingRunClub,
     XFile? coverImage,
+    String? instagramHandle,
+    String? phoneNumber,
+    String? email,
   }) async {
     final uid = requireSignedInUid(ref, action: 'create a club');
 
@@ -47,6 +50,9 @@ class CreateRunClubController extends _$CreateRunClubController {
           location: location,
           area: area,
           imageUrl: imageUrl,
+          instagramHandle: instagramHandle,
+          phoneNumber: phoneNumber,
+          email: email,
         ),
       );
       return;
@@ -80,6 +86,9 @@ class CreateRunClubController extends _$CreateRunClubController {
       hostName: hostName,
       hostAvatarUrl: hostAvatarUrl,
       imageUrl: imageUrl,
+      instagramHandle: instagramHandle,
+      phoneNumber: phoneNumber,
+      email: email,
     );
   }
 }

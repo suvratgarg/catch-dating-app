@@ -61,6 +61,26 @@ class UserProfileRepository {
       _userRef(uid).update({
         'savedRunIds': FieldValue.arrayRemove([runId]),
       });
+
+  Future<void> updatePreferences({
+    required String uid,
+    bool? prefsNewCatches,
+    bool? prefsRunReminders,
+    bool? prefsWeeklyDigest,
+    bool? prefsShowOnMap,
+  }) {
+    final fields = <String, dynamic>{};
+    if (prefsNewCatches != null) fields['prefsNewCatches'] = prefsNewCatches;
+    if (prefsRunReminders != null) {
+      fields['prefsRunReminders'] = prefsRunReminders;
+    }
+    if (prefsWeeklyDigest != null) {
+      fields['prefsWeeklyDigest'] = prefsWeeklyDigest;
+    }
+    if (prefsShowOnMap != null) fields['prefsShowOnMap'] = prefsShowOnMap;
+    if (fields.isEmpty) return Future<void>.value();
+    return _userRef(uid).update(fields);
+  }
 }
 
 @Riverpod(keepAlive: true)

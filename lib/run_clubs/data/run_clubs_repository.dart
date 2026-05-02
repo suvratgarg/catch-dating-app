@@ -28,7 +28,7 @@ class RunClubsRepository {
   DocumentReference<Map<String, dynamic>> _userRef(String uid) =>
       _db.collection(_usersCollectionPath).doc(uid);
 
-  // ── Read ──────────────────────────────────────────────────────────────────
+  // -- Read ---------------------------------------------------------------
 
   Stream<RunClub?> watchRunClub(String id) =>
       _runClubRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null);
@@ -53,7 +53,7 @@ class RunClubsRepository {
       .snapshots()
       .map((snap) => snap.docs.map((d) => d.data()).toList());
 
-  // ── Write ─────────────────────────────────────────────────────────────────
+  // -- Write --------------------------------------------------------------
 
   String generateId() => _runClubRef().id;
 
@@ -67,6 +67,9 @@ class RunClubsRepository {
     required String hostName,
     String? hostAvatarUrl,
     String? imageUrl,
+    String? instagramHandle,
+    String? phoneNumber,
+    String? email,
   }) async {
     final ref = _runClubRef(clubId);
     final batch = _db.batch();
@@ -86,6 +89,9 @@ class RunClubsRepository {
         imageUrl: imageUrl,
         memberUserIds: [hostUserId],
         memberCount: 1,
+        instagramHandle: instagramHandle,
+        phoneNumber: phoneNumber,
+        email: email,
       ),
     );
     batch.set(_userRef(hostUserId), {
@@ -104,7 +110,7 @@ class RunClubsRepository {
   Future<void> updateImageUrl(String id, String imageUrl) =>
       _runClubRef(id).update({'imageUrl': imageUrl});
 
-  // ── Members ───────────────────────────────────────────────────────────────
+  // -- Members ------------------------------------------------------------
 
   Future<void> joinClub(String clubId, String userId) =>
       _db.runTransaction((transaction) async {
@@ -114,7 +120,7 @@ class RunClubsRepository {
         final runClub = clubSnapshot.data();
 
         if (!clubSnapshot.exists || runClub == null) {
-          throw StateError('Run club $clubId not found.');
+          throw StateError('Run club \$clubId not found.');
         }
 
         transaction.set(clubRef, runClub.addMember(userId));
@@ -131,7 +137,7 @@ class RunClubsRepository {
         final runClub = clubSnapshot.data();
 
         if (!clubSnapshot.exists || runClub == null) {
-          throw StateError('Run club $clubId not found.');
+          throw StateError('Run club \$clubId not found.');
         }
 
         transaction.set(clubRef, runClub.removeMember(userId));
