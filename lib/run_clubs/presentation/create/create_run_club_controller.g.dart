@@ -42,7 +42,7 @@ final class CreateRunClubControllerProvider
 }
 
 String _$createRunClubControllerHash() =>
-    r'84172052d55c2c41ee5b5363055cf1910725a229';
+    r'359c569eb8859b11ae452fb4fb09c619e31ab16a';
 
 abstract class _$CreateRunClubController extends $Notifier<void> {
   void build();

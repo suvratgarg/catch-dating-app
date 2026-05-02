@@ -104,7 +104,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
             if (mutation.hasError) ...[
               gapH16,
               ErrorBanner(
-                message: authErrorMessage((mutation as MutationError).error),
+                message: generalErrorMessage((mutation as MutationError).error),
               ),
             ],
             const SizedBox(height: 40),

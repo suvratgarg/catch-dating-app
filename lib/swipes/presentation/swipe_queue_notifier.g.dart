@@ -16,7 +16,7 @@ final class SwipeQueueNotifierProvider
     extends $AsyncNotifierProvider<SwipeQueueNotifier, List<PublicProfile>> {
   SwipeQueueNotifierProvider._({
     required SwipeQueueNotifierFamily super.from,
-    required String super.argument,
+    required (String, {Set<String> vibeIds}) super.argument,
   }) : super(
          retry: null,
          name: r'swipeQueueProvider',
@@ -32,7 +32,7 @@ final class SwipeQueueNotifierProvider
   String toString() {
     return r'swipeQueueProvider'
         ''
-        '($argument)';
+        '$argument';
   }
 
   @$internal
@@ -51,7 +51,7 @@ final class SwipeQueueNotifierProvider
 }
 
 String _$swipeQueueNotifierHash() =>
-    r'c4f5fbf5e95761773bd0cd7657f7df51c0d520b2';
+    r'bfd3b1260f2f6cc61dd9902b37baf8c3f463adde';
 
 final class SwipeQueueNotifierFamily extends $Family
     with
@@ -60,7 +60,7 @@ final class SwipeQueueNotifierFamily extends $Family
           AsyncValue<List<PublicProfile>>,
           List<PublicProfile>,
           FutureOr<List<PublicProfile>>,
-          String
+          (String, {Set<String> vibeIds})
         > {
   SwipeQueueNotifierFamily._()
     : super(
@@ -71,8 +71,13 @@ final class SwipeQueueNotifierFamily extends $Family
         isAutoDispose: true,
       );
 
-  SwipeQueueNotifierProvider call(String runId) =>
-      SwipeQueueNotifierProvider._(argument: runId, from: this);
+  SwipeQueueNotifierProvider call(
+    String runId, {
+    Set<String> vibeIds = const {},
+  }) => SwipeQueueNotifierProvider._(
+    argument: (runId, vibeIds: vibeIds),
+    from: this,
+  );
 
   @override
   String toString() => r'swipeQueueProvider';
@@ -80,10 +85,14 @@ final class SwipeQueueNotifierFamily extends $Family
 
 abstract class _$SwipeQueueNotifier
     extends $AsyncNotifier<List<PublicProfile>> {
-  late final _$args = ref.$arg as String;
-  String get runId => _$args;
+  late final _$args = ref.$arg as (String, {Set<String> vibeIds});
+  String get runId => _$args.$1;
+  Set<String> get vibeIds => _$args.vibeIds;
 
-  FutureOr<List<PublicProfile>> build(String runId);
+  FutureOr<List<PublicProfile>> build(
+    String runId, {
+    Set<String> vibeIds = const {},
+  });
   @$mustCallSuper
   @override
   void runBuild() {
@@ -97,6 +106,6 @@ abstract class _$SwipeQueueNotifier
               Object?,
               Object?
             >;
-    element.handleCreate(ref, () => build(_$args));
+    element.handleCreate(ref, () => build(_$args.$1, vibeIds: _$args.vibeIds));
   }
 }

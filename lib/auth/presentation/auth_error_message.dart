@@ -1,5 +1,18 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+/// Returns a user-facing message for errors that occur during profile save /
+/// Firestore write operations (not auth-specific).
+String generalErrorMessage(Object error) {
+  if (error is StateError) {
+    return error.message.isNotEmpty ? error.message : 'Something went wrong.';
+  }
+  if (error is ArgumentError) {
+    return error.message.isNotEmpty ? error.message : 'Something went wrong.';
+  }
+
+  return _stripCommonErrorPrefix(error.toString());
+}
+
 String authErrorMessage(Object error) {
   if (error is FirebaseAuthException) {
     return switch (error.code) {

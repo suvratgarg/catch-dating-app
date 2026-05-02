@@ -58,4 +58,31 @@ void main() {
       expect(authErrorMessage(StateError('Unexpected')), 'Unexpected');
     });
   });
+
+  group('generalErrorMessage', () {
+    test('returns StateError messages directly', () {
+      expect(
+        generalErrorMessage(StateError('Please sign in again.')),
+        'Please sign in again.',
+      );
+    });
+
+    test('returns ArgumentError messages directly', () {
+      expect(
+        generalErrorMessage(ArgumentError('You must be at least 18.')),
+        'You must be at least 18.',
+      );
+    });
+
+    test('strips common prefixes from other exception types', () {
+      expect(
+        generalErrorMessage(Exception('Something broke')),
+        'Something broke',
+      );
+      expect(
+        generalErrorMessage('Bad state: Invalid data'),
+        'Invalid data',
+      );
+    });
+  });
 }

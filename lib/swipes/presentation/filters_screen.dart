@@ -215,23 +215,6 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                         ],
                       ),
                     ),
-                    _FilterSection(
-                      title: 'Only show verified runners',
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Coming with profile verification. Current matching remains based on shared run attendance.',
-                              style: CatchTextStyles.bodyS(
-                                context,
-                                color: t.ink2,
-                              ),
-                            ),
-                          ),
-                          Switch.adaptive(value: false, onChanged: null),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ),

@@ -11,12 +11,23 @@ part 'swipe_queue_notifier.g.dart';
 @riverpod
 class SwipeQueueNotifier extends _$SwipeQueueNotifier {
   @override
-  Future<List<PublicProfile>> build(String runId) async {
+  Future<List<PublicProfile>> build(
+    String runId, {
+    Set<String> vibeIds = const {},
+  }) async {
     final currentUser = await ref.watch(userProfileStreamProvider.future);
     if (currentUser == null) return [];
-    return ref
+    final candidates = await ref
         .read(swipeCandidateRepositoryProvider)
         .fetchCandidates(runId: runId, currentUser: currentUser);
+    if (vibeIds.isEmpty) return candidates;
+
+    final vibeProfiles = <PublicProfile>[];
+    final rest = <PublicProfile>[];
+    for (final p in candidates) {
+      (vibeIds.contains(p.uid) ? vibeProfiles : rest).add(p);
+    }
+    return [...vibeProfiles, ...rest];
   }
 
   Future<void> swipe(SwipeDirection direction) async {

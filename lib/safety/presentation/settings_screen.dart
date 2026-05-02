@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -20,6 +21,7 @@ class SettingsScreen extends ConsumerStatefulWidget {
 
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _deleting = false;
+  // TODO: these toggles are local UI state only — persist to Firestore user prefs
   bool _showOnMap = true;
   bool _newCatches = true;
   bool _runReminders = true;
@@ -63,6 +65,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final phoneNumber =
+        ref.watch(userProfileStreamProvider).asData?.value?.phoneNumber ?? '';
 
     return Scaffold(
       appBar: const CatchTopBar(title: 'Settings'),
@@ -79,7 +83,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
             children: [
               _SettingsRow(
                 label: 'Phone',
-                value: '+91 connected',
+                value: phoneNumber.isNotEmpty ? '+91 $phoneNumber' : '',
                 icon: Icons.phone_outlined,
                 tokens: t,
               ),
@@ -97,6 +101,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _SettingsGroup(
             title: 'Discovery',
             children: [
+              // TODO: wire up visibility/privacy controls
               _SettingsRow(
                 label: 'Who can see me',
                 value: 'Runners on my runs',
@@ -112,6 +117,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   onChanged: (value) => setState(() => _showOnMap = value),
                 ),
               ),
+              // TODO: implement snooze profile functionality
               _SettingsRow(
                 label: 'Snooze profile',
                 value: 'Off',
@@ -168,6 +174,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           _SettingsGroup(
             title: 'About',
             children: [
+              // TODO: add onTap handlers — open help center / privacy policy / terms URLs
               _SettingsRow(
                 label: 'Help & support',
                 value: 'Contact us',

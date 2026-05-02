@@ -106,6 +106,7 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
                 onPressed: () => context.goNamed(
                   Routes.swipeRunScreen.name,
                   pathParameters: {'runId': run.id},
+                  extra: _selectedVibes,
                 ),
                 fullWidth: true,
               ),

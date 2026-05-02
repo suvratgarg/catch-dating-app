@@ -14,9 +14,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SwipeScreen extends ConsumerStatefulWidget {
-  const SwipeScreen({super.key, required this.runId});
+  const SwipeScreen({super.key, required this.runId, this.vibeIds = const {}});
 
   final String runId;
+  final Set<String> vibeIds;
 
   @override
   ConsumerState<SwipeScreen> createState() => _SwipeScreenState();
@@ -45,13 +46,19 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     final swipeDir = direction == CardSwiperDirection.right
         ? SwipeDirection.like
         : SwipeDirection.pass;
-    await ref.read(swipeQueueProvider(widget.runId).notifier).swipe(swipeDir);
+    await ref
+        .read(
+          swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds).notifier,
+        )
+        .swipe(swipeDir);
     return true;
   }
 
   @override
   Widget build(BuildContext context) {
-    final queueAsync = ref.watch(swipeQueueProvider(widget.runId));
+    final queueAsync = ref.watch(
+      swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds),
+    );
     final runAsync = ref.watch(watchRunProvider(widget.runId));
     final currentUserAsync = ref.watch(userProfileStreamProvider);
 

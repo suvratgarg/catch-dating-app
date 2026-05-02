@@ -269,8 +269,12 @@ GoRouter goRouter(Ref ref) {
                   GoRoute(
                     path: ':runId',
                     name: Routes.swipeRunScreen.name,
-                    builder: (context, state) =>
-                        SwipeScreen(runId: state.pathParameters['runId']!),
+                    builder: (context, state) => SwipeScreen(
+                      runId: state.pathParameters['runId']!,
+                      vibeIds: state.extra is Set<String>
+                          ? state.extra! as Set<String>
+                          : const {},
+                    ),
                   ),
                 ],
               ),
