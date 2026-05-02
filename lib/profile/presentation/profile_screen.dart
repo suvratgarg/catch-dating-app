@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_tab.dart';
@@ -28,37 +29,42 @@ class ProfileScreen extends ConsumerWidget {
     return DefaultTabController(
       length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Profile'),
+        appBar: CatchTopBar(
+          title: 'Profile',
+          showBackButton: false,
           actions: [
-            IconButton(
-              icon: const Icon(Icons.notifications_none_rounded),
+            CatchTopBarIconAction(
+              icon: Icons.notifications_none_rounded,
               tooltip: 'Activity',
               onPressed: () => context.pushNamed(Routes.activityScreen.name),
             ),
-            IconButton(
-              icon: const Icon(Icons.receipt_long_outlined),
-              tooltip: 'Payment history',
-              onPressed: () =>
-                  context.pushNamed(Routes.paymentHistoryScreen.name),
-            ),
-            IconButton(
-              icon: const Icon(Icons.settings_outlined),
+            CatchTopBarIconAction(
+              icon: Icons.settings_outlined,
               tooltip: 'Settings',
               onPressed: () => context.pushNamed(Routes.settingsScreen.name),
             ),
-            IconButton(
-              icon: const Icon(Icons.edit_outlined),
-              tooltip: 'Edit profile',
-              onPressed: () => context.pushNamed(Routes.editProfileScreen.name),
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout_rounded),
-              tooltip: 'Sign out',
-              onPressed: () => ref.read(authRepositoryProvider).signOut(),
+            CatchTopBarMenuAction<String>(
+              tooltip: 'More profile actions',
+              onSelected: (value) {
+                if (value == 'payments') {
+                  context.pushNamed(Routes.paymentHistoryScreen.name);
+                } else if (value == 'edit') {
+                  context.pushNamed(Routes.editProfileScreen.name);
+                } else if (value == 'signOut') {
+                  ref.read(authRepositoryProvider).signOut();
+                }
+              },
+              itemBuilder: (context) => const [
+                PopupMenuItem(
+                  value: 'payments',
+                  child: Text('Payment history'),
+                ),
+                PopupMenuItem(value: 'edit', child: Text('Edit profile')),
+                PopupMenuItem(value: 'signOut', child: Text('Sign out')),
+              ],
             ),
           ],
-          bottom: const TabBar(
+          bottom: const CatchTopBarTabBar(
             tabs: [
               Tab(text: 'Profile'),
               Tab(text: 'Preview'),

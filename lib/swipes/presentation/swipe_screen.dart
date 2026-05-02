@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
@@ -55,12 +56,12 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     final currentUserAsync = ref.watch(userProfileStreamProvider);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Discover'),
+      appBar: CatchTopBar(
+        title: 'Discover',
         actions: [
-          IconButton(
+          CatchTopBarIconAction(
             tooltip: 'Filters',
-            icon: const Icon(Icons.tune_rounded),
+            icon: Icons.tune_rounded,
             onPressed: () => context.pushNamed(Routes.filtersScreen.name),
           ),
         ],

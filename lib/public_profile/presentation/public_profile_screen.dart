@@ -2,6 +2,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -135,11 +136,12 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
     final t = CatchTokens.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(profile?.name ?? 'Profile'),
+      appBar: CatchTopBar(
+        title: profile?.name ?? 'Profile',
         actions: [
           if (profile != null)
-            PopupMenuButton<String>(
+            CatchTopBarMenuAction<String>(
+              tooltip: 'Profile actions',
               enabled: !_submitting,
               onSelected: (value) {
                 if (value == 'report') {

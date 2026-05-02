@@ -3,6 +3,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -34,103 +35,84 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: SafeArea(
-        child: runAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(child: Text('Error: $error')),
-          data: (run) {
-            if (run == null) {
-              return const Center(child: Text('Run not found'));
-            }
-            final attendeeIds = run.attendedUserIds
-                .where((attendeeId) => attendeeId != uid)
-                .toList();
-
-            return ListView(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                Sizes.p8,
-                CatchSpacing.s5,
-                Sizes.p24,
-              ),
-              children: [
-                _RecapHeader(tokens: t),
-                gapH14,
-                _RecapHero(run: run, tokens: t),
-                gapH24,
-                Text(
-                  'Who brought the vibe?',
-                  style: CatchTextStyles.titleL(context),
-                ),
-                gapH4,
-                Text(
-                  "Tap people you remember. They'll be easier to spot when you open the catches deck.",
-                  style: CatchTextStyles.bodyS(context, color: t.ink2),
-                ),
-                gapH14,
-                if (attendeeIds.isEmpty)
-                  _EmptyRoster(tokens: t)
-                else
-                  GridView.builder(
-                    itemCount: attendeeIds.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3,
-                          crossAxisSpacing: 10,
-                          mainAxisSpacing: 10,
-                          childAspectRatio: 0.74,
-                        ),
-                    itemBuilder: (context, index) {
-                      final attendeeId = attendeeIds[index];
-                      return _VibeTile(
-                        uid: attendeeId,
-                        selected: _selectedVibes.contains(attendeeId),
-                        onTap: () => setState(() {
-                          _selectedVibes.contains(attendeeId)
-                              ? _selectedVibes.remove(attendeeId)
-                              : _selectedVibes.add(attendeeId);
-                        }),
-                      );
-                    },
-                  ),
-                gapH24,
-                CatchButton(
-                  label: 'Open catches deck',
-                  onPressed: () => context.goNamed(
-                    Routes.swipeRunScreen.name,
-                    pathParameters: {'runId': run.id},
-                  ),
-                  fullWidth: true,
-                ),
-              ],
-            );
-          },
+      appBar: CatchTopBar(
+        title: 'Run recap',
+        leading: CatchTopBarIconAction(
+          icon: Icons.close_rounded,
+          tooltip: 'Close recap',
+          onPressed: () => context.pop(),
         ),
       ),
-    );
-  }
-}
+      body: runAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(child: Text('Error: $error')),
+        data: (run) {
+          if (run == null) {
+            return const Center(child: Text('Run not found'));
+          }
+          final attendeeIds = run.attendedUserIds
+              .where((attendeeId) => attendeeId != uid)
+              .toList();
 
-class _RecapHeader extends StatelessWidget {
-  const _RecapHeader({required this.tokens});
-
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        IconButton.filledTonal(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.close_rounded),
-        ),
-        gapW12,
-        Expanded(
-          child: Text('Run recap', style: CatchTextStyles.displayM(context)),
-        ),
-      ],
+          return ListView(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              Sizes.p12,
+              CatchSpacing.s5,
+              Sizes.p24,
+            ),
+            children: [
+              _RecapHero(run: run, tokens: t),
+              gapH24,
+              Text(
+                'Who brought the vibe?',
+                style: CatchTextStyles.titleL(context),
+              ),
+              gapH4,
+              Text(
+                "Tap people you remember. They'll be easier to spot when you open the catches deck.",
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
+              gapH14,
+              if (attendeeIds.isEmpty)
+                _EmptyRoster(tokens: t)
+              else
+                GridView.builder(
+                  itemCount: attendeeIds.length,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 10,
+                    childAspectRatio: 0.74,
+                  ),
+                  itemBuilder: (context, index) {
+                    final attendeeId = attendeeIds[index];
+                    return _VibeTile(
+                      uid: attendeeId,
+                      selected: _selectedVibes.contains(attendeeId),
+                      onTap: () => setState(() {
+                        _selectedVibes.contains(attendeeId)
+                            ? _selectedVibes.remove(attendeeId)
+                            : _selectedVibes.add(attendeeId);
+                      }),
+                    );
+                  },
+                ),
+              gapH24,
+              CatchButton(
+                label: 'Open catches deck',
+                onPressed: () => context.goNamed(
+                  Routes.swipeRunScreen.name,
+                  pathParameters: {'runId': run.id},
+                ),
+                fullWidth: true,
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }

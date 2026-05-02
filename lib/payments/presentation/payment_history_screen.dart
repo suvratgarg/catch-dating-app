@@ -3,6 +3,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -18,7 +19,7 @@ class PaymentHistoryScreen extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Payment History')),
+      appBar: const CatchTopBar(title: 'Payment history'),
       body: uidAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -241,9 +242,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        titleSpacing: 0,
-        title: Row(
+      appBar: CatchTopBar(
+        titleWidget: Row(
           children: [
             CircleAvatar(
               radius: 18,
@@ -257,12 +257,20 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                   : null,
             ),
             gapW10,
-            Text(name),
+            Expanded(
+              child: Text(
+                name,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: CatchTextStyles.titleL(context, color: t.ink),
+              ),
+            ),
           ],
         ),
         actions: [
           if (otherUid != null)
-            PopupMenuButton<String>(
+            CatchTopBarMenuAction<String>(
+              tooltip: 'Chat actions',
               onSelected: (value) {
                 if (value == 'profile') {
                   context.pushNamed(

@@ -49,6 +49,7 @@ enum Routes {
   // Clubs branch (index 1)
   runClubsListScreen('/clubs'),
   runClubDetailScreen('/clubs/run-clubs/:runClubId'),
+  editRunClubScreen('/clubs/run-clubs/:runClubId/edit'),
   runDetailScreen('/clubs/run-clubs/:runClubId/runs/:runId'),
   createRunClubScreen('/clubs/create-run-club'),
   createRunScreen('/clubs/run-clubs/:runClubId/create-run'),
@@ -212,6 +213,17 @@ GoRouter goRouter(Ref ref) {
                         builder: (context, state) => RunDetailScreen(
                           runClubId: state.pathParameters['runClubId']!,
                           runId: state.pathParameters['runId']!,
+                        ),
+                      ),
+                      GoRoute(
+                        path: 'edit',
+                        name: Routes.editRunClubScreen.name,
+                        parentNavigatorKey: _rootNavigatorKey,
+                        builder: (context, state) => EditRunClubRouteScreen(
+                          runClubId: state.pathParameters['runClubId']!,
+                          initialRunClub: state.extra is RunClub
+                              ? state.extra! as RunClub
+                              : null,
                         ),
                       ),
                       GoRoute(
@@ -432,6 +444,34 @@ class CreateRunRouteScreen extends ConsumerWidget {
       data: (runClub) => runClub == null
           ? const Scaffold(body: Center(child: Text('Run club not found.')))
           : CreateRunScreen(runClub: runClub),
+    );
+  }
+}
+
+class EditRunClubRouteScreen extends ConsumerWidget {
+  const EditRunClubRouteScreen({
+    super.key,
+    required this.runClubId,
+    this.initialRunClub,
+  });
+
+  final String runClubId;
+  final RunClub? initialRunClub;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (initialRunClub != null) {
+      return CreateRunClubScreen(initialRunClub: initialRunClub!);
+    }
+
+    final runClubAsync = ref.watch(fetchRunClubProvider(runClubId));
+    return runClubAsync.when(
+      loading: () => const _RouterLoadingScreen(),
+      error: (error, _) =>
+          Scaffold(body: Center(child: Text(error.toString()))),
+      data: (runClub) => runClub == null
+          ? const Scaffold(body: Center(child: Text('Run club not found.')))
+          : CreateRunClubScreen(initialRunClub: runClub),
     );
   }
 }

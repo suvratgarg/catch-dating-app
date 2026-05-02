@@ -1,0 +1,25 @@
+{
+  "applinks": {
+    "apps": [],
+    "details": [
+      {
+        "appID": "2HQBK4UMUT.com.catchdates.app",
+        "paths": [
+          "/clubs/run-clubs/*"
+        ]
+      },
+      {
+        "appID": "2HQBK4UMUT.com.catchdates.app.dev",
+        "paths": [
+          "/clubs/run-clubs/*"
+        ]
+      },
+      {
+        "appID": "2HQBK4UMUT.com.catchdates.app.staging",
+        "paths": [
+          "/clubs/run-clubs/*"
+        ]
+      }
+    ]
+  }
+}

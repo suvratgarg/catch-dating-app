@@ -104,20 +104,45 @@ class ClubDetailBody extends StatelessWidget {
         ),
         if (isHost)
           Positioned(
-            top: MediaQuery.paddingOf(context).top + 8,
+            top: MediaQuery.paddingOf(context).top + 56,
             right: 8,
             child: Builder(
-              builder: (ctx) => Padding(
-                padding: const EdgeInsets.all(8),
-                child: IconBtn(
-                  background: t.primary,
-                  onTap: () => ctx.pushNamed(
-                    Routes.createRunScreen.name,
-                    pathParameters: {'runClubId': runClub.id},
-                    extra: runClub,
+              builder: (ctx) => Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: IconBtn(
+                      background: Colors.black.withValues(alpha: 0.35),
+                      onTap: () => ctx.pushNamed(
+                        Routes.editRunClubScreen.name,
+                        pathParameters: {'runClubId': runClub.id},
+                        extra: runClub,
+                      ),
+                      child: const Icon(
+                        Icons.edit_outlined,
+                        size: 20,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
-                  child: Icon(Icons.add_rounded, size: 20, color: t.primaryInk),
-                ),
+                  Padding(
+                    padding: const EdgeInsets.all(8),
+                    child: IconBtn(
+                      background: t.primary,
+                      onTap: () => ctx.pushNamed(
+                        Routes.createRunScreen.name,
+                        pathParameters: {'runClubId': runClub.id},
+                        extra: runClub,
+                      ),
+                      child: Icon(
+                        Icons.add_rounded,
+                        size: 20,
+                        color: t.primaryInk,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

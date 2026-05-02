@@ -9,15 +9,18 @@ class CreateRunClubCoverPicker extends StatelessWidget {
   const CreateRunClubCoverPicker({
     super.key,
     required this.coverImageBytes,
+    this.existingImageUrl,
     required this.onTap,
   });
 
   final Uint8List? coverImageBytes;
+  final String? existingImageUrl;
   final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final hasCover = coverImageBytes != null || existingImageUrl != null;
 
     return GestureDetector(
       onTap: onTap,
@@ -25,11 +28,18 @@ class CreateRunClubCoverPicker extends StatelessWidget {
         aspectRatio: 16 / 9,
         child: ClipRRect(
           borderRadius: BorderRadius.circular(CatchRadius.md),
-          child: coverImageBytes != null
+          child: hasCover
               ? Stack(
                   fit: StackFit.expand,
                   children: [
-                    Image.memory(coverImageBytes!, fit: BoxFit.cover),
+                    if (coverImageBytes != null)
+                      Image.memory(coverImageBytes!, fit: BoxFit.cover)
+                    else
+                      Image.network(
+                        existingImageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Container(color: t.raised),
+                      ),
                     Positioned(
                       bottom: 8,
                       right: 8,

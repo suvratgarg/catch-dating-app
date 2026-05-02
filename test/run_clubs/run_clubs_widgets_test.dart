@@ -520,7 +520,7 @@ void main() {
       await pumpVariant(RunClubListTileVariant.avatarChip, isActive: true);
     });
 
-    testWidgets('ClubDetailBody host view exposes create run navigation', (
+    testWidgets('ClubDetailBody host view exposes edit and create navigation', (
       tester,
     ) async {
       final club = buildRunClub(id: 'club-host', hostUserId: 'host-1');
@@ -544,6 +544,14 @@ void main() {
             ),
           ),
           GoRoute(
+            path: '/edit/:runClubId',
+            name: Routes.editRunClubScreen.name,
+            builder: (_, state) => Text(
+              'Edit ${state.pathParameters['runClubId']}',
+              textDirection: TextDirection.ltr,
+            ),
+          ),
+          GoRoute(
             path: '/create/:runClubId',
             name: Routes.createRunScreen.name,
             builder: (_, state) => Text(
@@ -561,6 +569,14 @@ void main() {
 
       expect(find.text('Booked'), findsOneWidget);
       expect(find.text('Join club'), findsNothing);
+
+      await tester.tap(find.byIcon(Icons.edit_outlined).first);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit club-host'), findsOneWidget);
+
+      router.go('/');
+      await tester.pumpAndSettle();
 
       await tester.tap(find.byIcon(Icons.add_rounded));
       await tester.pumpAndSettle();
@@ -985,6 +1001,41 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.textContaining('create failed'), findsOneWidget);
+    });
+
+    testWidgets('CreateRunClubScreen pre-fills fields in edit mode', (
+      tester,
+    ) async {
+      final club = buildRunClub(
+        name: 'Morning Miles',
+        area: 'Palasia',
+        location: IndianCity.indore,
+        description: 'Indore morning loops.',
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: CreateRunClubScreen(initialRunClub: club),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Edit run club'), findsOneWidget);
+      expect(find.text('Update club'), findsOneWidget);
+      expect(find.text('Save changes'), findsOneWidget);
+      expect(
+        find.widgetWithText(CatchTextField, 'Morning Miles'),
+        findsOneWidget,
+      );
+      expect(find.widgetWithText(CatchTextField, 'Palasia'), findsOneWidget);
+      expect(
+        find.widgetWithText(CatchTextField, 'Indore morning loops.'),
+        findsOneWidget,
+      );
+      expect(find.text('Indore'), findsOneWidget);
     });
 
     testWidgets(

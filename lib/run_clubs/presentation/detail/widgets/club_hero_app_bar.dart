@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
@@ -34,29 +34,25 @@ class ClubHeroAppBar extends StatelessWidget {
       elevation: 0,
       leading: Padding(
         padding: const EdgeInsets.all(8),
-        child: IconBtn(
-          background: Colors.black.withValues(alpha: 0.35),
-          onTap: () => Navigator.of(context).pop(),
-          child: const Icon(
-            Icons.arrow_back_ios_new_rounded,
-            size: 18,
-            color: Colors.white,
-          ),
+        child: CatchTopBarIconAction(
+          icon: Icons.arrow_back_ios_new_rounded,
+          tooltip: 'Back',
+          backgroundColor: Colors.black.withValues(alpha: 0.35),
+          foregroundColor: Colors.white,
+          onPressed: () => Navigator.of(context).pop(),
         ),
       ),
       actions: [
         Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
           child: Builder(
-            builder: (buttonContext) => IconBtn(
-              background: Colors.black.withValues(alpha: 0.35),
-              onTap: () => unawaited(
+            builder: (buttonContext) => CatchTopBarIconAction(
+              icon: Icons.ios_share_rounded,
+              tooltip: 'Share club',
+              backgroundColor: Colors.black.withValues(alpha: 0.35),
+              foregroundColor: Colors.white,
+              onPressed: () => unawaited(
                 (onShareClub ?? _shareRunClub)(buttonContext, club),
-              ),
-              child: const Icon(
-                Icons.ios_share_rounded,
-                size: 18,
-                color: Colors.white,
               ),
             ),
           ),

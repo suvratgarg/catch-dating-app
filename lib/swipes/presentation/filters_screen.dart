@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -89,187 +90,172 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: SafeArea(
-        child: profileAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(child: Text('Error: $error')),
-          data: (user) {
-            if (user == null) return const SizedBox.shrink();
-            _syncFromProfile(user);
+      appBar: CatchTopBar(
+        title: 'Filters',
+        leading: CatchTopBarIconAction(
+          icon: Icons.close_rounded,
+          tooltip: 'Close filters',
+          onPressed: () => context.pop(),
+        ),
+        actions: [
+          CatchTopBarTextAction(
+            label: 'Reset',
+            onPressed: profileAsync.asData?.value == null || _saving
+                ? null
+                : () => _reset(profileAsync.asData!.value!),
+          ),
+        ],
+      ),
+      body: profileAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(child: Text('Error: $error')),
+        data: (user) {
+          if (user == null) return const SizedBox.shrink();
+          _syncFromProfile(user);
 
-            final ageRange = _ageRange!;
-            final paceRange = _paceRange!;
-            final interestedIn = _interestedIn!;
-            final distances = _distances!;
+          final ageRange = _ageRange!;
+          final paceRange = _paceRange!;
+          final interestedIn = _interestedIn!;
+          final distances = _distances!;
 
-            return Column(
-              children: [
-                Padding(
+          return Column(
+            children: [
+              Expanded(
+                child: ListView(
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,
-                    Sizes.p8,
-                    CatchSpacing.s5,
-                    Sizes.p10,
-                  ),
-                  child: Row(
-                    children: [
-                      IconButton.filledTonal(
-                        onPressed: () => context.pop(),
-                        icon: const Icon(Icons.close_rounded),
-                      ),
-                      gapW12,
-                      Expanded(
-                        child: Text(
-                          'Filters',
-                          style: CatchTextStyles.displayM(context),
-                        ),
-                      ),
-                      CatchButton(
-                        label: 'Reset',
-                        onPressed: _saving ? null : () => _reset(user),
-                        variant: CatchButtonVariant.ghost,
-                        size: CatchButtonSize.sm,
-                      ),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: ListView(
-                    padding: const EdgeInsets.fromLTRB(
-                      CatchSpacing.s5,
-                      0,
-                      CatchSpacing.s5,
-                      Sizes.p20,
-                    ),
-                    children: [
-                      _FilterSection(
-                        title: 'Pace range',
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _FilterValue(
-                              value:
-                                  '${_formatPace(paceRange.start)} - ${_formatPace(paceRange.end)} /km',
-                            ),
-                            RangeSlider(
-                              min: 240,
-                              max: 540,
-                              divisions: 20,
-                              values: paceRange,
-                              labels: RangeLabels(
-                                _formatPace(paceRange.start),
-                                _formatPace(paceRange.end),
-                              ),
-                              onChanged: (values) =>
-                                  setState(() => _paceRange = values),
-                            ),
-                          ],
-                        ),
-                      ),
-                      _FilterSection(
-                        title: 'Age',
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _FilterValue(
-                              value:
-                                  '${ageRange.start.round()} - ${ageRange.end.round()}',
-                            ),
-                            RangeSlider(
-                              min: 18,
-                              max: 99,
-                              divisions: 81,
-                              values: ageRange,
-                              labels: RangeLabels(
-                                '${ageRange.start.round()}',
-                                '${ageRange.end.round()}',
-                              ),
-                              onChanged: (values) =>
-                                  setState(() => _ageRange = values),
-                            ),
-                          ],
-                        ),
-                      ),
-                      _FilterSection(
-                        title: 'Interested in',
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final gender in Gender.values)
-                              CatchChip(
-                                label: gender.label,
-                                active: interestedIn.contains(gender),
-                                onTap: () => setState(() {
-                                  interestedIn.contains(gender)
-                                      ? interestedIn.remove(gender)
-                                      : interestedIn.add(gender);
-                                }),
-                              ),
-                          ],
-                        ),
-                      ),
-                      _FilterSection(
-                        title: 'Run type',
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final distance in PreferredDistance.values)
-                              CatchChip(
-                                label: distance.label,
-                                active: distances.contains(distance),
-                                onTap: () => setState(() {
-                                  distances.contains(distance)
-                                      ? distances.remove(distance)
-                                      : distances.add(distance);
-                                }),
-                              ),
-                          ],
-                        ),
-                      ),
-                      _FilterSection(
-                        title: 'Only show verified runners',
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: Text(
-                                'Coming with profile verification. Current matching remains based on shared run attendance.',
-                                style: CatchTextStyles.bodyS(
-                                  context,
-                                  color: t.ink2,
-                                ),
-                              ),
-                            ),
-                            Switch.adaptive(value: false, onChanged: null),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s5,
-                    Sizes.p12,
+                    0,
                     CatchSpacing.s5,
                     Sizes.p20,
                   ),
-                  decoration: BoxDecoration(
-                    color: t.surface,
-                    border: Border(top: BorderSide(color: t.line)),
-                  ),
-                  child: CatchButton(
-                    label: 'Apply filters',
-                    onPressed: () => _save(user),
-                    isLoading: _saving,
-                    fullWidth: true,
-                  ),
+                  children: [
+                    _FilterSection(
+                      title: 'Pace range',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _FilterValue(
+                            value:
+                                '${_formatPace(paceRange.start)} - ${_formatPace(paceRange.end)} /km',
+                          ),
+                          RangeSlider(
+                            min: 240,
+                            max: 540,
+                            divisions: 20,
+                            values: paceRange,
+                            labels: RangeLabels(
+                              _formatPace(paceRange.start),
+                              _formatPace(paceRange.end),
+                            ),
+                            onChanged: (values) =>
+                                setState(() => _paceRange = values),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _FilterSection(
+                      title: 'Age',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _FilterValue(
+                            value:
+                                '${ageRange.start.round()} - ${ageRange.end.round()}',
+                          ),
+                          RangeSlider(
+                            min: 18,
+                            max: 99,
+                            divisions: 81,
+                            values: ageRange,
+                            labels: RangeLabels(
+                              '${ageRange.start.round()}',
+                              '${ageRange.end.round()}',
+                            ),
+                            onChanged: (values) =>
+                                setState(() => _ageRange = values),
+                          ),
+                        ],
+                      ),
+                    ),
+                    _FilterSection(
+                      title: 'Interested in',
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final gender in Gender.values)
+                            CatchChip(
+                              label: gender.label,
+                              active: interestedIn.contains(gender),
+                              onTap: () => setState(() {
+                                interestedIn.contains(gender)
+                                    ? interestedIn.remove(gender)
+                                    : interestedIn.add(gender);
+                              }),
+                            ),
+                        ],
+                      ),
+                    ),
+                    _FilterSection(
+                      title: 'Run type',
+                      child: Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: [
+                          for (final distance in PreferredDistance.values)
+                            CatchChip(
+                              label: distance.label,
+                              active: distances.contains(distance),
+                              onTap: () => setState(() {
+                                distances.contains(distance)
+                                    ? distances.remove(distance)
+                                    : distances.add(distance);
+                              }),
+                            ),
+                        ],
+                      ),
+                    ),
+                    _FilterSection(
+                      title: 'Only show verified runners',
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Coming with profile verification. Current matching remains based on shared run attendance.',
+                              style: CatchTextStyles.bodyS(
+                                context,
+                                color: t.ink2,
+                              ),
+                            ),
+                          ),
+                          Switch.adaptive(value: false, onChanged: null),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            );
-          },
-        ),
+              ),
+              Container(
+                padding: const EdgeInsets.fromLTRB(
+                  CatchSpacing.s5,
+                  Sizes.p12,
+                  CatchSpacing.s5,
+                  Sizes.p20,
+                ),
+                decoration: BoxDecoration(
+                  color: t.surface,
+                  border: Border(top: BorderSide(color: t.line)),
+                ),
+                child: CatchButton(
+                  label: 'Apply filters',
+                  onPressed: () => _save(user),
+                  isLoading: _saving,
+                  fullWidth: true,
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

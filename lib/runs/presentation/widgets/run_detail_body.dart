@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
@@ -72,47 +72,41 @@ class RunDetailBody extends ConsumerWidget {
             elevation: 0,
             leading: Padding(
               padding: const EdgeInsets.all(8),
-              child: IconBtn(
+              child: CatchTopBarIconAction(
+                icon: Icons.arrow_back_ios_new_rounded,
+                tooltip: 'Back',
                 background: t.surface,
-                onTap: () => Navigator.of(context).pop(),
-                child: Icon(
-                  Icons.arrow_back_ios_new_rounded,
-                  size: 18,
-                  color: t.ink,
-                ),
+                onPressed: () => Navigator.of(context).pop(),
+                foregroundColor: t.ink,
               ),
             ),
             actions: [
               Padding(
                 padding: const EdgeInsets.all(8),
                 child: Builder(
-                  builder: (buttonContext) => IconBtn(
+                  builder: (buttonContext) => CatchTopBarIconAction(
+                    icon: Icons.ios_share_rounded,
+                    tooltip: 'Share run',
                     background: t.surface,
-                    onTap: () => unawaited(
+                    onPressed: () => unawaited(
                       (onShareRun ?? _shareRun)(buttonContext, run),
                     ),
-                    child: Icon(
-                      Icons.ios_share_rounded,
-                      size: 18,
-                      color: t.ink,
-                    ),
+                    foregroundColor: t.ink,
                   ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
-                child: IconBtn(
+                child: CatchTopBarIconAction(
+                  icon: isSaved
+                      ? Icons.bookmark_rounded
+                      : Icons.bookmark_border_rounded,
+                  tooltip: isSaved ? 'Unsave run' : 'Save run',
                   background: t.surface,
-                  onTap: () => unawaited(
+                  onPressed: () => unawaited(
                     _toggleSavedRun(context, ref, run, userProfile, isSaved),
                   ),
-                  child: Icon(
-                    isSaved
-                        ? Icons.bookmark_rounded
-                        : Icons.bookmark_border_rounded,
-                    size: 18,
-                    color: t.ink,
-                  ),
+                  foregroundColor: t.ink,
                 ),
               ),
             ],

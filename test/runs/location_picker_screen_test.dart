@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +30,9 @@ void main() {
       );
       expect(
         tester
-            .widget<CatchButton>(find.widgetWithText(CatchButton, 'Confirm'))
+            .widget<CatchTopBarTextAction>(
+              find.widgetWithText(CatchTopBarTextAction, 'Confirm'),
+            )
             .onPressed,
         isNull,
       );
@@ -55,7 +57,9 @@ void main() {
       expect(find.text('19.110000, 72.910000'), findsOneWidget);
       expect(
         tester
-            .widget<CatchButton>(find.widgetWithText(CatchButton, 'Confirm'))
+            .widget<CatchTopBarTextAction>(
+              find.widgetWithText(CatchTopBarTextAction, 'Confirm'),
+            )
             .onPressed,
         isNotNull,
       );
@@ -96,12 +100,14 @@ void main() {
         expect(find.text('19.076000, 72.877700'), findsOneWidget);
         expect(
           tester
-              .widget<CatchButton>(find.widgetWithText(CatchButton, 'Confirm'))
+              .widget<CatchTopBarTextAction>(
+                find.widgetWithText(CatchTopBarTextAction, 'Confirm'),
+              )
               .onPressed,
           isNotNull,
         );
 
-        await tester.tap(find.widgetWithText(CatchButton, 'Confirm'));
+        await tester.tap(find.widgetWithText(CatchTopBarTextAction, 'Confirm'));
         await tester.pumpAndSettle();
 
         expect(find.text('Open'), findsOneWidget);

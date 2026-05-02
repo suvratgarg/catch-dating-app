@@ -2,7 +2,7 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -23,22 +23,20 @@ class ActivityScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: SafeArea(
-        child: uidAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => _ActivityMessage(
-            icon: Icons.error_outline_rounded,
-            title: 'Activity unavailable',
-            body: error.toString(),
-            tokens: t,
-          ),
-          data: (uid) {
-            if (uid == null) {
-              return const SizedBox.shrink();
-            }
-            return _ActivityContent(uid: uid, tokens: t);
-          },
+      body: uidAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => _ActivityMessage(
+          icon: Icons.error_outline_rounded,
+          title: 'Activity unavailable',
+          body: error.toString(),
+          tokens: t,
         ),
+        data: (uid) {
+          if (uid == null) {
+            return const SizedBox.shrink();
+          }
+          return _ActivityContent(uid: uid, tokens: t);
+        },
       ),
     );
   }
@@ -65,49 +63,65 @@ class _ActivityContent extends ConsumerWidget {
       runs: runs,
     );
 
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        Sizes.p8,
-        CatchSpacing.s5,
-        Sizes.p24,
-      ),
+    final markAllRead =
+        matches.any((match) => (match.unreadCounts[uid] ?? 0) > 0)
+        ? () => _markAllRead(ref, matches)
+        : null;
+
+    return Column(
       children: [
-        _ActivityHeader(
-          tokens: tokens,
-          onMarkAllRead:
-              matches.any((match) => (match.unreadCounts[uid] ?? 0) > 0)
-              ? () => _markAllRead(ref, matches)
-              : null,
-        ),
-        gapH20,
-        if (isLoading) ...[
-          const _ActivitySkeleton(),
-        ] else if (error != null) ...[
-          _ActivityMessage(
-            icon: Icons.error_outline_rounded,
-            title: 'Could not load activity',
-            body: error.toString(),
-            tokens: tokens,
-          ),
-        ] else if (items.isEmpty) ...[
-          _ActivityMessage(
-            icon: Icons.notifications_none_rounded,
-            title: 'No new activity',
-            body: 'New catches, messages, and run reminders will collect here.',
-            tokens: tokens,
-          ),
-        ] else ...[
-          for (final group in _groupItems(items)) ...[
-            _ActivitySectionTitle(label: group.label, tokens: tokens),
-            gapH8,
-            for (final item in group.items) ...[
-              _ActivityTile(item: item, tokens: tokens),
-              if (item != group.items.last) Divider(color: tokens.line),
-            ],
-            gapH18,
+        CatchTopBar(
+          title: 'Activity',
+          actions: [
+            CatchTopBarTextAction(
+              label: 'Mark all read',
+              onPressed: markAllRead,
+              foregroundColor: markAllRead == null
+                  ? tokens.ink3
+                  : tokens.primary,
+            ),
           ],
-        ],
+        ),
+        Expanded(
+          child: ListView(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              Sizes.p12,
+              CatchSpacing.s5,
+              Sizes.p24,
+            ),
+            children: [
+              if (isLoading) ...[
+                const _ActivitySkeleton(),
+              ] else if (error != null) ...[
+                _ActivityMessage(
+                  icon: Icons.error_outline_rounded,
+                  title: 'Could not load activity',
+                  body: error.toString(),
+                  tokens: tokens,
+                ),
+              ] else if (items.isEmpty) ...[
+                _ActivityMessage(
+                  icon: Icons.notifications_none_rounded,
+                  title: 'No new activity',
+                  body:
+                      'New catches, messages, and run reminders will collect here.',
+                  tokens: tokens,
+                ),
+              ] else ...[
+                for (final group in _groupItems(items)) ...[
+                  _ActivitySectionTitle(label: group.label, tokens: tokens),
+                  gapH8,
+                  for (final item in group.items) ...[
+                    _ActivityTile(item: item, tokens: tokens),
+                    if (item != group.items.last) Divider(color: tokens.line),
+                  ],
+                  gapH18,
+                ],
+              ],
+            ],
+          ),
+        ),
       ],
     );
   }
@@ -119,36 +133,6 @@ class _ActivityContent extends ConsumerWidget {
         await repository.resetUnread(matchId: match.id, uid: uid);
       }
     }
-  }
-}
-
-class _ActivityHeader extends StatelessWidget {
-  const _ActivityHeader({required this.tokens, this.onMarkAllRead});
-
-  final CatchTokens tokens;
-  final VoidCallback? onMarkAllRead;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        IconButton.filledTonal(
-          onPressed: () => context.pop(),
-          icon: const Icon(Icons.arrow_back_rounded),
-        ),
-        gapW12,
-        Expanded(
-          child: Text('Activity', style: CatchTextStyles.displayM(context)),
-        ),
-        CatchButton(
-          label: 'Mark all read',
-          onPressed: onMarkAllRead,
-          variant: CatchButtonVariant.ghost,
-          size: CatchButtonSize.sm,
-          foregroundColor: onMarkAllRead == null ? tokens.ink3 : tokens.primary,
-        ),
-      ],
-    );
   }
 }
 

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -64,6 +65,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final t = CatchTokens.of(context);
 
     return Scaffold(
+      appBar: const CatchTopBar(title: 'Settings'),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           CatchSpacing.s5,
@@ -72,25 +74,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Sizes.p32,
         ),
         children: [
-          SafeArea(
-            bottom: false,
-            child: Row(
-              children: [
-                IconButton.filledTonal(
-                  onPressed: () => context.pop(),
-                  icon: const Icon(Icons.arrow_back_rounded),
-                ),
-                gapW12,
-                Expanded(
-                  child: Text(
-                    'Settings',
-                    style: CatchTextStyles.displayM(context),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          gapH20,
           _SettingsGroup(
             title: 'Account',
             children: [

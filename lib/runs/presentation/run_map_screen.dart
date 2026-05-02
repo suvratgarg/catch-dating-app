@@ -2,6 +2,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -32,69 +33,67 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: SafeArea(
-        child: profileAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, _) => Center(child: Text('Error: $error')),
-          data: (user) {
-            if (user == null) return const SizedBox.shrink();
+      appBar: const CatchTopBar(title: 'Map view'),
+      body: profileAsync.when(
+        loading: () => const Center(child: CircularProgressIndicator()),
+        error: (error, _) => Center(child: Text('Error: $error')),
+        data: (user) {
+          if (user == null) return const SizedBox.shrink();
 
-            final signedUpAsync = ref.watch(signedUpRunsProvider(user.uid));
-            final recommendedAsync = ref.watch(
-              recommendedRunsProvider(user.joinedRunClubIds),
-            );
-            final isLoading =
-                signedUpAsync.isLoading || recommendedAsync.isLoading;
-            final error = signedUpAsync.error ?? recommendedAsync.error;
-            final runs = _mergeRuns(
-              signedUpAsync.asData?.value ?? const <Run>[],
-              recommendedAsync.asData?.value ?? const <Run>[],
-            );
-            final pinnedRuns = runs.where(_hasPin).toList();
-            final selectedRun = runs
-                .where((run) => run.id == _selectedRunId)
-                .firstOrNull;
+          final signedUpAsync = ref.watch(signedUpRunsProvider(user.uid));
+          final recommendedAsync = ref.watch(
+            recommendedRunsProvider(user.joinedRunClubIds),
+          );
+          final isLoading =
+              signedUpAsync.isLoading || recommendedAsync.isLoading;
+          final error = signedUpAsync.error ?? recommendedAsync.error;
+          final runs = _mergeRuns(
+            signedUpAsync.asData?.value ?? const <Run>[],
+            recommendedAsync.asData?.value ?? const <Run>[],
+          );
+          final pinnedRuns = runs.where(_hasPin).toList();
+          final selectedRun = runs
+              .where((run) => run.id == _selectedRunId)
+              .firstOrNull;
 
-            return Column(
-              children: [
-                _MapHeader(tokens: t),
-                Expanded(
-                  child: isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : error != null
-                      ? Center(child: Text('Unable to load runs: $error'))
-                      : runs.isEmpty
-                      ? _MapEmptyState(tokens: t)
-                      : Stack(
-                          children: [
-                            Positioned.fill(
-                              child: _RunsMap(
-                                runs: pinnedRuns,
-                                selectedRunId: _selectedRunId,
-                                enableNetworkTiles: widget.enableNetworkTiles,
-                                onRunSelected: (run) =>
-                                    setState(() => _selectedRunId = run.id),
-                              ),
+          return Column(
+            children: [
+              Expanded(
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : error != null
+                    ? Center(child: Text('Unable to load runs: $error'))
+                    : runs.isEmpty
+                    ? _MapEmptyState(tokens: t)
+                    : Stack(
+                        children: [
+                          Positioned.fill(
+                            child: _RunsMap(
+                              runs: pinnedRuns,
+                              selectedRunId: _selectedRunId,
+                              enableNetworkTiles: widget.enableNetworkTiles,
+                              onRunSelected: (run) =>
+                                  setState(() => _selectedRunId = run.id),
                             ),
-                            Positioned(
-                              left: CatchSpacing.s5,
-                              right: CatchSpacing.s5,
-                              bottom: Sizes.p20,
-                              child: _MapRunSheet(
-                                runs: runs,
-                                selectedRun: selectedRun,
-                                tokens: t,
-                                onRunSelected: (run) =>
-                                    setState(() => _selectedRunId = run.id),
-                              ),
+                          ),
+                          Positioned(
+                            left: CatchSpacing.s5,
+                            right: CatchSpacing.s5,
+                            bottom: Sizes.p20,
+                            child: _MapRunSheet(
+                              runs: runs,
+                              selectedRun: selectedRun,
+                              tokens: t,
+                              onRunSelected: (run) =>
+                                  setState(() => _selectedRunId = run.id),
                             ),
-                          ],
-                        ),
-                ),
-              ],
-            );
-          },
-        ),
+                          ),
+                        ],
+                      ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
@@ -110,36 +109,6 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
     final runs = byId.values.toList()
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
     return runs;
-  }
-}
-
-class _MapHeader extends StatelessWidget {
-  const _MapHeader({required this.tokens});
-
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        Sizes.p8,
-        CatchSpacing.s5,
-        Sizes.p10,
-      ),
-      child: Row(
-        children: [
-          IconButton.filledTonal(
-            onPressed: () => context.pop(),
-            icon: const Icon(Icons.arrow_back_rounded),
-          ),
-          gapW12,
-          Expanded(
-            child: Text('Map view', style: CatchTextStyles.displayM(context)),
-          ),
-        ],
-      ),
-    );
   }
 }
 

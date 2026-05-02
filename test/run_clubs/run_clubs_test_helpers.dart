@@ -144,6 +144,7 @@ class FakeRunClubsRepository implements RunClubsRepository {
   Object? joinError;
   Object? leaveError;
   CreateRunClubCall? lastCreateCall;
+  RunClub? lastUpdatedRunClub;
   String? updatedImageClubId;
   String? updatedImageUrl;
 
@@ -217,6 +218,7 @@ class FakeRunClubsRepository implements RunClubsRepository {
 
   @override
   Future<void> updateRunClub({required RunClub runClub}) async {
+    lastUpdatedRunClub = runClub;
     clubsById[runClub.id] = runClub;
   }
 

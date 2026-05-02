@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -377,5 +378,140 @@ void main() {
         );
       },
     );
+
+    test('updates an existing club without requiring profile state', () async {
+      final existingClub = buildRunClub(
+        id: 'club-1',
+        name: 'Old Name',
+        description: 'Old description',
+        area: 'Bandra',
+        imageUrl: 'https://example.com/old.jpg',
+        memberUserIds: const ['host-1', 'runner-1'],
+        memberCount: 2,
+        rating: 4.5,
+        reviewCount: 8,
+        nextRunLabel: 'Sat 6:30 AM',
+      );
+      final fakeRepository = FakeRunClubsRepository();
+      final fakeImageUploadRepository = FakeImageUploadRepository();
+      final container = ProviderContainer(
+        overrides: [
+          runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await container
+          .read(createRunClubControllerProvider.notifier)
+          .submit(
+            name: 'New Name',
+            location: IndianCity.indore,
+            area: 'Vijay Nagar',
+            description: 'Updated description',
+            existingRunClub: existingClub,
+          );
+
+      final updatedClub = fakeRepository.lastUpdatedRunClub;
+      expect(updatedClub, isNotNull);
+      expect(updatedClub!.id, existingClub.id);
+      expect(updatedClub.name, 'New Name');
+      expect(updatedClub.location, IndianCity.indore);
+      expect(updatedClub.area, 'Vijay Nagar');
+      expect(updatedClub.description, 'Updated description');
+      expect(updatedClub.imageUrl, existingClub.imageUrl);
+      expect(updatedClub.memberUserIds, existingClub.memberUserIds);
+      expect(updatedClub.memberCount, 2);
+      expect(updatedClub.rating, 4.5);
+      expect(updatedClub.reviewCount, 8);
+      expect(updatedClub.nextRunLabel, 'Sat 6:30 AM');
+      expect(fakeImageUploadRepository.lastUploadClubId, isNull);
+    });
+
+    test('uploads a replacement cover when editing with a new image', () async {
+      final existingClub = buildRunClub(
+        id: 'club-1',
+        imageUrl: 'https://example.com/old.jpg',
+      );
+      final fakeRepository = FakeRunClubsRepository();
+      final fakeImageUploadRepository = FakeImageUploadRepository(
+        pickedImage: XFile('/tmp/club-cover.jpg'),
+        uploadResult: 'https://example.com/new.jpg',
+      );
+      final container = ProviderContainer(
+        overrides: [
+          runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await container
+          .read(createRunClubControllerProvider.notifier)
+          .submit(
+            name: existingClub.name,
+            location: existingClub.location,
+            area: existingClub.area,
+            description: existingClub.description,
+            existingRunClub: existingClub,
+            coverImage: fakeImageUploadRepository.pickedImage,
+          );
+
+      expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
+      expect(
+        fakeRepository.lastUpdatedRunClub!.imageUrl,
+        'https://example.com/new.jpg',
+      );
+    });
+
+    test('rejects editing by a non-host user', () async {
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      expect(
+        () => container
+            .read(createRunClubControllerProvider.notifier)
+            .submit(
+              name: 'New Name',
+              location: IndianCity.mumbai,
+              area: 'Bandra',
+              description: 'Updated description',
+              existingRunClub: buildRunClub(hostUserId: 'host-1'),
+            ),
+        throwsA(isA<StateError>()),
+      );
+    });
   });
 }

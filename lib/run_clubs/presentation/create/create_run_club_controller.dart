@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,9 +22,36 @@ class CreateRunClubController extends _$CreateRunClubController {
     required IndianCity location,
     required String area,
     required String description,
+    RunClub? existingRunClub,
     XFile? coverImage,
   }) async {
     final uid = requireSignedInUid(ref, action: 'create a club');
+
+    if (existingRunClub != null) {
+      if (existingRunClub.hostUserId != uid) {
+        throw StateError('Only the host can edit this club.');
+      }
+
+      var imageUrl = existingRunClub.imageUrl;
+      if (coverImage != null) {
+        imageUrl = await ref
+            .read(imageUploadRepositoryProvider)
+            .uploadRunClubCover(clubId: existingRunClub.id, image: coverImage);
+      }
+
+      final clubsRepo = ref.read(runClubsRepositoryProvider);
+      await clubsRepo.updateRunClub(
+        runClub: existingRunClub.copyWith(
+          name: name,
+          description: description,
+          location: location,
+          area: area,
+          imageUrl: imageUrl,
+        ),
+      );
+      return;
+    }
+
     final userProfile = ref.read(userProfileStreamProvider).asData?.value;
     if (userProfile == null) {
       throw StateError('User profile not loaded. Please try again.');

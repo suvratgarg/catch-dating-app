@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
@@ -39,20 +39,14 @@ class _LocationPickerScreenState extends State<LocationPickerScreen> {
     final t = CatchTokens.of(context);
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Pick starting point'),
+      appBar: CatchTopBar(
+        title: 'Pick starting point',
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: CatchSpacing.s2),
-            child: CatchButton(
-              label: 'Confirm',
-              onPressed: _selected == null
-                  ? null
-                  : () => Navigator.of(context).pop(_selected),
-              variant: CatchButtonVariant.ghost,
-              size: CatchButtonSize.sm,
-              foregroundColor: t.primary,
-            ),
+          CatchTopBarTextAction(
+            label: 'Confirm',
+            onPressed: _selected == null
+                ? null
+                : () => Navigator.of(context).pop(_selected),
           ),
         ],
       ),
