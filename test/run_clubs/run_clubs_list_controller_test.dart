@@ -104,9 +104,12 @@ void main() {
           'member-club',
           'followed-club',
         ]);
-        expect(viewModel.discoverClubs.map((club) => club.id), [
+        expect(viewModel.allClubs.map((club) => club.id), [
+          'member-club',
+          'followed-club',
           'discover-club',
         ]);
+        expect(viewModel.joinedClubIds, {'member-club', 'followed-club'});
       },
     );
 

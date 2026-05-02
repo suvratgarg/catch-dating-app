@@ -170,6 +170,11 @@ export interface UserProfileDoc {
   paceMaxSecsPerKm: number;
   preferredDistances: PreferredDistance[];
   runningReasons: RunReason[];
+  // Notification / discovery preferences
+  prefsNewCatches: boolean;
+  prefsRunReminders: boolean;
+  prefsWeeklyDigest: boolean;
+  prefsShowOnMap: boolean;
 }
 
 /**
@@ -220,6 +225,9 @@ export interface RunClubDoc {
   reviewCount: number;
   nextRunAt?: FirebaseFirestore.Timestamp | null;
   nextRunLabel?: string | null;
+  instagramHandle?: string | null;
+  phoneNumber?: string | null;
+  email?: string | null;
 }
 
 /**

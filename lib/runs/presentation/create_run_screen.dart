@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
@@ -308,7 +309,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       if (draftId != null) {
         final uid = ref.read(uidProvider).asData?.value;
         if (uid != null) {
-          await ref.read(runDraftRepositoryProvider).deleteDraft(
+          await ref
+              .read(runDraftRepositoryProvider)
+              .deleteDraft(
                 runClubId: widget.runClub.id,
                 userId: uid,
                 draftId: draftId,
@@ -342,16 +345,12 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     final uid = ref.read(uidProvider).asData?.value;
     if (uid == null) return;
 
-    final drafts = await ref.read(runDraftRepositoryProvider).loadDrafts(
-          runClubId: widget.runClub.id,
-          userId: uid,
-        );
+    final drafts = await ref
+        .read(runDraftRepositoryProvider)
+        .loadDrafts(runClubId: widget.runClub.id, userId: uid);
     if (!mounted || drafts.isEmpty) return;
 
-    final picked = await showDraftPickerSheet(
-      context: context,
-      drafts: drafts,
-    );
+    final picked = await showDraftPickerSheet(context: context, drafts: drafts);
     if (!mounted) return;
 
     if (picked != null) {
@@ -398,8 +397,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
 
       // When
       if (draft.selectedDateMillis != null) {
-        final date =
-            DateTime.fromMillisecondsSinceEpoch(draft.selectedDateMillis!);
+        final date = DateTime.fromMillisecondsSinceEpoch(
+          draft.selectedDateMillis!,
+        );
         _selectedDate = date;
         _dateController.text =
             '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
@@ -468,9 +468,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(
-          _activeDraftId != null ? 'Draft updated' : 'Draft saved',
-        ),
+        content: Text(_activeDraftId != null ? 'Draft updated' : 'Draft saved'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -865,22 +863,22 @@ class HostRunManageScreen extends StatelessWidget {
             ],
             Row(
               children: [
-                _HostManageStat(
-                  label: 'Booked',
-                  value: '${run.signedUpCount}/${run.capacityLimit}',
+                _StatCard(
                   icon: Icons.check_circle_outline_rounded,
+                  value: '${run.signedUpCount}/${run.capacityLimit}',
+                  label: 'Booked',
                 ),
                 const SizedBox(width: 8),
-                _HostManageStat(
-                  label: 'Waitlist',
-                  value: '${run.waitlistUserIds.length}',
+                _StatCard(
                   icon: Icons.access_time_rounded,
+                  value: '${run.waitlistUserIds.length}',
+                  label: 'Waitlist',
                 ),
                 const SizedBox(width: 8),
-                _HostManageStat(
-                  label: 'Revenue',
-                  value: revenueRupees > 0 ? '₹$revenueRupees' : '—',
+                _StatCard(
                   icon: Icons.currency_rupee_rounded,
+                  value: revenueRupees > 0 ? '₹$revenueRupees' : '—',
+                  label: 'Revenue',
                 ),
               ],
             ),
@@ -909,16 +907,16 @@ class HostRunManageScreen extends StatelessWidget {
   }
 }
 
-class _HostManageStat extends StatelessWidget {
-  const _HostManageStat({
-    required this.label,
-    required this.value,
+class _StatCard extends StatelessWidget {
+  const _StatCard({
     required this.icon,
+    required this.value,
+    required this.label,
   });
 
-  final String label;
-  final String value;
   final IconData icon;
+  final String value;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -932,15 +930,7 @@ class _HostManageStat extends StatelessWidget {
           borderRadius: BorderRadius.circular(CatchRadius.lg),
           border: Border.all(color: t.line),
         ),
-        child: Column(
-          children: [
-            Icon(icon, color: t.primary, size: 18),
-            const SizedBox(height: 6),
-            Text(value, style: CatchTextStyles.titleM(context)),
-            const SizedBox(height: 2),
-            Text(label, style: CatchTextStyles.bodyS(context)),
-          ],
-        ),
+        child: StatColumn(icon: icon, value: value, label: label),
       ),
     );
   }

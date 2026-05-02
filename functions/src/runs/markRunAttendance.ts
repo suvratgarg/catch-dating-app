@@ -4,12 +4,13 @@ import {RunDoc} from "../shared/firestore";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 
 /**
- * Callable function that copies signedUpUserIds → attendedUserIds for a run.
+ * Callable function that toggles a single user's attendance for a run.
  *
  * Must be called by the host of the run (the run club's hostUserId).
- * Intended to be triggered manually after the run ends.
+ * Check-in window opens 10 minutes before the run's start time.
  *
- * Idempotent — calling it multiple times is safe; it uses arrayUnion.
+ * If the user is already in attendedUserIds they are removed;
+ * otherwise they are added.
  */
 export const markRunAttendance = onCall(appCheckCallableOptions, async (
   request
@@ -18,9 +19,12 @@ export const markRunAttendance = onCall(appCheckCallableOptions, async (
     throw new HttpsError("unauthenticated", "Must be signed in.");
   }
 
-  const {runId} = request.data as {runId?: string};
-  if (!runId) {
-    throw new HttpsError("invalid-argument", "runId is required.");
+  const {runId, userId} = request.data as {runId?: string; userId?: string};
+  if (!runId || !userId) {
+    throw new HttpsError(
+      "invalid-argument",
+      "runId and userId are required."
+    );
   }
 
   const db = admin.firestore();
@@ -47,20 +51,23 @@ export const markRunAttendance = onCall(appCheckCallableOptions, async (
     );
   }
 
-  // Ensure the run has ended.
-  const endTime = (run.endTime as FirebaseFirestore.Timestamp).toDate();
-  if (endTime > new Date()) {
+  // Check-in window opens 10 minutes before the run starts.
+  const startTime = (run.startTime as FirebaseFirestore.Timestamp).toDate();
+  const checkinWindow = new Date(startTime.getTime() - 10 * 60 * 1000);
+  if (new Date() < checkinWindow) {
     throw new HttpsError(
       "failed-precondition",
-      "Cannot mark attendance before the run has ended."
+      "Attendance check-in is not open yet."
     );
   }
 
+  const alreadyAttended = (run.attendedUserIds ?? []).includes(userId);
+
   await runRef.update({
-    attendedUserIds: admin.firestore.FieldValue.arrayUnion(
-      ...run.signedUpUserIds
-    ),
+    attendedUserIds: alreadyAttended
+      ? admin.firestore.FieldValue.arrayRemove(userId)
+      : admin.firestore.FieldValue.arrayUnion(userId),
   });
 
-  return {markedCount: run.signedUpUserIds.length};
+  return {userId, attended: !alreadyAttended};
 });

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_info_tile.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_tab.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
@@ -37,7 +38,7 @@ void main() {
     );
   });
 
-  testWidgets('ProfileTab hides empty email rows and still shows phone', (
+  testWidgets('ProfileTab shows add affordance for empty email', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1.0;
@@ -64,7 +65,8 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('Email'), findsNothing);
+    // Email row is visible with add affordance (shows "+ Email")
+    expect(find.textContaining('Email'), findsAtLeastNWidgets(1));
     expect(find.textContaining('Engineer'), findsAtLeastNWidgets(1));
     await tester.scrollUntilVisible(
       find.text('+919876543210'),
@@ -100,8 +102,7 @@ void main() {
     await tester.pump();
 
     expect(tester.takeException(), isNull);
-    expect(find.text('YOUR PROFILE'), findsOneWidget);
-    expect(find.text('Suvrat Garg, 30'), findsOneWidget);
-    expect(find.text('Photos'), findsOneWidget);
+    expect(find.byType(PhotoGrid), findsOneWidget);
+    expect(find.text('RUN PROFILE'), findsOneWidget);
   });
 }

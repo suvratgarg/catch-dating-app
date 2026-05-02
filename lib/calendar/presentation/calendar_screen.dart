@@ -2,7 +2,9 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
@@ -114,10 +116,19 @@ class _CalendarHeader extends StatelessWidget {
                   ],
                 ),
               ),
-              _ModeToggle(
-                mode: mode,
-                onModeChanged: onModeChanged,
-                tokens: tokens,
+              CatchSegmentedControl<CalendarViewMode>(
+                segments: const [
+                  CatchSegment(
+                    value: CalendarViewMode.timeline,
+                    label: 'Day',
+                  ),
+                  CatchSegment(
+                    value: CalendarViewMode.agenda,
+                    label: 'Agenda',
+                  ),
+                ],
+                selected: mode,
+                onChanged: onModeChanged,
               ),
             ],
           ),
@@ -133,24 +144,27 @@ class _CalendarHeader extends StatelessWidget {
             ),
             child: Row(
               children: [
-                _HeaderStat(
-                  label: 'Booked',
-                  value: '${runs.length}',
-                  tokens: tokens,
+                Expanded(
+                  child: StatColumn(
+                    label: 'Booked',
+                    value: '${runs.length}',
+                  ),
                 ),
                 _StatDivider(tokens: tokens),
-                _HeaderStat(
-                  label: 'Distance',
-                  value: '${totalDistance.round()} km',
-                  tokens: tokens,
+                Expanded(
+                  child: StatColumn(
+                    label: 'Distance',
+                    value: '${totalDistance.round()} km',
+                  ),
                 ),
                 _StatDivider(tokens: tokens),
-                _HeaderStat(
-                  label: 'Next',
-                  value: sortedRuns.isEmpty
-                      ? 'None'
-                      : RunFormatters.time(sortedRuns.first.startTime),
-                  tokens: tokens,
+                Expanded(
+                  child: StatColumn(
+                    label: 'Next',
+                    value: sortedRuns.isEmpty
+                        ? 'None'
+                        : RunFormatters.time(sortedRuns.first.startTime),
+                  ),
                 ),
               ],
             ),
@@ -164,84 +178,6 @@ class _CalendarHeader extends StatelessWidget {
     if (runs.isEmpty) return 'Your runs';
     final date = runs.first.startTime;
     return '${_monthName(date.month)} ${date.year}';
-  }
-}
-
-class _ModeToggle extends StatelessWidget {
-  const _ModeToggle({
-    required this.mode,
-    required this.onModeChanged,
-    required this.tokens,
-  });
-
-  final CalendarViewMode mode;
-  final ValueChanged<CalendarViewMode> onModeChanged;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: tokens.raised,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: tokens.line),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(3),
-        child: Row(
-          children: [
-            _ModeButton(
-              label: 'Day',
-              selected: mode == CalendarViewMode.timeline,
-              onTap: () => onModeChanged(CalendarViewMode.timeline),
-              tokens: tokens,
-            ),
-            _ModeButton(
-              label: 'Agenda',
-              selected: mode == CalendarViewMode.agenda,
-              onTap: () => onModeChanged(CalendarViewMode.agenda),
-              tokens: tokens,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _ModeButton extends StatelessWidget {
-  const _ModeButton({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-    required this.tokens,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(9),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(
-          color: selected ? tokens.ink : Colors.transparent,
-          borderRadius: BorderRadius.circular(9),
-        ),
-        child: Text(
-          label,
-          style: CatchTextStyles.bodyS(
-            context,
-            color: selected ? tokens.surface : tokens.ink2,
-          ).copyWith(fontWeight: FontWeight.w700),
-        ),
-      ),
-    );
   }
 }
 
@@ -534,37 +470,6 @@ class _TimelineRun extends StatelessWidget {
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HeaderStat extends StatelessWidget {
-  const _HeaderStat({
-    required this.label,
-    required this.value,
-    required this.tokens,
-  });
-
-  final String label;
-  final String value;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(label.toUpperCase(), style: CatchTextStyles.labelM(context)),
-          gapH2,
-          Text(
-            value,
-            style: CatchTextStyles.titleL(context),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

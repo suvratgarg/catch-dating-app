@@ -192,7 +192,7 @@ void main() {
         selectedPoint,
       );
       await tester.pump();
-      await tester.tap(find.widgetWithText(CatchButton, 'Confirm'));
+      await tester.tap(find.text('Confirm'));
       await tester.pumpAndSettle();
 
       expect(find.text('19.12345, 72.98765'), findsOneWidget);
@@ -201,7 +201,10 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('Run basics'), findsOneWidget);
 
+      // Second back — unsaved changes dialog appears since we filled basics.
       await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Discard'));
       await tester.pumpAndSettle();
       expect(find.text('Open'), findsOneWidget);
     });

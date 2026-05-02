@@ -14,10 +14,11 @@ abstract class RunClubsListViewModel with _$RunClubsListViewModel {
 
   const factory RunClubsListViewModel({
     required List<RunClub> joinedClubs,
-    required List<RunClub> discoverClubs,
+    required List<RunClub> allClubs,
+    @Default({}) Set<String> joinedClubIds,
   }) = _RunClubsListViewModel;
 
-  bool get isEmpty => joinedClubs.isEmpty && discoverClubs.isEmpty;
+  bool get isEmpty => allClubs.isEmpty;
 
   factory RunClubsListViewModel.partition({
     required List<RunClub> clubs,
@@ -25,19 +26,17 @@ abstract class RunClubsListViewModel with _$RunClubsListViewModel {
     required Set<String> joinedClubIds,
   }) {
     final joinedClubs = <RunClub>[];
-    final discoverClubs = <RunClub>[];
 
     for (final club in clubs) {
       if (club.hasMember(uid) || joinedClubIds.contains(club.id)) {
         joinedClubs.add(club);
-      } else {
-        discoverClubs.add(club);
       }
     }
 
     return RunClubsListViewModel(
       joinedClubs: List.unmodifiable(joinedClubs),
-      discoverClubs: List.unmodifiable(discoverClubs),
+      allClubs: List.unmodifiable(clubs),
+      joinedClubIds: joinedClubs.map((c) => c.id).toSet(),
     );
   }
 }

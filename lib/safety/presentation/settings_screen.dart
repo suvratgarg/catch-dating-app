@@ -4,6 +4,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/section_header.dart';
+import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -99,146 +101,154 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
           Sizes.p32,
         ),
         children: [
-          _SettingsGroup(
-            title: 'Account',
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SettingsRow(
-                label: 'Phone',
-                value: phoneNumber.isNotEmpty ? '+91 $phoneNumber' : '',
-                icon: Icons.phone_outlined,
-                tokens: t,
-              ),
-              _SettingsRow(
-                label: 'Payment history',
-                value: 'Bookings and receipts',
-                icon: Icons.receipt_long_outlined,
-                tokens: t,
-                onTap: () =>
-                    context.pushNamed(Routes.paymentHistoryScreen.name),
+              const SectionHeader(title: 'Account'),
+              _SettingsCard(
+                children: [
+                  SettingsRow(
+                    label: 'Phone',
+                    value: phoneNumber.isNotEmpty ? '+91 $phoneNumber' : '',
+                    icon: Icons.phone_outlined,
+                  ),
+                  SettingsRow(
+                    label: 'Payment history',
+                    value: 'Bookings and receipts',
+                    icon: Icons.receipt_long_outlined,
+                    onTap: () =>
+                        context.pushNamed(Routes.paymentHistoryScreen.name),
+                  ),
+                ],
               ),
             ],
           ),
           gapH20,
-          _SettingsGroup(
-            title: 'Discovery',
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SettingsRow(
-                label: 'Who can see me',
-                value: 'Runners on my runs',
-                icon: Icons.visibility_outlined,
-                tokens: t,
-              ),
-              _SettingsRow(
-                label: 'Show me on map',
-                icon: Icons.map_outlined,
-                tokens: t,
-                trailing: Switch.adaptive(
-                  value: _showOnMap,
-                  onChanged: (value) {
-                    setState(() => _showOnMap = value);
-                    _savePref('prefsShowOnMap', value);
-                  },
-                ),
+              const SectionHeader(title: 'Discovery'),
+              _SettingsCard(
+                children: [
+                  SettingsRow(
+                    label: 'Who can see me',
+                    value: 'Runners on my runs',
+                    icon: Icons.visibility_outlined,
+                  ),
+                  SettingsRow(
+                    label: 'Show me on map',
+                    icon: Icons.map_outlined,
+                    trailing: Switch.adaptive(
+                      value: _showOnMap,
+                      onChanged: (value) {
+                        setState(() => _showOnMap = value);
+                        _savePref('prefsShowOnMap', value);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
           gapH20,
-          _SettingsGroup(
-            title: 'Notifications',
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SettingsRow(
-                label: 'Activity',
-                value: 'Matches and run reminders',
-                icon: Icons.notifications_none_rounded,
-                tokens: t,
-                onTap: () => context.pushNamed(Routes.activityScreen.name),
-              ),
-              _SettingsRow(
-                label: 'New catches',
-                icon: Icons.favorite_outline,
-                tokens: t,
-                trailing: Switch.adaptive(
-                  value: _newCatches,
-                  onChanged: (value) {
-                    setState(() => _newCatches = value);
-                    _savePref('prefsNewCatches', value);
-                  },
-                ),
-              ),
-              _SettingsRow(
-                label: 'Run reminders',
-                icon: Icons.directions_run_outlined,
-                tokens: t,
-                trailing: Switch.adaptive(
-                  value: _runReminders,
-                  onChanged: (value) {
-                    setState(() => _runReminders = value);
-                    _savePref('prefsRunReminders', value);
-                  },
-                ),
-              ),
-              _SettingsRow(
-                label: 'Weekly digest',
-                icon: Icons.mark_email_read_outlined,
-                tokens: t,
-                trailing: Switch.adaptive(
-                  value: _weeklyDigest,
-                  onChanged: (value) {
-                    setState(() => _weeklyDigest = value);
-                    _savePref('prefsWeeklyDigest', value);
-                  },
-                ),
+              const SectionHeader(title: 'Notifications'),
+              _SettingsCard(
+                children: [
+                  SettingsRow(
+                    label: 'Activity',
+                    value: 'Matches and run reminders',
+                    icon: Icons.notifications_none_rounded,
+                    onTap: () => context.pushNamed(Routes.activityScreen.name),
+                  ),
+                  SettingsRow(
+                    label: 'New catches',
+                    icon: Icons.favorite_outline,
+                    trailing: Switch.adaptive(
+                      value: _newCatches,
+                      onChanged: (value) {
+                        setState(() => _newCatches = value);
+                        _savePref('prefsNewCatches', value);
+                      },
+                    ),
+                  ),
+                  SettingsRow(
+                    label: 'Run reminders',
+                    icon: Icons.directions_run_outlined,
+                    trailing: Switch.adaptive(
+                      value: _runReminders,
+                      onChanged: (value) {
+                        setState(() => _runReminders = value);
+                        _savePref('prefsRunReminders', value);
+                      },
+                    ),
+                  ),
+                  SettingsRow(
+                    label: 'Weekly digest',
+                    icon: Icons.mark_email_read_outlined,
+                    trailing: Switch.adaptive(
+                      value: _weeklyDigest,
+                      onChanged: (value) {
+                        setState(() => _weeklyDigest = value);
+                        _savePref('prefsWeeklyDigest', value);
+                      },
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
           gapH20,
-          Text('Safety', style: CatchTextStyles.labelM(context)),
+          const SectionHeader(title: 'Safety'),
           gapH8,
           const _BlockedAccountsSection(),
           gapH20,
-          _SettingsGroup(
-            title: 'About',
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _SettingsRow(
-                label: 'Help & support',
-                value: 'Contact us',
-                icon: Icons.help_outline,
-                tokens: t,
-                onTap: () => launchUrl(
-                  Uri.parse('https://catchdates.com/help'),
-                  mode: LaunchMode.externalApplication,
-                ),
-              ),
-              _SettingsRow(
-                label: 'Privacy',
-                value: 'Policy',
-                icon: Icons.lock_outline,
-                tokens: t,
-                onTap: () => launchUrl(
-                  Uri.parse('https://catchdates.com/privacy'),
-                  mode: LaunchMode.externalApplication,
-                ),
-              ),
-              _SettingsRow(
-                label: 'Terms',
-                value: 'Legal',
-                icon: Icons.description_outlined,
-                tokens: t,
-                onTap: () => launchUrl(
-                  Uri.parse('https://catchdates.com/terms'),
-                  mode: LaunchMode.externalApplication,
-                ),
+              const SectionHeader(title: 'About'),
+              _SettingsCard(
+                children: [
+                  SettingsRow(
+                    label: 'Help & support',
+                    value: 'Contact us',
+                    icon: Icons.help_outline,
+                    onTap: () => launchUrl(
+                      Uri.parse('https://catchdates.com/help'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                  ),
+                  SettingsRow(
+                    label: 'Privacy',
+                    value: 'Policy',
+                    icon: Icons.lock_outline,
+                    onTap: () => launchUrl(
+                      Uri.parse('https://catchdates.com/privacy'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                  ),
+                  SettingsRow(
+                    label: 'Terms',
+                    value: 'Legal',
+                    icon: Icons.description_outlined,
+                    onTap: () => launchUrl(
+                      Uri.parse('https://catchdates.com/terms'),
+                      mode: LaunchMode.externalApplication,
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
           gapH20,
           _SettingsCard(
             children: [
-              _SettingsRow(
+              SettingsRow(
                 label: 'Delete account',
                 value: 'Remove your profile',
                 icon: Icons.delete_outline,
-                tokens: t,
                 danger: true,
                 trailing: _deleting
                     ? const SizedBox.square(
@@ -263,25 +273,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   }
 }
 
-class _SettingsGroup extends StatelessWidget {
-  const _SettingsGroup({required this.title, required this.children});
-
-  final String title;
-  final List<Widget> children;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(title.toUpperCase(), style: CatchTextStyles.labelM(context)),
-        gapH8,
-        _SettingsCard(children: children),
-      ],
-    );
-  }
-}
-
 class _SettingsCard extends StatelessWidget {
   const _SettingsCard({required this.children});
 
@@ -294,72 +285,6 @@ class _SettingsCard extends StatelessWidget {
     return CatchSurface(
       borderColor: t.line,
       child: Column(children: children),
-    );
-  }
-}
-
-class _SettingsRow extends StatelessWidget {
-  const _SettingsRow({
-    required this.label,
-    required this.icon,
-    required this.tokens,
-    this.value,
-    this.trailing,
-    this.onTap,
-    this.danger = false,
-  });
-
-  final String label;
-  final String? value;
-  final IconData icon;
-  final CatchTokens tokens;
-  final Widget? trailing;
-  final VoidCallback? onTap;
-  final bool danger;
-
-  @override
-  Widget build(BuildContext context) {
-    final color = danger ? tokens.primary : tokens.ink;
-    final child = Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 13),
-      child: Row(
-        children: [
-          Icon(icon, color: danger ? tokens.primary : tokens.ink2, size: 22),
-          gapW12,
-          Expanded(
-            child: Text(
-              label,
-              style: CatchTextStyles.bodyM(
-                context,
-                color: color,
-              ).copyWith(fontWeight: FontWeight.w600),
-            ),
-          ),
-          if (trailing != null)
-            trailing!
-          else ...[
-            if (value != null)
-              Flexible(
-                child: Text(
-                  value!,
-                  textAlign: TextAlign.right,
-                  style: CatchTextStyles.bodyS(context, color: tokens.ink2),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            if (onTap != null) ...[
-              gapW6,
-              Icon(Icons.chevron_right_rounded, color: tokens.ink3),
-            ],
-          ],
-        ],
-      ),
-    );
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(onTap: onTap, child: child),
     );
   }
 }

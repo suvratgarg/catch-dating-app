@@ -1,9 +1,11 @@
+import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
@@ -17,13 +19,44 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class RunDetailCta extends ConsumerWidget {
-  const RunDetailCta({super.key, required this.run, required this.userProfile});
+  const RunDetailCta({
+    super.key,
+    required this.run,
+    required this.userProfile,
+    required this.runClubId,
+  });
 
   final Run run;
   final UserProfile userProfile;
+  final String runClubId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final clubAsync = ref.watch(fetchRunClubProvider(runClubId));
+    final uid = ref.watch(uidProvider).asData?.value;
+    final isHost =
+        uid != null && clubAsync.asData?.value?.hostUserId == uid;
+    final checkinOpen = DateTime.now()
+        .isAfter(run.startTime.subtract(const Duration(minutes: 10)));
+
+    if (isHost && checkinOpen) {
+      return BottomCTA(
+        label: 'Take Attendance',
+        onPressed: () => GoRouter.of(context).pushNamed(
+          Routes.attendanceSheet.name,
+          pathParameters: {
+            'runClubId': runClubId,
+            'runId': run.id,
+          },
+        ),
+        leadingContent: Icon(
+          Icons.checklist_rounded,
+          color: CatchTokens.of(context).primary,
+          size: 18,
+        ),
+      );
+    }
+
     final status = run.statusFor(userProfile);
     final supportsPaid = ref
         .watch(paymentRepositoryProvider)
@@ -62,7 +95,6 @@ class RunDetailCta extends ConsumerWidget {
             onPressed: bookMutation.isPending || (!run.isFree && !supportsPaid)
                 ? null
                 : () {
-                    final router = GoRouter.of(context);
                     RunBookingController.bookMutation.run(
                       ref,
                       (tx) async {
@@ -70,7 +102,7 @@ class RunDetailCta extends ConsumerWidget {
                             .get(runBookingControllerProvider.notifier)
                             .book(run: run, user: userProfile);
                         if (data != null && context.mounted) {
-                          router.pushNamed(
+                          GoRouter.of(context).pushNamed(
                             Routes.paymentConfirmationScreen.name,
                             extra: data,
                           );

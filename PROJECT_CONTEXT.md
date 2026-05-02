@@ -120,21 +120,30 @@ Defined in [`lib/routing/go_router.dart`](/Users/suvratgarg/Development/catch-da
 
 Standalone routes:
 
+- `/loading` → transient loading screen during auth resolution
 - `/auth` → legacy redirect to `/onboarding`
 - `/onboarding`
-- `/edit-profile`
+- `/calendar` → calendar timeline/agenda view of signed-up runs
+- `/activity` → activity/notifications feed
+- `/filters` → swipe filter preferences (age, pace, distance, gender)
+- `/map` → full-screen run map with pinned runs
 - `/payment-history`
+- `/payment-confirmation` → post-payment status (uses extra data)
+- `/settings` → safety/settings/account controls
+- `/profiles/:uid` → public profile of any user
 
 Tabbed shell routes:
 
 - `/` → Dashboard
 - `/clubs` → Run clubs list
 - `/clubs/run-clubs/:runClubId` → Club detail
+- `/clubs/run-clubs/:runClubId/edit` → Edit run club
 - `/clubs/run-clubs/:runClubId/runs/:runId` → Run detail
 - `/clubs/create-run-club` → Create club
 - `/clubs/run-clubs/:runClubId/create-run` → Create run
 - `/catches` → Attended runs eligible for swiping
 - `/catches/:runId` → Swipe deck for a specific run
+- `/catches/:runId/recap` → Post-run recap
 - `/chats` → Matches list
 - `/chats/:matchId` → Chat
 - `/you` → Profile
@@ -451,16 +460,33 @@ Callable functions:
   - decrements gender counts
   - promotes first eligible waitlisted user
   - attempts Razorpay refund if paid
+- `joinRunWaitlist`
+  - adds user to a run's waitlist
 - `markRunAttendance`
   - host-only
   - can run only after run end
   - copies signed-up users into `attendedUserIds`
+- `blockUser`
+  - creates a block edge between two users
+  - enforces symmetric discovery/communication barriers
+- `unblockUser`
+  - removes a previously created block edge
+- `requestAccountDeletion`
+  - anonymizes the retained `users/{uid}` doc
+  - deletes profile photos from Storage
+  - writes a `deletedUsers/{uid}` tombstone
+- `reportUser`
+  - creates server-owned `reports` document
+  - trims and bounds report text before write
+
+HTTPS endpoint (not callable):
+
+- `joinWaitlist`
+  - public marketing waitlist endpoint
+  - CORS origin allowlist for Catch domains, Firebase Hosting domains, and local previews
 
 Firestore triggers:
 
-- `createUserDocument`
-  - blocking auth trigger
-  - creates an initial `users/{uid}` doc when Firebase Auth user is created
 - `syncPublicProfile`
   - mirrors `users/{uid}` to `publicProfiles/{uid}` once profile is complete
 - `onSwipeCreated`
@@ -471,6 +497,8 @@ Firestore triggers:
   - increments unread count and sends message push notification
 - `syncRunClubReviewStats`
   - recalculates `runClubs/{clubId}.rating` and `reviewCount`
+- `onBlockCreated`
+  - closes any existing match/chat between the two users on block creation
 
 ## 9. Security rules
 

@@ -274,11 +274,15 @@ class FakeRunRepository extends Fake implements RunRepository {
   }
 
   @override
-  Future<void> markAttendance({required String runId}) async {
+  Future<bool> markAttendance({
+    required String runId,
+    required String userId,
+  }) async {
     if (markAttendanceError != null) {
       throw markAttendanceError!;
     }
     markedAttendanceRunId = runId;
+    return true;
   }
 }
 

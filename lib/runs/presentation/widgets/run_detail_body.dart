@@ -173,7 +173,11 @@ class RunDetailBody extends ConsumerWidget {
           ),
         ],
       ),
-      bottomNavigationBar: RunDetailCta(run: run, userProfile: userProfile),
+      bottomNavigationBar: RunDetailCta(
+        run: run,
+        userProfile: userProfile,
+        runClubId: runClubId,
+      ),
     );
   }
 }

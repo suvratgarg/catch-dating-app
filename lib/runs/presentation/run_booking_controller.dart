@@ -17,6 +17,7 @@ class RunBookingController extends _$RunBookingController {
   static final cancelMutation = Mutation<void>();
   static final joinWaitlistMutation = Mutation<void>();
   static final leaveWaitlistMutation = Mutation<void>();
+  static final markAttendanceMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -74,6 +75,18 @@ class RunBookingController extends _$RunBookingController {
     await ref
         .read(runRepositoryProvider)
         .leaveWaitlist(runId: run.id, userId: uid);
+  }
+
+  /// Toggles attendance for a single user on a run.
+  /// Only callable by the club host.
+  Future<void> markAttendance({
+    required String runId,
+    required String userId,
+  }) async {
+    _requireSignedIn(action: 'mark attendance');
+    await ref
+        .read(runRepositoryProvider)
+        .markAttendance(runId: runId, userId: userId);
   }
 
   String _requireSignedIn({required String action}) {

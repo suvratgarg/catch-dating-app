@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
@@ -20,6 +22,19 @@ Future<void> _saveField({
   );
 }
 
+String? _validateAge(String? value, String? maxText) {
+  final trimmed = (value ?? '').trim();
+  if (trimmed.isEmpty) return null;
+  final parsed = int.tryParse(trimmed);
+  if (parsed == null) return 'Enter a number';
+  if (parsed < 18 || parsed > 99) return 'Must be 18–99';
+  if (maxText != null) {
+    final maxParsed = int.tryParse(maxText.trim());
+    if (maxParsed != null && parsed > maxParsed) return 'Min ≤ max';
+  }
+  return null;
+}
+
 // ── Text fields ────────────────────────────────────────────────────────────────
 
 Future<void> showTextEditSheet({
@@ -28,6 +43,7 @@ Future<void> showTextEditSheet({
   required String title,
   required String currentValue,
   required UserProfile Function(UserProfile, String) applyEdit,
+  FormFieldValidator<String>? validator,
 }) async {
   final controller = TextEditingController(text: currentValue);
   final confirmed = await showModalBottomSheet<bool>(
@@ -64,6 +80,7 @@ Future<void> showTextEditSheet({
               maxLines: title == 'Bio' ? 4 : 1,
               textCapitalization: TextCapitalization.sentences,
               textInputAction: TextInputAction.done,
+              validator: validator,
               onSubmitted: (_) {
                 Navigator.of(ctx).pop(true);
               },
@@ -97,6 +114,7 @@ Future<void> showIntEditSheet({
   required String title,
   required int? currentValue,
   required UserProfile Function(UserProfile, int?) applyEdit,
+  FormFieldValidator<String>? validator,
 }) async {
   final controller = TextEditingController(
     text: currentValue?.toString() ?? '',
@@ -136,6 +154,7 @@ Future<void> showIntEditSheet({
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               suffixText: title == 'Height' ? 'cm' : null,
               textInputAction: TextInputAction.done,
+              validator: validator,
               onSubmitted: (_) {
                 Navigator.of(ctx).pop(true);
               },
@@ -221,7 +240,7 @@ Future<void> showSingleEnumSheet<T extends Labelled>({
   );
 
   if (result != null && result != currentValue) {
-    await _saveField(ref: ref, edit: (u) => applyEdit(u, result!));
+    await _saveField(ref: ref, edit: (u) => applyEdit(u, result));
   }
 }
 
@@ -337,6 +356,7 @@ Future<void> showAgeRangeSheet({
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textInputAction: TextInputAction.next,
+                    validator: (v) => _validateAge(v, maxController.text),
                   ),
                 ),
                 gapW12,
@@ -347,6 +367,7 @@ Future<void> showAgeRangeSheet({
                     keyboardType: TextInputType.number,
                     inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                     textInputAction: TextInputAction.done,
+                    validator: (v) => _validateAge(v, null),
                     onSubmitted: (_) {
                       Navigator.of(ctx).pop((
                         min: int.tryParse(minController.text) ?? currentMin,
@@ -407,5 +428,188 @@ Future<void> showDateOfBirthEdit({
       ref: ref,
       edit: (u) => u.copyWith(dateOfBirth: picked),
     );
+  }
+}
+
+// ── Pace range ─────────────────────────────────────────────────────────────────
+
+Future<void> showPaceEditSheet({
+  required BuildContext context,
+  required WidgetRef ref,
+  required int currentMin,
+  required int currentMax,
+}) async {
+  final minController = TextEditingController(
+    text: currentMin.toString(),
+  );
+  final maxController = TextEditingController(
+    text: currentMax.toString(),
+  );
+
+  final result = await showModalBottomSheet<({int min, int max})>(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (ctx) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(
+          Sizes.p16,
+          Sizes.p12,
+          Sizes.p16,
+          MediaQuery.of(ctx).viewInsets.bottom + Sizes.p16,
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Center(
+              child: Container(
+                width: 36,
+                height: 4,
+                decoration: BoxDecoration(
+                  color: Theme.of(ctx).dividerColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              ),
+            ),
+            gapH16,
+            Row(
+              children: [
+                Expanded(
+                  child: CatchTextField(
+                    label: 'Min pace (sec/km)',
+                    controller: minController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    textInputAction: TextInputAction.next,
+                  ),
+                ),
+                gapW12,
+                Expanded(
+                  child: CatchTextField(
+                    label: 'Max pace (sec/km)',
+                    controller: maxController,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    textInputAction: TextInputAction.done,
+                    onSubmitted: (_) {
+                      Navigator.of(ctx).pop((
+                        min: int.tryParse(minController.text) ?? currentMin,
+                        max: int.tryParse(maxController.text) ?? currentMax,
+                      ));
+                    },
+                  ),
+                ),
+              ],
+            ),
+            gapH8,
+            Text(
+              'e.g. 300 = 5:00/km, 420 = 7:00/km',
+              style: CatchTextStyles.bodyS(
+                ctx,
+                color: CatchTokens.of(ctx).ink3,
+              ),
+            ),
+            gapH16,
+            CatchButton(
+              label: 'Done',
+              onPressed: () => Navigator.of(ctx).pop((
+                min: int.tryParse(minController.text) ?? currentMin,
+                max: int.tryParse(maxController.text) ?? currentMax,
+              )),
+              fullWidth: true,
+            ),
+          ],
+        ),
+      );
+    },
+  );
+
+  minController.dispose();
+  maxController.dispose();
+
+  if (result != null && (result.min != currentMin || result.max != currentMax)) {
+    await _saveField(
+      ref: ref,
+      edit: (u) => u.copyWith(
+        paceMinSecsPerKm: result.min,
+        paceMaxSecsPerKm: result.max,
+      ),
+    );
+  }
+}
+
+// ── Boolean switch ────────────────────────────────────────────────────────────
+
+Future<void> showBooleanEditSheet({
+  required BuildContext context,
+  required WidgetRef ref,
+  required String title,
+  required IconData icon,
+  required bool currentValue,
+  required UserProfile Function(UserProfile, bool) applyEdit,
+}) async {
+  bool value = currentValue;
+  final confirmed = await showModalBottomSheet<bool>(
+    context: context,
+    useSafeArea: true,
+    builder: (ctx) {
+      final t = CatchTokens.of(ctx);
+      return StatefulBuilder(
+        builder: (ctx, setSheetState) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(
+              Sizes.p16,
+              Sizes.p12,
+              Sizes.p16,
+              Sizes.p32,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 36,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: Theme.of(ctx).dividerColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                gapH16,
+                Row(
+                  children: [
+                    Icon(icon, color: t.ink2),
+                    gapW16,
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: CatchTextStyles.titleL(context),
+                      ),
+                    ),
+                    Switch(
+                      value: value,
+                      onChanged: (v) => setSheetState(() => value = v),
+                    ),
+                  ],
+                ),
+                gapH16,
+                CatchButton(
+                  label: 'Done',
+                  onPressed: () => Navigator.of(ctx).pop(value),
+                  fullWidth: true,
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    },
+  );
+
+  if (confirmed != null && confirmed != currentValue) {
+    await _saveField(ref: ref, edit: (u) => applyEdit(u, confirmed));
   }
 }

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -110,7 +111,7 @@ class _ActivityContent extends ConsumerWidget {
                 ),
               ] else ...[
                 for (final group in _groupItems(items)) ...[
-                  _ActivitySectionTitle(label: group.label, tokens: tokens),
+                  SectionHeader(title: group.label),
                   gapH8,
                   for (final item in group.items) ...[
                     _ActivityTile(item: item, tokens: tokens),
@@ -202,23 +203,6 @@ class _ActivityTile extends StatelessWidget {
   }
 }
 
-class _ActivitySectionTitle extends StatelessWidget {
-  const _ActivitySectionTitle({required this.label, required this.tokens});
-
-  final String label;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      label.toUpperCase(),
-      style: CatchTextStyles.labelM(
-        context,
-        color: tokens.ink3,
-      ).copyWith(letterSpacing: 0.7),
-    );
-  }
-}
 
 class _ActivityMessage extends StatelessWidget {
   const _ActivityMessage({

@@ -16,7 +16,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'runs_test_helpers.dart';
+import '../run_clubs/run_clubs_test_helpers.dart' show FakeRunClubsRepository;
 
 void main() {
   group('RunDetailScreen', () {
@@ -32,6 +34,7 @@ void main() {
         tester,
         const RunDetailScreen(runClubId: 'club-1', runId: 'run-1'),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           runDetailViewModelProvider(
             'run-1',
           ).overrideWith((ref) => const AsyncLoading()),
@@ -46,6 +49,7 @@ void main() {
         tester,
         const RunDetailScreen(runClubId: 'club-1', runId: 'run-1'),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           runDetailViewModelProvider('run-1').overrideWith(
             (ref) => AsyncError(StateError('boom'), StackTrace.empty),
           ),
@@ -60,6 +64,7 @@ void main() {
         tester,
         const RunDetailScreen(runClubId: 'club-1', runId: 'run-1'),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           runDetailViewModelProvider(
             'run-1',
           ).overrideWith((ref) => const AsyncData(null)),
@@ -74,6 +79,7 @@ void main() {
         tester,
         const RunDetailScreen(runClubId: 'club-1', runId: 'run-1'),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           runDetailViewModelProvider('run-1').overrideWith(
             (ref) => AsyncData(
               RunDetailViewModel(
@@ -104,10 +110,12 @@ void main() {
         Scaffold(
           bottomNavigationBar: RunDetailCta(
             run: buildRun(signedUpUserIds: const ['a', 'b']),
+            runClubId: 'club1',
             userProfile: buildUser(),
           ),
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -131,10 +139,12 @@ void main() {
         Scaffold(
           bottomNavigationBar: RunDetailCta(
             run: buildRun(),
+            runClubId: 'club1',
             userProfile: buildUser(),
           ),
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -163,10 +173,12 @@ void main() {
         Scaffold(
           bottomNavigationBar: RunDetailCta(
             run: buildRun(priceInPaise: 15000),
+            runClubId: 'club1',
             userProfile: buildUser(),
           ),
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(
             FakePaymentRepository(supportsPaid: false),
           ),
@@ -188,10 +200,12 @@ void main() {
         Scaffold(
           bottomNavigationBar: RunDetailCta(
             run: buildRun(signedUpUserIds: const ['runner-1']),
+            runClubId: 'club1',
             userProfile: buildUser(),
           ),
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
@@ -207,6 +221,7 @@ void main() {
       final fakeRunRepository = FakeRunRepository();
       final container = ProviderContainer(
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
@@ -234,10 +249,12 @@ void main() {
                       capacityLimit: 1,
                       signedUpUserIds: const ['other-runner'],
                     ),
+                    runClubId: 'club1',
                     userProfile: buildUser(uid: 'runner-9'),
                   ),
                   RunDetailCta(
                     run: buildRun(waitlistUserIds: const ['runner-9']),
+                    runClubId: 'club1',
                     userProfile: buildUser(uid: 'runner-9'),
                   ),
                 ],
@@ -267,6 +284,7 @@ void main() {
             children: [
               RunDetailCta(
                 run: buildRun(attendedUserIds: const ['runner-1']),
+                runClubId: 'club1',
                 userProfile: buildUser(),
               ),
               RunDetailCta(
@@ -274,12 +292,14 @@ void main() {
                   startTime: DateTime.now().subtract(const Duration(hours: 2)),
                   endTime: DateTime.now().subtract(const Duration(hours: 1)),
                 ),
+                runClubId: 'club1',
                 userProfile: buildUser(),
               ),
             ],
           ),
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -307,10 +327,12 @@ void main() {
             children: [
               RunDetailCta(
                 run: buildRun(constraints: const RunConstraints(minAge: 18)),
+                runClubId: 'club1',
                 userProfile: tooYoungUser,
               ),
               RunDetailCta(
                 run: buildRun(constraints: const RunConstraints(maxAge: 40)),
+                runClubId: 'club1',
                 userProfile: olderUser,
               ),
               RunDetailCta(
@@ -318,12 +340,14 @@ void main() {
                   constraints: const RunConstraints(maxMen: 1),
                   genderCounts: const {'man': 1},
                 ),
+                runClubId: 'club1',
                 userProfile: buildUser(uid: 'runner-3'),
               ),
             ],
           ),
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -353,6 +377,7 @@ void main() {
           reviews: const [],
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -377,6 +402,7 @@ void main() {
           reviews: const [],
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -399,6 +425,7 @@ void main() {
           reviews: const [],
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
@@ -419,6 +446,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
             paymentRepositoryProvider.overrideWithValue(
               FakePaymentRepository(),
             ),
@@ -475,6 +503,7 @@ void main() {
           reviews: const [],
         ),
         overrides: [
+          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           userProfileRepositoryProvider.overrideWithValue(
             fakeUserProfileRepository,

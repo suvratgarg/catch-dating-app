@@ -24,8 +24,6 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_str
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/widgets/horizontal_club_section.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/widgets/nearby_clubs_section.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_content.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_header.dart';
@@ -55,7 +53,7 @@ void main() {
           const RunClubsContent(
             viewModel: RunClubsListViewModel(
               joinedClubs: [],
-              discoverClubs: [],
+              allClubs: [],
             ),
             isJoinPending: false,
           ),
@@ -66,7 +64,7 @@ void main() {
       },
     );
 
-    testWidgets('RunClubsContent renders joined and discover sections', (
+    testWidgets('RunClubsContent renders avatar rail and discover sections', (
       tester,
     ) async {
       await pumpTestApp(
@@ -76,15 +74,18 @@ void main() {
             joinedClubs: [
               buildRunClub(id: 'joined-1', nextRunLabel: 'Sat 6:30 AM'),
             ],
-            discoverClubs: [buildRunClub(id: 'discover-1')],
+            allClubs: [
+              buildRunClub(id: 'joined-1', nextRunLabel: 'Sat 6:30 AM'),
+              buildRunClub(id: 'discover-1'),
+            ],
+            joinedClubIds: {'joined-1'},
           ),
           isJoinPending: false,
         ),
       );
 
       expect(find.text('Your clubs'), findsOneWidget);
-      expect(find.text('For you'), findsOneWidget);
-      expect(find.text('Nearby'), findsOneWidget);
+      expect(find.text('Discover'), findsOneWidget);
     });
 
     testWidgets(
@@ -165,34 +166,6 @@ void main() {
       expect(find.text('Create run club'), findsOneWidget);
     });
 
-    testWidgets('row tile follow button is tappable and accessible', (
-      tester,
-    ) async {
-      var didJoin = false;
-
-      await pumpTestApp(
-        tester,
-        RunClubListTile(club: buildRunClub(), onJoin: () => didJoin = true),
-      );
-
-      await tester.tap(find.widgetWithText(CatchButton, 'Join'));
-      await tester.pump();
-
-      expect(didJoin, isTrue);
-    });
-
-    testWidgets('row tile joined state uses the default next-run copy', (
-      tester,
-    ) async {
-      await pumpTestApp(
-        tester,
-        RunClubListTile(club: buildRunClub(nextRunLabel: null), isJoined: true),
-      );
-
-      expect(find.text('Next run coming up'), findsOneWidget);
-      expect(find.widgetWithText(CatchButton, 'Joined'), findsOneWidget);
-    });
-
     testWidgets('directory and avatar chip variants render club metadata', (
       tester,
     ) async {
@@ -212,7 +185,7 @@ void main() {
             RunClubListTile(
               club: club,
               variant: RunClubListTileVariant.avatarChip,
-              isActive: true,
+              showLiveBadge: true,
             ),
           ],
         ),
@@ -447,80 +420,12 @@ void main() {
       expect(find.text('Mumbai'), findsWidgets);
     });
 
-    testWidgets(
-      'Horizontal and nearby sections render separators for multiple clubs',
-      (tester) async {
-        await pumpTestApp(
-          tester,
-          Column(
-            children: [
-              HorizontalClubSection(
-                title: 'Your clubs',
-                height: 220,
-                clubs: [
-                  buildRunClub(id: 'a'),
-                  buildRunClub(id: 'b'),
-                ],
-                variant: RunClubListTileVariant.scrollCard,
-                isJoined: true,
-              ),
-              NearbyClubsSection(
-                clubs: [
-                  buildRunClub(id: 'c'),
-                  buildRunClub(id: 'd'),
-                ],
-                isJoinPending: false,
-              ),
-            ],
-          ),
-        );
-
-        expect(
-          find.byWidgetPredicate(
-            (widget) => widget is SizedBox && widget.width == 10,
-          ),
-          findsWidgets,
-        );
-        expect(find.byType(Divider), findsOneWidget);
-      },
-    );
-
-    testWidgets('Joined horizontal card fits the production section height', (
-      tester,
-    ) async {
-      tester.view.devicePixelRatio = 1.0;
-      tester.view.physicalSize = const Size(390, 844);
-      addTearDown(tester.view.resetPhysicalSize);
-      addTearDown(tester.view.resetDevicePixelRatio);
-
-      await pumpTestApp(
-        tester,
-        HorizontalClubSection(
-          title: 'Your clubs',
-          height: 170,
-          clubs: [
-            buildRunClub(
-              id: 'joined-1',
-              name: 'Very Long Morning Run Club Name',
-              nextRunLabel: 'Tomorrow 6:30 AM at Carter Road',
-            ),
-          ],
-          variant: RunClubListTileVariant.scrollCard,
-          isJoined: true,
-        ),
-      );
-
-      expect(tester.takeException(), isNull);
-      expect(find.text('Very Long Morning Run Club Name'), findsOneWidget);
-      expect(find.text('Tomorrow 6:30 AM at Carter Road'), findsOneWidget);
-    });
-
     testWidgets('RunClubListTile variants navigate to detail routes', (
       tester,
     ) async {
       Future<void> pumpVariant(
         RunClubListTileVariant variant, {
-        bool isActive = false,
+        bool showLiveBadge = false,
         bool isJoined = false,
       }) async {
         final club = buildRunClub(
@@ -538,7 +443,7 @@ void main() {
                   child: RunClubListTile(
                     club: club,
                     variant: variant,
-                    isActive: isActive,
+                    showLiveBadge: showLiveBadge,
                     isJoined: isJoined,
                   ),
                 ),
@@ -565,10 +470,8 @@ void main() {
         expect(find.text('Detail ${club.id}'), findsOneWidget);
       }
 
-      await pumpVariant(RunClubListTileVariant.rowTile);
-      await pumpVariant(RunClubListTileVariant.scrollCard, isJoined: true);
       await pumpVariant(RunClubListTileVariant.directory, isJoined: true);
-      await pumpVariant(RunClubListTileVariant.avatarChip, isActive: true);
+      await pumpVariant(RunClubListTileVariant.avatarChip, showLiveBadge: true);
     });
 
     testWidgets(
@@ -807,7 +710,7 @@ void main() {
             AsyncData(
               RunClubsListViewModel(
                 joinedClubs: const [],
-                discoverClubs: [buildRunClub(id: 'club-err')],
+                allClubs: [buildRunClub(id: 'club-err')],
               ),
             ),
           ),

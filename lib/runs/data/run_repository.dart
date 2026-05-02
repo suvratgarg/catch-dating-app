@@ -93,10 +93,20 @@ class RunRepository {
         'waitlistUserIds': FieldValue.arrayRemove([userId]),
       });
 
-  /// Marks all signed-up users as attended via the [markRunAttendance] Cloud
+  /// Toggles attendance for a single user via the [markRunAttendance] Cloud
   /// Function. Only callable by the run club's host.
-  Future<void> markAttendance({required String runId}) =>
-      _functions.httpsCallable('markRunAttendance').call({'runId': runId});
+  /// Returns `true` if the user is now marked attended, `false` if removed.
+  Future<bool> markAttendance({
+    required String runId,
+    required String userId,
+  }) async {
+    final result =
+        await _functions.httpsCallable('markRunAttendance').call({
+          'runId': runId,
+          'userId': userId,
+        });
+    return (result.data as Map<String, dynamic>)['attended'] as bool;
+  }
 }
 
 @Riverpod(keepAlive: true)

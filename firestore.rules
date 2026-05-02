@@ -48,7 +48,10 @@ service cloud.firestore {
           'rating',
           'reviewCount',
           'nextRunAt',
-          'nextRunLabel'
+          'nextRunLabel',
+          'instagramHandle',
+          'phoneNumber',
+          'email'
         ])
         && data.keys().hasAll([
           'name',
@@ -93,7 +96,10 @@ service cloud.firestore {
         && data.reviewCount is int
         && data.reviewCount >= 0
         && (data.nextRunAt == null || data.nextRunAt is timestamp)
-        && (data.nextRunLabel == null || data.nextRunLabel is string);
+        && (data.nextRunLabel == null || data.nextRunLabel is string)
+        && (data.instagramHandle == null || data.instagramHandle is string)
+        && (data.phoneNumber == null || data.phoneNumber is string)
+        && (data.email == null || data.email is string);
     }
 
     function isValidRunClubCreate() {
@@ -127,14 +133,18 @@ service cloud.firestore {
           'hostName',
           'hostAvatarUrl',
           'imageUrl',
-          'tags'
+          'tags',
+          'instagramHandle',
+          'phoneNumber',
+          'email'
         ]);
     }
 
     function isValidRunClubMembershipUpdate() {
       return hasValidRunClubShape(request.resource.data)
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['memberUserIds', 'memberCount'])
+          .hasOnly(['memberUserIds', 'memberCount',
+                    'instagramHandle', 'phoneNumber', 'email'])
         && request.resource.data.hostUserId == resource.data.hostUserId
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.memberCount
@@ -214,13 +224,127 @@ service cloud.firestore {
     }
 
     // ── Users ─────────────────────────────────────────────────────────────────
+    function hasValidUserShape(data) {
+      return data.keys().hasOnly([
+          // Core
+          'name', 'email', 'bio', 'phoneNumber', 'dateOfBirth',
+          'gender', 'sexualOrientation', 'profileComplete',
+          // Photos
+          'photoUrls',
+          // Location
+          'city',
+          // Matching
+          'joinedRunClubIds', 'savedRunIds', 'interestedInGenders',
+          'minAgePreference', 'maxAgePreference',
+          // Background
+          'height', 'occupation', 'company', 'education', 'religion',
+          'languages',
+          // Intentions
+          'relationshipGoal',
+          // Lifestyle
+          'drinking', 'smoking', 'workout', 'diet', 'children',
+          // Running
+          'paceMinSecsPerKm', 'paceMaxSecsPerKm',
+          'preferredDistances', 'runningReasons',
+          // Notification / discovery preferences
+          'prefsNewCatches', 'prefsRunReminders',
+          'prefsWeeklyDigest', 'prefsShowOnMap',
+          // Runtime fields
+          'fcmToken', 'deleted', 'deletedAt'
+        ])
+        && data.keys().hasAll([
+          'name', 'email', 'bio', 'phoneNumber', 'dateOfBirth',
+          'gender', 'sexualOrientation', 'profileComplete',
+          'photoUrls', 'joinedRunClubIds', 'savedRunIds',
+          'interestedInGenders', 'minAgePreference', 'maxAgePreference',
+          'languages', 'paceMinSecsPerKm', 'paceMaxSecsPerKm',
+          'preferredDistances', 'runningReasons',
+          'prefsNewCatches', 'prefsRunReminders',
+          'prefsWeeklyDigest', 'prefsShowOnMap'
+        ])
+        // Core
+        && data.name is string
+        && data.email is string
+        && data.bio is string
+        && data.phoneNumber is string
+        && data.dateOfBirth is timestamp
+        && data.gender in ['man', 'woman', 'nonBinary', 'other']
+        && data.sexualOrientation in [
+          'straight', 'gay', 'bisexual', 'pansexual', 'asexual', 'other'
+        ]
+        && data.profileComplete is bool
+        // Photos
+        && data.photoUrls is list
+        // Location
+        && (data.city == null || data.city in [
+          'mumbai', 'delhi', 'bangalore', 'hyderabad',
+          'chennai', 'kolkata', 'pune', 'ahmedabad', 'indore'
+        ])
+        // Matching
+        && data.joinedRunClubIds is list
+        && data.savedRunIds is list
+        && data.interestedInGenders is list
+        && data.minAgePreference is number
+        && data.maxAgePreference is number
+        // Background
+        && (data.height == null || data.height is number)
+        && (data.occupation == null || data.occupation is string)
+        && (data.company == null || data.company is string)
+        && (data.education == null || data.education in [
+          'highSchool', 'someCollege', 'bachelors', 'masters', 'phd',
+          'tradeSchool', 'other'
+        ])
+        && (data.religion == null || data.religion in [
+          'hindu', 'muslim', 'christian', 'sikh', 'jain', 'buddhist',
+          'other', 'nonReligious'
+        ])
+        && data.languages is list
+        // Intentions
+        && (data.relationshipGoal == null || data.relationshipGoal in [
+          'relationship', 'casual', 'marriage', 'friendship', 'unsure'
+        ])
+        // Lifestyle
+        && (data.drinking == null || data.drinking in [
+          'never', 'socially', 'often'
+        ])
+        && (data.smoking == null || data.smoking in [
+          'never', 'occasionally', 'often'
+        ])
+        && (data.workout == null || data.workout in [
+          'never', 'sometimes', 'often', 'everyday'
+        ])
+        && (data.diet == null || data.diet in [
+          'omnivore', 'vegetarian', 'vegan', 'jain', 'other'
+        ])
+        && (data.children == null || data.children in [
+          'dontHave', 'haveWantMore', 'haveNoMore', 'wantSomeday', 'dontWant'
+        ])
+        // Running
+        && data.paceMinSecsPerKm is number
+        && data.paceMinSecsPerKm > 0
+        && data.paceMaxSecsPerKm is number
+        && data.paceMaxSecsPerKm > 0
+        && data.preferredDistances is list
+        && data.runningReasons is list
+        // Notification / discovery preferences
+        && data.prefsNewCatches is bool
+        && data.prefsRunReminders is bool
+        && data.prefsWeeklyDigest is bool
+        && data.prefsShowOnMap is bool
+        // Runtime fields (optional)
+        && (data.fcmToken == null || data.fcmToken is string)
+        && (data.deleted == null || data.deleted is bool)
+        && (data.deletedAt == null || data.deletedAt is timestamp);
+    }
+
     // Any authenticated user can read profiles (needed for chat, matches).
     // Only the owner can write their own document.
     match /users/{uid} {
       allow read: if isAuthed()
         && !isDeletedUser(uid)
         && !hasBlockBetween(request.auth.uid, uid);
-      allow write: if request.auth.uid == uid;
+      allow write: if request.auth.uid == uid
+        && hasValidUserShape(request.resource.data);
     }
 
     // ── Blocks ───────────────────────────────────────────────────────────────
@@ -274,11 +398,66 @@ service cloud.firestore {
     }
 
     // ── Runs ──────────────────────────────────────────────────────────────────
+    function hasValidRunShape(data) {
+      return data.keys().hasOnly([
+          'runClubId',
+          'startTime',
+          'endTime',
+          'meetingPoint',
+          'startingPointLat',
+          'startingPointLng',
+          'locationDetails',
+          'distanceKm',
+          'pace',
+          'capacityLimit',
+          'description',
+          'priceInPaise',
+          'signedUpUserIds',
+          'attendedUserIds',
+          'waitlistUserIds',
+          'constraints',
+          'genderCounts'
+        ])
+        && data.keys().hasAll([
+          'runClubId',
+          'startTime',
+          'endTime',
+          'meetingPoint',
+          'distanceKm',
+          'pace',
+          'capacityLimit',
+          'description',
+          'priceInPaise'
+        ])
+        && data.runClubId is string
+        && data.startTime is timestamp
+        && data.endTime is timestamp
+        && data.startTime < data.endTime
+        && data.meetingPoint is string
+        && (data.startingPointLat == null || data.startingPointLat is number)
+        && (data.startingPointLng == null || data.startingPointLng is number)
+        && (data.locationDetails == null || data.locationDetails is string)
+        && data.distanceKm is number
+        && data.distanceKm > 0
+        && data.pace in ['easy', 'moderate', 'fast', 'competitive']
+        && data.capacityLimit is int
+        && data.capacityLimit > 0
+        && data.description is string
+        && data.priceInPaise is int
+        && data.priceInPaise >= 0
+        && data.signedUpUserIds == []
+        && data.attendedUserIds == []
+        && data.waitlistUserIds == []
+        && data.constraints is map
+        && data.genderCounts == {};
+    }
+
     match /runs/{runId} {
       allow read: if isAuthed();
 
       // Only the club host can create a run for their club.
       allow create: if isAuthed()
+        && hasValidRunShape(request.resource.data)
         && get(/databases/$(database)/documents/runClubs/$(request.resource.data.runClubId))
             .data.hostUserId == request.auth.uid;
 
@@ -385,8 +564,8 @@ service cloud.firestore {
     }
 
     // ── App config (force-update gate) ────────────────────────────────────────
-    match /config/{document} {
-      allow read: if document == 'app_config';
+    match /config/app_config {
+      allow read: if true;
       allow write: if false;
     }
   }

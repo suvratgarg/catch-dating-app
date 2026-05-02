@@ -588,10 +588,14 @@ void main() {
     });
 
     test('markAttendance calls the matching Cloud Function', () async {
-      await repository.markAttendance(runId: 'run-9');
+      (functions.httpsCallable('markRunAttendance') as TestHttpsCallable)
+          .resultData = {'attended': true};
+      final result =
+          await repository.markAttendance(runId: 'run-9', userId: 'user-1');
 
+      expect(result, true);
       expect(functions.callables['markRunAttendance']!.calls, [
-        {'runId': 'run-9'},
+        {'runId': 'run-9', 'userId': 'user-1'},
       ]);
     });
   });

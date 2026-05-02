@@ -58,7 +58,7 @@ Important constraint: this document should not copy paid course material verbati
 - In-app review: no `in_app_review` package is wired yet.
 - Accessibility: no dedicated `accessibility_tools` dependency or release accessibility audit is documented yet.
 - Security/privacy: Firestore rules, Storage rules, App Check enforcement, callable App Check guards, blocking/reporting/account deletion, and secret-ignore hardening exist. A final privacy/store-form audit is still needed.
-- Release verification: web, Android APK/App Bundle, macOS dev/staging/prod, iOS simulator, signed iOS dev/staging/prod Profile builds, and the prod iOS archive have recent audit notes in `codex_audit/target_build_audit_2026-04-28.md` and `codex_audit/build_readiness_dependency_report_2026-04-29.md`.
+- Release verification: web, Android APK/App Bundle, macOS dev/staging/prod, iOS simulator, signed iOS dev/staging/prod Profile builds, and the prod iOS archive have recent audit notes in the active release setup tracker.
 - Apple signing status: iOS App Store IPA export now passes from the active
   release tracker; keep using that tracker for the freshest signing and
   notarization state.

@@ -42,10 +42,6 @@ when written but have since been superseded by the current docs above.
 
 | File | Superseded by |
 | --- | --- |
-| [`firebase_console_audit.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/firebase_console_audit.md) | `firebase_environment_current_state.md`, `firebase/README.md` |
-| [`remaining_config_resolution_tracker_2026-04-29.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/remaining_config_resolution_tracker_2026-04-29.md) | `firebase_environment_current_state.md`, `production_release_checklist.md`, active release tracker |
-| [`build_readiness_dependency_report_2026-04-29.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/build_readiness_dependency_report_2026-04-29.md) | Active release tracker and current release checklist |
-| [`target_build_audit_2026-04-28.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/target_build_audit_2026-04-28.md) | Newer build/readiness docs and active release tracker |
 | [`archive/root_trackers/`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/archive/root_trackers/) | `PROJECT_CONTEXT.md`, `TESTS.md`, and this index |
 
 ## Archive Contents

@@ -16,11 +16,7 @@ Gradle/JDK, and trust-chain status. It supersedes older blocker language in:
 
 - `codex_audit/production_release_checklist.md`
 - `codex_audit/firebase_environment_current_state.md`
-- `codex_audit/firebase_console_audit.md`
 - `codex_audit/ios_release_readiness_audit_2026-04-30.md`
-- `codex_audit/build_readiness_dependency_report_2026-04-29.md`
-- `codex_audit/remaining_config_resolution_tracker_2026-04-29.md`
-- `codex_audit/target_build_audit_2026-04-28.md`
 - `TESTS.md`
 - `codex_audit/lib_feature_completeness_matrix.md`
 

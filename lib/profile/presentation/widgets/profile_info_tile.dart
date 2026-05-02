@@ -10,12 +10,14 @@ class ProfileInfoTile extends StatelessWidget {
     required this.label,
     required this.value,
     this.onTap,
+    this.isAddAffordance = false,
   });
 
   final IconData icon;
   final String label;
   final String value;
   final VoidCallback? onTap;
+  final bool isAddAffordance;
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +32,13 @@ class ProfileInfoTile extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(label, style: CatchTextStyles.bodyS(context)),
-              Text(value, style: CatchTextStyles.bodyL(context)),
+              Text(
+                isAddAffordance ? '+ $value' : value,
+                style: CatchTextStyles.bodyL(
+                  context,
+                  color: isAddAffordance ? t.ink3 : null,
+                ),
+              ),
             ],
           ),
         ),

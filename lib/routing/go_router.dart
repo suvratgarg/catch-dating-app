@@ -19,6 +19,7 @@ import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_s
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
+import 'package:catch_dating_app/runs/presentation/attendance_sheet_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
@@ -51,6 +52,7 @@ enum Routes {
   runClubDetailScreen('/clubs/run-clubs/:runClubId'),
   editRunClubScreen('/clubs/run-clubs/:runClubId/edit'),
   runDetailScreen('/clubs/run-clubs/:runClubId/runs/:runId'),
+	attendanceSheet('/clubs/run-clubs/:runClubId/runs/:runId/attendance'),
   createRunClubScreen('/clubs/create-run-club'),
   createRunScreen('/clubs/run-clubs/:runClubId/create-run'),
   // Catches branch (index 2)
@@ -218,6 +220,19 @@ GoRouter goRouter(Ref ref) {
                           runClubId: state.pathParameters['runClubId']!,
                           runId: state.pathParameters['runId']!,
                         ),
+                        routes: [
+                          GoRoute(
+                            path: 'attendance',
+                            name: Routes.attendanceSheet.name,
+                            parentNavigatorKey: _rootNavigatorKey,
+                            builder: (context, state) =>
+                                AttendanceSheetScreen(
+                              runClubId:
+                                  state.pathParameters['runClubId']!,
+                              runId: state.pathParameters['runId']!,
+                            ),
+                          ),
+                        ],
                       ),
                       GoRoute(
                         path: 'edit',

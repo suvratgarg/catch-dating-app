@@ -12,24 +12,12 @@ import 'package:go_router/go_router.dart';
 part 'run_club_list_tile_parts/avatar_chip.dart';
 part 'run_club_list_tile_parts/club_image.dart';
 part 'run_club_list_tile_parts/directory_card.dart';
-part 'run_club_list_tile_parts/portrait_card.dart';
-part 'run_club_list_tile_parts/row_tile.dart';
-part 'run_club_list_tile_parts/scroll_card.dart';
 
 enum RunClubListTileVariant {
-  /// List row: avatar · name/subtitle · Join chip. Used in "Nearby".
-  rowTile,
-
-  /// 220 px wide horizontal-scroll card. Used in "Your clubs".
-  scrollCard,
-
-  /// 160 × 160 portrait card with gradient overlay. Used in "For you".
-  portraitCard,
-
   /// Full-width tall card with photo, tags, activity strip. Used in directory.
   directory,
 
-  /// Circular 58 px avatar chip with name label. Used as a filter chip row.
+  /// Circular avatar chip with name label. Used in avatar rail.
   avatarChip,
 }
 
@@ -37,9 +25,9 @@ class RunClubListTile extends StatelessWidget {
   const RunClubListTile({
     super.key,
     required this.club,
-    this.variant = RunClubListTileVariant.rowTile,
+    this.variant = RunClubListTileVariant.directory,
     this.isJoined = false,
-    this.isActive = false,
+    this.showLiveBadge = false,
     this.onJoin,
   });
 
@@ -48,9 +36,9 @@ class RunClubListTile extends StatelessWidget {
   final bool isJoined;
 
   /// Only used by [RunClubListTileVariant.avatarChip].
-  final bool isActive;
+  final bool showLiveBadge;
 
-  /// Only used by [RunClubListTileVariant.rowTile].
+  /// Only used by [RunClubListTileVariant.directory].
   final VoidCallback? onJoin;
 
   void _openDetail(BuildContext context) => context.pushNamed(
@@ -62,29 +50,15 @@ class RunClubListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return switch (variant) {
-      RunClubListTileVariant.rowTile => _RowTile(
+      RunClubListTileVariant.directory => _DirectoryCard(
         club: club,
         isJoined: isJoined,
         onTap: () => _openDetail(context),
         onJoin: onJoin,
       ),
-      RunClubListTileVariant.scrollCard => _ScrollCard(
-        club: club,
-        isJoined: isJoined,
-        onTap: () => _openDetail(context),
-      ),
-      RunClubListTileVariant.portraitCard => _PortraitCard(
-        club: club,
-        onTap: () => _openDetail(context),
-      ),
-      RunClubListTileVariant.directory => _DirectoryCard(
-        club: club,
-        isJoined: isJoined,
-        onTap: () => _openDetail(context),
-      ),
       RunClubListTileVariant.avatarChip => _AvatarChip(
         club: club,
-        isActive: isActive,
+        showLiveBadge: showLiveBadge,
         onTap: () => _openDetail(context),
       ),
     };
