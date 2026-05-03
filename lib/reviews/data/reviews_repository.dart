@@ -2,7 +2,6 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/reviews/domain/review_document_id.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -43,31 +42,22 @@ class ReviewsRepository {
       .snapshots()
       .map((s) => s.docs.map((d) => d.data()).toList());
 
-  /// Watches the single review this user wrote for a club (null if none).
-  Stream<Review?> watchUserReviewForClub({
-    required String runClubId,
+  /// Watches the review this user wrote for a specific run (null if none).
+  Stream<Review?> watchUserReviewForRun({
+    required String runId,
     required String reviewerUserId,
-  }) {
-    final docId = reviewDocumentId(
-      runClubId: runClubId,
-      reviewerUserId: reviewerUserId,
-    );
-    return _reviewsRef
-        .doc(docId)
-        .snapshots()
-        .map((snap) => snap.exists ? snap.data() : null);
-  }
+  }) => _reviewsRef
+      .where('runId', isEqualTo: runId)
+      .where('reviewerUserId', isEqualTo: reviewerUserId)
+      .limit(1)
+      .snapshots()
+      .map((s) => s.docs.isNotEmpty ? s.docs.first.data() : null);
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> addReview(Review review) => withFirestoreErrorContext(
     () {
-      final ref = _reviewsRef.doc(
-        reviewDocumentId(
-          runClubId: review.runClubId,
-          reviewerUserId: review.reviewerUserId,
-        ),
-      );
+      final ref = _reviewsRef.doc(); // auto-generated ID
       return ref.set(review.copyWith(id: ref.id));
     },
     collection: _collectionPath,
@@ -110,13 +100,13 @@ Stream<List<Review>> watchReviewsByUser(Ref ref, String reviewerUserId) =>
     ref.watch(reviewsRepositoryProvider).watchReviewsByUser(reviewerUserId);
 
 @riverpod
-Stream<Review?> watchUserReviewForClub(
+Stream<Review?> watchUserReviewForRun(
   Ref ref, {
-  required String runClubId,
+  required String runId,
   required String reviewerUserId,
 }) => ref
     .watch(reviewsRepositoryProvider)
-    .watchUserReviewForClub(
-      runClubId: runClubId,
+    .watchUserReviewForRun(
+      runId: runId,
       reviewerUserId: reviewerUserId,
     );

@@ -1,10 +1,11 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_empty_state.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/widgets/section_header.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,7 +31,12 @@ class RunClubsContent extends StatelessWidget {
       padding: EdgeInsets.zero,
       children: [
         if (viewModel.joinedClubs.isNotEmpty) ...[
-          const SectionHeader(title: 'Your clubs'),
+          SectionHeader(
+            title: 'Your clubs',
+            uppercase: false,
+            titleStyle: CatchTextStyles.titleL(context),
+            padding: const EdgeInsets.fromLTRB(CatchSpacing.s5, 14, CatchSpacing.s5, 8),
+          ),
           SizedBox(
             height: 92,
             child: ListView.separated(
@@ -60,7 +66,12 @@ class RunClubsContent extends StatelessWidget {
           ),
         ],
         if (viewModel.allClubs.isNotEmpty) ...[
-          const SectionHeader(title: 'Discover'),
+          SectionHeader(
+            title: 'Discover',
+            uppercase: false,
+            titleStyle: CatchTextStyles.titleL(context),
+            padding: const EdgeInsets.fromLTRB(CatchSpacing.s5, 14, CatchSpacing.s5, 8),
+          ),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
             child: Column(

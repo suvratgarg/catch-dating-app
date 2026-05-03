@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';

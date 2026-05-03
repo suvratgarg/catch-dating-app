@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
@@ -216,7 +217,7 @@ class _DashboardSectionStateCard extends StatelessWidget {
             const SizedBox(
               width: 18,
               height: 18,
-              child: CircularProgressIndicator(strokeWidth: 2),
+              child: CatchLoadingIndicator(strokeWidth: 2),
             ),
           ] else ...[
             Icon(Icons.error_outline_rounded, color: t.primary, size: 18),

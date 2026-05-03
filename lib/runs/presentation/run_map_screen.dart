@@ -1,10 +1,11 @@
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -37,8 +38,8 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
       backgroundColor: t.bg,
       appBar: const CatchTopBar(title: 'Map view'),
       body: profileAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(firestoreErrorMessage(error))),
+        loading: () => const CatchLoadingIndicator(),
+        error: (error, _) => CatchErrorText(error),
         data: (user) {
           if (user == null) return const SizedBox.shrink();
 
@@ -62,9 +63,9 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
             children: [
               Expanded(
                 child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
+                    ? const CatchLoadingIndicator()
                     : error != null
-                    ? Center(child: Text(firestoreErrorMessage(error)))
+                    ? CatchErrorText(error)
                     : runs.isEmpty
                     ? _MapEmptyState(tokens: t)
                     : Stack(

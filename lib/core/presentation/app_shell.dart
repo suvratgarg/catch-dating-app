@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -246,7 +247,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 trailing: _deleting
                     ? const SizedBox.square(
                         dimension: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
+                        child: CatchLoadingIndicator(strokeWidth: 2),
                       )
                     : null,
                 onTap: _deleting ? null : _confirmDeleteAccount,
@@ -311,7 +312,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
         blockedUsersAsync.when(
           loading: () => const Padding(
             padding: EdgeInsets.all(Sizes.p16),
-            child: Center(child: CircularProgressIndicator()),
+            child: const CatchLoadingIndicator(),
           ),
           error: (_, _) => Padding(
             padding: const EdgeInsets.all(Sizes.p16),

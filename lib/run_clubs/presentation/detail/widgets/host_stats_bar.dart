@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
 
@@ -100,17 +101,11 @@ class HostStatChip extends StatelessWidget {
         color: t.surface,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: Column(
-        children: [
-          Icon(icon, size: 16, color: t.primary),
-          const SizedBox(height: 4),
-          Text(value, style: CatchTextStyles.titleM(context)),
-          Text(
-            label,
-            style: CatchTextStyles.bodyS(context, color: t.ink3),
-            textAlign: TextAlign.center,
-          ),
-        ],
+      child: StatColumn(
+        icon: icon,
+        value: value,
+        label: label,
+        center: true,
       ),
     );
   }

@@ -3,6 +3,8 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -66,7 +68,7 @@ class ActivitySection extends ConsumerWidget {
                 const SizedBox(
                   width: 18,
                   height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+                  child: CatchLoadingIndicator(strokeWidth: 2),
                 ),
                 gapW10,
                 const Expanded(
@@ -120,22 +122,18 @@ class ActivitySection extends ConsumerWidget {
     List<Match> matches,
     BuildContext context,
   ) async {
-    final repository = ref.read(matchRepositoryProvider);
-    for (final match in matches) {
-      if ((match.unreadCounts[uid] ?? 0) > 0) {
-        try {
-          await repository.resetUnread(matchId: match.id, uid: uid);
-        } catch (error, stack) {
-          debugPrint('[ERROR] ActivitySection resetUnread: $error\n$stack');
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Failed to mark messages as read.'),
-              ),
-            );
-          }
-          return;
-        }
+    try {
+      await ref
+          .read(activityControllerProvider.notifier)
+          .markAllRead(matches: matches, uid: uid);
+    } catch (error, stack) {
+      debugPrint('[ERROR] ActivitySection markAllRead: $error\n$stack');
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to mark messages as read.'),
+          ),
+        );
       }
     }
   }

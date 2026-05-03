@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
@@ -72,16 +73,7 @@ Future<void> showTextEditSheet({
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Theme.of(ctx).dividerColor,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
+              const BottomSheetGrabber(),
               gapH16,
               CatchTextField(
                 label: title,
@@ -155,16 +147,7 @@ Future<void> showIntEditSheet({
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Center(
-                child: Container(
-                  width: 36,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: Theme.of(ctx).dividerColor,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
+              const BottomSheetGrabber(),
               gapH16,
               CatchTextField(
                 label: title,
@@ -237,16 +220,7 @@ Future<void> showSingleEnumSheet<T extends Labelled>({
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Theme.of(ctx).dividerColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
+                const BottomSheetGrabber(),
                 gapH16,
                 ChipField<T>(
                   label: title,
@@ -299,16 +273,7 @@ Future<void> showMultiEnumSheet<T extends Labelled>({
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Theme.of(ctx).dividerColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
+                const BottomSheetGrabber(),
                 gapH16,
                 ChipField<T>(
                   label: title,
@@ -374,16 +339,7 @@ Future<void> _showRangeEditSheet({
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Theme.of(ctx).dividerColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
+                const BottomSheetGrabber(),
                 gapH16,
                 Text(title, style: CatchTextStyles.titleL(context)),
                 gapH4,
@@ -533,16 +489,7 @@ Future<void> showBooleanEditSheet({
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Center(
-                  child: Container(
-                    width: 36,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: Theme.of(ctx).dividerColor,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                ),
+                const BottomSheetGrabber(),
                 gapH16,
                 Row(
                   children: [

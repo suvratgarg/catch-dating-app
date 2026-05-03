@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';

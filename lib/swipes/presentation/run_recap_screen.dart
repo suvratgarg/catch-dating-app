@@ -1,10 +1,11 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -45,8 +46,8 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
         ),
       ),
       body: runAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(firestoreErrorMessage(error))),
+        loading: () => const CatchLoadingIndicator(),
+        error: (error, _) => CatchErrorText(error),
         data: (run) {
           if (run == null) {
             return const Center(child: Text('Run not found'));

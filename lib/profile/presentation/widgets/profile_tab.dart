@@ -335,7 +335,7 @@ class ProfileTab extends ConsumerWidget {
       ProfileInfoEntry(
         icon: Icons.speed_outlined,
         label: 'Pace range',
-        value: _formatPaceRange(user),
+        value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
         onTap: () => showPaceEditSheet(
           context: context,
           ref: ref,
@@ -486,6 +486,3 @@ class _PromptCard extends StatelessWidget {
   }
 }
 
-String _formatPaceRange(UserProfile user) {
-  return '${formatPace(user.paceMinSecsPerKm)}-${formatPace(user.paceMaxSecsPerKm)}/km';
-}

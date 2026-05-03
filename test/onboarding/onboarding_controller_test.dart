@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';

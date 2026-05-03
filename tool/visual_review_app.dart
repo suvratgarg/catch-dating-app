@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';

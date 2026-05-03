@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 
 class PhotoSlot extends StatelessWidget {
   const PhotoSlot({
@@ -50,7 +51,7 @@ class PhotoSlot extends StatelessWidget {
               Container(
                 color: Colors.black45,
                 child: const Center(
-                  child: CircularProgressIndicator(color: Colors.white),
+                  child: CatchLoadingIndicator(color: Colors.white),
                 ),
               ),
             if (!isLoading && url != null)

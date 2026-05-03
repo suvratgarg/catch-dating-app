@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -98,17 +100,7 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 8),
-          // Drag handle
-          Center(
-            child: Container(
-              width: 32,
-              height: 4,
-              decoration: BoxDecoration(
-                color: t.ink3,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
+          const BottomSheetGrabber(),
           // Header
           Padding(
             padding: const EdgeInsets.fromLTRB(
@@ -177,19 +169,11 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
               CatchSpacing.s5,
               16,
             ),
-            child: OutlinedButton(
+            child: CatchButton(
+              label: 'Start fresh',
               onPressed: _onStartFresh,
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(48),
-                side: BorderSide(color: t.line),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(CatchRadius.lg),
-                ),
-              ),
-              child: Text(
-                'Start fresh',
-                style: CatchTextStyles.labelL(context),
-              ),
+              variant: CatchButtonVariant.secondary,
+              fullWidth: true,
             ),
           ),
         ],

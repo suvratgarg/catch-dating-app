@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:flutter/material.dart';
 
@@ -25,38 +25,31 @@ class StatsStrip extends StatelessWidget {
       ),
       child: Row(
         children: [
-          StatCell(value: '${club.memberCount}', label: 'Members'),
-          Container(width: 1, height: 36, color: t.line),
-          StatCell(value: '$upcomingCount', label: 'Upcoming'),
-          Container(width: 1, height: 36, color: t.line),
-          StatCell(
-            value: club.rating > 0 ? club.rating.toStringAsFixed(1) : '—',
-            label: 'Rating',
+          Expanded(
+            child: StatColumn(
+              value: '${club.memberCount}',
+              label: 'Members',
+              monoValue: true,
+              center: true,
+            ),
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class StatCell extends StatelessWidget {
-  const StatCell({super.key, required this.value, required this.label});
-
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Expanded(
-      child: Column(
-        children: [
-          Text(value, style: CatchTextStyles.mono(context)),
-          const SizedBox(height: 2),
-          Text(
-            label,
-            style: CatchTextStyles.bodyS(context, color: t.ink3),
-            textAlign: TextAlign.center,
+          Container(width: 1, height: 36, color: t.line),
+          Expanded(
+            child: StatColumn(
+              value: '$upcomingCount',
+              label: 'Upcoming',
+              monoValue: true,
+              center: true,
+            ),
+          ),
+          Container(width: 1, height: 36, color: t.line),
+          Expanded(
+            child: StatColumn(
+              value: club.rating > 0 ? club.rating.toStringAsFixed(1) : '—',
+              label: 'Rating',
+              monoValue: true,
+              center: true,
+            ),
           ),
         ],
       ),

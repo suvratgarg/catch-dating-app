@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';

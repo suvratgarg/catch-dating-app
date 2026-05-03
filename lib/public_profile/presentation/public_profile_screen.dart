@@ -1,11 +1,12 @@
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -29,37 +30,17 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
   bool _submitting = false;
 
   Future<void> _confirmBlock(PublicProfile profile) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showBlockUserDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Block ${profile.name}?'),
-        content: const Text(
-          'You will stop seeing each other in chats, matches, swipes, and '
-          'future run slots where the other person is already booked.',
-        ),
-        actions: [
-          CatchButton(
-            label: 'Cancel',
-            onPressed: () => Navigator.of(context).pop(false),
-            variant: CatchButtonVariant.ghost,
-            size: CatchButtonSize.sm,
-          ),
-          CatchButton(
-            label: 'Block',
-            onPressed: () => Navigator.of(context).pop(true),
-            variant: CatchButtonVariant.danger,
-            size: CatchButtonSize.sm,
-          ),
-        ],
-      ),
+      name: profile.name,
     );
     if (confirmed != true) return;
 
     setState(() => _submitting = true);
     try {
       await ref
-          .read(safetyRepositoryProvider)
-          .blockUser(targetUserId: profile.uid, source: 'profile');
+          .read(publicProfileControllerProvider.notifier)
+          .blockUser(targetUserId: profile.uid);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${profile.name} has been blocked.')),
@@ -114,12 +95,8 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
     setState(() => _submitting = true);
     try {
       await ref
-          .read(safetyRepositoryProvider)
-          .reportUser(
-            targetUserId: profile.uid,
-            source: 'profile',
-            reasonCode: reason,
-          );
+          .read(publicProfileControllerProvider.notifier)
+          .reportUser(targetUserId: profile.uid, reasonCode: reason);
       if (!mounted) return;
       ScaffoldMessenger.of(
         context,
@@ -159,7 +136,7 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
       ),
       body: profileAsync.when(
         loading: () => profile == null
-            ? const Center(child: CircularProgressIndicator())
+            ? const CatchLoadingIndicator()
             : _ProfileBody(profile: profile, submitting: _submitting),
         error: (_, _) => Center(
           child: Padding(
@@ -209,7 +186,7 @@ class _ProfileBody extends StatelessWidget {
           const Positioned.fill(
             child: ColoredBox(
               color: Color(0x66000000),
-              child: Center(child: CircularProgressIndicator()),
+              child: const CatchLoadingIndicator(),
             ),
           ),
       ],

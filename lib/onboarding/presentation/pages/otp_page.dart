@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
@@ -143,7 +144,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           ],
           gapH24,
           if (verifyMutation.isPending)
-            const Center(child: CircularProgressIndicator()),
+            const CatchLoadingIndicator(),
           gapH16,
           Center(
             child: CatchButton(

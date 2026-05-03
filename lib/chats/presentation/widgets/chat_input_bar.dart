@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
 
 class ChatInputBar extends StatelessWidget {
@@ -55,7 +56,7 @@ class ChatInputBar extends StatelessWidget {
                   ? const SizedBox(
                       width: 20,
                       height: 20,
-                      child: CircularProgressIndicator(strokeWidth: 2),
+                      child: CatchLoadingIndicator(strokeWidth: 2),
                     )
                   : const Icon(Icons.send_rounded),
             ),

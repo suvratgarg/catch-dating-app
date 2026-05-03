@@ -136,7 +136,7 @@ class PersonAvatar extends StatelessWidget {
               width: 9,
               height: 9,
               decoration: BoxDecoration(
-                color: const Color(0xFF4CAF50),
+                color: t.success,
                 shape: BoxShape.circle,
                 border: Border.all(color: t.surface, width: 1.5),
               ),

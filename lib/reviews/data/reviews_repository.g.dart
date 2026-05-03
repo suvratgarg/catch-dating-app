@@ -284,29 +284,29 @@ final class WatchReviewsByUserFamily extends $Family
   String toString() => r'watchReviewsByUserProvider';
 }
 
-@ProviderFor(watchUserReviewForClub)
-final watchUserReviewForClubProvider = WatchUserReviewForClubFamily._();
+@ProviderFor(watchUserReviewForRun)
+final watchUserReviewForRunProvider = WatchUserReviewForRunFamily._();
 
-final class WatchUserReviewForClubProvider
+final class WatchUserReviewForRunProvider
     extends $FunctionalProvider<AsyncValue<Review?>, Review?, Stream<Review?>>
     with $FutureModifier<Review?>, $StreamProvider<Review?> {
-  WatchUserReviewForClubProvider._({
-    required WatchUserReviewForClubFamily super.from,
-    required ({String runClubId, String reviewerUserId}) super.argument,
+  WatchUserReviewForRunProvider._({
+    required WatchUserReviewForRunFamily super.from,
+    required ({String runId, String reviewerUserId}) super.argument,
   }) : super(
          retry: null,
-         name: r'watchUserReviewForClubProvider',
+         name: r'watchUserReviewForRunProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$watchUserReviewForClubHash();
+  String debugGetCreateSourceHash() => _$watchUserReviewForRunHash();
 
   @override
   String toString() {
-    return r'watchUserReviewForClubProvider'
+    return r'watchUserReviewForRunProvider'
         ''
         '$argument';
   }
@@ -318,19 +318,17 @@ final class WatchUserReviewForClubProvider
 
   @override
   Stream<Review?> create(Ref ref) {
-    final argument =
-        this.argument as ({String runClubId, String reviewerUserId});
-    return watchUserReviewForClub(
+    final argument = this.argument as ({String runId, String reviewerUserId});
+    return watchUserReviewForRun(
       ref,
-      runClubId: argument.runClubId,
+      runId: argument.runId,
       reviewerUserId: argument.reviewerUserId,
     );
   }
 
   @override
   bool operator ==(Object other) {
-    return other is WatchUserReviewForClubProvider &&
-        other.argument == argument;
+    return other is WatchUserReviewForRunProvider && other.argument == argument;
   }
 
   @override
@@ -339,32 +337,32 @@ final class WatchUserReviewForClubProvider
   }
 }
 
-String _$watchUserReviewForClubHash() =>
-    r'7dc470a93937679a8ad1b96e4717079085f32400';
+String _$watchUserReviewForRunHash() =>
+    r'61922815ae5c3a544351d6590b58cb8811b74156';
 
-final class WatchUserReviewForClubFamily extends $Family
+final class WatchUserReviewForRunFamily extends $Family
     with
         $FunctionalFamilyOverride<
           Stream<Review?>,
-          ({String runClubId, String reviewerUserId})
+          ({String runId, String reviewerUserId})
         > {
-  WatchUserReviewForClubFamily._()
+  WatchUserReviewForRunFamily._()
     : super(
         retry: null,
-        name: r'watchUserReviewForClubProvider',
+        name: r'watchUserReviewForRunProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  WatchUserReviewForClubProvider call({
-    required String runClubId,
+  WatchUserReviewForRunProvider call({
+    required String runId,
     required String reviewerUserId,
-  }) => WatchUserReviewForClubProvider._(
-    argument: (runClubId: runClubId, reviewerUserId: reviewerUserId),
+  }) => WatchUserReviewForRunProvider._(
+    argument: (runId: runId, reviewerUserId: reviewerUserId),
     from: this,
   );
 
   @override
-  String toString() => r'watchUserReviewForClubProvider';
+  String toString() => r'watchUserReviewForRunProvider';
 }

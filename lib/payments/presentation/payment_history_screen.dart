@@ -1,10 +1,13 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/detail_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -22,8 +25,8 @@ class PaymentHistoryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: const CatchTopBar(title: 'Payment history'),
       body: uidAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(firestoreErrorMessage(e))),
+        loading: () => const CatchLoadingIndicator(),
+        error: (e, _) => CatchErrorText(e),
         data: (uid) {
           if (uid == null) {
             return const Center(child: Text('Not signed in.'));
@@ -45,7 +48,7 @@ class _PaymentList extends ConsumerWidget {
     final paymentsAsync = ref.watch(paymentsForUserProvider(userId));
 
     return paymentsAsync.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const CatchLoadingIndicator(),
       error: (e, _) => Center(child: Text('Error: $e')),
       data: (payments) {
         if (payments.isEmpty) {
@@ -163,17 +166,7 @@ class _PaymentTile extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              // Grabber
-              Center(
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: t.line2,
-                    borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  ),
-                ),
-              ),
+              const BottomSheetGrabber(),
               gapH16,
               // Header
               Text(runTitle, style: CatchTextStyles.titleL(context)),
@@ -196,19 +189,19 @@ class _PaymentTile extends ConsumerWidget {
               Divider(color: t.line, height: 1),
               gapH20,
               // Detail rows
-              _DetailRow(label: 'Payment ID', value: payment.paymentId),
+              DetailRow(label: 'Payment ID', value: payment.paymentId),
               gapH12,
-              _DetailRow(label: 'Order ID', value: payment.orderId),
+              DetailRow(label: 'Order ID', value: payment.orderId),
               gapH12,
-              _DetailRow(label: 'Run ID', value: payment.runId),
+              DetailRow(label: 'Run ID', value: payment.runId),
               gapH12,
-              _DetailRow(
+              DetailRow(
                 label: 'Date',
                 value: _dateFormat.format(payment.createdAt),
               ),
               if (statusPresentation.detail case final detail?) ...[
                 gapH12,
-                _DetailRow(label: 'Status', value: detail),
+                DetailRow(label: 'Status', value: detail),
               ],
               if (payment.signUpFailed) ...[
                 gapH20,
@@ -288,37 +281,5 @@ class _PaymentTile extends ConsumerWidget {
         detail: null,
       ),
     };
-  }
-}
-
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 90,
-          child: Text(
-            label,
-            style: CatchTextStyles.bodyS(context, color: t.ink3),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: CatchTextStyles.bodyS(context, color: t.ink).copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
-    );
   }
 }

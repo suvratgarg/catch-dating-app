@@ -1,6 +1,7 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_tab.dart';
@@ -65,8 +66,8 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
         body: userProfileAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, _) => Center(child: Text(firestoreErrorMessage(e))),
+          loading: () => const CatchLoadingIndicator(),
+          error: (e, _) => CatchErrorText(e),
           data: (user) {
             if (user == null) return const SizedBox.shrink();
 

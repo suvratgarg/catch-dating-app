@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -34,7 +35,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       appBar: const CatchTopBar(title: 'Calendar'),
       body: SafeArea(
         child: runsAsync.when(
-          loading: () => const Center(child: CircularProgressIndicator()),
+          loading: () => const CatchLoadingIndicator(),
           error: (_, _) => _CalendarMessage(
             title: 'Calendar unavailable',
             body: 'Your booked runs could not be loaded.',

@@ -1,14 +1,16 @@
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -16,7 +18,6 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -39,12 +40,12 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   bool _didScrollToLatestMessage = false;
   int _lastMessageCount = 0;
   String? _lastResetUid;
-  late final MatchRepository _matchRepository;
+  late final ChatController _chatController;
 
   @override
   void initState() {
     super.initState();
-    _matchRepository = ref.read(matchRepositoryProvider);
+    _chatController = ref.read(chatControllerProvider.notifier);
     _resetUnread(ref.read(uidProvider).value);
   }
 
@@ -61,7 +62,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     if (!force && uid == _lastResetUid) return;
 
     _lastResetUid = uid;
-    unawaited(_matchRepository.resetUnread(matchId: widget.matchId, uid: uid));
+    unawaited(_chatController.resetUnread(matchId: widget.matchId, uid: uid));
   }
 
   bool _isNearBottom() {
@@ -128,9 +129,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _controller.clear();
 
     try {
-      await ref
-          .read(chatRepositoryProvider)
-          .sendMessage(matchId: widget.matchId, senderId: uid, text: text);
+      await _chatController.sendMessage(matchId: widget.matchId, senderId: uid, text: text);
       if (_scrollController.hasClients) {
         unawaited(
           _scrollController.animateTo(
@@ -149,35 +148,13 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     required String targetUserId,
     required String targetName,
   }) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showBlockUserDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Block $targetName?'),
-        content: const Text(
-          'You will stop seeing each other in chats, matches, swipes, and '
-          'future run slots where the other person is already booked.',
-        ),
-        actions: [
-          CatchButton(
-            label: 'Cancel',
-            onPressed: () => Navigator.of(context).pop(false),
-            variant: CatchButtonVariant.ghost,
-            size: CatchButtonSize.sm,
-          ),
-          CatchButton(
-            label: 'Block',
-            onPressed: () => Navigator.of(context).pop(true),
-            variant: CatchButtonVariant.danger,
-            size: CatchButtonSize.sm,
-          ),
-        ],
-      ),
+      name: targetName,
     );
     if (confirmed != true) return;
 
-    await ref
-        .read(safetyRepositoryProvider)
-        .blockUser(targetUserId: targetUserId, source: 'chat');
+    await _chatController.blockUser(targetUserId: targetUserId);
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -185,14 +162,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     required String targetUserId,
     required String targetName,
   }) async {
-    await ref
-        .read(safetyRepositoryProvider)
-        .reportUser(
-          targetUserId: targetUserId,
-          source: 'chat',
-          contextId: widget.matchId,
-          reasonCode: 'chat_safety_concern',
-        );
+    await _chatController.reportUser(targetUserId: targetUserId, matchId: widget.matchId);
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Report submitted for $targetName.')),
@@ -201,6 +171,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(chatControllerProvider);
     ref.listen(uidProvider, (_, next) {
       if (next.value != null) {
         _resetUnread(next.value);
@@ -303,7 +274,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
           _RunContextHeader(run: runAsync.asData?.value),
           Expanded(
             child: messagesAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const CatchLoadingIndicator(),
               error: (e, _) => Center(
                 child: Text(
                   'Unable to load messages.',

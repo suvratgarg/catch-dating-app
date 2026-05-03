@@ -171,10 +171,6 @@ service cloud.firestore {
         );
     }
 
-    function expectedReviewId() {
-      return 'club_' + request.resource.data.runClubId + '_user_' + request.auth.uid;
-    }
-
     function hasValidReviewReference(data) {
       return exists(/databases/$(database)/documents/runClubs/$(data.runClubId))
         && (
@@ -515,7 +511,6 @@ service cloud.firestore {
     match /reviews/{reviewId} {
       allow read: if isAuthed();
       allow create: if isAuthed()
-        && reviewId == expectedReviewId()
         && isValidReviewPayload(request.resource.data);
       allow update: if isAuthed()
         && resource.data.reviewerUserId == request.auth.uid

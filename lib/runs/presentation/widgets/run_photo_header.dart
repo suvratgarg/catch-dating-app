@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
@@ -33,20 +34,10 @@ class RunPhotoHeader extends StatelessWidget {
         Positioned(
           top: 52,
           right: 16,
-          child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            decoration: BoxDecoration(
-              color: t.primary,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-            ),
-            child: Text(
-              '${run.signedUpCount}/${run.capacityLimit} spots',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w600,
-                color: t.primaryInk,
-              ),
-            ),
+          child: CatchBadge(
+            label: '${run.signedUpCount}/${run.capacityLimit} spots',
+            tone: CatchBadgeTone.live,
+            size: CatchBadgeSize.md,
           ),
         ),
         Positioned(

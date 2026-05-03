@@ -1,8 +1,7 @@
 import 'package:catch_dating_app/analytics/app_analytics.dart';
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart';
@@ -34,6 +33,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart'
     show AsyncValue, ConsumerWidget, WidgetRef;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 
 part 'go_router.g.dart';
 
@@ -433,7 +434,7 @@ class _RouterLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(body: CatchLoadingIndicator());
   }
 }
 
@@ -457,7 +458,7 @@ class CreateRunRouteScreen extends ConsumerWidget {
     return runClubAsync.when(
       loading: () => const _RouterLoadingScreen(),
       error: (error, _) =>
-          Scaffold(body: Center(child: Text(firestoreErrorMessage(error)))),
+          Scaffold(body: CatchErrorText(error)),
       data: (runClub) => runClub == null
           ? const Scaffold(body: Center(child: Text('Run club not found.')))
           : CreateRunScreen(runClub: runClub),
@@ -485,7 +486,7 @@ class EditRunClubRouteScreen extends ConsumerWidget {
     return runClubAsync.when(
       loading: () => const _RouterLoadingScreen(),
       error: (error, _) =>
-          Scaffold(body: Center(child: Text(firestoreErrorMessage(error)))),
+          Scaffold(body: CatchErrorText(error)),
       data: (runClub) => runClub == null
           ? const Scaffold(body: Center(child: Text('Run club not found.')))
           : CreateRunClubScreen(initialRunClub: runClub),

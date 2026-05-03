@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -5,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -41,8 +43,8 @@ class AttendanceSheetScreen extends ConsumerWidget {
         ),
       ),
       body: runAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(firestoreErrorMessage(e))),
+        loading: () => const CatchLoadingIndicator(),
+        error: (e, _) => CatchErrorText(e),
         data: (run) {
           if (run == null) {
             return const Center(child: Text('Run not found.'));
@@ -111,7 +113,7 @@ class _AttendanceList extends ConsumerWidget {
         ),
         Expanded(
           child: profilesAsync.isLoading
-              ? const Center(child: CircularProgressIndicator())
+              ? const CatchLoadingIndicator()
               : ListView.builder(
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,

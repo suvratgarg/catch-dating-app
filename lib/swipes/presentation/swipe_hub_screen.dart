@@ -1,10 +1,12 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -25,16 +27,16 @@ class SwipeHubScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: t.bg,
       body: uidAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(firestoreErrorMessage(e))),
+        loading: () => const CatchLoadingIndicator(),
+        error: (e, _) => CatchErrorText(e),
         data: (uid) {
           if (uid == null) return const SizedBox.shrink();
 
           final runsAsync = ref.watch(attendedRunsProvider(uid));
 
           return runsAsync.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, _) => Center(child: Text(firestoreErrorMessage(e))),
+            loading: () => const CatchLoadingIndicator(),
+            error: (e, _) => CatchErrorText(e),
             data: (runs) {
               final activeRuns = runsWithOpenSwipeWindow(runs);
 
@@ -126,13 +128,7 @@ class _CatchesHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'CATCHES',
-                style: CatchTextStyles.labelM(
-                  context,
-                  color: t.ink3,
-                ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
-              ),
+              SectionHeader(title: 'CATCHES', heavy: true),
               gapH2,
               Text('After the run', style: CatchTextStyles.displayL(context)),
             ],

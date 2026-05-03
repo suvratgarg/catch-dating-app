@@ -5,6 +5,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'match.freezed.dart';
 part 'match.g.dart';
 
+enum MatchStatus { active, blocked }
+
 @freezed
 abstract class Match with _$Match {
   const Match._();
@@ -19,7 +21,7 @@ abstract class Match with _$Match {
     String? lastMessagePreview,
     String? lastMessageSenderId,
     @Default({}) Map<String, int> unreadCounts,
-    @Default('active') String status,
+    @Default(MatchStatus.active) MatchStatus status,
     String? blockedBy,
     @NullableTimestampConverter() DateTime? blockedAt,
   }) = _Match;
@@ -29,5 +31,5 @@ abstract class Match with _$Match {
   /// Returns the UID of the other participant in this match.
   String otherId(String myUid) => user1Id == myUid ? user2Id : user1Id;
 
-  bool get isBlocked => status == 'blocked';
+  bool get isBlocked => status == MatchStatus.blocked;
 }

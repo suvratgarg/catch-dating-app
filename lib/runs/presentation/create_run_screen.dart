@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -487,15 +487,16 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
           'You have unsaved changes. Would you like to save a draft?',
         ),
         actions: [
-          TextButton(
+          CatchButton(
+            label: 'Discard',
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Discard'),
+            variant: CatchButtonVariant.ghost,
+            size: CatchButtonSize.sm,
           ),
-          FilledButton(
-            onPressed: () {
-              Navigator.of(ctx).pop(true);
-            },
-            child: const Text('Save Draft'),
+          CatchButton(
+            label: 'Save Draft',
+            onPressed: () => Navigator.of(ctx).pop(true),
+            size: CatchButtonSize.sm,
           ),
         ],
       ),

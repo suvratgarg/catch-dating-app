@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -95,24 +96,12 @@ class ClubHeroAppBar extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   if (isHost)
-                    Container(
-                      margin: const EdgeInsets.only(bottom: 6),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 8,
-                        vertical: 3,
-                      ),
-                      decoration: BoxDecoration(
-                        color: t.primary,
-                        borderRadius: BorderRadius.circular(CatchRadius.pill),
-                      ),
-                      child: Text(
-                        'HOST',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.w700,
-                          letterSpacing: 0.8,
-                          color: t.primaryInk,
-                        ),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 6),
+                      child: CatchBadge(
+                        label: 'HOST',
+                        tone: CatchBadgeTone.live,
+                        uppercase: true,
                       ),
                     ),
                   Text(
@@ -142,10 +131,10 @@ class ClubHeroAppBar extends StatelessWidget {
                       ),
                       if (club.rating > 0) ...[
                         const SizedBox(width: 12),
-                        const Icon(
+                        Icon(
                           Icons.star_rounded,
                           size: 14,
-                          color: Colors.amber,
+                          color: t.gold,
                         ),
                         const SizedBox(width: 2),
                         Text(

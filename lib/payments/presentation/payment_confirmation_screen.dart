@@ -1,7 +1,10 @@
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/detail_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -21,8 +24,8 @@ class PaymentConfirmationScreen extends ConsumerWidget {
 
     return Scaffold(
       body: runAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(firestoreErrorMessage(e))),
+        loading: () => const CatchLoadingIndicator(),
+        error: (e, _) => CatchErrorText(e),
         data: (run) {
           if (run == null) {
             return const Center(child: Text('Run not found.'));
@@ -273,16 +276,16 @@ class _RunSummaryCard extends StatelessWidget {
           gapH14,
           Divider(color: t.line, height: 1),
           gapH14,
-          _DetailRow(label: 'Where', value: run.meetingPoint),
+          DetailRow(label: 'Where', value: run.meetingPoint),
           gapH10,
-          _DetailRow(
+          DetailRow(
             label: 'Distance',
             value: '${run.distanceLabel} · ${run.pace.label.toLowerCase()} pace',
           ),
           gapH10,
-          _DetailRow(label: 'Paid', value: '$amount · UPI'),
+          DetailRow(label: 'Paid', value: '$amount · UPI'),
           gapH10,
-          _DetailRow(
+          DetailRow(
             label: 'Refund',
             value:
                 'Full refund until ${RunFormatters.shortWeekday(refundDeadline)} ${RunFormatters.time(refundDeadline)}',
@@ -293,34 +296,6 @@ class _RunSummaryCard extends StatelessWidget {
   }
 }
 
-class _DetailRow extends StatelessWidget {
-  const _DetailRow({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 80,
-          child: Text(label, style: CatchTextStyles.bodyS(context, color: t.ink3)),
-        ),
-        Expanded(
-          child: Text(
-            value,
-            style: CatchTextStyles.bodyS(context, color: t.ink).copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
 
 class _QuickActions extends StatelessWidget {
   const _QuickActions();
@@ -489,23 +464,13 @@ class _StickyBackToHome extends StatelessWidget {
               Sizes.p16,
               Sizes.p12 + bottomPadding,
             ),
-            child: SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton(
-                onPressed: () => Navigator.of(context).popUntil(
-                  (route) => route.isFirst,
-                ),
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: t.ink,
-                  side: BorderSide(color: t.line2, width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  ),
-                  textStyle: CatchTextStyles.labelL(context),
-                ),
-                child: const Text('Back to home'),
+            child: CatchButton(
+              label: 'Back to home',
+              onPressed: () => Navigator.of(context).popUntil(
+                (route) => route.isFirst,
               ),
+              variant: CatchButtonVariant.secondary,
+              fullWidth: true,
             ),
           ),
         ],

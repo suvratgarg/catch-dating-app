@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -131,13 +132,7 @@ class _HostActionPanel extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'HOST TOOLS',
-            style: CatchTextStyles.labelM(
-              context,
-              color: t.ink3,
-            ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
-          ),
+          SectionHeader(title: 'HOST TOOLS', heavy: true),
           const SizedBox(height: 4),
           Text(
             'Manage this club and publish upcoming runs.',
@@ -195,13 +190,7 @@ class _ClubContactSection extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'CONTACT',
-            style: CatchTextStyles.labelM(
-              context,
-              color: t.ink3,
-            ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
-          ),
+          SectionHeader(title: 'CONTACT', heavy: true),
           const SizedBox(height: 12),
           if (runClub.instagramHandle != null)
             _ContactRow(

@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/core/firestore_error_message.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
@@ -28,9 +29,9 @@ class RunClubsListScreen extends ConsumerWidget {
             const RunClubsHeader(),
             Expanded(
               child: viewModelAsync.when(
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const CatchLoadingIndicator(),
                 error: (error, _) =>
-                    Center(child: Text(firestoreErrorMessage(error))),
+                    CatchErrorText(error),
                 data: (viewModel) => RunClubsContent(
                   viewModel: viewModel,
                   isJoinPending: joinMutation.isPending,

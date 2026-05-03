@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
@@ -142,7 +143,7 @@ class _ForceUpdateCheckLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(body: CatchLoadingIndicator());
   }
 }
 

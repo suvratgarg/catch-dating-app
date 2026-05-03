@@ -1,8 +1,9 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
+import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/presentation/chat_list_tile.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/match_celebration_dialog.dart';
@@ -109,13 +110,7 @@ class _MatchesHeader extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'CHATS',
-                style: CatchTextStyles.labelM(
-                  context,
-                  color: t.ink3,
-                ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
-              ),
+              SectionHeader(title: 'CHATS', heavy: true),
               gapH2,
               Text('Your catches', style: CatchTextStyles.displayL(context)),
             ],

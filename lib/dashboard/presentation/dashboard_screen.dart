@@ -4,6 +4,7 @@ import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -40,7 +41,7 @@ class _DashboardLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return const Scaffold(body: CatchLoadingIndicator());
   }
 }
 

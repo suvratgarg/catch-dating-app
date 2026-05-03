@@ -1,11 +1,13 @@
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -48,18 +50,16 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     final paceRange = _paceRange!;
     setState(() => _saving = true);
     try {
-      await ref.read(userProfileRepositoryProvider).updateUserProfile(
+      await ref.read(filtersControllerProvider.notifier).saveFilters(
         uid: user.uid,
-        fields: {
-          'minAgePreference': ageRange.start.round(),
-          'maxAgePreference': ageRange.end.round(),
-          'paceMinSecsPerKm': paceRange.start.round(),
-          'paceMaxSecsPerKm': paceRange.end.round(),
-          'interestedInGenders':
-              (_interestedIn ?? {}).map((e) => e.name).toList(),
-          'preferredDistances':
-              (_distances ?? {}).map((e) => e.name).toList(),
-        },
+        minAgePreference: ageRange.start.round(),
+        maxAgePreference: ageRange.end.round(),
+        paceMinSecsPerKm: paceRange.start.round(),
+        paceMaxSecsPerKm: paceRange.end.round(),
+        interestedInGenders:
+            (_interestedIn ?? {}).map((e) => e.name).toList(),
+        preferredDistances:
+            (_distances ?? {}).map((e) => e.name).toList(),
       );
       if (mounted) context.pop();
     } finally {
@@ -110,8 +110,8 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
         ],
       ),
       body: profileAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(firestoreErrorMessage(error))),
+        loading: () => const CatchLoadingIndicator(),
+        error: (error, _) => CatchErrorText(error),
         data: (user) {
           if (user == null) return const SizedBox.shrink();
           _syncFromProfile(user);
