@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +32,7 @@ Future<void> _saveField({
       fields: fields,
     );
   }).catchError((Object error, StackTrace stack) {
-    debugPrint('_saveField failed: $error\n$stack');
+    debugPrint('[ERROR] ProfileEditSheet._saveField: $error\n$stack');
     // Reset the chain so subsequent saves are not blocked.
     _pendingSave = Future.value();
   });

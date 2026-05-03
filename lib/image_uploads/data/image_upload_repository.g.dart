@@ -26,7 +26,7 @@ final class ImageUploadRepositoryProvider
         argument: null,
         retry: null,
         name: r'imageUploadRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,4 +55,4 @@ final class ImageUploadRepositoryProvider
 }
 
 String _$imageUploadRepositoryHash() =>
-    r'005aaf921d700c4c2b8fe0a5ab10d3d4a8d4e727';
+    r'c566b695971f2bbb37c549a4e6b3677586e73dd8';

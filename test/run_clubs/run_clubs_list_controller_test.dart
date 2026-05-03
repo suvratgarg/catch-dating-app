@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
@@ -285,7 +286,7 @@ void main() {
         () => container
             .read(runClubsListControllerProvider.notifier)
             .joinClub('club-123'),
-        throwsA(isA<StateError>()),
+        throwsA(isA<SignInRequiredException>()),
       );
     });
   });

@@ -65,7 +65,7 @@ Payment? selectLatestSuccessfulPayment(Iterable<Payment> payments) {
   return completedPayments.firstOrNull;
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 PaymentHistoryRepository paymentHistoryRepository(Ref ref) =>
     PaymentHistoryRepository(ref.watch(firebaseFirestoreProvider));
 

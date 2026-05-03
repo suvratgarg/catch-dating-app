@@ -4,8 +4,10 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'app_analytics.g.dart';
 
 abstract interface class AnalyticsReporter {
   Future<void> setCollectionEnabled(bool enabled);
@@ -49,9 +51,8 @@ final class FirebaseAnalyticsReporter implements AnalyticsReporter {
   }
 }
 
-final appAnalyticsProvider = Provider<AppAnalytics>((ref) {
-  return AppAnalytics();
-});
+@riverpod
+AppAnalytics appAnalytics(Ref ref) => AppAnalytics();
 
 /// Vendor-neutral analytics facade for product and navigation events.
 class AppAnalytics {

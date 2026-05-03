@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -54,35 +55,38 @@ class ChatRepository {
     required String matchId,
     required String senderId,
     required String text,
-  }) async {
-    final normalizedText = normalizeOutgoingChatText(text);
-    final now = FieldValue.serverTimestamp();
-    final batch = _db.batch();
+  }) => withFirestoreErrorContext(
+    () async {
+      final normalizedText = normalizeOutgoingChatText(text);
+      final now = FieldValue.serverTimestamp();
+      final batch = _db.batch();
 
-    // Use an untyped ref so we can write FieldValue.serverTimestamp() for sentAt.
-    final msgRef = _db
-        .collection(_chatsCollectionPath)
-        .doc(matchId)
-        .collection('messages')
-        .doc();
+      final msgRef = _db
+          .collection(_chatsCollectionPath)
+          .doc(matchId)
+          .collection('messages')
+          .doc();
 
-    batch.set(msgRef, {
-      'senderId': senderId,
-      'text': normalizedText,
-      'sentAt': now,
-    });
+      batch.set(msgRef, {
+        'senderId': senderId,
+        'text': normalizedText,
+        'sentAt': now,
+      });
 
-    batch.update(_matchRef(matchId), {
-      'lastMessageAt': now,
-      'lastMessagePreview': buildChatPreviewText(normalizedText),
-      'lastMessageSenderId': senderId,
-    });
+      batch.update(_matchRef(matchId), {
+        'lastMessageAt': now,
+        'lastMessagePreview': buildChatPreviewText(normalizedText),
+        'lastMessageSenderId': senderId,
+      });
 
-    await batch.commit();
-  }
+      await batch.commit();
+    },
+    collection: _chatsCollectionPath,
+    action: 'send message',
+  );
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 ChatRepository chatRepository(Ref ref) =>
     ChatRepository(ref.watch(firebaseFirestoreProvider));
 

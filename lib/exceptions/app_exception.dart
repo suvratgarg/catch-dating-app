@@ -1,13 +1,17 @@
 /// Base class for all app-level exceptions that can be shown to the user.
 ///
 /// Subclasses carry a human-readable [message] and a machine-readable [code].
+/// The optional [cause] holds the original error for debugging — it is never
+/// shown to users.
+///
 /// Override [toString] returns [message] so exceptions display cleanly in
 /// error widgets without extra formatting.
 sealed class AppException implements Exception {
-  const AppException(this.code, this.message);
+  const AppException(this.code, this.message, {this.cause});
 
   final String code;
   final String message;
+  final Object? cause;
 
   @override
   String toString() => message;
@@ -18,6 +22,19 @@ sealed class AppException implements Exception {
 class SignInRequiredException extends AppException {
   const SignInRequiredException(String action)
     : super('sign-in-required', 'You need to be signed in to $action.');
+}
+
+// ── Network ───────────────────────────────────────────────────────────────────
+
+class NetworkException extends AppException {
+  const NetworkException(super.code, super.message, {super.cause});
+}
+
+// ── Permissions ───────────────────────────────────────────────────────────────
+
+class PermissionException extends AppException {
+  const PermissionException(String message, {Object? cause})
+    : super('permission-denied', message, cause: cause);
 }
 
 // ── Payments ──────────────────────────────────────────────────────────────────
@@ -55,13 +72,19 @@ class RunBookingFailedException extends AppException {
     : super('run-booking-failed', message);
 }
 
-// ── Firestore ─────────────────────────────────────────────────────────────────
+// ── Firestore / data layer ────────────────────────────────────────────────────
 
 class FirestoreWriteException extends AppException {
   const FirestoreWriteException({
     required String code,
     required String message,
-  }) : super(code, message);
+    Object? cause,
+    this.collection,
+    this.action,
+  }) : super(code, message, cause: cause);
+
+  final String? collection;
+  final String? action;
 }
 
 class DocumentNotFoundException extends AppException {

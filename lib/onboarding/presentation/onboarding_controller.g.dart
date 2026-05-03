@@ -8,12 +8,51 @@ part of 'onboarding_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+///
+/// This is the only controller in the app using this hybrid pattern:
+/// - [OnboardingData] (freezed) holds multi-step form state that must survive
+///   navigation between onboarding pages. This is why [keepAlive] is `true`.
+/// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
+///   single-shot async operations while the UI watches their lifecycle
+///   (idle / pending / error / success).
+/// - The controller self-invalidates at the end of [complete] so its state
+///   is freed once onboarding is done.
+///
+/// **When to use this pattern:** Multi-step flows where state must survive
+/// navigation and a freezed data class captures the full form state.
 
 @ProviderFor(OnboardingController)
 final onboardingControllerProvider = OnboardingControllerProvider._();
 
+/// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+///
+/// This is the only controller in the app using this hybrid pattern:
+/// - [OnboardingData] (freezed) holds multi-step form state that must survive
+///   navigation between onboarding pages. This is why [keepAlive] is `true`.
+/// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
+///   single-shot async operations while the UI watches their lifecycle
+///   (idle / pending / error / success).
+/// - The controller self-invalidates at the end of [complete] so its state
+///   is freed once onboarding is done.
+///
+/// **When to use this pattern:** Multi-step flows where state must survive
+/// navigation and a freezed data class captures the full form state.
 final class OnboardingControllerProvider
     extends $NotifierProvider<OnboardingController, OnboardingData> {
+  /// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+  ///
+  /// This is the only controller in the app using this hybrid pattern:
+  /// - [OnboardingData] (freezed) holds multi-step form state that must survive
+  ///   navigation between onboarding pages. This is why [keepAlive] is `true`.
+  /// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
+  ///   single-shot async operations while the UI watches their lifecycle
+  ///   (idle / pending / error / success).
+  /// - The controller self-invalidates at the end of [complete] so its state
+  ///   is freed once onboarding is done.
+  ///
+  /// **When to use this pattern:** Multi-step flows where state must survive
+  /// navigation and a freezed data class captures the full form state.
   OnboardingControllerProvider._()
     : super(
         from: null,
@@ -42,7 +81,21 @@ final class OnboardingControllerProvider
 }
 
 String _$onboardingControllerHash() =>
-    r'b8e8c644b386ab99f09c36cb8a9252ceaa4f23a3';
+    r'd47b70e1dec2129e1e6cc0ae0f91ff8ad961ec6a';
+
+/// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+///
+/// This is the only controller in the app using this hybrid pattern:
+/// - [OnboardingData] (freezed) holds multi-step form state that must survive
+///   navigation between onboarding pages. This is why [keepAlive] is `true`.
+/// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
+///   single-shot async operations while the UI watches their lifecycle
+///   (idle / pending / error / success).
+/// - The controller self-invalidates at the end of [complete] so its state
+///   is freed once onboarding is done.
+///
+/// **When to use this pattern:** Multi-step flows where state must survive
+/// navigation and a freezed data class captures the full form state.
 
 abstract class _$OnboardingController extends $Notifier<OnboardingData> {
   OnboardingData build();

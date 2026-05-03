@@ -12,7 +12,7 @@ part of 'onboarding_controller.dart';
 // dart format off
 T _$identity<T>(T value) => value;
 /// @nodoc
-mixin _$OnboardingData {
+mixin _$OnboardingData implements DiagnosticableTreeMixin {
 
  OnboardingStep get step; bool get phoneVerified; String? get verificationId; OnboardingProfileDraft get profileDraft;
 /// Create a copy of OnboardingData
@@ -22,6 +22,12 @@ mixin _$OnboardingData {
 $OnboardingDataCopyWith<OnboardingData> get copyWith => _$OnboardingDataCopyWithImpl<OnboardingData>(this as OnboardingData, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'OnboardingData'))
+    ..add(DiagnosticsProperty('step', step))..add(DiagnosticsProperty('phoneVerified', phoneVerified))..add(DiagnosticsProperty('verificationId', verificationId))..add(DiagnosticsProperty('profileDraft', profileDraft));
+}
 
 @override
 bool operator ==(Object other) {
@@ -33,7 +39,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,step,phoneVerified,verificationId,profileDraft);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, verificationId: $verificationId, profileDraft: $profileDraft)';
 }
 
@@ -217,7 +223,7 @@ return $default(_that.step,_that.phoneVerified,_that.verificationId,_that.profil
 /// @nodoc
 
 
-class _OnboardingData extends OnboardingData {
+class _OnboardingData extends OnboardingData with DiagnosticableTreeMixin {
   const _OnboardingData({this.step = OnboardingStep.welcome, this.phoneVerified = false, this.verificationId, this.profileDraft = const OnboardingProfileDraft()}): super._();
   
 
@@ -233,6 +239,12 @@ class _OnboardingData extends OnboardingData {
 _$OnboardingDataCopyWith<_OnboardingData> get copyWith => __$OnboardingDataCopyWithImpl<_OnboardingData>(this, _$identity);
 
 
+@override
+void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+  properties
+    ..add(DiagnosticsProperty('type', 'OnboardingData'))
+    ..add(DiagnosticsProperty('step', step))..add(DiagnosticsProperty('phoneVerified', phoneVerified))..add(DiagnosticsProperty('verificationId', verificationId))..add(DiagnosticsProperty('profileDraft', profileDraft));
+}
 
 @override
 bool operator ==(Object other) {
@@ -244,7 +256,7 @@ bool operator ==(Object other) {
 int get hashCode => Object.hash(runtimeType,step,phoneVerified,verificationId,profileDraft);
 
 @override
-String toString() {
+String toString({ DiagnosticLevel minLevel = DiagnosticLevel.info }) {
   return 'OnboardingData(step: $step, phoneVerified: $phoneVerified, verificationId: $verificationId, profileDraft: $profileDraft)';
 }
 

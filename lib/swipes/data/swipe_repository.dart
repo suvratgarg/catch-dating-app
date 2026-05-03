@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -16,13 +17,17 @@ class SwipeRepository {
       _db.collection(_collectionPath).doc(uid).collection('outgoing');
 
   Future<void> recordSwipe({required Swipe swipe}) =>
-      _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
-        'swiperId': swipe.swiperId,
-        'targetId': swipe.targetId,
-        'runId': swipe.runId,
-        'direction': swipe.direction.name,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+      withFirestoreErrorContext(
+        () => _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
+          'swiperId': swipe.swiperId,
+          'targetId': swipe.targetId,
+          'runId': swipe.runId,
+          'direction': swipe.direction.name,
+          'createdAt': FieldValue.serverTimestamp(),
+        }),
+        collection: _collectionPath,
+        action: 'record swipe',
+      );
 
   /// Returns the set of user IDs this user has already swiped on.
   Future<Set<String>> fetchSwipedUserIds({required String uid}) async {
@@ -31,6 +36,6 @@ class SwipeRepository {
   }
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 SwipeRepository swipeRepository(Ref ref) =>
     SwipeRepository(ref.watch(firebaseFirestoreProvider));

@@ -26,7 +26,7 @@ final class PublicProfileRepositoryProvider
         argument: null,
         retry: null,
         name: r'publicProfileRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,7 +55,7 @@ final class PublicProfileRepositoryProvider
 }
 
 String _$publicProfileRepositoryHash() =>
-    r'76a3733fbfdc6ab8288eaeccfd8e087a9a32cb01';
+    r'141d55cbd15e631ab5ff0497f7acec36de651f60';
 
 @ProviderFor(publicProfile)
 final publicProfileProvider = PublicProfileFamily._();

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
@@ -151,36 +153,44 @@ class RunClubsRepository {
       );
 
   Future<void> leaveClub(String clubId, String userId) =>
-      _db.runTransaction((transaction) async {
-        final clubRef = _runClubRef(clubId);
-        final userRef = _userRef(userId);
-        final clubSnapshot = await transaction.get(clubRef);
+      withFirestoreErrorContext(
+        () => _db.runTransaction((transaction) async {
+          final clubRef = _runClubRef(clubId);
+          final userRef = _userRef(userId);
+          final clubSnapshot = await transaction.get(clubRef);
 
-        if (!clubSnapshot.exists) {
-          throw DocumentNotFoundException('runClubs/$clubId');
-        }
+          if (!clubSnapshot.exists) {
+            throw DocumentNotFoundException('runClubs/$clubId');
+          }
 
-        transaction.update(clubRef, {
-          'memberUserIds': FieldValue.arrayRemove([userId]),
-          'memberCount': FieldValue.increment(-1),
-        });
-        transaction.set(userRef, {
-          'joinedRunClubIds': FieldValue.arrayRemove([clubId]),
-        }, SetOptions(merge: true));
-      });
+          transaction.update(clubRef, {
+            'memberUserIds': FieldValue.arrayRemove([userId]),
+            'memberCount': FieldValue.increment(-1),
+          });
+          transaction.set(userRef, {
+            'joinedRunClubIds': FieldValue.arrayRemove([clubId]),
+          }, SetOptions(merge: true));
+        }),
+        collection: 'runClubs',
+        action: 'leave',
+      );
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 RunClubsRepository runClubsRepository(Ref ref) =>
     RunClubsRepository(ref.watch(firebaseFirestoreProvider));
 
 @riverpod
 Stream<RunClub?> watchRunClub(Ref ref, String id) =>
-    ref.watch(runClubsRepositoryProvider).watchRunClub(id);
+    ref.watch(runClubsRepositoryProvider).watchRunClub(id).timeout(
+      const Duration(seconds: 10),
+    );
 
 @riverpod
 Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) =>
-    ref.watch(runClubsRepositoryProvider).watchRunClubsByLocation(location);
+    ref.watch(runClubsRepositoryProvider).watchRunClubsByLocation(location).timeout(
+      const Duration(seconds: 10),
+    );
 
 @riverpod
 Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
@@ -188,7 +198,8 @@ Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
   IndianCity location,
 ) => ref
     .watch(runClubsRepositoryProvider)
-    .watchRunClubsByLocationSortedByRating(location);
+    .watchRunClubsByLocationSortedByRating(location)
+    .timeout(const Duration(seconds: 10));
 
 @riverpod
 Future<RunClub?> fetchRunClub(Ref ref, String id) =>

@@ -35,8 +35,26 @@ Future<void> main() async {
 
   runApp(
     ProviderScope(
-      overrides: [appAnalyticsProvider.overrideWithValue(analytics)],
-      observers: [AsyncErrorLogger(errorLogger)],
+      overrides: [
+        appAnalyticsProvider.overrideWithValue(analytics),
+        errorLoggerProvider.overrideWithValue(errorLogger),
+      ],
+      observers: [
+        AsyncErrorLogger(
+          errorLogger,
+          onFirestoreWriteFailed: ({
+            required String collection,
+            required String action,
+            required String errorCode,
+          }) {
+            analytics.logFirestoreWriteFailed(
+              collection: collection,
+              action: action,
+              errorCode: errorCode,
+            );
+          },
+        ),
+      ],
       child: const MyApp(),
     ),
   );

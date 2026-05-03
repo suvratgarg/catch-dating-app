@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -42,7 +43,11 @@ class UserProfileRepository {
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> setUserProfile({required UserProfile userProfile}) =>
-      _userRef(userProfile.uid).set(userProfile);
+      withFirestoreErrorContext(
+        () => _userRef(userProfile.uid).set(userProfile),
+        collection: _collectionPath,
+        action: 'set profile',
+      );
 
   /// Updates only the given [fields] on the user document.
   ///
@@ -51,29 +56,49 @@ class UserProfileRepository {
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
-  }) => _userRef(uid).update(fields);
+  }) => withFirestoreErrorContext(
+    () => _userRef(uid).update(fields),
+    collection: _collectionPath,
+    action: 'update profile',
+  );
 
   Future<void> updatePhotoUrls({
     required String uid,
     required List<String> photoUrls,
-  }) => _userRef(uid).update({'photoUrls': photoUrls});
+  }) => withFirestoreErrorContext(
+    () => _userRef(uid).update({'photoUrls': photoUrls}),
+    collection: _collectionPath,
+    action: 'update photo URLs',
+  );
 
   Future<void> setProfileComplete({required String uid}) =>
-      _userRef(uid).update({'profileComplete': true});
+      withFirestoreErrorContext(
+        () => _userRef(uid).update({'profileComplete': true}),
+        collection: _collectionPath,
+        action: 'set profile complete',
+      );
 
   Future<void> saveRun({required String uid, required String runId}) =>
-      _userRef(uid).update({
-        'savedRunIds': FieldValue.arrayUnion([runId]),
-      });
+      withFirestoreErrorContext(
+        () => _userRef(uid).update({
+          'savedRunIds': FieldValue.arrayUnion([runId]),
+        }),
+        collection: _collectionPath,
+        action: 'save run',
+      );
 
   Future<void> unsaveRun({required String uid, required String runId}) =>
-      _userRef(uid).update({
-        'savedRunIds': FieldValue.arrayRemove([runId]),
-      });
+      withFirestoreErrorContext(
+        () => _userRef(uid).update({
+          'savedRunIds': FieldValue.arrayRemove([runId]),
+        }),
+        collection: _collectionPath,
+        action: 'unsave run',
+      );
 
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 UserProfileRepository userProfileRepository(Ref ref) =>
     UserProfileRepository(ref.watch(firebaseFirestoreProvider));
 

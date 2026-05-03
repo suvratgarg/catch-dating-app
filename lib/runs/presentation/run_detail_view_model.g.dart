@@ -8,9 +8,30 @@ part of 'run_detail_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Watches several stream/future providers and combines them into one
+/// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
+/// checked for loading/error so the combined result is [AsyncError] if any
+/// input fails or [AsyncLoading] if any input is still loading.
+///
+/// **When to use this pattern:** Screens that need data from multiple
+/// independent sources and want a single `.when(loading:error:data:)` call
+/// instead of managing multiple async states.
 
 @ProviderFor(runDetailViewModel)
 final runDetailViewModelProvider = RunDetailViewModelFamily._();
+
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Watches several stream/future providers and combines them into one
+/// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
+/// checked for loading/error so the combined result is [AsyncError] if any
+/// input fails or [AsyncLoading] if any input is still loading.
+///
+/// **When to use this pattern:** Screens that need data from multiple
+/// independent sources and want a single `.when(loading:error:data:)` call
+/// instead of managing multiple async states.
 
 final class RunDetailViewModelProvider
     extends
@@ -20,6 +41,16 @@ final class RunDetailViewModelProvider
           AsyncValue<RunDetailViewModel?>
         >
     with $Provider<AsyncValue<RunDetailViewModel?>> {
+  /// **Pattern D: Pure computed provider combining multiple async streams**
+  ///
+  /// Watches several stream/future providers and combines them into one
+  /// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
+  /// checked for loading/error so the combined result is [AsyncError] if any
+  /// input fails or [AsyncLoading] if any input is still loading.
+  ///
+  /// **When to use this pattern:** Screens that need data from multiple
+  /// independent sources and want a single `.when(loading:error:data:)` call
+  /// instead of managing multiple async states.
   RunDetailViewModelProvider._({
     required RunDetailViewModelFamily super.from,
     required String super.argument,
@@ -77,6 +108,17 @@ final class RunDetailViewModelProvider
 String _$runDetailViewModelHash() =>
     r'5df2bd7d5ab7434d71defe492066c854b3d3c309';
 
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Watches several stream/future providers and combines them into one
+/// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
+/// checked for loading/error so the combined result is [AsyncError] if any
+/// input fails or [AsyncLoading] if any input is still loading.
+///
+/// **When to use this pattern:** Screens that need data from multiple
+/// independent sources and want a single `.when(loading:error:data:)` call
+/// instead of managing multiple async states.
+
 final class RunDetailViewModelFamily extends $Family
     with $FunctionalFamilyOverride<AsyncValue<RunDetailViewModel?>, String> {
   RunDetailViewModelFamily._()
@@ -87,6 +129,17 @@ final class RunDetailViewModelFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// **Pattern D: Pure computed provider combining multiple async streams**
+  ///
+  /// Watches several stream/future providers and combines them into one
+  /// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
+  /// checked for loading/error so the combined result is [AsyncError] if any
+  /// input fails or [AsyncLoading] if any input is still loading.
+  ///
+  /// **When to use this pattern:** Screens that need data from multiple
+  /// independent sources and want a single `.when(loading:error:data:)` call
+  /// instead of managing multiple async states.
 
   RunDetailViewModelProvider call(String runId) =>
       RunDetailViewModelProvider._(argument: runId, from: this);

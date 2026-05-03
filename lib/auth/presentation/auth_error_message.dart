@@ -9,17 +9,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 /// [AppException] so Firestore-specific codes like `permission-denied`
 /// get user-friendly translations.
 String generalErrorMessage(Object error) {
-  if (error is FirebaseException || error is AppException) {
-    return firestoreErrorMessage(error);
-  }
-  if (error is StateError) {
-    return error.message.isNotEmpty ? error.message : 'Something went wrong.';
-  }
-  if (error is ArgumentError) {
-    return error.message.isNotEmpty ? error.message : 'Something went wrong.';
-  }
-
-  return _stripCommonErrorPrefix(error.toString());
+  return switch (error) {
+    FirebaseException() || AppException() => firestoreErrorMessage(error),
+    StateError(:final message) =>
+      // ignore: avoid_dynamic_calls
+      message.isNotEmpty ? message : 'Something went wrong.',
+    ArgumentError(:final message) =>
+      // ignore: avoid_dynamic_calls
+      message.isNotEmpty ? message : 'Something went wrong.',
+    _ => _stripCommonErrorPrefix(error.toString()),
+  };
 }
 
 String authErrorMessage(Object error) {

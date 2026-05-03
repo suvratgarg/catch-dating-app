@@ -26,7 +26,7 @@ final class ReviewsRepositoryProvider
         argument: null,
         retry: null,
         name: r'reviewsRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -54,7 +54,7 @@ final class ReviewsRepositoryProvider
   }
 }
 
-String _$reviewsRepositoryHash() => r'671ea8f343eba2c6997f5c4a6cc236fc5ee58ed4';
+String _$reviewsRepositoryHash() => r'93a61efc28bcb8b4a4d88a1d1676dcf4c687d81c';
 
 @ProviderFor(watchReviewsForClub)
 final watchReviewsForClubProvider = WatchReviewsForClubFamily._();

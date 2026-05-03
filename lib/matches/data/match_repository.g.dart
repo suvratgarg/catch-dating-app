@@ -22,7 +22,7 @@ final class MatchRepositoryProvider
         argument: null,
         retry: null,
         name: r'matchRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -49,7 +49,7 @@ final class MatchRepositoryProvider
   }
 }
 
-String _$matchRepositoryHash() => r'9907af557432ac8e51f83fa9e128fe925e7518b0';
+String _$matchRepositoryHash() => r'13f7432d5244d50c8fe9c712bd636394ac5d2c17';
 
 @ProviderFor(matchesForUser)
 final matchesForUserProvider = MatchesForUserFamily._();
@@ -106,7 +106,7 @@ final class MatchesForUserProvider
   }
 }
 
-String _$matchesForUserHash() => r'265881936bfd22d0e5337d8341ff9d884bdb716e';
+String _$matchesForUserHash() => r'04f0b44ddc8c3a036731ac39f0a2405dad368f85';
 
 final class MatchesForUserFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Match>>, String> {
@@ -124,6 +124,75 @@ final class MatchesForUserFamily extends $Family
 
   @override
   String toString() => r'matchesForUserProvider';
+}
+
+@ProviderFor(matchStream)
+final matchStreamProvider = MatchStreamFamily._();
+
+final class MatchStreamProvider
+    extends $FunctionalProvider<AsyncValue<Match?>, Match?, Stream<Match?>>
+    with $FutureModifier<Match?>, $StreamProvider<Match?> {
+  MatchStreamProvider._({
+    required MatchStreamFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'matchStreamProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$matchStreamHash();
+
+  @override
+  String toString() {
+    return r'matchStreamProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<Match?> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<Match?> create(Ref ref) {
+    final argument = this.argument as String;
+    return matchStream(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is MatchStreamProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$matchStreamHash() => r'c1381a4992dd0906bce681d27350c448201c3b59';
+
+final class MatchStreamFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<Match?>, String> {
+  MatchStreamFamily._()
+    : super(
+        retry: null,
+        name: r'matchStreamProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  MatchStreamProvider call(String matchId) =>
+      MatchStreamProvider._(argument: matchId, from: this);
+
+  @override
+  String toString() => r'matchStreamProvider';
 }
 
 @ProviderFor(totalUnreadCount)

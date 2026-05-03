@@ -196,7 +196,8 @@ Future<void> _shareRun(BuildContext context, Run run) async {
         sharePositionOrigin: origin,
       ),
     );
-  } on Object {
+  } on Object catch (error, stack) {
+    debugPrint('[ERROR] RunDetailBody share failed: $error\n$stack');
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Could not open share sheet.')),
@@ -222,7 +223,8 @@ Future<void> _toggleSavedRun(
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text(isSaved ? 'Run removed.' : 'Run saved.')),
     );
-  } on Object {
+  } on Object catch (error, stack) {
+    debugPrint('[ERROR] RunDetailBody saveRun failed: $error\n$stack');
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Could not update saved runs.')),

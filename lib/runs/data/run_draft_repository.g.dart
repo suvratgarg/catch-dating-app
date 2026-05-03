@@ -26,7 +26,7 @@ final class RunDraftRepositoryProvider
         argument: null,
         retry: null,
         name: r'runDraftRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,7 +55,7 @@ final class RunDraftRepositoryProvider
 }
 
 String _$runDraftRepositoryHash() =>
-    r'7c82b14c8472b88745ca9cd9b3a2c36f2b5d731c';
+    r'4bd07d3d0b04366803e48e403a5beaf9852bf1e2';
 
 @ProviderFor(clubRunDrafts)
 final clubRunDraftsProvider = ClubRunDraftsFamily._();

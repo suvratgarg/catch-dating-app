@@ -1,10 +1,11 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -14,6 +15,7 @@ import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -82,7 +84,7 @@ class RunDetailCta extends ConsumerWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         if (errorMutation.hasError)
-          CatchErrorBanner(
+          ErrorBanner(
             message: runBookingErrorMessage(
               (errorMutation as MutationError).error,
             ),
@@ -104,9 +106,11 @@ class RunDetailCta extends ConsumerWidget {
                             .get(runBookingControllerProvider.notifier)
                             .book(run: run, user: userProfile);
                         if (data != null && context.mounted) {
-                          GoRouter.of(context).pushNamed(
-                            Routes.paymentConfirmationScreen.name,
-                            extra: data,
+                          unawaited(
+                            GoRouter.of(context).pushNamed(
+                              Routes.paymentConfirmationScreen.name,
+                              extra: data,
+                            ),
                           );
                         }
                       },

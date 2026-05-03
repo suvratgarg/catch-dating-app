@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -11,6 +10,20 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_booking_controller.g.dart';
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// This is the most common mutation pattern in the app (6 controllers use it):
+/// - [build()] returns `void` — the controller holds no Riverpod state.
+/// - [Mutation]s (`bookMutation`, `cancelMutation`, etc.) are `static final`
+///   fields that track the lifecycle of single-shot operations.
+/// - The UI watches mutations directly (e.g. `ref.watch(controller.mutation)`)
+///   and checks `.isPending`, `.hasError`, `.isSuccess`.
+/// - Controller methods delegate to repositories and let errors propagate
+///   into the Mutation error state automatically.
+///
+/// **When to use this pattern:** Single-shot user actions (book, cancel, join,
+/// leave, submit, delete) where the UI needs to show loading/error/success
+/// state for a specific action.
 @riverpod
 class RunBookingController extends _$RunBookingController {
   static final bookMutation = Mutation<void>();
@@ -90,10 +103,6 @@ class RunBookingController extends _$RunBookingController {
   }
 
   String _requireSignedIn({required String action}) {
-    try {
-      return requireSignedInUid(ref, action: action);
-    } on StateError {
-      throw SignInRequiredException(action);
-    }
+    return requireSignedInUid(ref, action: action);
   }
 }

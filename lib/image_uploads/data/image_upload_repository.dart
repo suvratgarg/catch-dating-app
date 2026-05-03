@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -34,14 +35,18 @@ class ImageUploadRepository {
   Future<String> upload({
     required String storagePath,
     required XFile image,
-  }) async {
-    final bytes = await image.readAsBytes();
-    final ext = _ext(image.name);
-    final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
-    final ref = _storage.ref('$storagePath.$ext');
-    await ref.putData(bytes, SettableMetadata(contentType: contentType));
-    return ref.getDownloadURL();
-  }
+  }) => withFirestoreErrorContext(
+    () async {
+      final bytes = await image.readAsBytes();
+      final ext = _ext(image.name);
+      final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
+      final ref = _storage.ref('$storagePath.$ext');
+      await ref.putData(bytes, SettableMetadata(contentType: contentType));
+      return ref.getDownloadURL();
+    },
+    collection: 'storage',
+    action: 'upload',
+  );
 
   // ── Path helpers ──────────────────────────────────────────────────────────
 
@@ -68,6 +73,6 @@ class ImageUploadRepository {
   }
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 ImageUploadRepository imageUploadRepository(Ref ref) =>
     ImageUploadRepository(ref.watch(firebaseStorageProvider));

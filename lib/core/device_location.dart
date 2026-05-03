@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -28,7 +29,8 @@ class DeviceLocation extends _$DeviceLocation {
         ),
       );
       return LatLng(position.latitude, position.longitude);
-    } catch (_) {
+    } catch (error, stack) {
+      debugPrint('[ERROR] DeviceLocation.build: $error\n$stack');
       return null;
     }
   }

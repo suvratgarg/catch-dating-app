@@ -12,7 +12,7 @@ void main() {
       repo = RunDraftRepository();
     });
 
-    RunDraft _buildDraft({
+    RunDraft buildDraft({
       String id = 'draft-1',
       String runClubId = 'club-1',
       DateTime? savedAt,
@@ -67,7 +67,7 @@ void main() {
 
     group('saveDraft / loadDrafts', () {
       test('save then load returns the same draft', () async {
-        final draft = _buildDraft(distance: '5');
+        final draft = buildDraft(distance: '5');
         await repo.saveDraft(userId: 'user-1', draft: draft);
 
         final drafts = await repo.loadDrafts(
@@ -80,10 +80,10 @@ void main() {
       });
 
       test('save with same ID updates instead of duplicating', () async {
-        final draft1 = _buildDraft(id: 'draft-1', distance: '5');
+        final draft1 = buildDraft(id: 'draft-1', distance: '5');
         await repo.saveDraft(userId: 'user-1', draft: draft1);
 
-        final draft2 = _buildDraft(
+        final draft2 = buildDraft(
           id: 'draft-1',
           distance: '10',
           meetingPoint: 'Park',
@@ -100,12 +100,12 @@ void main() {
       });
 
       test('sorted by savedAt descending (newest first)', () async {
-        final old = _buildDraft(
+        final old = buildDraft(
           id: 'old',
           savedAt: DateTime(2026, 5, 1),
           distance: '5',
         );
-        final newer = _buildDraft(
+        final newer = buildDraft(
           id: 'new',
           savedAt: DateTime(2026, 5, 3),
           distance: '10',
@@ -126,7 +126,7 @@ void main() {
         for (var i = 0; i < 7; i++) {
           await repo.saveDraft(
             userId: 'user-1',
-            draft: _buildDraft(
+            draft: buildDraft(
               id: 'draft-$i',
               savedAt: DateTime(2026, 5, i + 1),
               distance: '$i',
@@ -149,8 +149,8 @@ void main() {
 
     group('deleteDraft', () {
       test('removes the specified draft, leaves others', () async {
-        await repo.saveDraft(userId: 'user-1', draft: _buildDraft(id: 'd-1'));
-        await repo.saveDraft(userId: 'user-1', draft: _buildDraft(id: 'd-2'));
+        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-1'));
+        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-2'));
 
         await repo.deleteDraft(
           runClubId: 'club-1',
@@ -167,7 +167,7 @@ void main() {
       });
 
       test('does nothing when draft not found', () async {
-        await repo.saveDraft(userId: 'user-1', draft: _buildDraft(id: 'd-1'));
+        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-1'));
         await repo.deleteDraft(
           runClubId: 'club-1',
           userId: 'user-1',
@@ -184,8 +184,8 @@ void main() {
 
     group('deleteAllDrafts', () {
       test('clears all drafts for the club/user', () async {
-        await repo.saveDraft(userId: 'user-1', draft: _buildDraft(id: 'd-1'));
-        await repo.saveDraft(userId: 'user-1', draft: _buildDraft(id: 'd-2'));
+        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-1'));
+        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-2'));
 
         await repo.deleteAllDrafts(runClubId: 'club-1', userId: 'user-1');
 
@@ -201,11 +201,11 @@ void main() {
       test('different clubIds produce isolated lists', () async {
         await repo.saveDraft(
           userId: 'user-1',
-          draft: _buildDraft(id: 'd-1', runClubId: 'club-1'),
+          draft: buildDraft(id: 'd-1', runClubId: 'club-1'),
         );
         await repo.saveDraft(
           userId: 'user-1',
-          draft: _buildDraft(id: 'd-2', runClubId: 'club-2'),
+          draft: buildDraft(id: 'd-2', runClubId: 'club-2'),
         );
 
         final club1Drafts = await repo.loadDrafts(
@@ -225,11 +225,11 @@ void main() {
       test('different userIds produce isolated lists', () async {
         await repo.saveDraft(
           userId: 'user-1',
-          draft: _buildDraft(id: 'd-1'),
+          draft: buildDraft(id: 'd-1'),
         );
         await repo.saveDraft(
           userId: 'user-2',
-          draft: _buildDraft(id: 'd-2'),
+          draft: buildDraft(id: 'd-2'),
         );
 
         final user1Drafts = await repo.loadDrafts(

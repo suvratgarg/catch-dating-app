@@ -125,7 +125,8 @@ class ActivitySection extends ConsumerWidget {
       if ((match.unreadCounts[uid] ?? 0) > 0) {
         try {
           await repository.resetUnread(matchId: match.id, uid: uid);
-        } catch (_) {
+        } catch (error, stack) {
+          debugPrint('[ERROR] ActivitySection resetUnread: $error\n$stack');
           if (context.mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(

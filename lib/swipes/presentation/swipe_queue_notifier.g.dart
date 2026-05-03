@@ -8,12 +8,54 @@ part of 'swipe_queue_notifier.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern C: AsyncNotifier with async state**
+///
+/// Used when state is loaded asynchronously AND needs to be mutated after load:
+/// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
+///   (loading / data / error) automatically.
+/// - Methods like [swipe] mutate the loaded state by removing the first
+///   profile from the list. Since state is `AsyncData<List<...>>`, the
+///   mutation is synchronous (just `state = AsyncData(newList)`).
+/// - The UI watches with `.when(loading:error:data:)` for the initial load
+///   and uses the current state for mutations.
+///
+/// **When to use this pattern:** Data that needs an async fetch to initialize
+/// followed by synchronous state mutations (pagination, queue operations,
+/// local filtering of fetched data).
 
 @ProviderFor(SwipeQueueNotifier)
 final swipeQueueProvider = SwipeQueueNotifierFamily._();
 
+/// **Pattern C: AsyncNotifier with async state**
+///
+/// Used when state is loaded asynchronously AND needs to be mutated after load:
+/// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
+///   (loading / data / error) automatically.
+/// - Methods like [swipe] mutate the loaded state by removing the first
+///   profile from the list. Since state is `AsyncData<List<...>>`, the
+///   mutation is synchronous (just `state = AsyncData(newList)`).
+/// - The UI watches with `.when(loading:error:data:)` for the initial load
+///   and uses the current state for mutations.
+///
+/// **When to use this pattern:** Data that needs an async fetch to initialize
+/// followed by synchronous state mutations (pagination, queue operations,
+/// local filtering of fetched data).
 final class SwipeQueueNotifierProvider
     extends $AsyncNotifierProvider<SwipeQueueNotifier, List<PublicProfile>> {
+  /// **Pattern C: AsyncNotifier with async state**
+  ///
+  /// Used when state is loaded asynchronously AND needs to be mutated after load:
+  /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
+  ///   (loading / data / error) automatically.
+  /// - Methods like [swipe] mutate the loaded state by removing the first
+  ///   profile from the list. Since state is `AsyncData<List<...>>`, the
+  ///   mutation is synchronous (just `state = AsyncData(newList)`).
+  /// - The UI watches with `.when(loading:error:data:)` for the initial load
+  ///   and uses the current state for mutations.
+  ///
+  /// **When to use this pattern:** Data that needs an async fetch to initialize
+  /// followed by synchronous state mutations (pagination, queue operations,
+  /// local filtering of fetched data).
   SwipeQueueNotifierProvider._({
     required SwipeQueueNotifierFamily super.from,
     required (String, {Set<String> vibeIds}) super.argument,
@@ -53,6 +95,21 @@ final class SwipeQueueNotifierProvider
 String _$swipeQueueNotifierHash() =>
     r'bfd3b1260f2f6cc61dd9902b37baf8c3f463adde';
 
+/// **Pattern C: AsyncNotifier with async state**
+///
+/// Used when state is loaded asynchronously AND needs to be mutated after load:
+/// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
+///   (loading / data / error) automatically.
+/// - Methods like [swipe] mutate the loaded state by removing the first
+///   profile from the list. Since state is `AsyncData<List<...>>`, the
+///   mutation is synchronous (just `state = AsyncData(newList)`).
+/// - The UI watches with `.when(loading:error:data:)` for the initial load
+///   and uses the current state for mutations.
+///
+/// **When to use this pattern:** Data that needs an async fetch to initialize
+/// followed by synchronous state mutations (pagination, queue operations,
+/// local filtering of fetched data).
+
 final class SwipeQueueNotifierFamily extends $Family
     with
         $ClassFamilyOverride<
@@ -71,6 +128,21 @@ final class SwipeQueueNotifierFamily extends $Family
         isAutoDispose: true,
       );
 
+  /// **Pattern C: AsyncNotifier with async state**
+  ///
+  /// Used when state is loaded asynchronously AND needs to be mutated after load:
+  /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
+  ///   (loading / data / error) automatically.
+  /// - Methods like [swipe] mutate the loaded state by removing the first
+  ///   profile from the list. Since state is `AsyncData<List<...>>`, the
+  ///   mutation is synchronous (just `state = AsyncData(newList)`).
+  /// - The UI watches with `.when(loading:error:data:)` for the initial load
+  ///   and uses the current state for mutations.
+  ///
+  /// **When to use this pattern:** Data that needs an async fetch to initialize
+  /// followed by synchronous state mutations (pagination, queue operations,
+  /// local filtering of fetched data).
+
   SwipeQueueNotifierProvider call(
     String runId, {
     Set<String> vibeIds = const {},
@@ -82,6 +154,21 @@ final class SwipeQueueNotifierFamily extends $Family
   @override
   String toString() => r'swipeQueueProvider';
 }
+
+/// **Pattern C: AsyncNotifier with async state**
+///
+/// Used when state is loaded asynchronously AND needs to be mutated after load:
+/// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
+///   (loading / data / error) automatically.
+/// - Methods like [swipe] mutate the loaded state by removing the first
+///   profile from the list. Since state is `AsyncData<List<...>>`, the
+///   mutation is synchronous (just `state = AsyncData(newList)`).
+/// - The UI watches with `.when(loading:error:data:)` for the initial load
+///   and uses the current state for mutations.
+///
+/// **When to use this pattern:** Data that needs an async fetch to initialize
+/// followed by synchronous state mutations (pagination, queue operations,
+/// local filtering of fetched data).
 
 abstract class _$SwipeQueueNotifier
     extends $AsyncNotifier<List<PublicProfile>> {

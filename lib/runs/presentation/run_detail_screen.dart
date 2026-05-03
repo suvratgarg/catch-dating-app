@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_body.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class RunDetailScreen extends ConsumerWidget {
     return Scaffold(
       body: vmAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text(e.toString())),
+        error: (e, _) => Center(child: Text(firestoreErrorMessage(e))),
         data: (vm) {
           if (vm == null) {
             return const Center(child: Text('Run not found.'));

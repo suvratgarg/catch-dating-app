@@ -21,7 +21,7 @@ final class ChatRepositoryProvider
         argument: null,
         retry: null,
         name: r'chatRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class ChatRepositoryProvider
   }
 }
 
-String _$chatRepositoryHash() => r'0b7044875b8c07584ff10e7578d2b443f1c07ce4';
+String _$chatRepositoryHash() => r'f5bb52f1c50ce09e2fe669c4ed8d1686727a46f4';
 
 @ProviderFor(chatMessages)
 final chatMessagesProvider = ChatMessagesFamily._();

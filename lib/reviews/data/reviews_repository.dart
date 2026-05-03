@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/domain/review_document_id.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -59,30 +60,40 @@ class ReviewsRepository {
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> addReview(Review review) {
-    final ref = _reviewsRef.doc(
-      reviewDocumentId(
-        runClubId: review.runClubId,
-        reviewerUserId: review.reviewerUserId,
-      ),
-    );
-    return ref.set(review.copyWith(id: ref.id));
-  }
+  Future<void> addReview(Review review) => withFirestoreErrorContext(
+    () {
+      final ref = _reviewsRef.doc(
+        reviewDocumentId(
+          runClubId: review.runClubId,
+          reviewerUserId: review.reviewerUserId,
+        ),
+      );
+      return ref.set(review.copyWith(id: ref.id));
+    },
+    collection: _collectionPath,
+    action: 'add review',
+  );
 
-  Future<void> updateReview(Review review) =>
-      _reviewsRef.doc(review.id).update({
-        'rating': review.rating,
-        'comment': review.comment,
-        'updatedAt': FieldValue.serverTimestamp(),
-      });
+  Future<void> updateReview(Review review) => withFirestoreErrorContext(
+    () => _reviewsRef.doc(review.id).update({
+      'rating': review.rating,
+      'comment': review.comment,
+      'updatedAt': FieldValue.serverTimestamp(),
+    }),
+    collection: _collectionPath,
+    action: 'update review',
+  );
 
-  Future<void> deleteReview(String reviewId) =>
-      _reviewsRef.doc(reviewId).delete();
+  Future<void> deleteReview(String reviewId) => withFirestoreErrorContext(
+    () => _reviewsRef.doc(reviewId).delete(),
+    collection: _collectionPath,
+    action: 'delete review',
+  );
 }
 
 // ── Providers ─────────────────────────────────────────────────────────────────
 
-@Riverpod(keepAlive: true)
+@riverpod
 ReviewsRepository reviewsRepository(Ref ref) =>
     ReviewsRepository(ref.watch(firebaseFirestoreProvider));
 

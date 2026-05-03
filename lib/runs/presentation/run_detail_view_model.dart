@@ -61,6 +61,16 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
   );
 }
 
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Watches several stream/future providers and combines them into one
+/// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
+/// checked for loading/error so the combined result is [AsyncError] if any
+/// input fails or [AsyncLoading] if any input is still loading.
+///
+/// **When to use this pattern:** Screens that need data from multiple
+/// independent sources and want a single `.when(loading:error:data:)` call
+/// instead of managing multiple async states.
 @riverpod
 AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
   return buildRunDetailViewModel(

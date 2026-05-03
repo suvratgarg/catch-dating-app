@@ -91,7 +91,7 @@ class SwipeCandidateRepository {
   }
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 SwipeCandidateRepository swipeCandidateRepository(Ref ref) =>
     SwipeCandidateRepository(
       ref.watch(runRepositoryProvider),

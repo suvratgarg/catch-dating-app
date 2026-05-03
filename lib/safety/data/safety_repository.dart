@@ -3,7 +3,9 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'safety_repository.g.dart';
 
 class BlockedUser {
   const BlockedUser({
@@ -89,18 +91,16 @@ class SafetyRepository {
   }
 }
 
-final safetyRepositoryProvider = Provider<SafetyRepository>(
-  (ref) => SafetyRepository(
-    ref.watch(firebaseFirestoreProvider),
-    ref.watch(firebaseFunctionsProvider),
-    ref.watch(firebaseAuthProvider),
-  ),
+@riverpod
+SafetyRepository safetyRepository(Ref ref) => SafetyRepository(
+  ref.watch(firebaseFirestoreProvider),
+  ref.watch(firebaseFunctionsProvider),
+  ref.watch(firebaseAuthProvider),
 );
 
-final blockedUsersProvider = StreamProvider.autoDispose<List<BlockedUser>>((
-  ref,
-) {
+@riverpod
+Stream<List<BlockedUser>> blockedUsers(Ref ref) {
   final uid = ref.watch(uidProvider).asData?.value;
   if (uid == null) return const Stream.empty();
   return ref.watch(safetyRepositoryProvider).watchBlockedUsers(uid: uid);
-});
+}

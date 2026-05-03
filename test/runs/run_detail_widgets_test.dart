@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
@@ -15,10 +16,8 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'runs_test_helpers.dart';
 import '../run_clubs/run_clubs_test_helpers.dart' show FakeRunClubsRepository;
+import 'runs_test_helpers.dart';
 
 void main() {
   group('RunDetailScreen', () {
@@ -56,7 +55,7 @@ void main() {
         ],
       );
 
-      expect(find.text('Bad state: boom'), findsOneWidget);
+      expect(find.text('boom'), findsOneWidget);
     });
 
     testWidgets('renders the missing state', (tester) async {

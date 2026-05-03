@@ -53,7 +53,7 @@ class PublicProfileRepository {
   }
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 PublicProfileRepository publicProfileRepository(Ref ref) =>
     PublicProfileRepository(ref.watch(firebaseFirestoreProvider));
 

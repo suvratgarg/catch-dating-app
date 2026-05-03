@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
+import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -39,7 +40,8 @@ class RunDraftRepository {
       }
       fresh.sort((a, b) => b.savedAt.compareTo(a.savedAt));
       return fresh;
-    } catch (_) {
+    } catch (error, stack) {
+      debugPrint('[ERROR] RunDraftRepository.loadDrafts: $error\n$stack');
       return [];
     }
   }
@@ -116,7 +118,7 @@ class RunDraftRepository {
   }
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 RunDraftRepository runDraftRepository(Ref ref) => RunDraftRepository();
 
 @riverpod

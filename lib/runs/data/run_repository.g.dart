@@ -21,7 +21,7 @@ final class RunRepositoryProvider
         argument: null,
         retry: null,
         name: r'runRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,7 +48,7 @@ final class RunRepositoryProvider
   }
 }
 
-String _$runRepositoryHash() => r'575c538b2ab8ac560cbfcecc9d0ba8e2d5f41870';
+String _$runRepositoryHash() => r'1ca5816b6dbed4851ef8ab59b32dfb23f001d4be';
 
 @ProviderFor(watchRun)
 final watchRunProvider = WatchRunFamily._();
@@ -99,7 +99,7 @@ final class WatchRunProvider
   }
 }
 
-String _$watchRunHash() => r'98f031bde136bc17743d37b6b7080a91c1af5e4b';
+String _$watchRunHash() => r'871b4572751818a738699f84ce8505831411961d';
 
 final class WatchRunFamily extends $Family
     with $FunctionalFamilyOverride<Stream<Run?>, String> {
@@ -169,7 +169,7 @@ final class RunsForClubProvider
   }
 }
 
-String _$runsForClubHash() => r'd60f4b44ccf52c96842898a8623a5ab978c75942';
+String _$runsForClubHash() => r'f9f29e830099516621d7beb312d4b11bccaa7753';
 
 final class RunsForClubFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {
@@ -239,7 +239,7 @@ final class AttendedRunsProvider
   }
 }
 
-String _$attendedRunsHash() => r'2cd166c36327ebd1e4909c2b1b5113bcc0f8d98d';
+String _$attendedRunsHash() => r'1d8f35bc44636d86b6cbfad6f11b26dbc7be8851';
 
 final class AttendedRunsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {
@@ -309,7 +309,7 @@ final class SignedUpRunsProvider
   }
 }
 
-String _$signedUpRunsHash() => r'fc85fbaaeacd65154ebd9925dfdd83446e289369';
+String _$signedUpRunsHash() => r'5eca924dd8a279818067e40e11493504bc3b9f78';
 
 final class SignedUpRunsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {

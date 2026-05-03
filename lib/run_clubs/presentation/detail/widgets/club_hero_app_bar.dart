@@ -182,7 +182,8 @@ Future<void> shareRunClub(BuildContext context, RunClub club) async {
         sharePositionOrigin: origin,
       ),
     );
-  } on Object {
+  } on Object catch (error, stack) {
+    debugPrint('[ERROR] ClubHeroAppBar share failed: $error\n$stack');
     if (!context.mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Could not open share sheet.')),

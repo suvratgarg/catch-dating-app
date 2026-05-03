@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:flutter/foundation.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
@@ -11,6 +10,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -39,6 +39,19 @@ abstract class OnboardingData with _$OnboardingData {
   List<Gender> get interestedInGenders => profileDraft.interestedInGenders;
 }
 
+/// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+///
+/// This is the only controller in the app using this hybrid pattern:
+/// - [OnboardingData] (freezed) holds multi-step form state that must survive
+///   navigation between onboarding pages. This is why [keepAlive] is `true`.
+/// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
+///   single-shot async operations while the UI watches their lifecycle
+///   (idle / pending / error / success).
+/// - The controller self-invalidates at the end of [complete] so its state
+///   is freed once onboarding is done.
+///
+/// **When to use this pattern:** Multi-step flows where state must survive
+/// navigation and a freezed data class captures the full form state.
 @Riverpod(keepAlive: true)
 class OnboardingController extends _$OnboardingController {
   static const welcomeStep = OnboardingStep.welcome;
@@ -317,6 +330,10 @@ class OnboardingController extends _$OnboardingController {
       },
     );
     _deleteDraft();
+    // Onboarding is complete — the router will redirect away shortly.
+    // Invalidate self so the keepAlive provider is disposed and its
+    // state (including OnboardingData) is freed.
+    ref.invalidateSelf();
   }
 
   String _requireSignedInUid() {
@@ -415,7 +432,9 @@ class OnboardingController extends _$OnboardingController {
           sexualOrientation: state.sexualOrientation,
           interestedInGenders: state.interestedInGenders,
         ),
-      ).catchError((_, __) {/* best-effort */}),
+      ).catchError((Object error, StackTrace stack) {
+        debugPrint('[ERROR] OnboardingController._saveDraft: $error\n$stack');
+      }),
     );
   }
 
@@ -427,7 +446,9 @@ class OnboardingController extends _$OnboardingController {
       ref
           .read(onboardingDraftRepositoryProvider)
           .deleteDraft(uid: uid)
-          .catchError((_, __) {/* best-effort */}),
+          .catchError((Object error, StackTrace stack) {
+        debugPrint('[ERROR] OnboardingController._deleteDraft: $error\n$stack');
+      }),
     );
   }
 }

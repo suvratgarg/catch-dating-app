@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:flutter/foundation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -84,6 +85,7 @@ class PhotoUploadController extends _$PhotoUploadController {
   }
 
   void _failUploading(int index, Object error) {
+    debugPrint('[ERROR] PhotoUploadController._failUploading($index): $error');
     state = (
       loadingIndices: state.loadingIndices.difference({index}),
       uploadError: error,
@@ -115,7 +117,9 @@ class PhotoUploadController extends _$PhotoUploadController {
     final nextWrite = _pendingPhotoWrite.then((_) => operation());
     _pendingPhotoWrite = nextWrite.then<void>(
       (_) {},
-      onError: (error, stackTrace) {},
+      onError: (Object error, StackTrace stack) {
+        debugPrint('[ERROR] PhotoUploadController._serializePhotoWrite: $error\n$stack');
+      },
     );
     return nextWrite;
   }

@@ -26,7 +26,7 @@ final class UserProfileRepositoryProvider
         argument: null,
         retry: null,
         name: r'userProfileRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,7 +55,7 @@ final class UserProfileRepositoryProvider
 }
 
 String _$userProfileRepositoryHash() =>
-    r'b19e03e10d5cccfff77ccdf6561cdf36a0c39a07';
+    r'e74eeb8aeb2b86dce8e86f1d42332dddef3fbafe';
 
 @ProviderFor(userProfileStream)
 final userProfileStreamProvider = UserProfileStreamProvider._();

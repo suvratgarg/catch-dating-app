@@ -26,7 +26,7 @@ final class OnboardingDraftRepositoryProvider
         argument: null,
         retry: null,
         name: r'onboardingDraftRepositoryProvider',
-        isAutoDispose: false,
+        isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,4 +55,4 @@ final class OnboardingDraftRepositoryProvider
 }
 
 String _$onboardingDraftRepositoryHash() =>
-    r'6e4ac3d0f58791bb09c4a06d178ace2e7ec9f694';
+    r'4812d4edfdf79d802e084ebefec7e8cb526954d0';

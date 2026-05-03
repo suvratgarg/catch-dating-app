@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -72,26 +75,47 @@ class RunRepository {
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> createRun({required Run run}) => _runRef(run.id).set(run);
+  Future<void> createRun({required Run run}) => withFirestoreErrorContext(
+    () => _runRef(run.id).set(run),
+    collection: _collectionPath,
+    action: 'create run',
+  );
 
   Future<void> signUpForRun({required String runId, required String userId}) =>
-      _runRef(runId).update({
-        'signedUpUserIds': FieldValue.arrayUnion([userId]),
-      });
+      withFirestoreErrorContext(
+        () => _runRef(runId).update({
+          'signedUpUserIds': FieldValue.arrayUnion([userId]),
+        }),
+        collection: _collectionPath,
+        action: 'sign up for run',
+      );
 
   /// Cancels the current user's sign-up via the [cancelRunSignUp] Cloud
   /// Function, which atomically removes them from [signedUpUserIds] and
   /// decrements their gender count.
   Future<void> cancelSignUpViaFunction({required String runId}) =>
-      _functions.httpsCallable('cancelRunSignUp').call({'runId': runId});
+      withFirestoreErrorContext(
+        () => _functions.httpsCallable('cancelRunSignUp').call({'runId': runId}),
+        collection: _collectionPath,
+        action: 'cancel sign-up',
+      );
 
   Future<void> joinWaitlistViaFunction({required String runId}) =>
-      _functions.httpsCallable('joinRunWaitlist').call({'runId': runId});
+      withFirestoreErrorContext(
+        () =>
+            _functions.httpsCallable('joinRunWaitlist').call({'runId': runId}),
+        collection: _collectionPath,
+        action: 'join waitlist',
+      );
 
   Future<void> leaveWaitlist({required String runId, required String userId}) =>
-      _runRef(runId).update({
-        'waitlistUserIds': FieldValue.arrayRemove([userId]),
-      });
+      withFirestoreErrorContext(
+        () => _runRef(runId).update({
+          'waitlistUserIds': FieldValue.arrayRemove([userId]),
+        }),
+        collection: _collectionPath,
+        action: 'leave waitlist',
+      );
 
   /// Toggles attendance for a single user via the [markRunAttendance] Cloud
   /// Function. Only callable by the run club's host.
@@ -99,17 +123,21 @@ class RunRepository {
   Future<bool> markAttendance({
     required String runId,
     required String userId,
-  }) async {
-    final result =
-        await _functions.httpsCallable('markRunAttendance').call({
-          'runId': runId,
-          'userId': userId,
-        });
-    return (result.data as Map<String, dynamic>)['attended'] as bool;
-  }
+  }) => withFirestoreErrorContext(
+    () async {
+      final result =
+          await _functions.httpsCallable('markRunAttendance').call({
+            'runId': runId,
+            'userId': userId,
+          });
+      return (result.data as Map<String, dynamic>)['attended'] as bool;
+    },
+    collection: _collectionPath,
+    action: 'mark attendance',
+  );
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 RunRepository runRepository(Ref ref) => RunRepository(
   ref.watch(firebaseFirestoreProvider),
   ref.watch(firebaseFunctionsProvider),
@@ -117,19 +145,27 @@ RunRepository runRepository(Ref ref) => RunRepository(
 
 @riverpod
 Stream<Run?> watchRun(Ref ref, String runId) =>
-    ref.watch(runRepositoryProvider).watchRun(runId);
+    ref.watch(runRepositoryProvider).watchRun(runId).timeout(
+      const Duration(seconds: 10),
+    );
 
 @riverpod
 Stream<List<Run>> runsForClub(Ref ref, String runClubId) =>
-    ref.watch(runRepositoryProvider).watchRunsForClub(runClubId: runClubId);
+    ref.watch(runRepositoryProvider).watchRunsForClub(runClubId: runClubId).timeout(
+      const Duration(seconds: 10),
+    );
 
 @riverpod
 Stream<List<Run>> attendedRuns(Ref ref, String uid) =>
-    ref.watch(runRepositoryProvider).watchAttendedRuns(uid: uid);
+    ref.watch(runRepositoryProvider).watchAttendedRuns(uid: uid).timeout(
+      const Duration(seconds: 10),
+    );
 
 @riverpod
 Stream<List<Run>> signedUpRuns(Ref ref, String uid) =>
-    ref.watch(runRepositoryProvider).watchSignedUpRuns(uid: uid);
+    ref.watch(runRepositoryProvider).watchSignedUpRuns(uid: uid).timeout(
+      const Duration(seconds: 10),
+    );
 
 /// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
 @riverpod

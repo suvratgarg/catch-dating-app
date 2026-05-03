@@ -25,56 +25,57 @@ class RunClubDetailScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(runClubDetailViewModelProvider(runClubId));
-    final joinMutation = ref.watch(RunClubMembershipController.joinMutation);
-    final leaveMutation = ref.watch(RunClubMembershipController.leaveMutation);
     final currentUid = ref.watch(uidProvider).asData?.value;
     final currentUserProfile = ref
         .watch(userProfileStreamProvider)
         .asData
         ?.value;
 
-    listenForMutationErrorSnackbar(
-      context: context,
-      ref: ref,
-      mutation: RunClubMembershipController.joinMutation,
-    );
-    listenForMutationErrorSnackbar(
-      context: context,
-      ref: ref,
-      mutation: RunClubMembershipController.leaveMutation,
-    );
-
+    final joinMutation = ref.watch(RunClubMembershipController.joinMutation);
+    final leaveMutation = ref.watch(RunClubMembershipController.leaveMutation);
     final vm = vmAsync.asData?.value;
 
+    Widget wrapMutationListeners(Widget child) => MutationErrorSnackbarListener(
+      mutation: RunClubMembershipController.joinMutation,
+      child: MutationErrorSnackbarListener(
+        mutation: RunClubMembershipController.leaveMutation,
+        child: child,
+      ),
+    );
+
     if (vm != null) {
-      return Scaffold(
-        body: _buildBody(
-          runClub: vm.runClub,
-          runs: vm.allRuns,
-          upcomingRuns: vm.upcomingRuns,
-          reviews: vm.reviews,
-          userProfile: vm.userProfile,
-          uid: vm.uid,
-          isHost: vm.isHost,
-          isMember: vm.isMember,
-          isMutating: joinMutation.isPending || leaveMutation.isPending,
+      return wrapMutationListeners(
+        Scaffold(
+          body: _buildBody(
+            runClub: vm.runClub,
+            runs: vm.allRuns,
+            upcomingRuns: vm.upcomingRuns,
+            reviews: vm.reviews,
+            userProfile: vm.userProfile,
+            uid: vm.uid,
+            isHost: vm.isHost,
+            isMember: vm.isMember,
+            isMutating: joinMutation.isPending || leaveMutation.isPending,
+          ),
         ),
       );
     }
 
     if (vmAsync.isLoading && initialRunClub != null) {
-      return Scaffold(
-        body: _buildBody(
-          runClub: initialRunClub!,
-          runs: const [],
-          upcomingRuns: const [],
-          reviews: const [],
-          userProfile: currentUserProfile,
-          uid: currentUid,
-          isHost:
-              currentUid != null && currentUid == initialRunClub!.hostUserId,
-          isMember: currentUid != null && initialRunClub!.hasMember(currentUid),
-          isMutating: joinMutation.isPending || leaveMutation.isPending,
+      return wrapMutationListeners(
+        Scaffold(
+          body: _buildBody(
+            runClub: initialRunClub!,
+            runs: const [],
+            upcomingRuns: const [],
+            reviews: const [],
+            userProfile: currentUserProfile,
+            uid: currentUid,
+            isHost:
+                currentUid != null && currentUid == initialRunClub!.hostUserId,
+            isMember: currentUid != null && initialRunClub!.hasMember(currentUid),
+            isMutating: joinMutation.isPending || leaveMutation.isPending,
+          ),
         ),
       );
     }

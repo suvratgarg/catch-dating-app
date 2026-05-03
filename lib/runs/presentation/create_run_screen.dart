@@ -3,24 +3,24 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
+import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_controller.dart';
 import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/eligibility_step.dart';
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_details_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/step_progress_bar.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_step.dart';
-import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
-import 'package:catch_dating_app/runs/domain/run_draft.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/where_step.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -380,7 +380,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       if (draft.paceName != null) {
         try {
           _selectedPace = PaceLevel.values.byName(draft.paceName!);
-        } catch (_) {}
+        } catch (_) {
+          // Draft contained an unrecognized pace name — ignore and use default.
+        }
       }
 
       // Where
@@ -643,7 +645,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
               ),
             ),
             if (submitMutation.hasError)
-              CatchErrorBanner(
+              ErrorBanner(
                 message: mutationErrorMessage(submitMutation),
               ),
             StepperFooter(

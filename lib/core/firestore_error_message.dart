@@ -39,12 +39,13 @@ String firestoreErrorMessage(Object error) {
     return userMessage;
   }
 
-  if (error is StateError) {
-    return error.message.isNotEmpty ? error.message : 'Something went wrong.';
+  if (error case StateError(:final message)) {
+    return message.isNotEmpty ? message : 'Something went wrong.';
   }
 
-  if (error is ArgumentError) {
-    return error.message.isNotEmpty ? error.message : 'Something went wrong.';
+  if (error case ArgumentError(:final message)) {
+    // ignore: avoid_dynamic_calls
+    return message.isNotEmpty ? message : 'Something went wrong.';
   }
 
   return _stripCommonErrorPrefix(error.toString());

@@ -17,13 +17,9 @@ class RunClubsListScreen extends ConsumerWidget {
     final viewModelAsync = ref.watch(runClubsListViewModelProvider);
     final joinMutation = ref.watch(RunClubsListController.joinMutation);
 
-    listenForMutationErrorSnackbar(
-      context: context,
-      ref: ref,
+    return MutationErrorSnackbarListener(
       mutation: RunClubsListController.joinMutation,
-    );
-
-    return Scaffold(
+      child: Scaffold(
       backgroundColor: t.bg,
       body: SafeArea(
         child: Column(
@@ -46,6 +42,7 @@ class RunClubsListScreen extends ConsumerWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
