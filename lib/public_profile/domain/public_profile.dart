@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -13,6 +14,11 @@ abstract class PublicProfile with _$PublicProfile {
     required String bio,
     required Gender gender,
     @Default([]) List<String> photoUrls,
+
+    // Location
+    @JsonKey(unknownEnumValue: null) IndianCity? city,
+    double? latitude,
+    double? longitude,
 
     // Background
     int? height,
@@ -31,6 +37,12 @@ abstract class PublicProfile with _$PublicProfile {
     @JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,
     @JsonKey(unknownEnumValue: null) DietaryPreference? diet,
     @JsonKey(unknownEnumValue: null) ChildrenStatus? children,
+
+    // Running identity
+    @Default(300) int paceMinSecsPerKm,
+    @Default(420) int paceMaxSecsPerKm,
+    @Default([]) List<PreferredDistance> preferredDistances,
+    @Default([]) List<RunReason> runningReasons,
   }) = _PublicProfile;
 
   factory PublicProfile.fromJson(Map<String, dynamic> json) =>
@@ -49,6 +61,9 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   bio: user.bio,
   gender: user.gender,
   photoUrls: user.photoUrls,
+  city: user.city,
+  latitude: user.latitude,
+  longitude: user.longitude,
   height: user.height,
   occupation: user.occupation,
   company: user.company,
@@ -61,4 +76,8 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   workout: user.workout,
   diet: user.diet,
   children: user.children,
+  paceMinSecsPerKm: user.paceMinSecsPerKm,
+  paceMaxSecsPerKm: user.paceMaxSecsPerKm,
+  preferredDistances: user.preferredDistances,
+  runningReasons: user.runningReasons,
 );

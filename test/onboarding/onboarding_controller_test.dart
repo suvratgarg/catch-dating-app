@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -14,18 +16,20 @@ void main() {
   group('OnboardingController.initStep', () {
     test('starts on the welcome step for signed-out users', () async {
       final repository = FakeAuthRepository();
+      final draftRepository = FakeOnboardingDraftRepository();
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
           uidProvider.overrideWith((ref) => Stream.value(null)),
           userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],
       );
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
       await primeOnboardingAsyncProviders(container);
 
-      container.read(onboardingControllerProvider.notifier).initStep();
+      await container.read(onboardingControllerProvider.notifier).initStep();
 
       expect(
         container.read(onboardingControllerProvider).step,
@@ -41,18 +45,20 @@ void main() {
             uid: 'runner-1',
             phoneNumber: '+919876543210',
           );
+        final draftRepository = FakeOnboardingDraftRepository();
         final container = createOnboardingTestContainer(
           overrides: [
             authRepositoryProvider.overrideWithValue(repository),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+            onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
           ],
         );
         addTearDown(repository.dispose);
         addTearDown(container.dispose);
         await primeOnboardingAsyncProviders(container);
 
-        container.read(onboardingControllerProvider.notifier).initStep();
+        await container.read(onboardingControllerProvider.notifier).initStep();
 
         expect(
           container.read(onboardingControllerProvider),
@@ -68,6 +74,7 @@ void main() {
     test('jumps to the photos step for incomplete profiles', () async {
       final repository = FakeAuthRepository()
         ..currentUserValue = TestUser(uid: 'runner-1');
+      final draftRepository = FakeOnboardingDraftRepository();
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
@@ -77,13 +84,14 @@ void main() {
               buildUser(uid: 'runner-1').copyWith(profileComplete: false),
             ),
           ),
+          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],
       );
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
       await primeOnboardingAsyncProviders(container);
 
-      container.read(onboardingControllerProvider.notifier).initStep();
+      await container.read(onboardingControllerProvider.notifier).initStep();
 
       expect(
         container.read(onboardingControllerProvider).step,
@@ -96,18 +104,20 @@ void main() {
       () async {
         final repository = FakeAuthRepository()
           ..currentUserValue = TestUser(uid: 'runner-1');
+        final draftRepository = FakeOnboardingDraftRepository();
         final container = createOnboardingTestContainer(
           overrides: [
             authRepositoryProvider.overrideWithValue(repository),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+            onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
           ],
         );
         addTearDown(repository.dispose);
         addTearDown(container.dispose);
         await primeOnboardingAsyncProviders(container);
 
-        container.read(onboardingControllerProvider.notifier).initStep();
+        await container.read(onboardingControllerProvider.notifier).initStep();
 
         expect(
           container.read(onboardingControllerProvider).step,
@@ -143,7 +153,7 @@ void main() {
 
         final notifier = container.read(onboardingControllerProvider.notifier);
 
-        await notifier.sendOtp('9999999999');
+        await notifier.sendOtp('9999999999', '+91');
 
         expect(repository.verifiedPhoneNumber, '+919999999999');
         expect(
@@ -151,7 +161,7 @@ void main() {
           const OnboardingData(
             step: OnboardingStep.otp,
             verificationId: 'verification-id',
-            profileDraft: OnboardingProfileDraft(phoneNumber: '9999999999'),
+            profileDraft: OnboardingProfileDraft(phoneNumber: '9999999999', countryCode: '+91'),
           ),
         );
         expect(repository.credential, isNull);
@@ -184,7 +194,7 @@ void main() {
 
         final notifier = container.read(onboardingControllerProvider.notifier);
 
-        await notifier.sendOtp('9999999999');
+        await notifier.sendOtp('9999999999', '+91');
 
         expect(repository.credential, same(credential));
         expect(repository.otpVerificationId, isNull);
@@ -247,7 +257,7 @@ void main() {
         addTearDown(container.dispose);
         final notifier = container.read(onboardingControllerProvider.notifier);
 
-        await notifier.sendOtp('9999999999');
+        await notifier.sendOtp('9999999999', '+91');
         await notifier.verifyOtp('123456');
 
         expect(repository.otpVerificationId, 'verification-id');
@@ -288,6 +298,7 @@ void main() {
         lastName: 'Runner',
         dateOfBirth: DateTime(1997, 4, 15),
         phoneNumber: '9876543210',
+        countryCode: '+91',
       );
       notifier.setGenderInterest(
         gender: Gender.woman,
@@ -315,6 +326,7 @@ void main() {
           phoneNumber: '+919876543210',
         );
       final userProfileRepository = FakeOnboardingUserProfileRepository();
+      final draftRepository = FakeOnboardingDraftRepository();
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
@@ -323,6 +335,7 @@ void main() {
           ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],
       );
       addTearDown(repository.dispose);
@@ -330,12 +343,13 @@ void main() {
       await primeOnboardingAsyncProviders(container);
 
       final notifier = container.read(onboardingControllerProvider.notifier);
-      notifier.initStep();
+      await notifier.initStep();
       notifier.setNameDob(
         firstName: 'Asha',
         lastName: 'Runner',
         dateOfBirth: DateTime(1997, 4, 15),
         phoneNumber: '9876543210',
+        countryCode: '+91',
       );
       notifier.setGenderInterest(
         gender: Gender.woman,
@@ -362,6 +376,7 @@ void main() {
     test('throws when the latest profile is unavailable', () async {
       final repository = FakeAuthRepository();
       final userProfileRepository = FakeOnboardingUserProfileRepository();
+      final draftRepository = FakeOnboardingDraftRepository();
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
@@ -370,6 +385,7 @@ void main() {
           ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],
       );
       addTearDown(repository.dispose);
@@ -385,13 +401,7 @@ void main() {
               preferredDistances: const [PreferredDistance.tenK],
               runningReasons: const [RunReason.community],
             ),
-        throwsA(
-          isA<StateError>().having(
-            (error) => error.message,
-            'message',
-            'User profile not loaded. Please try again.',
-          ),
-        ),
+        throwsA(isA<DocumentNotFoundException>()),
       );
     });
 
@@ -402,6 +412,7 @@ void main() {
           uid: 'runner-1',
         ).copyWith(profileComplete: false),
       );
+      final draftRepository = FakeOnboardingDraftRepository();
       final container = createOnboardingTestContainer(
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
@@ -414,6 +425,7 @@ void main() {
               buildUser(uid: 'runner-1').copyWith(profileComplete: false),
             ),
           ),
+          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],
       );
       addTearDown(repository.dispose);

@@ -1,0 +1,34 @@
+name: Firestore Rules Tests
+
+on:
+  pull_request:
+    paths:
+      - 'firestore.rules'
+      - 'functions/test/firestore.rules.test.cjs'
+      - 'functions/package.json'
+      - 'functions/package-lock.json'
+  push:
+    branches: [main]
+    paths:
+      - 'firestore.rules'
+      - 'functions/test/firestore.rules.test.cjs'
+      - 'functions/package.json'
+      - 'functions/package-lock.json'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm ci
+
+      - run: npm test

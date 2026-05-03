@@ -5,7 +5,12 @@ enum OnboardingStep {
   nameDob,
   genderInterest,
   photos,
-  runningPrefs,
+  runningPrefs;
+
+  static OnboardingStep? fromIndex(int index) {
+    if (index < 0 || index >= OnboardingStep.values.length) return null;
+    return OnboardingStep.values[index];
+  }
 }
 
 extension OnboardingStepX on OnboardingStep {

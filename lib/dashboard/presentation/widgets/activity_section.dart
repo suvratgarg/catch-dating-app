@@ -1,8 +1,7 @@
-import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -14,43 +13,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ActivityScreen extends ConsumerWidget {
-  const ActivityScreen({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final uidAsync = ref.watch(uidProvider);
-    final t = CatchTokens.of(context);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: uidAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => _ActivityMessage(
-          icon: Icons.error_outline_rounded,
-          title: 'Activity unavailable',
-          body: error.toString(),
-          tokens: t,
-        ),
-        data: (uid) {
-          if (uid == null) {
-            return const SizedBox.shrink();
-          }
-          return _ActivityContent(uid: uid, tokens: t);
-        },
-      ),
-    );
-  }
-}
-
-class _ActivityContent extends ConsumerWidget {
-  const _ActivityContent({required this.uid, required this.tokens});
+class ActivitySection extends ConsumerWidget {
+  const ActivitySection({
+    super.key,
+    required this.uid,
+    this.showEmptyState = true,
+  });
 
   final String uid;
-  final CatchTokens tokens;
+  final bool showEmptyState;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
     final matchesAsync = ref.watch(matchesForUserProvider(uid));
     final runsAsync = ref.watch(signedUpRunsProvider(uid));
 
@@ -64,74 +39,102 @@ class _ActivityContent extends ConsumerWidget {
       runs: runs,
     );
 
-    final markAllRead =
-        matches.any((match) => (match.unreadCounts[uid] ?? 0) > 0)
-        ? () => _markAllRead(ref, matches)
-        : null;
+    final hasUnread = matches.any((match) => (match.unreadCounts[uid] ?? 0) > 0);
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        CatchTopBar(
-          title: 'Activity',
-          actions: [
-            CatchTopBarTextAction(
-              label: 'Mark all read',
-              onPressed: markAllRead,
-              foregroundColor: markAllRead == null
-                  ? tokens.ink3
-                  : tokens.primary,
+        if (hasUnread && items.isNotEmpty) ...[
+          Align(
+            alignment: Alignment.centerRight,
+            child: GestureDetector(
+              onTap: () => _markAllRead(ref, matches, context),
+              child: Text(
+                'Mark all read',
+                style: CatchTextStyles.bodyM(context, color: t.primary),
+              ),
             ),
-          ],
-        ),
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              Sizes.p12,
-              CatchSpacing.s5,
-              Sizes.p24,
-            ),
-            children: [
-              if (isLoading) ...[
-                const _ActivitySkeleton(),
-              ] else if (error != null) ...[
-                _ActivityMessage(
-                  icon: Icons.error_outline_rounded,
-                  title: 'Could not load activity',
-                  body: error.toString(),
-                  tokens: tokens,
-                ),
-              ] else if (items.isEmpty) ...[
-                _ActivityMessage(
-                  icon: Icons.notifications_none_rounded,
-                  title: 'No new activity',
-                  body:
-                      'New catches, messages, and run reminders will collect here.',
-                  tokens: tokens,
-                ),
-              ] else ...[
-                for (final group in _groupItems(items)) ...[
-                  SectionHeader(title: group.label),
-                  gapH8,
-                  for (final item in group.items) ...[
-                    _ActivityTile(item: item, tokens: tokens),
-                    if (item != group.items.last) Divider(color: tokens.line),
-                  ],
-                  gapH18,
-                ],
-              ],
-            ],
           ),
-        ),
+          gapH8,
+        ],
+        if (isLoading) ...[
+          CatchSurface(
+            padding: const EdgeInsets.all(Sizes.p16),
+            borderColor: t.line,
+            child: Row(
+              children: [
+                const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+                gapW10,
+                const Expanded(
+                  child: _ActivityStateLabel('Loading activity...'),
+                ),
+              ],
+            ),
+          ),
+        ] else if (error != null) ...[
+          CatchSurface(
+            padding: const EdgeInsets.all(Sizes.p16),
+            borderColor: t.line,
+            child: Row(
+              children: [
+                Icon(Icons.error_outline_rounded, color: t.primary, size: 18),
+                gapW10,
+                const Expanded(
+                  child: _ActivityStateLabel('Could not load activity'),
+                ),
+              ],
+            ),
+          ),
+        ] else if (items.isEmpty) ...[
+          if (showEmptyState)
+            _ActivityMessage(
+              icon: Icons.notifications_none_rounded,
+              title: 'No new activity',
+              body:
+                  'New catches, messages, and run reminders will collect here.',
+              tokens: t,
+            ),
+        ] else ...[
+          Divider(color: t.line, height: 1),
+          gapH18,
+          for (final group in _groupItems(items)) ...[
+            SectionHeader(title: group.label),
+            gapH8,
+            for (final item in group.items) ...[
+              _ActivityTile(item: item, tokens: t),
+              if (item != group.items.last) Divider(color: t.line),
+            ],
+            gapH18,
+          ],
+        ],
       ],
     );
   }
 
-  Future<void> _markAllRead(WidgetRef ref, List<Match> matches) async {
+  Future<void> _markAllRead(
+    WidgetRef ref,
+    List<Match> matches,
+    BuildContext context,
+  ) async {
     final repository = ref.read(matchRepositoryProvider);
     for (final match in matches) {
       if ((match.unreadCounts[uid] ?? 0) > 0) {
-        await repository.resetUnread(matchId: match.id, uid: uid);
+        try {
+          await repository.resetUnread(matchId: match.id, uid: uid);
+        } catch (_) {
+          if (context.mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Failed to mark messages as read.'),
+              ),
+            );
+          }
+          return;
+        }
       }
     }
   }
@@ -148,7 +151,10 @@ class _ActivityTile extends StatelessWidget {
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: item.route == null ? null : () => context.push(item.route!),
+        onTap: () {
+          final route = item.route;
+          if (route != null) context.push(route);
+        },
         borderRadius: BorderRadius.circular(CatchRadius.md),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 10),
@@ -203,7 +209,6 @@ class _ActivityTile extends StatelessWidget {
   }
 }
 
-
 class _ActivityMessage extends StatelessWidget {
   const _ActivityMessage({
     required this.icon,
@@ -243,27 +248,15 @@ class _ActivityMessage extends StatelessWidget {
   }
 }
 
-class _ActivitySkeleton extends StatelessWidget {
-  const _ActivitySkeleton();
+class _ActivityStateLabel extends StatelessWidget {
+  const _ActivityStateLabel(this.message);
+
+  final String message;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-
-    return Column(
-      children: List.generate(
-        4,
-        (index) => Container(
-          height: 66,
-          margin: const EdgeInsets.only(bottom: 10),
-          decoration: BoxDecoration(
-            color: t.surface,
-            borderRadius: BorderRadius.circular(CatchRadius.md),
-            border: Border.all(color: t.line),
-          ),
-        ),
-      ),
-    );
+    return Text(message, style: CatchTextStyles.bodyS(context, color: t.ink2));
   }
 }
 
@@ -384,9 +377,11 @@ List<_ActivityGroup> _groupItems(List<_ActivityItem> items) {
 
   return [
     if (today.isNotEmpty) _ActivityGroup(label: 'Today', items: today),
-    if (upcoming.isNotEmpty) _ActivityGroup(label: 'Upcoming', items: upcoming),
+    if (upcoming.isNotEmpty)
+      _ActivityGroup(label: 'Upcoming', items: upcoming),
     if (yesterday.isNotEmpty)
       _ActivityGroup(label: 'Yesterday', items: yesterday),
-    if (earlier.isNotEmpty) _ActivityGroup(label: 'This week', items: earlier),
+    if (earlier.isNotEmpty)
+      _ActivityGroup(label: 'This week', items: earlier),
   ];
 }

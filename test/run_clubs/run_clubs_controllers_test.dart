@@ -423,19 +423,15 @@ void main() {
             existingRunClub: existingClub,
           );
 
-      final updatedClub = fakeRepository.lastUpdatedRunClub;
-      expect(updatedClub, isNotNull);
-      expect(updatedClub!.id, existingClub.id);
-      expect(updatedClub.name, 'New Name');
-      expect(updatedClub.location, IndianCity.indore);
-      expect(updatedClub.area, 'Vijay Nagar');
-      expect(updatedClub.description, 'Updated description');
-      expect(updatedClub.imageUrl, existingClub.imageUrl);
-      expect(updatedClub.memberUserIds, existingClub.memberUserIds);
-      expect(updatedClub.memberCount, 2);
-      expect(updatedClub.rating, 4.5);
-      expect(updatedClub.reviewCount, 8);
-      expect(updatedClub.nextRunLabel, 'Sat 6:30 AM');
+      expect(fakeRepository.lastUpdatedClubId, existingClub.id);
+      final fields = fakeRepository.lastUpdatedFields;
+      expect(fields, isNotNull);
+      expect(fields!['name'], 'New Name');
+      expect(fields['location'], 'indore');
+      expect(fields['area'], 'Vijay Nagar');
+      expect(fields['description'], 'Updated description');
+      // When no new cover is uploaded, imageUrl stays as the existing one.
+      expect(fields['imageUrl'], existingClub.imageUrl);
       expect(fakeImageUploadRepository.lastUploadClubId, isNull);
     });
 
@@ -479,10 +475,7 @@ void main() {
           );
 
       expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
-      expect(
-        fakeRepository.lastUpdatedRunClub!.imageUrl,
-        'https://example.com/new.jpg',
-      );
+      expect(fakeRepository.lastUpdatedFields!['imageUrl'], 'https://example.com/new.jpg');
     });
 
     test('rejects editing by a non-host user', () async {

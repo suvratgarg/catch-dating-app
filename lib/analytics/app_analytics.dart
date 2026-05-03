@@ -107,6 +107,20 @@ class AppAnalytics {
     unawaited(_reporter.setUserId(userId));
   }
 
+  /// Logs a Firestore write failure so we can track permission-denied,
+  /// network, and quota errors in dashboards alongside Crashlytics.
+  void logFirestoreWriteFailed({
+    required String collection,
+    required String action,
+    required String errorCode,
+  }) {
+    logEvent(AnalyticsEvents.firestoreWriteFailed, parameters: {
+      AnalyticsParameters.firestoreCollection: collection,
+      AnalyticsParameters.firestoreAction: action,
+      AnalyticsParameters.firestoreErrorCode: errorCode,
+    });
+  }
+
   static String _validateEventName(String name) {
     final isValid = RegExp(r'^[a-zA-Z][a-zA-Z0-9_]{0,39}$').hasMatch(name);
     if (!isValid) {
@@ -179,6 +193,7 @@ abstract final class AnalyticsEvents {
   static const matchViewed = 'match_viewed';
   static const chatMessageSent = 'chat_message_sent';
   static const profileEdited = 'profile_edited';
+  static const firestoreWriteFailed = 'firestore_write_failed';
 }
 
 abstract final class AnalyticsParameters {
@@ -191,4 +206,9 @@ abstract final class AnalyticsParameters {
   static const runClubId = 'run_club_id';
   static const runId = 'run_id';
   static const matchId = 'match_id';
+
+  // Firestore error context
+  static const firestoreCollection = 'firestore_collection';
+  static const firestoreAction = 'firestore_action';
+  static const firestoreErrorCode = 'firestore_error_code';
 }

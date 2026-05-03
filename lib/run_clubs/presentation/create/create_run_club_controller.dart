@@ -43,17 +43,19 @@ class CreateRunClubController extends _$CreateRunClubController {
       }
 
       final clubsRepo = ref.read(runClubsRepositoryProvider);
+      final fields = <String, dynamic>{
+        'name': name,
+        'description': description,
+        'location': location.name,
+        'area': area,
+        'imageUrl': imageUrl,
+      };
+      if (instagramHandle != null) fields['instagramHandle'] = instagramHandle;
+      if (phoneNumber != null) fields['phoneNumber'] = phoneNumber;
+      if (email != null) fields['email'] = email;
       await clubsRepo.updateRunClub(
-        runClub: existingRunClub.copyWith(
-          name: name,
-          description: description,
-          location: location,
-          area: area,
-          imageUrl: imageUrl,
-          instagramHandle: instagramHandle,
-          phoneNumber: phoneNumber,
-          email: email,
-        ),
+        clubId: existingRunClub.id,
+        fields: fields,
       );
       return;
     }

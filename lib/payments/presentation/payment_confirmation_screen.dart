@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -21,7 +22,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
     return Scaffold(
       body: runAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (e, _) => Center(child: Text('Error: $e')),
+        error: (e, _) => Center(child: Text(firestoreErrorMessage(e))),
         data: (run) {
           if (run == null) {
             return const Center(child: Text('Run not found.'));

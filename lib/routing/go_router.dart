@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/activity/presentation/activity_screen.dart';
 import 'package:catch_dating_app/analytics/app_analytics.dart';
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
@@ -42,7 +42,6 @@ enum Routes {
   legacyAuthRedirect('/auth'),
   onboardingScreen('/onboarding'),
   calendarScreen('/calendar'),
-  activityScreen('/activity'),
   filtersScreen('/filters'),
   runMapScreen('/map'),
   // Home / Dashboard branch (index 0)
@@ -132,11 +131,6 @@ GoRouter goRouter(Ref ref) {
         path: Routes.calendarScreen.path,
         name: Routes.calendarScreen.name,
         builder: (context, state) => const CalendarScreen(),
-      ),
-      GoRoute(
-        path: Routes.activityScreen.path,
-        name: Routes.activityScreen.name,
-        builder: (context, state) => const ActivityScreen(),
       ),
       GoRoute(
         path: Routes.filtersScreen.path,
@@ -463,7 +457,7 @@ class CreateRunRouteScreen extends ConsumerWidget {
     return runClubAsync.when(
       loading: () => const _RouterLoadingScreen(),
       error: (error, _) =>
-          Scaffold(body: Center(child: Text(error.toString()))),
+          Scaffold(body: Center(child: Text(firestoreErrorMessage(error)))),
       data: (runClub) => runClub == null
           ? const Scaffold(body: Center(child: Text('Run club not found.')))
           : CreateRunScreen(runClub: runClub),
@@ -491,7 +485,7 @@ class EditRunClubRouteScreen extends ConsumerWidget {
     return runClubAsync.when(
       loading: () => const _RouterLoadingScreen(),
       error: (error, _) =>
-          Scaffold(body: Center(child: Text(error.toString()))),
+          Scaffold(body: Center(child: Text(firestoreErrorMessage(error)))),
       data: (runClub) => runClub == null
           ? const Scaffold(body: Center(child: Text('Run club not found.')))
           : CreateRunClubScreen(initialRunClub: runClub),

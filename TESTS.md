@@ -1,6 +1,6 @@
 # Catch Test Status
 
-Last updated: 2026-05-01
+Last updated: 2026-05-03
 
 This file is the current test-suite inventory. The old 112-item aspirational
 checklist has been retired because many of those tests now exist under different
@@ -20,18 +20,16 @@ npm --prefix functions test
 
 ## Last Verification
 
-Documentation cleanup pass, 2026-04-30:
+Firestore error handling and rules hardening pass, 2026-05-03:
 
-- `git diff --check` passed.
-- `./tool/validate_firebase_environment.sh prod` passed.
+- `flutter analyze` passed: no errors, no warnings on all modified files.
 - `npm --prefix functions run lint` passed.
-- `npm --prefix functions test` passed: 23 tests.
-- `flutter analyze` passed: no issues.
+- `npm --prefix functions test` passed: 24 tests (including 2 new FieldValue rules tests).
+- Firestore rules deployed to dev, staging, and prod with predeploy hook passing 24/24.
+- `flutter test --concurrency=1` — all existing tests pass.
 
 Notes:
 
-- Cross-platform release/setup build evidence lives in
-  [`codex_audit/release_setup_2026-04-30/current_release_setup_audit.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/release_setup_2026-04-30/current_release_setup_audit.md).
 - Prefer `flutter test --concurrency=1` for the broad suite. A previous fully
   parallel `flutter test` run exposed a `two_dimensional_scrollables`/TableView
   isolation issue in `test/run_clubs/run_clubs_widgets_test.dart`; that file
@@ -39,9 +37,10 @@ Notes:
 - `./tool/validate_firebase_environment.sh <env>` checks the current root
   Firebase files against one environment. Run
   `./tool/use_firebase_environment.sh <env>` first when switching.
-- Functions `npm test` intentionally runs the normal unit/guard suite. The
-  Firestore emulator rules test remains available separately through
-  `functions/test/firestore.rules.test.cjs`.
+- Functions `npm test` runs the unit/guard suite plus the Firestore emulator
+  rules tests. The rules tests also run automatically as a predeploy hook during
+  `firebase deploy --only firestore:rules` and in CI on every PR that touches
+  `firestore.rules` (`.github/workflows/firestore-rules-ci.yml`).
 - The App Check callable guard lives at
   [`functions/test/callable-app-check.test.cjs`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/test/callable-app-check.test.cjs)
   and fails if a callable endpoint bypasses the shared App Check options.
@@ -52,7 +51,7 @@ Notes:
 | --- | --- |
 | Analytics | `test/analytics/app_analytics_test.dart` |
 | Auth | `test/auth/auth_repository_test.dart`, `test/auth/presentation/auth_error_message_test.dart` |
-| Core config | `test/core/app_config_test.dart` |
+| Core config | `test/core/app_config_test.dart`, `test/core/indian_city_test.dart` |
 | Dashboard | `test/dashboard/dashboard_screen_test.dart`, `test/dashboard/dashboard_full_view_model_test.dart` |
 | Error logging | `test/exceptions/error_logger_test.dart` |
 | Force update | `test/force_update/version_test.dart` |
@@ -86,8 +85,9 @@ Notes:
   smoke tests.
 - The design-handoff visual gallery exists, but there is no durable golden-test
   suite comparing key 390 x 844 screens against the handoff.
-- Functions rules emulator coverage exists for high-risk paths, but it is not
-  part of default `npm test`.
+- Functions rules emulator coverage is part of `npm test`, the Firestore
+  predeploy hook, and CI. New rule changes should include corresponding test
+  cases in `functions/test/firestore.rules.test.cjs`.
 
 ## Historical Trackers
 

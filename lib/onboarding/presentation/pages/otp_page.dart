@@ -55,7 +55,9 @@ class _OtpPageState extends ConsumerState<OtpPage> {
   }
 
   void _resendOtp() {
-    final phoneNumber = ref.read(onboardingControllerProvider).phoneNumber;
+    final data = ref.read(onboardingControllerProvider);
+    final phoneNumber = data.phoneNumber;
+    final countryCode = data.countryCode;
     if (_secondsUntilResend > 0 || phoneNumber.isEmpty) {
       return;
     }
@@ -66,7 +68,9 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     _restartResendCooldown();
 
     OnboardingController.sendOtpMutation.run(ref, (tx) async {
-      await tx.get(onboardingControllerProvider.notifier).sendOtp(phoneNumber);
+      await tx
+          .get(onboardingControllerProvider.notifier)
+          .sendOtp(phoneNumber, countryCode);
     });
   }
 
@@ -113,7 +117,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           const SizedBox(height: 32),
           OnboardingStepHeader(
             title: 'Enter the code',
-            subtitle: 'Sent to ${_maskedPhoneNumber(data.phoneNumber)}',
+            subtitle: 'Sent to ${_maskedPhoneNumber(data.phoneNumber, data.countryCode)}',
           ),
           const SizedBox(height: 40),
           _OtpDigitField(
@@ -171,16 +175,16 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     );
   }
 
-  String _maskedPhoneNumber(String phoneNumber) {
+  String _maskedPhoneNumber(String phoneNumber, String countryCode) {
     if (phoneNumber.isEmpty) {
       return 'your number';
     }
 
     if (phoneNumber.length < 5) {
-      return '+91 $phoneNumber';
+      return '$countryCode $phoneNumber';
     }
 
-    return '+91 ${phoneNumber.substring(0, 5)} ${phoneNumber.substring(5)}';
+    return '$countryCode ${phoneNumber.substring(0, 5)} ${phoneNumber.substring(5)}';
   }
 
   String _resendButtonLabel(bool isSending) {

@@ -54,6 +54,9 @@ export const syncPublicProfile = onDocumentWritten(
       gender: user.gender,
       photoUrls: user.photoUrls ?? [],
       // Optional fields — omit undefined values so Firestore doesn't store them
+      ...(user.city && {city: user.city}),
+      ...(user.latitude !== undefined && {latitude: user.latitude}),
+      ...(user.longitude !== undefined && {longitude: user.longitude}),
       ...(user.height !== undefined && {height: user.height}),
       ...(user.occupation && {occupation: user.occupation}),
       ...(user.company && {company: user.company}),
@@ -66,6 +69,10 @@ export const syncPublicProfile = onDocumentWritten(
       ...(user.workout && {workout: user.workout}),
       ...(user.diet && {diet: user.diet}),
       ...(user.children && {children: user.children}),
+      paceMinSecsPerKm: user.paceMinSecsPerKm,
+      paceMaxSecsPerKm: user.paceMaxSecsPerKm,
+      preferredDistances: user.preferredDistances ?? [],
+      runningReasons: user.runningReasons ?? [],
     };
 
     logger.info("Syncing public profile", {userId});

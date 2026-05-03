@@ -43,10 +43,21 @@ abstract class RunClubsListViewModel with _$RunClubsListViewModel {
 
 @Riverpod(keepAlive: true)
 class SelectedRunClubCity extends _$SelectedRunClubCity {
+  bool _userSelected = false;
+
   @override
   IndianCity build() => IndianCity.mumbai;
 
   void setCity(IndianCity city) {
+    _userSelected = true;
+    if (state != city) {
+      state = city;
+      ref.read(runClubSearchQueryProvider.notifier).clear();
+    }
+  }
+
+  void autoSelectCity(IndianCity city) {
+    if (_userSelected) return;
     if (state != city) {
       state = city;
       ref.read(runClubSearchQueryProvider.notifier).clear();

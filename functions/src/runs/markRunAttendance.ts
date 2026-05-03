@@ -64,9 +64,9 @@ export const markRunAttendance = onCall(appCheckCallableOptions, async (
   const alreadyAttended = (run.attendedUserIds ?? []).includes(userId);
 
   await runRef.update({
-    attendedUserIds: alreadyAttended
-      ? admin.firestore.FieldValue.arrayRemove(userId)
-      : admin.firestore.FieldValue.arrayUnion(userId),
+    attendedUserIds: alreadyAttended ?
+      admin.firestore.FieldValue.arrayRemove(userId) :
+      admin.firestore.FieldValue.arrayUnion(userId),
   });
 
   return {userId, attended: !alreadyAttended};

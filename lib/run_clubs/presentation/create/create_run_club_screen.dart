@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/app_form_layout.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
@@ -15,7 +16,6 @@ import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_ru
 import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_run_club_cover_picker.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_run_club_details_fields.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -119,7 +119,7 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
     final t = CatchTokens.of(context);
     final submitMutation = ref.watch(CreateRunClubController.submitMutation);
     final mutationError = submitMutation.hasError
-        ? (submitMutation as MutationError).error.toString()
+        ? mutationErrorMessage(submitMutation)
         : null;
 
     ref.listen(CreateRunClubController.submitMutation, (previous, current) {

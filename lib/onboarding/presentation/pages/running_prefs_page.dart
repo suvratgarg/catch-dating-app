@@ -1,5 +1,6 @@
-import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
@@ -9,7 +10,6 @@ import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class RunningPrefsPage extends ConsumerStatefulWidget {
@@ -24,13 +24,6 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
   final Set<PreferredDistance> _distances = {};
   final Set<RunReason> _reasons = {};
   bool _didSeedFromProfile = false;
-
-  String _formatPace(double secsPerKm) {
-    final secs = secsPerKm.round();
-    final m = secs ~/ 60;
-    final s = secs % 60;
-    return '$m:${s.toString().padLeft(2, '0')}/km';
-  }
 
   void _submit() {
     OnboardingController.completeMutation.run(ref, (tx) async {
@@ -89,13 +82,13 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                _formatPace(_paceRange.start),
+                '${formatPace(_paceRange.start)}/km',
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: t.ink),
               ),
               Text(
-                _formatPace(_paceRange.end),
+                '${formatPace(_paceRange.end)}/km',
                 style: Theme.of(
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: t.ink),
@@ -105,8 +98,8 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           RangeSlider(
             values: _paceRange,
             min: 240, // 4:00/km
-            max: 480, // 8:00/km
-            divisions: 24,
+            max: 540, // 9:00/km
+            divisions: 20,
             onChanged: (next) {
               OnboardingController.completeMutation.reset(ref);
               setState(() => _paceRange = next);
@@ -152,7 +145,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           if (mutation.hasError) ...[
             gapH16,
             ErrorBanner(
-              message: generalErrorMessage((mutation as MutationError).error),
+              message: mutationErrorMessage(mutation),
             ),
           ],
           const SizedBox(height: 40),

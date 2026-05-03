@@ -26,7 +26,7 @@ class _DirectoryCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SizedBox(
-            height: 140,
+            height: 120,
             child: Stack(
               fit: StackFit.expand,
               children: [
@@ -119,66 +119,55 @@ class _DirectoryCard extends StatelessWidget {
                     }).toList(),
                   ),
                 ],
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Container(
                   height: 1,
                   color: t.line,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
                 Row(
                   children: [
-                    SizedBox(
-                      width: 52,
-                      height: 40,
-                      child: Stack(
-                        children: [
-                          for (var j = 0; j < 3; j++)
-                            Positioned(
-                              left: j * 16.0,
-                              child: Container(
-                                width: 40,
-                                height: 40,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(
-                                    CatchRadius.sm,
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 9,
+                          backgroundImage: club.hostAvatarUrl != null
+                              ? NetworkImage(club.hostAvatarUrl!)
+                              : null,
+                          backgroundColor: club.hostAvatarUrl == null
+                              ? t.line
+                              : null,
+                          child: club.hostAvatarUrl == null
+                              ? Text(
+                                  club.hostName.isNotEmpty
+                                      ? club.hostName[0].toUpperCase()
+                                      : '?',
+                                  style: TextStyle(
+                                    fontSize: 8,
+                                    fontWeight: FontWeight.w600,
+                                    color: t.ink2,
                                   ),
-                                  border: Border.all(
-                                    color: t.surface,
-                                    width: 1.5,
-                                  ),
-                                  color: t.line,
-                                ),
-                                child: Center(
-                                  child: Icon(
-                                    Icons.image_outlined,
-                                    size: 16,
-                                    color: t.ink3,
-                                  ),
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
+                                )
+                              : null,
+                        ),
+                        const SizedBox(width: 6),
+                        Text(
+                          club.hostName,
+                          style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        ),
+                      ],
                     ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        'Recent runs',
-                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    const Spacer(),
+                    if (!isJoined && onJoin != null)
+                      CatchButton(
+                        label: 'Join',
+                        onPressed: onJoin,
+                        variant: CatchButtonVariant.secondary,
+                        size: CatchButtonSize.sm,
                       ),
-                    ),
-                    Icon(Icons.chevron_right_rounded, size: 16, color: t.ink3),
                   ],
                 ),
-                if (!isJoined && onJoin != null) ...[
-                  const SizedBox(height: 14),
-                  CatchButton(
-                    label: 'Join',
-                    onPressed: onJoin,
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                  ),
-                ],
               ],
             ),
           ),

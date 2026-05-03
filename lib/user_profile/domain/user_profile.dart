@@ -207,6 +207,8 @@ abstract class UserProfile with _$UserProfile {
 
     // Location
     @JsonKey(unknownEnumValue: null) IndianCity? city,
+    double? latitude,
+    double? longitude,
 
     // Matching preferences
     @Default([]) List<String> joinedRunClubIds,

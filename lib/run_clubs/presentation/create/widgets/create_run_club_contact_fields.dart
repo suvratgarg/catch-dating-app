@@ -39,7 +39,7 @@ class CreateRunClubContactFields extends StatelessWidget {
           controller: phoneController,
           isOptional: true,
           prefixIcon: const Icon(Icons.call_outlined),
-          hintText: '+91 98765 43210',
+          hintText: '98765 43210',
           keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.next,
         ),

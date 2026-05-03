@@ -12,6 +12,7 @@ abstract class OnboardingProfileDraft with _$OnboardingProfileDraft {
     @Default('') String lastName,
     DateTime? dateOfBirth,
     @Default('') String phoneNumber,
+    @Default('+91') String countryCode,
     Gender? gender,
     SexualOrientation? sexualOrientation,
     @Default([]) List<Gender> interestedInGenders,

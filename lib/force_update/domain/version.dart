@@ -4,7 +4,7 @@
 /// update is required.
 ///
 /// Non-parseable strings are treated as "0.0.0" so a missing/malformed
-/// Firestore document never blocks the user.
+/// remote config value never blocks the user.
 bool isUpdateRequired({required String current, required String minimum}) {
   final cur = _parse(current);
   final min = _parse(minimum);

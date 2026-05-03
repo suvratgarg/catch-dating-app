@@ -48,6 +48,10 @@ class CreateRunClubDetailsFields extends StatelessWidget {
               selectedCity == null ? 'Please select a city' : null,
         ),
         gapH16,
+        // TODO: replace free-text area field with a validated dropdown of known
+        // neighbourhoods per city (see indian_city_areas.dart). Add a LabelledString
+        // wrapper so CatchDropdownField can hold String values. "Other..." option
+        // reveals a text field for custom input. City change resets area selection.
         CatchTextField(
           label: 'Area / neighbourhood',
           controller: areaController,

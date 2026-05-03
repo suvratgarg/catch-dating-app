@@ -1,11 +1,13 @@
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/force_update/data/app_version_repository.dart';
+import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
+import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,6 +18,7 @@ class MyApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final goRouter = ref.watch(goRouterProvider);
     final forceUpdate = ref.watch(forceUpdateRequiredProvider);
+    ref.watch(locationInitializerProvider);
 
     return MaterialApp.router(
       title: AppConfig.appTitle,
@@ -24,7 +27,10 @@ class MyApp extends ConsumerWidget {
       darkTheme: AppTheme.dark,
       routerConfig: goRouter,
       builder: (context, child) {
-        final content = _buildForceUpdateGate(ref, forceUpdate, child);
+        final content = _ForceUpdateLifecycleWrapper(
+          ref: ref,
+          child: _buildForceUpdateGate(ref, forceUpdate, child),
+        );
 
         if (!AppConfig.shouldShowEnvironmentBanner) {
           return content;
@@ -54,16 +60,70 @@ class MyApp extends ConsumerWidget {
       return _ForceUpdateCheckErrorScreen(
         error: forceUpdate.error,
         onRetry: () {
-          ref.invalidate(watchAppVersionConfigProvider);
-          ref.invalidate(currentAppVersionProvider);
-          ref.invalidate(currentAppBuildNumberProvider);
-          ref.invalidate(forceUpdateRequiredProvider);
+          ref
+              .read(firebaseRemoteConfigProvider)
+              .fetchAndActivate()
+              .whenComplete(() {
+            ref.invalidate(appVersionConfigProvider);
+            ref.invalidate(appPackageInfoProvider);
+            ref.invalidate(forceUpdateRequiredProvider);
+          });
         },
       );
     }
 
     return const _ForceUpdateCheckLoadingScreen();
   }
+}
+
+/// Re-fetches Remote Config when the app is foregrounded so the force-update
+/// gate stays fresh during long-running app sessions.
+class _ForceUpdateLifecycleWrapper extends StatefulWidget {
+  const _ForceUpdateLifecycleWrapper({
+    required this.ref,
+    required this.child,
+  });
+
+  final WidgetRef ref;
+  final Widget child;
+
+  @override
+  State<_ForceUpdateLifecycleWrapper> createState() =>
+      _ForceUpdateLifecycleWrapperState();
+}
+
+class _ForceUpdateLifecycleWrapperState
+    extends State<_ForceUpdateLifecycleWrapper>
+    with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      widget.ref
+          .read(firebaseRemoteConfigProvider)
+          .fetchAndActivate()
+          .then((_) {
+        if (mounted) {
+          widget.ref.invalidate(appVersionConfigProvider);
+          widget.ref.invalidate(forceUpdateRequiredProvider);
+        }
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _ForceUpdateCheckLoadingScreen extends StatelessWidget {
@@ -138,19 +198,4 @@ class _ForceUpdateCheckErrorScreen extends StatelessWidget {
       ),
     );
   }
-}
-
-@visibleForTesting
-String? forceUpdateDevelopmentDiagnostic(Object? error) {
-  if (AppConfig.environment.isProduction || error == null) {
-    return null;
-  }
-
-  if (error is FirebaseException &&
-      error.plugin == 'cloud_firestore' &&
-      error.code == 'permission-denied') {
-    return 'Dev diagnostic: config/app_config was denied. Check deployed Firestore rules and App Check for ${AppConfig.environmentName}; for a physical debug iPhone, register the printed App Check debug token in Firebase Console.';
-  }
-
-  return 'Dev diagnostic: ${error.runtimeType}: $error';
 }

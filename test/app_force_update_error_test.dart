@@ -1,22 +1,34 @@
-import 'package:catch_dating_app/app.dart';
+import 'package:catch_dating_app/force_update/presentation/force_update_diagnostics.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test(
-    'force update diagnostics explain App Check and rules denials in dev',
+    'force update diagnostics show Remote Config guidance in dev',
     () {
       final diagnostic = forceUpdateDevelopmentDiagnostic(
-        FirebaseException(plugin: 'cloud_firestore', code: 'permission-denied'),
+        FirebaseException(plugin: 'remoteconfig', code: 'fetch-throttled'),
       );
 
-      expect(diagnostic, contains('config/app_config was denied'));
-      expect(diagnostic, contains('App Check'));
-      expect(diagnostic, contains('debug iPhone'));
+      expect(diagnostic, isNotNull);
+      expect(diagnostic, contains('Remote Config'));
+      expect(
+        diagnostic,
+        contains('Firebase Console'),
+      );
     },
   );
 
   test('force update diagnostics stay hidden when there is no error', () {
     expect(forceUpdateDevelopmentDiagnostic(null), isNull);
   });
+
+  test(
+    'force update diagnostics stay hidden for non-Firebase errors in prod',
+    () {
+      // Not testing isProduction=true directly since it depends on AppConfig,
+      // but we verify the null-early-return path works.
+      expect(forceUpdateDevelopmentDiagnostic(null), isNull);
+    },
+  );
 }

@@ -2,6 +2,7 @@
 
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -311,6 +312,7 @@ class TestWriteBatch extends Fake implements WriteBatch {
 class TestTransaction extends Fake implements Transaction {
   final snapshotByDocument = <Object, Object>{};
   final setCalls = <RecordedSetCall>[];
+  final updateCalls = <Map<Object, Object?>>[];
 
   void registerSnapshot<T>(
     DocumentReference<T> document,
@@ -339,6 +341,15 @@ class TestTransaction extends Fake implements Transaction {
         options: options,
       ),
     );
+    return this;
+  }
+
+  @override
+  Transaction update(
+    DocumentReference<Object?> documentReference,
+    Map<Object, Object?> data,
+  ) {
+    updateCalls.add(data);
     return this;
   }
 }
@@ -580,14 +591,18 @@ void main() {
       expect(createdClub.email, isNull);
     });
 
-    test('updateRunClub overwrites the club document', () async {
+    test('updateRunClub delegates to doc.update with the given fields', () async {
       final clubDoc =
           runClubsCollection.doc('club-1') as TestRunClubDocumentReference;
-      final club = buildRunClub(id: 'club-1');
 
-      await repository.updateRunClub(runClub: club);
+      await repository.updateRunClub(
+        clubId: 'club-1',
+        fields: {'name': 'New Name', 'area': 'New Area'},
+      );
 
-      expect(clubDoc.setCalls, [club]);
+      expect(clubDoc.updateCalls, [
+        {'name': 'New Name', 'area': 'New Area'},
+      ]);
     });
 
     test('deleteRunClub deletes the document', () async {
@@ -599,13 +614,13 @@ void main() {
       expect(clubDoc.deleteCalled, isTrue);
     });
 
-    test('updateImageUrl patches the club image URL', () async {
+    test('updateRunClub patches specific fields via update', () async {
       final clubDoc =
           runClubsCollection.doc('club-1') as TestRunClubDocumentReference;
 
-      await repository.updateImageUrl(
-        'club-1',
-        'https://example.com/updated.jpg',
+      await repository.updateRunClub(
+        clubId: 'club-1',
+        fields: {'imageUrl': 'https://example.com/updated.jpg'},
       );
 
       expect(clubDoc.updateCalls, [
@@ -632,12 +647,20 @@ void main() {
 
         await repository.joinClub('club-1', 'runner-1');
 
-        expect(transaction.setCalls, hasLength(2));
-        final updatedClub = transaction.setCalls.first.data as RunClub;
-        expect(updatedClub.memberUserIds, ['host-1', 'runner-1']);
-        expect(updatedClub.memberCount, 2);
+        expect(transaction.updateCalls, hasLength(1));
+        expect(transaction.setCalls, hasLength(1));
 
-        final userWrite = transaction.setCalls.last;
+        final clubUpdate = transaction.updateCalls.first;
+        expect(
+          clubUpdate,
+          containsPair('memberUserIds', isA<FieldValue>()),
+        );
+        expect(
+          clubUpdate,
+          containsPair('memberCount', isA<FieldValue>()),
+        );
+
+        final userWrite = transaction.setCalls.first;
         expect(userWrite.document, same(userDoc));
         expect(
           userWrite.data,
@@ -664,7 +687,7 @@ void main() {
 
       expect(
         () => repository.joinClub('missing-club', 'runner-1'),
-        throwsA(isA<StateError>()),
+        throwsA(isA<DocumentNotFoundException>()),
       );
     });
 
@@ -691,12 +714,20 @@ void main() {
 
         await repository.leaveClub('club-1', 'runner-1');
 
-        expect(transaction.setCalls, hasLength(2));
-        final updatedClub = transaction.setCalls.first.data as RunClub;
-        expect(updatedClub.memberUserIds, ['host-1']);
-        expect(updatedClub.memberCount, 1);
+        expect(transaction.updateCalls, hasLength(1));
+        expect(transaction.setCalls, hasLength(1));
 
-        final userWrite = transaction.setCalls.last;
+        final clubUpdate = transaction.updateCalls.first;
+        expect(
+          clubUpdate,
+          containsPair('memberUserIds', isA<FieldValue>()),
+        );
+        expect(
+          clubUpdate,
+          containsPair('memberCount', isA<FieldValue>()),
+        );
+
+        final userWrite = transaction.setCalls.first;
         expect(userWrite.document, same(userDoc));
         expect(
           userWrite.data,
@@ -723,7 +754,7 @@ void main() {
 
       expect(
         () => repository.leaveClub('missing-club', 'runner-1'),
-        throwsA(isA<StateError>()),
+        throwsA(isA<DocumentNotFoundException>()),
       );
     });
 

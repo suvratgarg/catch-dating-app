@@ -143,8 +143,7 @@ service cloud.firestore {
     function isValidRunClubMembershipUpdate() {
       return hasValidRunClubShape(request.resource.data)
         && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['memberUserIds', 'memberCount',
-                    'instagramHandle', 'phoneNumber', 'email'])
+          .hasOnly(['memberUserIds', 'memberCount'])
         && request.resource.data.hostUserId == resource.data.hostUserId
         && request.resource.data.createdAt == resource.data.createdAt
         && request.resource.data.memberCount
@@ -233,6 +232,8 @@ service cloud.firestore {
           'photoUrls',
           // Location
           'city',
+          'latitude',
+          'longitude',
           // Matching
           'joinedRunClubIds', 'savedRunIds', 'interestedInGenders',
           'minAgePreference', 'maxAgePreference',
@@ -280,6 +281,8 @@ service cloud.firestore {
           'mumbai', 'delhi', 'bangalore', 'hyderabad',
           'chennai', 'kolkata', 'pune', 'ahmedabad', 'indore'
         ])
+        && (data.latitude == null || data.latitude is number)
+        && (data.longitude == null || data.longitude is number)
         // Matching
         && data.joinedRunClubIds is list
         && data.savedRunIds is list
@@ -343,8 +346,16 @@ service cloud.firestore {
       allow read: if isAuthed()
         && !isDeletedUser(uid)
         && !hasBlockBetween(request.auth.uid, uid);
-      allow write: if request.auth.uid == uid
+
+      // Only the owner can create or update their own document, and the
+      // payload must pass full shape validation.
+      allow create, update: if request.auth.uid == uid
         && hasValidUserShape(request.resource.data);
+
+      // Client-side deletes are blocked — account deletion is handled
+      // exclusively by the requestAccountDeletion Cloud Function, which
+      // uses the admin SDK to anonymize the document in place.
+      allow delete: if false;
     }
 
     // ── Blocks ───────────────────────────────────────────────────────────────
@@ -563,10 +574,5 @@ service cloud.firestore {
             .data.status != 'blocked';
     }
 
-    // ── App config (force-update gate) ────────────────────────────────────────
-    match /config/app_config {
-      allow read: if true;
-      allow write: if false;
-    }
   }
 }

@@ -150,9 +150,8 @@ class FakeRunClubsRepository implements RunClubsRepository {
   Object? joinError;
   Object? leaveError;
   CreateRunClubCall? lastCreateCall;
-  RunClub? lastUpdatedRunClub;
-  String? updatedImageClubId;
-  String? updatedImageUrl;
+  String? lastUpdatedClubId;
+  Map<String, dynamic>? lastUpdatedFields;
 
   final Map<String, RunClub> clubsById = {};
   final Map<IndianCity, List<RunClub>> clubsByLocation = {};
@@ -222,16 +221,14 @@ class FakeRunClubsRepository implements RunClubsRepository {
     leftUserId = userId;
   }
 
-  @override
-  Future<void> updateImageUrl(String id, String imageUrl) async {
-    updatedImageClubId = id;
-    updatedImageUrl = imageUrl;
-  }
 
   @override
-  Future<void> updateRunClub({required RunClub runClub}) async {
-    lastUpdatedRunClub = runClub;
-    clubsById[runClub.id] = runClub;
+  Future<void> updateRunClub({
+    required String clubId,
+    required Map<String, dynamic> fields,
+  }) async {
+    lastUpdatedClubId = clubId;
+    lastUpdatedFields = fields;
   }
 
   @override

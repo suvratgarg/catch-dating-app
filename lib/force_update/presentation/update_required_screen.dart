@@ -2,7 +2,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/force_update/data/app_version_repository.dart';
+import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -15,7 +15,7 @@ class UpdateRequiredScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final config = ref.watch(watchAppVersionConfigProvider).asData?.value;
+    final config = ref.watch(appVersionConfigProvider);
     final t = CatchTokens.of(context);
 
     return Scaffold(
@@ -45,13 +45,11 @@ class UpdateRequiredScreen extends ConsumerWidget {
               gapH48,
               CatchButton(
                 label: 'Update now',
-                onPressed: config != null
-                    ? () => _openStore(
-                        context,
-                        config.storeUrlAndroid,
-                        config.storeUrlIos,
-                      )
-                    : null,
+                onPressed: () => _openStore(
+                  context,
+                  config.storeUrlAndroid,
+                  config.storeUrlIos,
+                ),
                 icon: const Icon(Icons.open_in_new),
                 fullWidth: true,
               ),

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
@@ -81,7 +82,7 @@ class RunClubDetailScreen extends ConsumerWidget {
     return Scaffold(
       body: vmAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text(error.toString())),
+        error: (error, _) => Center(child: Text(firestoreErrorMessage(error))),
         data: (_) => const Center(child: Text('Run club not found.')),
       ),
     );

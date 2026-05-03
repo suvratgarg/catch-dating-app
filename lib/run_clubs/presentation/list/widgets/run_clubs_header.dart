@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -26,6 +28,9 @@ class _RunClubsHeaderState extends ConsumerState<RunClubsHeader> {
     _searchController = TextEditingController(
       text: ref.read(runClubSearchQueryProvider),
     );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tryAutoSelectFromGps();
+    });
   }
 
   @override
@@ -44,6 +49,10 @@ class _RunClubsHeaderState extends ConsumerState<RunClubsHeader> {
       if (_searchController.text != query) {
         _searchController.text = query;
       }
+    });
+
+    ref.listen(deviceLocationProvider, (_, next) {
+      next.whenData((_) => _tryAutoSelectFromGps());
     });
 
     return Padding(
@@ -102,6 +111,15 @@ class _RunClubsHeaderState extends ConsumerState<RunClubsHeader> {
         ],
       ),
     );
+  }
+
+  void _tryAutoSelectFromGps() {
+    final location = ref.read(deviceLocationProvider).asData?.value;
+    if (location == null) return;
+    final nearest = IndianCity.nearestCity(location);
+    if (nearest != null) {
+      ref.read(selectedRunClubCityProvider.notifier).autoSelectCity(nearest);
+    }
   }
 }
 

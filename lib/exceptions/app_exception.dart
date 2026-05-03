@@ -54,3 +54,17 @@ class RunBookingFailedException extends AppException {
   const RunBookingFailedException(String message)
     : super('run-booking-failed', message);
 }
+
+// ── Firestore ─────────────────────────────────────────────────────────────────
+
+class FirestoreWriteException extends AppException {
+  const FirestoreWriteException({
+    required String code,
+    required String message,
+  }) : super(code, message);
+}
+
+class DocumentNotFoundException extends AppException {
+  const DocumentNotFoundException(String path)
+    : super('not-found', 'Document not found: $path');
+}

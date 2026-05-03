@@ -59,27 +59,29 @@ class RunClubsContent extends StatelessWidget {
             child: Divider(color: CatchTokens.of(context).line, height: 24),
           ),
         ],
-        const SectionHeader(title: 'Discover'),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
-          child: Column(
-            children: [
-              for (var i = 0; i < viewModel.allClubs.length; i++) ...[
-                RunClubListTile(
-                  club: viewModel.allClubs[i],
-                  variant: RunClubListTileVariant.directory,
-                  isJoined:
-                      viewModel.joinedClubIds.contains(viewModel.allClubs[i].id),
-                  onJoin: onJoin == null || isJoinPending
-                      ? null
-                      : () => onJoin!(viewModel.allClubs[i]),
-                ),
-                if (i < viewModel.allClubs.length - 1)
-                  const SizedBox(height: 14),
+        if (viewModel.allClubs.isNotEmpty) ...[
+          const SectionHeader(title: 'Discover'),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+            child: Column(
+              children: [
+                for (var i = 0; i < viewModel.allClubs.length; i++) ...[
+                  RunClubListTile(
+                    club: viewModel.allClubs[i],
+                    variant: RunClubListTileVariant.directory,
+                    isJoined: viewModel.joinedClubIds
+                        .contains(viewModel.allClubs[i].id),
+                    onJoin: onJoin == null || isJoinPending
+                        ? null
+                        : () => onJoin!(viewModel.allClubs[i]),
+                  ),
+                  if (i < viewModel.allClubs.length - 1)
+                    const SizedBox(height: 14),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
+        ],
         const SizedBox(height: 24),
       ],
     );

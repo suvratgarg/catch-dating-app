@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:cloud_firestore/cloud_firestore.dart'; // FieldValue
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -102,45 +104,66 @@ class RunClubsRepository {
     return ref.id;
   }
 
-  Future<void> updateRunClub({required RunClub runClub}) =>
-      _runClubRef(runClub.id).set(runClub);
+  /// Updates only the fields present in [fields] on the club document.
+  ///
+  /// Uses [DocumentReference.update] so only the supplied keys are touched —
+  /// other fields (notably `createdAt`) are never deserialized, avoiding the
+  /// Timestamp → DateTime → Timestamp round-trip that would lose nanosecond
+  /// precision and trip the Firestore rules `isValidRunClubHostUpdate` diff
+  /// check.
+  Future<void> updateRunClub({
+    required String clubId,
+    required Map<String, dynamic> fields,
+  }) => _runClubRef(clubId).update(fields);
 
   Future<void> deleteRunClub(String id) => _runClubRef(id).delete();
 
-  Future<void> updateImageUrl(String id, String imageUrl) =>
-      _runClubRef(id).update({'imageUrl': imageUrl});
-
   // -- Members ------------------------------------------------------------
 
+  /// Adds [userId] to [clubId]'s member list.
+  ///
+  /// Uses [FieldValue] operations inside a transaction so only
+  /// `memberUserIds` and `memberCount` are touched — other fields
+  /// (notably `createdAt`) are never deserialized, avoiding a
+  /// Timestamp → DateTime → Timestamp round-trip that would lose
+  /// nanosecond precision and trip the Firestore rules diff check.
   Future<void> joinClub(String clubId, String userId) =>
-      _db.runTransaction((transaction) async {
-        final clubRef = _runClubRef(clubId);
-        final userRef = _userRef(userId);
-        final clubSnapshot = await transaction.get(clubRef);
-        final runClub = clubSnapshot.data();
+      withFirestoreErrorContext(
+        () => _db.runTransaction((transaction) async {
+          final clubRef = _runClubRef(clubId);
+          final userRef = _userRef(userId);
+          final clubSnapshot = await transaction.get(clubRef);
 
-        if (!clubSnapshot.exists || runClub == null) {
-          throw StateError('Run club \$clubId not found.');
-        }
+          if (!clubSnapshot.exists) {
+            throw DocumentNotFoundException('runClubs/$clubId');
+          }
 
-        transaction.set(clubRef, runClub.addMember(userId));
-        transaction.set(userRef, {
-          'joinedRunClubIds': FieldValue.arrayUnion([clubId]),
-        }, SetOptions(merge: true));
-      });
+          transaction.update(clubRef, {
+            'memberUserIds': FieldValue.arrayUnion([userId]),
+            'memberCount': FieldValue.increment(1),
+          });
+          transaction.set(userRef, {
+            'joinedRunClubIds': FieldValue.arrayUnion([clubId]),
+          }, SetOptions(merge: true));
+        }),
+        collection: 'runClubs',
+        action: 'join',
+      );
 
   Future<void> leaveClub(String clubId, String userId) =>
       _db.runTransaction((transaction) async {
         final clubRef = _runClubRef(clubId);
         final userRef = _userRef(userId);
         final clubSnapshot = await transaction.get(clubRef);
-        final runClub = clubSnapshot.data();
 
-        if (!clubSnapshot.exists || runClub == null) {
-          throw StateError('Run club \$clubId not found.');
+        if (!clubSnapshot.exists) {
+          throw DocumentNotFoundException('runClubs/$clubId');
         }
 
-        transaction.set(clubRef, runClub.removeMember(userId));
+        transaction.update(clubRef, {
+          'memberUserIds': FieldValue.arrayRemove([userId]),
+          'memberCount': FieldValue.increment(-1),
+        });
         transaction.set(userRef, {
           'joinedRunClubIds': FieldValue.arrayRemove([clubId]),
         }, SetOptions(merge: true));

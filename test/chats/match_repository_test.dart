@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -160,7 +161,7 @@ void main() {
       final matchDoc =
           typedMatchesCollection.doc('match-1')
               as TestTypedDocumentReference<Match>;
-      matchDoc.updateError = StateError('missing match');
+      matchDoc.updateError = FirebaseException(plugin: 'firestore', code: 'not-found');
 
       await repository.resetUnread(matchId: 'match-1', uid: 'runner-1');
 

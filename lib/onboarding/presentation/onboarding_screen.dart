@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -26,7 +28,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       if (!mounted) {
         return;
       }
-      ref.read(onboardingControllerProvider.notifier).initStep();
+      unawaited(ref.read(onboardingControllerProvider.notifier).initStep());
     });
   }
 

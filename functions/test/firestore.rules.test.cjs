@@ -8,14 +8,18 @@ const {
 } = require("@firebase/rules-unit-testing");
 const {
   Timestamp,
+  arrayRemove,
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
   getDoc,
   getDocs,
+  increment,
   orderBy,
   query,
   setDoc,
+  updateDoc,
   where,
 } = require("firebase/firestore");
 
@@ -211,6 +215,34 @@ describe("firestore.rules", () => {
         ),
       );
     });
+
+    it("allows joining via updateDoc with FieldValue operations", async () => {
+      await seed(["runClubs", "club-1"], runClub());
+
+      await assertSucceeds(
+        updateDoc(doc(authedDb("runner-1"), "runClubs", "club-1"), {
+          memberUserIds: arrayUnion("runner-1"),
+          memberCount: increment(1),
+        }),
+      );
+    });
+
+    it("allows leaving via updateDoc with FieldValue operations", async () => {
+      await seed(
+        ["runClubs", "club-1"],
+        runClub({
+          memberUserIds: ["host-1", "runner-1", "runner-2"],
+          memberCount: 3,
+        }),
+      );
+
+      await assertSucceeds(
+        updateDoc(doc(authedDb("runner-1"), "runClubs", "club-1"), {
+          memberUserIds: arrayRemove("runner-1"),
+          memberCount: increment(-1),
+        }),
+      );
+    });
   });
 
   describe("runs", () => {
@@ -358,41 +390,4 @@ describe("firestore.rules", () => {
     });
   });
 
-  describe("app config", () => {
-    it("allows unauthenticated clients to read the force-update config", async () => {
-      await seed(["config", "app_config"], {
-        minimumSupportedVersion: "1.0.0",
-        latestVersion: "1.0.0",
-      });
-
-      await assertSucceeds(
-        getDoc(
-          doc(
-            testEnv.unauthenticatedContext().firestore(),
-            "config",
-            "app_config",
-          ),
-        ),
-      );
-    });
-
-    it("does not expose other config documents", async () => {
-      await seed(["config", "internal_flags"], {
-        enabled: true,
-      });
-
-      await assertFails(
-        getDoc(
-          doc(
-            testEnv.unauthenticatedContext().firestore(),
-            "config",
-            "internal_flags",
-          ),
-        ),
-      );
-      await assertFails(
-        getDoc(doc(authedDb("user-1"), "config", "internal_flags")),
-      );
-    });
-  });
 });

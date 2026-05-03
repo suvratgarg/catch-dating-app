@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -23,11 +24,14 @@ class PhonePage extends ConsumerStatefulWidget {
 class _PhonePageState extends ConsumerState<PhonePage> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
+  late String _countryCode;
 
   @override
   void initState() {
     super.initState();
-    _phoneController.text = ref.read(onboardingControllerProvider).phoneNumber;
+    final data = ref.read(onboardingControllerProvider);
+    _phoneController.text = data.phoneNumber;
+    _countryCode = data.countryCode;
   }
 
   @override
@@ -41,7 +45,7 @@ class _PhonePageState extends ConsumerState<PhonePage> {
       OnboardingController.sendOtpMutation.run(ref, (tx) async {
         await tx
             .get(onboardingControllerProvider.notifier)
-            .sendOtp(_phoneController.text.trim());
+            .sendOtp(_phoneController.text.trim(), _countryCode);
       });
     }
   }
@@ -58,73 +62,84 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 24),
-      child: Form(
-        key: _formKey,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const SizedBox(height: 32),
-            const OnboardingStepHeader(
-              title: "What's your number?",
-              subtitle: "We'll send you a one-time code to verify.",
-            ),
-            const SizedBox(height: 40),
-            CatchTextField(
-              label: 'Mobile number',
-              controller: _phoneController,
-              autofocus: shouldAutofocus,
-              keyboardType: TextInputType.phone,
-              textInputAction: TextInputAction.done,
-              autofillHints: const [AutofillHints.telephoneNumberNational],
-              onSubmitted: (_) => _submit(),
-              onChanged: (_) => OnboardingController.sendOtpMutation.reset(ref),
-              inputFormatters: [
-                FilteringTextInputFormatter.digitsOnly,
-                LengthLimitingTextInputFormatter(10),
-              ],
-              hintText: '98765 43210',
-              prefixIcon: Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 14,
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 2,
-                ),
-                decoration: BoxDecoration(
-                  color: t.surface,
-                  borderRadius: BorderRadius.circular(6),
-                ),
-                child: Text(
-                  '+91',
-                  style: CatchTextStyles.bodyM(context, color: t.ink),
+      child: Column(
+        children: [
+          Expanded(
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    const SizedBox(height: 32),
+                    const OnboardingStepHeader(
+                      title: "What's your number?",
+                      subtitle: "We'll send you a one-time code to verify.",
+                    ),
+                    const SizedBox(height: 40),
+                    CatchTextField(
+                      label: 'Mobile number',
+                      controller: _phoneController,
+                      autofocus: shouldAutofocus,
+                      keyboardType: TextInputType.phone,
+                      textInputAction: TextInputAction.done,
+                      autofillHints: const [AutofillHints.telephoneNumberNational],
+                      onSubmitted: (_) => _submit(),
+                      onChanged: (_) => OnboardingController.sendOtpMutation.reset(ref),
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        LengthLimitingTextInputFormatter(15),
+                      ],
+                      hintText: '98765 43210',
+                      prefixIcon: _buildCountryCodePicker(t),
+                      validator: (v) {
+                        if (v == null || v.trim().length < 7) {
+                          return 'Please enter a valid phone number';
+                        }
+                        return null;
+                      },
+                    ),
+                    if (mutation.hasError) ...[
+                      gapH16,
+                      ErrorBanner(
+                        message: authErrorMessage((mutation as MutationError).error),
+                      ),
+                    ],
+                  ],
                 ),
               ),
-              validator: (v) {
-                if (v == null || v.trim().length != 10) {
-                  return 'Please enter a valid 10-digit number';
-                }
-                return null;
-              },
             ),
-            if (mutation.hasError) ...[
-              gapH16,
-              ErrorBanner(
-                message: authErrorMessage((mutation as MutationError).error),
-              ),
-            ],
-            const Spacer(),
-            CatchButton(
-              label: 'Send code',
-              onPressed: _submit,
-              isLoading: mutation.isPending,
-              fullWidth: true,
-              size: CatchButtonSize.lg,
-            ),
-            const SizedBox(height: 32),
-          ],
-        ),
+          ),
+          CatchButton(
+            label: 'Send code',
+            onPressed: _submit,
+            isLoading: mutation.isPending,
+            fullWidth: true,
+            size: CatchButtonSize.lg,
+          ),
+          const SizedBox(height: 32),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCountryCodePicker(CatchTokens t) {
+    return CountryCodePicker(
+      initialSelection: _countryCode,
+      onChanged: (code) {
+        _countryCode = code.dialCode!;
+        OnboardingController.sendOtpMutation.reset(ref);
+      },
+      showCountryOnly: false,
+      showOnlyCountryWhenClosed: false,
+      alignLeft: false,
+      showFlag: false,
+      showDropDownButton: true,
+      hideMainText: false,
+      textStyle: CatchTextStyles.bodyM(context, color: t.ink),
+      padding: const EdgeInsets.symmetric(horizontal: 12),
+      flagDecoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(4),
       ),
     );
   }

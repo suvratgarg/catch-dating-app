@@ -139,6 +139,8 @@ export interface UserProfileDoc {
   photoUrls: string[];
   // Location (optional — set during onboarding)
   city?: IndianCity;
+  latitude?: number;
+  longitude?: number;
   // Matching preferences
   joinedRunClubIds: string[];
   savedRunIds: string[];
@@ -189,6 +191,9 @@ export interface PublicProfileDoc {
   bio: string;
   gender: Gender;
   photoUrls: string[];
+  city?: IndianCity;
+  latitude?: number;
+  longitude?: number;
   height?: number;
   occupation?: string;
   company?: string;
@@ -201,6 +206,10 @@ export interface PublicProfileDoc {
   workout?: WorkoutFrequency;
   diet?: DietaryPreference;
   children?: ChildrenStatus;
+  paceMinSecsPerKm: number;
+  paceMaxSecsPerKm: number;
+  preferredDistances: PreferredDistance[];
+  runningReasons: RunReason[];
 }
 
 /**

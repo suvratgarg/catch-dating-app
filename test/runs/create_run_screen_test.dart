@@ -236,7 +236,7 @@ void main() {
       expect(uncaughtError, isA<StateError>());
       await tester.pump();
 
-      expect(find.text('Bad state: create failed'), findsOneWidget);
+      expect(find.text('create failed'), findsOneWidget);
       expect(find.text('Schedule run'), findsOneWidget);
     });
   });

@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -36,7 +38,7 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
       appBar: const CatchTopBar(title: 'Map view'),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) => Center(child: Text(firestoreErrorMessage(error))),
         data: (user) {
           if (user == null) return const SizedBox.shrink();
 
@@ -62,7 +64,7 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
                 child: isLoading
                     ? const Center(child: CircularProgressIndicator())
                     : error != null
-                    ? Center(child: Text('Unable to load runs: $error'))
+                    ? Center(child: Text(firestoreErrorMessage(error)))
                     : runs.isEmpty
                     ? _MapEmptyState(tokens: t)
                     : Stack(
@@ -112,7 +114,7 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
   }
 }
 
-class _RunsMap extends StatelessWidget {
+class _RunsMap extends ConsumerWidget {
   const _RunsMap({
     required this.runs,
     required this.selectedRunId,
@@ -128,9 +130,10 @@ class _RunsMap extends StatelessWidget {
   final ValueChanged<Run> onRunSelected;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
     final center = runs.isEmpty
-        ? _mumbai
+        ? (deviceLocation ?? _mumbai)
         : LatLng(runs.first.startingPointLat!, runs.first.startingPointLng!);
     final t = CatchTokens.of(context);
 

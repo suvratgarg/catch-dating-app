@@ -63,8 +63,15 @@ The app follows a consistent feature-first structure:
 Important cross-cutting patterns:
 
 - Repositories wrap Firebase APIs and expose typed reads/writes.
+- **Firestore partial updates use `DocumentReference.update()` with specific
+  field maps (or `FieldValue` operations) rather than reading a full document
+  and writing it back with `set()`. This avoids a `Timestamp → DateTime →
+  Timestamp` round-trip that loses nanosecond precision and trips Firestore
+  rule `diff()` checks. See §18 for the full error handling conventions.**
 - Riverpod providers expose streams/futures and combine feature state.
 - Mutations use `flutter_riverpod/experimental/mutation.dart`.
+  Use `mutationErrorMessage()` from `lib/core/widgets/mutation_error_util.dart`
+  for all mutation error display — never show raw `error.toString()`.
 - Navigation is centralized in [`lib/routing/go_router.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/routing/go_router.dart).
 - The authenticated app uses a 5-tab `StatefulShellRoute`.
 - Models are serialized with Freezed + JSON; generated files live next to source files.
@@ -75,6 +82,13 @@ Entry points:
 - App widget: [`lib/app.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/app.dart)
 - Router: [`lib/routing/go_router.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/routing/go_router.dart)
 - Bottom-tab shell: [`lib/core/presentation/app_shell.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/presentation/app_shell.dart)
+
+Error handling:
+
+- [`lib/core/firestore_error_message.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_message.dart) — translates Firebase error codes to user messages
+- [`lib/core/firestore_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_util.dart) — structured error-context wrapper for repository methods
+- [`lib/core/widgets/mutation_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/widgets/mutation_error_util.dart) — unified mutation error display helper
+- [`lib/exceptions/app_exception.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/exceptions/app_exception.dart) — typed `FirestoreWriteException` and `DocumentNotFoundException`
 
 ## 4. Runtime behavior
 
@@ -203,7 +217,7 @@ Files:
 
 Behavior:
 
-- Browsing is city-based, defaulting to Mumbai.
+- Browsing is city-based, with GPS auto-detecting the nearest city on first launch. Falls back to Mumbai when GPS is unavailable or denied.
 - Search is client-side and filters by club name, area, host name, and tags.
 - Clubs are partitioned into:
   - `joinedClubs`
@@ -341,23 +355,24 @@ Behavior:
 
 Force update:
 
-- Config repo: [`lib/force_update/data/app_version_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/data/app_version_repository.dart)
+- Config provider: [`lib/force_update/data/app_version_config_provider.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/data/app_version_config_provider.dart)
 - Decision provider: [`lib/force_update/data/force_update_provider.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/data/force_update_provider.dart)
+- Diagnostics: [`lib/force_update/presentation/force_update_diagnostics.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/presentation/force_update_diagnostics.dart)
+- Platform resolver: [`lib/force_update/domain/platform_build_resolver.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/force_update/domain/platform_build_resolver.dart)
 
 Behavior:
 
-- Reads `config/app_config`.
+- Reads version gates from Firebase Remote Config (initialized in `main.dart`).
 - Compares the running build number with the platform-specific remote minimum:
   `minBuildAndroid`, `minBuildIos`, `minBuildWeb`, or `minBuildMacos`.
 - Falls back to semantic `minVersion` only when the current platform has no
   minimum build configured.
 - If below minimum, the app renders `UpdateRequiredScreen`.
-- If the remote config/version check is loading or fails, the app shell blocks
+- If the config/version check is loading or fails, the app shell blocks
   normal startup with a loading indicator or retry screen instead of silently
   bypassing the compatibility gate.
-- As of 2026-05-01, dev, staging, and prod all have `config/app_config` seeded
-  with `minVersion: 1.0.0` and all platform minimum builds set to `1`, matching
-  the current `1.0.0+1` app build.
+- On foreground (resume), the app re-fetches Remote Config so the gate stays
+  fresh during long-running sessions.
 
 ### 6.10 Push notifications
 
@@ -379,12 +394,13 @@ Private user data:
 - `users/{uid}`
   - source of truth for onboarding/profile
   - includes dating prefs, running prefs, `joinedRunClubIds`, `photoUrls`, optional `fcmToken`
+  - optional `latitude`/`longitude` for proximity features (collected once via device GPS)
 
 Public user projection:
 
 - `publicProfiles/{uid}`
   - generated from `users/{uid}` once `profileComplete == true`
-  - contains only public-facing fields such as `name`, `age`, `bio`, and public attributes
+  - contains only public-facing fields such as `name`, `age`, `bio`, public attributes, and optional `latitude`/`longitude`
 
 Run clubs:
 
@@ -425,10 +441,6 @@ Chats:
 Reviews:
 
 - `reviews/{reviewId}`
-
-Remote config:
-
-- `config/app_config`
 
 The TypeScript mirror of the Firestore schema is:
 
@@ -520,15 +532,39 @@ Summary:
 
 ## 10. Maps and location
 
-Location picking uses:
+GPS / device location:
 
-- [`lib/runs/presentation/location_picker_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/location_picker_screen.dart)
+- [`lib/core/device_location.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/device_location.dart) — `DeviceLocation` provider, the single source of truth for device GPS. Uses `geolocator` with low accuracy + 10 s timeout. Returns `LatLng?` (null on permission denial or error). Cached per session via `keepAlive: true`.
+- [`lib/core/location_service.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/location_service.dart) — `LocationInitializer` provider, collects GPS once and writes `latitude`/`longitude` (and nearest `IndianCity` if not set) to the user's Firestore doc. Watched from `app.dart` so it fires on every app launch.
+- [`lib/core/indian_city.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/indian_city.dart) — `IndianCity` enum now carries lat/lng coordinates per city plus a `nearestCity(LatLng)` static method using Haversine distance (via `latlong2`).
 
-Important notes:
+City auto-select:
 
-- Uses `flutter_map` with OpenStreetMap tiles.
+- `SelectedRunClubCity` in [`lib/run_clubs/presentation/list/run_clubs_list_view_model.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/presentation/list/run_clubs_list_view_model.dart) has an `autoSelectCity()` method that sets the city from GPS but never overrides a manual user pick (tracked with an internal `_userSelected` flag).
+- The run clubs header watches `DeviceLocation` and calls `autoSelectCity` when GPS resolves (or via post-frame callback for already-resolved GPS).
+
+Distance on profile cards:
+
+- [`lib/swipes/presentation/profile_card_content.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/profile_card_content.dart) — `ProfileCardContent.fromProfile()` accepts an optional `currentUserLocation`. When both the viewer and the viewed profile have coordinates, a distance attribute ("3.2 km away") appears on the card. Distance is computed client-side with `latlong2.Distance(roundResult: false)`.
+- [`lib/swipes/presentation/widgets/scrollable_profile.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/widgets/scrollable_profile.dart) — reads `DeviceLocation` and passes it to `fromProfile`.
+
+Map center fallback:
+
+- [`lib/runs/presentation/location_picker_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/location_picker_screen.dart) — `_pickLocation()` in `CreateRunScreen` uses device GPS as the initial map center when no prior pin exists.
+- [`lib/runs/presentation/run_map_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/run_map_screen.dart) — `_RunsMap` falls back to device GPS center when no runs with coordinates are available.
+
+All map UIs use:
+
+- `flutter_map` with OpenStreetMap tiles.
 - No Google Maps SDK is involved.
-- Selected run start locations are stored as raw lat/lng numbers on the run doc.
+
+Location data model:
+
+- `users/{uid}` and `publicProfiles/{uid}` both carry optional `latitude`/`longitude` (nullable doubles).
+- `syncPublicProfile` Cloud Function copies lat/lng from user docs to public profiles.
+- Firestore rules validate them as `number | null`.
+
+No geohash, GeoPoint, or server-side proximity queries are used — all distance math is client-side. If server-side "within X km" queries are needed later, add a geohash field in a separate migration.
 
 ## 11. Dev commands
 
@@ -660,7 +696,7 @@ If you need to change push notifications:
 If you need to change force-update:
 
 - `lib/force_update/**`
-- Firestore `config/app_config`
+- Firebase Remote Config template (in the Firebase Console)
 
 ## 14. Current sharp edges and likely gotchas
 
@@ -751,8 +787,7 @@ providers, App Check enforcement for Firestore, Storage, Auth, and callable
 Functions, and the same 17 deployed v2 Node.js 24 Functions in `asia-south1`.
 Those Functions were redeployed and re-listed across dev, staging, and prod on
 2026-05-01. Firestore rules are also deployed and aligned across all three
-projects; dev and staging were updated on 2026-05-01 after their live rulesets
-were found to be missing the checked-in `config/app_config` read rule.
+projects; dev and staging were updated on 2026-05-01.
 
 Files involved:
 
@@ -804,3 +839,61 @@ These look like support material, not runtime app code:
 - `catch-dating-app/`
 
 They may still be useful as design reference, but primary product code lives in `lib/` and `functions/`.
+
+## 18. Firestore error handling conventions
+
+Firebase security rules are the last line of defense — the app must handle rule
+rejections gracefully so users (and developers) aren't left guessing.
+
+### Rules
+
+- **Never silently swallow Firestore write errors.** Let `FirebaseException`
+  propagate to the UI layer. The `AsyncErrorLogger` ProviderObserver catches
+  unhandled errors and reports them to Crashlytics automatically.
+- **Use `firestoreErrorMessage()` for user-facing messages.** Located in
+  [`lib/core/firestore_error_message.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_message.dart).
+  It translates `FirebaseException` codes (`permission-denied`, `unavailable`,
+  `deadline-exceeded`, etc.) to human-readable messages. In debug mode it
+  appends the Firebase error code so developers can diagnose issues without
+  recompiling.
+- **Use `withFirestoreErrorContext()` for structured logging.** Located in
+  [`lib/core/firestore_error_util.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/firestore_error_util.dart).
+  Wrap Firestore write operations to catch `FirebaseException` and rethrow
+  as `FirestoreWriteException` with collection/action context.
+- **Use `FieldValue` operations instead of full-document `set()` for partial
+  updates.** Reading a document, modifying one field in Dart, and writing it
+  back causes a `Timestamp → DateTime → Timestamp` round-trip that loses
+  nanosecond precision. The Firestore `diff()` function in the rules sees
+  this as a spurious field change and rejects the write. Use
+  `transaction.update()` with `FieldValue.arrayUnion` / `FieldValue.increment`
+  to touch only the fields that need to change.
+- **Mutation-driven UIs should use `firestoreErrorMessage()` for error
+  display.** Don't show `error.toString()` to users — it's either raw
+  exception text or uselessly truncated. The `ErrorBanner` widget and
+  `listenForMutationErrorSnackbar` utility are the right display channels.
+- **Firestore rules tests run in CI** on every PR that touches
+  `firestore.rules` or `functions/test/firestore.rules.test.cjs`. Keep the
+  test file in sync with rule changes.
+- **Log Firestore write failures to Analytics** via
+  `AppAnalytics.logFirestoreWriteFailed()` so permission spikes and quota
+  issues are visible in dashboards, not just Crashlytics.
+
+### Common Firestore error codes
+
+| Code | Meaning | User sees |
+|------|---------|-----------|
+| `permission-denied` | Rules rejected the write | "You don't have permission..." |
+| `unavailable` | Network/Firestore down | "We're having trouble connecting..." |
+| `deadline-exceeded` | Request timed out | "The request timed out..." |
+| `unauthenticated` | Auth token expired/missing | "Please sign in again..." |
+| `not-found` | Document doesn't exist | "The data you're looking for..." |
+| `resource-exhausted` | Quota exceeded | "We're experiencing high traffic..." |
+
+### Debugging permission-denied in development
+
+1. Check the debug-mode error banner — it shows `[DEBUG Firestore <code>]`
+   with the server-side message.
+2. Run `cd functions && node --test test/firestore.rules.test.cjs` to
+   reproduce the failing operation against the local rules.
+3. Use the Firebase Console > Firestore > Rules > Rules Playground to
+   simulate the exact document path and auth state.

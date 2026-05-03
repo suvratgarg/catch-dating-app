@@ -11,7 +11,6 @@ part of 'app_version_config.dart';
 
 // dart format off
 T _$identity<T>(T value) => value;
-
 /// @nodoc
 mixin _$AppVersionConfig {
 
@@ -22,8 +21,6 @@ mixin _$AppVersionConfig {
 @pragma('vm:prefer-inline')
 $AppVersionConfigCopyWith<AppVersionConfig> get copyWith => _$AppVersionConfigCopyWithImpl<AppVersionConfig>(this as AppVersionConfig, _$identity);
 
-  /// Serializes this AppVersionConfig to a JSON map.
-  Map<String, dynamic> toJson();
 
 
 @override
@@ -31,7 +28,7 @@ bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.minBuildAndroid, minBuildAndroid) || other.minBuildAndroid == minBuildAndroid)&&(identical(other.minBuildIos, minBuildIos) || other.minBuildIos == minBuildIos)&&(identical(other.minBuildWeb, minBuildWeb) || other.minBuildWeb == minBuildWeb)&&(identical(other.minBuildMacos, minBuildMacos) || other.minBuildMacos == minBuildMacos)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,minVersion,minBuildAndroid,minBuildIos,minBuildWeb,minBuildMacos,storeUrlAndroid,storeUrlIos);
 
@@ -212,11 +209,11 @@ return $default(_that.minVersion,_that.minBuildAndroid,_that.minBuildIos,_that.m
 }
 
 /// @nodoc
-@JsonSerializable()
+
 
 class _AppVersionConfig implements AppVersionConfig {
   const _AppVersionConfig({this.minVersion = '0.0.0', this.minBuildAndroid = 0, this.minBuildIos = 0, this.minBuildWeb = 0, this.minBuildMacos = 0, this.storeUrlAndroid = '', this.storeUrlIos = ''});
-  factory _AppVersionConfig.fromJson(Map<String, dynamic> json) => _$AppVersionConfigFromJson(json);
+  
 
 @override@JsonKey() final  String minVersion;
 @override@JsonKey() final  int minBuildAndroid;
@@ -232,17 +229,14 @@ class _AppVersionConfig implements AppVersionConfig {
 @pragma('vm:prefer-inline')
 _$AppVersionConfigCopyWith<_AppVersionConfig> get copyWith => __$AppVersionConfigCopyWithImpl<_AppVersionConfig>(this, _$identity);
 
-@override
-Map<String, dynamic> toJson() {
-  return _$AppVersionConfigToJson(this, );
-}
+
 
 @override
 bool operator ==(Object other) {
   return identical(this, other) || (other.runtimeType == runtimeType&&other is _AppVersionConfig&&(identical(other.minVersion, minVersion) || other.minVersion == minVersion)&&(identical(other.minBuildAndroid, minBuildAndroid) || other.minBuildAndroid == minBuildAndroid)&&(identical(other.minBuildIos, minBuildIos) || other.minBuildIos == minBuildIos)&&(identical(other.minBuildWeb, minBuildWeb) || other.minBuildWeb == minBuildWeb)&&(identical(other.minBuildMacos, minBuildMacos) || other.minBuildMacos == minBuildMacos)&&(identical(other.storeUrlAndroid, storeUrlAndroid) || other.storeUrlAndroid == storeUrlAndroid)&&(identical(other.storeUrlIos, storeUrlIos) || other.storeUrlIos == storeUrlIos));
 }
 
-@JsonKey(includeFromJson: false, includeToJson: false)
+
 @override
 int get hashCode => Object.hash(runtimeType,minVersion,minBuildAndroid,minBuildIos,minBuildWeb,minBuildMacos,storeUrlAndroid,storeUrlIos);
 

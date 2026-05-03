@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/activity/presentation/activity_screen.dart';
 import 'package:catch_dating_app/auth/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
@@ -128,7 +127,6 @@ class VisualReviewApp extends StatelessWidget {
                   label: 'Map view',
                   child: const RunMapScreen(enableNetworkTiles: false),
                 ),
-                _PhoneFrame(label: 'Activity', child: const ActivityScreen()),
                 _PhoneFrame(label: 'Filters', child: const FiltersScreen()),
                 _PhoneFrame(
                   label: 'Run recap',
@@ -216,6 +214,12 @@ final class _VisualReviewUserProfileRepository
 
   @override
   Future<void> unsaveRun({required String uid, required String runId}) async {}
+
+  @override
+  Future<void> updateUserProfile({
+    required String uid,
+    required Map<String, dynamic> fields,
+  }) async {}
 
   @override
   Future<void> updatePreferences({

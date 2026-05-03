@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -12,6 +13,7 @@ import 'package:catch_dating_app/runs/presentation/create_run_controller.dart';
 import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/eligibility_step.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_details_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/step_progress_bar.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/stepper_footer.dart';
@@ -21,7 +23,6 @@ import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/where_step.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -198,10 +199,11 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   }
 
   Future<void> _pickLocation() async {
+    final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
     final result = await Navigator.of(context).push<LatLng>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
-          initialLocation: _startingPoint,
+          initialLocation: _startingPoint ?? deviceLocation,
           loadMapTiles: widget.loadMapTiles,
         ),
         fullscreenDialog: true,
@@ -642,7 +644,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
             ),
             if (submitMutation.hasError)
               CatchErrorBanner(
-                message: (submitMutation as MutationError).error.toString(),
+                message: mutationErrorMessage(submitMutation),
               ),
             StepperFooter(
               isLastStep: _currentStep == _totalSteps - 1,

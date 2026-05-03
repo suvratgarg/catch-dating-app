@@ -697,7 +697,6 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.textContaining('Error loading clubs:'), findsOneWidget);
       expect(find.textContaining('boom'), findsOneWidget);
     });
 

@@ -4,12 +4,14 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -28,17 +30,14 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _newCatches = true;
   bool _runReminders = true;
   bool _weeklyDigest = false;
-  bool _didSeedFromProfile = false;
+  String? _seededUid;
 
   Future<void> _savePref(String key, bool value) async {
     final uid = ref.read(userProfileStreamProvider).asData?.value?.uid;
     if (uid == null) return;
-    await ref.read(userProfileRepositoryProvider).updatePreferences(
+    await ref.read(userProfileRepositoryProvider).updateUserProfile(
       uid: uid,
-      prefsNewCatches: key == 'prefsNewCatches' ? value : null,
-      prefsRunReminders: key == 'prefsRunReminders' ? value : null,
-      prefsWeeklyDigest: key == 'prefsWeeklyDigest' ? value : null,
-      prefsShowOnMap: key == 'prefsShowOnMap' ? value : null,
+      fields: {key: value},
     );
   }
 
@@ -83,8 +82,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     final userProfile = ref.watch(userProfileStreamProvider).asData?.value;
     final phoneNumber = userProfile?.phoneNumber ?? '';
 
-    if (!_didSeedFromProfile && userProfile != null) {
-      _didSeedFromProfile = true;
+    if (userProfile != null && userProfile.uid != _seededUid) {
+      _seededUid = userProfile.uid;
       _showOnMap = userProfile.prefsShowOnMap;
       _newCatches = userProfile.prefsNewCatches;
       _runReminders = userProfile.prefsRunReminders;
@@ -109,7 +108,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                 children: [
                   SettingsRow(
                     label: 'Phone',
-                    value: phoneNumber.isNotEmpty ? '+91 $phoneNumber' : '',
+                    value: _formatPhoneForDisplay(phoneNumber),
                     icon: Icons.phone_outlined,
                   ),
                   SettingsRow(
@@ -157,12 +156,6 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
               const SectionHeader(title: 'Notifications'),
               _SettingsCard(
                 children: [
-                  SettingsRow(
-                    label: 'Activity',
-                    value: 'Matches and run reminders',
-                    icon: Icons.notifications_none_rounded,
-                    onTap: () => context.pushNamed(Routes.activityScreen.name),
-                  ),
                   SettingsRow(
                     label: 'New catches',
                     icon: Icons.favorite_outline,
@@ -271,6 +264,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       ),
     );
   }
+
+  String _formatPhoneForDisplay(String phoneNumber) {
+    if (phoneNumber.isEmpty) return '';
+    if (!phoneNumber.startsWith('+')) return phoneNumber;
+
+    final sortedCodes = codes.toList()
+      ..sort((a, b) => b['dial_code']!.length.compareTo(a['dial_code']!.length));
+    for (final c in sortedCodes) {
+      final dialCode = c['dial_code']!;
+      if (phoneNumber.startsWith(dialCode)) {
+        final national = phoneNumber.substring(dialCode.length);
+        return '$dialCode $national';
+      }
+    }
+    return phoneNumber;
+  }
 }
 
 class _SettingsCard extends StatelessWidget {
@@ -348,12 +357,12 @@ class _BlockedAccountTile extends ConsumerWidget {
     final profileAsync = ref.watch(publicProfileProvider(blockedUser.uid));
     final profile = profileAsync.asData?.value;
 
-    return ListTile(
-      leading: CircleAvatar(
-        child: Text((profile?.name ?? 'U').characters.first.toUpperCase()),
+    return PersonRow(
+      data: PersonRowData(
+        name: profile?.name ?? 'Blocked account',
+        metaLine: blockedUser.source,
+        seed: blockedUser.uid,
       ),
-      title: Text(profile?.name ?? 'Blocked account'),
-      subtitle: Text(blockedUser.source),
       trailing: CatchButton(
         label: 'Unblock',
         onPressed: () => ref

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/catches_callout.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
@@ -124,6 +125,8 @@ class DashboardFull extends ConsumerWidget {
                     recommendationsSection: viewModel.recommendationsSection,
                     tokens: t,
                   ),
+                  gapH18,
+                  ActivitySection(uid: user.uid),
                 ],
               ),
             ),

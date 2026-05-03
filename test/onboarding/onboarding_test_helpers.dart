@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -119,6 +121,54 @@ class FakeOnboardingUserProfileRepository extends Fake
     currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
       photoUrls: List<String>.from(photoUrls),
     );
+  }
+
+  @override
+  Future<void> updateUserProfile({
+    required String uid,
+    required Map<String, dynamic> fields,
+  }) async {
+    final updated = Map<String, dynamic>.from(fields);
+    if (updated.containsKey('profileComplete')) {
+      currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
+        profileComplete: updated['profileComplete'] as bool,
+      );
+    }
+    if (updated.containsKey('paceMinSecsPerKm')) {
+      currentUser = (currentUser ?? buildUser(uid: uid)).copyWith(
+        paceMinSecsPerKm: updated['paceMinSecsPerKm'] as int,
+        paceMaxSecsPerKm: updated['paceMaxSecsPerKm'] as int,
+        preferredDistances: (updated['preferredDistances'] as List)
+            .map((e) => PreferredDistance.values.firstWhere((d) => d.name == e))
+            .toList(),
+        runningReasons: (updated['runningReasons'] as List)
+            .map((e) => RunReason.values.firstWhere((r) => r.name == e))
+            .toList(),
+        profileComplete: updated['profileComplete'] as bool,
+      );
+    }
+    lastSavedUser = currentUser;
+  }
+}
+
+class FakeOnboardingDraftRepository extends Fake
+    implements OnboardingDraftRepository {
+  OnboardingDraft? draft;
+
+  @override
+  Future<OnboardingDraft?> fetchDraft({required String uid}) async => draft;
+
+  @override
+  Future<void> saveDraft({
+    required String uid,
+    required OnboardingDraft draft,
+  }) async {
+    this.draft = draft;
+  }
+
+  @override
+  Future<void> deleteDraft({required String uid}) async {
+    draft = null;
   }
 }
 

@@ -7,12 +7,14 @@ import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
+import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +47,7 @@ Future<void> main() async {
 Future<void> _initializeFirebaseServices() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await _activateFirebaseAppCheck();
+  await _initializeRemoteConfig();
 
   if (AppConfig.supportsPushMessagingOnCurrentPlatform) {
     FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -61,15 +64,41 @@ Future<void> _initializeFirebaseServices() async {
   }
 }
 
+Future<void> _initializeRemoteConfig() async {
+  final remoteConfig = FirebaseRemoteConfig.instance;
+  await remoteConfig.setConfigSettings(
+    RemoteConfigSettings(
+      fetchTimeout: const Duration(seconds: 10),
+      minimumFetchInterval: Duration.zero,
+    ),
+  );
+  await remoteConfig.setDefaults(kAppVersionConfigDefaults);
+  try {
+    await remoteConfig.fetchAndActivate();
+  } catch (_) {
+    // fetch failed — the defaults set above will serve as the gate.
+  }
+}
+
 Future<void> _activateFirebaseAppCheck() async {
   final debugToken = AppConfig.firebaseAppCheckDebugToken.trim();
   final debugTokenOrNull = debugToken.isEmpty ? null : debugToken;
   final useDebugProvider = kDebugMode || AppConfig.useFirebaseEmulators;
 
+  debugPrint('── App Check init ──');
+  debugPrint('  kDebugMode: $kDebugMode');
+  debugPrint('  debugToken configured: ${debugToken.isNotEmpty}');
+  debugPrint('  useDebugProvider: $useDebugProvider');
+
   if (kIsWeb) {
     final siteKey = AppConfig.firebaseAppCheckWebRecaptchaEnterpriseSiteKey
         .trim();
     if (useDebugProvider) {
+      debugPrint(
+        debugToken.isEmpty
+            ? 'WARNING: Debug provider active but no FIREBASE_APP_CHECK_DEBUG_TOKEN set.'
+            : 'Using WebDebugProvider with configured token.',
+      );
       await FirebaseAppCheck.instance.activate(
         providerWeb: WebDebugProvider(debugToken: debugTokenOrNull),
       );
@@ -79,6 +108,16 @@ Future<void> _activateFirebaseAppCheck() async {
       );
     }
     return;
+  }
+
+  if (useDebugProvider && debugToken.isEmpty) {
+    debugPrint(
+      'WARNING: Debug App Check provider active on iOS/Android but no '
+      'FIREBASE_APP_CHECK_DEBUG_TOKEN env var is set. A random token will be '
+      'generated and printed. It must be registered in Firebase Console '
+      '(App Check > Manage debug tokens) and re-exported, or all App Check-'
+      'protected services (Firestore, Auth, Functions) will fail with 403.',
+    );
   }
 
   await FirebaseAppCheck.instance.activate(

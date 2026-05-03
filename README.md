@@ -48,12 +48,22 @@ Preferred environment-aware app runs:
 ```
 
 Physical iPhone debug runs require a Firebase App Check debug token when App
-Check enforcement is enabled. Register the printed token in Firebase Console
-under App Check > Catch Dev iOS > Manage debug tokens. To reuse a stable local
-token without committing it, export it before running the wrapper:
+Check enforcement is enabled. The current dev token is baked into
+`tool/dart_defines/dev.json` and passed automatically — no export needed.
+
+**If the app prints a new debug token** (e.g. after reinstalling the app or
+on a new device), update both places:
+
+1. Register the token in Firebase Console under
+   **App Check > Catch Dev iOS > Manage debug tokens**
+2. Update the `FIREBASE_APP_CHECK_DEBUG_TOKEN` value in
+   `tool/dart_defines/dev.json`
+
+The shell wrapper also respects the `FIREBASE_APP_CHECK_DEBUG_TOKEN` env var
+as an override if you need to test with a different token temporarily:
 
 ```bash
-export FIREBASE_APP_CHECK_DEBUG_TOKEN=your_registered_debug_token
+export FIREBASE_APP_CHECK_DEBUG_TOKEN=some_other_token
 ./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
 ```
 
@@ -140,6 +150,26 @@ environment, so switch first:
 - Callable Cloud Functions enforce Firebase App Check. See `functions/README.md` before adding new callable endpoints or changing Razorpay secrets.
 - iOS App Attest is declared in `ios/Runner/Runner.entitlements`; real-device App Check, phone auth, push, and upload flows should be smoke-tested in dev/staging after any Firebase or Apple capability change.
 
+## Firestore error handling
+
+Firestore write errors (permission-denied, network failures, quota exceeded)
+are translated to user-friendly messages via `lib/core/firestore_error_message.dart`.
+In debug mode, the Firebase error code is appended to help developers diagnose
+rule failures without recompiling.
+
+All Firestore partial updates use `DocumentReference.update()` with specific
+field maps rather than reading a full document, modifying it in Dart, and
+writing it back. This avoids a `Timestamp -> DateTime -> Timestamp` round-trip
+that loses nanosecond precision and causes Firestore rule `diff()` checks to
+reject writes.
+
+Key files:
+- `lib/core/firestore_error_message.dart` — error code to user message translation
+- `lib/core/firestore_error_util.dart` — structured error-context wrapper for repository methods
+- `lib/core/widgets/mutation_error_util.dart` — unified mutation error display helper
+- `lib/exceptions/app_exception.dart` — typed `FirestoreWriteException` and `DocumentNotFoundException`
+- `PROJECT_CONTEXT.md` §18 — full error handling conventions
+
 ## Verification
 
 Recent verification commands:
@@ -156,4 +186,12 @@ npm --prefix functions test
 ./tool/flutter_with_env.sh dev build ios --simulator --no-codesign
 ./tool/flutter_with_env.sh dev build ios --no-codesign
 ./tool/flutter_with_env.sh prod build ipa --release --export-options-plist=ios/ExportOptions.prod.plist
+```
+
+Firestore rules deploy (tests run automatically as a predeploy hook):
+
+```bash
+./tool/firebase_with_env.sh dev deploy --only firestore:rules
+./tool/firebase_with_env.sh staging deploy --only firestore:rules
+./tool/firebase_with_env.sh prod deploy --only firestore:rules
 ```

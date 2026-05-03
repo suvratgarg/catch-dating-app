@@ -44,6 +44,15 @@ class UserProfileRepository {
   Future<void> setUserProfile({required UserProfile userProfile}) =>
       _userRef(userProfile.uid).set(userProfile);
 
+  /// Updates only the given [fields] on the user document.
+  ///
+  /// Prefer this over [setUserProfile] for partial updates — it avoids
+  /// the Timestamp → DateTime → Timestamp round-trip on [dateOfBirth].
+  Future<void> updateUserProfile({
+    required String uid,
+    required Map<String, dynamic> fields,
+  }) => _userRef(uid).update(fields);
+
   Future<void> updatePhotoUrls({
     required String uid,
     required List<String> photoUrls,
@@ -62,25 +71,6 @@ class UserProfileRepository {
         'savedRunIds': FieldValue.arrayRemove([runId]),
       });
 
-  Future<void> updatePreferences({
-    required String uid,
-    bool? prefsNewCatches,
-    bool? prefsRunReminders,
-    bool? prefsWeeklyDigest,
-    bool? prefsShowOnMap,
-  }) {
-    final fields = <String, dynamic>{};
-    if (prefsNewCatches != null) fields['prefsNewCatches'] = prefsNewCatches;
-    if (prefsRunReminders != null) {
-      fields['prefsRunReminders'] = prefsRunReminders;
-    }
-    if (prefsWeeklyDigest != null) {
-      fields['prefsWeeklyDigest'] = prefsWeeklyDigest;
-    }
-    if (prefsShowOnMap != null) fields['prefsShowOnMap'] = prefsShowOnMap;
-    if (fields.isEmpty) return Future<void>.value();
-    return _userRef(uid).update(fields);
-  }
 }
 
 @Riverpod(keepAlive: true)

@@ -185,3 +185,51 @@ final class FirebaseFunctionsProvider
 }
 
 String _$firebaseFunctionsHash() => r'463face86aaa4e5a51ef0cc5f0f0e9a641e3dd6a';
+
+@ProviderFor(firebaseRemoteConfig)
+final firebaseRemoteConfigProvider = FirebaseRemoteConfigProvider._();
+
+final class FirebaseRemoteConfigProvider
+    extends
+        $FunctionalProvider<
+          FirebaseRemoteConfig,
+          FirebaseRemoteConfig,
+          FirebaseRemoteConfig
+        >
+    with $Provider<FirebaseRemoteConfig> {
+  FirebaseRemoteConfigProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'firebaseRemoteConfigProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$firebaseRemoteConfigHash();
+
+  @$internal
+  @override
+  $ProviderElement<FirebaseRemoteConfig> $createElement(
+    $ProviderPointer pointer,
+  ) => $ProviderElement(pointer);
+
+  @override
+  FirebaseRemoteConfig create(Ref ref) {
+    return firebaseRemoteConfig(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(FirebaseRemoteConfig value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<FirebaseRemoteConfig>(value),
+    );
+  }
+}
+
+String _$firebaseRemoteConfigHash() =>
+    r'558f490ba1ca6e87cc08e4c965455411ae7bd64a';

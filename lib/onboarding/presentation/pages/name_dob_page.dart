@@ -23,6 +23,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
   final _dateController = TextEditingController();
   DateTime? _selectedDate;
   bool _phoneVerified = false;
+  String _countryCode = '+91';
 
   @override
   void initState() {
@@ -69,6 +70,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
     _phoneController.text = data.phoneNumber;
     _phoneVerified = data.phoneVerified;
+    _countryCode = data.countryCode;
   }
 
   String _formatDate(DateTime date) {
@@ -81,15 +83,13 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
     if (_formKey.currentState!.validate()) {
       ref
           .read(onboardingControllerProvider.notifier)
-          .setNameDob(
+          .advanceToGenderInterest(
             firstName: _firstNameController.text.trim(),
             lastName: _lastNameController.text.trim(),
             dateOfBirth: _selectedDate!,
             phoneNumber: _phoneController.text.trim(),
+            countryCode: _countryCode,
           );
-      ref
-          .read(onboardingControllerProvider.notifier)
-          .goToStep(OnboardingStep.genderInterest);
     }
   }
 
@@ -163,7 +163,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.telephoneNumberNational],
               prefixIcon: const Icon(Icons.phone_outlined),
-              prefixText: '+91 ',
+              prefixText: '$_countryCode ',
               helperText: _phoneVerified ? 'Verified via OTP' : null,
               helperTone: CatchTextFieldSupportTone.brand,
               validator: (v) {

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -142,6 +143,7 @@ class DashboardEmpty extends StatelessWidget {
                       ],
                     );
                   }),
+                  if (user != null) ...[gapH20, ActivitySection(uid: user!.uid, showEmptyState: false)],
                 ],
               ),
             ),

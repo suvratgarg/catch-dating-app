@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
+import 'package:catch_dating_app/force_update/domain/platform_build_resolver.dart';
 import 'package:catch_dating_app/force_update/domain/version.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';

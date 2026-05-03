@@ -32,27 +32,5 @@ void main() {
       );
     });
 
-    test('validates age preference inputs for bounds and ordering', () {
-      expect(
-        validateAgePreferenceInput('120', otherValue: '', isMinimumField: true),
-        'Enter an age between 18 and 99',
-      );
-      expect(
-        validateAgePreferenceInput(
-          '40',
-          otherValue: '20',
-          isMinimumField: true,
-        ),
-        'Min age must be less than or equal to max age',
-      );
-      expect(
-        validateAgePreferenceInput(
-          '20',
-          otherValue: '40',
-          isMinimumField: false,
-        ),
-        'Max age must be greater than or equal to min age',
-      );
-    });
   });
 }

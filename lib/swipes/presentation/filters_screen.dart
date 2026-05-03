@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/firestore_error_message.dart';
+import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -46,18 +48,19 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     final paceRange = _paceRange!;
     setState(() => _saving = true);
     try {
-      await ref
-          .read(userProfileRepositoryProvider)
-          .setUserProfile(
-            userProfile: user.copyWith(
-              minAgePreference: ageRange.start.round(),
-              maxAgePreference: ageRange.end.round(),
-              paceMinSecsPerKm: paceRange.start.round(),
-              paceMaxSecsPerKm: paceRange.end.round(),
-              interestedInGenders: (_interestedIn ?? {}).toList(),
-              preferredDistances: (_distances ?? {}).toList(),
-            ),
-          );
+      await ref.read(userProfileRepositoryProvider).updateUserProfile(
+        uid: user.uid,
+        fields: {
+          'minAgePreference': ageRange.start.round(),
+          'maxAgePreference': ageRange.end.round(),
+          'paceMinSecsPerKm': paceRange.start.round(),
+          'paceMaxSecsPerKm': paceRange.end.round(),
+          'interestedInGenders':
+              (_interestedIn ?? {}).map((e) => e.name).toList(),
+          'preferredDistances':
+              (_distances ?? {}).map((e) => e.name).toList(),
+        },
+      );
       if (mounted) context.pop();
     } finally {
       if (mounted) setState(() => _saving = false);
@@ -108,7 +111,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
       ),
       body: profileAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('Error: $error')),
+        error: (error, _) => Center(child: Text(firestoreErrorMessage(error))),
         data: (user) {
           if (user == null) return const SizedBox.shrink();
           _syncFromProfile(user);
@@ -136,7 +139,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                         children: [
                           _FilterValue(
                             value:
-                                '${_formatPace(paceRange.start)} - ${_formatPace(paceRange.end)} /km',
+                                '${formatPace(paceRange.start)} - ${formatPace(paceRange.end)} /km',
                           ),
                           RangeSlider(
                             min: 240,
@@ -144,8 +147,8 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                             divisions: 20,
                             values: paceRange,
                             labels: RangeLabels(
-                              _formatPace(paceRange.start),
-                              _formatPace(paceRange.end),
+                              formatPace(paceRange.start),
+                              formatPace(paceRange.end),
                             ),
                             onChanged: (values) =>
                                 setState(() => _paceRange = values),
@@ -241,13 +244,6 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
         },
       ),
     );
-  }
-
-  static String _formatPace(double seconds) {
-    final rounded = seconds.round();
-    final minutes = rounded ~/ 60;
-    final remainder = rounded % 60;
-    return '$minutes:${remainder.toString().padLeft(2, '0')}';
   }
 
   static RangeValues _rangeValues(

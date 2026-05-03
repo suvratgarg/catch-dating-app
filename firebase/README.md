@@ -41,10 +41,12 @@ Current state:
   `web/index.html` sets `self.FIREBASE_APPCHECK_DEBUG_TOKEN = true` only on
   localhost/loopback origins, and the generated local browser token is
   registered on the dev web app. Do not commit raw debug tokens.
-- Firestore rules are deployed and aligned across dev, staging, and prod. The
-  checked-in rules allow public reads of `config/app_config` for the
-  force-update gate while keeping all other client access governed by the
-  normal auth/ownership rules.
+- Firestore rules are deployed and aligned across dev, staging, and prod. All
+  client access is governed by the normal auth/ownership rules. A predeploy hook
+  in `firebase.json` runs the rules test suite (`npm test`) before every
+  `firebase deploy --only firestore:rules`, so broken rules cannot ship from
+  the CLI. A GitHub Actions workflow (`.github/workflows/firestore-rules-ci.yml`)
+  runs the same tests on every PR that touches `firestore.rules`.
 - Production now has only the current app registrations active:
   `Catch Prod Android`, `Catch Prod iOS`, and `Catch Prod Web`. The old
   `com.example.*` Android/iOS registrations and the old Windows web

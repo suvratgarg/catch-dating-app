@@ -54,6 +54,17 @@ Before real payments launch:
 3. Deploy Functions for each environment.
 4. Smoke test order creation, payment verification, cancellation, and refunds.
 
+## Firestore rules
+
+`firebase.json` includes a predeploy hook that runs `npm test` before every
+`firebase deploy --only firestore:rules`. Broken rules will fail the deploy
+before reaching Firebase. The same tests run in CI on every PR that touches
+`firestore.rules` (`.github/workflows/firestore-rules-ci.yml`).
+
+Rules tests live at `test/firestore.rules.test.cjs` and use the
+`@firebase/rules-unit-testing` emulator. Add test cases for any new rule
+conditions, especially `diff()` checks and `hasOnly`/`hasAll` shape validation.
+
 ## Commands
 
 ```bash
@@ -62,5 +73,8 @@ npm test
 ./tool/firebase_with_env.sh dev deploy --only functions
 ./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions
+./tool/firebase_with_env.sh dev deploy --only firestore:rules
+./tool/firebase_with_env.sh staging deploy --only firestore:rules
+./tool/firebase_with_env.sh prod deploy --only firestore:rules
 npm run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
 ```

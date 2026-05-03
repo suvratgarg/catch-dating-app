@@ -135,6 +135,7 @@ void main() {
             lastName: 'Runner',
             dateOfBirth: DateTime(1997, 4, 15),
             phoneNumber: '9876543210',
+            countryCode: '+91',
           );
 
       await pumpOnboardingPage(
@@ -160,7 +161,7 @@ void main() {
 
       await container
           .read(onboardingControllerProvider.notifier)
-          .sendOtp('9876543210');
+          .sendOtp('9876543210', '+91');
 
       await pumpOnboardingPage(
         tester,
@@ -195,7 +196,7 @@ void main() {
 
       await container
           .read(onboardingControllerProvider.notifier)
-          .sendOtp('9876543210');
+          .sendOtp('9876543210', '+91');
 
       await pumpOnboardingPage(
         tester,
@@ -292,7 +293,7 @@ void main() {
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
       final notifier = container.read(onboardingControllerProvider.notifier);
-      await notifier.sendOtp('9876543210');
+      await notifier.sendOtp('9876543210', '+91');
       await notifier.verifyOtp('123456');
 
       await pumpOnboardingPage(
@@ -337,13 +338,14 @@ void main() {
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
       final notifier = container.read(onboardingControllerProvider.notifier);
-      await notifier.sendOtp('9876543210');
+      await notifier.sendOtp('9876543210', '+91');
       await notifier.verifyOtp('123456');
       notifier.setNameDob(
         firstName: 'Asha',
         lastName: 'Runner',
         dateOfBirth: DateTime(1997, 4, 15),
         phoneNumber: '9876543210',
+        countryCode: '+91',
       );
 
       await pumpOnboardingPage(

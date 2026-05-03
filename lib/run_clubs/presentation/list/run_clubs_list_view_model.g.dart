@@ -42,7 +42,7 @@ final class SelectedRunClubCityProvider
 }
 
 String _$selectedRunClubCityHash() =>
-    r'356ea2a54be8c716c7ee9b3274b3ca7c75b75f73';
+    r'd174fbc0cc9813c49a50061b90c1e07e503d82b7';
 
 abstract class _$SelectedRunClubCity extends $Notifier<IndianCity> {
   IndianCity build();

@@ -8,84 +8,53 @@ part of 'force_update_provider.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// The current app version string (e.g. "1.2.3") from the platform.
+/// The current app version and build number from the platform.
 
-@ProviderFor(currentAppVersion)
-final currentAppVersionProvider = CurrentAppVersionProvider._();
+@ProviderFor(appPackageInfo)
+final appPackageInfoProvider = AppPackageInfoProvider._();
 
-/// The current app version string (e.g. "1.2.3") from the platform.
+/// The current app version and build number from the platform.
 
-final class CurrentAppVersionProvider
-    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
-    with $FutureModifier<String>, $FutureProvider<String> {
-  /// The current app version string (e.g. "1.2.3") from the platform.
-  CurrentAppVersionProvider._()
+final class AppPackageInfoProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<({String buildNumber, String version})>,
+          ({String buildNumber, String version}),
+          FutureOr<({String buildNumber, String version})>
+        >
+    with
+        $FutureModifier<({String buildNumber, String version})>,
+        $FutureProvider<({String buildNumber, String version})> {
+  /// The current app version and build number from the platform.
+  AppPackageInfoProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'currentAppVersionProvider',
+        name: r'appPackageInfoProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$currentAppVersionHash();
+  String debugGetCreateSourceHash() => _$appPackageInfoHash();
 
   @$internal
   @override
-  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $FutureProviderElement<({String buildNumber, String version})> $createElement(
+    $ProviderPointer pointer,
+  ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<String> create(Ref ref) {
-    return currentAppVersion(ref);
+  FutureOr<({String buildNumber, String version})> create(Ref ref) {
+    return appPackageInfo(ref);
   }
 }
 
-String _$currentAppVersionHash() => r'828a55b7464459763068499a4896ac2c649f002c';
+String _$appPackageInfoHash() => r'5951c12936e1cf5f3d3daf309d4c60d1159c2791';
 
-/// The current platform build number from pubspec/native metadata.
-
-@ProviderFor(currentAppBuildNumber)
-final currentAppBuildNumberProvider = CurrentAppBuildNumberProvider._();
-
-/// The current platform build number from pubspec/native metadata.
-
-final class CurrentAppBuildNumberProvider
-    extends $FunctionalProvider<AsyncValue<String>, String, FutureOr<String>>
-    with $FutureModifier<String>, $FutureProvider<String> {
-  /// The current platform build number from pubspec/native metadata.
-  CurrentAppBuildNumberProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'currentAppBuildNumberProvider',
-        isAutoDispose: false,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$currentAppBuildNumberHash();
-
-  @$internal
-  @override
-  $FutureProviderElement<String> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
-
-  @override
-  FutureOr<String> create(Ref ref) {
-    return currentAppBuildNumber(ref);
-  }
-}
-
-String _$currentAppBuildNumberHash() =>
-    r'ca3e12c8273c3278997504fbbc66314a8bd77f4d';
-
-/// True when the running version is below the remote [minVersion].
+/// True when the running version is below the remote minimum.
 ///
 /// Loading and error states are surfaced to the app shell so the app does not
 /// silently continue when the compatibility check cannot complete.
@@ -93,7 +62,7 @@ String _$currentAppBuildNumberHash() =>
 @ProviderFor(forceUpdateRequired)
 final forceUpdateRequiredProvider = ForceUpdateRequiredProvider._();
 
-/// True when the running version is below the remote [minVersion].
+/// True when the running version is below the remote minimum.
 ///
 /// Loading and error states are surfaced to the app shell so the app does not
 /// silently continue when the compatibility check cannot complete.
@@ -106,7 +75,7 @@ final class ForceUpdateRequiredProvider
           AsyncValue<bool>
         >
     with $Provider<AsyncValue<bool>> {
-  /// True when the running version is below the remote [minVersion].
+  /// True when the running version is below the remote minimum.
   ///
   /// Loading and error states are surfaced to the app shell so the app does not
   /// silently continue when the compatibility check cannot complete.
@@ -144,4 +113,4 @@ final class ForceUpdateRequiredProvider
 }
 
 String _$forceUpdateRequiredHash() =>
-    r'8a5d798620bf01c2c1b3b54330e1d799254fd6a6';
+    r'0c415fd42fccb7463c50ec0072d7c7ecb597481f';

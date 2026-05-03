@@ -30,6 +30,51 @@ void main() {
       },
     );
 
+    test('autoSelectCity sets city when user has not made a manual pick', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      expect(container.read(selectedRunClubCityProvider), IndianCity.mumbai);
+
+      container
+          .read(selectedRunClubCityProvider.notifier)
+          .autoSelectCity(IndianCity.delhi);
+
+      expect(container.read(selectedRunClubCityProvider), IndianCity.delhi);
+    });
+
+    test('autoSelectCity does not override a manual city choice', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      // Manual pick
+      container
+          .read(selectedRunClubCityProvider.notifier)
+          .setCity(IndianCity.bangalore);
+      expect(container.read(selectedRunClubCityProvider), IndianCity.bangalore);
+
+      // GPS tries to override — should be ignored
+      container
+          .read(selectedRunClubCityProvider.notifier)
+          .autoSelectCity(IndianCity.mumbai);
+      expect(
+        container.read(selectedRunClubCityProvider),
+        IndianCity.bangalore,
+      );
+    });
+
+    test('setCity clears search query while autoSelectCity also clears it', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      container.read(runClubSearchQueryProvider.notifier).setQuery('stride');
+      container
+          .read(selectedRunClubCityProvider.notifier)
+          .autoSelectCity(IndianCity.delhi);
+
+      expect(container.read(runClubSearchQueryProvider), isEmpty);
+    });
+
     test('matchesRunClubSearchQuery matches name, area, host, and tags', () {
       final bandraClub = buildRunClub(
         id: 'club-1',

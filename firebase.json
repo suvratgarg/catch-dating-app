@@ -83,7 +83,11 @@
     "database": "(default)",
     "location": "asia-south1",
     "rules": "firestore.rules",
-    "indexes": "firestore.indexes.json"
+    "indexes": "firestore.indexes.json",
+    "predeploy": [
+      "npm --prefix functions ci",
+      "npm --prefix functions test"
+    ]
   },
   "emulators": {
     "auth": {

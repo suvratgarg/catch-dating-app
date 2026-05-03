@@ -98,11 +98,16 @@ class MatchRepository {
 
   /// Resets the unread count for [uid] in the given match to zero.
   /// Called when the user opens a chat, both on entry and exit.
+  ///
+  /// Only swallows [FirebaseException] with code `not-found` — the match
+  /// document may not exist yet if a Cloud Function hasn't created it.
+  /// All other errors (permission-denied, network, etc.) propagate.
   Future<void> resetUnread({required String matchId, required String uid}) =>
-      _matchRef(matchId)
-          .update({'unreadCounts.$uid': 0})
-          // Silently ignore errors (e.g., match document not yet created)
-          .catchError((_) {});
+      _matchRef(matchId).update({'unreadCounts.$uid': 0}).catchError(
+        (Object _) {},
+        test: (Object error) =>
+            error is FirebaseException && error.code == 'not-found',
+      );
 }
 
 @Riverpod(keepAlive: true)

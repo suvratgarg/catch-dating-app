@@ -17,6 +17,9 @@ _PublicProfile _$PublicProfileFromJson(
   photoUrls:
       (json['photoUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
+  city: $enumDecodeNullable(_$IndianCityEnumMap, json['city']),
+  latitude: (json['latitude'] as num?)?.toDouble(),
+  longitude: (json['longitude'] as num?)?.toDouble(),
   height: (json['height'] as num?)?.toInt(),
   occupation: json['occupation'] as String?,
   company: json['company'] as String?,
@@ -36,6 +39,18 @@ _PublicProfile _$PublicProfileFromJson(
   workout: $enumDecodeNullable(_$WorkoutFrequencyEnumMap, json['workout']),
   diet: $enumDecodeNullable(_$DietaryPreferenceEnumMap, json['diet']),
   children: $enumDecodeNullable(_$ChildrenStatusEnumMap, json['children']),
+  paceMinSecsPerKm: (json['paceMinSecsPerKm'] as num?)?.toInt() ?? 300,
+  paceMaxSecsPerKm: (json['paceMaxSecsPerKm'] as num?)?.toInt() ?? 420,
+  preferredDistances:
+      (json['preferredDistances'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$PreferredDistanceEnumMap, e))
+          .toList() ??
+      const [],
+  runningReasons:
+      (json['runningReasons'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$RunReasonEnumMap, e))
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$PublicProfileToJson(
@@ -46,6 +61,9 @@ Map<String, dynamic> _$PublicProfileToJson(
   'bio': instance.bio,
   'gender': _$GenderEnumMap[instance.gender]!,
   'photoUrls': instance.photoUrls,
+  'city': _$IndianCityEnumMap[instance.city],
+  'latitude': instance.latitude,
+  'longitude': instance.longitude,
   'height': instance.height,
   'occupation': instance.occupation,
   'company': instance.company,
@@ -58,6 +76,14 @@ Map<String, dynamic> _$PublicProfileToJson(
   'workout': _$WorkoutFrequencyEnumMap[instance.workout],
   'diet': _$DietaryPreferenceEnumMap[instance.diet],
   'children': _$ChildrenStatusEnumMap[instance.children],
+  'paceMinSecsPerKm': instance.paceMinSecsPerKm,
+  'paceMaxSecsPerKm': instance.paceMaxSecsPerKm,
+  'preferredDistances': instance.preferredDistances
+      .map((e) => _$PreferredDistanceEnumMap[e]!)
+      .toList(),
+  'runningReasons': instance.runningReasons
+      .map((e) => _$RunReasonEnumMap[e]!)
+      .toList(),
 };
 
 const _$GenderEnumMap = {
@@ -65,6 +91,18 @@ const _$GenderEnumMap = {
   Gender.woman: 'woman',
   Gender.nonBinary: 'nonBinary',
   Gender.other: 'other',
+};
+
+const _$IndianCityEnumMap = {
+  IndianCity.mumbai: 'mumbai',
+  IndianCity.delhi: 'delhi',
+  IndianCity.bangalore: 'bangalore',
+  IndianCity.hyderabad: 'hyderabad',
+  IndianCity.chennai: 'chennai',
+  IndianCity.kolkata: 'kolkata',
+  IndianCity.pune: 'pune',
+  IndianCity.ahmedabad: 'ahmedabad',
+  IndianCity.indore: 'indore',
 };
 
 const _$EducationLevelEnumMap = {
@@ -144,4 +182,21 @@ const _$ChildrenStatusEnumMap = {
   ChildrenStatus.haveNoMore: 'haveNoMore',
   ChildrenStatus.wantSomeday: 'wantSomeday',
   ChildrenStatus.dontWant: 'dontWant',
+};
+
+const _$PreferredDistanceEnumMap = {
+  PreferredDistance.fiveK: 'fiveK',
+  PreferredDistance.tenK: 'tenK',
+  PreferredDistance.halfMarathon: 'halfMarathon',
+  PreferredDistance.marathon: 'marathon',
+};
+
+const _$RunReasonEnumMap = {
+  RunReason.fitness: 'fitness',
+  RunReason.community: 'community',
+  RunReason.mindfulness: 'mindfulness',
+  RunReason.challenge: 'challenge',
+  RunReason.weightLoss: 'weightLoss',
+  RunReason.raceTraining: 'raceTraining',
+  RunReason.social: 'social',
 };

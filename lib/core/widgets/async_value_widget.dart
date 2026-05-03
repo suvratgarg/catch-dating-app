@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,7 +23,7 @@ class AsyncValueWidget<T> extends StatelessWidget {
     return value.when(
       data: data,
       loading: () => const Center(child: CircularProgressIndicator()),
-      error: (e, _) => Center(child: ErrorMessageWidget(e.toString())),
+      error: (e, _) => Center(child: ErrorMessageWidget(firestoreErrorMessage(e))),
     );
   }
 }
@@ -46,7 +47,7 @@ class AsyncValueSliverWidget<T> extends StatelessWidget {
         child: Center(child: CircularProgressIndicator()),
       ),
       error: (e, _) => SliverToBoxAdapter(
-        child: Center(child: ErrorMessageWidget(e.toString())),
+        child: Center(child: ErrorMessageWidget(firestoreErrorMessage(e))),
       ),
     );
   }

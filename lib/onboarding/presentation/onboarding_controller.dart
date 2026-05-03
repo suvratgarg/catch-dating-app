@@ -1,6 +1,11 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/app_config.dart';
+import 'package:flutter/foundation.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -25,6 +30,7 @@ abstract class OnboardingData with _$OnboardingData {
   }) = _OnboardingData;
 
   String get phoneNumber => profileDraft.phoneNumber;
+  String get countryCode => profileDraft.countryCode;
   String get firstName => profileDraft.firstName;
   String get lastName => profileDraft.lastName;
   DateTime? get dateOfBirth => profileDraft.dateOfBirth;
@@ -51,11 +57,9 @@ class OnboardingController extends _$OnboardingController {
   @override
   OnboardingData build() => const OnboardingData();
 
-  void initStep() {
-    syncEntryStep();
-  }
+  Future<void> initStep() => syncEntryStep();
 
-  void syncEntryStep() {
+  Future<void> syncEntryStep() async {
     final uid = ref.read(uidProvider).asData?.value;
     final userProfile = ref.read(userProfileStreamProvider).asData?.value;
 
@@ -64,6 +68,33 @@ class OnboardingController extends _$OnboardingController {
       return;
     }
 
+    // Try to resume from a persisted draft first (exact step tracking).
+    final draft =
+        await ref.read(onboardingDraftRepositoryProvider).fetchDraft(uid: uid);
+    final draftStep =
+        draft != null ? OnboardingStep.fromIndex(draft.step) : null;
+    if (draft != null && draftStep != null) {
+      _setStateIfChanged(
+        state.copyWith(
+          step: draftStep,
+          phoneVerified: draftStep.index >= OnboardingStep.nameDob.index,
+          profileDraft: state.profileDraft.copyWith(
+            firstName: draft.firstName,
+            lastName: draft.lastName,
+            dateOfBirth: draft.dateOfBirth,
+            phoneNumber: draft.phoneNumber,
+            countryCode: draft.countryCode,
+            gender: draft.gender,
+            sexualOrientation: draft.sexualOrientation,
+            interestedInGenders: draft.interestedInGenders,
+          ),
+        ),
+      );
+      return;
+    }
+
+    // No draft — fall back to the existing heuristic (also handles users
+    // who started onboarding before the draft system was introduced).
     if (userProfile == null) {
       final phoneNumber = _authPhoneNumber;
       if (phoneNumber.isEmpty) {
@@ -83,7 +114,8 @@ class OnboardingController extends _$OnboardingController {
           step: OnboardingStep.nameDob,
           phoneVerified: true,
           profileDraft: state.profileDraft.copyWith(
-            phoneNumber: _stripIndianCountryCode(phoneNumber),
+            phoneNumber: _stripCountryCode(phoneNumber, '+91'),
+            countryCode: '+91',
           ),
         ),
       );
@@ -97,14 +129,29 @@ class OnboardingController extends _$OnboardingController {
 
   void goToStep(OnboardingStep step) => state = state.copyWith(step: step);
 
+  void goToStepAndSaveDraft(OnboardingStep step) {
+    state = state.copyWith(step: step);
+    _saveDraft();
+  }
+
   // ── Phone OTP ─────────────────────────────────────────────────────────────
 
-  Future<void> sendOtp(String phoneNumber) async {
+  Future<void> sendOtp(String phoneNumber, String countryCode) async {
     state = state.copyWith(
       phoneVerified: false,
       verificationId: null,
-      profileDraft: state.profileDraft.copyWith(phoneNumber: phoneNumber),
+      profileDraft: state.profileDraft.copyWith(
+        phoneNumber: phoneNumber,
+        countryCode: countryCode,
+      ),
     );
+
+    final formatted = _formatPhoneNumber(phoneNumber, countryCode);
+    debugPrint('── sendOtp ──');
+    debugPrint('  national number: $phoneNumber');
+    debugPrint('  country code: $countryCode');
+    debugPrint('  formatted: $formatted');
+    debugPrint('  appCheckDebugToken configured: ${AppConfig.firebaseAppCheckDebugToken.isNotEmpty}');
 
     // verifyPhoneNumber's Future resolves when Firebase submits the request —
     // before codeSent/verificationFailed fire. A Completer bridges those async
@@ -115,8 +162,9 @@ class OnboardingController extends _$OnboardingController {
       ref
           .read(authRepositoryProvider)
           .verifyPhoneNumber(
-            phoneNumber: _formatIndianPhoneNumber(phoneNumber),
+            phoneNumber: formatted,
             codeSent: (verificationId, _) {
+              debugPrint('sendOtp: codeSent — verificationId received');
               state = state.copyWith(
                 verificationId: verificationId,
                 step: OnboardingStep.otp,
@@ -124,9 +172,11 @@ class OnboardingController extends _$OnboardingController {
               if (!completer.isCompleted) completer.complete();
             },
             verificationFailed: (e) {
+              debugPrint('sendOtp verificationFailed: code=${e.code} message=${e.message}');
               if (!completer.isCompleted) completer.completeError(e);
             },
             verificationCompleted: (credential) async {
+              debugPrint('sendOtp: verificationCompleted (auto)');
               try {
                 await ref
                     .read(authRepositoryProvider)
@@ -142,6 +192,7 @@ class OnboardingController extends _$OnboardingController {
             },
           )
           .catchError((Object e, StackTrace st) {
+            debugPrint('sendOtp catchError: $e');
             if (!completer.isCompleted) completer.completeError(e, st);
           }),
     );
@@ -170,6 +221,7 @@ class OnboardingController extends _$OnboardingController {
     required String lastName,
     required DateTime dateOfBirth,
     required String phoneNumber,
+    required String countryCode,
   }) {
     state = state.copyWith(
       profileDraft: state.profileDraft.copyWith(
@@ -177,6 +229,7 @@ class OnboardingController extends _$OnboardingController {
         lastName: lastName,
         dateOfBirth: dateOfBirth,
         phoneNumber: phoneNumber,
+        countryCode: countryCode,
       ),
     );
   }
@@ -195,9 +248,30 @@ class OnboardingController extends _$OnboardingController {
     );
   }
 
+  void advanceToGenderInterest({
+    required String firstName,
+    required String lastName,
+    required DateTime dateOfBirth,
+    required String phoneNumber,
+    required String countryCode,
+  }) {
+    setNameDob(
+      firstName: firstName,
+      lastName: lastName,
+      dateOfBirth: dateOfBirth,
+      phoneNumber: phoneNumber,
+      countryCode: countryCode,
+    );
+    state = state.copyWith(step: OnboardingStep.genderInterest);
+    _saveDraft();
+  }
+
   Future<void> saveProfile() async {
     final uid = _requireSignedInUid();
     final draft = _requireProfileDraft();
+
+    state = state.copyWith(step: OnboardingStep.photos);
+    _saveDraft();
 
     await ref
         .read(userProfileRepositoryProvider)
@@ -213,7 +287,6 @@ class OnboardingController extends _$OnboardingController {
             profileComplete: false,
           ),
         );
-    state = state.copyWith(step: OnboardingStep.photos);
   }
 
   Future<void> complete({
@@ -224,19 +297,20 @@ class OnboardingController extends _$OnboardingController {
   }) async {
     final userProfile = ref.read(userProfileStreamProvider).asData?.value;
     if (userProfile == null) {
-      throw StateError('User profile not loaded. Please try again.');
+      throw const DocumentNotFoundException('users/current');
     }
-    await ref
-        .read(userProfileRepositoryProvider)
-        .setUserProfile(
-          userProfile: userProfile.copyWith(
-            paceMinSecsPerKm: paceMinSecsPerKm,
-            paceMaxSecsPerKm: paceMaxSecsPerKm,
-            preferredDistances: preferredDistances,
-            runningReasons: runningReasons,
-            profileComplete: true,
-          ),
-        );
+    await ref.read(userProfileRepositoryProvider).updateUserProfile(
+      uid: userProfile.uid,
+      fields: {
+        'paceMinSecsPerKm': paceMinSecsPerKm,
+        'paceMaxSecsPerKm': paceMaxSecsPerKm,
+        'preferredDistances':
+            preferredDistances.map((e) => e.name).toList(),
+        'runningReasons': runningReasons.map((e) => e.name).toList(),
+        'profileComplete': true,
+      },
+    );
+    _deleteDraft();
   }
 
   String _requireSignedInUid() {
@@ -286,7 +360,7 @@ class OnboardingController extends _$OnboardingController {
     }
 
     return draft.copyWith(
-      phoneNumber: _formatIndianPhoneNumber(draft.phoneNumber),
+      phoneNumber: _formatPhoneNumber(draft.phoneNumber, draft.countryCode),
     );
   }
 
@@ -300,17 +374,54 @@ class OnboardingController extends _$OnboardingController {
     state = nextState;
   }
 
-  String _formatIndianPhoneNumber(String phoneNumber) {
+  String _formatPhoneNumber(String phoneNumber, String countryCode) {
     final normalized = phoneNumber.trim();
     if (normalized.startsWith('+')) {
       return normalized;
     }
-    return '+91$normalized';
+    return '$countryCode$normalized';
   }
 
-  String _stripIndianCountryCode(String phoneNumber) {
-    return phoneNumber.startsWith('+91')
-        ? phoneNumber.substring(3)
-        : phoneNumber;
+  String _stripCountryCode(String phoneNumber, String countryCode) {
+    if (phoneNumber.startsWith(countryCode)) {
+      return phoneNumber.substring(countryCode.length);
+    }
+    return phoneNumber;
+  }
+
+  void _saveDraft() {
+    final uid = ref.read(uidProvider).asData?.value;
+    if (uid == null) return;
+
+    // Best-effort cache — a failed write is harmless; syncEntryStep falls
+    // back to the existing heuristic on next launch.
+    unawaited(
+      ref.read(onboardingDraftRepositoryProvider).saveDraft(
+        uid: uid,
+        draft: OnboardingDraft(
+          step: state.step.index,
+          firstName: state.firstName,
+          lastName: state.lastName,
+          dateOfBirth: state.dateOfBirth,
+          phoneNumber: state.phoneNumber,
+          countryCode: state.countryCode,
+          gender: state.gender,
+          sexualOrientation: state.sexualOrientation,
+          interestedInGenders: state.interestedInGenders,
+        ),
+      ).catchError((_, __) {/* best-effort */}),
+    );
+  }
+
+  void _deleteDraft() {
+    final uid = ref.read(uidProvider).asData?.value;
+    if (uid == null) return;
+
+    unawaited(
+      ref
+          .read(onboardingDraftRepositoryProvider)
+          .deleteDraft(uid: uid)
+          .catchError((_, __) {/* best-effort */}),
+    );
   }
 }

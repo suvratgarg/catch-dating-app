@@ -310,3 +310,61 @@ Note: `tool/visual_review_app.dart` still emits a non-fatal Riverpod lint warnin
 - `lib/profile/presentation/**`
 - `lib/safety/presentation/settings_screen.dart`
 - `lib/routing/go_router.dart`
+
+## 2026-05-03 Primitive Consolidation Pass
+
+Goal: reduce UI drift by migrating ad-hoc private widgets to shared primitives
+from `lib/core/widgets/`, and create new primitives for patterns duplicated
+across multiple screens.
+
+### New Primitives Created
+
+| Primitive | File | Replaces |
+|-----------|------|----------|
+| `StatColumn` | `lib/core/widgets/stat_column.dart` | `_HeaderStat` (calendar), `_HostManageStat` (create_run) |
+| `SectionHeader` | `lib/core/widgets/section_header.dart` | `_SettingsGroup` title (settings), `_ActivitySectionTitle` (activity) |
+| `SettingsRow` | `lib/core/widgets/settings_row.dart` | `_SettingsRow` (settings, 13+ usages extracted to shared) |
+
+### Existing Primitives Wired Into Screens
+
+| Primitive | File | Screen | Replaced |
+|-----------|------|--------|----------|
+| `CatchSegmentedControl` | `lib/core/widgets/catch_segmented_control.dart` | Calendar | `_ModeToggle` + `_ModeButton` (60 lines) |
+| `PersonRow` + `PersonAvatar` | `lib/core/widgets/person_row.dart` | Settings | `_BlockedAccountTile` raw `ListTile` + `CircleAvatar` |
+
+### Private Classes Eliminated
+
+| Screen | Classes removed |
+|--------|----------------|
+| Calendar | `_ModeToggle`, `_ModeButton`, `_HeaderStat` |
+| Settings | `_SettingsGroup`, `_SettingsRow` (extracted to `SettingsRow`) |
+| Create Run | `_HostManageStat` (replaced with `_StatCard` wrapping `StatColumn`) |
+| Activity | `_ActivitySectionTitle` |
+
+### Primitives Evaluated But Intentionally Not Wired
+
+- **`RunCard`** — Calendar `_AgendaRunCard` and `_TimelineRun` have specific
+  colored left-bar and timeline dot+line layouts that don't map to RunCard's
+  3-density card model. RunCard wants pre-formatted `RunCardData`; calendar
+  cards are simpler run-summary rows.
+- **`CatchProgressBar`** — Onboarding uses a segmented step-progress indicator
+  (dots), not a continuous 0–1 bar. Different use cases.
+- **`_PillStat` / `_RecapStat`** — These use dark-background hero styling (white
+  text, mono font). `StatColumn` targets light surfaces. These are fine as
+  local private helpers for their dark hero contexts.
+- **Decorative icon circles** — Vary from 36px to 156px across 4 screens with
+  different colors, gradients, and icon sizes. A shared primitive would need
+  too many parameters to cover all cases cleanly.
+
+### Remaining Known Duplication (deferred)
+
+- `_HostUserList` in create_run_screen — uses raw `ListTile` + `CircleAvatar`
+  but needs async profile resolution to adopt `PersonRow`. Defer until roster
+  data flow is upgraded.
+- `_FilterSection` in filters_screen — has its own border/padding container
+  structure. Could adopt `SectionHeader` for the inner title, low value alone.
+
+### Verification
+
+- `flutter analyze`: 16 info-level issues (all pre-existing, no new warnings)
+- `flutter test --concurrency=1`: 428 tests passed

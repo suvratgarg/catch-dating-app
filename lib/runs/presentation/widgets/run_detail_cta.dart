@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/auth/auth_repository.dart';
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_banner.dart';
@@ -181,6 +183,9 @@ class RunDetailCta extends ConsumerWidget {
 String runBookingErrorMessage(Object error) {
   if (error is AppException) {
     return error.message;
+  }
+  if (error is FirebaseException) {
+    return firestoreErrorMessage(error);
   }
   if (error is FirebaseFunctionsException) {
     if (error.code == 'unauthenticated') {

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,7 +18,7 @@ extension AsyncValueUI on AsyncValue<void> {
       messenger.clearSnackBars();
       messenger.showSnackBar(
         SnackBar(
-          content: Text(error.toString()),
+          content: Text(firestoreErrorMessage(error ?? 'An unexpected error occurred.')),
           backgroundColor: Theme.of(context).colorScheme.error,
         ),
       );

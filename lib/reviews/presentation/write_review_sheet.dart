@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -8,7 +9,6 @@ import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Shows a bottom sheet for creating or editing a review.
@@ -132,7 +132,7 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
           ),
           if (mutation.hasError) ...[
             gapH12,
-            ErrorBanner(message: (mutation as MutationError).error.toString()),
+            ErrorBanner(message: mutationErrorMessage(mutation)),
           ],
           gapH20,
           CatchButton(
