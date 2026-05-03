@@ -134,6 +134,12 @@ class OnboardingController extends _$OnboardingController {
     _saveDraft();
   }
 
+  void setCountryCode(String code) {
+    state = state.copyWith(
+      profileDraft: state.profileDraft.copyWith(countryCode: code),
+    );
+  }
+
   // ── Phone OTP ─────────────────────────────────────────────────────────────
 
   Future<void> sendOtp(String phoneNumber, String countryCode) async {

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,9 +32,16 @@ Future<void> _saveField({
       uid: uid,
       fields: fields,
     );
+  }).catchError((Object error, StackTrace stack) {
+    debugPrint('_saveField failed: $error\n$stack');
+    // Reset the chain so subsequent saves are not blocked.
+    _pendingSave = Future.value();
   });
   return _pendingSave;
 }
+
+String _enumName(Object value) =>
+    value is Enum ? value.name : value.toString();
 
 // ── Text fields ────────────────────────────────────────────────────────────────
 
@@ -45,53 +53,63 @@ Future<void> showTextEditSheet({
   required String fieldName,
   FormFieldValidator<String>? validator,
 }) async {
+  final formKey = GlobalKey<FormState>();
   final controller = TextEditingController(text: currentValue);
   final confirmed = await showModalBottomSheet<bool>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     builder: (ctx) {
-      return Padding(
-        padding: EdgeInsets.fromLTRB(
-          Sizes.p16,
-          Sizes.p12,
-          Sizes.p16,
-          MediaQuery.of(ctx).viewInsets.bottom + Sizes.p16,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Theme.of(ctx).dividerColor,
-                  borderRadius: BorderRadius.circular(2),
+      return Form(
+        key: formKey,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            Sizes.p16,
+            Sizes.p12,
+            Sizes.p16,
+            MediaQuery.of(ctx).viewInsets.bottom + Sizes.p16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(ctx).dividerColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
-            gapH16,
-            CatchTextField(
-              label: title,
-              controller: controller,
-              autofocus: true,
-              maxLines: title == 'Bio' ? 4 : 1,
-              textCapitalization: TextCapitalization.sentences,
-              textInputAction: TextInputAction.done,
-              validator: validator,
-              onSubmitted: (_) {
-                Navigator.of(ctx).pop(true);
-              },
-            ),
-            gapH16,
-            CatchButton(
-              label: 'Done',
-              onPressed: () => Navigator.of(ctx).pop(true),
-              fullWidth: true,
-            ),
-          ],
+              gapH16,
+              CatchTextField(
+                label: title,
+                controller: controller,
+                autofocus: true,
+                maxLines: fieldName == 'bio' ? 4 : 1,
+                textCapitalization: TextCapitalization.sentences,
+                textInputAction: TextInputAction.done,
+                validator: validator,
+                onSubmitted: (_) {
+                  if (formKey.currentState!.validate()) {
+                    Navigator.of(ctx).pop(true);
+                  }
+                },
+              ),
+              gapH16,
+              CatchButton(
+                label: 'Done',
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    Navigator.of(ctx).pop(true);
+                  }
+                },
+                fullWidth: true,
+              ),
+            ],
+          ),
         ),
       );
     },
@@ -116,6 +134,7 @@ Future<void> showIntEditSheet({
   required String fieldName,
   FormFieldValidator<String>? validator,
 }) async {
+  final formKey = GlobalKey<FormState>();
   final controller = TextEditingController(
     text: currentValue?.toString() ?? '',
   );
@@ -124,48 +143,57 @@ Future<void> showIntEditSheet({
     isScrollControlled: true,
     useSafeArea: true,
     builder: (ctx) {
-      return Padding(
-        padding: EdgeInsets.fromLTRB(
-          Sizes.p16,
-          Sizes.p12,
-          Sizes.p16,
-          MediaQuery.of(ctx).viewInsets.bottom + Sizes.p16,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Container(
-                width: 36,
-                height: 4,
-                decoration: BoxDecoration(
-                  color: Theme.of(ctx).dividerColor,
-                  borderRadius: BorderRadius.circular(2),
+      return Form(
+        key: formKey,
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            Sizes.p16,
+            Sizes.p12,
+            Sizes.p16,
+            MediaQuery.of(ctx).viewInsets.bottom + Sizes.p16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Center(
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Theme.of(ctx).dividerColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
               ),
-            ),
-            gapH16,
-            CatchTextField(
-              label: title,
-              controller: controller,
-              autofocus: true,
-              keyboardType: TextInputType.number,
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              suffixText: title == 'Height' ? 'cm' : null,
-              textInputAction: TextInputAction.done,
-              validator: validator,
-              onSubmitted: (_) {
-                Navigator.of(ctx).pop(true);
-              },
-            ),
-            gapH16,
-            CatchButton(
-              label: 'Done',
-              onPressed: () => Navigator.of(ctx).pop(true),
-              fullWidth: true,
-            ),
-          ],
+              gapH16,
+              CatchTextField(
+                label: title,
+                controller: controller,
+                autofocus: true,
+                keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                suffixText: title == 'Height' ? 'cm' : null,
+                textInputAction: TextInputAction.done,
+                validator: validator,
+                onSubmitted: (_) {
+                  if (formKey.currentState!.validate()) {
+                    Navigator.of(ctx).pop(true);
+                  }
+                },
+              ),
+              gapH16,
+              CatchButton(
+                label: 'Done',
+                onPressed: () {
+                  if (formKey.currentState!.validate()) {
+                    Navigator.of(ctx).pop(true);
+                  }
+                },
+                fullWidth: true,
+              ),
+            ],
+          ),
         ),
       );
     },
@@ -240,7 +268,7 @@ Future<void> showSingleEnumSheet<T extends Labelled>({
   );
 
   if (result != null && result != currentValue) {
-    await _saveField(ref: ref, fields: {fieldName: (result as Enum).name});
+    await _saveField(ref: ref, fields: {fieldName: _enumName(result)});
   }
 }
 
@@ -307,7 +335,7 @@ Future<void> showMultiEnumSheet<T extends Labelled>({
   if (result != null) {
     await _saveField(
       ref: ref,
-      fields: {fieldName: result.map((e) => (e as Enum).name).toList()},
+      fields: {fieldName: result.map(_enumName).toList()},
     );
   }
 }

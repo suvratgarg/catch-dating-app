@@ -1,7 +1,10 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/profile/presentation/widgets/profile_edit_sheet.dart';
@@ -373,60 +376,6 @@ class ProfileTab extends ConsumerWidget {
         isAddAffordance: user.runningReasons.isEmpty,
       ),
     ];
-    final notifications = [
-      ProfileInfoEntry(
-        icon: Icons.favorite_outline,
-        label: 'New catch notifications',
-        value: user.prefsNewCatches ? 'On' : 'Off',
-        onTap: () => showBooleanEditSheet(
-          context: context,
-          ref: ref,
-          title: 'New catch notifications',
-          icon: Icons.favorite_outline,
-          currentValue: user.prefsNewCatches,
-          fieldName: 'prefsNewCatches',
-        ),
-      ),
-      ProfileInfoEntry(
-        icon: Icons.notifications_active_outlined,
-        label: 'Run reminders',
-        value: user.prefsRunReminders ? 'On' : 'Off',
-        onTap: () => showBooleanEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Run reminders',
-          icon: Icons.notifications_active_outlined,
-          currentValue: user.prefsRunReminders,
-          fieldName: 'prefsRunReminders',
-        ),
-      ),
-      ProfileInfoEntry(
-        icon: Icons.weekend_outlined,
-        label: 'Weekly digest',
-        value: user.prefsWeeklyDigest ? 'On' : 'Off',
-        onTap: () => showBooleanEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Weekly digest',
-          icon: Icons.weekend_outlined,
-          currentValue: user.prefsWeeklyDigest,
-          fieldName: 'prefsWeeklyDigest',
-        ),
-      ),
-      ProfileInfoEntry(
-        icon: Icons.map_outlined,
-        label: 'Show on map',
-        value: user.prefsShowOnMap ? 'On' : 'Off',
-        onTap: () => showBooleanEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Show on map',
-          icon: Icons.map_outlined,
-          currentValue: user.prefsShowOnMap,
-          fieldName: 'prefsShowOnMap',
-        ),
-      ),
-    ];
 
     return ListView(
       padding: const EdgeInsets.fromLTRB(
@@ -444,14 +393,9 @@ class ProfileTab extends ConsumerWidget {
               .pickAndUpload(index),
         ),
         gapH14,
-        GestureDetector(
-          onTap: () => showTextEditSheet(
-            context: context,
-            ref: ref,
-            title: 'Bio',
-            currentValue: user.bio,
-            fieldName: 'bio',
-          ),
+        SectionHeader(title: 'Bio'),
+        CatchSurface(
+          borderColor: t.line,
           child: _PromptCard(
             eyebrow: 'On a perfect run',
             text: user.bio.isNotEmpty
@@ -459,22 +403,36 @@ class ProfileTab extends ConsumerWidget {
                 : 'Add a bio to tell runners about yourself',
             tokens: t,
             isPrompt: user.bio.isEmpty,
+            onTap: () => showTextEditSheet(
+              context: context,
+              ref: ref,
+              title: 'Bio',
+              currentValue: user.bio,
+              fieldName: 'bio',
+            ),
           ),
         ),
-        gapH14,
-        _RunningIdentityCard(user: user, tokens: t),
-        gapH24,
-        ProfileInfoSection(title: 'About', entries: basics),
-        ProfileInfoSection(title: 'Location', entries: location),
-        ProfileInfoSection(title: 'Background', entries: background),
-        ProfileInfoSection(title: 'Discovery', entries: discovery),
-        ProfileInfoSection(title: 'Intentions', entries: intentions),
-        ProfileInfoSection(title: 'Lifestyle', entries: lifestyle),
-        ProfileInfoSection(title: 'Running Details', entries: running),
-        ProfileInfoSection(
-          title: 'Notifications',
-          entries: notifications,
-        ),
+        gapH20,
+        SectionHeader(title: 'About'),
+        ProfileInfoSection(entries: basics, grouped: true),
+        gapH20,
+        SectionHeader(title: 'Location'),
+        ProfileInfoSection(entries: location, grouped: true),
+        gapH20,
+        SectionHeader(title: 'Background'),
+        ProfileInfoSection(entries: background, grouped: true),
+        gapH20,
+        SectionHeader(title: 'Discovery'),
+        ProfileInfoSection(entries: discovery, grouped: true),
+        gapH20,
+        SectionHeader(title: 'Intentions'),
+        ProfileInfoSection(entries: intentions, grouped: true),
+        gapH20,
+        SectionHeader(title: 'Lifestyle'),
+        ProfileInfoSection(entries: lifestyle, grouped: true),
+        gapH20,
+        SectionHeader(title: 'Running Details'),
+        ProfileInfoSection(entries: running, grouped: true),
         gapH32,
       ],
     );
@@ -487,22 +445,19 @@ class _PromptCard extends StatelessWidget {
     required this.text,
     required this.tokens,
     this.isPrompt = false,
+    this.onTap,
   });
 
   final String eyebrow;
   final String text;
   final CatchTokens tokens;
   final bool isPrompt;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    final content = Padding(
       padding: const EdgeInsets.all(Sizes.p16),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        border: Border.all(color: tokens.line),
-      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -518,129 +473,19 @@ class _PromptCard extends StatelessWidget {
         ],
       ),
     );
-  }
-}
 
-class _RunningIdentityCard extends StatelessWidget {
-  const _RunningIdentityCard({required this.user, required this.tokens});
-
-  final UserProfile user;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = tokens;
-
-    return Container(
-      padding: const EdgeInsets.all(Sizes.p18),
-      decoration: BoxDecoration(
-        color: t.ink,
+    if (onTap != null) {
+      return InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(CatchRadius.lg),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'RUN PROFILE',
-            style: CatchTextStyles.labelM(
-              context,
-              color: t.surface.withValues(alpha: 0.72),
-            ).copyWith(fontWeight: FontWeight.w800, letterSpacing: 1.2),
-          ),
-          gapH8,
-          Text(
-            '${user.name.split(' ').first} runs ${_formatPaceRange(user)}',
-            style: CatchTextStyles.displayM(context, color: t.surface),
-          ),
-          gapH14,
-          Row(
-            children: [
-              _RunStatPill(label: 'Pace', value: _formatPaceRange(user), tokens: t),
-              gapW8,
-              _RunStatPill(
-                label: 'Distance',
-                value: _formatDistanceSummary(user),
-                tokens: t,
-              ),
-            ],
-          ),
-          if (user.runningReasons.isNotEmpty) ...[
-            gapH12,
-            Text(
-              user.runningReasons.map((reason) => reason.label).join(' · '),
-              style: CatchTextStyles.bodyS(
-                context,
-                color: t.surface.withValues(alpha: 0.76),
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ],
-      ),
-    );
+        child: content,
+      );
+    }
+
+    return content;
   }
-
-}
-
-class _RunStatPill extends StatelessWidget {
-  const _RunStatPill({
-    required this.label,
-    required this.value,
-    required this.tokens,
-  });
-
-  final String label;
-  final String value;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = tokens;
-
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.08),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.10)),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: CatchTextStyles.bodyS(
-                context,
-                color: t.surface.withValues(alpha: 0.64),
-              ),
-            ),
-            gapH2,
-            Text(
-              value,
-              style: CatchTextStyles.mono(context, color: t.surface),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-String _formatPace(int secsPerKm) {
-  final minutes = secsPerKm ~/ 60;
-  final seconds = secsPerKm % 60;
-  return '$minutes:${seconds.toString().padLeft(2, '0')}';
 }
 
 String _formatPaceRange(UserProfile user) {
-  return '${_formatPace(user.paceMinSecsPerKm)}-${_formatPace(user.paceMaxSecsPerKm)}/km';
-}
-
-String _formatDistanceSummary(UserProfile user) {
-  if (user.preferredDistances.isEmpty) return 'Any run';
-  return user.preferredDistances.map((d) => d.label).take(2).join(', ');
+  return '${formatPace(user.paceMinSecsPerKm)}-${formatPace(user.paceMaxSecsPerKm)}/km';
 }

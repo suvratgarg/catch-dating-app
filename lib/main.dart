@@ -106,6 +106,13 @@ Future<void> _activateFirebaseAppCheck() async {
       await FirebaseAppCheck.instance.activate(
         providerWeb: ReCaptchaEnterpriseProvider(siteKey),
       );
+    } else {
+      debugPrint(
+        'WARNING: Web App Check has no debug token and no ReCaptcha site key '
+        'configured. App Check enforcement is silently disabled — all '
+        'App Check-protected services (Firestore, Auth, Functions) are '
+        'unprotected on web.',
+      );
     }
     return;
   }

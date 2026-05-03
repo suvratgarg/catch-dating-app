@@ -71,8 +71,8 @@ class ProfileInfoSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        gapH16,
         if (title != null) ...[
+          gapH16,
           Padding(
             padding: EdgeInsets.only(
               left: grouped ? Sizes.p4 : 0,
@@ -80,9 +80,7 @@ class ProfileInfoSection extends StatelessWidget {
             ),
             child: Text(
               title!.toUpperCase(),
-              style: CatchTextStyles.labelM(
-                context,
-              ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2),
+              style: CatchTextStyles.labelM(context),
             ),
           ),
           gapH8,

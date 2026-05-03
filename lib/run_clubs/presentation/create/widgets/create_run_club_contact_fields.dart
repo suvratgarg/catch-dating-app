@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CreateRunClubContactFields extends StatelessWidget {
   const CreateRunClubContactFields({
@@ -42,6 +43,10 @@ class CreateRunClubContactFields extends StatelessWidget {
           hintText: '98765 43210',
           keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.next,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+            LengthLimitingTextInputFormatter(15),
+          ],
         ),
         gapH16,
         CatchTextField(

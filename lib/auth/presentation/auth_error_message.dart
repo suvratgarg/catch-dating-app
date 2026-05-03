@@ -36,9 +36,7 @@ String authErrorMessage(Object error) {
         'Too many attempts. Please wait a bit and try again.',
       'user-disabled' => 'This account has been disabled.',
       'internal-error' =>
-        'Unable to reach authentication services. If this is a dev build, '
-        'check that your App Check debug token is registered in Firebase '
-        'Console and exported as FIREBASE_APP_CHECK_DEBUG_TOKEN.',
+        'Unable to reach authentication services. Please try again.',
       _ => error.message ?? 'Something went wrong. Please try again.',
     };
   }

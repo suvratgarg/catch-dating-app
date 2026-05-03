@@ -8,7 +8,9 @@ import 'package:catch_dating_app/force_update/presentation/force_update_diagnost
 import 'package:catch_dating_app/force_update/presentation/update_required_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class MyApp extends ConsumerWidget {
@@ -23,6 +25,15 @@ class MyApp extends ConsumerWidget {
     return MaterialApp.router(
       title: AppConfig.appTitle,
       debugShowCheckedModeBanner: false,
+      localizationsDelegates: [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        CountryLocalizations.getDelegate(enableLocalization: false),
+      ],
+      supportedLocales: const [
+        Locale('en'),
+      ],
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       routerConfig: goRouter,

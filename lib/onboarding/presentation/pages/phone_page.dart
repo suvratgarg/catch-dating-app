@@ -24,14 +24,11 @@ class PhonePage extends ConsumerStatefulWidget {
 class _PhonePageState extends ConsumerState<PhonePage> {
   final _formKey = GlobalKey<FormState>();
   final _phoneController = TextEditingController();
-  late String _countryCode;
 
   @override
   void initState() {
     super.initState();
-    final data = ref.read(onboardingControllerProvider);
-    _phoneController.text = data.phoneNumber;
-    _countryCode = data.countryCode;
+    _phoneController.text = ref.read(onboardingControllerProvider).phoneNumber;
   }
 
   @override
@@ -42,10 +39,11 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      final countryCode = ref.read(onboardingControllerProvider).countryCode;
       OnboardingController.sendOtpMutation.run(ref, (tx) async {
         await tx
             .get(onboardingControllerProvider.notifier)
-            .sendOtp(_phoneController.text.trim(), _countryCode);
+            .sendOtp(_phoneController.text.trim(), countryCode);
       });
     }
   }
@@ -125,17 +123,18 @@ class _PhonePageState extends ConsumerState<PhonePage> {
 
   Widget _buildCountryCodePicker(CatchTokens t) {
     return CountryCodePicker(
-      initialSelection: _countryCode,
+      initialSelection: ref.watch(onboardingControllerProvider.select((d) => d.countryCode)),
       onChanged: (code) {
-        _countryCode = code.dialCode!;
+        ref.read(onboardingControllerProvider.notifier).setCountryCode(code.dialCode!);
         OnboardingController.sendOtpMutation.reset(ref);
       },
       showCountryOnly: false,
       showOnlyCountryWhenClosed: false,
       alignLeft: false,
-      showFlag: false,
+      showFlag: true,
       showDropDownButton: true,
       hideMainText: false,
+      favorite: const ['IN'],
       textStyle: CatchTextStyles.bodyM(context, color: t.ink),
       padding: const EdgeInsets.symmetric(horizontal: 12),
       flagDecoration: BoxDecoration(

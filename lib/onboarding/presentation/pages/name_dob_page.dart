@@ -22,8 +22,6 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
   final _phoneController = TextEditingController();
   final _dateController = TextEditingController();
   DateTime? _selectedDate;
-  bool _phoneVerified = false;
-  String _countryCode = '+91';
 
   @override
   void initState() {
@@ -69,8 +67,6 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
         : '';
 
     _phoneController.text = data.phoneNumber;
-    _phoneVerified = data.phoneVerified;
-    _countryCode = data.countryCode;
   }
 
   String _formatDate(DateTime date) {
@@ -81,6 +77,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
+      final data = ref.read(onboardingControllerProvider);
       ref
           .read(onboardingControllerProvider.notifier)
           .advanceToGenderInterest(
@@ -88,18 +85,15 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             lastName: _lastNameController.text.trim(),
             dateOfBirth: _selectedDate!,
             phoneNumber: _phoneController.text.trim(),
-            countryCode: _countryCode,
+            countryCode: data.countryCode,
           );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final shouldAutofocus = ref.watch(
-      onboardingControllerProvider.select(
-        (data) => data.step == OnboardingStep.nameDob,
-      ),
-    );
+    final data = ref.watch(onboardingControllerProvider);
+    final shouldAutofocus = data.step == OnboardingStep.nameDob;
     final age = _age();
 
     return SingleChildScrollView(
@@ -163,11 +157,11 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               textInputAction: TextInputAction.done,
               autofillHints: const [AutofillHints.telephoneNumberNational],
               prefixIcon: const Icon(Icons.phone_outlined),
-              prefixText: '$_countryCode ',
-              helperText: _phoneVerified ? 'Verified via OTP' : null,
+              prefixText: '${data.countryCode} ',
+              helperText: data.phoneVerified ? 'Verified via OTP' : null,
               helperTone: CatchTextFieldSupportTone.brand,
               validator: (v) {
-                if (!_phoneVerified || v == null || v.trim().isEmpty) {
+                if (!data.phoneVerified || v == null || v.trim().isEmpty) {
                   return 'Please verify your phone number before continuing.';
                 }
                 return null;

@@ -117,7 +117,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           const SizedBox(height: 32),
           OnboardingStepHeader(
             title: 'Enter the code',
-            subtitle: 'Sent to ${_maskedPhoneNumber(data.phoneNumber, data.countryCode)}',
+            subtitle: 'Sent to ${_displayPhoneNumber(data.phoneNumber, data.countryCode)}',
           ),
           const SizedBox(height: 40),
           _OtpDigitField(
@@ -175,7 +175,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     );
   }
 
-  String _maskedPhoneNumber(String phoneNumber, String countryCode) {
+  String _displayPhoneNumber(String phoneNumber, String countryCode) {
     if (phoneNumber.isEmpty) {
       return 'your number';
     }
