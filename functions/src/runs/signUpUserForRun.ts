@@ -3,6 +3,7 @@ import {HttpsError} from "firebase-functions/v2/https";
 import {UserProfileDoc, RunDoc} from "../shared/firestore";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {computeAge} from "../shared/dates";
+import {requireDoc} from "../shared/validation";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid runs)
@@ -46,8 +47,8 @@ export async function signUpUserForRun(
       throw new HttpsError("not-found", "User profile not found.");
     }
 
-    const run = runSnap.data() as RunDoc;
-    const user = userSnap.data() as UserProfileDoc;
+    const run = requireDoc<RunDoc>(runSnap, "RunDoc");
+    const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
 
     // Idempotent — user already signed up.
     if (run.signedUpUserIds.includes(userId)) {

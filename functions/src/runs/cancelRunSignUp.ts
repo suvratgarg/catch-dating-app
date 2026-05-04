@@ -4,7 +4,7 @@ import * as logger from "firebase-functions/logger";
 import {UserProfileDoc, PaymentDoc, RunDoc} from "../shared/firestore";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
+import {validateCallable, requireDoc} from "../shared/validation";
 import {z} from "zod";
 import {
   appCheckCallableOptionsWithSecrets,
@@ -61,8 +61,8 @@ export const cancelRunSignUp = onCall(
         throw new HttpsError("not-found", "User profile not found.");
       }
 
-      const run = runSnap.data() as RunDoc;
-      const user = userSnap.data() as UserProfileDoc;
+      const run = requireDoc<RunDoc>(runSnap, "RunDoc");
+      const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
 
       // Idempotent — already not signed up.
       if (!run.signedUpUserIds.includes(userId)) {
@@ -98,7 +98,9 @@ export const cancelRunSignUp = onCall(
           continue;
         }
 
-        const waitlistUser = waitlistUserSnap.data() as UserProfileDoc;
+        const waitlistUser = requireDoc<UserProfileDoc>(
+          waitlistUserSnap, "UserProfileDoc (waitlist)"
+        );
         const wGender = waitlistUser.gender;
         const currentCount = run.genderCounts[wGender] ?? 0;
 
@@ -123,7 +125,7 @@ export const cancelRunSignUp = onCall(
 
     // Issue a refund outside the transaction if the run was paid.
     if (paymentDoc) {
-      const payment = paymentDoc.data() as PaymentDoc;
+      const payment = requireDoc<PaymentDoc>(paymentDoc, "PaymentDoc");
       const razorpay = createRazorpayClient();
 
       try {

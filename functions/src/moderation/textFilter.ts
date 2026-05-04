@@ -103,10 +103,12 @@ export interface ModerationResult {
  * match causes `action: "block"`. Flag-list matches only cause `action:
  * "flag"` when no block-list term matched.
  *
- * @param text — Input text. Empty / whitespace-only strings return `allow`.
- * @return ModerationResult with the recommended action and matched terms.
+ * @param {string|null|undefined} text Input text.
+ * @return {ModerationResult} Recommended action and matched terms.
  */
-export function moderateText(text: string | undefined | null): ModerationResult {
+export function moderateText(
+  text: string | undefined | null
+): ModerationResult {
   if (!text || text.trim().length === 0) {
     return {action: "allow", matches: []};
   }
@@ -142,7 +144,11 @@ export function moderateText(text: string | undefined | null): ModerationResult 
 /**
  * Returns true when text should be blocked (contains a block-list term).
  * Convenience wrapper around {@link moderateText}.
+ * @param {string|null|undefined} text Input text.
+ * @return {boolean} True if the text should be blocked.
  */
-export function isBlocked(text: string | undefined | null): boolean {
+export function isBlocked(
+  text: string | undefined | null
+): boolean {
   return moderateText(text).action === "block";
 }

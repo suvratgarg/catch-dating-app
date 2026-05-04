@@ -2,6 +2,9 @@ import assert from "node:assert/strict";
 
 /**
  * Asserts that an error is an HttpsError with the expected code and message.
+ * @param {unknown} actual The error to check.
+ * @param {string} expectedCode Expected HttpsError code.
+ * @param {string} expectedMessage Expected substring in the error message.
  */
 export function isHttpsError(
   actual: unknown,

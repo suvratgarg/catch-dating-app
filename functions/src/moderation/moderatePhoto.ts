@@ -72,7 +72,8 @@ interface SafeSearchCategory {
 
 /**
  * Returns the highest SafeSearch severity across all categories.
- * `null` means no category reached even the flag threshold.
+ * @param {SafeSearchCategory[]} categories SafeSearch results.
+ * @return {"block"|"flag"|"allow"} The highest severity found.
  */
 function highestSeverity(
   categories: SafeSearchCategory[]
@@ -86,7 +87,9 @@ function highestSeverity(
 }
 
 /**
- * Extracts the uid from a `users/{uid}/photos/...` path.
+ * Extracts uid from a `users/{uid}/photos/...` Storage path.
+ * @param {string} filePath The Storage object path.
+ * @return {string|null} The uid, or null if not a user photo path.
  */
 function uidFromPath(filePath: string): string | null {
   const parts = filePath.split("/");
@@ -104,7 +107,6 @@ function uidFromPath(filePath: string): string | null {
  * `photoUrls` array so the client does not show a broken reference.
  */
 export const moderatePhotoOnUpload = onObjectFinalized(
-  {bucket: "default"},
   async (event) => {
     const filePath = event.data.name;
     if (!filePath) return;
@@ -151,8 +153,10 @@ export const moderatePhotoOnUpload = onObjectFinalized(
       const flagData = {
         targetUserId: uidFromPath(filePath) ?? "unknown",
         flagType: "explicit_photo" as const,
-        source: (isProfilePhoto ? "profile_photo" :
-          isClubImage ? "club_image" : "chat_message") as ModerationFlagDoc["source"],
+        source: (
+          isProfilePhoto ? "profile_photo" :
+            isClubImage ? "club_image" : "chat_message"
+        ) as ModerationFlagDoc["source"],
         status: "pending" as const,
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
         contextId: filePath,

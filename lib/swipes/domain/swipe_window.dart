@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:collection/collection.dart';
 
 const swipeWindowDuration = Duration(hours: 24);
 
@@ -12,21 +13,15 @@ bool hasOpenSwipeWindow(Run run, {DateTime? now}) {
 
 List<Run> runsWithOpenSwipeWindow(Iterable<Run> runs, {DateTime? now}) {
   final currentTime = now ?? DateTime.now();
-  final open = <Run>[];
-  for (final run in runs) {
-    if (hasOpenSwipeWindow(run, now: currentTime)) open.add(run);
-  }
-  return open;
+  return runs
+      .where((run) => hasOpenSwipeWindow(run, now: currentTime))
+      .toList();
 }
 
 Run? latestRunWithOpenSwipeWindow(Iterable<Run> runs, {DateTime? now}) {
   final currentTime = now ?? DateTime.now();
-  Run? latestRun;
-  for (final run in runs) {
-    if (!hasOpenSwipeWindow(run, now: currentTime)) continue;
-    if (latestRun == null || run.endTime.isAfter(latestRun.endTime)) {
-      latestRun = run;
-    }
-  }
-  return latestRun;
+  return maxBy(
+    runs.where((run) => hasOpenSwipeWindow(run, now: currentTime)),
+    (run) => run.endTime,
+  );
 }

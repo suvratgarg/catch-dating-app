@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -67,9 +68,8 @@ class RunDraftRepository {
     } else {
       drafts.add(draft);
       while (drafts.length > _maxDrafts) {
-        drafts.remove(
-          drafts.reduce((a, b) => a.savedAt.isBefore(b.savedAt) ? a : b),
-        );
+        final oldest = minBy<RunDraft, DateTime>(drafts, (d) => d.savedAt);
+        if (oldest != null) drafts.remove(oldest);
       }
     }
 

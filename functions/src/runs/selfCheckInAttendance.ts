@@ -40,7 +40,7 @@ const SelfCheckInSchema = z.object({
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
-/** Maximum distance in metres from the run meeting point to allow self check-in. */
+/** Max distance (m) from meeting point to allow self check-in. */
 const MAX_CHECK_IN_DISTANCE_M = 200;
 
 /** Minutes before the run start that the self-check-in window opens. */
@@ -58,9 +58,12 @@ const EARTH_RADIUS_M = 6_371_000;
  * Haversine distance between two lat/lng points, in metres.
  *
  * We inline this rather than adding a geo dependency so the function has
- * zero cold-start overhead from external packages. The formula is stable
- * and well-tested — it's the same algorithm used by the `latlong2` Dart
- * package on the client.
+ * zero cold-start overhead — same algorithm as the `latlong2` Dart package.
+ * @param {number} lat1 First point latitude.
+ * @param {number} lng1 First point longitude.
+ * @param {number} lat2 Second point latitude.
+ * @param {number} lng2 Second point longitude.
+ * @return {number} Distance in metres.
  */
 function haversineDistanceM(
   lat1: number, lng1: number,
@@ -76,6 +79,11 @@ function haversineDistanceM(
   return EARTH_RADIUS_M * c;
 }
 
+/**
+ * Converts degrees to radians.
+ * @param {number} deg Angle in degrees.
+ * @return {number} Angle in radians.
+ */
 function toRad(deg: number): number {
   return (deg * Math.PI) / 180;
 }
@@ -132,14 +140,16 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
   if (now < windowStart) {
     throw new HttpsError(
       "failed-precondition",
-      `Check-in opens ${CHECK_IN_WINDOW_BEFORE_MIN} minutes before the run starts.`
+      `Check-in opens ${CHECK_IN_WINDOW_BEFORE_MIN} min before the run starts.`
     );
   }
 
   if (now > windowEnd) {
     throw new HttpsError(
       "failed-precondition",
-      `Check-in closed. The ${CHECK_IN_WINDOW_AFTER_MIN}-minute post-run window has ended. Contact the host.`
+      "Check-in closed. " +
+      `The ${CHECK_IN_WINDOW_AFTER_MIN}-min post-run window ended. ` +
+      "Contact the host."
     );
   }
 

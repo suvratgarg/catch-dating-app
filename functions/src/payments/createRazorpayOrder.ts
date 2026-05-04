@@ -16,7 +16,7 @@ import {hasBlockingRelationship} from "../safety/blocking";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
+import {validateCallable, requireDoc} from "../shared/validation";
 import {z} from "zod";
 
 const CreateOrderSchema = z.object({
@@ -55,7 +55,7 @@ export async function createRazorpayOrderHandler(
     throw new HttpsError("not-found", "Run not found.");
   }
 
-  const run = runSnap.data() as RunDoc;
+  const run = requireDoc<RunDoc>(runSnap, "RunDoc");
 
   // Pre-flight capacity check; the real atomic check happens in
   // signUpUserForRun.

@@ -92,12 +92,11 @@ export const DEFAULT_RATE_LIMIT: RateLimitConfig = {
  * guarantees atomicity — two concurrent requests for the same user/action
  * cannot both pass the limit.
  *
- * @param db — Firestore instance (from `admin.firestore()`).
- * @param uid — Authenticated user ID.
- * @param action — Action name (must match a key in `RATE_LIMITS`).
- * @param config — Rate limit configuration (defaults to `RATE_LIMITS[action]`
- *   or `DEFAULT_RATE_LIMIT`).
- * @throws {HttpsError} `resource-exhausted` when the limit is exceeded.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} uid Authenticated user ID.
+ * @param {string} action Action name (key in `RATE_LIMITS`).
+ * @param {RateLimitConfig=} config Optional rate-limit config.
+ * @throws {HttpsError} `resource-exhausted` when limit exceeded.
  */
 export async function checkRateLimit(
   db: FirebaseFirestore.Firestore,
@@ -158,8 +157,10 @@ const ipCounters = new Map<string, {count: number; resetAt: number}>();
 
 /**
  * Checks whether [ip] has exceeded the in-memory rate limit.
- *
- * @return `true` if the request is allowed.
+ * @param {string} ip Client IP address.
+ * @param {number} maxRequests Max requests per window.
+ * @param {number} windowMs Window duration in milliseconds.
+ * @return {boolean} `true` if the request is allowed.
  */
 export function checkIpRateLimit(
   ip: string,

@@ -18,8 +18,12 @@ import * as admin from "firebase-admin";
 import {moderateText, type ModerationResult} from "./textFilter";
 
 /**
- * Writes a moderation flag document and (for block actions) redacts the
- * message text with a `[message removed]` placeholder.
+ * Writes a moderation flag and optionally redacts a blocked message.
+ * @param {ModerationResult} result The moderation result.
+ * @param {string} messageId The message document ID.
+ * @param {string} senderId The user who sent the message.
+ * @param {string} matchId The match (chat) document ID.
+ * @param {Object} deps Injectable Firestore dependencies.
  */
 async function handleModerationResult(
   result: ModerationResult,
@@ -31,6 +35,7 @@ async function handleModerationResult(
     serverTimestamp: () => FirebaseFirestore.FieldValue;
   }
 ): Promise<void> {
+  const matchList = result.matches.join(", ");
   const flagData = {
     targetUserId: senderId,
     flagType: "banned_text" as const,
@@ -38,7 +43,7 @@ async function handleModerationResult(
     status: "pending" as const,
     createdAt: deps.serverTimestamp(),
     contextId: messageId,
-    context: `chat message in match ${matchId}. Matches: ${result.matches.join(", ")}`,
+    context: `chat msg in match ${matchId}. Terms: ${matchList}`,
   };
 
   await deps.firestore().collection("moderationFlags").add(flagData);
