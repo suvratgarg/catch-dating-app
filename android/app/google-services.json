@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "619661127800",
-    "project_id": "catchdates-dev",
-    "storage_bucket": "catchdates-dev.firebasestorage.app"
+    "project_number": "822303414140",
+    "project_id": "catchdates-staging",
+    "storage_bucket": "catchdates-staging.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:619661127800:android:d90f9bb4d89afbd7077d8d",
+        "mobilesdk_app_id": "1:822303414140:android:e843ef30968cea960c76f9",
         "android_client_info": {
-          "package_name": "com.catchdates.app.dev"
+          "package_name": "com.catchdates.app.staging"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCpzFHkPnvzLf9ti3JJ3dytrZ0ZiKxzWuY"
+          "current_key": "AIzaSyBxPo4wbRYJekJhWlE6bJqgqNjhPXNaJj4"
         }
       ],
       "services": {

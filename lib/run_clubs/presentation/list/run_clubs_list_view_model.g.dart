@@ -216,7 +216,7 @@ final class FilteredRunClubsProvider
   }
 }
 
-String _$filteredRunClubsHash() => r'8460f2e5083fe3b5945204d9f60095c03006c768';
+String _$filteredRunClubsHash() => r'fa2dc7dc25481dceba433fd984e5c1f9d218fd93';
 
 /// **Pattern D: Pure computed provider combining multiple async streams**
 ///
