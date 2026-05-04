@@ -1,12 +1,12 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -50,17 +50,19 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     final paceRange = _paceRange!;
     setState(() => _saving = true);
     try {
-      await ref.read(filtersControllerProvider.notifier).saveFilters(
-        uid: user.uid,
-        minAgePreference: ageRange.start.round(),
-        maxAgePreference: ageRange.end.round(),
-        paceMinSecsPerKm: paceRange.start.round(),
-        paceMaxSecsPerKm: paceRange.end.round(),
-        interestedInGenders:
-            (_interestedIn ?? {}).map((e) => e.name).toList(),
-        preferredDistances:
-            (_distances ?? {}).map((e) => e.name).toList(),
-      );
+      await ref
+          .read(filtersControllerProvider.notifier)
+          .saveFilters(
+            uid: user.uid,
+            minAgePreference: ageRange.start.round(),
+            maxAgePreference: ageRange.end.round(),
+            paceMinSecsPerKm: paceRange.start.round(),
+            paceMaxSecsPerKm: paceRange.end.round(),
+            interestedInGenders: (_interestedIn ?? {})
+                .map((e) => e.name)
+                .toList(),
+            preferredDistances: (_distances ?? {}).map((e) => e.name).toList(),
+          );
       if (mounted) context.pop();
     } finally {
       if (mounted) setState(() => _saving = false);

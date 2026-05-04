@@ -1,8 +1,6 @@
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dashboard_full_view_model.g.dart';

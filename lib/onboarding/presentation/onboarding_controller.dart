@@ -37,8 +37,8 @@ abstract class OnboardingData with _$OnboardingData {
   String get lastName => profileDraft.lastName;
   DateTime? get dateOfBirth => profileDraft.dateOfBirth;
   Gender? get gender => profileDraft.gender;
-  SexualOrientation? get sexualOrientation => profileDraft.sexualOrientation;
   List<Gender> get interestedInGenders => profileDraft.interestedInGenders;
+  String? get instagramHandle => profileDraft.instagramHandle;
 }
 
 /// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
@@ -61,6 +61,7 @@ class OnboardingController extends _$OnboardingController {
   static const otpStep = OnboardingStep.otp;
   static const nameDobStep = OnboardingStep.nameDob;
   static const genderInterestStep = OnboardingStep.genderInterest;
+  static const instagramStep = OnboardingStep.instagram;
   static const photosStep = OnboardingStep.photos;
   static const runningPrefsStep = OnboardingStep.runningPrefs;
 
@@ -100,8 +101,8 @@ class OnboardingController extends _$OnboardingController {
             phoneNumber: draft.phoneNumber,
             countryCode: draft.countryCode,
             gender: draft.gender,
-            sexualOrientation: draft.sexualOrientation,
             interestedInGenders: draft.interestedInGenders,
+            instagramHandle: draft.instagramHandle,
           ),
         ),
       );
@@ -264,15 +265,19 @@ class OnboardingController extends _$OnboardingController {
 
   void setGenderInterest({
     required Gender gender,
-    required SexualOrientation sexualOrientation,
     required List<Gender> interestedInGenders,
   }) {
     state = state.copyWith(
       profileDraft: state.profileDraft.copyWith(
         gender: gender,
-        sexualOrientation: sexualOrientation,
         interestedInGenders: interestedInGenders,
       ),
+    );
+  }
+
+  void setInstagramHandle(String? handle) {
+    state = state.copyWith(
+      profileDraft: state.profileDraft.copyWith(instagramHandle: handle),
     );
   }
 
@@ -294,11 +299,17 @@ class OnboardingController extends _$OnboardingController {
     _saveDraft();
   }
 
+  void advanceToPhotos({String? instagramHandle}) {
+    setInstagramHandle(instagramHandle);
+    state = state.copyWith(step: OnboardingStep.photos);
+    _saveDraft();
+  }
+
   Future<void> saveProfile() async {
     final uid = requireSignedInUid(ref, action: 'save profile');
     final draft = _requireProfileDraft();
 
-    state = state.copyWith(step: OnboardingStep.photos);
+    state = state.copyWith(step: OnboardingStep.instagram);
     _saveDraft();
 
     await ref
@@ -309,9 +320,12 @@ class OnboardingController extends _$OnboardingController {
             name: draft.fullName,
             dateOfBirth: draft.dateOfBirth!,
             gender: draft.gender!,
-            sexualOrientation: draft.sexualOrientation!,
             phoneNumber: draft.phoneNumber,
             interestedInGenders: draft.interestedInGenders,
+            instagramHandle:
+                (draft.instagramHandle?.trim() ?? '').isEmpty
+                    ? null
+                    : draft.instagramHandle?.trim(),
             profileComplete: false,
           ),
         );
@@ -353,7 +367,6 @@ class OnboardingController extends _$OnboardingController {
     );
     final dateOfBirth = draft.dateOfBirth;
     final gender = draft.gender;
-    final sexualOrientation = draft.sexualOrientation;
 
     if (draft.firstName.isEmpty ||
         draft.lastName.isEmpty ||
@@ -369,7 +382,7 @@ class OnboardingController extends _$OnboardingController {
       );
     }
 
-    if (gender == null || sexualOrientation == null) {
+    if (gender == null) {
       throw StateError(
         'Please choose your dating preferences before continuing.',
       );
@@ -430,8 +443,8 @@ class OnboardingController extends _$OnboardingController {
           phoneNumber: state.phoneNumber,
           countryCode: state.countryCode,
           gender: state.gender,
-          sexualOrientation: state.sexualOrientation,
           interestedInGenders: state.interestedInGenders,
+          instagramHandle: state.instagramHandle,
         ),
       ).catchError((Object error, StackTrace stack) {
         debugPrint('[ERROR] OnboardingController._saveDraft: $error\n$stack');

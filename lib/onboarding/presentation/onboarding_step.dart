@@ -4,6 +4,7 @@ enum OnboardingStep {
   otp,
   nameDob,
   genderInterest,
+  instagram,
   photos,
   runningPrefs;
 

@@ -3,7 +3,6 @@ import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/profile/presentation/widgets/profile_tab.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
@@ -20,6 +19,7 @@ import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -343,7 +343,6 @@ UserProfile _user() {
     dateOfBirth: DateTime(1996, 5, 8),
     bio: 'Coffee after a steady 10K is the ideal Sunday.',
     gender: Gender.man,
-    sexualOrientation: SexualOrientation.straight,
     phoneNumber: '+919876543210',
     profileComplete: true,
     interestedInGenders: const [Gender.woman],

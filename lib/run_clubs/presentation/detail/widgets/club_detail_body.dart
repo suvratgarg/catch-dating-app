@@ -30,6 +30,7 @@ class ClubDetailBody extends StatelessWidget {
     required this.isHost,
     required this.isMember,
     required this.isMutating,
+    required this.isAuthenticated,
   });
 
   final RunClub runClub;
@@ -41,11 +42,12 @@ class ClubDetailBody extends StatelessWidget {
   final bool isHost;
   final bool isMember;
   final bool isMutating;
+  final bool isAuthenticated;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final showMembershipControls = !isHost && uid != null;
+    final showMembershipControls = isAuthenticated && !isHost;
 
     return CustomScrollView(
       slivers: [
@@ -87,14 +89,19 @@ class ClubDetailBody extends StatelessWidget {
                   isMutating: isMutating,
                 ),
               if (showMembershipControls) const SizedBox(height: 24),
-              ReviewsSection(
-                runClubId: runClub.id,
-                reviews: reviews,
-                currentUid: uid,
-                userProfile: userProfile,
-                isHost: isHost,
-                isMember: isMember,
-              ),
+              if (!isAuthenticated) ...[
+                _GuestPrompt(runClub: runClub),
+                const SizedBox(height: 24),
+              ],
+              if (isAuthenticated)
+                ReviewsSection(
+                  runClubId: runClub.id,
+                  reviews: reviews,
+                  currentUid: uid,
+                  userProfile: userProfile,
+                  isHost: isHost,
+                  isMember: isMember,
+                ),
               const SizedBox(height: 24),
               Text('Schedule', style: CatchTextStyles.titleL(context)),
               const SizedBox(height: 12),
@@ -261,6 +268,42 @@ class _ContactRow extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _GuestPrompt extends StatelessWidget {
+  const _GuestPrompt({required this.runClub});
+
+  final RunClub runClub;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(14),
+      child: Column(
+        children: [
+          Text(
+            'Sign in to join this club, see member reviews, and connect with the community.',
+            style: CatchTextStyles.bodyM(context, color: t.ink2),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 12),
+          CatchButton(
+            label: 'Sign in to join',
+            onPressed: () => context.pushNamed(
+              Routes.onboardingScreen.name,
+              queryParameters: {
+                'from': '/clubs/run-clubs/${runClub.id}',
+              },
+            ),
+            fullWidth: true,
+          ),
+        ],
       ),
     );
   }

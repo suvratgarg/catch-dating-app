@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$OnboardingDraft {
 
- int get step; String get firstName; String get lastName;@TimestampConverter() DateTime? get dateOfBirth; String get phoneNumber; String get countryCode; Gender? get gender; SexualOrientation? get sexualOrientation; List<Gender> get interestedInGenders;
+ int get step; String get firstName; String get lastName;@TimestampConverter() DateTime? get dateOfBirth; String get phoneNumber; String get countryCode; Gender? get gender; List<Gender> get interestedInGenders; String? get instagramHandle;
 /// Create a copy of OnboardingDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $OnboardingDraftCopyWith<OnboardingDraft> get copyWith => _$OnboardingDraftCopyW
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingDraft&&(identical(other.step, step) || other.step == step)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.sexualOrientation, sexualOrientation) || other.sexualOrientation == sexualOrientation)&&const DeepCollectionEquality().equals(other.interestedInGenders, interestedInGenders));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is OnboardingDraft&&(identical(other.step, step) || other.step == step)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.interestedInGenders, interestedInGenders)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,step,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,sexualOrientation,const DeepCollectionEquality().hash(interestedInGenders));
+int get hashCode => Object.hash(runtimeType,step,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,const DeepCollectionEquality().hash(interestedInGenders),instagramHandle);
 
 @override
 String toString() {
-  return 'OnboardingDraft(step: $step, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, sexualOrientation: $sexualOrientation, interestedInGenders: $interestedInGenders)';
+  return 'OnboardingDraft(step: $step, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, interestedInGenders: $interestedInGenders, instagramHandle: $instagramHandle)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $OnboardingDraftCopyWith<$Res>  {
   factory $OnboardingDraftCopyWith(OnboardingDraft value, $Res Function(OnboardingDraft) _then) = _$OnboardingDraftCopyWithImpl;
 @useResult
 $Res call({
- int step, String firstName, String lastName,@TimestampConverter() DateTime? dateOfBirth, String phoneNumber, String countryCode, Gender? gender, SexualOrientation? sexualOrientation, List<Gender> interestedInGenders
+ int step, String firstName, String lastName,@TimestampConverter() DateTime? dateOfBirth, String phoneNumber, String countryCode, Gender? gender, List<Gender> interestedInGenders, String? instagramHandle
 });
 
 
@@ -65,7 +65,7 @@ class _$OnboardingDraftCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingDraft
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? phoneNumber = null,Object? countryCode = null,Object? gender = freezed,Object? sexualOrientation = freezed,Object? interestedInGenders = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? step = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? phoneNumber = null,Object? countryCode = null,Object? gender = freezed,Object? interestedInGenders = null,Object? instagramHandle = freezed,}) {
   return _then(_self.copyWith(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as int,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
@@ -74,9 +74,9 @@ as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth 
 as DateTime?,phoneNumber: null == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as String,countryCode: null == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
 as String,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as Gender?,sexualOrientation: freezed == sexualOrientation ? _self.sexualOrientation : sexualOrientation // ignore: cast_nullable_to_non_nullable
-as SexualOrientation?,interestedInGenders: null == interestedInGenders ? _self.interestedInGenders : interestedInGenders // ignore: cast_nullable_to_non_nullable
-as List<Gender>,
+as Gender?,interestedInGenders: null == interestedInGenders ? _self.interestedInGenders : interestedInGenders // ignore: cast_nullable_to_non_nullable
+as List<Gender>,instagramHandle: freezed == instagramHandle ? _self.instagramHandle : instagramHandle // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -161,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int step,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  SexualOrientation? sexualOrientation,  List<Gender> interestedInGenders)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int step,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _OnboardingDraft() when $default != null:
-return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.sexualOrientation,_that.interestedInGenders);case _:
+return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.interestedInGenders,_that.instagramHandle);case _:
   return orElse();
 
 }
@@ -182,10 +182,10 @@ return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int step,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  SexualOrientation? sexualOrientation,  List<Gender> interestedInGenders)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int step,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle)  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingDraft():
-return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.sexualOrientation,_that.interestedInGenders);case _:
+return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.interestedInGenders,_that.instagramHandle);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -202,10 +202,10 @@ return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_tha
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int step,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  SexualOrientation? sexualOrientation,  List<Gender> interestedInGenders)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int step,  String firstName,  String lastName, @TimestampConverter()  DateTime? dateOfBirth,  String phoneNumber,  String countryCode,  Gender? gender,  List<Gender> interestedInGenders,  String? instagramHandle)?  $default,) {final _that = this;
 switch (_that) {
 case _OnboardingDraft() when $default != null:
-return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.sexualOrientation,_that.interestedInGenders);case _:
+return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumber,_that.countryCode,_that.gender,_that.interestedInGenders,_that.instagramHandle);case _:
   return null;
 
 }
@@ -217,7 +217,7 @@ return $default(_that.step,_that.firstName,_that.lastName,_that.dateOfBirth,_tha
 @JsonSerializable()
 
 class _OnboardingDraft extends OnboardingDraft {
-  const _OnboardingDraft({required this.step, this.firstName = '', this.lastName = '', @TimestampConverter() this.dateOfBirth, this.phoneNumber = '', this.countryCode = '+91', this.gender, this.sexualOrientation, final  List<Gender> interestedInGenders = const []}): _interestedInGenders = interestedInGenders,super._();
+  const _OnboardingDraft({required this.step, this.firstName = '', this.lastName = '', @TimestampConverter() this.dateOfBirth, this.phoneNumber = '', this.countryCode = '+91', this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle}): _interestedInGenders = interestedInGenders,super._();
   factory _OnboardingDraft.fromJson(Map<String, dynamic> json) => _$OnboardingDraftFromJson(json);
 
 @override final  int step;
@@ -227,7 +227,6 @@ class _OnboardingDraft extends OnboardingDraft {
 @override@JsonKey() final  String phoneNumber;
 @override@JsonKey() final  String countryCode;
 @override final  Gender? gender;
-@override final  SexualOrientation? sexualOrientation;
  final  List<Gender> _interestedInGenders;
 @override@JsonKey() List<Gender> get interestedInGenders {
   if (_interestedInGenders is EqualUnmodifiableListView) return _interestedInGenders;
@@ -235,6 +234,7 @@ class _OnboardingDraft extends OnboardingDraft {
   return EqualUnmodifiableListView(_interestedInGenders);
 }
 
+@override final  String? instagramHandle;
 
 /// Create a copy of OnboardingDraft
 /// with the given fields replaced by the non-null parameter values.
@@ -249,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingDraft&&(identical(other.step, step) || other.step == step)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&(identical(other.sexualOrientation, sexualOrientation) || other.sexualOrientation == sexualOrientation)&&const DeepCollectionEquality().equals(other._interestedInGenders, _interestedInGenders));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _OnboardingDraft&&(identical(other.step, step) || other.step == step)&&(identical(other.firstName, firstName) || other.firstName == firstName)&&(identical(other.lastName, lastName) || other.lastName == lastName)&&(identical(other.dateOfBirth, dateOfBirth) || other.dateOfBirth == dateOfBirth)&&(identical(other.phoneNumber, phoneNumber) || other.phoneNumber == phoneNumber)&&(identical(other.countryCode, countryCode) || other.countryCode == countryCode)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other._interestedInGenders, _interestedInGenders)&&(identical(other.instagramHandle, instagramHandle) || other.instagramHandle == instagramHandle));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,step,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,sexualOrientation,const DeepCollectionEquality().hash(_interestedInGenders));
+int get hashCode => Object.hash(runtimeType,step,firstName,lastName,dateOfBirth,phoneNumber,countryCode,gender,const DeepCollectionEquality().hash(_interestedInGenders),instagramHandle);
 
 @override
 String toString() {
-  return 'OnboardingDraft(step: $step, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, sexualOrientation: $sexualOrientation, interestedInGenders: $interestedInGenders)';
+  return 'OnboardingDraft(step: $step, firstName: $firstName, lastName: $lastName, dateOfBirth: $dateOfBirth, phoneNumber: $phoneNumber, countryCode: $countryCode, gender: $gender, interestedInGenders: $interestedInGenders, instagramHandle: $instagramHandle)';
 }
 
 
@@ -269,7 +269,7 @@ abstract mixin class _$OnboardingDraftCopyWith<$Res> implements $OnboardingDraft
   factory _$OnboardingDraftCopyWith(_OnboardingDraft value, $Res Function(_OnboardingDraft) _then) = __$OnboardingDraftCopyWithImpl;
 @override @useResult
 $Res call({
- int step, String firstName, String lastName,@TimestampConverter() DateTime? dateOfBirth, String phoneNumber, String countryCode, Gender? gender, SexualOrientation? sexualOrientation, List<Gender> interestedInGenders
+ int step, String firstName, String lastName,@TimestampConverter() DateTime? dateOfBirth, String phoneNumber, String countryCode, Gender? gender, List<Gender> interestedInGenders, String? instagramHandle
 });
 
 
@@ -286,7 +286,7 @@ class __$OnboardingDraftCopyWithImpl<$Res>
 
 /// Create a copy of OnboardingDraft
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? step = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? phoneNumber = null,Object? countryCode = null,Object? gender = freezed,Object? sexualOrientation = freezed,Object? interestedInGenders = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? step = null,Object? firstName = null,Object? lastName = null,Object? dateOfBirth = freezed,Object? phoneNumber = null,Object? countryCode = null,Object? gender = freezed,Object? interestedInGenders = null,Object? instagramHandle = freezed,}) {
   return _then(_OnboardingDraft(
 step: null == step ? _self.step : step // ignore: cast_nullable_to_non_nullable
 as int,firstName: null == firstName ? _self.firstName : firstName // ignore: cast_nullable_to_non_nullable
@@ -295,9 +295,9 @@ as String,dateOfBirth: freezed == dateOfBirth ? _self.dateOfBirth : dateOfBirth 
 as DateTime?,phoneNumber: null == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as String,countryCode: null == countryCode ? _self.countryCode : countryCode // ignore: cast_nullable_to_non_nullable
 as String,gender: freezed == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as Gender?,sexualOrientation: freezed == sexualOrientation ? _self.sexualOrientation : sexualOrientation // ignore: cast_nullable_to_non_nullable
-as SexualOrientation?,interestedInGenders: null == interestedInGenders ? _self._interestedInGenders : interestedInGenders // ignore: cast_nullable_to_non_nullable
-as List<Gender>,
+as Gender?,interestedInGenders: null == interestedInGenders ? _self._interestedInGenders : interestedInGenders // ignore: cast_nullable_to_non_nullable
+as List<Gender>,instagramHandle: freezed == instagramHandle ? _self.instagramHandle : instagramHandle // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

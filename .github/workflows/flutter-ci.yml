@@ -26,3 +26,8 @@ jobs:
 
       - name: Unit & widget tests
         run: flutter test --concurrency=1
+
+      - name: Verify Firestore types are in sync
+        run: |
+          dart tool/generate_firestore_types.dart
+          git diff --exit-code functions/src/shared/firestore.ts

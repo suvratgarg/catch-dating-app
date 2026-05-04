@@ -390,7 +390,7 @@ service cloud.firestore {
 
     // ── Run clubs ─────────────────────────────────────────────────────────────
     match /runClubs/{clubId} {
-      allow read: if isAuthed();
+      allow read: if true;
 
       // Any authenticated user can create a club; they must be its host.
       allow create: if isAuthed()
@@ -464,7 +464,7 @@ service cloud.firestore {
     }
 
     match /runs/{runId} {
-      allow read: if isAuthed();
+      allow read: if true;
 
       // Only the club host can create a run for their club.
       allow create: if isAuthed()

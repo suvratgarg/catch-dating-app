@@ -1,9 +1,10 @@
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+
+import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:flutter/material.dart';
 
@@ -19,10 +20,8 @@ Future<RunDraft?> showDraftPickerSheet({
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
     ),
-    builder: (sheetContext) => _DraftPickerSheet(
-      drafts: drafts,
-      completer: completer,
-    ),
+    builder: (sheetContext) =>
+        _DraftPickerSheet(drafts: drafts, completer: completer),
   ).then((_) {
     if (!completer.isCompleted) completer.complete(null);
   });
@@ -30,10 +29,7 @@ Future<RunDraft?> showDraftPickerSheet({
 }
 
 class _DraftPickerSheet extends StatefulWidget {
-  const _DraftPickerSheet({
-    required this.drafts,
-    required this.completer,
-  });
+  const _DraftPickerSheet({required this.drafts, required this.completer});
 
   final List<RunDraft> drafts;
   final Completer<RunDraft?> completer;
@@ -231,7 +227,11 @@ class _DraftCard extends StatelessWidget {
               ),
               IconButton(
                 onPressed: onDelete,
-                icon: Icon(Icons.delete_outline_rounded, size: 20, color: t.ink2),
+                icon: Icon(
+                  Icons.delete_outline_rounded,
+                  size: 20,
+                  color: t.ink2,
+                ),
                 visualDensity: VisualDensity.compact,
                 tooltip: 'Delete draft',
               ),

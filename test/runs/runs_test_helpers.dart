@@ -78,7 +78,6 @@ UserProfile buildUser({
     dateOfBirth: dateOfBirth ?? DateTime(1995, 6, 15),
     bio: 'Here for the run.',
     gender: gender,
-    sexualOrientation: SexualOrientation.straight,
     phoneNumber: phoneNumber,
     profileComplete: true,
     joinedRunClubIds: joinedRunClubIds,

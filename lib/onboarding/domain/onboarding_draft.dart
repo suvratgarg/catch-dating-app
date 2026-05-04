@@ -18,8 +18,8 @@ abstract class OnboardingDraft with _$OnboardingDraft {
     @Default('') String phoneNumber,
     @Default('+91') String countryCode,
     Gender? gender,
-    SexualOrientation? sexualOrientation,
     @Default([]) List<Gender> interestedInGenders,
+    String? instagramHandle,
   }) = _OnboardingDraft;
 
   factory OnboardingDraft.fromJson(Map<String, dynamic> json) =>

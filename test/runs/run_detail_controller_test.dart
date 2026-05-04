@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -15,6 +16,7 @@ void main() {
         runAsync: const AsyncLoading(),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
+        isAuthenticated: true,
       );
 
       expect(result.isLoading, isTrue);
@@ -29,6 +31,7 @@ void main() {
         runAsync: AsyncData(run),
         userProfileAsync: AsyncData(user),
         reviewsAsync: AsyncData([review]),
+        isAuthenticated: true,
       );
 
       final value = result.requireValue;
@@ -43,19 +46,23 @@ void main() {
         runAsync: const AsyncData(null),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
+        isAuthenticated: true,
       );
 
       expect(result.value, isNull);
     });
 
-    test('returns loading when the app user stream yields null', () {
+    test('returns data with null userProfile when user is authenticated and '
+        'the app user stream yields null', () {
       final result = buildRunDetailViewModel(
         runAsync: AsyncData(buildRun()),
         userProfileAsync: const AsyncData(null),
         reviewsAsync: const AsyncData(<Review>[]),
+        isAuthenticated: true,
       );
 
-      expect(result.isLoading, isTrue);
+      expect(result.requireValue, isNotNull);
+      expect(result.requireValue!.userProfile, isNull);
     });
 
     test('surfaces run stream errors', () {
@@ -63,6 +70,7 @@ void main() {
         runAsync: AsyncError(StateError('run failed'), StackTrace.empty),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
+        isAuthenticated: true,
       );
 
       expect(result.hasError, isTrue);
@@ -77,6 +85,7 @@ void main() {
           StackTrace.empty,
         ),
         reviewsAsync: const AsyncData(<Review>[]),
+        isAuthenticated: true,
       );
 
       expect(result.hasError, isTrue);
@@ -91,6 +100,7 @@ void main() {
           StateError('reviews failed'),
           StackTrace.empty,
         ),
+        isAuthenticated: true,
       );
 
       expect(result.hasError, isTrue);
@@ -105,6 +115,7 @@ void main() {
         final review = buildReview(runId: 'run-77');
         final container = ProviderContainer(
           overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-77')),
             watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             watchReviewsForRunProvider(

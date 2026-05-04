@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/otp_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/phone_page.dart';
@@ -85,6 +86,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       OnboardingStep.otp => const OtpPage(),
       OnboardingStep.nameDob => const NameDobPage(),
       OnboardingStep.genderInterest => const GenderInterestPage(),
+      OnboardingStep.instagram => const InstagramPage(),
       OnboardingStep.photos => const PhotosPage(),
       OnboardingStep.runningPrefs => const RunningPrefsPage(),
     };

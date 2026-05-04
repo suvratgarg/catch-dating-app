@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
@@ -25,23 +25,23 @@ Future<void> _saveField({
   required WidgetRef ref,
   required Map<String, dynamic> fields,
 }) {
-  _pendingSave = _pendingSave.then((_) async {
-    final uid = ref.read(uidProvider).asData?.value;
-    if (uid == null) return;
-    await ref.read(userProfileRepositoryProvider).updateUserProfile(
-      uid: uid,
-      fields: fields,
-    );
-  }).catchError((Object error, StackTrace stack) {
-    debugPrint('[ERROR] ProfileEditSheet._saveField: $error\n$stack');
-    // Reset the chain so subsequent saves are not blocked.
-    _pendingSave = Future.value();
-  });
+  _pendingSave = _pendingSave
+      .then((_) async {
+        final uid = ref.read(uidProvider).asData?.value;
+        if (uid == null) return;
+        await ref
+            .read(userProfileRepositoryProvider)
+            .updateUserProfile(uid: uid, fields: fields);
+      })
+      .catchError((Object error, StackTrace stack) {
+        debugPrint('[ERROR] ProfileEditSheet._saveField: $error\n$stack');
+        // Reset the chain so subsequent saves are not blocked.
+        _pendingSave = Future.value();
+      });
   return _pendingSave;
 }
 
-String _enumName(Object value) =>
-    value is Enum ? value.name : value.toString();
+String _enumName(Object value) => value is Enum ? value.name : value.toString();
 
 // ── Text fields ────────────────────────────────────────────────────────────────
 
@@ -359,8 +359,7 @@ Future<void> _showRangeEditSheet({
                     labelText(range.start),
                     labelText(range.end),
                   ),
-                  onChanged: (values) =>
-                      setSheetState(() => range = values),
+                  onChanged: (values) => setSheetState(() => range = values),
                 ),
                 gapH16,
                 CatchButton(
@@ -380,10 +379,10 @@ Future<void> _showRangeEditSheet({
     final newMin = range.start.round();
     final newMax = range.end.round();
     if (newMin != currentMin || newMax != currentMax) {
-      await _saveField(ref: ref, fields: {
-        minFieldName: newMin,
-        maxFieldName: newMax,
-      });
+      await _saveField(
+        ref: ref,
+        fields: {minFieldName: newMin, maxFieldName: newMax},
+      );
     }
   }
 }
@@ -429,9 +428,10 @@ Future<void> showDateOfBirthEdit({
   );
 
   if (picked != null && picked != currentDate) {
-    await _saveField(ref: ref, fields: {
-      'dateOfBirth': Timestamp.fromDate(picked),
-    });
+    await _saveField(
+      ref: ref,
+      fields: {'dateOfBirth': Timestamp.fromDate(picked)},
+    );
   }
 }
 

@@ -7,10 +7,10 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
-import 'package:catch_dating_app/profile/presentation/widgets/profile_edit_sheet.dart';
-import 'package:catch_dating_app/profile/presentation/widgets/profile_info_section.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_edit_sheet.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -62,19 +62,6 @@ class ProfileTab extends ConsumerWidget {
           values: Gender.values,
           currentValue: user.gender,
           fieldName: 'gender',
-        ),
-      ),
-      ProfileInfoEntry(
-        icon: Icons.favorite_outline,
-        label: 'Orientation',
-        value: user.sexualOrientation.label,
-        onTap: () => showSingleEnumSheet<SexualOrientation>(
-          context: context,
-          ref: ref,
-          title: 'Sexual orientation',
-          values: SexualOrientation.values,
-          currentValue: user.sexualOrientation,
-          fieldName: 'sexualOrientation',
         ),
       ),
       ProfileInfoEntry(
@@ -485,4 +472,3 @@ class _PromptCard extends StatelessWidget {
     return content;
   }
 }
-

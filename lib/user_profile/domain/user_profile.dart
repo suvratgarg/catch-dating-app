@@ -21,19 +21,6 @@ enum Gender implements Labelled {
   final String label;
 }
 
-enum SexualOrientation implements Labelled {
-  straight('Straight'),
-  gay('Gay'),
-  bisexual('Bisexual'),
-  pansexual('Pansexual'),
-  asexual('Asexual'),
-  other('Other');
-
-  const SexualOrientation(this.label);
-  @override
-  final String label;
-}
-
 // ── Background ────────────────────────────────────────────────────────────────
 
 enum EducationLevel implements Labelled {
@@ -194,13 +181,13 @@ abstract class UserProfile with _$UserProfile {
     required String name,
     @TimestampConverter() required DateTime dateOfBirth,
     required Gender gender,
-    required SexualOrientation sexualOrientation,
     required String phoneNumber,
     required bool profileComplete,
 
     // Optional profile/contact field. Authentication is phone-only.
     @Default('') String email,
     @Default('') String bio,
+    String? instagramHandle,
 
     // Photos
     @Default([]) List<String> photoUrls,

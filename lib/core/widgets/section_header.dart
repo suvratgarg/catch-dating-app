@@ -22,21 +22,19 @@ class SectionHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final text = uppercase ? title.toUpperCase() : title;
-    final style = titleStyle ??
+    final style =
+        titleStyle ??
         (heavy
-            ? CatchTextStyles.labelM(context).copyWith(
-                fontWeight: FontWeight.w700,
-                letterSpacing: 1.2,
-              )
+            ? CatchTextStyles.labelM(
+                context,
+              ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.2)
             : CatchTextStyles.labelM(context));
     return Padding(
       padding: padding,
       child: Row(
         children: [
-          Expanded(
-            child: Text(text, style: style),
-          ),
-          if (trailing != null) trailing!,
+          Expanded(child: Text(text, style: style)),
+          ?trailing,
         ],
       ),
     );

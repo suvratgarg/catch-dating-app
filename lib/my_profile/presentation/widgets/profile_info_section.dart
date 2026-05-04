@@ -2,7 +2,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/profile/presentation/widgets/profile_info_tile.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:flutter/material.dart';
 
 class ProfileInfoEntry {
@@ -52,11 +52,9 @@ class ProfileInfoSection extends StatelessWidget {
         ),
       );
       if (grouped && i < entries.length - 1) {
-        tiles.add(Divider(
-          height: 1,
-          indent: 52,
-          color: CatchTokens.of(context).line,
-        ));
+        tiles.add(
+          Divider(height: 1, indent: 52, color: CatchTokens.of(context).line),
+        );
       }
     }
 

@@ -192,7 +192,6 @@ UserProfile _buildUser({
     dateOfBirth: DateTime(1995, 6, 15),
     bio: 'Here for the runs.',
     gender: Gender.man,
-    sexualOrientation: SexualOrientation.straight,
     phoneNumber: '+10000000000',
     profileComplete: true,
     joinedRunClubIds: joinedRunClubIds,

@@ -14,8 +14,8 @@ abstract class OnboardingProfileDraft with _$OnboardingProfileDraft {
     @Default('') String phoneNumber,
     @Default('+91') String countryCode,
     Gender? gender,
-    SexualOrientation? sexualOrientation,
     @Default([]) List<Gender> interestedInGenders,
+    String? instagramHandle,
   }) = _OnboardingProfileDraft;
 
   String get fullName => '$firstName $lastName'.trim();

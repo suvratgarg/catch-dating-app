@@ -2,11 +2,12 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/safety/domain/blocked_user.dart';
-export 'package:catch_dating_app/safety/domain/blocked_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+export 'package:catch_dating_app/safety/domain/blocked_user.dart';
 
 part 'safety_repository.g.dart';
 
@@ -62,9 +63,9 @@ class SafetyRepository {
 
   Future<void> unblockUser({required String targetUserId}) =>
       withFirestoreErrorContext(
-        () => _functions
-            .httpsCallable('unblockUser')
-            .call({'targetUserId': targetUserId}),
+        () => _functions.httpsCallable('unblockUser').call({
+          'targetUserId': targetUserId,
+        }),
         collection: 'blocks',
         action: 'unblock user',
       );

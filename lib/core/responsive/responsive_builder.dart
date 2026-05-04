@@ -1,6 +1,5 @@
+import 'package:catch_dating_app/core/responsive/breakpoints.dart';
 import 'package:flutter/material.dart';
-
-import 'breakpoints.dart';
 
 /// Builds different layouts based on the current screen size.
 ///

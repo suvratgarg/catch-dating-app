@@ -302,7 +302,6 @@ void main() {
       );
       notifier.setGenderInterest(
         gender: Gender.woman,
-        sexualOrientation: SexualOrientation.straight,
         interestedInGenders: const [Gender.man],
       );
 
@@ -347,7 +346,6 @@ void main() {
       );
       notifier.setGenderInterest(
         gender: Gender.woman,
-        sexualOrientation: SexualOrientation.straight,
         interestedInGenders: const [Gender.man],
       );
 
@@ -361,7 +359,7 @@ void main() {
       expect(userProfileRepository.lastSavedUser!.profileComplete, isFalse);
       expect(
         container.read(onboardingControllerProvider).step,
-        OnboardingStep.photos,
+        OnboardingStep.instagram,
       );
     });
   });

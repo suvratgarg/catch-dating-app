@@ -248,3 +248,121 @@ class CatchTopBarTextAction extends StatelessWidget {
     );
   }
 }
+
+/// Catch-styled [SliverAppBar] for use in [CustomScrollView.slivers].
+///
+/// Mirrors [CatchTopBar]'s API while behaving as a collapsible sliver header:
+/// [titleWidget] scrolls away, [bottom] remains pinned, and [actions] stay
+/// visible in the collapsed toolbar.
+///
+/// Use this instead of [CatchTopBar] when the content below should scroll
+/// beneath the header.
+class CatchSliverTopBar extends SliverAppBar {
+  const CatchSliverTopBar({
+    super.key,
+    Widget? titleWidget,
+    super.leading,
+    List<Widget> super.actions = const [],
+    super.backgroundColor,
+    double expandedHeight = 56,
+    super.bottom,
+  }) : super(
+         pinned: true,
+         floating: false,
+         snap: false,
+         elevation: 0,
+         surfaceTintColor: Colors.transparent,
+         title: const SizedBox.shrink(),
+         expandedHeight: expandedHeight,
+         flexibleSpace: titleWidget,
+       );
+}
+
+/// A sliver header with a collapsible title and an optional pinned bottom.
+///
+/// Unlike [CatchSliverTopBar] (which wraps [SliverAppBar]), this builds two
+/// [SliverPersistentHeader] slivers directly: the title scrolls away
+/// completely ([minExtent] 0), and the bottom stays pinned. No hidden toolbar.
+///
+/// Use [buildSlivers] inside a [CustomScrollView.slivers] list.
+class CatchSliverHeader {
+  const CatchSliverHeader({
+    required this.title,
+    this.bottom,
+    this.titleHeight = 80,
+    this.bottomHeight = 52,
+  });
+
+  final Widget title;
+  final Widget? bottom;
+  final double titleHeight;
+  final double bottomHeight;
+
+  List<Widget> buildSlivers(BuildContext context) {
+    return [
+      SliverPersistentHeader(
+        pinned: false,
+        delegate: _CollapsibleHeaderDelegate(
+          child: title,
+          height: titleHeight,
+        ),
+      ),
+      if (bottom != null)
+        SliverPersistentHeader(
+          pinned: true,
+          delegate: _PinnedHeaderDelegate(
+            child: bottom!,
+            height: bottomHeight,
+          ),
+        ),
+    ];
+  }
+}
+
+class _CollapsibleHeaderDelegate extends SliverPersistentHeaderDelegate {
+  const _CollapsibleHeaderDelegate({required this.child, required this.height});
+
+  final Widget child;
+  final double height;
+
+  @override
+  double get minExtent => 0;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => SizedBox.expand(child: child);
+
+  @override
+  bool shouldRebuild(covariant _CollapsibleHeaderDelegate old) =>
+      child != old.child || height != old.height;
+}
+
+class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
+  const _PinnedHeaderDelegate({required this.child, required this.height});
+
+  final Widget child;
+  final double height;
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) => SizedBox.expand(child: child);
+
+  @override
+  bool shouldRebuild(covariant _PinnedHeaderDelegate old) =>
+      child != old.child || height != old.height;
+}

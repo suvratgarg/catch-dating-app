@@ -18,35 +18,31 @@ _OnboardingDraft _$OnboardingDraftFromJson(Map<String, dynamic> json) =>
       phoneNumber: json['phoneNumber'] as String? ?? '',
       countryCode: json['countryCode'] as String? ?? '+91',
       gender: $enumDecodeNullable(_$GenderEnumMap, json['gender']),
-      sexualOrientation: $enumDecodeNullable(
-        _$SexualOrientationEnumMap,
-        json['sexualOrientation'],
-      ),
       interestedInGenders:
           (json['interestedInGenders'] as List<dynamic>?)
               ?.map((e) => $enumDecode(_$GenderEnumMap, e))
               .toList() ??
           const [],
+      instagramHandle: json['instagramHandle'] as String?,
     );
 
-Map<String, dynamic> _$OnboardingDraftToJson(
-  _OnboardingDraft instance,
-) => <String, dynamic>{
-  'step': instance.step,
-  'firstName': instance.firstName,
-  'lastName': instance.lastName,
-  'dateOfBirth': _$JsonConverterToJson<Timestamp, DateTime>(
-    instance.dateOfBirth,
-    const TimestampConverter().toJson,
-  ),
-  'phoneNumber': instance.phoneNumber,
-  'countryCode': instance.countryCode,
-  'gender': _$GenderEnumMap[instance.gender],
-  'sexualOrientation': _$SexualOrientationEnumMap[instance.sexualOrientation],
-  'interestedInGenders': instance.interestedInGenders
-      .map((e) => _$GenderEnumMap[e]!)
-      .toList(),
-};
+Map<String, dynamic> _$OnboardingDraftToJson(_OnboardingDraft instance) =>
+    <String, dynamic>{
+      'step': instance.step,
+      'firstName': instance.firstName,
+      'lastName': instance.lastName,
+      'dateOfBirth': _$JsonConverterToJson<Timestamp, DateTime>(
+        instance.dateOfBirth,
+        const TimestampConverter().toJson,
+      ),
+      'phoneNumber': instance.phoneNumber,
+      'countryCode': instance.countryCode,
+      'gender': _$GenderEnumMap[instance.gender],
+      'interestedInGenders': instance.interestedInGenders
+          .map((e) => _$GenderEnumMap[e]!)
+          .toList(),
+      'instagramHandle': instance.instagramHandle,
+    };
 
 Value? _$JsonConverterFromJson<Json, Value>(
   Object? json,
@@ -58,15 +54,6 @@ const _$GenderEnumMap = {
   Gender.woman: 'woman',
   Gender.nonBinary: 'nonBinary',
   Gender.other: 'other',
-};
-
-const _$SexualOrientationEnumMap = {
-  SexualOrientation.straight: 'straight',
-  SexualOrientation.gay: 'gay',
-  SexualOrientation.bisexual: 'bisexual',
-  SexualOrientation.pansexual: 'pansexual',
-  SexualOrientation.asexual: 'asexual',
-  SexualOrientation.other: 'other',
 };
 
 Json? _$JsonConverterToJson<Json, Value>(

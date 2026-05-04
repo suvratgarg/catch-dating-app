@@ -13,14 +13,11 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
     json['dateOfBirth'] as Timestamp,
   ),
   gender: $enumDecode(_$GenderEnumMap, json['gender']),
-  sexualOrientation: $enumDecode(
-    _$SexualOrientationEnumMap,
-    json['sexualOrientation'],
-  ),
   phoneNumber: json['phoneNumber'] as String,
   profileComplete: json['profileComplete'] as bool,
   email: json['email'] as String? ?? '',
   bio: json['bio'] as String? ?? '',
+  instagramHandle: json['instagramHandle'] as String?,
   photoUrls:
       (json['photoUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
@@ -87,11 +84,11 @@ Map<String, dynamic> _$UserProfileToJson(
   'name': instance.name,
   'dateOfBirth': const TimestampConverter().toJson(instance.dateOfBirth),
   'gender': _$GenderEnumMap[instance.gender]!,
-  'sexualOrientation': _$SexualOrientationEnumMap[instance.sexualOrientation]!,
   'phoneNumber': instance.phoneNumber,
   'profileComplete': instance.profileComplete,
   'email': instance.email,
   'bio': instance.bio,
+  'instagramHandle': instance.instagramHandle,
   'photoUrls': instance.photoUrls,
   'city': _$IndianCityEnumMap[instance.city],
   'latitude': instance.latitude,
@@ -134,15 +131,6 @@ const _$GenderEnumMap = {
   Gender.woman: 'woman',
   Gender.nonBinary: 'nonBinary',
   Gender.other: 'other',
-};
-
-const _$SexualOrientationEnumMap = {
-  SexualOrientation.straight: 'straight',
-  SexualOrientation.gay: 'gay',
-  SexualOrientation.bisexual: 'bisexual',
-  SexualOrientation.pansexual: 'pansexual',
-  SexualOrientation.asexual: 'asexual',
-  SexualOrientation.other: 'other',
 };
 
 const _$IndianCityEnumMap = {

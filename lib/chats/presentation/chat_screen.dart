@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -11,6 +10,7 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -130,7 +130,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     _controller.clear();
 
     try {
-      await _chatController.sendMessage(matchId: widget.matchId, senderId: uid, text: text);
+      await _chatController.sendMessage(
+        matchId: widget.matchId,
+        senderId: uid,
+        text: text,
+      );
       if (_scrollController.hasClients) {
         unawaited(
           _scrollController.animateTo(
@@ -175,7 +179,10 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     required String targetUserId,
     required String targetName,
   }) async {
-    await _chatController.reportUser(targetUserId: targetUserId, matchId: widget.matchId);
+    await _chatController.reportUser(
+      targetUserId: targetUserId,
+      matchId: widget.matchId,
+    );
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Report submitted for $targetName.')),

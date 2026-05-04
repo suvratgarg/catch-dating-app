@@ -47,7 +47,6 @@ void main() {
       name: 'Test Runner',
       dateOfBirth: DateTime(birthYear, 6, 15),
       gender: gender,
-      sexualOrientation: SexualOrientation.straight,
       phoneNumber: '+910000000000',
       profileComplete: true,
       interestedInGenders: const [Gender.woman],

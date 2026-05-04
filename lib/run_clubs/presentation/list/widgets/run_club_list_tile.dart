@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
@@ -5,8 +6,10 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 part 'run_club_list_tile_parts/avatar_chip.dart';
@@ -28,7 +31,6 @@ class RunClubListTile extends StatelessWidget {
     this.variant = RunClubListTileVariant.directory,
     this.isJoined = false,
     this.showLiveBadge = false,
-    this.onJoin,
   });
 
   final RunClub club;
@@ -37,9 +39,6 @@ class RunClubListTile extends StatelessWidget {
 
   /// Only used by [RunClubListTileVariant.avatarChip].
   final bool showLiveBadge;
-
-  /// Only used by [RunClubListTileVariant.directory].
-  final VoidCallback? onJoin;
 
   void _openDetail(BuildContext context) => context.pushNamed(
     Routes.runClubDetailScreen.name,
@@ -54,7 +53,6 @@ class RunClubListTile extends StatelessWidget {
         club: club,
         isJoined: isJoined,
         onTap: () => _openDetail(context),
-        onJoin: onJoin,
       ),
       RunClubListTileVariant.avatarChip => _AvatarChip(
         club: club,

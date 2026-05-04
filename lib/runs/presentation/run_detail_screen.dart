@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_body.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +32,7 @@ class RunDetailScreen extends ConsumerWidget {
             userProfile: vm.userProfile,
             runClubId: runClubId,
             reviews: vm.reviews,
+            isAuthenticated: vm.isAuthenticated,
           );
         },
       ),

@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -118,7 +118,8 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           const SizedBox(height: 32),
           OnboardingStepHeader(
             title: 'Enter the code',
-            subtitle: 'Sent to ${_displayPhoneNumber(data.phoneNumber, data.countryCode)}',
+            subtitle:
+                'Sent to ${_displayPhoneNumber(data.phoneNumber, data.countryCode)}',
           ),
           const SizedBox(height: 40),
           _OtpDigitField(
@@ -143,8 +144,7 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             ),
           ],
           gapH24,
-          if (verifyMutation.isPending)
-            const CatchLoadingIndicator(),
+          if (verifyMutation.isPending) const CatchLoadingIndicator(),
           gapH16,
           Center(
             child: CatchButton(

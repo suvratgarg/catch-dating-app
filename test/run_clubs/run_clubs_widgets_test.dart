@@ -25,8 +25,8 @@ import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_cont
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_content.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_header.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_list_body.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart';
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -50,12 +50,8 @@ void main() {
       (tester) async {
         await pumpTestApp(
           tester,
-          const RunClubsContent(
-            viewModel: RunClubsListViewModel(
-              joinedClubs: [],
-              allClubs: [],
-            ),
-            isJoinPending: false,
+          const RunClubsListBody(
+            viewModel: RunClubsListViewModel(joinedClubs: [], allClubs: []),
           ),
         );
 
@@ -69,7 +65,7 @@ void main() {
     ) async {
       await pumpTestApp(
         tester,
-        RunClubsContent(
+        RunClubsListBody(
           viewModel: RunClubsListViewModel(
             joinedClubs: [
               buildRunClub(id: 'joined-1', nextRunLabel: 'Sat 6:30 AM'),
@@ -80,7 +76,6 @@ void main() {
             ],
             joinedClubIds: {'joined-1'},
           ),
-          isJoinPending: false,
         ),
       );
 
@@ -99,7 +94,13 @@ void main() {
             container: container,
             child: MaterialApp(
               theme: AppTheme.light,
-              home: const Scaffold(body: RunClubsHeader()),
+              home: Scaffold(
+                body: Builder(
+                  builder: (context) => CustomScrollView(
+                    slivers: RunClubsSliverHeader().buildSlivers(context),
+                  ),
+                ),
+              ),
             ),
           ),
         );
@@ -139,7 +140,13 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) => const Scaffold(body: RunClubsHeader()),
+            builder: (_, _) => Scaffold(
+              body: Builder(
+                builder: (context) => CustomScrollView(
+                  slivers: RunClubsSliverHeader().buildSlivers(context),
+                ),
+              ),
+            ),
           ),
           GoRoute(
             path: '/create-run-club',
@@ -510,6 +517,7 @@ void main() {
                 isHost: true,
                 isMember: true,
                 isMutating: false,
+                isAuthenticated: true,
               ),
             ),
           ),
@@ -584,6 +592,7 @@ void main() {
                 isHost: false,
                 isMember: true,
                 isMutating: false,
+                isAuthenticated: true,
               ),
             ),
           ),
@@ -834,6 +843,7 @@ void main() {
                 reviews: const [],
                 userProfile: buildUser(uid: 'runner-1'),
                 uid: 'runner-1',
+                isAuthenticated: true,
               ),
             ),
           ),
@@ -883,6 +893,7 @@ void main() {
                 reviews: const [],
                 userProfile: buildUser(uid: 'runner-1'),
                 uid: 'runner-1',
+                isAuthenticated: true,
               ),
             ),
           ),

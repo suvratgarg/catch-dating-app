@@ -12,8 +12,8 @@ import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../runs/runs_test_helpers.dart';
 
@@ -97,7 +97,7 @@ void main() {
         ],
         child: MaterialApp(
           theme: AppTheme.light,
-          home: const MatchesListScreen(),
+          home: const ChatsListScreen(),
         ),
       ),
     );
@@ -129,7 +129,7 @@ void main() {
         GoRoute(
           path: Routes.matchesListScreen.path,
           name: Routes.matchesListScreen.name,
-          builder: (_, _) => const MatchesListScreen(),
+          builder: (_, _) => const ChatsListScreen(),
           routes: [
             GoRoute(
               path: ':matchId',

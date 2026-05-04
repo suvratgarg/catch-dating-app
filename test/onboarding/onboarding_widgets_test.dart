@@ -390,7 +390,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Please select your gender'), findsOneWidget);
-      expect(find.text('Please select your orientation'), findsOneWidget);
     });
 
     testWidgets('restores saved selections from the onboarding draft', (
@@ -402,7 +401,6 @@ void main() {
           .read(onboardingControllerProvider.notifier)
           .setGenderInterest(
             gender: Gender.woman,
-            sexualOrientation: SexualOrientation.straight,
             interestedInGenders: const [Gender.man],
           );
 
@@ -415,12 +413,6 @@ void main() {
       expect(
         tester
             .widget<CatchChip>(find.widgetWithText(CatchChip, 'Woman').first)
-            .active,
-        isTrue,
-      );
-      expect(
-        tester
-            .widget<CatchChip>(find.widgetWithText(CatchChip, 'Straight'))
             .active,
         isTrue,
       );

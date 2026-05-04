@@ -19,7 +19,6 @@ class GenderInterestPage extends ConsumerStatefulWidget {
 class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
   final _formKey = GlobalKey<FormState>();
   Gender? _gender;
-  SexualOrientation? _orientation;
   Set<Gender> _interestedIn = {};
 
   @override
@@ -27,7 +26,6 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
     super.initState();
     final data = ref.read(onboardingControllerProvider);
     _gender = data.gender;
-    _orientation = data.sexualOrientation;
     _interestedIn = {...data.interestedInGenders};
   }
 
@@ -39,7 +37,6 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
         .read(onboardingControllerProvider.notifier)
         .setGenderInterest(
           gender: _gender!,
-          sexualOrientation: _orientation!,
           interestedInGenders: _interestedIn.toList(),
         );
 
@@ -72,20 +69,6 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
               onChanged: (next) {
                 OnboardingController.saveProfileMutation.reset(ref);
                 setState(() => _gender = next.isEmpty ? null : next.first);
-              },
-            ),
-            gapH24,
-            ChipField<SexualOrientation>(
-              label: 'Sexual orientation',
-              values: SexualOrientation.values,
-              selected: _orientation != null ? {_orientation!} : {},
-              multiSelect: false,
-              validator: (_) => _orientation == null
-                  ? 'Please select your orientation'
-                  : null,
-              onChanged: (next) {
-                OnboardingController.saveProfileMutation.reset(ref);
-                setState(() => _orientation = next.isEmpty ? null : next.first);
               },
             ),
             gapH24,

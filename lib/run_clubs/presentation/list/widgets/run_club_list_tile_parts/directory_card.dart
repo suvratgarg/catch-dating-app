@@ -1,21 +1,20 @@
 part of '../run_club_list_tile.dart';
 
-class _DirectoryCard extends StatelessWidget {
+class _DirectoryCard extends ConsumerWidget {
   const _DirectoryCard({
     required this.club,
     required this.isJoined,
     this.onTap,
-    this.onJoin,
   });
 
   final RunClub club;
   final bool isJoined;
   final VoidCallback? onTap;
-  final VoidCallback? onJoin;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final joinMutation = ref.watch(RunClubsListController.joinMutation);
 
     return CatchSurface(
       onTap: onTap,
@@ -127,42 +126,30 @@ class _DirectoryCard extends StatelessWidget {
                 const SizedBox(height: 10),
                 Row(
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleAvatar(
-                          radius: 9,
-                          backgroundImage: club.hostAvatarUrl != null
-                              ? NetworkImage(club.hostAvatarUrl!)
-                              : null,
-                          backgroundColor: club.hostAvatarUrl == null
-                              ? t.line
-                              : null,
-                          child: club.hostAvatarUrl == null
-                              ? Text(
-                                  club.hostName.isNotEmpty
-                                      ? club.hostName[0].toUpperCase()
-                                      : '?',
-                                  style: TextStyle(
-                                    fontSize: 8,
-                                    fontWeight: FontWeight.w600,
-                                    color: t.ink2,
-                                  ),
-                                )
-                              : null,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          club.hostName,
-                          style: CatchTextStyles.bodyS(context, color: t.ink2),
-                        ),
-                      ],
+                    _HostAvatar(club: club),
+                    const SizedBox(width: 6),
+                    Text(
+                      club.hostName,
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
                     ),
                     const Spacer(),
-                    if (!isJoined && onJoin != null)
+                    if (!isJoined)
                       CatchButton(
                         label: 'Join',
-                        onPressed: onJoin,
+                        onPressed: joinMutation.isPending
+                            ? null
+                            : () {
+                                final uid =
+                                    ref.read(uidProvider).asData?.value;
+                                if (uid == null) {
+                                  context.pushNamed(
+                                    Routes.onboardingScreen.name,
+                                    queryParameters: {'from': '/clubs'},
+                                  );
+                                  return;
+                                }
+                                _joinClub(ref);
+                              },
                         variant: CatchButtonVariant.secondary,
                         size: CatchButtonSize.sm,
                       ),
@@ -172,6 +159,46 @@ class _DirectoryCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  void _joinClub(WidgetRef ref) {
+    RunClubsListController.joinMutation.run(ref, (transaction) async {
+      await transaction
+          .get(runClubsListControllerProvider.notifier)
+          .joinClub(club.id);
+    });
+  }
+}
+
+class _HostAvatar extends StatelessWidget {
+  const _HostAvatar({required this.club});
+
+  final RunClub club;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    if (club.hostAvatarUrl != null) {
+      return CircleAvatar(
+        radius: 9,
+        backgroundImage: NetworkImage(club.hostAvatarUrl!),
+        backgroundColor: t.line,
+      );
+    }
+
+    return CircleAvatar(
+      radius: 9,
+      backgroundColor: t.line,
+      child: Text(
+        club.hostName.isNotEmpty ? club.hostName[0].toUpperCase() : '?',
+        style: TextStyle(
+          fontSize: 8,
+          fontWeight: FontWeight.w600,
+          color: t.ink2,
+        ),
       ),
     );
   }

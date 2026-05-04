@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
@@ -132,11 +132,7 @@ class ClubHeroAppBar extends StatelessWidget {
                       ),
                       if (club.rating > 0) ...[
                         const SizedBox(width: 12),
-                        Icon(
-                          Icons.star_rounded,
-                          size: 14,
-                          color: t.gold,
-                        ),
+                        Icon(Icons.star_rounded, size: 14, color: t.gold),
                         const SizedBox(width: 2),
                         Text(
                           club.rating.toStringAsFixed(1),

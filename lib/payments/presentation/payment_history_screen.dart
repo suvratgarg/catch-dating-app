@@ -1,17 +1,17 @@
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
-import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/detail_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -77,7 +77,6 @@ class _PaymentTile extends ConsumerWidget {
 
   static final _dateFormat = DateFormat('d MMM yyyy · HH:mm');
 
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
@@ -133,11 +132,7 @@ class _PaymentTile extends ConsumerWidget {
     );
   }
 
-  void _showDetailSheet(
-    BuildContext context,
-    WidgetRef ref,
-    String runTitle,
-  ) {
+  void _showDetailSheet(BuildContext context, WidgetRef ref, String runTitle) {
     final t = CatchTokens.of(context);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final statusPresentation = _statusPresentation(payment);
@@ -146,7 +141,9 @@ class _PaymentTile extends ConsumerWidget {
       context: context,
       backgroundColor: t.surface,
       shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(CatchRadius.lg),
+        ),
       ),
       builder: (sheetContext) {
         return SafeArea(
@@ -161,74 +158,76 @@ class _PaymentTile extends ConsumerWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-              const BottomSheetGrabber(),
-              gapH16,
-              // Header
-              Text(runTitle, style: CatchTextStyles.titleL(context)),
-              gapH8,
-              Row(
-                children: [
-                  CatchBadge(
-                    label: statusPresentation.label,
-                    tone: statusPresentation.tone,
-                    size: CatchBadgeSize.md,
-                  ),
-                  const Spacer(),
-                  Text(
-                    RunFormatters.priceInPaise(payment.amount),
-                    style: CatchTextStyles.displayS(context),
-                  ),
-                ],
-              ),
-              gapH20,
-              Divider(color: t.line, height: 1),
-              gapH20,
-              // Detail rows
-              DetailRow(label: 'Payment ID', value: payment.paymentId),
-              gapH12,
-              DetailRow(label: 'Order ID', value: payment.orderId),
-              gapH12,
-              DetailRow(label: 'Run ID', value: payment.runId),
-              gapH12,
-              DetailRow(
-                label: 'Date',
-                value: _dateFormat.format(payment.createdAt),
-              ),
-              if (statusPresentation.detail case final detail?) ...[
-                gapH12,
-                DetailRow(label: 'Status', value: detail),
-              ],
-              if (payment.signUpFailed) ...[
+                const BottomSheetGrabber(),
+                gapH16,
+                // Header
+                Text(runTitle, style: CatchTextStyles.titleL(context)),
+                gapH8,
+                Row(
+                  children: [
+                    CatchBadge(
+                      label: statusPresentation.label,
+                      tone: statusPresentation.tone,
+                      size: CatchBadgeSize.md,
+                    ),
+                    const Spacer(),
+                    Text(
+                      RunFormatters.priceInPaise(payment.amount),
+                      style: CatchTextStyles.displayS(context),
+                    ),
+                  ],
+                ),
                 gapH20,
                 Divider(color: t.line, height: 1),
-                gapH16,
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.of(sheetContext).pop();
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text(
-                            'Please contact Catch support for assistance with this booking.',
+                gapH20,
+                // Detail rows
+                DetailRow(label: 'Payment ID', value: payment.paymentId),
+                gapH12,
+                DetailRow(label: 'Order ID', value: payment.orderId),
+                gapH12,
+                DetailRow(label: 'Run ID', value: payment.runId),
+                gapH12,
+                DetailRow(
+                  label: 'Date',
+                  value: _dateFormat.format(payment.createdAt),
+                ),
+                if (statusPresentation.detail case final detail?) ...[
+                  gapH12,
+                  DetailRow(label: 'Status', value: detail),
+                ],
+                if (payment.signUpFailed) ...[
+                  gapH20,
+                  Divider(color: t.line, height: 1),
+                  gapH16,
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.of(sheetContext).pop();
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Please contact Catch support for assistance with this booking.',
+                            ),
                           ),
+                        );
+                      },
+                      icon: const Icon(Icons.help_outline_rounded, size: 18),
+                      label: const Text('Get help with this booking'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: t.warning,
+                        side: BorderSide(
+                          color: t.warning.withValues(alpha: 0.4),
                         ),
-                      );
-                    },
-                    icon: const Icon(Icons.help_outline_rounded, size: 18),
-                    label: const Text('Get help with this booking'),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: t.warning,
-                      side: BorderSide(color: t.warning.withValues(alpha: 0.4)),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(CatchRadius.pill),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(CatchRadius.pill),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
                     ),
                   ),
-                ),
+                ],
               ],
-            ],
             ),
           ),
         );

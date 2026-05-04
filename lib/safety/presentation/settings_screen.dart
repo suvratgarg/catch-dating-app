@@ -2,12 +2,12 @@ import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -36,10 +36,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   Future<void> _savePref(String key, bool value) async {
     final uid = ref.read(watchUserProfileProvider).asData?.value?.uid;
     if (uid == null) return;
-    await ref.read(userProfileRepositoryProvider).updateUserProfile(
-      uid: uid,
-      fields: {key: value},
-    );
+    await ref
+        .read(userProfileRepositoryProvider)
+        .updateUserProfile(uid: uid, fields: {key: value});
   }
 
   Future<void> _confirmDeleteAccount() async {
@@ -271,7 +270,9 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     if (!phoneNumber.startsWith('+')) return phoneNumber;
 
     final sortedCodes = codes.toList()
-      ..sort((a, b) => b['dial_code']!.length.compareTo(a['dial_code']!.length));
+      ..sort(
+        (a, b) => b['dial_code']!.length.compareTo(a['dial_code']!.length),
+      );
     for (final c in sortedCodes) {
       final dialCode = c['dial_code']!;
       if (phoneNumber.startsWith(dialCode)) {
@@ -312,7 +313,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
         blockedUsersAsync.when(
           loading: () => const Padding(
             padding: EdgeInsets.all(Sizes.p16),
-            child: const CatchLoadingIndicator(),
+            child: CatchLoadingIndicator(),
           ),
           error: (_, _) => Padding(
             padding: const EdgeInsets.all(Sizes.p16),

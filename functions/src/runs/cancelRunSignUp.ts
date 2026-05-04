@@ -104,9 +104,9 @@ export const cancelRunSignUp = onCall(
         const wGender = waitlistUser.gender;
         const currentCount = run.genderCounts[wGender] ?? 0;
 
-        if (wGender === "man" && run.constraints.maxMen !== undefined &&
+        if (wGender === "man" && run.constraints.maxMen != null &&
             currentCount >= run.constraints.maxMen) continue;
-        if (wGender === "woman" && run.constraints.maxWomen !== undefined &&
+        if (wGender === "woman" && run.constraints.maxWomen != null &&
             currentCount >= run.constraints.maxWomen) continue;
 
         // Promote this user.

@@ -164,47 +164,58 @@ class RunClubsRepository {
         action: 'join',
       );
 
-  Future<void> leaveClub(String clubId, String userId) =>
-      withFirestoreErrorContext(
-        () => _db.runTransaction((transaction) async {
-          final clubRef = _runClubRef(clubId);
-          final userRef = _userRef(userId);
-          final clubSnapshot = await transaction.get(clubRef);
+  Future<void> leaveClub(String clubId, String userId) async {
+    // Phase 1 diagnostic: split club and user writes to identify which
+    // document's security rules are rejecting the leave operation.
+    // TODO: re-atomic once rules mismatch is resolved.
 
-          if (!clubSnapshot.exists) {
-            throw DocumentNotFoundException('runClubs/$clubId');
-          }
+    // Step 1 — update club (read + write in transaction for consistency).
+    await withFirestoreErrorContext(
+      () => _db.runTransaction((transaction) async {
+        final clubRef = _runClubRef(clubId);
+        final clubSnapshot = await transaction.get(clubRef);
 
-          transaction.update(clubRef, {
-            'memberUserIds': FieldValue.arrayRemove([userId]),
-            'memberCount': FieldValue.increment(-1),
-          });
-          transaction.set(userRef, {
-            'joinedRunClubIds': FieldValue.arrayRemove([clubId]),
-          }, SetOptions(merge: true));
-        }),
-        collection: _collectionPath,
-        action: 'leave',
-      );
+        if (!clubSnapshot.exists) {
+          throw DocumentNotFoundException('runClubs/$clubId');
+        }
+
+        transaction.update(clubRef, {
+          'memberUserIds': FieldValue.arrayRemove([userId]),
+          'memberCount': FieldValue.increment(-1),
+        });
+      }),
+      collection: _collectionPath,
+      action: 'leave (club)',
+    );
+
+    // Step 2 — update user doc.
+    await withFirestoreErrorContext(
+      () => _userRef(userId).update({
+        'joinedRunClubIds': FieldValue.arrayRemove([clubId]),
+      }),
+      collection: 'users',
+      action: 'leave (user)',
+    );
+  }
 }
 
 @riverpod
 RunClubsRepository runClubsRepository(Ref ref) =>
     RunClubsRepository(ref.watch(firebaseFirestoreProvider));
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stream<RunClub?> watchRunClub(Ref ref, String id) =>
     ref.watch(runClubsRepositoryProvider).watchRunClub(id).timeout(
       const Duration(seconds: 10),
     );
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) =>
     ref.watch(runClubsRepositoryProvider).watchRunClubsByLocation(location).timeout(
       const Duration(seconds: 10),
     );
 
-@riverpod
+@Riverpod(keepAlive: true)
 Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
   Ref ref,
   IndianCity location,

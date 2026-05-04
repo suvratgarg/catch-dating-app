@@ -2,12 +2,12 @@ importScripts('https://www.gstatic.com/firebasejs/12.12.0/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/12.12.0/firebase-messaging-compat.js');
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyAclOdcAenSath18ZsE5HzejY6HDb6sycA',
-  appId: '1:822303414140:web:6c5d5c7179dcd8f60c76f9',
-  messagingSenderId: '822303414140',
-  projectId: 'catchdates-staging',
-  authDomain: 'catchdates-staging.firebaseapp.com',
-  storageBucket: 'catchdates-staging.firebasestorage.app',
+  apiKey: 'AIzaSyAl271K9YGiYZOEcNgoEwZiOQV0ydpWfrg',
+  appId: '1:619661127800:web:b0673ad370947b2f077d8d',
+  messagingSenderId: '619661127800',
+  projectId: 'catchdates-dev',
+  authDomain: 'catchdates-dev.firebaseapp.com',
+  storageBucket: 'catchdates-dev.firebasestorage.app',
 });
 
 const messaging = firebase.messaging();

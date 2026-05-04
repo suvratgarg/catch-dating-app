@@ -1,8 +1,8 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
@@ -119,14 +119,8 @@ class _CalendarHeader extends StatelessWidget {
               ),
               CatchSegmentedControl<CalendarViewMode>(
                 segments: const [
-                  CatchSegment(
-                    value: CalendarViewMode.timeline,
-                    label: 'Day',
-                  ),
-                  CatchSegment(
-                    value: CalendarViewMode.agenda,
-                    label: 'Agenda',
-                  ),
+                  CatchSegment(value: CalendarViewMode.timeline, label: 'Day'),
+                  CatchSegment(value: CalendarViewMode.agenda, label: 'Agenda'),
                 ],
                 selected: mode,
                 onChanged: onModeChanged,
@@ -146,10 +140,7 @@ class _CalendarHeader extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: StatColumn(
-                    label: 'Booked',
-                    value: '${runs.length}',
-                  ),
+                  child: StatColumn(label: 'Booked', value: '${runs.length}'),
                 ),
                 _StatDivider(tokens: tokens),
                 Expanded(

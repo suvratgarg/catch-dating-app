@@ -89,6 +89,7 @@ void main() {
                 ),
                 userProfile: buildUser(),
                 reviews: const [],
+                isAuthenticated: true,
               ),
             ),
           ),
@@ -374,6 +375,7 @@ void main() {
           userProfile: user,
           runClubId: 'club-1',
           reviews: const [],
+          isAuthenticated: true,
         ),
         overrides: [
           runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
@@ -399,6 +401,7 @@ void main() {
           userProfile: buildUser(),
           runClubId: 'club-1',
           reviews: const [],
+          isAuthenticated: true,
         ),
         overrides: [
           runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
@@ -422,6 +425,7 @@ void main() {
           userProfile: buildUser(),
           runClubId: 'club-1',
           reviews: const [],
+          isAuthenticated: true,
         ),
         overrides: [
           runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
@@ -464,6 +468,7 @@ void main() {
                 userProfile: buildUser(),
                 runClubId: 'club-1',
                 reviews: const [],
+                isAuthenticated: true,
                 onShareRun: (_, run) async {
                   sharedRunId = run.id;
                 },
@@ -500,6 +505,7 @@ void main() {
           userProfile: buildUser(savedRunIds: const ['run-1']),
           runClubId: 'club-1',
           reviews: const [],
+          isAuthenticated: true,
         ),
         overrides: [
           runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),

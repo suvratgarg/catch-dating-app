@@ -8,8 +8,8 @@ import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
@@ -38,20 +38,17 @@ class RunDetailCta extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final clubAsync = ref.watch(fetchRunClubProvider(runClubId));
     final uid = ref.watch(uidProvider).asData?.value;
-    final isHost =
-        uid != null && clubAsync.asData?.value?.hostUserId == uid;
-    final checkinOpen = DateTime.now()
-        .isAfter(run.startTime.subtract(const Duration(minutes: 10)));
+    final isHost = uid != null && clubAsync.asData?.value?.hostUserId == uid;
+    final checkinOpen = DateTime.now().isAfter(
+      run.startTime.subtract(const Duration(minutes: 10)),
+    );
 
     if (isHost && checkinOpen) {
       return BottomCTA(
         label: 'Take Attendance',
         onPressed: () => GoRouter.of(context).pushNamed(
           Routes.attendanceSheet.name,
-          pathParameters: {
-            'runClubId': runClubId,
-            'runId': run.id,
-          },
+          pathParameters: {'runClubId': runClubId, 'runId': run.id},
         ),
         leadingContent: Icon(
           Icons.checklist_rounded,
@@ -103,22 +100,19 @@ class RunDetailCta extends ConsumerWidget {
             onPressed: bookMutation.isPending || (!run.isFree && !supportsPaid)
                 ? null
                 : () {
-                    RunBookingController.bookMutation.run(
-                      ref,
-                      (tx) async {
-                        final data = await tx
-                            .get(runBookingControllerProvider.notifier)
-                            .book(run: run, user: userProfile);
-                        if (data != null && context.mounted) {
-                          unawaited(
-                            GoRouter.of(context).pushNamed(
-                              Routes.paymentConfirmationScreen.name,
-                              extra: data,
-                            ),
-                          );
-                        }
-                      },
-                    );
+                    RunBookingController.bookMutation.run(ref, (tx) async {
+                      final data = await tx
+                          .get(runBookingControllerProvider.notifier)
+                          .book(run: run, user: userProfile);
+                      if (data != null && context.mounted) {
+                        unawaited(
+                          GoRouter.of(context).pushNamed(
+                            Routes.paymentConfirmationScreen.name,
+                            extra: data,
+                          ),
+                        );
+                      }
+                    });
                   },
             isLoading: bookMutation.isPending,
             leadingContent: run.isFree
@@ -128,11 +122,14 @@ class RunDetailCta extends ConsumerWidget {
                   ),
           ),
           RunSignUpStatus.signedUp => (() {
-            final checkinWindowStart =
-                run.startTime.subtract(const Duration(minutes: 30));
-            final checkinWindowEnd =
-                run.startTime.add(const Duration(minutes: 30));
-            final checkinOpen = DateTime.now().isAfter(checkinWindowStart) &&
+            final checkinWindowStart = run.startTime.subtract(
+              const Duration(minutes: 30),
+            );
+            final checkinWindowEnd = run.startTime.add(
+              const Duration(minutes: 30),
+            );
+            final checkinOpen =
+                DateTime.now().isAfter(checkinWindowStart) &&
                 DateTime.now().isBefore(checkinWindowEnd);
 
             // Show "Check in" button when the window is open and the

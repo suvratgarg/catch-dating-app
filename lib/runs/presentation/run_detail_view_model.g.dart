@@ -106,7 +106,7 @@ final class RunDetailViewModelProvider
 }
 
 String _$runDetailViewModelHash() =>
-    r'1f17a2d3191bfe6f05f0be839b55bd1d08870d2e';
+    r'ddee5287bffb7e58a9e06b51dd380a75d75736ff';
 
 /// **Pattern D: Pure computed provider combining multiple async streams**
 ///

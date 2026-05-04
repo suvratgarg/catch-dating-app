@@ -43,6 +43,7 @@ class CatchTextField extends StatefulWidget {
     this.prefixText,
     this.suffixIcon,
     this.suffixText,
+    this.showClearButton = false,
   });
 
   final String label;
@@ -76,6 +77,11 @@ class CatchTextField extends StatefulWidget {
   final String? prefixText;
   final Widget? suffixIcon;
   final String? suffixText;
+
+  /// When true, replaces [suffixIcon] with a clear (X) button when the field
+  /// has non-empty text. Pressing it clears the controller and calls
+  /// [onChanged] with an empty string.
+  final bool showClearButton;
 
   @override
   State<CatchTextField> createState() => _CatchTextFieldState();
@@ -219,12 +225,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
                       data: IconThemeData(color: t.ink3, size: CatchIcon.md),
                       child: widget.prefixIcon!,
                     ),
-              suffixIcon: widget.suffixIcon == null
-                  ? null
-                  : IconTheme(
-                      data: IconThemeData(color: t.ink3, size: CatchIcon.md),
-                      child: widget.suffixIcon!,
-                    ),
+              suffixIcon: _buildSuffixIcon(t),
             ),
           ),
         );
@@ -292,6 +293,36 @@ class _CatchTextFieldState extends State<CatchTextField> {
       CatchTextFieldShape.rounded => CatchRadius.sm,
       CatchTextFieldShape.pill => CatchRadius.pill,
     };
+  }
+
+  Widget? _buildSuffixIcon(CatchTokens t) {
+    if (widget.showClearButton) {
+      return ValueListenableBuilder(
+        valueListenable: _controller,
+        builder: (_, TextEditingValue value, _) {
+          if (value.text.isEmpty) {
+            if (widget.suffixIcon == null) return const SizedBox.shrink();
+            return IconTheme(
+              data: IconThemeData(color: t.ink3, size: CatchIcon.md),
+              child: widget.suffixIcon!,
+            );
+          }
+          return IconButton(
+            icon: const Icon(Icons.close_rounded, size: 16),
+            onPressed: () {
+              _controller.clear();
+              widget.onChanged?.call('');
+            },
+          );
+        },
+      );
+    }
+
+    if (widget.suffixIcon == null) return null;
+    return IconTheme(
+      data: IconThemeData(color: t.ink3, size: CatchIcon.md),
+      child: widget.suffixIcon!,
+    );
   }
 
   EdgeInsets get _contentPadding {

@@ -53,7 +53,6 @@ export async function requestAccountDeletionHandler(
     dateOfBirth: admin.firestore.Timestamp.fromMillis(0),
     bio: "",
     gender: "other",
-    sexualOrientation: "other",
     phoneNumber: "",
     profileComplete: false,
     photoUrls: [],

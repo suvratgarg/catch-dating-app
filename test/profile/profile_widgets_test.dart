@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
-import 'package:catch_dating_app/profile/presentation/widgets/profile_info_tile.dart';
-import 'package:catch_dating_app/profile/presentation/widgets/profile_tab.dart';
 import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -157,30 +157,31 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('Pace range sheet opens via RangeSlider and shows formatted pace', (
-    tester,
-  ) async {
-    final user = buildUser(name: 'Suvrat Garg');
-    await _pumpProfileTab(tester, user);
+  testWidgets(
+    'Pace range sheet opens via RangeSlider and shows formatted pace',
+    (tester) async {
+      final user = buildUser(name: 'Suvrat Garg');
+      await _pumpProfileTab(tester, user);
 
-    // Scroll to and tap the pace range row.
-    await tester.scrollUntilVisible(
-      find.text('Pace range'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.tap(find.text('Pace range'));
-    await tester.pumpAndSettle();
+      // Scroll to and tap the pace range row.
+      await tester.scrollUntilVisible(
+        find.text('Pace range'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('Pace range'));
+      await tester.pumpAndSettle();
 
-    // Bottom sheet is open with RangeSlider and Done button.
-    expect(find.byType(RangeSlider), findsOneWidget);
-    expect(find.text('Done'), findsOneWidget);
+      // Bottom sheet is open with RangeSlider and Done button.
+      expect(find.byType(RangeSlider), findsOneWidget);
+      expect(find.text('Done'), findsOneWidget);
 
-    // Dismiss with Done button.
-    await tester.tap(find.text('Done'));
-    await tester.pumpAndSettle();
+      // Dismiss with Done button.
+      await tester.tap(find.text('Done'));
+      await tester.pumpAndSettle();
 
-    // Sheet closed, no exceptions.
-    expect(tester.takeException(), isNull);
-  });
+      // Sheet closed, no exceptions.
+      expect(tester.takeException(), isNull);
+    },
+  );
 }

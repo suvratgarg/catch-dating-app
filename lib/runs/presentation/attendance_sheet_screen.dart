@@ -1,12 +1,12 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -80,15 +80,15 @@ class _AttendanceList extends ConsumerWidget {
     final profilesAsync = ref.watch(runnerProfilesProvider(signedUpIds));
     final profiles = profilesAsync.asData?.value ?? {};
 
-    final attendedCount = signedUpIds.where((id) => attendedIds.contains(id)).length;
+    final attendedCount = signedUpIds
+        .where((id) => attendedIds.contains(id))
+        .length;
 
     return Column(
       children: [
         if (mutation.hasError)
           ErrorBanner(
-            message: _attendanceErrorMessage(
-              (mutation as MutationError).error,
-            ),
+            message: _attendanceErrorMessage((mutation as MutationError).error),
           ),
         Padding(
           padding: const EdgeInsets.fromLTRB(
@@ -163,8 +163,7 @@ class _AttendeeRow extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final mutation =
-        ref.watch(RunBookingController.markAttendanceMutation);
+    final mutation = ref.watch(RunBookingController.markAttendanceMutation);
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
@@ -190,17 +189,10 @@ class _AttendeeRow extends ConsumerWidget {
             ),
             child: Row(
               children: [
-                PersonAvatar(
-                  size: 40,
-                  name: name,
-                  imageUrl: photoUrl,
-                ),
+                PersonAvatar(size: 40, name: name, imageUrl: photoUrl),
                 const SizedBox(width: 12),
                 Expanded(
-                  child: Text(
-                    name,
-                    style: CatchTextStyles.bodyM(context),
-                  ),
+                  child: Text(name, style: CatchTextStyles.bodyM(context)),
                 ),
                 Icon(
                   isAttended

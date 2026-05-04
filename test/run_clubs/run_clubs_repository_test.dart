@@ -186,6 +186,18 @@ class TestMapDocumentReference extends Fake
 
   @override
   String get path => 'users/$id';
+
+  final updateCalls = <Map<Object, Object?>>[];
+  bool updateShouldFail = false;
+
+  @override
+  Future<void> update(Map<Object, Object?> data) {
+    updateCalls.add(data);
+    if (updateShouldFail) {
+      return Future.error(FirebaseException(plugin: 'firestore', message: 'update failed'));
+    }
+    return Future.value();
+  }
 }
 
 class TestUsersCollection extends Fake

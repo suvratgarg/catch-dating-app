@@ -29,7 +29,7 @@ void main() {
       );
       expect(
         OnboardingStep.photos.previousWithin(OnboardingStep.nameDob),
-        OnboardingStep.genderInterest,
+        OnboardingStep.instagram,
       );
     });
   });

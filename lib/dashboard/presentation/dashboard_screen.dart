@@ -1,10 +1,10 @@
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 
 class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
@@ -21,7 +21,9 @@ class DashboardScreen extends ConsumerWidget {
       data: (user) {
         if (user == null) return DashboardEmpty(user: null);
 
-        final signedUpRunsAsync = ref.watch(watchSignedUpRunsProvider(user.uid));
+        final signedUpRunsAsync = ref.watch(
+          watchSignedUpRunsProvider(user.uid),
+        );
         return signedUpRunsAsync.when(
           loading: () => const _DashboardLoadingScreen(),
           error: (e, _) => const _DashboardMessageScreen(

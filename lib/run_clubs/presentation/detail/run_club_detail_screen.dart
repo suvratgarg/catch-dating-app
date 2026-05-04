@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
@@ -57,12 +57,14 @@ class RunClubDetailScreen extends ConsumerWidget {
             isHost: vm.isHost,
             isMember: vm.isMember,
             isMutating: joinMutation.isPending || leaveMutation.isPending,
+            isAuthenticated: vm.isAuthenticated,
           ),
         ),
       );
     }
 
     if (vmAsync.isLoading && initialRunClub != null) {
+      final placeholderAuth = currentUid != null;
       return wrapMutationListeners(
         Scaffold(
           body: _buildBody(
@@ -72,10 +74,10 @@ class RunClubDetailScreen extends ConsumerWidget {
             reviews: const [],
             userProfile: currentUserProfile,
             uid: currentUid,
-            isHost:
-                currentUid != null && currentUid == initialRunClub!.hostUserId,
-            isMember: currentUid != null && initialRunClub!.hasMember(currentUid),
+            isHost: placeholderAuth && currentUid == initialRunClub!.hostUserId,
+            isMember: placeholderAuth && initialRunClub!.hasMember(currentUid),
             isMutating: joinMutation.isPending || leaveMutation.isPending,
+            isAuthenticated: placeholderAuth,
           ),
         ),
       );
@@ -100,6 +102,7 @@ class RunClubDetailScreen extends ConsumerWidget {
     required bool isHost,
     required bool isMember,
     required bool isMutating,
+    required bool isAuthenticated,
   }) {
     return ClubDetailBody(
       runClub: runClub,
@@ -111,6 +114,7 @@ class RunClubDetailScreen extends ConsumerWidget {
       isHost: isHost,
       isMember: isMember,
       isMutating: isMutating,
+      isAuthenticated: isAuthenticated,
     );
   }
 }

@@ -7,9 +7,9 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
@@ -41,12 +41,10 @@ class _AppShellState extends ConsumerState<AppShell> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) => _initFcm());
-    _connectivitySub = Connectivity()
-        .onConnectivityChanged
-        .listen((results) {
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
       if (!mounted) return;
-      final offline = results.isEmpty ||
-          results.every((r) => r == ConnectivityResult.none);
+      final offline =
+          results.isEmpty || results.every((r) => r == ConnectivityResult.none);
       if (offline != _isOffline) {
         setState(() => _isOffline = offline);
       }
@@ -88,7 +86,10 @@ class _AppShellState extends ConsumerState<AppShell> {
   @override
   Widget build(BuildContext context) {
     final uid = ref.watch(uidProvider).value ?? '';
-    final unreadCount = ref.watch(totalUnreadCountProvider(uid));
+    final isAuthenticated = uid.isNotEmpty;
+    final unreadCount = isAuthenticated
+        ? ref.watch(totalUnreadCountProvider(uid))
+        : 0;
 
     // Keep Crashlytics user ID in sync with auth state. Also invalidate
     // the user profile stream on sign-out so the next user starts fresh.
@@ -117,55 +118,57 @@ class _AppShellState extends ConsumerState<AppShell> {
           Expanded(child: widget.navigationShell),
         ],
       ),
-      bottomNavigationBar: NavigationBar(
-        selectedIndex: widget.navigationShell.currentIndex,
-        onDestinationSelected: (index) => widget.navigationShell.goBranch(
-          index,
-          initialLocation: index == widget.navigationShell.currentIndex,
-        ),
-        destinations: [
-          // 0 — Home
-          const NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Home',
-          ),
-          // 1 — Clubs
-          const NavigationDestination(
-            icon: Icon(Icons.groups_outlined),
-            selectedIcon: Icon(Icons.groups_rounded),
-            label: 'Clubs',
-          ),
-          // 2 — Catches
-          const NavigationDestination(
-            icon: Icon(Icons.favorite_outline_rounded),
-            selectedIcon: Icon(Icons.favorite_rounded),
-            label: 'Catches',
-          ),
-          // 3 — Chats
-          NavigationDestination(
-            icon: unreadCount > 0
-                ? Badge(
-                    label: Text('$unreadCount'),
-                    child: const Icon(Icons.chat_bubble_outline_rounded),
-                  )
-                : const Icon(Icons.chat_bubble_outline_rounded),
-            selectedIcon: unreadCount > 0
-                ? Badge(
-                    label: Text('$unreadCount'),
-                    child: const Icon(Icons.chat_bubble_rounded),
-                  )
-                : const Icon(Icons.chat_bubble_rounded),
-            label: 'Chats',
-          ),
-          // 4 — You
-          const NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'You',
-          ),
-        ],
-      ),
+      bottomNavigationBar: isAuthenticated
+          ? NavigationBar(
+              selectedIndex: widget.navigationShell.currentIndex,
+              onDestinationSelected: (index) => widget.navigationShell.goBranch(
+                index,
+                initialLocation: index == widget.navigationShell.currentIndex,
+              ),
+              destinations: [
+                // 0 — Home
+                const NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home_rounded),
+                  label: 'Home',
+                ),
+                // 1 — Clubs
+                const NavigationDestination(
+                  icon: Icon(Icons.groups_outlined),
+                  selectedIcon: Icon(Icons.groups_rounded),
+                  label: 'Clubs',
+                ),
+                // 2 — Catches
+                const NavigationDestination(
+                  icon: Icon(Icons.favorite_outline_rounded),
+                  selectedIcon: Icon(Icons.favorite_rounded),
+                  label: 'Catches',
+                ),
+                // 3 — Chats
+                NavigationDestination(
+                  icon: unreadCount > 0
+                      ? Badge(
+                          label: Text('$unreadCount'),
+                          child: const Icon(Icons.chat_bubble_outline_rounded),
+                        )
+                      : const Icon(Icons.chat_bubble_outline_rounded),
+                  selectedIcon: unreadCount > 0
+                      ? Badge(
+                          label: Text('$unreadCount'),
+                          child: const Icon(Icons.chat_bubble_rounded),
+                        )
+                      : const Icon(Icons.chat_bubble_rounded),
+                  label: 'Chats',
+                ),
+                // 4 — You
+                const NavigationDestination(
+                  icon: Icon(Icons.person_outline_rounded),
+                  selectedIcon: Icon(Icons.person_rounded),
+                  label: 'You',
+                ),
+              ],
+            )
+          : null,
     );
   }
 }

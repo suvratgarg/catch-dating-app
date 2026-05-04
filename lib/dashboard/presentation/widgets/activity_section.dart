@@ -1,9 +1,9 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -41,7 +41,9 @@ class ActivitySection extends ConsumerWidget {
       runs: runs,
     );
 
-    final hasUnread = matches.any((match) => (match.unreadCounts[uid] ?? 0) > 0);
+    final hasUnread = matches.any(
+      (match) => (match.unreadCounts[uid] ?? 0) > 0,
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,9 +132,7 @@ class ActivitySection extends ConsumerWidget {
       debugPrint('[ERROR] ActivitySection markAllRead: $error\n$stack');
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to mark messages as read.'),
-          ),
+          const SnackBar(content: Text('Failed to mark messages as read.')),
         );
       }
     }
@@ -376,11 +376,9 @@ List<_ActivityGroup> _groupItems(List<_ActivityItem> items) {
 
   return [
     if (today.isNotEmpty) _ActivityGroup(label: 'Today', items: today),
-    if (upcoming.isNotEmpty)
-      _ActivityGroup(label: 'Upcoming', items: upcoming),
+    if (upcoming.isNotEmpty) _ActivityGroup(label: 'Upcoming', items: upcoming),
     if (yesterday.isNotEmpty)
       _ActivityGroup(label: 'Yesterday', items: yesterday),
-    if (earlier.isNotEmpty)
-      _ActivityGroup(label: 'This week', items: earlier),
+    if (earlier.isNotEmpty) _ActivityGroup(label: 'This week', items: earlier),
   ];
 }

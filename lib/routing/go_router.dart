@@ -3,13 +3,14 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
-import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart';
+import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart'; // ChatsListScreen
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -17,8 +18,8 @@ import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
-import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/attendance_sheet_screen.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
@@ -28,13 +29,12 @@ import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart'
     show AsyncValue, ConsumerWidget, WidgetRef;
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 
 part 'go_router.g.dart';
 
@@ -52,7 +52,7 @@ enum Routes {
   runClubDetailScreen('/clubs/run-clubs/:runClubId'),
   editRunClubScreen('/clubs/run-clubs/:runClubId/edit'),
   runDetailScreen('/clubs/run-clubs/:runClubId/runs/:runId'),
-	attendanceSheet('/clubs/run-clubs/:runClubId/runs/:runId/attendance'),
+  attendanceSheet('/clubs/run-clubs/:runClubId/runs/:runId/attendance'),
   createRunClubScreen('/clubs/create-run-club'),
   createRunScreen('/clubs/run-clubs/:runClubId/create-run'),
   // Catches branch (index 2)
@@ -205,9 +205,9 @@ GoRouter goRouter(Ref ref) {
                     builder: (context, state) => RunClubDetailScreen(
                       runClubId: state.pathParameters['runClubId']!,
                       initialRunClub: switch (state.extra) {
-                            final RunClub rc => rc,
-                            _ => null,
-                          },
+                        final RunClub rc => rc,
+                        _ => null,
+                      },
                     ),
                     routes: [
                       GoRoute(
@@ -222,10 +222,8 @@ GoRouter goRouter(Ref ref) {
                             path: 'attendance',
                             name: Routes.attendanceSheet.name,
                             parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) =>
-                                AttendanceSheetScreen(
-                              runClubId:
-                                  state.pathParameters['runClubId']!,
+                            builder: (context, state) => AttendanceSheetScreen(
+                              runClubId: state.pathParameters['runClubId']!,
                               runId: state.pathParameters['runId']!,
                             ),
                           ),
@@ -238,9 +236,9 @@ GoRouter goRouter(Ref ref) {
                         builder: (context, state) => EditRunClubRouteScreen(
                           runClubId: state.pathParameters['runClubId']!,
                           initialRunClub: switch (state.extra) {
-                              final RunClub rc => rc,
-                              _ => null,
-                            },
+                            final RunClub rc => rc,
+                            _ => null,
+                          },
                         ),
                       ),
                       GoRoute(
@@ -250,9 +248,9 @@ GoRouter goRouter(Ref ref) {
                         builder: (context, state) => CreateRunRouteScreen(
                           runClubId: state.pathParameters['runClubId']!,
                           initialRunClub: switch (state.extra) {
-                              final RunClub rc => rc,
-                              _ => null,
-                            },
+                            final RunClub rc => rc,
+                            _ => null,
+                          },
                         ),
                       ),
                     ],
@@ -290,9 +288,9 @@ GoRouter goRouter(Ref ref) {
                     builder: (context, state) => SwipeScreen(
                       runId: state.pathParameters['runId']!,
                       vibeIds: switch (state.extra) {
-                          final Set<String> ids => ids,
-                          _ => const {},
-                        },
+                        final Set<String> ids => ids,
+                        _ => const {},
+                      },
                     ),
                   ),
                 ],
@@ -308,7 +306,7 @@ GoRouter goRouter(Ref ref) {
               GoRoute(
                 path: Routes.matchesListScreen.path,
                 name: Routes.matchesListScreen.name,
-                builder: (context, state) => const MatchesListScreen(),
+                builder: (context, state) => const ChatsListScreen(),
                 routes: [
                   GoRoute(
                     path: ':matchId',
@@ -316,9 +314,9 @@ GoRouter goRouter(Ref ref) {
                     builder: (context, state) => ChatScreen(
                       matchId: state.pathParameters['matchId']!,
                       otherProfile: switch (state.extra) {
-                          final PublicProfile p => p,
-                          _ => null,
-                        },
+                        final PublicProfile p => p,
+                        _ => null,
+                      },
                     ),
                   ),
                 ],
@@ -344,6 +342,21 @@ GoRouter goRouter(Ref ref) {
   );
 }
 
+/// Routes that unauthenticated users may access for read-only browsing.
+bool _isPublicRoute(String matchedLocation) {
+  if (matchedLocation == Routes.runClubsListScreen.path) return true;
+
+  if (matchedLocation.startsWith('/clubs/run-clubs/')) {
+    // Write-oriented sub-routes still require auth.
+    if (matchedLocation.endsWith('/edit')) return false;
+    if (matchedLocation.endsWith('/create-run')) return false;
+    if (matchedLocation.endsWith('/attendance')) return false;
+    return true;
+  }
+
+  return false;
+}
+
 String? appRedirect({
   required AsyncValue<String?> uidAsync,
   required AsyncValue<UserProfile?> userProfileAsync,
@@ -359,6 +372,7 @@ String? appRedirect({
       uidAsync.hasValue && uidAsync.value != null && userProfileAsync.isLoading;
 
   if (isWaitingOnAuth || isWaitingOnProfile) {
+    if (_isPublicRoute(matchedLocation)) return null;
     if (onLoading) return null;
     return _locationWithFrom(
       Routes.loadingScreen.path,
@@ -370,11 +384,9 @@ String? appRedirect({
   final userProfile = userProfileAsync.value;
 
   if (uid == null) {
+    if (_isPublicRoute(matchedLocation)) return null;
     if (onOnboarding) return null;
-    return _locationWithFrom(
-      Routes.onboardingScreen.path,
-      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
-    );
+    return Routes.runClubsListScreen.path;
   }
 
   if (userProfile == null || !userProfile.profileComplete) {
@@ -463,8 +475,7 @@ class CreateRunRouteScreen extends ConsumerWidget {
     final runClubAsync = ref.watch(fetchRunClubProvider(runClubId));
     return runClubAsync.when(
       loading: () => const _RouterLoadingScreen(),
-      error: (error, _) =>
-          Scaffold(body: CatchErrorText(error)),
+      error: (error, _) => Scaffold(body: CatchErrorText(error)),
       data: (runClub) => runClub == null
           ? const Scaffold(body: Center(child: Text('Run club not found.')))
           : CreateRunScreen(runClub: runClub),
@@ -491,8 +502,7 @@ class EditRunClubRouteScreen extends ConsumerWidget {
     final runClubAsync = ref.watch(fetchRunClubProvider(runClubId));
     return runClubAsync.when(
       loading: () => const _RouterLoadingScreen(),
-      error: (error, _) =>
-          Scaffold(body: CatchErrorText(error)),
+      error: (error, _) => Scaffold(body: CatchErrorText(error)),
       data: (runClub) => runClub == null
           ? const Scaffold(body: Center(child: Text('Run club not found.')))
           : CreateRunClubScreen(initialRunClub: runClub),

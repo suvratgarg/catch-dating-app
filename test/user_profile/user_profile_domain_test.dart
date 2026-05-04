@@ -7,7 +7,6 @@ void main() {
     name: 'Runner',
     dateOfBirth: dateOfBirth,
     gender: Gender.man,
-    sexualOrientation: SexualOrientation.straight,
     phoneNumber: '+910000000000',
     profileComplete: true,
     interestedInGenders: const [Gender.woman],

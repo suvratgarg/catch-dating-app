@@ -8,7 +8,6 @@ UserProfile _completeUser() => UserProfile(
   name: 'Runner',
   dateOfBirth: DateTime(1995, 6, 15),
   gender: Gender.man,
-  sexualOrientation: SexualOrientation.straight,
   phoneNumber: '+910000000000',
   profileComplete: true,
   interestedInGenders: const [Gender.woman],
@@ -19,7 +18,6 @@ UserProfile _incompleteUser() => UserProfile(
   name: 'New Runner',
   dateOfBirth: DateTime(1995, 6, 15),
   gender: Gender.man,
-  sexualOrientation: SexualOrientation.straight,
   phoneNumber: '+910000000000',
   profileComplete: false,
   interestedInGenders: const [],
@@ -43,7 +41,7 @@ String? _redirect({
 void main() {
   group('appRedirect', () {
     test(
-      'unauthenticated users are sent to onboarding and keep their destination',
+      'unauthenticated users are sent to the clubs list',
       () {
         expect(
           _redirect(
@@ -52,7 +50,7 @@ void main() {
             location: '/chats/match-1',
             matchedLocation: Routes.chatScreen.path,
           ),
-          '/onboarding?from=%2Fchats%2Fmatch-1',
+          '/clubs',
         );
       },
     );
@@ -72,7 +70,7 @@ void main() {
       },
     );
 
-    test('run club detail deep links are preserved through onboarding', () {
+    test('run club detail deep links are accessible to unauthenticated users', () {
       expect(
         _redirect(
           uidAsync: const AsyncData(null),
@@ -80,11 +78,11 @@ void main() {
           location: '/clubs/run-clubs/club-1',
           matchedLocation: Routes.runClubDetailScreen.path,
         ),
-        '/onboarding?from=%2Fclubs%2Frun-clubs%2Fclub-1',
+        null,
       );
     });
 
-    test('run detail deep links are preserved through onboarding', () {
+    test('run detail deep links are accessible to unauthenticated users', () {
       expect(
         _redirect(
           uidAsync: const AsyncData(null),
@@ -92,7 +90,7 @@ void main() {
           location: '/clubs/run-clubs/club-1/runs/run-1',
           matchedLocation: Routes.runDetailScreen.path,
         ),
-        '/onboarding?from=%2Fclubs%2Frun-clubs%2Fclub-1%2Fruns%2Frun-1',
+        null,
       );
     });
 
@@ -153,7 +151,7 @@ void main() {
       },
     );
 
-    test('legacy auth links send signed-out users to phone onboarding', () {
+    test('legacy auth links send signed-out users to the clubs list', () {
       expect(
         _redirect(
           uidAsync: const AsyncData(null),
@@ -161,7 +159,7 @@ void main() {
           location: '/auth?from=%2Fchats%2Fmatch-1',
           matchedLocation: Routes.legacyAuthRedirect.path,
         ),
-        '/onboarding?from=%2Fchats%2Fmatch-1',
+        '/clubs',
       );
     });
 

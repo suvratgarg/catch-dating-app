@@ -1,12 +1,12 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/detail_row.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/detail_row.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -34,10 +34,7 @@ class PaymentConfirmationScreen extends ConsumerWidget {
           if (run == null) {
             return const Center(child: Text('Run not found.'));
           }
-          return _ConfirmationBody(
-            data: data,
-            run: run,
-          );
+          return _ConfirmationBody(data: data, run: run);
         },
       ),
     );
@@ -75,11 +72,7 @@ class _ConfirmationBody extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      _RunSummaryCard(
-                        data: data,
-                        run: run,
-                        clubName: clubName,
-                      ),
+                      _RunSummaryCard(data: data, run: run, clubName: clubName),
                       gapH14,
                       _QuickActions(run: run),
                       gapH18,
@@ -126,9 +119,7 @@ class _HeroSection extends StatelessWidget {
           Positioned.fill(
             child: Opacity(
               opacity: 0.15,
-              child: CustomPaint(
-                painter: _DotPatternPainter(),
-              ),
+              child: CustomPaint(painter: _DotPatternPainter()),
             ),
           ),
           Padding(
@@ -171,10 +162,7 @@ class _HeroSection extends StatelessWidget {
                 // Run title
                 Text(
                   run.title,
-                  style: CatchTextStyles.displayL(
-                    context,
-                    color: Colors.white,
-                  ),
+                  style: CatchTextStyles.displayL(context, color: Colors.white),
                   textAlign: TextAlign.center,
                 ),
                 gapH8,
@@ -263,10 +251,7 @@ class _RunSummaryCard extends StatelessWidget {
                       ),
                       gapH2,
                     ],
-                    Text(
-                      run.title,
-                      style: CatchTextStyles.titleM(context),
-                    ),
+                    Text(run.title, style: CatchTextStyles.titleM(context)),
                     gapH2,
                     Text(
                       '${run.longDateLabel} · ${run.timeRangeLabel}',
@@ -284,7 +269,8 @@ class _RunSummaryCard extends StatelessWidget {
           gapH10,
           DetailRow(
             label: 'Distance',
-            value: '${run.distanceLabel} · ${run.pace.label.toLowerCase()} pace',
+            value:
+                '${run.distanceLabel} · ${run.pace.label.toLowerCase()} pace',
           ),
           gapH10,
           DetailRow(label: 'Paid', value: '$amount · UPI'),
@@ -300,7 +286,6 @@ class _RunSummaryCard extends StatelessWidget {
   }
 }
 
-
 class _QuickActions extends StatelessWidget {
   const _QuickActions({required this.run});
 
@@ -311,7 +296,7 @@ class _QuickActions extends StatelessWidget {
   Future<void> _addToCalendar() async {
     final start = run.startTime;
     final end = run.endTime;
-    final fmt = (DateTime d) =>
+    String fmt(DateTime d) =>
         '${d.year}${d.month.toString().padLeft(2, '0')}'
         '${d.day.toString().padLeft(2, '0')}T'
         '${d.hour.toString().padLeft(2, '0')}'
@@ -337,7 +322,8 @@ class _QuickActions extends StatelessWidget {
         ? Uri.parse('https://maps.google.com/maps?daddr=$lat,$lng')
         : Uri.parse(
             'https://maps.google.com/maps?q='
-            '${Uri.encodeComponent(run.meetingPoint)}');
+            '${Uri.encodeComponent(run.meetingPoint)}',
+          );
     await launchUrl(uri, mode: LaunchMode.externalApplication);
   }
 
@@ -346,7 +332,8 @@ class _QuickActions extends StatelessWidget {
   Future<void> _inviteFriend() async {
     await SharePlus.instance.share(
       ShareParams(
-        text: 'Join me for a run! ${run.title} — ${run.meetingPoint}. '
+        text:
+            'Join me for a run! ${run.title} — ${run.meetingPoint}. '
             'Download Catch: https://catchdates.com',
       ),
     );
@@ -467,7 +454,8 @@ class _ReferralBanner extends StatelessWidget {
   Future<void> _shareReferral() async {
     await SharePlus.instance.share(
       ShareParams(
-        text: 'I just signed up for ${run.title}! '
+        text:
+            'I just signed up for ${run.title}! '
             'Join me — download Catch and book a run: '
             'https://catchdates.com',
       ),
@@ -517,10 +505,7 @@ class _ReferralBanner extends StatelessWidget {
 }
 
 class _StickyBackToHome extends StatelessWidget {
-  const _StickyBackToHome({
-    required this.t,
-    required this.bottomPadding,
-  });
+  const _StickyBackToHome({required this.t, required this.bottomPadding});
 
   final CatchTokens t;
   final double bottomPadding;
@@ -542,9 +527,8 @@ class _StickyBackToHome extends StatelessWidget {
             ),
             child: CatchButton(
               label: 'Back to home',
-              onPressed: () => Navigator.of(context).popUntil(
-                (route) => route.isFirst,
-              ),
+              onPressed: () =>
+                  Navigator.of(context).popUntil((route) => route.isFirst),
               variant: CatchButtonVariant.secondary,
               fullWidth: true,
             ),

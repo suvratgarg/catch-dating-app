@@ -35,8 +35,10 @@ class MessageBubble extends StatelessWidget {
           Flexible(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: (MediaQuery.of(context).size.width * 0.72)
-                    .clamp(0, 480),
+                maxWidth: (MediaQuery.of(context).size.width * 0.72).clamp(
+                  0,
+                  480,
+                ),
               ),
               padding: const EdgeInsets.symmetric(
                 horizontal: Sizes.p14,
@@ -65,8 +67,7 @@ class MessageBubble extends StatelessWidget {
                           imageUrl!,
                           width: 200,
                           fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => const SizedBox
-                              .shrink(),
+                          errorBuilder: (_, _, _) => const SizedBox.shrink(),
                           loadingBuilder: (_, child, progress) {
                             if (progress == null) return child;
                             return SizedBox(
@@ -76,7 +77,7 @@ class MessageBubble extends StatelessWidget {
                                 child: CircularProgressIndicator(
                                   value: progress.expectedTotalBytes != null
                                       ? progress.cumulativeBytesLoaded /
-                                          progress.expectedTotalBytes!
+                                            progress.expectedTotalBytes!
                                       : null,
                                   strokeWidth: 2,
                                 ),
