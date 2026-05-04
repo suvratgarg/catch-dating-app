@@ -17,7 +17,7 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userProfileAsync = ref.watch(userProfileStreamProvider);
+    final userProfileAsync = ref.watch(watchUserProfileProvider);
     final uploadState = ref.watch(photoUploadControllerProvider);
 
     ref.listen(photoUploadControllerProvider, (_, state) {

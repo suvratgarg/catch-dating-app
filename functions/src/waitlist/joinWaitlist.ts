@@ -1,6 +1,7 @@
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {onRequest} from "firebase-functions/v2/https";
+import {checkIpRateLimit} from "../shared/rateLimit";
 
 interface JoinWaitlistBody {
   fullName?: unknown;
@@ -192,6 +193,17 @@ export const joinWaitlist = onRequest(
     const role = normalizeText(body.role).toLowerCase();
     const instagram = normalizeInstagram(body.instagram);
     const honeypot = normalizeText(body.website);
+
+    const clientIp = request.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+      request.ip ??
+      "unknown";
+
+    if (!checkIpRateLimit(clientIp)) {
+      response.status(429).json({
+        error: "Too many requests. Please try again later.",
+      });
+      return;
+    }
 
     if (honeypot) {
       logger.info("Waitlist honeypot tripped", {email});

@@ -34,7 +34,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   String? _seededUid;
 
   Future<void> _savePref(String key, bool value) async {
-    final uid = ref.read(userProfileStreamProvider).asData?.value?.uid;
+    final uid = ref.read(watchUserProfileProvider).asData?.value?.uid;
     if (uid == null) return;
     await ref.read(userProfileRepositoryProvider).updateUserProfile(
       uid: uid,
@@ -80,7 +80,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final userProfile = ref.watch(userProfileStreamProvider).asData?.value;
+    final userProfile = ref.watch(watchUserProfileProvider).asData?.value;
     final phoneNumber = userProfile?.phoneNumber ?? '';
 
     if (userProfile != null && userProfile.uid != _seededUid) {
@@ -304,7 +304,7 @@ class _BlockedAccountsSection extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final blockedUsersAsync = ref.watch(blockedUsersProvider);
+    final blockedUsersAsync = ref.watch(watchBlockedUsersProvider);
     final t = CatchTokens.of(context);
 
     return _SettingsCard(
@@ -355,7 +355,7 @@ class _BlockedAccountTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(publicProfileProvider(blockedUser.uid));
+    final profileAsync = ref.watch(watchPublicProfileProvider(blockedUser.uid));
     final profile = profileAsync.asData?.value;
 
     return PersonRow(

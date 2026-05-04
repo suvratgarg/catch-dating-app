@@ -2,6 +2,7 @@ import * as admin from "firebase-admin";
 import {HttpsError} from "firebase-functions/v2/https";
 import {UserProfileDoc, RunDoc} from "../shared/firestore";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
+import {computeAge} from "../shared/dates";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid runs)
@@ -115,19 +116,4 @@ export async function signUpUserForRun(
       [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
     });
   });
-}
-
-/**
- * Computes a user's age in full years from their date of birth.
- * @param {Date} dob User birth date.
- * @return {number} User age in whole years.
- */
-function computeAge(dob: Date): number {
-  const today = new Date();
-  let age = today.getFullYear() - dob.getFullYear();
-  const monthDiff = today.getMonth() - dob.getMonth();
-  if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
-    age--;
-  }
-  return age;
 }

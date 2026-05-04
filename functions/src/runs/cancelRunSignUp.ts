@@ -1,7 +1,11 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import {UserProfileDoc, PaymentDoc, RunDoc} from "../shared/firestore";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
+import {requireAuth} from "../shared/auth";
+import {validateCallable} from "../shared/validation";
+import {z} from "zod";
 import {
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
@@ -11,9 +15,9 @@ import {
   razorpayKeySecret,
 } from "../payments/razorpay";
 
-interface CancelData {
-  runId: string;
-}
+const CancelSchema = z.object({
+  runId: z.string(),
+});
 
 /**
  * Atomically cancels a user's sign-up for a run.
@@ -26,18 +30,10 @@ interface CancelData {
 export const cancelRunSignUp = onCall(
   appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
   async (request) => {
-    if (!request.auth) {
-      throw new HttpsError("unauthenticated", "Must be signed in to cancel.");
-    }
-
-    const {runId} = request.data as CancelData;
-
-    if (!runId) {
-      throw new HttpsError("invalid-argument", "runId is required.");
-    }
+    const userId = requireAuth(request);
+    const {runId} = validateCallable(request, CancelSchema);
 
     const db = admin.firestore();
-    const userId = request.auth.uid;
     const runRef = db.collection("runs").doc(runId);
     const userRef = db.collection("users").doc(userId);
 
@@ -138,7 +134,7 @@ export const cancelRunSignUp = onCall(
       } catch (refundError) {
         // Log and continue — cancellation itself succeeded; refund can be
         // retried manually via the Razorpay dashboard.
-        console.error(
+        logger.error(
           "Refund failed for payment",
           payment.paymentId,
           refundError

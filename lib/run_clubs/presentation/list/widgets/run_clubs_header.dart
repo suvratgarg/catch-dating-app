@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/data/city_repository.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -113,10 +115,14 @@ class _RunClubsHeaderState extends ConsumerState<RunClubsHeader> {
     );
   }
 
-  void _tryAutoSelectFromGps() {
+  Future<void> _tryAutoSelectFromGps() async {
     final location = ref.read(deviceLocationProvider).asData?.value;
     if (location == null) return;
-    final nearest = IndianCity.nearestCity(location);
+    final repo = CityRepository(ref.read(firebaseFirestoreProvider));
+    final nearest = await repo.nearestCity(
+      location.latitude,
+      location.longitude,
+    );
     if (nearest != null) {
       ref.read(selectedRunClubCityProvider.notifier).autoSelectCity(nearest);
     }

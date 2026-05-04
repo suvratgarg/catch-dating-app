@@ -117,12 +117,13 @@ class PaymentRepository {
           );
         },
       );
-    } catch (error) {
+    } catch (error, st) {
       if (identical(_completer, completer)) {
         _completer = null;
       }
       throw _normalizePaymentError(
         error,
+        stackTrace: st,
         fallbackMessage: 'Unable to launch the payment checkout.',
       );
     }
@@ -172,10 +173,11 @@ class PaymentRepository {
           runId: _pendingRunId ?? '',
         ),
       );
-    } catch (e) {
+    } catch (e, st) {
       completer.completeError(
         _normalizePaymentError(
           e,
+          stackTrace: st,
           fallbackMessage: 'Unable to complete the payment verification.',
         ),
       );
@@ -234,14 +236,14 @@ class PaymentRepository {
   AppException _normalizePaymentError(
     Object error, {
     required String fallbackMessage,
+    StackTrace? stackTrace,
   }) {
-    if (error is AppException) {
-      return error;
-    }
-    if (error is FirebaseFunctionsException) {
-      return PaymentFailedException(error.message ?? fallbackMessage);
-    }
-    return PaymentFailedException(error.toString());
+    return switch (error) {
+      AppException e => e,
+      FirebaseFunctionsException e =>
+        PaymentFailedException(e.message ?? fallbackMessage),
+      _ => PaymentFailedException(error.toString()),
+    };
   }
 
   AppException _normalizeRunBookingError(

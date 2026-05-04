@@ -31,7 +31,7 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileAsync = ref.watch(userProfileStreamProvider);
+    final profileAsync = ref.watch(watchUserProfileProvider);
     final t = CatchTokens.of(context);
 
     return Scaffold(
@@ -43,7 +43,7 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
         data: (user) {
           if (user == null) return const SizedBox.shrink();
 
-          final signedUpAsync = ref.watch(signedUpRunsProvider(user.uid));
+          final signedUpAsync = ref.watch(watchSignedUpRunsProvider(user.uid));
           final recommendedAsync = ref.watch(
             recommendedRunsProvider(user.joinedRunClubIds),
           );

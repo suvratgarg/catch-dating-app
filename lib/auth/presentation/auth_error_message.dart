@@ -31,6 +31,8 @@ String authErrorMessage(Object error) {
       'network-request-failed' =>
         'Check your internet connection and try again.',
       'operation-not-allowed' => 'This sign-in method is not enabled.',
+      'timeout' =>
+        'The verification request timed out. Please check your connection and try again.',
       'too-many-requests' =>
         'Too many attempts. Please wait a bit and try again.',
       'user-disabled' => 'This account has been disabled.',

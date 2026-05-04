@@ -108,7 +108,7 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileAsync = ref.watch(publicProfileProvider(widget.uid));
+    final profileAsync = ref.watch(watchPublicProfileProvider(widget.uid));
     final profile = profileAsync.asData?.value ?? widget.initialProfile;
     final t = CatchTokens.of(context);
 

@@ -2,6 +2,7 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {UserProfileDoc, MatchDoc} from "../shared/firestore";
+import {sendFcmNotification} from "../shared/notifications";
 
 export const onMatchCreated = onDocumentCreated(
   "matches/{matchId}",
@@ -32,15 +33,12 @@ export const onMatchCreated = onDocumentCreated(
 
     await Promise.allSettled(
       tokens.map((token) =>
-        admin.messaging().send({
+        sendFcmNotification({
           token,
-          notification: {
-            title: "It's a match! 🎉",
-            body: "You both liked each other. Say hi!",
-          },
-          data: {type: "match", matchId},
-          apns: {payload: {aps: {sound: "default"}}},
-          android: {notification: {sound: "default"}},
+          title: "It's a match! 🎉",
+          body: "You both liked each other. Say hi!",
+          type: "match",
+          matchId,
         })
       )
     );

@@ -10,7 +10,12 @@ class RunDraftRepository {
   static const _maxDrafts = 5;
   static const _maxStaleDays = 7;
 
-  Future<SharedPreferences> get _prefs => SharedPreferences.getInstance();
+  SharedPreferences? _prefsInstance;
+
+  Future<SharedPreferences> get _prefs async {
+    _prefsInstance ??= await SharedPreferences.getInstance();
+    return _prefsInstance!;
+  }
 
   String _key(String runClubId, String userId) =>
       'run_drafts_${runClubId}_$userId';

@@ -70,5 +70,5 @@ PaymentHistoryRepository paymentHistoryRepository(Ref ref) =>
     PaymentHistoryRepository(ref.watch(firebaseFirestoreProvider));
 
 @riverpod
-Stream<List<Payment>> paymentsForUser(Ref ref, String userId) =>
+Stream<List<Payment>> watchPaymentsForUser(Ref ref, String userId) =>
     ref.watch(paymentHistoryRepositoryProvider).watchPaymentsForUser(userId);

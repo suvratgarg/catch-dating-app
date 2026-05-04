@@ -57,10 +57,10 @@ final class PaymentHistoryRepositoryProvider
 String _$paymentHistoryRepositoryHash() =>
     r'ef7852ab07a7d3f9357f0594a54845a4e3e3f85f';
 
-@ProviderFor(paymentsForUser)
-final paymentsForUserProvider = PaymentsForUserFamily._();
+@ProviderFor(watchPaymentsForUser)
+final watchPaymentsForUserProvider = WatchPaymentsForUserFamily._();
 
-final class PaymentsForUserProvider
+final class WatchPaymentsForUserProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Payment>>,
@@ -68,23 +68,23 @@ final class PaymentsForUserProvider
           Stream<List<Payment>>
         >
     with $FutureModifier<List<Payment>>, $StreamProvider<List<Payment>> {
-  PaymentsForUserProvider._({
-    required PaymentsForUserFamily super.from,
+  WatchPaymentsForUserProvider._({
+    required WatchPaymentsForUserFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'paymentsForUserProvider',
+         name: r'watchPaymentsForUserProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$paymentsForUserHash();
+  String debugGetCreateSourceHash() => _$watchPaymentsForUserHash();
 
   @override
   String toString() {
-    return r'paymentsForUserProvider'
+    return r'watchPaymentsForUserProvider'
         ''
         '($argument)';
   }
@@ -98,12 +98,12 @@ final class PaymentsForUserProvider
   @override
   Stream<List<Payment>> create(Ref ref) {
     final argument = this.argument as String;
-    return paymentsForUser(ref, argument);
+    return watchPaymentsForUser(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is PaymentsForUserProvider && other.argument == argument;
+    return other is WatchPaymentsForUserProvider && other.argument == argument;
   }
 
   @override
@@ -112,22 +112,23 @@ final class PaymentsForUserProvider
   }
 }
 
-String _$paymentsForUserHash() => r'0a2f81b071e098bf6083eef45e1fb406d126c78d';
+String _$watchPaymentsForUserHash() =>
+    r'c8f75c6b9c0225e39b1bbc1a84a3d35c98f41c52';
 
-final class PaymentsForUserFamily extends $Family
+final class WatchPaymentsForUserFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Payment>>, String> {
-  PaymentsForUserFamily._()
+  WatchPaymentsForUserFamily._()
     : super(
         retry: null,
-        name: r'paymentsForUserProvider',
+        name: r'watchPaymentsForUserProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  PaymentsForUserProvider call(String userId) =>
-      PaymentsForUserProvider._(argument: userId, from: this);
+  WatchPaymentsForUserProvider call(String userId) =>
+      WatchPaymentsForUserProvider._(argument: userId, from: this);
 
   @override
-  String toString() => r'paymentsForUserProvider';
+  String toString() => r'watchPaymentsForUserProvider';
 }

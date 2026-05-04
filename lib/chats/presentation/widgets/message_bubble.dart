@@ -9,11 +9,13 @@ class MessageBubble extends StatelessWidget {
     required this.text,
     required this.isMe,
     required this.sentAt,
+    this.imageUrl,
   });
 
   final String text;
   final bool isMe;
   final DateTime sentAt;
+  final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +35,8 @@ class MessageBubble extends StatelessWidget {
           Flexible(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.72,
+                maxWidth: (MediaQuery.of(context).size.width * 0.72)
+                    .clamp(0, 480),
               ),
               padding: const EdgeInsets.symmetric(
                 horizontal: Sizes.p14,
@@ -53,13 +56,44 @@ class MessageBubble extends StatelessWidget {
                     ? CrossAxisAlignment.end
                     : CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    text,
-                    style: CatchTextStyles.bodyM(
-                      context,
-                      color: isMe ? t.primaryInk : t.ink,
+                  if (imageUrl != null)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: Sizes.p6),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(CatchRadius.md),
+                        child: Image.network(
+                          imageUrl!,
+                          width: 200,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => const SizedBox
+                              .shrink(),
+                          loadingBuilder: (_, child, progress) {
+                            if (progress == null) return child;
+                            return SizedBox(
+                              width: 200,
+                              height: 150,
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  value: progress.expectedTotalBytes != null
+                                      ? progress.cumulativeBytesLoaded /
+                                          progress.expectedTotalBytes!
+                                      : null,
+                                  strokeWidth: 2,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
                     ),
-                  ),
+                  if (text.isNotEmpty)
+                    Text(
+                      text,
+                      style: CatchTextStyles.bodyM(
+                        context,
+                        color: isMe ? t.primaryInk : t.ink,
+                      ),
+                    ),
                   gapH2,
                   Text(
                     timeStr,

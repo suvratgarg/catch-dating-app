@@ -4,6 +4,7 @@ import {
   onCall,
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import Razorpay from "razorpay";
 import {signUpUserForRun} from "../runs/signUpUserForRun";
 import {buildPaymentRecord, verifyPaidRunBooking} from "./paymentValidation";
@@ -14,12 +15,15 @@ import {
   verifyPaymentSignature,
 } from "./razorpay";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
+import {requireAuth} from "../shared/auth";
+import {validateCallable} from "../shared/validation";
+import {z} from "zod";
 
-interface VerifyPaymentData {
-  paymentId: string;
-  orderId: string;
-  signature: string;
-}
+const VerifyPaymentSchema = z.object({
+  paymentId: z.string(),
+  orderId: z.string(),
+  signature: z.string(),
+});
 
 interface VerifyRazorpayPaymentDeps {
   createClient: () => Razorpay;
@@ -44,20 +48,14 @@ const defaultDeps: VerifyRazorpayPaymentDeps = {
  * @return {Promise<{verified: boolean, runId: string}>} Verification result.
  */
 export async function verifyRazorpayPaymentHandler(
-  request: CallableRequest<Partial<VerifyPaymentData> | null>,
+  request: CallableRequest<unknown>,
   deps: VerifyRazorpayPaymentDeps = defaultDeps
 ) {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Must be signed in.");
-  }
-
-  const paymentId = request.data?.paymentId;
-  const orderId = request.data?.orderId;
-  const signature = request.data?.signature;
-
-  if (!paymentId || !orderId || !signature) {
-    throw new HttpsError("invalid-argument", "Missing required fields.");
-  }
+  const userId = requireAuth(request);
+  const {paymentId, orderId, signature} = validateCallable(
+    request,
+    VerifyPaymentSchema
+  );
 
   if (!deps.verifySignature({orderId, paymentId, signature})) {
     throw new HttpsError(
@@ -67,7 +65,6 @@ export async function verifyRazorpayPaymentHandler(
   }
 
   const db = deps.firestore();
-  const userId = request.auth.uid;
   const razorpay = deps.createClient();
   const [order, payment] = await Promise.all([
     razorpay.orders.fetch(orderId),
@@ -92,7 +89,7 @@ export async function verifyRazorpayPaymentHandler(
       });
       refundSucceeded = true;
     } catch (refundError) {
-      console.error("Refund failed for payment", paymentId, refundError);
+      logger.error("Refund failed for payment", paymentId, refundError);
     }
 
     await db.collection("payments").doc(paymentId).set({

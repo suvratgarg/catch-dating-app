@@ -8,12 +8,33 @@ part of 'write_review_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Most common mutation pattern in the app. [build] returns void — the
+/// controller holds no Riverpod state. [Mutation]s ([submitMutation],
+/// [deleteMutation]) track the lifecycle of single-shot operations.
+/// The UI watches mutations directly via `ref.watch(controller.mutation)`
+/// and checks `.isPending`, `.hasError`, `.isSuccess`.
 
 @ProviderFor(WriteReviewController)
 final writeReviewControllerProvider = WriteReviewControllerProvider._();
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Most common mutation pattern in the app. [build] returns void — the
+/// controller holds no Riverpod state. [Mutation]s ([submitMutation],
+/// [deleteMutation]) track the lifecycle of single-shot operations.
+/// The UI watches mutations directly via `ref.watch(controller.mutation)`
+/// and checks `.isPending`, `.hasError`, `.isSuccess`.
 final class WriteReviewControllerProvider
     extends $NotifierProvider<WriteReviewController, void> {
+  /// **Pattern B: Stateless controller + static Mutations**
+  ///
+  /// Most common mutation pattern in the app. [build] returns void — the
+  /// controller holds no Riverpod state. [Mutation]s ([submitMutation],
+  /// [deleteMutation]) track the lifecycle of single-shot operations.
+  /// The UI watches mutations directly via `ref.watch(controller.mutation)`
+  /// and checks `.isPending`, `.hasError`, `.isSuccess`.
   WriteReviewControllerProvider._()
     : super(
         from: null,
@@ -43,6 +64,14 @@ final class WriteReviewControllerProvider
 
 String _$writeReviewControllerHash() =>
     r'2b090116fd77513ad9ba8e99d67e854ca64dfa96';
+
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Most common mutation pattern in the app. [build] returns void — the
+/// controller holds no Riverpod state. [Mutation]s ([submitMutation],
+/// [deleteMutation]) track the lifecycle of single-shot operations.
+/// The UI watches mutations directly via `ref.watch(controller.mutation)`
+/// and checks `.isPending`, `.hasError`, `.isSuccess`.
 
 abstract class _$WriteReviewController extends $Notifier<void> {
   void build();

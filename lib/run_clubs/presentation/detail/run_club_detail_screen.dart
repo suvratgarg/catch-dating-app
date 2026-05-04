@@ -28,7 +28,7 @@ class RunClubDetailScreen extends ConsumerWidget {
     final vmAsync = ref.watch(runClubDetailViewModelProvider(runClubId));
     final currentUid = ref.watch(uidProvider).asData?.value;
     final currentUserProfile = ref
-        .watch(userProfileStreamProvider)
+        .watch(watchUserProfileProvider)
         .asData
         ?.value;
 

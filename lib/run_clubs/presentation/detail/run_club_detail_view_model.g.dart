@@ -8,9 +8,22 @@ part of 'run_club_detail_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Watches the club, runs, reviews, user profile, and auth streams and
+/// combines them into a single [RunClubDetailViewModel]. Each input is
+/// individually checked so the combined result is [AsyncError] if any input
+/// fails or [AsyncLoading] if any input is still loading.
 
 @ProviderFor(runClubDetailViewModel)
 final runClubDetailViewModelProvider = RunClubDetailViewModelFamily._();
+
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Watches the club, runs, reviews, user profile, and auth streams and
+/// combines them into a single [RunClubDetailViewModel]. Each input is
+/// individually checked so the combined result is [AsyncError] if any input
+/// fails or [AsyncLoading] if any input is still loading.
 
 final class RunClubDetailViewModelProvider
     extends
@@ -20,6 +33,12 @@ final class RunClubDetailViewModelProvider
           AsyncValue<RunClubDetailViewModel?>
         >
     with $Provider<AsyncValue<RunClubDetailViewModel?>> {
+  /// **Pattern D: Pure computed provider combining multiple async streams**
+  ///
+  /// Watches the club, runs, reviews, user profile, and auth streams and
+  /// combines them into a single [RunClubDetailViewModel]. Each input is
+  /// individually checked so the combined result is [AsyncError] if any input
+  /// fails or [AsyncLoading] if any input is still loading.
   RunClubDetailViewModelProvider._({
     required RunClubDetailViewModelFamily super.from,
     required String super.argument,
@@ -76,7 +95,14 @@ final class RunClubDetailViewModelProvider
 }
 
 String _$runClubDetailViewModelHash() =>
-    r'3f8b7af537d9208f084b3c31327e07608603fe6a';
+    r'2e39fb7572fc06694f5b1b2d40a3294023552c94';
+
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Watches the club, runs, reviews, user profile, and auth streams and
+/// combines them into a single [RunClubDetailViewModel]. Each input is
+/// individually checked so the combined result is [AsyncError] if any input
+/// fails or [AsyncLoading] if any input is still loading.
 
 final class RunClubDetailViewModelFamily extends $Family
     with
@@ -89,6 +115,13 @@ final class RunClubDetailViewModelFamily extends $Family
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
+
+  /// **Pattern D: Pure computed provider combining multiple async streams**
+  ///
+  /// Watches the club, runs, reviews, user profile, and auth streams and
+  /// combines them into a single [RunClubDetailViewModel]. Each input is
+  /// individually checked so the combined result is [AsyncError] if any input
+  /// fails or [AsyncLoading] if any input is still loading.
 
   RunClubDetailViewModelProvider call(String clubId) =>
       RunClubDetailViewModelProvider._(argument: clubId, from: this);

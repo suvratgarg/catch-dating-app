@@ -51,10 +51,10 @@ final class MatchRepositoryProvider
 
 String _$matchRepositoryHash() => r'13f7432d5244d50c8fe9c712bd636394ac5d2c17';
 
-@ProviderFor(matchesForUser)
-final matchesForUserProvider = MatchesForUserFamily._();
+@ProviderFor(watchMatchesForUser)
+final watchMatchesForUserProvider = WatchMatchesForUserFamily._();
 
-final class MatchesForUserProvider
+final class WatchMatchesForUserProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<Match>>,
@@ -62,23 +62,23 @@ final class MatchesForUserProvider
           Stream<List<Match>>
         >
     with $FutureModifier<List<Match>>, $StreamProvider<List<Match>> {
-  MatchesForUserProvider._({
-    required MatchesForUserFamily super.from,
+  WatchMatchesForUserProvider._({
+    required WatchMatchesForUserFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'matchesForUserProvider',
+         name: r'watchMatchesForUserProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$matchesForUserHash();
+  String debugGetCreateSourceHash() => _$watchMatchesForUserHash();
 
   @override
   String toString() {
-    return r'matchesForUserProvider'
+    return r'watchMatchesForUserProvider'
         ''
         '($argument)';
   }
@@ -92,12 +92,12 @@ final class MatchesForUserProvider
   @override
   Stream<List<Match>> create(Ref ref) {
     final argument = this.argument as String;
-    return matchesForUser(ref, argument);
+    return watchMatchesForUser(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is MatchesForUserProvider && other.argument == argument;
+    return other is WatchMatchesForUserProvider && other.argument == argument;
   }
 
   @override
@@ -106,24 +106,25 @@ final class MatchesForUserProvider
   }
 }
 
-String _$matchesForUserHash() => r'04f0b44ddc8c3a036731ac39f0a2405dad368f85';
+String _$watchMatchesForUserHash() =>
+    r'321ba7e9162210d73104b007ed2e23082d59e569';
 
-final class MatchesForUserFamily extends $Family
+final class WatchMatchesForUserFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Match>>, String> {
-  MatchesForUserFamily._()
+  WatchMatchesForUserFamily._()
     : super(
         retry: null,
-        name: r'matchesForUserProvider',
+        name: r'watchMatchesForUserProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  MatchesForUserProvider call(String uid) =>
-      MatchesForUserProvider._(argument: uid, from: this);
+  WatchMatchesForUserProvider call(String uid) =>
+      WatchMatchesForUserProvider._(argument: uid, from: this);
 
   @override
-  String toString() => r'matchesForUserProvider';
+  String toString() => r'watchMatchesForUserProvider';
 }
 
 @ProviderFor(matchStream)
@@ -251,7 +252,7 @@ final class TotalUnreadCountProvider extends $FunctionalProvider<int, int, int>
   }
 }
 
-String _$totalUnreadCountHash() => r'3920e412c5f407a81907cd92c0b63559c55e2e7d';
+String _$totalUnreadCountHash() => r'0df1d23f3b124a656e8dcb848c998a1e6d094781';
 
 final class TotalUnreadCountFamily extends $Family
     with $FunctionalFamilyOverride<int, String> {

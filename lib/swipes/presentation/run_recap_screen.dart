@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -83,8 +84,10 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
                   itemCount: attendeeIds.length,
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: responsiveGridCount(
+                      MediaQuery.of(context).size.width,
+                    ),
                     crossAxisSpacing: 10,
                     mainAxisSpacing: 10,
                     childAspectRatio: 0.74,
@@ -225,7 +228,7 @@ class _VibeTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profile = ref.watch(publicProfileProvider(uid)).asData?.value;
+    final profile = ref.watch(watchPublicProfileProvider(uid)).asData?.value;
     final t = CatchTokens.of(context);
 
     return GestureDetector(

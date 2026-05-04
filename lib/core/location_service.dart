@@ -12,7 +12,7 @@ class LocationInitializer extends _$LocationInitializer {
   @override
   Future<void> build() async {
     // watch (not read) so we rebuild when the stream emits a profile
-    final userProfile = ref.watch(userProfileStreamProvider).asData?.value;
+    final userProfile = ref.watch(watchUserProfileProvider).asData?.value;
     if (userProfile == null || _collected) return;
 
     // Only collect if the user doesn't already have coordinates.

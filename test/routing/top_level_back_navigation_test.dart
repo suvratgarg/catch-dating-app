@@ -38,7 +38,7 @@ void main() {
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
         ],
         child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       ),

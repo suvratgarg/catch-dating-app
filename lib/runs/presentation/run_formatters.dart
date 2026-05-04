@@ -1,58 +1,27 @@
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:intl/intl.dart';
 
 class RunFormatters {
-  static const _monthsShort = [
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec',
-  ];
+  static final _month = DateFormat('MMM');
+  static final _weekdayShort = DateFormat('E');
+  static final _weekdayLong = DateFormat('EEEE');
+  static final _time = DateFormat('HH:mm');
+  static final _shortDateFmt = DateFormat('E, d MMM');
+  static final _longDateFmt = DateFormat('EEEE, d MMM');
 
-  static const _weekdaysShort = [
-    'Mon',
-    'Tue',
-    'Wed',
-    'Thu',
-    'Fri',
-    'Sat',
-    'Sun',
-  ];
-
-  static const _weekdaysLong = [
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday',
-    'Saturday',
-    'Sunday',
-  ];
-
-  static String shortMonth(DateTime dateTime) =>
-      _monthsShort[dateTime.month - 1];
+  static String shortMonth(DateTime dateTime) => _month.format(dateTime);
 
   static String shortWeekday(DateTime dateTime) =>
-      _weekdaysShort[dateTime.weekday - 1];
+      _weekdayShort.format(dateTime);
 
   static String longWeekday(DateTime dateTime) =>
-      _weekdaysLong[dateTime.weekday - 1];
+      _weekdayLong.format(dateTime);
 
-  static String shortDate(DateTime dateTime) =>
-      '${shortWeekday(dateTime)}, ${dateTime.day} ${shortMonth(dateTime)}';
+  static String shortDate(DateTime dateTime) => _shortDateFmt.format(dateTime);
 
-  static String longDate(DateTime dateTime) =>
-      '${longWeekday(dateTime)}, ${dateTime.day} ${shortMonth(dateTime)}';
+  static String longDate(DateTime dateTime) => _longDateFmt.format(dateTime);
 
-  static String time(DateTime dateTime) =>
-      '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
+  static String time(DateTime dateTime) => _time.format(dateTime);
 
   static String timeRange(
     DateTime startTime,

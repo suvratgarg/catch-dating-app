@@ -623,7 +623,7 @@ void main() {
         overrides: [
           runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          userProfileStreamProvider.overrideWith(
+          watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(buildUser(uid: 'runner-1')),
           ),
           watchRunClubsByLocationProvider(
@@ -751,14 +751,14 @@ void main() {
               watchRunClubProvider(
                 club.id,
               ).overrideWith((ref) => controller.stream),
-              runsForClubProvider(
+              watchRunsForClubProvider(
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Run>[])),
               watchReviewsForClubProvider(
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Review>[])),
               uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-              userProfileStreamProvider.overrideWith(
+              watchUserProfileProvider.overrideWith(
                 (ref) => Stream.value(buildUser(uid: 'runner-1')),
               ),
             ],
@@ -1026,7 +1026,7 @@ void main() {
               (ref) => fakeImageUploadRepository,
             ),
             uidProvider.overrideWith((ref) => Stream.value('host-1')),
-            userProfileStreamProvider.overrideWith(
+            watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'host-1', name: 'Priya')),
             ),
           ],
@@ -1039,7 +1039,7 @@ void main() {
         );
         addTearDown(uidSubscription.close);
         final userProfileSubscription = container.listen(
-          userProfileStreamProvider,
+          watchUserProfileProvider,
           (_, _) {},
           fireImmediately: true,
         );

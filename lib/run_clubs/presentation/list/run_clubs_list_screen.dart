@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
@@ -29,7 +29,7 @@ class RunClubsListScreen extends ConsumerWidget {
             const RunClubsHeader(),
             Expanded(
               child: viewModelAsync.when(
-                loading: () => const CatchLoadingIndicator(),
+                loading: () => const CatchSkeletonList(count: 4),
                 error: (error, _) =>
                     CatchErrorText(error),
                 data: (viewModel) => RunClubsContent(

@@ -15,7 +15,7 @@ void main() {
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
-          publicProfileProvider(
+          watchPublicProfileProvider(
             'runner-2',
           ).overrideWith((ref) => Stream<Never>.error(Exception('boom'))),
         ],

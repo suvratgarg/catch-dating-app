@@ -72,12 +72,16 @@ class RunDetailCta extends ConsumerWidget {
     final leaveWMutation = ref.watch(
       RunBookingController.leaveWaitlistMutation,
     );
+    final selfCheckInMutation = ref.watch(
+      RunBookingController.selfCheckInMutation,
+    );
 
     final errorMutation = [
       bookMutation,
       cancelMutation,
       joinWMutation,
       leaveWMutation,
+      selfCheckInMutation,
     ].firstWhere((m) => m.hasError, orElse: () => bookMutation);
 
     return Column(
@@ -123,19 +127,51 @@ class RunDetailCta extends ConsumerWidget {
                     price: RunFormatters.priceInPaise(run.priceInPaise),
                   ),
           ),
-          RunSignUpStatus.signedUp => BottomCTA(
-            label: 'Cancel booking',
-            onPressed: cancelMutation.isPending
-                ? null
-                : () => RunBookingController.cancelMutation.run(
-                    ref,
-                    (tx) async => tx
-                        .get(runBookingControllerProvider.notifier)
-                        .cancelBooking(run: run),
-                  ),
-            isLoading: cancelMutation.isPending,
-            leadingContent: const BookedLeading(),
-          ),
+          RunSignUpStatus.signedUp => (() {
+            final checkinWindowStart =
+                run.startTime.subtract(const Duration(minutes: 30));
+            final checkinWindowEnd =
+                run.startTime.add(const Duration(minutes: 30));
+            final checkinOpen = DateTime.now().isAfter(checkinWindowStart) &&
+                DateTime.now().isBefore(checkinWindowEnd);
+
+            // Show "Check in" button when the window is open and the
+            // user hasn't already checked in via another device.
+            if (checkinOpen && !run.hasAttended(userProfile.uid)) {
+              return BottomCTA(
+                label: 'Check in',
+                onPressed: selfCheckInMutation.isPending
+                    ? null
+                    : () => RunBookingController.selfCheckInMutation.run(
+                        ref,
+                        (tx) async => tx
+                            .get(runBookingControllerProvider.notifier)
+                            .selfCheckIn(runId: run.id),
+                      ),
+                isLoading: selfCheckInMutation.isPending,
+                leadingContent: Icon(
+                  Icons.location_on_rounded,
+                  color: CatchTokens.of(context).primary,
+                  size: 18,
+                ),
+              );
+            }
+
+            // Outside check-in window: normal cancel button.
+            return BottomCTA(
+              label: 'Cancel booking',
+              onPressed: cancelMutation.isPending
+                  ? null
+                  : () => RunBookingController.cancelMutation.run(
+                      ref,
+                      (tx) async => tx
+                          .get(runBookingControllerProvider.notifier)
+                          .cancelBooking(run: run),
+                    ),
+              isLoading: cancelMutation.isPending,
+              leadingContent: const BookedLeading(),
+            );
+          })(),
           RunSignUpStatus.full => BottomCTA(
             label: 'Join waitlist',
             onPressed: joinWMutation.isPending

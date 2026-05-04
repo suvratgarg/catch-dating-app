@@ -28,8 +28,8 @@ class ActivitySection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final matchesAsync = ref.watch(matchesForUserProvider(uid));
-    final runsAsync = ref.watch(signedUpRunsProvider(uid));
+    final matchesAsync = ref.watch(watchMatchesForUserProvider(uid));
+    final runsAsync = ref.watch(watchSignedUpRunsProvider(uid));
 
     final isLoading = matchesAsync.isLoading || runsAsync.isLoading;
     final error = matchesAsync.error ?? runsAsync.error;

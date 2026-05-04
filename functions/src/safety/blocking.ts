@@ -3,23 +3,24 @@ import {onCall, CallableRequest, HttpsError} from
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
+import {z} from "zod";
 import {BlockDoc, MatchDoc} from "../shared/firestore";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {requireAuth} from "../shared/auth";
+import {validateCallable} from "../shared/validation";
 
 const BLOCKS_COLLECTION = "blocks";
 const MATCHES_COLLECTION = "matches";
 
-type BlockSource = BlockDoc["source"];
+const BlockUserSchema = z.object({
+  targetUserId: z.string(),
+  source: z.string().optional(),
+  reasonCode: z.string().optional(),
+});
 
-interface BlockUserData {
-  targetUserId: string;
-  source?: BlockSource;
-  reasonCode?: string;
-}
-
-interface UnblockUserData {
-  targetUserId: string;
-}
+const UnblockUserSchema = z.object({
+  targetUserId: z.string(),
+});
 
 interface BlockingDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -130,35 +131,32 @@ export async function assertNoBlockingRelationshipInTransaction(
  * @return {Promise<{blocked: boolean}>} Operation result.
  */
 export async function blockUserHandler(
-  request: CallableRequest<Partial<BlockUserData> | null>,
+  request: CallableRequest<unknown>,
   deps: BlockingDeps = defaultDeps
 ): Promise<{blocked: boolean}> {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Must be signed in to block.");
-  }
+  const blockerUserId = requireAuth(request);
+  const data = validateCallable(request, BlockUserSchema);
 
-  const blockerUserId = request.auth.uid;
-  const blockedUserId = request.data?.targetUserId;
-  if (!blockedUserId || blockedUserId === blockerUserId) {
+  if (data.targetUserId === blockerUserId) {
     throw new HttpsError("invalid-argument", "targetUserId is invalid.");
   }
 
   const db = deps.firestore();
   await db
     .collection(BLOCKS_COLLECTION)
-    .doc(blockDocId(blockerUserId, blockedUserId))
+    .doc(blockDocId(blockerUserId, data.targetUserId))
     .set({
       blockerUserId,
-      blockedUserId,
+      blockedUserId: data.targetUserId,
       createdAt: deps.serverTimestamp(),
-      source: request.data?.source ?? "profile",
-      ...(request.data?.reasonCode && {reasonCode: request.data.reasonCode}),
+      source: data.source ?? "profile",
+      ...(data.reasonCode && {reasonCode: data.reasonCode}),
     });
 
   await closeMatchesForBlockedPair({
     db,
     userAId: blockerUserId,
-    userBId: blockedUserId,
+    userBId: data.targetUserId,
     blockedBy: blockerUserId,
     serverTimestamp: deps.serverTimestamp,
   });
@@ -173,22 +171,19 @@ export async function blockUserHandler(
  * @return {Promise<{unblocked: boolean}>} Operation result.
  */
 export async function unblockUserHandler(
-  request: CallableRequest<Partial<UnblockUserData> | null>,
+  request: CallableRequest<unknown>,
   deps: BlockingDeps = defaultDeps
 ): Promise<{unblocked: boolean}> {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Must be signed in to unblock.");
-  }
+  const blockerUserId = requireAuth(request);
+  const data = validateCallable(request, UnblockUserSchema);
 
-  const blockerUserId = request.auth.uid;
-  const blockedUserId = request.data?.targetUserId;
-  if (!blockedUserId || blockedUserId === blockerUserId) {
+  if (data.targetUserId === blockerUserId) {
     throw new HttpsError("invalid-argument", "targetUserId is invalid.");
   }
 
   await deps.firestore()
     .collection(BLOCKS_COLLECTION)
-    .doc(blockDocId(blockerUserId, blockedUserId))
+    .doc(blockDocId(blockerUserId, data.targetUserId))
     .delete();
 
   return {unblocked: true};

@@ -6,6 +6,7 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_booking_controller.g.dart';
@@ -31,6 +32,7 @@ class RunBookingController extends _$RunBookingController {
   static final joinWaitlistMutation = Mutation<void>();
   static final leaveWaitlistMutation = Mutation<void>();
   static final markAttendanceMutation = Mutation<void>();
+  static final selfCheckInMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -100,6 +102,34 @@ class RunBookingController extends _$RunBookingController {
     await ref
         .read(runRepositoryProvider)
         .markAttendance(runId: runId, userId: userId);
+  }
+
+  /// Self-check-in for the signed-in user via GPS-verified proximity.
+  ///
+  /// Reads the device's current location and passes it to the
+  /// [selfCheckInAttendance] Cloud Function, which validates that the user
+  /// is within 200 m of the run's meeting point during the 30-minute
+  /// check-in window around the run start time.
+  Future<void> selfCheckIn({required String runId}) async {
+    _requireSignedIn(action: 'check in to a run');
+
+    // Obtain current position. On failure (permission denied, GPS off,
+    // location services disabled), let the error propagate into the
+    // mutation error state so the UI can display it.
+    final position = await Geolocator.getCurrentPosition(
+      locationSettings: const LocationSettings(
+        accuracy: LocationAccuracy.high,
+        // 15-second timeout — if GPS can't get a fix, fail fast so the
+        // user isn't staring at a spinner.
+        timeLimit: Duration(seconds: 15),
+      ),
+    );
+
+    await ref.read(runRepositoryProvider).selfCheckInAttendance(
+      runId: runId,
+      latitude: position.latitude,
+      longitude: position.longitude,
+    );
   }
 
   String _requireSignedIn({required String action}) {

@@ -27,7 +27,7 @@ class _MatchesListScreenState extends ConsumerState<MatchesListScreen> {
     final t = CatchTokens.of(context);
 
     if (uid != null) {
-      ref.listen(matchesForUserProvider(uid), (previous, next) {
+      ref.listen(watchMatchesForUserProvider(uid), (previous, next) {
         if (!context.mounted) return;
         if (previous == null || !previous.hasValue || !next.hasValue) {
           return;
@@ -50,7 +50,7 @@ class _MatchesListScreenState extends ConsumerState<MatchesListScreen> {
           if (resolvedUid == null) return const SizedBox.shrink();
 
           return AsyncValueWidget(
-            value: ref.watch(matchesForUserProvider(resolvedUid)),
+            value: ref.watch(watchMatchesForUserProvider(resolvedUid)),
             data: (matches) => matches.isEmpty
                 ? _MatchesEmptyState(tokens: t)
                 : SafeArea(

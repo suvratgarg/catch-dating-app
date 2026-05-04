@@ -389,3 +389,20 @@ export interface ReviewDoc {
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt?: FirebaseFirestore.Timestamp;
 }
+
+/**
+ * /moderationFlags/{flagId}
+ * Server-owned moderation ticket created when auto-moderation flags content.
+ */
+export interface ModerationFlagDoc {
+  targetUserId: string;
+  flagType: "explicit_photo" | "banned_text" | "underage_content";
+  source: "profile_photo" | "club_image" | "chat_message" | "user_bio"
+    | "club_description" | "review_comment";
+  status: "pending" | "reviewed" | "dismissed";
+  createdAt: FirebaseFirestore.Timestamp;
+  reviewedAt?: FirebaseFirestore.Timestamp;
+  contextId?: string;
+  context?: string;
+  safeSearchResults?: Record<string, string>;
+}

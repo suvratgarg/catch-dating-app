@@ -64,6 +64,12 @@ Future<void> main() async {
 
 Future<void> _initializeFirebaseServices() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+
+  // Enable offline persistence explicitly — defaults differ by platform
+  // (mobile: enabled, web: disabled). Setting it ensures consistent behavior.
+  FirebaseFirestore.instance.settings =
+      const Settings(persistenceEnabled: true);
+
   await _activateFirebaseAppCheck();
   await _initializeRemoteConfig();
 

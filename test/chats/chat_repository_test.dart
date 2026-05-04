@@ -150,7 +150,7 @@ void main() {
     });
   });
 
-  test('chatMessagesProvider streams messages from the repository', () async {
+  test('watchChatMessagesProvider streams messages from the repository', () async {
     final fakeRepository = _FakeChatRepository();
     final message = _buildMessage();
     final container = ProviderContainer(
@@ -161,12 +161,12 @@ void main() {
     addTearDown(container.dispose);
     fakeRepository.messagesByMatch['match-1'] = [message];
     final subscription = container.listen<AsyncValue<List<ChatMessage>>>(
-      chatMessagesProvider('match-1'),
+      watchChatMessagesProvider('match-1'),
       (_, _) {},
     );
     addTearDown(subscription.close);
 
-    final messages = await container.read(chatMessagesProvider('match-1').future);
+    final messages = await container.read(watchChatMessagesProvider('match-1').future);
 
     expect(messages, [message]);
   });

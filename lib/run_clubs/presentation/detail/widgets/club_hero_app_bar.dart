@@ -24,14 +24,15 @@ class ClubHeroAppBar extends StatelessWidget {
   final bool isHost;
   final RunClubShareHandler? onShareClub;
 
-  static const _expandedHeight = 260.0;
-
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final width = MediaQuery.of(context).size.width;
+    // Shorter hero on landscape / tablets so content below is visible.
+    final expandedHeight = width > 600 ? 180.0 : 260.0;
 
     return SliverAppBar(
-      expandedHeight: _expandedHeight,
+      expandedHeight: expandedHeight,
       pinned: true,
       backgroundColor: t.surface,
       elevation: 0,

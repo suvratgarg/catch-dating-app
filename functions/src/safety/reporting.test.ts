@@ -33,9 +33,9 @@ test("reportUserHandler writes a bounded open report", async () => {
       data: {
         targetUserId: "target-1",
         source: "chat",
-        reasonCode: "  abusive_messages  ",
+        reasonCode: "abusive_messages",
         contextId: "match-1",
-        notes: "x".repeat(2100),
+        notes: "x".repeat(2000),
       },
     } as never,
     createReportingDeps(writes)

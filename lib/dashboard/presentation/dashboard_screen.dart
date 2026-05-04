@@ -11,7 +11,7 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final userAsync = ref.watch(userProfileStreamProvider);
+    final userAsync = ref.watch(watchUserProfileProvider);
 
     return userAsync.when(
       loading: () => const _DashboardLoadingScreen(),
@@ -21,7 +21,7 @@ class DashboardScreen extends ConsumerWidget {
       data: (user) {
         if (user == null) return DashboardEmpty(user: null);
 
-        final signedUpRunsAsync = ref.watch(signedUpRunsProvider(user.uid));
+        final signedUpRunsAsync = ref.watch(watchSignedUpRunsProvider(user.uid));
         return signedUpRunsAsync.when(
           loading: () => const _DashboardLoadingScreen(),
           error: (e, _) => const _DashboardMessageScreen(

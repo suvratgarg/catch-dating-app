@@ -62,7 +62,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds),
     );
     final runAsync = ref.watch(watchRunProvider(widget.runId));
-    final currentUserAsync = ref.watch(userProfileStreamProvider);
+    final currentUserAsync = ref.watch(watchUserProfileProvider);
 
     return Scaffold(
       appBar: CatchTopBar(
@@ -89,7 +89,12 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                 children: [
                   Expanded(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                      padding: EdgeInsets.fromLTRB(
+                        MediaQuery.of(context).size.width > 600 ? 48 : 16,
+                        16,
+                        MediaQuery.of(context).size.width > 600 ? 48 : 16,
+                        8,
+                      ),
                       child: CardSwiper(
                         controller: _controller,
                         cardsCount: profiles.length,

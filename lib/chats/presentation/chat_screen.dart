@@ -37,6 +37,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
   final _controller = TextEditingController();
   final _scrollController = ScrollController();
   bool _sending = false;
+  bool _sendingImage = false;
   bool _didScrollToLatestMessage = false;
   int _lastMessageCount = 0;
   String? _lastResetUid;
@@ -144,6 +145,18 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     }
   }
 
+  Future<void> _sendImage() async {
+    final uid = ref.read(uidProvider).value;
+    if (_sendingImage || uid == null) return;
+
+    setState(() => _sendingImage = true);
+    try {
+      await _chatController.sendImage(matchId: widget.matchId, senderId: uid);
+    } finally {
+      if (mounted) setState(() => _sendingImage = false);
+    }
+  }
+
   Future<void> _confirmBlock({
     required String targetUserId,
     required String targetName,
@@ -178,7 +191,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       }
     });
 
-    ref.listen(chatMessagesProvider(widget.matchId), (previous, next) {
+    ref.listen(watchChatMessagesProvider(widget.matchId), (previous, next) {
       final previousMessages = previous?.asData?.value;
       next.whenData(
         (messages) => _syncScrollWithMessages(
@@ -188,8 +201,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       );
     });
 
-    final uid = ref.watch(uidProvider).value;
-    final messagesAsync = ref.watch(chatMessagesProvider(widget.matchId));
+    final uid = ref.watch(uidProvider.select((v) => v.value));
+    final messagesAsync = ref.watch(watchChatMessagesProvider(widget.matchId));
     final matchAsync = ref.watch(matchStreamProvider(widget.matchId));
     final match = matchAsync.asData?.value;
     final runAsync = match == null
@@ -199,7 +212,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final otherUid = uid == null ? null : match?.otherId(uid);
     final otherProfileAsync = otherUid == null
         ? const AsyncData<PublicProfile?>(null)
-        : ref.watch(publicProfileProvider(otherUid));
+        : ref.watch(watchPublicProfileProvider(otherUid));
     final profile = otherProfileAsync.asData?.value ?? widget.otherProfile;
     final name = profile?.name ?? 'Chat';
     final photoUrl = profile?.photoUrls.isNotEmpty == true
@@ -243,22 +256,24 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             CatchTopBarMenuAction<String>(
               tooltip: 'Chat actions',
               onSelected: (value) {
-                if (value == 'profile') {
-                  context.pushNamed(
-                    Routes.publicProfileScreen.name,
-                    pathParameters: {'uid': otherUid},
-                    extra: profile,
-                  );
-                } else if (value == 'report') {
-                  _reportUser(
-                    targetUserId: otherUid,
-                    targetName: profile?.name ?? 'this person',
-                  );
-                } else if (value == 'block') {
-                  _confirmBlock(
-                    targetUserId: otherUid,
-                    targetName: profile?.name ?? 'this person',
-                  );
+                switch (value) {
+                  case 'profile':
+                    context.pushNamed(
+                      Routes.publicProfileScreen.name,
+                      pathParameters: {'uid': otherUid},
+                      extra: profile,
+                    );
+                  case 'report':
+                    _reportUser(
+                      targetUserId: otherUid,
+                      targetName: profile?.name ?? 'this person',
+                    );
+                  case 'block':
+                    _confirmBlock(
+                      targetUserId: otherUid,
+                      targetName: profile?.name ?? 'this person',
+                    );
+                  default:
                 }
               },
               itemBuilder: (context) => const [
@@ -298,6 +313,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                     vertical: Sizes.p16,
                   ),
                   itemCount: messages.length,
+                  prototypeItem: MessageBubble(
+                    text: 'placeholder',
+                    isMe: false,
+                    sentAt: DateTime.now(),
+                  ),
                   itemBuilder: (context, i) {
                     final msg = messages[i];
                     final isMe = msg.senderId == uid;
@@ -305,6 +325,7 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
                       text: msg.text,
                       isMe: isMe,
                       sentAt: msg.sentAt,
+                      imageUrl: msg.imageUrl,
                     );
                   },
                 );
@@ -315,6 +336,8 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
             controller: _controller,
             sending: _sending,
             onSend: match?.isBlocked == true ? null : _send,
+            onSendImage: match?.isBlocked == true ? null : _sendImage,
+            sendingImage: _sendingImage,
           ),
         ],
       ),

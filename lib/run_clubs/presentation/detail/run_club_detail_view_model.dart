@@ -27,15 +27,21 @@ abstract class RunClubDetailViewModel with _$RunClubDetailViewModel {
   }) = _RunClubDetailViewModel;
 }
 
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Watches the club, runs, reviews, user profile, and auth streams and
+/// combines them into a single [RunClubDetailViewModel]. Each input is
+/// individually checked so the combined result is [AsyncError] if any input
+/// fails or [AsyncLoading] if any input is still loading.
 @riverpod
 AsyncValue<RunClubDetailViewModel?> runClubDetailViewModel(
   Ref ref,
   String clubId,
 ) {
   final clubAsync = ref.watch(watchRunClubProvider(clubId));
-  final runsAsync = ref.watch(runsForClubProvider(clubId));
+  final runsAsync = ref.watch(watchRunsForClubProvider(clubId));
   final reviewsAsync = ref.watch(watchReviewsForClubProvider(clubId));
-  final userProfileAsync = ref.watch(userProfileStreamProvider);
+  final userProfileAsync = ref.watch(watchUserProfileProvider);
   final uidAsync = ref.watch(uidProvider);
 
   return buildRunClubDetailViewModel(

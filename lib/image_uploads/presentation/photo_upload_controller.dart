@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -9,8 +10,21 @@ part 'photo_upload_controller.g.dart';
 
 typedef PhotoUploadState = ({Set<int> loadingIndices, Object? uploadError});
 
+/// **Custom pattern: Record-type state + serialized writes + Mutation**
+///
+/// Tracks per-index upload loading state via a Dart record
+/// `({Set<int> loadingIndices, Object? uploadError})` and serializes
+/// Firestore writes through a `_pendingPhotoWrite` chain to prevent races.
+/// [uploadPhotoMutation] gives the UI a standard Mutation lifecycle hook
+/// for the overall upload operation.
+///
+/// **When to use this pattern:** Multi-slot upload UIs where individual
+/// slots have independent loading states and writes must be serialized to
+/// avoid Firestore document races.
 @riverpod
 class PhotoUploadController extends _$PhotoUploadController {
+  static final uploadPhotoMutation = Mutation<void>();
+
   Future<void> _pendingPhotoWrite = Future.value();
   bool _isPickingImage = false;
 
@@ -28,9 +42,9 @@ class PhotoUploadController extends _$PhotoUploadController {
     final XFile? photo;
     try {
       photo = await _pickImage(repo);
-    } catch (e) {
+    } catch (e, st) {
       if (!ref.mounted) return;
-      _failUploading(index, e);
+      _failUploading(index, e, st);
       return;
     }
     if (!ref.mounted) return;
@@ -55,9 +69,9 @@ class PhotoUploadController extends _$PhotoUploadController {
 
       if (!ref.mounted) return;
       _finishUploading(index);
-    } catch (e) {
+    } catch (e, st) {
       if (!ref.mounted) return;
-      _failUploading(index, e);
+      _failUploading(index, e, st);
     }
   }
 
@@ -84,8 +98,10 @@ class PhotoUploadController extends _$PhotoUploadController {
     );
   }
 
-  void _failUploading(int index, Object error) {
-    debugPrint('[ERROR] PhotoUploadController._failUploading($index): $error');
+  void _failUploading(int index, Object error, [StackTrace? st]) {
+    debugPrint(
+      '[ERROR] PhotoUploadController._failUploading($index): $error\n$st',
+    );
     state = (
       loadingIndices: state.loadingIndices.difference({index}),
       uploadError: error,

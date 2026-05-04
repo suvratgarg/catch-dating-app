@@ -7,6 +7,7 @@ import {
   MatchDoc,
   PublicProfileDoc,
 } from "../shared/firestore";
+import {sendFcmNotification} from "../shared/notifications";
 
 export const onMessageCreated = onDocumentCreated(
   "chats/{matchId}/messages/{messageId}",
@@ -54,12 +55,12 @@ export const onMessageCreated = onDocumentCreated(
 
     logger.info("Sending message notification", {matchId, recipientId});
 
-    await admin.messaging().send({
+    await sendFcmNotification({
       token: fcmToken,
-      notification: {title: senderName, body},
-      data: {type: "message", matchId},
-      apns: {payload: {aps: {sound: "default"}}},
-      android: {notification: {sound: "default"}},
+      title: senderName,
+      body,
+      type: "message",
+      matchId,
     });
   }
 );

@@ -48,12 +48,12 @@ final class ChatRepositoryProvider
   }
 }
 
-String _$chatRepositoryHash() => r'f5bb52f1c50ce09e2fe669c4ed8d1686727a46f4';
+String _$chatRepositoryHash() => r'89a20b768d7230c7137857de8047d713d0c75fa4';
 
-@ProviderFor(chatMessages)
-final chatMessagesProvider = ChatMessagesFamily._();
+@ProviderFor(watchChatMessages)
+final watchChatMessagesProvider = WatchChatMessagesFamily._();
 
-final class ChatMessagesProvider
+final class WatchChatMessagesProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<ChatMessage>>,
@@ -63,23 +63,23 @@ final class ChatMessagesProvider
     with
         $FutureModifier<List<ChatMessage>>,
         $StreamProvider<List<ChatMessage>> {
-  ChatMessagesProvider._({
-    required ChatMessagesFamily super.from,
+  WatchChatMessagesProvider._({
+    required WatchChatMessagesFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'chatMessagesProvider',
+         name: r'watchChatMessagesProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$chatMessagesHash();
+  String debugGetCreateSourceHash() => _$watchChatMessagesHash();
 
   @override
   String toString() {
-    return r'chatMessagesProvider'
+    return r'watchChatMessagesProvider'
         ''
         '($argument)';
   }
@@ -93,12 +93,12 @@ final class ChatMessagesProvider
   @override
   Stream<List<ChatMessage>> create(Ref ref) {
     final argument = this.argument as String;
-    return chatMessages(ref, argument);
+    return watchChatMessages(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is ChatMessagesProvider && other.argument == argument;
+    return other is WatchChatMessagesProvider && other.argument == argument;
   }
 
   @override
@@ -107,22 +107,22 @@ final class ChatMessagesProvider
   }
 }
 
-String _$chatMessagesHash() => r'bd8b396f7e080b26a278aa47960f31a2dc60bce9';
+String _$watchChatMessagesHash() => r'c225a7fd63ceb6e96182758c78fa3f313ededf23';
 
-final class ChatMessagesFamily extends $Family
+final class WatchChatMessagesFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<ChatMessage>>, String> {
-  ChatMessagesFamily._()
+  WatchChatMessagesFamily._()
     : super(
         retry: null,
-        name: r'chatMessagesProvider',
+        name: r'watchChatMessagesProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  ChatMessagesProvider call(String matchId) =>
-      ChatMessagesProvider._(argument: matchId, from: this);
+  WatchChatMessagesProvider call(String matchId) =>
+      WatchChatMessagesProvider._(argument: matchId, from: this);
 
   @override
-  String toString() => r'chatMessagesProvider';
+  String toString() => r'watchChatMessagesProvider';
 }

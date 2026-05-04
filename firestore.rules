@@ -7,6 +7,13 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function isValidCity(city) {
+      return city is string
+        && city in firestore.get(
+          /databases/(default)/documents/config/cities
+        ).data.cityNames;
+    }
+
     function blockDocId(blockerUid, blockedUid) {
       return blockerUid + '__' + blockedUid;
     }
@@ -69,17 +76,7 @@ service cloud.firestore {
         ])
         && data.name is string
         && data.description is string
-        && data.location in [
-          'mumbai',
-          'delhi',
-          'bangalore',
-          'hyderabad',
-          'chennai',
-          'kolkata',
-          'pune',
-          'ahmedabad',
-          'indore'
-        ]
+        && isValidCity(data.location)
         && data.area is string
         && data.hostUserId is string
         && data.hostName is string
@@ -273,10 +270,7 @@ service cloud.firestore {
         // Photos
         && data.photoUrls is list
         // Location
-        && (data.city == null || data.city in [
-          'mumbai', 'delhi', 'bangalore', 'hyderabad',
-          'chennai', 'kolkata', 'pune', 'ahmedabad', 'indore'
-        ])
+        && (data.city == null || isValidCity(data.city))
         && (data.latitude == null || data.latitude is number)
         && (data.longitude == null || data.longitude is number)
         // Matching
@@ -367,6 +361,16 @@ service cloud.firestore {
 
     // Written exclusively by the reportUser Cloud Function.
     match /reports/{reportId} {
+      allow read, write: if false;
+    }
+
+    // Written exclusively by the rate-limit middleware in Cloud Functions.
+    match /rateLimits/{docId} {
+      allow read, write: if false;
+    }
+
+    // Written exclusively by the moderation Cloud Functions.
+    match /moderationFlags/{flagId} {
       allow read, write: if false;
     }
 

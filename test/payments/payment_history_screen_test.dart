@@ -32,7 +32,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            paymentsForUserProvider('runner-1').overrideWith(
+            watchPaymentsForUserProvider('runner-1').overrideWith(
               (ref) => Stream.value([
                 Payment(
                   id: 'pay-1',
@@ -70,7 +70,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            paymentsForUserProvider('runner-1').overrideWith(
+            watchPaymentsForUserProvider('runner-1').overrideWith(
               (ref) => Stream.value([
                 Payment(
                   id: 'pay-2',
@@ -108,7 +108,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            paymentsForUserProvider('runner-1').overrideWith(
+            watchPaymentsForUserProvider('runner-1').overrideWith(
               (ref) => Stream.value([
                 Payment(
                   id: 'pay-3',
@@ -150,7 +150,7 @@ void main() {
           ProviderScope(
             overrides: [
               uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-              paymentsForUserProvider('runner-1').overrideWith(
+              watchPaymentsForUserProvider('runner-1').overrideWith(
                 (ref) => Stream.value([
                   Payment(
                     id: 'pay-4',
@@ -188,7 +188,7 @@ void main() {
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            paymentsForUserProvider('runner-1').overrideWith(
+            watchPaymentsForUserProvider('runner-1').overrideWith(
               (ref) => Stream.value([
                 Payment(
                   id: 'pay-completed',

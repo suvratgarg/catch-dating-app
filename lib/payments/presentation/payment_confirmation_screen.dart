@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
@@ -12,6 +14,8 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PaymentConfirmationScreen extends ConsumerWidget {
   const PaymentConfirmationScreen({super.key, required this.data});
@@ -77,11 +81,11 @@ class _ConfirmationBody extends ConsumerWidget {
                         clubName: clubName,
                       ),
                       gapH14,
-                      const _QuickActions(),
+                      _QuickActions(run: run),
                       gapH18,
                       _HeadsUp(t: t),
                       gapH14,
-                      const _ReferralBanner(),
+                      _ReferralBanner(run: run),
                       // Extra space so content clears the sticky CTA.
                       SizedBox(height: 100 + bottomPadding),
                     ],
@@ -298,47 +302,114 @@ class _RunSummaryCard extends StatelessWidget {
 
 
 class _QuickActions extends StatelessWidget {
-  const _QuickActions();
+  const _QuickActions({required this.run});
+
+  final Run run;
+
+  // ── Calendar ─────────────────────────────────────────────────────────
+
+  Future<void> _addToCalendar() async {
+    final start = run.startTime;
+    final end = run.endTime;
+    final fmt = (DateTime d) =>
+        '${d.year}${d.month.toString().padLeft(2, '0')}'
+        '${d.day.toString().padLeft(2, '0')}T'
+        '${d.hour.toString().padLeft(2, '0')}'
+        '${d.minute.toString().padLeft(2, '0')}00';
+
+    final uri = Uri.parse(
+      'https://calendar.google.com/calendar/render'
+      '?action=TEMPLATE'
+      '&text=${Uri.encodeComponent(run.title)}'
+      '&dates=${fmt(start)}/${fmt(end)}'
+      '&details=${Uri.encodeComponent('Catch run — ${run.meetingPoint}')}'
+      '&location=${Uri.encodeComponent(run.meetingPoint)}',
+    );
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  // ── Directions ───────────────────────────────────────────────────────
+
+  Future<void> _openDirections() async {
+    final lat = run.startingPointLat;
+    final lng = run.startingPointLng;
+    final uri = lat != null && lng != null
+        ? Uri.parse('https://maps.google.com/maps?daddr=$lat,$lng')
+        : Uri.parse(
+            'https://maps.google.com/maps?q='
+            '${Uri.encodeComponent(run.meetingPoint)}');
+    await launchUrl(uri, mode: LaunchMode.externalApplication);
+  }
+
+  // ── Invite ───────────────────────────────────────────────────────────
+
+  Future<void> _inviteFriend() async {
+    await SharePlus.instance.share(
+      ShareParams(
+        text: 'Join me for a run! ${run.title} — ${run.meetingPoint}. '
+            'Download Catch: https://catchdates.com',
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: _ActionTile(emoji: '📅', label: 'Add to\ncalendar')),
+        Expanded(
+          child: _ActionTile(
+            emoji: '📅',
+            label: 'Add to\ncalendar',
+            onTap: _addToCalendar,
+          ),
+        ),
         gapW8,
-        Expanded(child: _ActionTile(emoji: '📍', label: 'Get\ndirections')),
+        Expanded(
+          child: _ActionTile(
+            emoji: '📍',
+            label: 'Get\ndirections',
+            onTap: _openDirections,
+          ),
+        ),
         gapW8,
-        Expanded(child: _ActionTile(emoji: '👋', label: 'Invite a\nfriend')),
+        Expanded(
+          child: _ActionTile(
+            emoji: '👋',
+            label: 'Invite a\nfriend',
+            onTap: _inviteFriend,
+          ),
+        ),
       ],
     );
   }
 }
 
 class _ActionTile extends StatelessWidget {
-  const _ActionTile({required this.emoji, required this.label});
+  const _ActionTile({
+    required this.emoji,
+    required this.label,
+    required this.onTap,
+  });
 
   final String emoji;
   final String label;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${label.replaceAll('\n', ' ')} coming soon'),
-            duration: const Duration(seconds: 1),
-          ),
-        );
-      },
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: t.surface,
           border: Border.all(color: t.line),
           borderRadius: BorderRadius.circular(CatchRadius.sm + 4),
         ),
-        padding: const EdgeInsets.symmetric(vertical: Sizes.p12, horizontal: Sizes.p8),
+        padding: const EdgeInsets.symmetric(
+          vertical: Sizes.p12,
+          horizontal: Sizes.p8,
+        ),
         child: Column(
           children: [
             Text(emoji, style: const TextStyle(fontSize: 18)),
@@ -389,20 +460,25 @@ class _HeadsUp extends StatelessWidget {
 }
 
 class _ReferralBanner extends StatelessWidget {
-  const _ReferralBanner();
+  const _ReferralBanner({required this.run});
+
+  final Run run;
+
+  Future<void> _shareReferral() async {
+    await SharePlus.instance.share(
+      ShareParams(
+        text: 'I just signed up for ${run.title}! '
+            'Join me — download Catch and book a run: '
+            'https://catchdates.com',
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return GestureDetector(
-      onTap: () {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Share link coming soon'),
-            duration: Duration(seconds: 1),
-          ),
-        );
-      },
+      onTap: _shareReferral,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(CatchRadius.md),

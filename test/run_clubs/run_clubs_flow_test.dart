@@ -56,7 +56,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(user)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             watchRunClubsByLocationProvider(
               IndianCity.mumbai,
             ).overrideWith((ref) => Stream.value([club])),
@@ -86,14 +86,14 @@ void main() {
               watchRunClubProvider(
                 club.id,
               ).overrideWith((ref) => Stream.value(club)),
-              runsForClubProvider(
+              watchRunsForClubProvider(
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Run>[])),
               watchReviewsForClubProvider(
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Review>[])),
               uidProvider.overrideWith((ref) => Stream.value(null)),
-              userProfileStreamProvider.overrideWith(
+              watchUserProfileProvider.overrideWith(
                 (ref) => Stream.value(null),
               ),
             ],
@@ -123,14 +123,14 @@ void main() {
               watchRunClubProvider(
                 club.id,
               ).overrideWith((ref) => controller.stream),
-              runsForClubProvider(
+              watchRunsForClubProvider(
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Run>[])),
               watchReviewsForClubProvider(
                 club.id,
               ).overrideWith((ref) => Stream.value(const <Review>[])),
               uidProvider.overrideWith((ref) => Stream.value('runner-2')),
-              userProfileStreamProvider.overrideWith(
+              watchUserProfileProvider.overrideWith(
                 (ref) => Stream.value(_buildUser(uid: 'runner-2')),
               ),
             ],

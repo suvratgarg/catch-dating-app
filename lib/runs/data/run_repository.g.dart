@@ -119,30 +119,30 @@ final class WatchRunFamily extends $Family
   String toString() => r'watchRunProvider';
 }
 
-@ProviderFor(runsForClub)
-final runsForClubProvider = RunsForClubFamily._();
+@ProviderFor(watchRunsForClub)
+final watchRunsForClubProvider = WatchRunsForClubFamily._();
 
-final class RunsForClubProvider
+final class WatchRunsForClubProvider
     extends
         $FunctionalProvider<AsyncValue<List<Run>>, List<Run>, Stream<List<Run>>>
     with $FutureModifier<List<Run>>, $StreamProvider<List<Run>> {
-  RunsForClubProvider._({
-    required RunsForClubFamily super.from,
+  WatchRunsForClubProvider._({
+    required WatchRunsForClubFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'runsForClubProvider',
+         name: r'watchRunsForClubProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$runsForClubHash();
+  String debugGetCreateSourceHash() => _$watchRunsForClubHash();
 
   @override
   String toString() {
-    return r'runsForClubProvider'
+    return r'watchRunsForClubProvider'
         ''
         '($argument)';
   }
@@ -155,12 +155,12 @@ final class RunsForClubProvider
   @override
   Stream<List<Run>> create(Ref ref) {
     final argument = this.argument as String;
-    return runsForClub(ref, argument);
+    return watchRunsForClub(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is RunsForClubProvider && other.argument == argument;
+    return other is WatchRunsForClubProvider && other.argument == argument;
   }
 
   @override
@@ -169,50 +169,50 @@ final class RunsForClubProvider
   }
 }
 
-String _$runsForClubHash() => r'f9f29e830099516621d7beb312d4b11bccaa7753';
+String _$watchRunsForClubHash() => r'94ae2425b0c76ca84607ebf1b7decfecf122565f';
 
-final class RunsForClubFamily extends $Family
+final class WatchRunsForClubFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {
-  RunsForClubFamily._()
+  WatchRunsForClubFamily._()
     : super(
         retry: null,
-        name: r'runsForClubProvider',
+        name: r'watchRunsForClubProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  RunsForClubProvider call(String runClubId) =>
-      RunsForClubProvider._(argument: runClubId, from: this);
+  WatchRunsForClubProvider call(String runClubId) =>
+      WatchRunsForClubProvider._(argument: runClubId, from: this);
 
   @override
-  String toString() => r'runsForClubProvider';
+  String toString() => r'watchRunsForClubProvider';
 }
 
-@ProviderFor(attendedRuns)
-final attendedRunsProvider = AttendedRunsFamily._();
+@ProviderFor(watchAttendedRuns)
+final watchAttendedRunsProvider = WatchAttendedRunsFamily._();
 
-final class AttendedRunsProvider
+final class WatchAttendedRunsProvider
     extends
         $FunctionalProvider<AsyncValue<List<Run>>, List<Run>, Stream<List<Run>>>
     with $FutureModifier<List<Run>>, $StreamProvider<List<Run>> {
-  AttendedRunsProvider._({
-    required AttendedRunsFamily super.from,
+  WatchAttendedRunsProvider._({
+    required WatchAttendedRunsFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'attendedRunsProvider',
+         name: r'watchAttendedRunsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$attendedRunsHash();
+  String debugGetCreateSourceHash() => _$watchAttendedRunsHash();
 
   @override
   String toString() {
-    return r'attendedRunsProvider'
+    return r'watchAttendedRunsProvider'
         ''
         '($argument)';
   }
@@ -225,12 +225,12 @@ final class AttendedRunsProvider
   @override
   Stream<List<Run>> create(Ref ref) {
     final argument = this.argument as String;
-    return attendedRuns(ref, argument);
+    return watchAttendedRuns(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is AttendedRunsProvider && other.argument == argument;
+    return other is WatchAttendedRunsProvider && other.argument == argument;
   }
 
   @override
@@ -239,50 +239,50 @@ final class AttendedRunsProvider
   }
 }
 
-String _$attendedRunsHash() => r'1d8f35bc44636d86b6cbfad6f11b26dbc7be8851';
+String _$watchAttendedRunsHash() => r'47e47603ad911756b60455a9524cb4718b987b3e';
 
-final class AttendedRunsFamily extends $Family
+final class WatchAttendedRunsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {
-  AttendedRunsFamily._()
+  WatchAttendedRunsFamily._()
     : super(
         retry: null,
-        name: r'attendedRunsProvider',
+        name: r'watchAttendedRunsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  AttendedRunsProvider call(String uid) =>
-      AttendedRunsProvider._(argument: uid, from: this);
+  WatchAttendedRunsProvider call(String uid) =>
+      WatchAttendedRunsProvider._(argument: uid, from: this);
 
   @override
-  String toString() => r'attendedRunsProvider';
+  String toString() => r'watchAttendedRunsProvider';
 }
 
-@ProviderFor(signedUpRuns)
-final signedUpRunsProvider = SignedUpRunsFamily._();
+@ProviderFor(watchSignedUpRuns)
+final watchSignedUpRunsProvider = WatchSignedUpRunsFamily._();
 
-final class SignedUpRunsProvider
+final class WatchSignedUpRunsProvider
     extends
         $FunctionalProvider<AsyncValue<List<Run>>, List<Run>, Stream<List<Run>>>
     with $FutureModifier<List<Run>>, $StreamProvider<List<Run>> {
-  SignedUpRunsProvider._({
-    required SignedUpRunsFamily super.from,
+  WatchSignedUpRunsProvider._({
+    required WatchSignedUpRunsFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'signedUpRunsProvider',
+         name: r'watchSignedUpRunsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$signedUpRunsHash();
+  String debugGetCreateSourceHash() => _$watchSignedUpRunsHash();
 
   @override
   String toString() {
-    return r'signedUpRunsProvider'
+    return r'watchSignedUpRunsProvider'
         ''
         '($argument)';
   }
@@ -295,12 +295,12 @@ final class SignedUpRunsProvider
   @override
   Stream<List<Run>> create(Ref ref) {
     final argument = this.argument as String;
-    return signedUpRuns(ref, argument);
+    return watchSignedUpRuns(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is SignedUpRunsProvider && other.argument == argument;
+    return other is WatchSignedUpRunsProvider && other.argument == argument;
   }
 
   @override
@@ -309,24 +309,24 @@ final class SignedUpRunsProvider
   }
 }
 
-String _$signedUpRunsHash() => r'5eca924dd8a279818067e40e11493504bc3b9f78';
+String _$watchSignedUpRunsHash() => r'b7ebee6fc666497bfeec4b87d76da54296b2807f';
 
-final class SignedUpRunsFamily extends $Family
+final class WatchSignedUpRunsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {
-  SignedUpRunsFamily._()
+  WatchSignedUpRunsFamily._()
     : super(
         retry: null,
-        name: r'signedUpRunsProvider',
+        name: r'watchSignedUpRunsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  SignedUpRunsProvider call(String uid) =>
-      SignedUpRunsProvider._(argument: uid, from: this);
+  WatchSignedUpRunsProvider call(String uid) =>
+      WatchSignedUpRunsProvider._(argument: uid, from: this);
 
   @override
-  String toString() => r'signedUpRunsProvider';
+  String toString() => r'watchSignedUpRunsProvider';
 }
 
 /// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).

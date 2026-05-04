@@ -21,7 +21,7 @@ void main() {
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],
       );
@@ -50,7 +50,7 @@ void main() {
           overrides: [
             authRepositoryProvider.overrideWithValue(repository),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
             onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
           ],
         );
@@ -79,7 +79,7 @@ void main() {
         overrides: [
           authRepositoryProvider.overrideWithValue(repository),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          userProfileStreamProvider.overrideWith(
+          watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
               buildUser(uid: 'runner-1').copyWith(profileComplete: false),
             ),
@@ -109,7 +109,7 @@ void main() {
           overrides: [
             authRepositoryProvider.overrideWithValue(repository),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
             onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
           ],
         );
@@ -285,7 +285,7 @@ void main() {
             (ref) => userProfileRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value(null)),
-          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
         ],
       );
       addTearDown(repository.dispose);
@@ -308,13 +308,7 @@ void main() {
 
       await expectLater(
         notifier.saveProfile(),
-        throwsA(
-          isA<StateError>().having(
-            (error) => error.message,
-            'message',
-            'Please sign in again before continuing.',
-          ),
-        ),
+        throwsA(isA<SignInRequiredException>()),
       );
       expect(userProfileRepository.lastSavedUser, isNull);
     });
@@ -334,7 +328,7 @@ void main() {
             (ref) => userProfileRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],
       );
@@ -384,7 +378,7 @@ void main() {
             (ref) => userProfileRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
         ],
       );
@@ -420,7 +414,7 @@ void main() {
             (ref) => userProfileRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          userProfileStreamProvider.overrideWith(
+          watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
               buildUser(uid: 'runner-1').copyWith(profileComplete: false),
             ),

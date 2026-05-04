@@ -8,7 +8,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_queue_notifier.g.dart';
 
-@riverpod
 /// **Pattern C: AsyncNotifier with async state**
 ///
 /// Used when state is loaded asynchronously AND needs to be mutated after load:
@@ -23,13 +22,14 @@ part 'swipe_queue_notifier.g.dart';
 /// **When to use this pattern:** Data that needs an async fetch to initialize
 /// followed by synchronous state mutations (pagination, queue operations,
 /// local filtering of fetched data).
+@riverpod
 class SwipeQueueNotifier extends _$SwipeQueueNotifier {
   @override
   Future<List<PublicProfile>> build(
     String runId, {
     Set<String> vibeIds = const {},
   }) async {
-    final currentUser = await ref.watch(userProfileStreamProvider.future);
+    final currentUser = await ref.watch(watchUserProfileProvider.future);
     if (currentUser == null) return [];
     final candidates = await ref
         .read(swipeCandidateRepositoryProvider)

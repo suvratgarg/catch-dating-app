@@ -5,14 +5,12 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/catches_callout.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -45,18 +43,11 @@ class DashboardFull extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final firstName = user.name.split(' ').first;
-    final viewModel = buildDashboardFullViewModel(
+    final viewModel = ref.watch(dashboardFullViewModelProvider(
       signedUpRuns: signedUpRuns,
-      attendedRunsAsync: ref.watch(attendedRunsProvider(user.uid)),
-      recommendedRunsAsync: ref.watch(
-        dashboardRecommendedRunsProvider(
-          DashboardRecommendationsQuery(
-            userId: user.uid,
-            followedClubIds: user.joinedRunClubIds,
-          ),
-        ),
-      ),
-    );
+      uid: user.uid,
+      followedClubIds: user.joinedRunClubIds,
+    ));
 
     return Scaffold(
       backgroundColor: t.bg,

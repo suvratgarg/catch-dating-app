@@ -14,6 +14,7 @@ import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:go_router/go_router.dart';
 
 import '../run_clubs/run_clubs_test_helpers.dart' as run_club_helpers;
@@ -51,6 +52,16 @@ class _FakeChatRepository implements ChatRepository {
   @override
   Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
       Stream.value([]);
+
+  @override
+  Future<XFile?> pickImage() async => null;
+
+  @override
+  Future<void> sendImageMessage({
+    required String matchId,
+    required String senderId,
+    required XFile image,
+  }) async {}
 }
 
 Match _buildMatch({
@@ -80,7 +91,7 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
       chatRepositoryProvider.overrideWithValue(_FakeChatRepository()),
       watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
       if (streamedProfile != null)
-        publicProfileProvider(
+        watchPublicProfileProvider(
           streamedProfile.uid,
         ).overrideWith((ref) => Stream.value(streamedProfile)),
     ],

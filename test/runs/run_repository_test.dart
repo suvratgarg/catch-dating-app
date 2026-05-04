@@ -652,7 +652,7 @@ void main() {
       expect(container.read(watchRunProvider(run.id)).value, run);
     });
 
-    test('runsForClubProvider delegates to the repository', () async {
+    test('watchRunsForClubProvider delegates to the repository', () async {
       final run = buildRun(id: 'run-1', runClubId: 'club-1');
       runsCollection.nextWhereResult = TestRunsQuery(
         snapshot: TestRunQuerySnapshot([
@@ -664,16 +664,16 @@ void main() {
       );
 
       container.listen(
-        runsForClubProvider('club-1'),
+        watchRunsForClubProvider('club-1'),
         (_, _) {},
         fireImmediately: true,
       );
       await container.pump();
 
-      expect(container.read(runsForClubProvider('club-1')).value, [run]);
+      expect(container.read(watchRunsForClubProvider('club-1')).value, [run]);
     });
 
-    test('attendedRunsProvider delegates to the repository', () async {
+    test('watchAttendedRunsProvider delegates to the repository', () async {
       final run = buildRun(id: 'run-1');
       runsCollection.nextWhereResult = TestRunsQuery(
         snapshot: TestRunQuerySnapshot([
@@ -685,16 +685,16 @@ void main() {
       );
 
       container.listen(
-        attendedRunsProvider('runner-1'),
+        watchAttendedRunsProvider('runner-1'),
         (_, _) {},
         fireImmediately: true,
       );
       await container.pump();
 
-      expect(container.read(attendedRunsProvider('runner-1')).value, [run]);
+      expect(container.read(watchAttendedRunsProvider('runner-1')).value, [run]);
     });
 
-    test('signedUpRunsProvider delegates to the repository', () async {
+    test('watchSignedUpRunsProvider delegates to the repository', () async {
       final run = buildRun(id: 'run-1');
       runsCollection.nextWhereResult = TestRunsQuery(
         snapshot: TestRunQuerySnapshot([
@@ -706,13 +706,13 @@ void main() {
       );
 
       container.listen(
-        signedUpRunsProvider('runner-1'),
+        watchSignedUpRunsProvider('runner-1'),
         (_, _) {},
         fireImmediately: true,
       );
       await container.pump();
 
-      expect(container.read(signedUpRunsProvider('runner-1')).value, [run]);
+      expect(container.read(watchSignedUpRunsProvider('runner-1')).value, [run]);
     });
 
     test('recommendedRunsProvider delegates to the repository', () async {

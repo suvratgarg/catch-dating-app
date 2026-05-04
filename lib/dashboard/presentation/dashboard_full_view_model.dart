@@ -1,6 +1,11 @@
+import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'dashboard_full_view_model.g.dart';
 
 enum DashboardSectionStatus { loading, error, data }
 
@@ -90,5 +95,21 @@ DashboardFullViewModel buildDashboardFullViewModel({
     activeSwipeRun: activeSwipeRun,
     attendedRunsSection: attendedRunsSection,
     recommendationsSection: recommendationsSection,
+  );
+}
+
+/// Combines signed-up runs, attended runs, and recommended runs into a single
+/// [DashboardFullViewModel] for the dashboard screen.
+@riverpod
+DashboardFullViewModel dashboardFullViewModel(
+  Ref ref, {
+  required List<Run> signedUpRuns,
+  required String uid,
+  required List<String> followedClubIds,
+}) {
+  return buildDashboardFullViewModel(
+    signedUpRuns: signedUpRuns,
+    attendedRunsAsync: ref.watch(watchAttendedRunsProvider(uid)),
+    recommendedRunsAsync: ref.watch(recommendedRunsProvider(followedClubIds)),
   );
 }

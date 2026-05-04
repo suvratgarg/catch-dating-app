@@ -8,12 +8,27 @@ part of 'filters_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Saves swipe filter preferences to the user profile document.
+/// [saveFiltersMutation] tracks the async lifecycle so the UI can
+/// show a loading spinner during the save.
 
 @ProviderFor(FiltersController)
 final filtersControllerProvider = FiltersControllerProvider._();
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Saves swipe filter preferences to the user profile document.
+/// [saveFiltersMutation] tracks the async lifecycle so the UI can
+/// show a loading spinner during the save.
 final class FiltersControllerProvider
     extends $NotifierProvider<FiltersController, void> {
+  /// **Pattern B: Stateless controller + static Mutations**
+  ///
+  /// Saves swipe filter preferences to the user profile document.
+  /// [saveFiltersMutation] tracks the async lifecycle so the UI can
+  /// show a loading spinner during the save.
   FiltersControllerProvider._()
     : super(
         from: null,
@@ -41,7 +56,13 @@ final class FiltersControllerProvider
   }
 }
 
-String _$filtersControllerHash() => r'6bad287bb38fab6f444557956be8ffe913a2aeb7';
+String _$filtersControllerHash() => r'3d1d2656cd4e89946f8279638a1289c97393a7a9';
+
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Saves swipe filter preferences to the user profile document.
+/// [saveFiltersMutation] tracks the async lifecycle so the UI can
+/// show a loading spinner during the save.
 
 abstract class _$FiltersController extends $Notifier<void> {
   void build();

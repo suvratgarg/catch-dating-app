@@ -1,7 +1,16 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {RunDoc} from "../shared/firestore";
+import {requireAuth} from "../shared/auth";
+import {validateCallable} from "../shared/validation";
+import {checkRateLimit} from "../shared/rateLimit";
+import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+
+const MarkAttendanceSchema = z.object({
+  runId: z.string(),
+  userId: z.string(),
+});
 
 /**
  * Callable function that toggles a single user's attendance for a run.
@@ -15,17 +24,10 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 export const markRunAttendance = onCall(appCheckCallableOptions, async (
   request
 ) => {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Must be signed in.");
-  }
+  const uid = requireAuth(request);
+  const {runId, userId} = validateCallable(request, MarkAttendanceSchema);
 
-  const {runId, userId} = request.data as {runId?: string; userId?: string};
-  if (!runId || !userId) {
-    throw new HttpsError(
-      "invalid-argument",
-      "runId and userId are required."
-    );
-  }
+  await checkRateLimit(admin.firestore(), uid, "markRunAttendance");
 
   const db = admin.firestore();
   const runRef = db.collection("runs").doc(runId);
@@ -44,7 +46,7 @@ export const markRunAttendance = onCall(appCheckCallableOptions, async (
     throw new HttpsError("not-found", "Run club not found.");
   }
   const club = clubSnap.data() as {hostUserId: string};
-  if (club.hostUserId !== request.auth.uid) {
+  if (club.hostUserId !== uid) {
     throw new HttpsError(
       "permission-denied",
       "Only the club host can mark attendance."

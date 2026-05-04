@@ -45,7 +45,7 @@ void main() {
     test('does not pop the queue when auth uid is unavailable', () async {
       final container = ProviderContainer(
         overrides: [
-          userProfileStreamProvider.overrideWith(
+          watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(buildUser(uid: 'runner-1')),
           ),
           authRepositoryProvider.overrideWithValue(authRepository),
@@ -83,7 +83,7 @@ void main() {
         authRepository.currentUserValue = TestUser(uid: 'runner-1');
         final container = ProviderContainer(
           overrides: [
-            userProfileStreamProvider.overrideWith(
+            watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
             ),
             authRepositoryProvider.overrideWithValue(authRepository),

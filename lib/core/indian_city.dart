@@ -21,6 +21,7 @@ enum IndianCity implements Labelled {
   LatLng get coordinates => LatLng(latitude, longitude);
 
   /// Returns the city closest to [position], or null if no cities are defined.
+  @Deprecated('Use CityRepository.nearestCity() via cityListProvider instead.')
   static IndianCity? nearestCity(LatLng position) {
     IndianCity? closest;
     double minDistance = double.infinity;
@@ -34,4 +35,19 @@ enum IndianCity implements Labelled {
     }
     return closest;
   }
+
+  /// Looks up an [IndianCity] by its enum value name (e.g. `'mumbai'`).
+  ///
+  /// Returns `null` when [name] doesn't match any known city — callers
+  /// should fall back to [CityData]-based lookup via [cityListProvider].
+  static IndianCity? fromName(String name) {
+    for (final city in values) {
+      if (city.name == name) return city;
+    }
+    return null;
+  }
+
+  /// The 9 hardcoded city defaults used as a fallback when the Firestore
+  /// `config/cities` document is unavailable.
+  static List<IndianCity> get defaults => values;
 }

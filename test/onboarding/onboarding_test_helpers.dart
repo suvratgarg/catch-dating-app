@@ -226,7 +226,7 @@ Future<void> primeOnboardingAsyncProviders(ProviderContainer container) async {
     fireImmediately: true,
   );
   final userProfileSubscription = container.listen(
-    userProfileStreamProvider,
+    watchUserProfileProvider,
     (_, _) {},
     fireImmediately: true,
   );

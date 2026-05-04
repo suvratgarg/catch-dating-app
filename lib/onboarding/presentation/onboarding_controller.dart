@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
@@ -10,6 +11,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -74,7 +76,7 @@ class OnboardingController extends _$OnboardingController {
 
   Future<void> syncEntryStep() async {
     final uid = ref.read(uidProvider).asData?.value;
-    final userProfile = ref.read(userProfileStreamProvider).asData?.value;
+    final userProfile = ref.read(watchUserProfileProvider).asData?.value;
 
     if (uid == null) {
       _setStateIfChanged(state.copyWith(step: OnboardingStep.welcome));
@@ -216,7 +218,14 @@ class OnboardingController extends _$OnboardingController {
           }),
     );
 
-    return completer.future;
+    return completer.future.timeout(
+      const Duration(seconds: 60),
+      onTimeout: () => throw FirebaseAuthException(
+        code: 'timeout',
+        message:
+            'The verification request timed out. Please check your connection and try again.',
+      ),
+    );
   }
 
   Future<void> verifyOtp(String code) async {
@@ -286,7 +295,7 @@ class OnboardingController extends _$OnboardingController {
   }
 
   Future<void> saveProfile() async {
-    final uid = _requireSignedInUid();
+    final uid = requireSignedInUid(ref, action: 'save profile');
     final draft = _requireProfileDraft();
 
     state = state.copyWith(step: OnboardingStep.photos);
@@ -314,7 +323,7 @@ class OnboardingController extends _$OnboardingController {
     required List<PreferredDistance> preferredDistances,
     required List<RunReason> runningReasons,
   }) async {
-    final userProfile = ref.read(userProfileStreamProvider).asData?.value;
+    final userProfile = ref.read(watchUserProfileProvider).asData?.value;
     if (userProfile == null) {
       throw const DocumentNotFoundException('users/current');
     }
@@ -334,14 +343,6 @@ class OnboardingController extends _$OnboardingController {
     // Invalidate self so the keepAlive provider is disposed and its
     // state (including OnboardingData) is freed.
     ref.invalidateSelf();
-  }
-
-  String _requireSignedInUid() {
-    final uid = ref.read(uidProvider).asData?.value;
-    if (uid == null || uid.isEmpty) {
-      throw StateError('Please sign in again before continuing.');
-    }
-    return uid;
   }
 
   OnboardingProfileDraft _requireProfileDraft() {

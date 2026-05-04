@@ -5,6 +5,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_club_membership_controller.g.dart';
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Exposes [joinMutation] and [leaveMutation] for the club detail screen.
+/// The UI watches mutation state to show loading spinners and error banners
+/// during join/leave operations.
 @riverpod
 class RunClubMembershipController extends _$RunClubMembershipController {
   static final joinMutation = Mutation<void>();

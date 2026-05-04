@@ -1,18 +1,19 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {ReportDoc} from "../shared/firestore";
+import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {checkRateLimit} from "../shared/rateLimit";
+import {requireAuth} from "../shared/auth";
+import {validateCallable} from "../shared/validation";
 
-type ReportSource = ReportDoc["source"];
-
-interface ReportUserData {
-  targetUserId: string;
-  source?: ReportSource;
-  reasonCode?: string;
-  contextId?: string;
-  notes?: string;
-}
+const ReportUserSchema = z.object({
+  targetUserId: z.string(),
+  source: z.string().optional(),
+  reasonCode: z.string().max(64).optional(),
+  contextId: z.string().max(128).optional(),
+  notes: z.string().max(2000).optional(),
+});
 
 interface ReportingDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -46,37 +47,37 @@ export function normalizeReportText(
  * @return {Promise<{reported: boolean}>} Operation result.
  */
 export async function reportUserHandler(
-  request: CallableRequest<Partial<ReportUserData> | null>,
+  request: CallableRequest<unknown>,
   deps: ReportingDeps = defaultDeps
 ): Promise<{reported: boolean}> {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Must be signed in to report.");
-  }
+  const reporterUserId = requireAuth(request);
+  const data = validateCallable(request, ReportUserSchema);
 
-  const reporterUserId = request.auth.uid;
-  const targetUserId = request.data?.targetUserId;
-  if (!targetUserId || targetUserId === reporterUserId) {
+  if (data.targetUserId === reporterUserId) {
     throw new HttpsError("invalid-argument", "targetUserId is invalid.");
   }
 
-  const reasonCode = normalizeReportText(request.data?.reasonCode, 64);
-  const contextId = normalizeReportText(request.data?.contextId, 128);
-  const notes = normalizeReportText(request.data?.notes, 2000);
-
   await deps.firestore().collection("reports").add({
     reporterUserId,
-    targetUserId,
+    targetUserId: data.targetUserId,
     createdAt: deps.serverTimestamp(),
-    source: request.data?.source ?? "profile",
+    source: data.source ?? "profile",
     status: "open",
-    ...(reasonCode && {reasonCode}),
-    ...(contextId && {contextId}),
-    ...(notes && {notes}),
+    ...(data.reasonCode && {reasonCode: data.reasonCode}),
+    ...(data.contextId && {contextId: data.contextId}),
+    ...(data.notes && {notes: data.notes}),
   });
 
   return {reported: true};
 }
 
-export const reportUser = onCall(appCheckCallableOptions, (request) =>
-  reportUserHandler(request)
-);
+export const reportUser = onCall(appCheckCallableOptions, async (request) => {
+  if (request.auth) {
+    await checkRateLimit(
+      admin.firestore(),
+      request.auth.uid,
+      "reportUser"
+    );
+  }
+  return reportUserHandler(request);
+});

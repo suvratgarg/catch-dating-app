@@ -11,6 +11,7 @@ abstract class ChatMessage with _$ChatMessage {
     @JsonKey(includeToJson: false) required String id,
     required String senderId,
     required String text,
+    String? imageUrl,
     @TimestampConverter() required DateTime sentAt,
   }) = _ChatMessage;
 

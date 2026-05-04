@@ -135,6 +135,26 @@ class RunRepository {
     collection: _collectionPath,
     action: 'mark attendance',
   );
+
+  /// Self-check-in for a signed-up participant via the
+  /// [selfCheckInAttendance] Cloud Function.
+  ///
+  /// Requires GPS coordinates so the server can verify the user is within
+  /// 200 m of the run's meeting point. Pass `null` for runs without
+  /// coordinates (the server skips the proximity check).
+  Future<void> selfCheckInAttendance({
+    required String runId,
+    required double? latitude,
+    required double? longitude,
+  }) => withFirestoreErrorContext(
+    () => _functions.httpsCallable('selfCheckInAttendance').call({
+      'runId': runId,
+      if (latitude != null) 'latitude': latitude,
+      if (longitude != null) 'longitude': longitude,
+    }),
+    collection: _collectionPath,
+    action: 'self check-in',
+  );
 }
 
 @riverpod
@@ -150,19 +170,19 @@ Stream<Run?> watchRun(Ref ref, String runId) =>
     );
 
 @riverpod
-Stream<List<Run>> runsForClub(Ref ref, String runClubId) =>
+Stream<List<Run>> watchRunsForClub(Ref ref, String runClubId) =>
     ref.watch(runRepositoryProvider).watchRunsForClub(runClubId: runClubId).timeout(
       const Duration(seconds: 10),
     );
 
 @riverpod
-Stream<List<Run>> attendedRuns(Ref ref, String uid) =>
+Stream<List<Run>> watchAttendedRuns(Ref ref, String uid) =>
     ref.watch(runRepositoryProvider).watchAttendedRuns(uid: uid).timeout(
       const Duration(seconds: 10),
     );
 
 @riverpod
-Stream<List<Run>> signedUpRuns(Ref ref, String uid) =>
+Stream<List<Run>> watchSignedUpRuns(Ref ref, String uid) =>
     ref.watch(runRepositoryProvider).watchSignedUpRuns(uid: uid).timeout(
       const Duration(seconds: 10),
     );

@@ -40,7 +40,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
   @override
   Widget build(BuildContext context) {
-    final userProfile = ref.watch(userProfileStreamProvider).asData?.value;
+    final userProfile = ref.watch(watchUserProfileProvider).asData?.value;
     final mutation = ref.watch(OnboardingController.completeMutation);
     final t = CatchTokens.of(context);
 

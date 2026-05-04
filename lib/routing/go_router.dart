@@ -89,7 +89,7 @@ GoRouter goRouter(Ref ref) {
   final analytics = ref.read(appAnalyticsProvider);
 
   ref.listen(uidProvider, (_, _) => notifier.notify());
-  ref.listen(userProfileStreamProvider, (_, _) => notifier.notify());
+  ref.listen(watchUserProfileProvider, (_, _) => notifier.notify());
 
   ref.onDispose(notifier.dispose);
 
@@ -101,7 +101,7 @@ GoRouter goRouter(Ref ref) {
     redirect: (context, state) {
       return appRedirect(
         uidAsync: ref.read(uidProvider),
-        userProfileAsync: ref.read(userProfileStreamProvider),
+        userProfileAsync: ref.read(watchUserProfileProvider),
         matchedLocation: state.matchedLocation,
         uri: state.uri,
       );
@@ -166,9 +166,10 @@ GoRouter goRouter(Ref ref) {
         name: Routes.publicProfileScreen.name,
         builder: (context, state) => PublicProfileScreen(
           uid: state.pathParameters['uid']!,
-          initialProfile: state.extra is PublicProfile
-              ? state.extra! as PublicProfile
-              : null,
+          initialProfile: switch (state.extra) {
+            final PublicProfile p => p,
+            _ => null,
+          },
         ),
       ),
       StatefulShellRoute.indexedStack(
@@ -203,9 +204,10 @@ GoRouter goRouter(Ref ref) {
                     name: Routes.runClubDetailScreen.name,
                     builder: (context, state) => RunClubDetailScreen(
                       runClubId: state.pathParameters['runClubId']!,
-                      initialRunClub: state.extra is RunClub
-                          ? state.extra! as RunClub
-                          : null,
+                      initialRunClub: switch (state.extra) {
+                            final RunClub rc => rc,
+                            _ => null,
+                          },
                     ),
                     routes: [
                       GoRoute(
@@ -235,9 +237,10 @@ GoRouter goRouter(Ref ref) {
                         parentNavigatorKey: _rootNavigatorKey,
                         builder: (context, state) => EditRunClubRouteScreen(
                           runClubId: state.pathParameters['runClubId']!,
-                          initialRunClub: state.extra is RunClub
-                              ? state.extra! as RunClub
-                              : null,
+                          initialRunClub: switch (state.extra) {
+                              final RunClub rc => rc,
+                              _ => null,
+                            },
                         ),
                       ),
                       GoRoute(
@@ -246,9 +249,10 @@ GoRouter goRouter(Ref ref) {
                         parentNavigatorKey: _rootNavigatorKey,
                         builder: (context, state) => CreateRunRouteScreen(
                           runClubId: state.pathParameters['runClubId']!,
-                          initialRunClub: state.extra is RunClub
-                              ? state.extra! as RunClub
-                              : null,
+                          initialRunClub: switch (state.extra) {
+                              final RunClub rc => rc,
+                              _ => null,
+                            },
                         ),
                       ),
                     ],
@@ -285,9 +289,10 @@ GoRouter goRouter(Ref ref) {
                     name: Routes.swipeRunScreen.name,
                     builder: (context, state) => SwipeScreen(
                       runId: state.pathParameters['runId']!,
-                      vibeIds: state.extra is Set<String>
-                          ? state.extra! as Set<String>
-                          : const {},
+                      vibeIds: switch (state.extra) {
+                          final Set<String> ids => ids,
+                          _ => const {},
+                        },
                     ),
                   ),
                 ],
@@ -310,9 +315,10 @@ GoRouter goRouter(Ref ref) {
                     name: Routes.chatScreen.name,
                     builder: (context, state) => ChatScreen(
                       matchId: state.pathParameters['matchId']!,
-                      otherProfile: state.extra is PublicProfile
-                          ? state.extra! as PublicProfile
-                          : null,
+                      otherProfile: switch (state.extra) {
+                          final PublicProfile p => p,
+                          _ => null,
+                        },
                     ),
                   ),
                 ],

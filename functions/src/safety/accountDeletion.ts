@@ -1,7 +1,8 @@
-import {onCall, CallableRequest, HttpsError} from
+import {onCall, CallableRequest} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {requireAuth} from "../shared/auth";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
 
@@ -29,14 +30,7 @@ export async function requestAccountDeletionHandler(
   request: CallableRequest<null>,
   deps: AccountDeletionDeps = defaultDeps
 ): Promise<{deleted: boolean}> {
-  if (!request.auth) {
-    throw new HttpsError(
-      "unauthenticated",
-      "Must be signed in to delete an account."
-    );
-  }
-
-  const uid = request.auth.uid;
+  const uid = requireAuth(request);
   const db = deps.firestore();
   const now = deps.serverTimestamp();
   const userSnap = await db.collection("users").doc(uid).get();

@@ -8,12 +8,27 @@ part of 'create_run_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Validates input and delegates run creation to [RunRepository].
+/// [submitMutation] carries the created [Run] on success so the UI can
+/// navigate to the run detail screen.
 
 @ProviderFor(CreateRunController)
 final createRunControllerProvider = CreateRunControllerProvider._();
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Validates input and delegates run creation to [RunRepository].
+/// [submitMutation] carries the created [Run] on success so the UI can
+/// navigate to the run detail screen.
 final class CreateRunControllerProvider
     extends $NotifierProvider<CreateRunController, void> {
+  /// **Pattern B: Stateless controller + static Mutations**
+  ///
+  /// Validates input and delegates run creation to [RunRepository].
+  /// [submitMutation] carries the created [Run] on success so the UI can
+  /// navigate to the run detail screen.
   CreateRunControllerProvider._()
     : super(
         from: null,
@@ -42,7 +57,13 @@ final class CreateRunControllerProvider
 }
 
 String _$createRunControllerHash() =>
-    r'613652460da5684347262d3a1efa5a27a3420eda';
+    r'721225f8c2055452a9064c72a030f4a3778bda6f';
+
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Validates input and delegates run creation to [RunRepository].
+/// [submitMutation] carries the created [Run] on success so the UI can
+/// navigate to the run detail screen.
 
 abstract class _$CreateRunController extends $Notifier<void> {
   void build();

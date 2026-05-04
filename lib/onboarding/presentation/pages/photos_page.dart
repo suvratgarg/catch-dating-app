@@ -16,7 +16,7 @@ class PhotosPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final photoUrls =
-        ref.watch(userProfileStreamProvider).asData?.value?.photoUrls ??
+        ref.watch(watchUserProfileProvider).asData?.value?.photoUrls ??
         const [];
     final uploadState = ref.watch(photoUploadControllerProvider);
     final t = CatchTokens.of(context);

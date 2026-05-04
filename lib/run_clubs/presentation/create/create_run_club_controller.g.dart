@@ -8,12 +8,27 @@ part of 'create_run_club_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles create and edit club submission. [submitMutation] tracks the
+/// lifecycle of the async submit operation. The UI watches
+/// `ref.watch(createRunClubControllerProvider.submitMutation)`.
 
 @ProviderFor(CreateRunClubController)
 final createRunClubControllerProvider = CreateRunClubControllerProvider._();
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles create and edit club submission. [submitMutation] tracks the
+/// lifecycle of the async submit operation. The UI watches
+/// `ref.watch(createRunClubControllerProvider.submitMutation)`.
 final class CreateRunClubControllerProvider
     extends $NotifierProvider<CreateRunClubController, void> {
+  /// **Pattern B: Stateless controller + static Mutations**
+  ///
+  /// Handles create and edit club submission. [submitMutation] tracks the
+  /// lifecycle of the async submit operation. The UI watches
+  /// `ref.watch(createRunClubControllerProvider.submitMutation)`.
   CreateRunClubControllerProvider._()
     : super(
         from: null,
@@ -42,7 +57,13 @@ final class CreateRunClubControllerProvider
 }
 
 String _$createRunClubControllerHash() =>
-    r'64b35d9a07686ae4b8c35e1692c1bbb240545fcb';
+    r'd304d919e6d90249ea0ba55175140d7282a5fc9d';
+
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles create and edit club submission. [submitMutation] tracks the
+/// lifecycle of the async submit operation. The UI watches
+/// `ref.watch(createRunClubControllerProvider.submitMutation)`.
 
 abstract class _$CreateRunClubController extends $Notifier<void> {
   void build();

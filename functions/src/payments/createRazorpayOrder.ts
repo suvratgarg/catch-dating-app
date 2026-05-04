@@ -14,10 +14,14 @@ import {
 } from "./razorpay";
 import {hasBlockingRelationship} from "../safety/blocking";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
+import {checkRateLimit} from "../shared/rateLimit";
+import {requireAuth} from "../shared/auth";
+import {validateCallable} from "../shared/validation";
+import {z} from "zod";
 
-interface CreateOrderData {
-  runId: string;
-}
+const CreateOrderSchema = z.object({
+  runId: z.string(),
+});
 
 interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
@@ -38,18 +42,11 @@ const defaultDeps: CreateRazorpayOrderDeps = {
  * @return {Promise<{orderId: string, amount: number, currency: string}>} Order.
  */
 export async function createRazorpayOrderHandler(
-  request: CallableRequest<Partial<CreateOrderData> | null>,
+  request: CallableRequest<unknown>,
   deps: CreateRazorpayOrderDeps = defaultDeps
 ) {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Must be signed in to book.");
-  }
-
-  const runId = request.data?.runId;
-
-  if (!runId) {
-    throw new HttpsError("invalid-argument", "runId is required.");
-  }
+  const uid = requireAuth(request);
+  const {runId} = validateCallable(request, CreateOrderSchema);
 
   const db = deps.firestore();
   const runSnap = await db.collection("runs").doc(runId).get();
@@ -62,7 +59,7 @@ export async function createRazorpayOrderHandler(
 
   // Pre-flight capacity check; the real atomic check happens in
   // signUpUserForRun.
-  if (run.signedUpUserIds.includes(request.auth.uid)) {
+  if (run.signedUpUserIds.includes(uid)) {
     throw new HttpsError(
       "already-exists",
       "You are already booked for this run."
@@ -76,7 +73,7 @@ export async function createRazorpayOrderHandler(
     );
   }
 
-  if (await hasBlockingRelationship(db, request.auth.uid, [
+  if (await hasBlockingRelationship(db, uid, [
     ...run.signedUpUserIds,
     ...(run.attendedUserIds ?? []),
   ])) {
@@ -91,7 +88,7 @@ export async function createRazorpayOrderHandler(
     buildOrderCreatePayload({
       runId,
       run,
-      userId: request.auth.uid,
+      userId: uid,
       receiptToken: deps.now(),
     })
   );
@@ -105,5 +102,14 @@ export async function createRazorpayOrderHandler(
 
 export const createRazorpayOrder = onCall(
   appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
-  (request) => createRazorpayOrderHandler(request)
+  async (request) => {
+    if (request.auth) {
+      await checkRateLimit(
+        admin.firestore(),
+        request.auth.uid,
+        "createRazorpayOrder"
+      );
+    }
+    return createRazorpayOrderHandler(request);
+  }
 );

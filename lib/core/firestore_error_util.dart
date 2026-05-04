@@ -36,11 +36,12 @@ Future<T> withFirestoreErrorContext<T>(
     throw _mapFunctionsException(e, collection: collection, action: action);
   } on FirebaseException catch (e) {
     throw _mapFirebaseException(e, collection: collection, action: action);
-  } catch (e) {
+  } catch (e, st) {
     throw FirestoreWriteException(
       code: 'unexpected',
       message: '$action on $collection failed unexpectedly.',
       cause: e,
+      stackTrace: st,
       collection: collection,
       action: action,
     );

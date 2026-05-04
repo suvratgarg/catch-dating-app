@@ -5,6 +5,13 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'write_review_controller.g.dart';
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Most common mutation pattern in the app. [build] returns void — the
+/// controller holds no Riverpod state. [Mutation]s ([submitMutation],
+/// [deleteMutation]) track the lifecycle of single-shot operations.
+/// The UI watches mutations directly via `ref.watch(controller.mutation)`
+/// and checks `.isPending`, `.hasError`, `.isSuccess`.
 @riverpod
 class WriteReviewController extends _$WriteReviewController {
   static final submitMutation = Mutation<void>();

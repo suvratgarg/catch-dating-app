@@ -55,10 +55,10 @@ final class SafetyRepositoryProvider
 
 String _$safetyRepositoryHash() => r'0aafe410a486c7e46e2370fc1cb77bab49762529';
 
-@ProviderFor(blockedUsers)
-final blockedUsersProvider = BlockedUsersProvider._();
+@ProviderFor(watchBlockedUsers)
+final watchBlockedUsersProvider = WatchBlockedUsersProvider._();
 
-final class BlockedUsersProvider
+final class WatchBlockedUsersProvider
     extends
         $FunctionalProvider<
           AsyncValue<List<BlockedUser>>,
@@ -68,19 +68,19 @@ final class BlockedUsersProvider
     with
         $FutureModifier<List<BlockedUser>>,
         $StreamProvider<List<BlockedUser>> {
-  BlockedUsersProvider._()
+  WatchBlockedUsersProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'blockedUsersProvider',
+        name: r'watchBlockedUsersProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$blockedUsersHash();
+  String debugGetCreateSourceHash() => _$watchBlockedUsersHash();
 
   @$internal
   @override
@@ -90,8 +90,8 @@ final class BlockedUsersProvider
 
   @override
   Stream<List<BlockedUser>> create(Ref ref) {
-    return blockedUsers(ref);
+    return watchBlockedUsers(ref);
   }
 }
 
-String _$blockedUsersHash() => r'850e355721b6071e88309b521264098f876a6706';
+String _$watchBlockedUsersHash() => r'1c0a39ef43fc52aa5ba39568e3b8418caf326711';

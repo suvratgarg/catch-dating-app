@@ -14,17 +14,31 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// )
 /// ```
 class AsyncValueWidget<T> extends StatelessWidget {
-  const AsyncValueWidget({super.key, required this.value, required this.data});
+  const AsyncValueWidget({
+    super.key,
+    required this.value,
+    required this.data,
+    this.loading,
+    this.error,
+  });
 
   final AsyncValue<T> value;
   final Widget Function(T) data;
+
+  /// Optional custom loading widget. Defaults to [CatchLoadingIndicator].
+  final Widget Function()? loading;
+
+  /// Optional custom error widget. Defaults to [ErrorMessageWidget].
+  final Widget Function(Object error, StackTrace? stackTrace)? error;
 
   @override
   Widget build(BuildContext context) {
     return value.when(
       data: data,
-      loading: () => const CatchLoadingIndicator(),
-      error: (e, _) => Center(child: ErrorMessageWidget(firestoreErrorMessage(e))),
+      loading: loading ?? (() => const CatchLoadingIndicator()),
+      error: error ??
+          ((e, _) =>
+              Center(child: ErrorMessageWidget(firestoreErrorMessage(e)))),
     );
   }
 }
@@ -35,20 +49,25 @@ class AsyncValueSliverWidget<T> extends StatelessWidget {
     super.key,
     required this.value,
     required this.data,
+    this.loading,
+    this.error,
   });
 
   final AsyncValue<T> value;
   final Widget Function(T) data;
+  final Widget Function()? loading;
+  final Widget Function(Object error, StackTrace? stackTrace)? error;
 
   @override
   Widget build(BuildContext context) {
     return value.when(
       data: data,
-      loading: () => const SliverToBoxAdapter(
-        child: CatchLoadingIndicator(),
+      loading: () => SliverToBoxAdapter(
+        child: loading?.call() ?? const CatchLoadingIndicator(),
       ),
-      error: (e, _) => SliverToBoxAdapter(
-        child: Center(child: ErrorMessageWidget(firestoreErrorMessage(e))),
+      error: (e, st) => SliverToBoxAdapter(
+        child: error?.call(e, st) ??
+            Center(child: ErrorMessageWidget(firestoreErrorMessage(e))),
       ),
     );
   }

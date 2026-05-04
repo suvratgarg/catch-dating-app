@@ -11,6 +11,7 @@ import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 
 import '../runs/runs_test_helpers.dart';
 
@@ -53,6 +54,16 @@ class FakeChatRepository implements ChatRepository {
   Stream<List<ChatMessage>> watchMessages({required String matchId}) {
     return Stream.value(messagesByMatch[matchId] ?? const []);
   }
+
+  @override
+  Future<XFile?> pickImage() async => null;
+
+  @override
+  Future<void> sendImageMessage({
+    required String matchId,
+    required String senderId,
+    required XFile image,
+  }) async {}
 }
 
 Match buildMatch({
@@ -108,7 +119,7 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
             chatRepositoryProvider.overrideWithValue(chatRepository),
-            publicProfileProvider('runner-2').overrideWith(
+            watchPublicProfileProvider('runner-2').overrideWith(
               (ref) => Stream.value(
                 buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
               ),
@@ -215,7 +226,7 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
             chatRepositoryProvider.overrideWithValue(chatRepository),
-            chatMessagesProvider('match-1').overrideWithValue(
+            watchChatMessagesProvider('match-1').overrideWithValue(
               AsyncError<List<ChatMessage>>(
                 Exception('boom'),
                 StackTrace.empty,

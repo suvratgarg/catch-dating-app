@@ -1,25 +1,24 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import {z} from "zod";
 import {RunDoc} from "../shared/firestore";
 import {signUpUserForRun} from "./signUpUserForRun";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {checkRateLimit} from "../shared/rateLimit";
+import {requireAuth} from "../shared/auth";
+import {validateCallable} from "../shared/validation";
 
-interface SignUpForFreeRunData {
-  runId: string;
-}
+const SignUpForFreeRunSchema = z.object({
+  runId: z.string(),
+});
 
 export const signUpForFreeRun = onCall(appCheckCallableOptions, async (
   request
 ) => {
-  if (!request.auth) {
-    throw new HttpsError("unauthenticated", "Must be signed in to book a run.");
-  }
+  const uid = requireAuth(request);
+  const {runId} = validateCallable(request, SignUpForFreeRunSchema);
 
-  const {runId} = request.data as SignUpForFreeRunData;
-
-  if (!runId) {
-    throw new HttpsError("invalid-argument", "runId is required.");
-  }
+  await checkRateLimit(admin.firestore(), uid, "signUpForFreeRun");
 
   const db = admin.firestore();
 
@@ -39,7 +38,7 @@ export const signUpForFreeRun = onCall(appCheckCallableOptions, async (
     );
   }
 
-  await signUpUserForRun(db, runId, request.auth.uid);
+  await signUpUserForRun(db, runId, uid);
 
   return {success: true};
 });

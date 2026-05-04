@@ -31,7 +31,7 @@ class ChatListTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(publicProfileProvider(_otherUid));
+    final profileAsync = ref.watch(watchPublicProfileProvider(_otherUid));
     final t = CatchTokens.of(context);
     final unreadCount = match.unreadCounts[currentUid] ?? 0;
     final hasUnread = unreadCount > 0;

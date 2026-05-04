@@ -2,22 +2,7 @@ import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {UserProfileDoc, PublicProfileDoc} from "../shared/firestore";
-
-/**
- * Computes a user's age in full years from their birth date.
- * @param {FirebaseFirestore.Timestamp} dateOfBirth Firestore birth date.
- * @return {number} User age in whole years.
- */
-function computeAge(dateOfBirth: FirebaseFirestore.Timestamp): number {
-  const dob = dateOfBirth.toDate();
-  const today = new Date();
-  let age = today.getFullYear() - dob.getFullYear();
-  const hasHadBirthdayThisYear =
-    today.getMonth() > dob.getMonth() ||
-    (today.getMonth() === dob.getMonth() && today.getDate() >= dob.getDate());
-  if (!hasHadBirthdayThisYear) age--;
-  return age;
-}
+import {computeAge} from "../shared/dates";
 
 export const syncPublicProfile = onDocumentWritten(
   "users/{userId}",
@@ -47,9 +32,18 @@ export const syncPublicProfile = onDocumentWritten(
     // Only sync once the profile is marked complete
     if (!user.profileComplete) return;
 
+    const age = computeAge(user.dateOfBirth.toDate());
+
+    // Block underage users from appearing in any swipe queue.
+    if (age < 18) {
+      logger.warn("Blocking underage public profile sync", {userId, age});
+      await publicProfileRef.delete();
+      return;
+    }
+
     const publicProfile: PublicProfileDoc = {
       name: user.name,
-      age: computeAge(user.dateOfBirth),
+      age,
       bio: user.bio,
       gender: user.gender,
       photoUrls: user.photoUrls ?? [],

@@ -57,10 +57,10 @@ final class PublicProfileRepositoryProvider
 String _$publicProfileRepositoryHash() =>
     r'141d55cbd15e631ab5ff0497f7acec36de651f60';
 
-@ProviderFor(publicProfile)
-final publicProfileProvider = PublicProfileFamily._();
+@ProviderFor(watchPublicProfile)
+final watchPublicProfileProvider = WatchPublicProfileFamily._();
 
-final class PublicProfileProvider
+final class WatchPublicProfileProvider
     extends
         $FunctionalProvider<
           AsyncValue<PublicProfile?>,
@@ -68,23 +68,23 @@ final class PublicProfileProvider
           Stream<PublicProfile?>
         >
     with $FutureModifier<PublicProfile?>, $StreamProvider<PublicProfile?> {
-  PublicProfileProvider._({
-    required PublicProfileFamily super.from,
+  WatchPublicProfileProvider._({
+    required WatchPublicProfileFamily super.from,
     required String super.argument,
   }) : super(
          retry: null,
-         name: r'publicProfileProvider',
+         name: r'watchPublicProfileProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$publicProfileHash();
+  String debugGetCreateSourceHash() => _$watchPublicProfileHash();
 
   @override
   String toString() {
-    return r'publicProfileProvider'
+    return r'watchPublicProfileProvider'
         ''
         '($argument)';
   }
@@ -98,12 +98,12 @@ final class PublicProfileProvider
   @override
   Stream<PublicProfile?> create(Ref ref) {
     final argument = this.argument as String;
-    return publicProfile(ref, argument);
+    return watchPublicProfile(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is PublicProfileProvider && other.argument == argument;
+    return other is WatchPublicProfileProvider && other.argument == argument;
   }
 
   @override
@@ -112,22 +112,23 @@ final class PublicProfileProvider
   }
 }
 
-String _$publicProfileHash() => r'3269b75a4655e7d52a1830df8cf9570c05478479';
+String _$watchPublicProfileHash() =>
+    r'c109a28d721065d734c731d5a04876e9187c1de3';
 
-final class PublicProfileFamily extends $Family
+final class WatchPublicProfileFamily extends $Family
     with $FunctionalFamilyOverride<Stream<PublicProfile?>, String> {
-  PublicProfileFamily._()
+  WatchPublicProfileFamily._()
     : super(
         retry: null,
-        name: r'publicProfileProvider',
+        name: r'watchPublicProfileProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
       );
 
-  PublicProfileProvider call(String uid) =>
-      PublicProfileProvider._(argument: uid, from: this);
+  WatchPublicProfileProvider call(String uid) =>
+      WatchPublicProfileProvider._(argument: uid, from: this);
 
   @override
-  String toString() => r'publicProfileProvider';
+  String toString() => r'watchPublicProfileProvider';
 }

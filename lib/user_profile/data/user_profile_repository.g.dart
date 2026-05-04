@@ -26,7 +26,7 @@ final class UserProfileRepositoryProvider
         argument: null,
         retry: null,
         name: r'userProfileRepositoryProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -55,12 +55,12 @@ final class UserProfileRepositoryProvider
 }
 
 String _$userProfileRepositoryHash() =>
-    r'e74eeb8aeb2b86dce8e86f1d42332dddef3fbafe';
+    r'b19e03e10d5cccfff77ccdf6561cdf36a0c39a07';
 
-@ProviderFor(userProfileStream)
-final userProfileStreamProvider = UserProfileStreamProvider._();
+@ProviderFor(watchUserProfile)
+final watchUserProfileProvider = WatchUserProfileProvider._();
 
-final class UserProfileStreamProvider
+final class WatchUserProfileProvider
     extends
         $FunctionalProvider<
           AsyncValue<UserProfile?>,
@@ -68,19 +68,19 @@ final class UserProfileStreamProvider
           Stream<UserProfile?>
         >
     with $FutureModifier<UserProfile?>, $StreamProvider<UserProfile?> {
-  UserProfileStreamProvider._()
+  WatchUserProfileProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'userProfileStreamProvider',
+        name: r'watchUserProfileProvider',
         isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$userProfileStreamHash();
+  String debugGetCreateSourceHash() => _$watchUserProfileHash();
 
   @$internal
   @override
@@ -90,8 +90,8 @@ final class UserProfileStreamProvider
 
   @override
   Stream<UserProfile?> create(Ref ref) {
-    return userProfileStream(ref);
+    return watchUserProfile(ref);
   }
 }
 
-String _$userProfileStreamHash() => r'c05faaad5bd4704ede0bd49abfae945d4a36834a';
+String _$watchUserProfileHash() => r'5edae70543b5cde2d305e723c9c8acdb3f06eafb';

@@ -7,11 +7,12 @@
 /// Override [toString] returns [message] so exceptions display cleanly in
 /// error widgets without extra formatting.
 sealed class AppException implements Exception {
-  const AppException(this.code, this.message, {this.cause});
+  const AppException(this.code, this.message, {this.cause, this.stackTrace});
 
   final String code;
   final String message;
   final Object? cause;
+  final StackTrace? stackTrace;
 
   @override
   String toString() => message;
@@ -79,9 +80,10 @@ class FirestoreWriteException extends AppException {
     required String code,
     required String message,
     Object? cause,
+    StackTrace? stackTrace,
     this.collection,
     this.action,
-  }) : super(code, message, cause: cause);
+  }) : super(code, message, cause: cause, stackTrace: stackTrace);
 
   final String? collection;
   final String? action;

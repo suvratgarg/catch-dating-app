@@ -37,8 +37,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(user)),
-            signedUpRunsProvider(
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchSignedUpRunsProvider(
               user.uid,
             ).overrideWith((ref) => signedUpRunsController.stream),
           ],
@@ -61,8 +61,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(user)),
-            signedUpRunsProvider(user.uid).overrideWithValue(
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchSignedUpRunsProvider(user.uid).overrideWithValue(
               AsyncError<List<Run>>(Exception('boom'), StackTrace.empty),
             ),
           ],
@@ -88,8 +88,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(user)),
-            signedUpRunsProvider(
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchSignedUpRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
           ],
@@ -119,11 +119,11 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(user)),
-            signedUpRunsProvider(
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchSignedUpRunsProvider(
               user.uid,
             ).overrideWithValue(AsyncData<List<Run>>([nextRun])),
-            attendedRunsProvider(
+            watchAttendedRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
@@ -154,7 +154,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            attendedRunsProvider(
+            watchAttendedRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncLoading<List<Run>>()),
             dashboardRecommendedRunsProvider(
@@ -187,7 +187,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            attendedRunsProvider(user.uid).overrideWithValue(
+            watchAttendedRunsProvider(user.uid).overrideWithValue(
               AsyncError<List<Run>>(Exception('boom'), StackTrace.empty),
             ),
             dashboardRecommendedRunsProvider(
@@ -220,7 +220,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            attendedRunsProvider(
+            watchAttendedRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
@@ -256,7 +256,7 @@ void main() {
         await tester.pumpWidget(
           ProviderScope(
             overrides: [
-              attendedRunsProvider(
+              watchAttendedRunsProvider(
                 user.uid,
               ).overrideWith((ref) => Stream.value(const [])),
               dashboardRecommendedRunsProvider(
@@ -309,7 +309,7 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            attendedRunsProvider(
+            watchAttendedRunsProvider(
               user.uid,
             ).overrideWithValue(AsyncData<List<Run>>([swipeRun])),
             dashboardRecommendedRunsProvider(

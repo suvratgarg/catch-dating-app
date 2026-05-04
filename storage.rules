@@ -19,6 +19,18 @@ service firebase.storage {
         && isImage();
     }
 
+    match /chats/{matchId}/images/{fileName} {
+      allow read: if isSignedIn()
+        && firestore.get(
+          /databases/(default)/documents/matches/$(matchId)
+        ).data.participantIds.hasAny([request.auth.uid]);
+      allow write: if isSignedIn()
+        && isImage()
+        && firestore.get(
+          /databases/(default)/documents/matches/$(matchId)
+        ).data.participantIds.hasAny([request.auth.uid]);
+    }
+
     match /runClubs/{clubId}/{fileName} {
       allow read: if isSignedIn();
       allow write: if isSignedIn()

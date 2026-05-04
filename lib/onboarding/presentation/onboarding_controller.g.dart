@@ -81,7 +81,7 @@ final class OnboardingControllerProvider
 }
 
 String _$onboardingControllerHash() =>
-    r'd47b70e1dec2129e1e6cc0ae0f91ff8ad961ec6a';
+    r'59911dce1fc0769290e9565ac8868f7281bdaef5';
 
 /// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
 ///

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -11,6 +12,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 import 'run_clubs_test_helpers.dart';
 
+CityData _cityFromEnum(IndianCity c) => CityData(
+  name: c.name,
+  label: c.label,
+  latitude: c.latitude,
+  longitude: c.longitude,
+);
+
 void main() {
   group('RunClubsList state', () {
     test(
@@ -19,14 +27,14 @@ void main() {
         final container = ProviderContainer();
         addTearDown(container.dispose);
 
-        expect(container.read(selectedRunClubCityProvider), IndianCity.mumbai);
+        expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.mumbai));
 
         container.read(runClubSearchQueryProvider.notifier).setQuery('stride');
         container
             .read(selectedRunClubCityProvider.notifier)
-            .setCity(IndianCity.delhi);
+            .setCity(_cityFromEnum(IndianCity.delhi));
 
-        expect(container.read(selectedRunClubCityProvider), IndianCity.delhi);
+        expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.delhi));
         expect(container.read(runClubSearchQueryProvider), isEmpty);
       },
     );
@@ -35,32 +43,30 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      expect(container.read(selectedRunClubCityProvider), IndianCity.mumbai);
+      expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.mumbai));
 
       container
           .read(selectedRunClubCityProvider.notifier)
-          .autoSelectCity(IndianCity.delhi);
+          .autoSelectCity(_cityFromEnum(IndianCity.delhi));
 
-      expect(container.read(selectedRunClubCityProvider), IndianCity.delhi);
+      expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.delhi));
     });
 
     test('autoSelectCity does not override a manual city choice', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      // Manual pick
       container
           .read(selectedRunClubCityProvider.notifier)
-          .setCity(IndianCity.bangalore);
-      expect(container.read(selectedRunClubCityProvider), IndianCity.bangalore);
+          .setCity(_cityFromEnum(IndianCity.bangalore));
+      expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.bangalore));
 
-      // GPS tries to override — should be ignored
       container
           .read(selectedRunClubCityProvider.notifier)
-          .autoSelectCity(IndianCity.mumbai);
+          .autoSelectCity(_cityFromEnum(IndianCity.mumbai));
       expect(
         container.read(selectedRunClubCityProvider),
-        IndianCity.bangalore,
+        _cityFromEnum(IndianCity.bangalore),
       );
     });
 
@@ -71,7 +77,7 @@ void main() {
       container.read(runClubSearchQueryProvider.notifier).setQuery('stride');
       container
           .read(selectedRunClubCityProvider.notifier)
-          .autoSelectCity(IndianCity.delhi);
+          .autoSelectCity(_cityFromEnum(IndianCity.delhi));
 
       expect(container.read(runClubSearchQueryProvider), isEmpty);
     });
@@ -119,7 +125,7 @@ void main() {
 
         final container = ProviderContainer(
           overrides: [
-            userProfileStreamProvider.overrideWith(
+            watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(
                 buildUser(
                   uid: 'runner-1',
@@ -193,7 +199,7 @@ void main() {
     test('runClubsListViewModelProvider surfaces app user errors', () async {
       final container = ProviderContainer(
         overrides: [
-          userProfileStreamProvider.overrideWith(
+          watchUserProfileProvider.overrideWith(
             (ref) => Stream.error(StateError('user failed')),
           ),
           filteredRunClubsProvider.overrideWithValue(
@@ -220,7 +226,7 @@ void main() {
       () async {
         final container = ProviderContainer(
           overrides: [
-            userProfileStreamProvider.overrideWith(
+            watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
             ),
             filteredRunClubsProvider.overrideWithValue(

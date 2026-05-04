@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
@@ -45,7 +46,7 @@ class _PaymentList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final paymentsAsync = ref.watch(paymentsForUserProvider(userId));
+    final paymentsAsync = ref.watch(watchPaymentsForUserProvider(userId));
 
     return paymentsAsync.when(
       loading: () => const CatchLoadingIndicator(),
@@ -76,12 +77,6 @@ class _PaymentTile extends ConsumerWidget {
 
   static final _dateFormat = DateFormat('d MMM yyyy · HH:mm');
 
-  String _formattedAmount(Payment payment) {
-    final rupees = payment.amount / 100;
-    return rupees == rupees.roundToDouble()
-        ? '₹${rupees.round()}'
-        : '₹${rupees.toStringAsFixed(2)}';
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -120,7 +115,7 @@ class _PaymentTile extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  _formattedAmount(payment),
+                  RunFormatters.priceInPaise(payment.amount),
                   style: CatchTextStyles.bodyM(
                     context,
                   ).copyWith(fontWeight: FontWeight.w600),
@@ -180,7 +175,7 @@ class _PaymentTile extends ConsumerWidget {
                   ),
                   const Spacer(),
                   Text(
-                    _formattedAmount(payment),
+                    RunFormatters.priceInPaise(payment.amount),
                     style: CatchTextStyles.displayS(context),
                   ),
                 ],

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/constants/app_sizes.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -27,15 +27,15 @@ class SwipeHubScreen extends ConsumerWidget {
     return Scaffold(
       backgroundColor: t.bg,
       body: uidAsync.when(
-        loading: () => const CatchLoadingIndicator(),
+        loading: () => const CatchSkeletonList(count: 3),
         error: (e, _) => CatchErrorText(e),
         data: (uid) {
           if (uid == null) return const SizedBox.shrink();
 
-          final runsAsync = ref.watch(attendedRunsProvider(uid));
+          final runsAsync = ref.watch(watchAttendedRunsProvider(uid));
 
           return runsAsync.when(
-            loading: () => const CatchLoadingIndicator(),
+            loading: () => const CatchSkeletonList(count: 3),
             error: (e, _) => CatchErrorText(e),
             data: (runs) {
               final activeRuns = runsWithOpenSwipeWindow(runs);

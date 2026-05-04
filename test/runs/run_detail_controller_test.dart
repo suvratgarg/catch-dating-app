@@ -106,7 +106,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(user)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             watchReviewsForRunProvider(
               run.id,
             ).overrideWith((ref) => Stream.value([review])),
@@ -121,7 +121,7 @@ void main() {
         addTearDown(subscription.close);
 
         await container.read(watchRunProvider(run.id).future);
-        await container.read(userProfileStreamProvider.future);
+        await container.read(watchUserProfileProvider.future);
         await container.read(watchReviewsForRunProvider(run.id).future);
         await container.pump();
         await container.pump();

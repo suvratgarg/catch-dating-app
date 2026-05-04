@@ -5,6 +5,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_clubs_list_controller.g.dart';
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles the join-club action from the club list screen.
+/// [joinMutation] tracks the async join lifecycle so the list tile can
+/// show a loading indicator while the operation is in flight.
 @riverpod
 class RunClubsListController extends _$RunClubsListController {
   static final joinMutation = Mutation<void>();

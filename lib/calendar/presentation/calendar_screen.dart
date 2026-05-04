@@ -28,7 +28,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     final uid = ref.watch(uidProvider).asData?.value;
     final runsAsync = uid == null
         ? const AsyncData(<Run>[])
-        : ref.watch(signedUpRunsProvider(uid));
+        : ref.watch(watchSignedUpRunsProvider(uid));
 
     return Scaffold(
       backgroundColor: t.bg,

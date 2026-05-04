@@ -25,7 +25,7 @@ void showMatchCelebration(
       onSendMessage: () {
         Navigator.of(dialogContext).pop();
         final otherProfile = ref
-            .read(publicProfileProvider(otherUid))
+            .read(watchPublicProfileProvider(otherUid))
             .asData
             ?.value;
         context.goNamed(
@@ -52,7 +52,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(publicProfileProvider(otherUid));
+    final profileAsync = ref.watch(watchPublicProfileProvider(otherUid));
     final t = CatchTokens.of(context);
 
     final profile = profileAsync.asData?.value;

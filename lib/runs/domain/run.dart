@@ -7,6 +7,7 @@ import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:intl/intl.dart';
 
 part 'run.freezed.dart';
 part 'run.g.dart';
@@ -117,16 +118,7 @@ abstract class Run with _$Run {
   }
 
   String get title {
-    const weekdays = [
-      'Monday',
-      'Tuesday',
-      'Wednesday',
-      'Thursday',
-      'Friday',
-      'Saturday',
-      'Sunday',
-    ];
-    final weekday = weekdays[startTime.weekday - 1];
+    final weekday = DateFormat('EEEE').format(startTime);
     final hour = startTime.hour;
     final period = hour < 12
         ? 'Morning'

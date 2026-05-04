@@ -10,6 +10,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'create_run_club_controller.g.dart';
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles create and edit club submission. [submitMutation] tracks the
+/// lifecycle of the async submit operation. The UI watches
+/// `ref.watch(createRunClubControllerProvider.submitMutation)`.
 @riverpod
 class CreateRunClubController extends _$CreateRunClubController {
   static final submitMutation = Mutation<void>();
@@ -60,7 +65,7 @@ class CreateRunClubController extends _$CreateRunClubController {
       return;
     }
 
-    final userProfile = ref.read(userProfileStreamProvider).asData?.value;
+    final userProfile = ref.read(watchUserProfileProvider).asData?.value;
     if (userProfile == null) {
       throw StateError('User profile not loaded. Please try again.');
     }

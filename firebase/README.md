@@ -54,6 +54,17 @@ Current state:
   30-day permanent deletion window.
 - Dev and staging Functions reuse the current prod Razorpay test-mode secrets.
   Replace this with environment-owned secrets before live Razorpay payments.
+- **Firestore config document `config/cities` is required in every environment.**
+  The `isValidCity()` rules function reads from it. Deploying Firestore rules
+  without this document will reject all profile edits and club creations.
+  See [`docs/deploy_runbook_2026_05_04.md`](../docs/deploy_runbook_2026_05_04.md)
+  for the exact document contents.
+- **TTL policy on `rateLimits.expiresAt` is required in every environment.**
+  Create it in Firebase Console → Firestore → TTL Policies. Without it,
+  rate-limit counter documents accumulate indefinitely.
+- **Cloud Vision API must be enabled on every GCP project.**
+  `gcloud services enable vision.googleapis.com --project=<project-id>`.
+  The `moderatePhotoOnUpload` Storage trigger depends on it.
 
 ## Runtime source of truth
 

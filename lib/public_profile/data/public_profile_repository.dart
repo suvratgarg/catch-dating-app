@@ -58,5 +58,5 @@ PublicProfileRepository publicProfileRepository(Ref ref) =>
     PublicProfileRepository(ref.watch(firebaseFirestoreProvider));
 
 @riverpod
-Stream<PublicProfile?> publicProfile(Ref ref, String uid) =>
+Stream<PublicProfile?> watchPublicProfile(Ref ref, String uid) =>
     ref.watch(publicProfileRepositoryProvider).watchPublicProfile(uid: uid);

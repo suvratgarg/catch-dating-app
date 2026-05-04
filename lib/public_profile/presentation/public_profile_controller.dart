@@ -1,10 +1,18 @@
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'public_profile_controller.g.dart';
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles block and report actions from the public profile screen.
+/// The UI wraps calls in `mutation.run(ref, ...)` to observe lifecycle.
 @riverpod
 class PublicProfileController extends _$PublicProfileController {
+  static final blockUserMutation = Mutation<void>();
+  static final reportUserMutation = Mutation<void>();
+
   @override
   void build() {}
 

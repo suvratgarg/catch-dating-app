@@ -10,15 +10,20 @@ class ChatInputBar extends StatelessWidget {
     required this.controller,
     required this.sending,
     required this.onSend,
+    this.onSendImage,
+    this.sendingImage = false,
   });
 
   final TextEditingController controller;
   final bool sending;
   final VoidCallback? onSend;
+  final VoidCallback? onSendImage;
+  final bool sendingImage;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final disabled = sending || sendingImage;
 
     return SafeArea(
       child: Container(
@@ -32,6 +37,17 @@ class ChatInputBar extends StatelessWidget {
         ),
         child: Row(
           children: [
+            IconButton(
+              onPressed: disabled ? null : onSendImage,
+              icon: sendingImage
+                  ? const SizedBox(
+                      width: 20,
+                      height: 20,
+                      child: CatchLoadingIndicator(strokeWidth: 2),
+                    )
+                  : Icon(Icons.image_outlined, color: t.ink2),
+              tooltip: 'Send an image',
+            ),
             Expanded(
               child: CatchTextField(
                 label: 'Message',
@@ -45,13 +61,13 @@ class ChatInputBar extends StatelessWidget {
                 size: CatchTextFieldSize.compact,
                 shape: CatchTextFieldShape.pill,
                 tone: CatchTextFieldTone.raised,
-                enabled: onSend != null,
+                enabled: onSend != null && !disabled,
                 onSubmitted: (_) => onSend?.call(),
               ),
             ),
             gapW8,
             IconButton.filled(
-              onPressed: sending ? null : onSend,
+              onPressed: disabled ? null : onSend,
               icon: sending
                   ? const SizedBox(
                       width: 20,

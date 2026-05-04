@@ -199,12 +199,12 @@ void main() {
     );
     addTearDown(container.dispose);
     final subscription = container.listen<AsyncValue<List<Match>>>(
-      matchesForUserProvider('runner-1'),
+      watchMatchesForUserProvider('runner-1'),
       (_, _) {},
     );
     addTearDown(subscription.close);
 
-    await container.read(matchesForUserProvider('runner-1').future);
+    await container.read(watchMatchesForUserProvider('runner-1').future);
 
     expect(container.read(totalUnreadCountProvider('runner-1')), 5);
   });

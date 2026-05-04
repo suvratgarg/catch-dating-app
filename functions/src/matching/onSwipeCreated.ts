@@ -69,8 +69,9 @@ export const onSwipeCreated = onDocumentCreated(
         user2Id: id2,
       });
     } catch (e: unknown) {
-      if ((e as {code?: number}).code === 6) {
-        // gRPC ALREADY_EXISTS — match already exists, nothing to do
+      const code = (e as {code?: unknown}).code;
+      if (code === 6 || code === "already-exists") {
+        // ALREADY_EXISTS — match already exists, nothing to do
         return;
       }
       throw e;

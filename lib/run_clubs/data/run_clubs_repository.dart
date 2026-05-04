@@ -32,7 +32,7 @@ class RunClubsRepository {
   DocumentReference<Map<String, dynamic>> _userRef(String uid) =>
       _db.collection(_usersCollectionPath).doc(uid);
 
-  // -- Read ---------------------------------------------------------------
+  // ── Read ───────────────────────────────────────────────────────────────────
 
   Stream<RunClub?> watchRunClub(String id) =>
       _runClubRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null);
@@ -57,7 +57,7 @@ class RunClubsRepository {
       .snapshots()
       .map((snap) => snap.docs.map((d) => d.data()).toList());
 
-  // -- Write --------------------------------------------------------------
+  // ── Write ──────────────────────────────────────────────────────────────────
 
   String generateId() => _runClubRef().id;
 
@@ -74,37 +74,41 @@ class RunClubsRepository {
     String? instagramHandle,
     String? phoneNumber,
     String? email,
-  }) async {
-    final ref = _runClubRef(clubId);
-    final batch = _db.batch();
+  }) => withFirestoreErrorContext(
+    () async {
+      final ref = _runClubRef(clubId);
+      final batch = _db.batch();
 
-    batch.set(
-      ref,
-      RunClub(
-        id: ref.id,
-        name: name,
-        description: description,
-        location: location,
-        area: area,
-        hostUserId: hostUserId,
-        hostName: hostName,
-        hostAvatarUrl: hostAvatarUrl,
-        createdAt: DateTime.now(),
-        imageUrl: imageUrl,
-        memberUserIds: [hostUserId],
-        memberCount: 1,
-        instagramHandle: instagramHandle,
-        phoneNumber: phoneNumber,
-        email: email,
-      ),
-    );
-    batch.set(_userRef(hostUserId), {
-      'joinedRunClubIds': FieldValue.arrayUnion([ref.id]),
-    }, SetOptions(merge: true));
+      batch.set(
+        ref,
+        RunClub(
+          id: ref.id,
+          name: name,
+          description: description,
+          location: location,
+          area: area,
+          hostUserId: hostUserId,
+          hostName: hostName,
+          hostAvatarUrl: hostAvatarUrl,
+          createdAt: DateTime.now(),
+          imageUrl: imageUrl,
+          memberUserIds: [hostUserId],
+          memberCount: 1,
+          instagramHandle: instagramHandle,
+          phoneNumber: phoneNumber,
+          email: email,
+        ),
+      );
+      batch.set(_userRef(hostUserId), {
+        'joinedRunClubIds': FieldValue.arrayUnion([ref.id]),
+      }, SetOptions(merge: true));
 
-    await batch.commit();
-    return ref.id;
-  }
+      await batch.commit();
+      return ref.id;
+    },
+    collection: _collectionPath,
+    action: 'create club',
+  );
 
   /// Updates only the fields present in [fields] on the club document.
   ///
@@ -116,11 +120,19 @@ class RunClubsRepository {
   Future<void> updateRunClub({
     required String clubId,
     required Map<String, dynamic> fields,
-  }) => _runClubRef(clubId).update(fields);
+  }) => withFirestoreErrorContext(
+    () => _runClubRef(clubId).update(fields),
+    collection: _collectionPath,
+    action: 'update club',
+  );
 
-  Future<void> deleteRunClub(String id) => _runClubRef(id).delete();
+  Future<void> deleteRunClub(String id) => withFirestoreErrorContext(
+    () => _runClubRef(id).delete(),
+    collection: _collectionPath,
+    action: 'delete club',
+  );
 
-  // -- Members ------------------------------------------------------------
+  // ── Members ────────────────────────────────────────────────────────────────
 
   /// Adds [userId] to [clubId]'s member list.
   ///
@@ -148,7 +160,7 @@ class RunClubsRepository {
             'joinedRunClubIds': FieldValue.arrayUnion([clubId]),
           }, SetOptions(merge: true));
         }),
-        collection: 'runClubs',
+        collection: _collectionPath,
         action: 'join',
       );
 
@@ -171,7 +183,7 @@ class RunClubsRepository {
             'joinedRunClubIds': FieldValue.arrayRemove([clubId]),
           }, SetOptions(merge: true));
         }),
-        collection: 'runClubs',
+        collection: _collectionPath,
         action: 'leave',
       );
 }

@@ -60,25 +60,25 @@ void main() {
         userProfileRepositoryProvider.overrideWithValue(
           _VisualReviewUserProfileRepository(user),
         ),
-        attendedRunsProvider(
+        watchAttendedRunsProvider(
           'runner-1',
         ).overrideWithValue(AsyncData([liveRun])),
-        signedUpRunsProvider(
+        watchSignedUpRunsProvider(
           'runner-1',
         ).overrideWithValue(AsyncData([upcomingRun])),
-        matchesForUserProvider(
+        watchMatchesForUserProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value([match])),
         watchRunProvider(
           liveRun.id,
         ).overrideWith((ref) => Stream.value(liveRun)),
-        publicProfileProvider('runner-2').overrideWith(
+        watchPublicProfileProvider('runner-2').overrideWith(
           (ref) => Stream.value(_publicProfile('runner-2', 'Riya')),
         ),
-        publicProfileProvider('runner-3').overrideWith(
+        watchPublicProfileProvider('runner-3').overrideWith(
           (ref) => Stream.value(_publicProfile('runner-3', 'Zoya')),
         ),
-        publicProfileProvider('runner-4').overrideWith(
+        watchPublicProfileProvider('runner-4').overrideWith(
           (ref) => Stream.value(_publicProfile('runner-4', 'Dev')),
         ),
       ],
@@ -167,7 +167,7 @@ class VisualReviewApp extends StatelessWidget {
                   label: 'Settings',
                   child: ProviderScope(
                     overrides: [
-                      blockedUsersProvider.overrideWithValue(
+                      watchBlockedUsersProvider.overrideWithValue(
                         const AsyncData([]),
                       ),
                     ],

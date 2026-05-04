@@ -6,6 +6,11 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'create_run_controller.g.dart';
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Validates input and delegates run creation to [RunRepository].
+/// [submitMutation] carries the created [Run] on success so the UI can
+/// navigate to the run detail screen.
 @riverpod
 class CreateRunController extends _$CreateRunController {
   static final submitMutation = Mutation<Run>();
@@ -28,18 +33,18 @@ class CreateRunController extends _$CreateRunController {
     required int priceInPaise,
     required RunConstraints constraints,
   }) async {
-    final normalizedRunClubId = _trimmedRequired(
-      value: runClubId,
+    final normalizedRunClubId = _requireNonBlank(
+      runClubId,
       fieldName: 'runClubId',
       message: 'Run club id is required.',
     );
-    final normalizedMeetingPoint = _trimmedRequired(
-      value: meetingPoint,
+    final normalizedMeetingPoint = _requireNonBlank(
+      meetingPoint,
       fieldName: 'meetingPoint',
       message: 'Meeting point is required.',
     );
     final normalizedDescription = description.trim();
-    final normalizedLocationDetails = _trimmedOrNull(locationDetails);
+    final normalizedLocationDetails = _trimToNull(locationDetails);
 
     if (!endTime.isAfter(startTime)) {
       throw ArgumentError.value(
@@ -95,22 +100,22 @@ class CreateRunController extends _$CreateRunController {
     await runRepo.createRun(run: run);
     return run;
   }
+}
 
-  static String _trimmedRequired({
-    required String value,
-    required String fieldName,
-    required String message,
-  }) {
-    final normalized = value.trim();
-    if (normalized.isEmpty) {
-      throw ArgumentError.value(value, fieldName, message);
-    }
-    return normalized;
+String _requireNonBlank(
+  String value, {
+  required String fieldName,
+  required String message,
+}) {
+  final normalized = value.trim();
+  if (normalized.isEmpty) {
+    throw ArgumentError.value(value, fieldName, message);
   }
+  return normalized;
+}
 
-  static String? _trimmedOrNull(String? value) {
-    final normalized = value?.trim();
-    if (normalized == null || normalized.isEmpty) return null;
-    return normalized;
-  }
+String? _trimToNull(String? value) {
+  final normalized = value?.trim();
+  if (normalized == null || normalized.isEmpty) return null;
+  return normalized;
 }

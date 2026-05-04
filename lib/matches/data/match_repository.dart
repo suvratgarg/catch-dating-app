@@ -114,7 +114,7 @@ MatchRepository matchRepository(Ref ref) =>
     MatchRepository(ref.watch(firebaseFirestoreProvider));
 
 @riverpod
-Stream<List<Match>> matchesForUser(Ref ref, String uid) =>
+Stream<List<Match>> watchMatchesForUser(Ref ref, String uid) =>
     ref.watch(matchRepositoryProvider).watchMatchesForUser(uid: uid).timeout(
       const Duration(seconds: 10),
     );
@@ -125,7 +125,7 @@ Stream<Match?> matchStream(Ref ref, String matchId) =>
 
 @riverpod
 int totalUnreadCount(Ref ref, String uid) {
-  final matches = ref.watch(matchesForUserProvider(uid)).asData?.value ?? [];
+  final matches = ref.watch(watchMatchesForUserProvider(uid)).asData?.value ?? [];
   return matches
       .where((match) => !match.isBlocked)
       .fold(0, (total, m) => total + (m.unreadCounts[uid] ?? 0));

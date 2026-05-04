@@ -443,7 +443,7 @@ void main() {
         addTearDown(tester.view.resetDevicePixelRatio);
         final container = createOnboardingTestContainer(
           overrides: [
-            userProfileStreamProvider.overrideWith(
+            watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(
                 buildUser(uid: 'runner-1').copyWith(photoUrls: const []),
               ),

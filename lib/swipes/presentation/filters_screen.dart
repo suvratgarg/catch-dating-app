@@ -88,7 +88,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final profileAsync = ref.watch(userProfileStreamProvider);
+    final profileAsync = ref.watch(watchUserProfileProvider);
     final t = CatchTokens.of(context);
 
     return Scaffold(

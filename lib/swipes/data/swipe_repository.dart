@@ -16,6 +16,16 @@ class SwipeRepository {
   CollectionReference<Map<String, dynamic>> _outgoingSwipesRef(String uid) =>
       _db.collection(_collectionPath).doc(uid).collection('outgoing');
 
+  // ── Read ──────────────────────────────────────────────────────────────────
+
+  /// Returns the set of user IDs this user has already swiped on.
+  Future<Set<String>> fetchSwipedUserIds({required String uid}) async {
+    final snap = await _outgoingSwipesRef(uid).get();
+    return snap.docs.map((d) => d.id).toSet();
+  }
+
+  // ── Write ─────────────────────────────────────────────────────────────────
+
   Future<void> recordSwipe({required Swipe swipe}) =>
       withFirestoreErrorContext(
         () => _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
@@ -29,11 +39,6 @@ class SwipeRepository {
         action: 'record swipe',
       );
 
-  /// Returns the set of user IDs this user has already swiped on.
-  Future<Set<String>> fetchSwipedUserIds({required String uid}) async {
-    final snap = await _outgoingSwipesRef(uid).get();
-    return snap.docs.map((d) => d.id).toSet();
-  }
 }
 
 @riverpod

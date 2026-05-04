@@ -98,12 +98,12 @@ class UserProfileRepository {
 
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 UserProfileRepository userProfileRepository(Ref ref) =>
     UserProfileRepository(ref.watch(firebaseFirestoreProvider));
 
 @Riverpod(keepAlive: true)
-Stream<UserProfile?> userProfileStream(Ref ref) {
+Stream<UserProfile?> watchUserProfile(Ref ref) {
   final uidAsync = ref.watch(uidProvider);
 
   return switch (uidAsync) {

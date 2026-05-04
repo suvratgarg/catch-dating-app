@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
@@ -41,14 +42,19 @@ abstract class RunClubsListViewModel with _$RunClubsListViewModel {
   }
 }
 
+/// **KeepAlive notifier with internal flag**
+///
+/// Holds the currently selected city for run club browsing. Uses an
+/// internal `_userSelected` flag so GPS auto-detection never overrides a
+/// manual user pick. [keepAlive] is true so the city survives tab switches.
 @Riverpod(keepAlive: true)
 class SelectedRunClubCity extends _$SelectedRunClubCity {
   bool _userSelected = false;
 
   @override
-  IndianCity build() => IndianCity.mumbai;
+  CityData build() => _mumbaiDefault;
 
-  void setCity(IndianCity city) {
+  void setCity(CityData city) {
     _userSelected = true;
     if (state != city) {
       state = city;
@@ -56,7 +62,7 @@ class SelectedRunClubCity extends _$SelectedRunClubCity {
     }
   }
 
-  void autoSelectCity(IndianCity city) {
+  void autoSelectCity(CityData city) {
     if (_userSelected) return;
     if (state != city) {
       state = city;
@@ -65,6 +71,17 @@ class SelectedRunClubCity extends _$SelectedRunClubCity {
   }
 }
 
+final _mumbaiDefault = CityData(
+  name: 'mumbai',
+  label: 'Mumbai',
+  latitude: 19.0760,
+  longitude: 72.8777,
+);
+
+/// **KeepAlive notifier — simple string state**
+///
+/// Holds the current search query text. [keepAlive] ensures the query
+/// survives tab switches so the user's search isn't lost while browsing.
 @Riverpod(keepAlive: true)
 class RunClubSearchQuery extends _$RunClubSearchQuery {
   @override
@@ -82,11 +99,18 @@ class RunClubSearchQuery extends _$RunClubSearchQuery {
 
 /// Algolia swap point: replace this provider's body to use a remote search
 /// index. The VM and screen are not affected.
+///
+/// **Pattern D variant:** Combines location-filtered clubs with client-side
+/// search to produce a filtered list for the UI.
 @riverpod
 AsyncValue<List<RunClub>> filteredRunClubs(Ref ref) {
   final city = ref.watch(selectedRunClubCityProvider);
   final query = ref.watch(runClubSearchQueryProvider);
-  final clubsAsync = ref.watch(watchRunClubsByLocationProvider(city));
+  final clubsAsync = ref.watch(
+    watchRunClubsByLocationProvider(
+      IndianCity.fromName(city.name) ?? IndianCity.mumbai,
+    ),
+  );
 
   return clubsAsync.whenData((clubs) {
     final normalizedQuery = query.trim().toLowerCase();
@@ -100,9 +124,14 @@ AsyncValue<List<RunClub>> filteredRunClubs(Ref ref) {
   });
 }
 
+/// **Pattern D: Pure computed provider combining multiple async streams**
+///
+/// Combines the user profile and filtered clubs streams into a
+/// [RunClubsListViewModel] that partitions clubs into joined and discover
+/// lists for the UI.
 @riverpod
 AsyncValue<RunClubsListViewModel> runClubsListViewModel(Ref ref) {
-  final userProfileAsync = ref.watch(userProfileStreamProvider);
+  final userProfileAsync = ref.watch(watchUserProfileProvider);
   final filteredAsync = ref.watch(filteredRunClubsProvider);
 
   if (userProfileAsync.isLoading || filteredAsync.isLoading) {

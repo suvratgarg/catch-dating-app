@@ -8,12 +8,27 @@ part of 'run_clubs_list_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles the join-club action from the club list screen.
+/// [joinMutation] tracks the async join lifecycle so the list tile can
+/// show a loading indicator while the operation is in flight.
 
 @ProviderFor(RunClubsListController)
 final runClubsListControllerProvider = RunClubsListControllerProvider._();
 
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles the join-club action from the club list screen.
+/// [joinMutation] tracks the async join lifecycle so the list tile can
+/// show a loading indicator while the operation is in flight.
 final class RunClubsListControllerProvider
     extends $NotifierProvider<RunClubsListController, void> {
+  /// **Pattern B: Stateless controller + static Mutations**
+  ///
+  /// Handles the join-club action from the club list screen.
+  /// [joinMutation] tracks the async join lifecycle so the list tile can
+  /// show a loading indicator while the operation is in flight.
   RunClubsListControllerProvider._()
     : super(
         from: null,
@@ -43,6 +58,12 @@ final class RunClubsListControllerProvider
 
 String _$runClubsListControllerHash() =>
     r'fd2588d594b45dae2bd8ad46f30383b27b31f6c6';
+
+/// **Pattern B: Stateless controller + static Mutations**
+///
+/// Handles the join-club action from the club list screen.
+/// [joinMutation] tracks the async join lifecycle so the list tile can
+/// show a loading indicator while the operation is in flight.
 
 abstract class _$RunClubsListController extends $Notifier<void> {
   void build();

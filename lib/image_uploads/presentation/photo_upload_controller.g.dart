@@ -8,12 +8,45 @@ part of 'photo_upload_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+/// **Custom pattern: Record-type state + serialized writes + Mutation**
+///
+/// Tracks per-index upload loading state via a Dart record
+/// `({Set<int> loadingIndices, Object? uploadError})` and serializes
+/// Firestore writes through a `_pendingPhotoWrite` chain to prevent races.
+/// [uploadPhotoMutation] gives the UI a standard Mutation lifecycle hook
+/// for the overall upload operation.
+///
+/// **When to use this pattern:** Multi-slot upload UIs where individual
+/// slots have independent loading states and writes must be serialized to
+/// avoid Firestore document races.
 
 @ProviderFor(PhotoUploadController)
 final photoUploadControllerProvider = PhotoUploadControllerProvider._();
 
+/// **Custom pattern: Record-type state + serialized writes + Mutation**
+///
+/// Tracks per-index upload loading state via a Dart record
+/// `({Set<int> loadingIndices, Object? uploadError})` and serializes
+/// Firestore writes through a `_pendingPhotoWrite` chain to prevent races.
+/// [uploadPhotoMutation] gives the UI a standard Mutation lifecycle hook
+/// for the overall upload operation.
+///
+/// **When to use this pattern:** Multi-slot upload UIs where individual
+/// slots have independent loading states and writes must be serialized to
+/// avoid Firestore document races.
 final class PhotoUploadControllerProvider
     extends $NotifierProvider<PhotoUploadController, PhotoUploadState> {
+  /// **Custom pattern: Record-type state + serialized writes + Mutation**
+  ///
+  /// Tracks per-index upload loading state via a Dart record
+  /// `({Set<int> loadingIndices, Object? uploadError})` and serializes
+  /// Firestore writes through a `_pendingPhotoWrite` chain to prevent races.
+  /// [uploadPhotoMutation] gives the UI a standard Mutation lifecycle hook
+  /// for the overall upload operation.
+  ///
+  /// **When to use this pattern:** Multi-slot upload UIs where individual
+  /// slots have independent loading states and writes must be serialized to
+  /// avoid Firestore document races.
   PhotoUploadControllerProvider._()
     : super(
         from: null,
@@ -42,7 +75,19 @@ final class PhotoUploadControllerProvider
 }
 
 String _$photoUploadControllerHash() =>
-    r'db9e74c92725da01dd1ae8dc9cb3abd1bbb05c70';
+    r'fae09a20143805c487d3f5c9be5b0e635e114f47';
+
+/// **Custom pattern: Record-type state + serialized writes + Mutation**
+///
+/// Tracks per-index upload loading state via a Dart record
+/// `({Set<int> loadingIndices, Object? uploadError})` and serializes
+/// Firestore writes through a `_pendingPhotoWrite` chain to prevent races.
+/// [uploadPhotoMutation] gives the UI a standard Mutation lifecycle hook
+/// for the overall upload operation.
+///
+/// **When to use this pattern:** Multi-slot upload UIs where individual
+/// slots have independent loading states and writes must be serialized to
+/// avoid Firestore document races.
 
 abstract class _$PhotoUploadController extends $Notifier<PhotoUploadState> {
   PhotoUploadState build();

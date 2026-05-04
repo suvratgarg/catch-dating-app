@@ -12,10 +12,11 @@ bool hasOpenSwipeWindow(Run run, {DateTime? now}) {
 
 List<Run> runsWithOpenSwipeWindow(Iterable<Run> runs, {DateTime? now}) {
   final currentTime = now ?? DateTime.now();
-  return [
-    for (final run in runs)
-      if (hasOpenSwipeWindow(run, now: currentTime)) run,
-  ];
+  final open = <Run>[];
+  for (final run in runs) {
+    if (hasOpenSwipeWindow(run, now: currentTime)) open.add(run);
+  }
+  return open;
 }
 
 Run? latestRunWithOpenSwipeWindow(Iterable<Run> runs, {DateTime? now}) {

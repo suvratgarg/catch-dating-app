@@ -241,7 +241,7 @@ void main() {
             (ref) => fakeImageUploadRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          userProfileStreamProvider.overrideWith(
+          watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(
               buildUser(
                 uid: 'host-1',
@@ -260,7 +260,7 @@ void main() {
       );
       addTearDown(uidSubscription.close);
       final userProfileSubscription = container.listen(
-        userProfileStreamProvider,
+        watchUserProfileProvider,
         (_, _) {},
         fireImmediately: true,
       );
@@ -300,7 +300,7 @@ void main() {
             (ref) => fakeImageUploadRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          userProfileStreamProvider.overrideWith(
+          watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(buildUser(uid: 'host-1', name: 'Priya')),
           ),
         ],
@@ -313,7 +313,7 @@ void main() {
       );
       addTearDown(uidSubscription.close);
       final userProfileSubscription = container.listen(
-        userProfileStreamProvider,
+        watchUserProfileProvider,
         (_, _) {},
         fireImmediately: true,
       );
@@ -346,7 +346,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('host-1')),
-            userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           ],
         );
         addTearDown(container.dispose);
@@ -357,7 +357,7 @@ void main() {
         );
         addTearDown(uidSubscription.close);
         final userProfileSubscription = container.listen(
-          userProfileStreamProvider,
+          watchUserProfileProvider,
           (_, _) {},
           fireImmediately: true,
         );
@@ -401,7 +401,7 @@ void main() {
             (ref) => fakeImageUploadRepository,
           ),
           uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          userProfileStreamProvider.overrideWith((ref) => Stream.value(null)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
         ],
       );
       addTearDown(container.dispose);

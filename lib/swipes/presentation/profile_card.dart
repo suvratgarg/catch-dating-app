@@ -23,9 +23,12 @@ class ProfileCard extends StatelessWidget {
     final likeOpacity = (horizontalOffsetPercentage / 40.0).clamp(0.0, 1.0);
     final nopeOpacity = (-horizontalOffsetPercentage / 40.0).clamp(0.0, 1.0);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(20),
-      child: LayoutBuilder(
+    return Semantics(
+      label: 'Profile of ${profile.name}, ${profile.age}',
+      hint: 'Swipe left to pass, right to like. Tap to view full profile.',
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: LayoutBuilder(
         builder: (context, constraints) => Stack(
           children: [
             ScrollableProfile(
@@ -54,6 +57,7 @@ class ProfileCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
