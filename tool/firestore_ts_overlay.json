@@ -1,0 +1,104 @@
+{
+  "extraFields": {
+    "UserProfileDoc": [
+      { "name": "fcmToken", "tsType": "string", "optional": true, "comment": "Runtime — written by FcmService, not part of the profile form" },
+      { "name": "deleted", "tsType": "boolean", "optional": true, "comment": "Safety/account lifecycle field written by account deletion flow" },
+      { "name": "deletedAt", "tsType": "FirebaseFirestore.Timestamp", "optional": true }
+    ],
+    "MatchDoc": [
+      { "name": "participantIds", "tsType": "string[]", "comment": "Always [user1Id, user2Id], used for Firestore arrayContains queries" }
+    ],
+    "PublicProfileDoc": [
+      { "name": "languages", "tsType": "Language[]", "optional": true }
+    ]
+  },
+
+  "fieldOverrides": {
+    "PublicProfileDoc": ["languages"]
+  },
+
+  "extraInterfaces": [
+    {
+      "name": "BlockDoc",
+      "collectionPath": "/blocks/{blockerUserId}__{blockedUserId}",
+      "comment": "Server-enforced safety edge. Either direction blocks shared dating surfaces.",
+      "fields": [
+        { "name": "blockerUserId", "tsType": "string" },
+        { "name": "blockedUserId", "tsType": "string" },
+        { "name": "createdAt", "tsType": "FirebaseFirestore.Timestamp" },
+        { "name": "source", "tsType": "\"profile\" | \"chat\" | \"match\" | \"support\"" },
+        { "name": "reasonCode", "tsType": "string", "optional": true }
+      ]
+    },
+    {
+      "name": "ReportDoc",
+      "collectionPath": "/reports/{reportId}",
+      "comment": "Server-owned safety report for abuse/moderation review.",
+      "fields": [
+        { "name": "reporterUserId", "tsType": "string" },
+        { "name": "targetUserId", "tsType": "string" },
+        { "name": "createdAt", "tsType": "FirebaseFirestore.Timestamp" },
+        { "name": "source", "tsType": "\"profile\" | \"chat\" | \"match\" | \"support\"" },
+        { "name": "status", "tsType": "\"open\" | \"reviewed\" | \"dismissed\"" },
+        { "name": "reasonCode", "tsType": "string", "optional": true },
+        { "name": "contextId", "tsType": "string", "optional": true },
+        { "name": "notes", "tsType": "string", "optional": true }
+      ]
+    },
+    {
+      "name": "ModerationFlagDoc",
+      "collectionPath": "/moderationFlags/{flagId}",
+      "comment": "Server-owned moderation ticket created when auto-moderation flags content.",
+      "fields": [
+        { "name": "targetUserId", "tsType": "string" },
+        { "name": "flagType", "tsType": "\"explicit_photo\" | \"banned_text\" | \"underage_content\"" },
+        { "name": "source", "tsType": "\"profile_photo\" | \"club_image\" | \"chat_message\" | \"user_bio\" | \"club_description\" | \"review_comment\"" },
+        { "name": "status", "tsType": "\"pending\" | \"reviewed\" | \"dismissed\"" },
+        { "name": "createdAt", "tsType": "FirebaseFirestore.Timestamp" },
+        { "name": "reviewedAt", "tsType": "FirebaseFirestore.Timestamp", "optional": true },
+        { "name": "contextId", "tsType": "string", "optional": true },
+        { "name": "context", "tsType": "string", "optional": true },
+        { "name": "safeSearchResults", "tsType": "Record<string, string>", "optional": true }
+      ]
+    }
+  ],
+
+  "extraEnumTypes": [],
+
+  "interfaceComments": {
+    "PublicProfileDoc": "Written exclusively by syncPublicProfile Cloud Function.",
+    "MatchDoc": "Written exclusively by onSwipeCreated Cloud Function.",
+    "ReviewDoc": "The current client uses one deterministic review document per (runClubId, reviewerUserId) pair."
+  },
+
+  "fieldComments": {
+    "UserProfileDoc": {
+      "phoneNumber": "Authentication is phone-only",
+      "email": "Optional profile/contact field"
+    },
+    "RunClubDoc": {
+      "hostAvatarUrl": "nullable in Firestore",
+      "imageUrl": "nullable in Firestore",
+      "nextRunAt": "nullable in Firestore",
+      "nextRunLabel": "nullable in Firestore",
+      "instagramHandle": "nullable in Firestore",
+      "phoneNumber": "nullable in Firestore",
+      "email": "nullable in Firestore"
+    },
+    "RunDoc": {
+      "priceInPaise": "in paise (INR subunit). 0 = free run",
+      "startingPointLat": "nullable in Firestore",
+      "startingPointLng": "nullable in Firestore",
+      "locationDetails": "nullable in Firestore",
+      "genderCounts": "Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'. Denormalized counts maintained atomically by Cloud Functions."
+    },
+    "PaymentDoc": {
+      "amount": "in paise",
+      "signUpFailed": "True when payment succeeded but sign-up failed due to a race or refund",
+      "id": "Razorpay paymentId for paid, auto-id for free"
+    },
+    "ReviewDoc": {
+      "runId": "optional — not all reviews are linked to a specific run"
+    }
+  }
+}
