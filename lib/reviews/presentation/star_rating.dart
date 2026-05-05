@@ -1,6 +1,7 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-/// Read-only star row. [rating] is 1–5 (integers for filled stars).
+/// Read-only star row. [rating] is 1-5 (integers for filled stars).
 class StarRating extends StatelessWidget {
   const StarRating({super.key, required this.rating, this.size = 16});
 
@@ -9,14 +10,17 @@ class StarRating extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final clampedRating = rating.clamp(0, 5);
+
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: List.generate(
         5,
         (i) => Icon(
-          i < rating ? Icons.star_rounded : Icons.star_outline_rounded,
+          i < clampedRating ? Icons.star_rounded : Icons.star_outline_rounded,
           size: size,
-          color: Colors.amber,
+          color: t.gold,
         ),
       ),
     );
@@ -30,30 +34,46 @@ class StarRatingPicker extends StatelessWidget {
     required this.rating,
     required this.onChanged,
     this.size = 40,
+    this.keyBuilder,
   });
 
   final int rating;
   final ValueChanged<int> onChanged;
   final double size;
+  final Key Function(int rating)? keyBuilder;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final clampedRating = rating.clamp(0, 5);
+
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(
-        5,
-        (i) => GestureDetector(
-          onTap: () => onChanged(i + 1),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 4),
-            child: Icon(
-              i < rating ? Icons.star_rounded : Icons.star_outline_rounded,
-              size: size,
-              color: Colors.amber,
+      children: List.generate(5, (i) {
+        final value = i + 1;
+        return Tooltip(
+          message: '$value star${value == 1 ? '' : 's'}',
+          child: Semantics(
+            button: true,
+            label: 'Rate $value star${value == 1 ? '' : 's'}',
+            selected: clampedRating == value,
+            child: GestureDetector(
+              key: keyBuilder?.call(value),
+              onTap: () => onChanged(value),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: Icon(
+                  i < clampedRating
+                      ? Icons.star_rounded
+                      : Icons.star_outline_rounded,
+                  size: size,
+                  color: t.gold,
+                ),
+              ),
             ),
           ),
-        ),
-      ),
+        );
+      }),
     );
   }
 }

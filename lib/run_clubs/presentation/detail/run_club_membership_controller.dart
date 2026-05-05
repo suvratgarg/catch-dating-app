@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_club_membership_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Exposes [joinMutation] and [leaveMutation] for the club detail screen.
 /// The UI watches mutation state to show loading spinners and error banners
@@ -19,12 +19,12 @@ class RunClubMembershipController extends _$RunClubMembershipController {
   void build() {}
 
   Future<void> join(String clubId) async {
-    final uid = requireSignedInUid(ref, action: 'join a club');
-    await ref.read(runClubsRepositoryProvider).joinClub(clubId, uid);
+    requireSignedInUid(ref, action: 'join a club');
+    await ref.read(runClubsRepositoryProvider).joinClub(clubId);
   }
 
   Future<void> leave(String clubId) async {
-    final uid = requireSignedInUid(ref, action: 'leave a club');
-    await ref.read(runClubsRepositoryProvider).leaveClub(clubId, uid);
+    requireSignedInUid(ref, action: 'leave a club');
+    await ref.read(runClubsRepositoryProvider).leaveClub(clubId);
   }
 }

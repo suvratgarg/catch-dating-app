@@ -218,7 +218,7 @@ final class FilteredRunClubsProvider
 
 String _$filteredRunClubsHash() => r'fa2dc7dc25481dceba433fd984e5c1f9d218fd93';
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Combines the user profile and filtered clubs streams into a
 /// [RunClubsListViewModel] that partitions clubs into joined and discover
@@ -227,7 +227,7 @@ String _$filteredRunClubsHash() => r'fa2dc7dc25481dceba433fd984e5c1f9d218fd93';
 @ProviderFor(runClubsListViewModel)
 final runClubsListViewModelProvider = RunClubsListViewModelProvider._();
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Combines the user profile and filtered clubs streams into a
 /// [RunClubsListViewModel] that partitions clubs into joined and discover
@@ -241,7 +241,7 @@ final class RunClubsListViewModelProvider
           AsyncValue<RunClubsListViewModel>
         >
     with $Provider<AsyncValue<RunClubsListViewModel>> {
-  /// **Pattern D: Pure computed provider combining multiple async streams**
+  /// **Pattern D: View-model provider**
   ///
   /// Combines the user profile and filtered clubs streams into a
   /// [RunClubsListViewModel] that partitions clubs into joined and discover

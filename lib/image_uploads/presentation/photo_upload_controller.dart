@@ -10,7 +10,7 @@ part 'photo_upload_controller.g.dart';
 
 typedef PhotoUploadState = ({Set<int> loadingIndices, Object? uploadError});
 
-/// **Custom pattern: Record-type state + serialized writes + Mutation**
+/// **Pattern B: State controller with record state + Mutation**
 ///
 /// Tracks per-index upload loading state via a Dart record
 /// `({Set<int> loadingIndices, Object? uploadError})` and serializes
@@ -134,7 +134,9 @@ class PhotoUploadController extends _$PhotoUploadController {
     _pendingPhotoWrite = nextWrite.then<void>(
       (_) {},
       onError: (Object error, StackTrace stack) {
-        debugPrint('[ERROR] PhotoUploadController._serializePhotoWrite: $error\n$stack');
+        debugPrint(
+          '[ERROR] PhotoUploadController._serializePhotoWrite: $error\n$stack',
+        );
       },
     );
     return nextWrite;

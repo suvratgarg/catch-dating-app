@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -23,42 +24,17 @@ class TestUser extends Fake implements User {
   final String? phoneNumber;
 }
 
-class TestUserCredential extends Fake implements UserCredential {
-  TestUserCredential(this._user);
+class RecordingMockFirebaseAuth extends MockFirebaseAuth {
+  RecordingMockFirebaseAuth({super.signedIn, super.mockUser});
 
-  final User? _user;
-
-  @override
-  User? get user => _user;
-}
-
-class TestFirebaseAuth extends Fake implements FirebaseAuth {
-  TestFirebaseAuth({User? currentUser}) : _currentUser = currentUser;
-
-  final StreamController<User?> _authStateController =
-      StreamController<User?>.broadcast();
-
-  User? _currentUser;
   String? verifiedPhoneNumber;
   AuthCredential? signedInCredential;
   int signOutCallCount = 0;
-  VerifyPhoneNumberHandler? onVerifyPhoneNumber;
 
   @override
-  User? get currentUser => _currentUser;
-
-  @override
-  Stream<User?> authStateChanges() => _authStateController.stream;
-
-  void emitAuthState(User? user) {
-    _currentUser = user;
-    _authStateController.add(user);
-  }
-
-  @override
-  Future<UserCredential> signInWithCredential(AuthCredential credential) async {
+  Future<UserCredential> signInWithCredential(AuthCredential? credential) {
     signedInCredential = credential;
-    return TestUserCredential(_currentUser);
+    return super.signInWithCredential(credential);
   }
 
   @override
@@ -72,23 +48,41 @@ class TestFirebaseAuth extends Fake implements FirebaseAuth {
     String? autoRetrievedSmsCodeForTesting,
     Duration timeout = const Duration(seconds: 30),
     int? forceResendingToken,
-    MultiFactorSession? multiFactorSession,
+    Object? multiFactorSession,
   }) async {
     verifiedPhoneNumber = phoneNumber;
-    await onVerifyPhoneNumber?.call(
+    await super.verifyPhoneNumber(
+      phoneNumber: phoneNumber,
       verificationCompleted: verificationCompleted,
       verificationFailed: verificationFailed,
       codeSent: codeSent,
       codeAutoRetrievalTimeout: codeAutoRetrievalTimeout,
+      autoRetrievedSmsCodeForTesting: autoRetrievedSmsCodeForTesting,
+      timeout: timeout,
+      forceResendingToken: forceResendingToken,
     );
   }
 
   @override
   Future<void> signOut() async {
     signOutCallCount += 1;
+    await super.signOut();
   }
 
-  Future<void> dispose() => _authStateController.close();
+  void dispose() {
+    if (!stateChangedStreamController.isClosed) {
+      stateChangedStreamController.close();
+    }
+    if (!userChangedStreamController.isClosed) {
+      userChangedStreamController.close();
+    }
+    if (!idTokenChangedStreamController.isClosed) {
+      idTokenChangedStreamController.close();
+    }
+    if (!authForFakeFirestoreStreamController.isClosed) {
+      authForFakeFirestoreStreamController.close();
+    }
+  }
 }
 
 class FakeAuthRepository extends Fake implements AuthRepository {

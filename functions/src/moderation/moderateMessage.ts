@@ -17,6 +17,8 @@ import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import {moderateText, type ModerationResult} from "./textFilter";
 
+const ALREADY_EXISTS_CODE = 6;
+
 /**
  * Writes a moderation flag and optionally redacts a blocked message.
  * @param {ModerationResult} result The moderation result.
@@ -46,7 +48,17 @@ async function handleModerationResult(
     context: `chat msg in match ${matchId}. Terms: ${matchList}`,
   };
 
-  await deps.firestore().collection("moderationFlags").add(flagData);
+  const flagRef = deps.firestore()
+    .collection("moderationFlags")
+    .doc(`chatMessage_${matchId}_${messageId}`);
+  try {
+    await flagRef.create(flagData);
+  } catch (error: unknown) {
+    const code = (error as {code?: unknown}).code;
+    if (code !== ALREADY_EXISTS_CODE && code !== "already-exists") {
+      throw error;
+    }
+  }
 
   if (result.action === "block") {
     // Redact the message text in-place so other users never see it.

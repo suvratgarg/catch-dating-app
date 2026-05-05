@@ -11,7 +11,7 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_s
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';

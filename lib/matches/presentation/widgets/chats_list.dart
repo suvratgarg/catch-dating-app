@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -22,8 +23,9 @@ class ChatsList extends ConsumerWidget {
         if (!context.mounted) return;
         if (previous == null || !previous.hasValue || !next.hasValue) return;
         final prevIds = previous.value!.map((m) => m.id).toSet();
-        final newMatches =
-            next.value!.where((m) => !prevIds.contains(m.id)).toList();
+        final newMatches = next.value!
+            .where((m) => !prevIds.contains(m.id))
+            .toList();
         for (final match in newMatches) {
           showMatchCelebration(context, ref, match, uid);
         }
@@ -33,17 +35,26 @@ class ChatsList extends ConsumerWidget {
     final viewModelAsync = ref.watch(chatsListViewModelProvider);
 
     return switch (viewModelAsync) {
-      AsyncLoading() => const SliverFillRemaining(
+      AsyncLoading() => SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s4,
+            CatchSpacing.s5,
+            CatchSpacing.s6,
+          ),
           child: CatchSkeletonList(count: 4),
         ),
+      ),
       AsyncError(:final error) => SliverFillRemaining(
-          child: CatchErrorText(error),
-        ),
-      AsyncData(:final value) => value.isEmpty || uid == null
-          ? const SliverFillRemaining(child: ChatsEmptyState())
-          : SliverToBoxAdapter(
-              child: ChatsListBody(viewModel: value, uid: uid),
-            ),
+        child: CatchErrorText(error),
+      ),
+      AsyncData(:final value) =>
+        value.isEmpty || uid == null
+            ? const SliverFillRemaining(child: ChatsEmptyState())
+            : SliverToBoxAdapter(
+                child: ChatsListBody(viewModel: value, uid: uid),
+              ),
     };
   }
 }

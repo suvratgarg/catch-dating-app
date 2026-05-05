@@ -1,14 +1,14 @@
-/// Generates `functions/src/shared/firestore.ts` from Dart freezed models.
-///
-/// Usage: dart tool/generate_firestore_types.dart
-///
-/// Reads the Dart freezed model files listed in [_modelConfigs], parses their
-/// enums and factory constructors, maps them to TypeScript, merges in TS-only
-/// additions from [firestore_ts_overlay.json], and writes the result to
-/// functions/src/shared/firestore.ts.
-///
-/// CI enforces that the committed file matches the generated output — if you
-/// change a Dart model, run this script and commit the result.
+// Generates `functions/src/shared/firestore.ts` from Dart freezed models.
+//
+// Usage: dart tool/generate_firestore_types.dart
+//
+// Reads the Dart freezed model files listed in [_modelConfigs], parses their
+// enums and factory constructors, maps them to TypeScript, merges in TS-only
+// additions from [firestore_ts_overlay.json], and writes the result to
+// functions/src/shared/firestore.ts.
+//
+// CI enforces that the committed file matches the generated output — if you
+// change a Dart model, run this script and commit the result.
 
 import 'dart:convert';
 import 'dart:io';
@@ -79,9 +79,7 @@ final _modelConfigs = <_ModelConfig>[
 
 /// Extra Dart files that define enums used across models but don't have a
 /// corresponding top-level TS interface.
-final _extraEnumSources = <String>[
-  'lib/core/indian_city.dart',
-];
+final _extraEnumSources = <String>['lib/core/indian_city.dart'];
 
 void main() {
   final allEnums = <String, List<String>>{};
@@ -116,12 +114,14 @@ void main() {
 
   final outputPath = '$_projectRoot/functions/src/shared/firestore.ts';
   File(outputPath).writeAsStringSync(buf.toString());
-  print('Generated $outputPath');
+  stdout.writeln('Generated $outputPath');
 }
 
 // ── Parsing ──────────────────────────────────────────────────────────────────
 
-final _enumRegex = RegExp(r'enum\s+(\w+)\s*(?:implements\s+\w+\s*)?\{([^}]+)\}');
+final _enumRegex = RegExp(
+  r'enum\s+(\w+)\s*(?:implements\s+\w+\s*)?\{([^}]+)\}',
+);
 
 /// Enum names that are client-side only and should not appear in the TS output.
 const _clientOnlyEnums = {'RunSignUpStatus', 'RunEligibility'};
@@ -184,10 +184,6 @@ Map<String, List<String>> _parseEnums(String source) {
   }
   return enums;
 }
-
-final _annotationStripRegex = RegExp(
-  r"@\w+(?:\([^)]*(?:\([^)]*\)[^)]*)*\))?\s*",
-);
 
 /// Strips leading Dart annotations from [line]. Handles nested parens
 /// (e.g. `@Default(RunConstraints())`) by counting parenthesis depth.
@@ -281,10 +277,7 @@ _InterfaceInfo _parseInterface(String source, _ModelConfig config) {
     }
   }
 
-  return _InterfaceInfo(
-    config: config,
-    fields: fields,
-  );
+  return _InterfaceInfo(config: config, fields: fields);
 }
 
 _FieldInfo? _parseField(String line) {
@@ -310,7 +303,9 @@ _FieldInfo? _parseField(String line) {
   final dartType = parts.sublist(0, parts.length - 1).join(' ');
 
   final isNullable = dartType.endsWith('?');
-  final baseType = isNullable ? dartType.substring(0, dartType.length - 1) : dartType;
+  final baseType = isNullable
+      ? dartType.substring(0, dartType.length - 1)
+      : dartType;
   // Optional in TS if the field isn't `required` and has no `@Default`.
   // @Default guarantees a value is always written to Firestore.
   final isOptional = isNullable && !hasRequired && !hasDefault;
@@ -327,7 +322,8 @@ _FieldInfo? _parseField(String line) {
 
 Map<String, dynamic> _readOverlay() {
   final path = '$_projectRoot/tool/firestore_ts_overlay.json';
-  final json = jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
+  final json =
+      jsonDecode(File(path).readAsStringSync()) as Map<String, dynamic>;
   return json;
 }
 
@@ -364,11 +360,77 @@ String _mapDartTypeToTs(String dartType) {
 }
 
 String _fieldTsType(_FieldInfo field) {
-  final base = field.isTimestamp ? 'FirebaseFirestore.Timestamp' : _mapDartTypeToTs(field.dartType);
+  final base = field.isTimestamp
+      ? 'FirebaseFirestore.Timestamp'
+      : _mapDartTypeToTs(field.dartType);
   return field.isOptional ? '$base | null' : base;
 }
 
 // ── Output generation ────────────────────────────────────────────────────────
+
+const _tsMaxLineLength = 80;
+
+void _writeJsDocText(StringBuffer buf, String text) {
+  for (final line in _wrapWords(text, _tsMaxLineLength - 3)) {
+    buf.writeln(' * $line');
+  }
+}
+
+void _writeFieldComment(StringBuffer buf, String comment) {
+  final singleLine = '  /** $comment */';
+  if (singleLine.length <= _tsMaxLineLength) {
+    buf.writeln(singleLine);
+    return;
+  }
+
+  buf.writeln('  /**');
+  for (final line in _wrapWords(comment, _tsMaxLineLength - 5)) {
+    buf.writeln('   * $line');
+  }
+  buf.writeln('   */');
+}
+
+void _writeTsProperty(
+  StringBuffer buf, {
+  required String name,
+  required String optional,
+  required String tsType,
+}) {
+  final singleLine = '  $name$optional: $tsType;';
+  if (singleLine.length <= _tsMaxLineLength || !tsType.contains('|')) {
+    buf.writeln(singleLine);
+    return;
+  }
+
+  final parts = tsType.split('|').map((part) => part.trim()).toList();
+  buf.writeln('  $name$optional:');
+  for (var i = 0; i < parts.length; i++) {
+    final suffix = i == parts.length - 1 ? ';' : '';
+    buf.writeln('    | ${parts[i]}$suffix');
+  }
+}
+
+List<String> _wrapWords(String text, int maxLength) {
+  final words = text.split(RegExp(r'\s+')).where((word) => word.isNotEmpty);
+  final lines = <String>[];
+  var current = '';
+
+  for (final word in words) {
+    if (current.isEmpty) {
+      current = word;
+    } else if (current.length + 1 + word.length <= maxLength) {
+      current = '$current $word';
+    } else {
+      lines.add(current);
+      current = word;
+    }
+  }
+
+  if (current.isNotEmpty) {
+    lines.add(current);
+  }
+  return lines.isEmpty ? [''] : lines;
+}
 
 void _writeHeader(StringBuffer buf) {
   buf.writeln('/**');
@@ -379,20 +441,34 @@ void _writeHeader(StringBuffer buf) {
   buf.writeln(' *');
   buf.writeln(' * To update: dart tool/generate_firestore_types.dart');
   buf.writeln(' *');
-  buf.writeln(' * These mirror the Dart freezed models in lib/<feature>/domain/<Model>.dart.');
-  buf.writeln(' * Enum values match what Dart\'s json_serializable serialises by default');
-  buf.writeln(' * (enum member name, camelCase — e.g. DrinkingHabit.socially → "socially").');
+  buf.writeln(
+    ' * These mirror the Dart freezed models in lib/<feature>/domain/<Model>.dart.',
+  );
+  buf.writeln(
+    ' * Enum values match what Dart\'s json_serializable serialises by default',
+  );
+  buf.writeln(
+    ' * (enum member name, camelCase — e.g. DrinkingHabit.socially → "socially").',
+  );
   buf.writeln(' *');
-  buf.writeln(' * Fields marked with @JsonKey(includeToJson: false) in Dart are the');
+  buf.writeln(
+    ' * Fields marked with @JsonKey(includeToJson: false) in Dart are the',
+  );
   buf.writeln(' * document ID and are NOT stored inside the document data.');
   buf.writeln(' *');
-  buf.writeln(' * Timestamps are stored as Firestore timestamps in the DB. In admin SDK');
-  buf.writeln(' * code, use FirebaseFirestore.Timestamp and FieldValue.serverTimestamp()');
+  buf.writeln(
+    ' * Timestamps are stored as Firestore timestamps in the DB. In admin SDK',
+  );
+  buf.writeln(
+    ' * code, use FirebaseFirestore.Timestamp and FieldValue.serverTimestamp()',
+  );
   buf.writeln(' * to write.');
   buf.writeln(' */');
   buf.writeln();
   buf.writeln('// FirebaseFirestore.Timestamp is available globally via');
-  buf.writeln('// @google-cloud/firestore, a transitive dependency of firebase-admin.');
+  buf.writeln(
+    '// @google-cloud/firestore, a transitive dependency of firebase-admin.',
+  );
   buf.writeln();
 }
 
@@ -401,12 +477,13 @@ void _writeEnumTypes(
   Map<String, List<String>> allEnums,
   Map<String, dynamic> overlay,
 ) {
-  buf.writeln('// ── Shared enum types ────────────────────────────────────────────────────');
+  buf.writeln(
+    '// ── Shared enum types ────────────────────────────────────────────────────',
+  );
   buf.writeln();
 
-  final extraEnums =
-      (overlay['extraEnumTypes'] as List<dynamic>? ?? [])
-          .cast<Map<String, dynamic>>();
+  final extraEnums = (overlay['extraEnumTypes'] as List<dynamic>? ?? [])
+      .cast<Map<String, dynamic>>();
 
   // Collect all enum type names for output.
   final names = <String>[...allEnums.keys];
@@ -419,7 +496,9 @@ void _writeEnumTypes(
     if (allEnums.containsKey(name)) {
       final values = allEnums[name]!;
       if (values.length <= 4) {
-        buf.writeln('export type $name = ${values.map((v) => '"$v"').join(' | ')};');
+        buf.writeln(
+          'export type $name = ${values.map((v) => '"$v"').join(' | ')};',
+        );
       } else {
         buf.writeln('export type $name =');
         for (var i = 0; i < values.length; i++) {
@@ -432,7 +511,9 @@ void _writeEnumTypes(
       final extra = extraEnums.firstWhere((e) => e['name'] == name);
       final values = (extra['values'] as List<dynamic>).cast<String>();
       if (values.length <= 4) {
-        buf.writeln('export type $name = ${values.map((v) => '"$v"').join(' | ')};');
+        buf.writeln(
+          'export type $name = ${values.map((v) => '"$v"').join(' | ')};',
+        );
       } else {
         buf.writeln('export type $name =');
         for (var i = 0; i < values.length; i++) {
@@ -451,11 +532,12 @@ void _writeInterfaces(
   Map<String, List<String>> allEnums,
   Map<String, dynamic> overlay,
 ) {
-  buf.writeln('// ── Document interfaces ──────────────────────────────────────────────────');
+  buf.writeln(
+    '// ── Document interfaces ──────────────────────────────────────────────────',
+  );
   buf.writeln();
 
-  final extraFields =
-      (overlay['extraFields'] as Map<String, dynamic>? ?? {});
+  final extraFields = (overlay['extraFields'] as Map<String, dynamic>? ?? {});
   final fieldOverrides =
       (overlay['fieldOverrides'] as Map<String, dynamic>? ?? {});
   final interfaceComments =
@@ -483,11 +565,13 @@ void _writeInterfaces(
     }
     buf.writeln(' * Dart: ${config.dartPath} — ${config.dartName}');
     if (config.idField != null) {
-      buf.writeln(' * Note: "${config.idField}" is the document ID, not stored'
-          ' in the document data.');
+      buf.writeln(
+        ' * Note: "${config.idField}" is the document ID, not stored'
+        ' in the document data.',
+      );
     }
     if (ifaceComment != null) {
-      buf.writeln(' * $ifaceComment');
+      _writeJsDocText(buf, ifaceComment);
     }
     buf.writeln(' */');
 
@@ -502,21 +586,31 @@ void _writeInterfaces(
       if (overrides.contains(field.name)) continue;
 
       if (comment != null) {
-        buf.writeln('  /** $comment */');
+        _writeFieldComment(buf, comment);
       }
       final tsType = _fieldTsType(field);
       final optional = field.isOptional ? '?' : '';
-      buf.writeln('  ${field.name}$optional: $tsType;');
+      _writeTsProperty(
+        buf,
+        name: field.name,
+        optional: optional,
+        tsType: tsType,
+      );
     }
 
     // Write extra fields from overlay.
     for (final extraField in extra) {
       final comment = extraField['comment'] as String?;
       if (comment != null) {
-        buf.writeln('  /** $comment */');
+        _writeFieldComment(buf, comment);
       }
       final optional = extraField['optional'] == true ? '?' : '';
-      buf.writeln('  ${extraField['name']}$optional: ${extraField['tsType']};');
+      _writeTsProperty(
+        buf,
+        name: extraField['name'] as String,
+        optional: optional,
+        tsType: extraField['tsType'] as String,
+      );
     }
 
     buf.writeln('}');
@@ -524,32 +618,36 @@ void _writeInterfaces(
   }
 }
 
-void _writeExtraInterfaces(
-  StringBuffer buf,
-  Map<String, dynamic> overlay,
-) {
-  final extraInterfaces =
-      (overlay['extraInterfaces'] as List<dynamic>? ?? [])
-          .cast<Map<String, dynamic>>();
+void _writeExtraInterfaces(StringBuffer buf, Map<String, dynamic> overlay) {
+  final extraInterfaces = (overlay['extraInterfaces'] as List<dynamic>? ?? [])
+      .cast<Map<String, dynamic>>();
 
   if (extraInterfaces.isEmpty) return;
 
-  buf.writeln('// ── Server-only interfaces (no Dart model) ────────────────────────────────');
+  buf.writeln(
+    '// ── Server-only interfaces (no Dart model) ────────────────────────────────',
+  );
   buf.writeln();
 
   for (final iface in extraInterfaces) {
-    final fields = (iface['fields'] as List<dynamic>).cast<Map<String, dynamic>>();
+    final fields = (iface['fields'] as List<dynamic>)
+        .cast<Map<String, dynamic>>();
 
     buf.writeln('/**');
     buf.writeln(' * ${iface['collectionPath']}');
     if (iface['comment'] != null) {
-      buf.writeln(' * ${iface['comment']}');
+      _writeJsDocText(buf, iface['comment'] as String);
     }
     buf.writeln(' */');
     buf.writeln('export interface ${iface['name']} {');
     for (final field in fields) {
       final optional = field['optional'] == true ? '?' : '';
-      buf.writeln('  ${field['name']}$optional: ${field['tsType']};');
+      _writeTsProperty(
+        buf,
+        name: field['name'] as String,
+        optional: optional,
+        tsType: field['tsType'] as String,
+      );
     }
     buf.writeln('}');
     buf.writeln();

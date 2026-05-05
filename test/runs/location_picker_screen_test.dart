@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';

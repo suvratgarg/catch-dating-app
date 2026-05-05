@@ -12,6 +12,7 @@ abstract class OnboardingDraft with _$OnboardingDraft {
 
   const factory OnboardingDraft({
     required int step,
+    @Default(0) int draftVersion,
     @Default('') String firstName,
     @Default('') String lastName,
     @TimestampConverter() DateTime? dateOfBirth,

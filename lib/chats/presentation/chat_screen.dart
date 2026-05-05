@@ -5,65 +5,71 @@ import 'package:catch_dating_app/chats/data/chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
-import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_run_context_header.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
-class ChatScreen extends ConsumerStatefulWidget {
+class ChatScreen extends StatelessWidget {
   const ChatScreen({super.key, required this.matchId, this.otherProfile});
 
   final String matchId;
   final PublicProfile? otherProfile;
 
   @override
-  ConsumerState<ChatScreen> createState() => _ChatScreenState();
+  Widget build(BuildContext context) {
+    return _ChatContent(matchId: matchId, initialProfile: otherProfile);
+  }
 }
 
-class _ChatScreenState extends ConsumerState<ChatScreen> {
-  final _controller = TextEditingController();
+class _ChatContent extends ConsumerStatefulWidget {
+  const _ChatContent({required this.matchId, required this.initialProfile});
+
+  final String matchId;
+  final PublicProfile? initialProfile;
+
+  @override
+  ConsumerState<_ChatContent> createState() => _ChatContentState();
+}
+
+class _ChatContentState extends ConsumerState<_ChatContent> {
+  final _textController = TextEditingController();
   final _scrollController = ScrollController();
-  bool _sending = false;
-  bool _sendingImage = false;
   bool _didScrollToLatestMessage = false;
   int _lastMessageCount = 0;
   String? _lastResetUid;
-  late final ChatController _chatController;
 
   @override
   void initState() {
     super.initState();
-    _chatController = ref.read(chatControllerProvider.notifier);
     _resetUnread(ref.read(uidProvider).value);
   }
 
   @override
   void dispose() {
-    _resetUnread(_lastResetUid, force: true);
-    _controller.dispose();
+    _textController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _resetUnread(String? uid, {bool force = false}) {
+  void _resetUnread(String? uid) {
     if (uid == null) return;
-    if (!force && uid == _lastResetUid) return;
+    if (uid == _lastResetUid) return;
 
     _lastResetUid = uid;
-    unawaited(_chatController.resetUnread(matchId: widget.matchId, uid: uid));
+    unawaited(
+      ref
+          .read(chatControllerProvider.notifier)
+          .resetUnread(matchId: widget.matchId, uid: uid),
+    );
   }
 
   bool _isNearBottom() {
@@ -123,42 +129,39 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   Future<void> _send() async {
     final uid = ref.read(uidProvider).value;
-    final text = _controller.text.trim();
-    if (text.isEmpty || _sending || uid == null) return;
+    final text = _textController.text.trim();
+    final sendMutation = ref.read(ChatController.sendMessageMutation);
+    if (text.isEmpty || sendMutation.isPending || uid == null) return;
 
-    setState(() => _sending = true);
-    _controller.clear();
+    _textController.clear();
 
-    try {
-      await _chatController.sendMessage(
-        matchId: widget.matchId,
-        senderId: uid,
-        text: text,
+    await ChatController.sendMessageMutation.run(ref, (tx) async {
+      await tx
+          .get(chatControllerProvider.notifier)
+          .sendMessage(matchId: widget.matchId, senderId: uid, text: text);
+    });
+
+    if (_scrollController.hasClients) {
+      unawaited(
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        ),
       );
-      if (_scrollController.hasClients) {
-        unawaited(
-          _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: const Duration(milliseconds: 200),
-            curve: Curves.easeOut,
-          ),
-        );
-      }
-    } finally {
-      if (mounted) setState(() => _sending = false);
     }
   }
 
   Future<void> _sendImage() async {
     final uid = ref.read(uidProvider).value;
-    if (_sendingImage || uid == null) return;
+    final imageMutation = ref.read(ChatController.sendImageMutation);
+    if (imageMutation.isPending || uid == null) return;
 
-    setState(() => _sendingImage = true);
-    try {
-      await _chatController.sendImage(matchId: widget.matchId, senderId: uid);
-    } finally {
-      if (mounted) setState(() => _sendingImage = false);
-    }
+    await ChatController.sendImageMutation.run(ref, (tx) async {
+      await tx
+          .get(chatControllerProvider.notifier)
+          .sendImage(matchId: widget.matchId, senderId: uid);
+    });
   }
 
   Future<void> _confirmBlock({
@@ -171,7 +174,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     );
     if (confirmed != true) return;
 
-    await _chatController.blockUser(targetUserId: targetUserId);
+    await ChatController.blockUserMutation.run(ref, (tx) async {
+      await tx
+          .get(chatControllerProvider.notifier)
+          .blockUser(targetUserId: targetUserId);
+    });
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -179,10 +186,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     required String targetUserId,
     required String targetName,
   }) async {
-    await _chatController.reportUser(
-      targetUserId: targetUserId,
-      matchId: widget.matchId,
-    );
+    await ChatController.reportUserMutation.run(ref, (tx) async {
+      await tx
+          .get(chatControllerProvider.notifier)
+          .reportUser(targetUserId: targetUserId, matchId: widget.matchId);
+    });
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Report submitted for $targetName.')),
@@ -191,7 +199,6 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
-    ref.watch(chatControllerProvider);
     ref.listen(uidProvider, (_, next) {
       if (next.value != null) {
         _resetUnread(next.value);
@@ -215,12 +222,11 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
     final runAsync = match == null
         ? const AsyncData<Run?>(null)
         : ref.watch(watchRunProvider(match.runId));
-    final t = CatchTokens.of(context);
     final otherUid = uid == null ? null : match?.otherId(uid);
     final otherProfileAsync = otherUid == null
         ? const AsyncData<PublicProfile?>(null)
         : ref.watch(watchPublicProfileProvider(otherUid));
-    final profile = otherProfileAsync.asData?.value ?? widget.otherProfile;
+    final profile = otherProfileAsync.asData?.value ?? widget.initialProfile;
     final name = profile?.name ?? 'Chat';
     final photoUrl = profile?.photoUrls.isNotEmpty == true
         ? profile!.photoUrls.first
@@ -232,182 +238,71 @@ class _ChatScreenState extends ConsumerState<ChatScreen> {
       _syncScrollWithMessages(messages: initialMessages);
     }
 
-    return Scaffold(
-      appBar: CatchTopBar(
-        titleWidget: Row(
+    return _ChatMutationListeners(
+      child: Scaffold(
+        appBar: ChatTopBar(
+          name: name,
+          photoUrl: photoUrl,
+          otherUid: otherUid,
+          profile: profile,
+          onReport: otherUid == null
+              ? () {}
+              : () => _reportUser(
+                  targetUserId: otherUid,
+                  targetName: profile?.name ?? 'this person',
+                ),
+          onBlock: otherUid == null
+              ? () {}
+              : () => _confirmBlock(
+                  targetUserId: otherUid,
+                  targetName: profile?.name ?? 'this person',
+                ),
+        ),
+        body: Column(
           children: [
-            CircleAvatar(
-              radius: 18,
-              backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-              backgroundColor: t.primarySoft,
-              child: photoUrl == null
-                  ? Text(
-                      name.isNotEmpty ? name[0].toUpperCase() : '?',
-                      style: CatchTextStyles.labelL(context, color: t.primary),
-                    )
-                  : null,
-            ),
-            gapW10,
+            ChatRunContextHeader(run: runAsync.asData?.value),
             Expanded(
-              child: Text(
-                name,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.titleL(context, color: t.ink),
+              child: ChatMessageList(
+                messagesAsync: messagesAsync,
+                currentUid: uid,
+                otherName: profile?.name ?? 'your match',
+                scrollController: _scrollController,
               ),
+            ),
+            ChatInputBar(
+              controller: _textController,
+              sending: ref.watch(ChatController.sendMessageMutation).isPending,
+              onSend: match?.isBlocked == true ? null : _send,
+              onSendImage: match?.isBlocked == true ? null : _sendImage,
+              sendingImage: ref
+                  .watch(ChatController.sendImageMutation)
+                  .isPending,
             ),
           ],
         ),
-        actions: [
-          if (otherUid != null)
-            CatchTopBarMenuAction<String>(
-              tooltip: 'Chat actions',
-              onSelected: (value) {
-                switch (value) {
-                  case 'profile':
-                    context.pushNamed(
-                      Routes.publicProfileScreen.name,
-                      pathParameters: {'uid': otherUid},
-                      extra: profile,
-                    );
-                  case 'report':
-                    _reportUser(
-                      targetUserId: otherUid,
-                      targetName: profile?.name ?? 'this person',
-                    );
-                  case 'block':
-                    _confirmBlock(
-                      targetUserId: otherUid,
-                      targetName: profile?.name ?? 'this person',
-                    );
-                  default:
-                }
-              },
-              itemBuilder: (context) => const [
-                PopupMenuItem(value: 'profile', child: Text('View profile')),
-                PopupMenuItem(value: 'report', child: Text('Report')),
-                PopupMenuItem(value: 'block', child: Text('Block')),
-              ],
-            ),
-        ],
-      ),
-      body: Column(
-        children: [
-          _RunContextHeader(run: runAsync.asData?.value),
-          Expanded(
-            child: messagesAsync.when(
-              loading: () => const CatchLoadingIndicator(),
-              error: (e, _) => Center(
-                child: Text(
-                  'Unable to load messages.',
-                  style: CatchTextStyles.bodyM(context, color: t.ink2),
-                ),
-              ),
-              data: (messages) {
-                if (messages.isEmpty) {
-                  return Center(
-                    child: Text(
-                      'Say hi to ${profile?.name ?? 'your match'}!',
-                      style: CatchTextStyles.bodyM(context, color: t.ink2),
-                    ),
-                  );
-                }
-
-                return ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: Sizes.p12,
-                    vertical: Sizes.p16,
-                  ),
-                  itemCount: messages.length,
-                  prototypeItem: MessageBubble(
-                    text: 'placeholder',
-                    isMe: false,
-                    sentAt: DateTime.now(),
-                  ),
-                  itemBuilder: (context, i) {
-                    final msg = messages[i];
-                    final isMe = msg.senderId == uid;
-                    return MessageBubble(
-                      text: msg.text,
-                      isMe: isMe,
-                      sentAt: msg.sentAt,
-                      imageUrl: msg.imageUrl,
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-          ChatInputBar(
-            controller: _controller,
-            sending: _sending,
-            onSend: match?.isBlocked == true ? null : _send,
-            onSendImage: match?.isBlocked == true ? null : _sendImage,
-            sendingImage: _sendingImage,
-          ),
-        ],
       ),
     );
   }
 }
 
-class _RunContextHeader extends StatelessWidget {
-  const _RunContextHeader({required this.run});
+class _ChatMutationListeners extends StatelessWidget {
+  const _ChatMutationListeners({required this.child});
 
-  final Run? run;
+  final Widget child;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final title = run?.title ?? 'the same run';
-    final date = run == null
-        ? null
-        : DateFormat('EEE d MMM').format(run!.startTime);
-
-    return Container(
-      width: double.infinity,
-      margin: const EdgeInsets.fromLTRB(Sizes.p12, Sizes.p8, Sizes.p12, 0),
-      padding: const EdgeInsets.all(Sizes.p12),
-      decoration: BoxDecoration(
-        color: t.primarySoft,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        border: Border.all(color: t.line),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 36,
-            height: 36,
-            decoration: BoxDecoration(color: t.surface, shape: BoxShape.circle),
-            child: Icon(Icons.directions_run_rounded, color: t.primary),
+    return MutationErrorSnackbarListener(
+      mutation: ChatController.sendMessageMutation,
+      child: MutationErrorSnackbarListener(
+        mutation: ChatController.sendImageMutation,
+        child: MutationErrorSnackbarListener(
+          mutation: ChatController.reportUserMutation,
+          child: MutationErrorSnackbarListener(
+            mutation: ChatController.blockUserMutation,
+            child: child,
           ),
-          gapW10,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'YOU BOTH RAN',
-                  style: CatchTextStyles.labelM(
-                    context,
-                    color: t.primary,
-                  ).copyWith(fontWeight: FontWeight.w800),
-                ),
-                gapH2,
-                Text(
-                  date == null ? title : '$title · $date',
-                  style: CatchTextStyles.bodyS(
-                    context,
-                    color: t.ink,
-                  ).copyWith(fontWeight: FontWeight.w600),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ],
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

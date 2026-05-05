@@ -6,7 +6,6 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draf
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
@@ -100,7 +99,7 @@ void main() {
     });
 
     test(
-      'requires phone verification for signed-in users without a phone',
+      'starts at welcome for signed-in users without a phone',
       () async {
         final repository = FakeAuthRepository()
           ..currentUserValue = TestUser(uid: 'runner-1');
@@ -121,154 +120,7 @@ void main() {
 
         expect(
           container.read(onboardingControllerProvider).step,
-          OnboardingStep.phone,
-        );
-        expect(
-          container.read(onboardingControllerProvider).phoneVerified,
-          isFalse,
-        );
-      },
-    );
-  });
-
-  group('OnboardingController.sendOtp', () {
-    test(
-      'prefixes +91 and advances to the OTP step when code is sent',
-      () async {
-        final repository = FakeAuthRepository()
-          ..onVerifyPhoneNumber =
-              ({
-                required verificationCompleted,
-                required verificationFailed,
-                required codeSent,
-                required codeAutoRetrievalTimeout,
-              }) {
-                codeSent('verification-id', 11);
-              };
-        final container = createOnboardingTestContainer(
-          overrides: [authRepositoryProvider.overrideWithValue(repository)],
-        );
-        addTearDown(repository.dispose);
-        addTearDown(container.dispose);
-
-        final notifier = container.read(onboardingControllerProvider.notifier);
-
-        await notifier.sendOtp('9999999999', '+91');
-
-        expect(repository.verifiedPhoneNumber, '+919999999999');
-        expect(
-          container.read(onboardingControllerProvider),
-          const OnboardingData(
-            step: OnboardingStep.otp,
-            verificationId: 'verification-id',
-            profileDraft: OnboardingProfileDraft(phoneNumber: '9999999999', countryCode: '+91'),
-          ),
-        );
-        expect(repository.credential, isNull);
-        expect(repository.otpVerificationId, isNull);
-      },
-    );
-
-    test(
-      'uses signInWithCredential during auto verification and advances to profile',
-      () async {
-        final credential = PhoneAuthProvider.credential(
-          verificationId: 'verification-id',
-          smsCode: '123456',
-        );
-        final repository = FakeAuthRepository()
-          ..onVerifyPhoneNumber =
-              ({
-                required verificationCompleted,
-                required verificationFailed,
-                required codeSent,
-                required codeAutoRetrievalTimeout,
-              }) {
-                verificationCompleted(credential);
-              };
-        final container = createOnboardingTestContainer(
-          overrides: [authRepositoryProvider.overrideWithValue(repository)],
-        );
-        addTearDown(repository.dispose);
-        addTearDown(container.dispose);
-
-        final notifier = container.read(onboardingControllerProvider.notifier);
-
-        await notifier.sendOtp('9999999999', '+91');
-
-        expect(repository.credential, same(credential));
-        expect(repository.otpVerificationId, isNull);
-        expect(
-          container.read(onboardingControllerProvider).step,
-          OnboardingStep.nameDob,
-        );
-        expect(
-          container.read(onboardingControllerProvider).phoneVerified,
-          isTrue,
-        );
-      },
-    );
-  });
-
-  group('OnboardingController.verifyOtp', () {
-    test(
-      'throws a friendly error when no verification session is active',
-      () async {
-        final repository = FakeAuthRepository();
-        final container = createOnboardingTestContainer(
-          overrides: [authRepositoryProvider.overrideWithValue(repository)],
-        );
-        addTearDown(repository.dispose);
-        addTearDown(container.dispose);
-
-        await expectLater(
-          container
-              .read(onboardingControllerProvider.notifier)
-              .verifyOtp('123456'),
-          throwsA(
-            isA<StateError>().having(
-              (error) => error.message,
-              'message',
-              'Verification session expired. Please request a new code.',
-            ),
-          ),
-        );
-        expect(repository.otpVerificationId, isNull);
-      },
-    );
-
-    test(
-      'signs in with the stored verification id and marks the phone as verified',
-      () async {
-        final repository = FakeAuthRepository()
-          ..onVerifyPhoneNumber =
-              ({
-                required verificationCompleted,
-                required verificationFailed,
-                required codeSent,
-                required codeAutoRetrievalTimeout,
-              }) {
-                codeSent('verification-id', 11);
-              };
-        final container = createOnboardingTestContainer(
-          overrides: [authRepositoryProvider.overrideWithValue(repository)],
-        );
-        addTearDown(repository.dispose);
-        addTearDown(container.dispose);
-        final notifier = container.read(onboardingControllerProvider.notifier);
-
-        await notifier.sendOtp('9999999999', '+91');
-        await notifier.verifyOtp('123456');
-
-        expect(repository.otpVerificationId, 'verification-id');
-        expect(repository.otpSmsCode, '123456');
-        expect(
-          container.read(onboardingControllerProvider).step,
-          OnboardingStep.nameDob,
-        );
-        expect(
-          container.read(onboardingControllerProvider).phoneVerified,
-          isTrue,
+          OnboardingStep.welcome,
         );
       },
     );

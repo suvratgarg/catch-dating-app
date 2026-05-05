@@ -1,6 +1,6 @@
 part of '../run_club_list_tile.dart';
 
-class _DirectoryCard extends ConsumerWidget {
+class _DirectoryCard extends StatelessWidget {
   const _DirectoryCard({
     required this.club,
     required this.isJoined,
@@ -12,9 +12,8 @@ class _DirectoryCard extends ConsumerWidget {
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final joinMutation = ref.watch(RunClubsListController.joinMutation);
 
     return CatchSurface(
       onTap: onTap,
@@ -119,10 +118,7 @@ class _DirectoryCard extends ConsumerWidget {
                   ),
                 ],
                 const SizedBox(height: 10),
-                Container(
-                  height: 1,
-                  color: t.line,
-                ),
+                Container(height: 1, color: t.line),
                 const SizedBox(height: 10),
                 Row(
                   children: [
@@ -133,26 +129,7 @@ class _DirectoryCard extends ConsumerWidget {
                       style: CatchTextStyles.bodyS(context, color: t.ink2),
                     ),
                     const Spacer(),
-                    if (!isJoined)
-                      CatchButton(
-                        label: 'Join',
-                        onPressed: joinMutation.isPending
-                            ? null
-                            : () {
-                                final uid =
-                                    ref.read(uidProvider).asData?.value;
-                                if (uid == null) {
-                                  context.pushNamed(
-                                    Routes.onboardingScreen.name,
-                                    queryParameters: {'from': '/clubs'},
-                                  );
-                                  return;
-                                }
-                                _joinClub(ref);
-                              },
-                        variant: CatchButtonVariant.secondary,
-                        size: CatchButtonSize.sm,
-                      ),
+                    if (!isJoined) _JoinClubButton(clubId: club.id),
                   ],
                 ),
               ],
@@ -162,12 +139,42 @@ class _DirectoryCard extends ConsumerWidget {
       ),
     );
   }
+}
+
+class _JoinClubButton extends ConsumerWidget {
+  const _JoinClubButton({required this.clubId});
+
+  final String clubId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final joinMutation = ref.watch(RunClubsListController.joinMutation);
+
+    return CatchButton(
+      label: 'Join',
+      onPressed: joinMutation.isPending
+          ? null
+          : () {
+              final uid = ref.read(uidProvider).asData?.value;
+              if (uid == null) {
+                context.pushNamed(
+                  Routes.onboardingScreen.name,
+                  queryParameters: {'from': '/clubs'},
+                );
+                return;
+              }
+              _joinClub(ref);
+            },
+      variant: CatchButtonVariant.secondary,
+      size: CatchButtonSize.sm,
+    );
+  }
 
   void _joinClub(WidgetRef ref) {
     RunClubsListController.joinMutation.run(ref, (transaction) async {
       await transaction
           .get(runClubsListControllerProvider.notifier)
-          .joinClub(club.id);
+          .joinClub(clubId);
     });
   }
 }

@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RunDetailViewModel {
 
- Run get run; UserProfile? get userProfile; List<Review> get reviews; bool get isAuthenticated;
+ Run get run; UserProfile? get userProfile; List<Review> get reviews; bool get isAuthenticated; bool get isHost;
 /// Create a copy of RunDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RunDetailViewModelCopyWith<RunDetailViewModel> get copyWith => _$RunDetailViewM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunDetailViewModel&&(identical(other.run, run) || other.run == run)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunDetailViewModel&&(identical(other.run, run) || other.run == run)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,run,userProfile,const DeepCollectionEquality().hash(reviews),isAuthenticated);
+int get hashCode => Object.hash(runtimeType,run,userProfile,const DeepCollectionEquality().hash(reviews),isAuthenticated,isHost);
 
 @override
 String toString() {
-  return 'RunDetailViewModel(run: $run, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated)';
+  return 'RunDetailViewModel(run: $run, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $RunDetailViewModelCopyWith<$Res>  {
   factory $RunDetailViewModelCopyWith(RunDetailViewModel value, $Res Function(RunDetailViewModel) _then) = _$RunDetailViewModelCopyWithImpl;
 @useResult
 $Res call({
- Run run, UserProfile? userProfile, List<Review> reviews, bool isAuthenticated
+ Run run, UserProfile? userProfile, List<Review> reviews, bool isAuthenticated, bool isHost
 });
 
 
@@ -62,12 +62,13 @@ class _$RunDetailViewModelCopyWithImpl<$Res>
 
 /// Create a copy of RunDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? run = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? run = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,Object? isHost = null,}) {
   return _then(_self.copyWith(
 run: null == run ? _self.run : run // ignore: cast_nullable_to_non_nullable
 as Run,userProfile: freezed == userProfile ? _self.userProfile : userProfile // ignore: cast_nullable_to_non_nullable
 as UserProfile?,reviews: null == reviews ? _self.reviews : reviews // ignore: cast_nullable_to_non_nullable
 as List<Review>,isAuthenticated: null == isAuthenticated ? _self.isAuthenticated : isAuthenticated // ignore: cast_nullable_to_non_nullable
+as bool,isHost: null == isHost ? _self.isHost : isHost // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -174,10 +175,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Run run,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( Run run,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RunDetailViewModel() when $default != null:
-return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated);case _:
+return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost);case _:
   return orElse();
 
 }
@@ -195,10 +196,10 @@ return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated)
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Run run,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( Run run,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost)  $default,) {final _that = this;
 switch (_that) {
 case _RunDetailViewModel():
-return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated);case _:
+return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -215,10 +216,10 @@ return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated)
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Run run,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( Run run,  UserProfile? userProfile,  List<Review> reviews,  bool isAuthenticated,  bool isHost)?  $default,) {final _that = this;
 switch (_that) {
 case _RunDetailViewModel() when $default != null:
-return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated);case _:
+return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated,_that.isHost);case _:
   return null;
 
 }
@@ -230,7 +231,7 @@ return $default(_that.run,_that.userProfile,_that.reviews,_that.isAuthenticated)
 
 
 class _RunDetailViewModel implements RunDetailViewModel {
-  const _RunDetailViewModel({required this.run, required this.userProfile, required final  List<Review> reviews, required this.isAuthenticated}): _reviews = reviews;
+  const _RunDetailViewModel({required this.run, required this.userProfile, required final  List<Review> reviews, required this.isAuthenticated, required this.isHost}): _reviews = reviews;
   
 
 @override final  Run run;
@@ -243,6 +244,7 @@ class _RunDetailViewModel implements RunDetailViewModel {
 }
 
 @override final  bool isAuthenticated;
+@override final  bool isHost;
 
 /// Create a copy of RunDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
@@ -254,16 +256,16 @@ _$RunDetailViewModelCopyWith<_RunDetailViewModel> get copyWith => __$RunDetailVi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunDetailViewModel&&(identical(other.run, run) || other.run == run)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunDetailViewModel&&(identical(other.run, run) || other.run == run)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated)&&(identical(other.isHost, isHost) || other.isHost == isHost));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,run,userProfile,const DeepCollectionEquality().hash(_reviews),isAuthenticated);
+int get hashCode => Object.hash(runtimeType,run,userProfile,const DeepCollectionEquality().hash(_reviews),isAuthenticated,isHost);
 
 @override
 String toString() {
-  return 'RunDetailViewModel(run: $run, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated)';
+  return 'RunDetailViewModel(run: $run, userProfile: $userProfile, reviews: $reviews, isAuthenticated: $isAuthenticated, isHost: $isHost)';
 }
 
 
@@ -274,7 +276,7 @@ abstract mixin class _$RunDetailViewModelCopyWith<$Res> implements $RunDetailVie
   factory _$RunDetailViewModelCopyWith(_RunDetailViewModel value, $Res Function(_RunDetailViewModel) _then) = __$RunDetailViewModelCopyWithImpl;
 @override @useResult
 $Res call({
- Run run, UserProfile? userProfile, List<Review> reviews, bool isAuthenticated
+ Run run, UserProfile? userProfile, List<Review> reviews, bool isAuthenticated, bool isHost
 });
 
 
@@ -291,12 +293,13 @@ class __$RunDetailViewModelCopyWithImpl<$Res>
 
 /// Create a copy of RunDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? run = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? run = null,Object? userProfile = freezed,Object? reviews = null,Object? isAuthenticated = null,Object? isHost = null,}) {
   return _then(_RunDetailViewModel(
 run: null == run ? _self.run : run // ignore: cast_nullable_to_non_nullable
 as Run,userProfile: freezed == userProfile ? _self.userProfile : userProfile // ignore: cast_nullable_to_non_nullable
 as UserProfile?,reviews: null == reviews ? _self._reviews : reviews // ignore: cast_nullable_to_non_nullable
 as List<Review>,isAuthenticated: null == isAuthenticated ? _self.isAuthenticated : isAuthenticated // ignore: cast_nullable_to_non_nullable
+as bool,isHost: null == isHost ? _self.isHost : isHost // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

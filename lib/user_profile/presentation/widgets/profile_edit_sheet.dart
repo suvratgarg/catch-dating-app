@@ -1,44 +1,27 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-// Serializes profile saves so rapid edits don't race.
-Future<void> _pendingSave = Future.value();
-
-/// Persists [fields] to the current user's Firestore document via
-/// [UserProfileRepository.updateUserProfile], which uses [DocumentReference.update]
-/// to touch only the supplied keys. This avoids the Timestamp → DateTime →
-/// Timestamp round-trip on [dateOfBirth] that a full-document [set] would cause.
 Future<void> _saveField({
   required WidgetRef ref,
   required Map<String, dynamic> fields,
 }) {
-  _pendingSave = _pendingSave
-      .then((_) async {
-        final uid = ref.read(uidProvider).asData?.value;
-        if (uid == null) return;
-        await ref
-            .read(userProfileRepositoryProvider)
-            .updateUserProfile(uid: uid, fields: fields);
-      })
-      .catchError((Object error, StackTrace stack) {
-        debugPrint('[ERROR] ProfileEditSheet._saveField: $error\n$stack');
-        // Reset the chain so subsequent saves are not blocked.
-        _pendingSave = Future.value();
-      });
-  return _pendingSave;
+  return ProfileEditController.saveFieldsMutation.run(
+    ref,
+    (tx) async =>
+        tx.get(profileEditControllerProvider.notifier).saveFields(fields),
+  );
 }
 
 String _enumName(Object value) => value is Enum ? value.name : value.toString();
@@ -62,44 +45,30 @@ Future<void> showTextEditSheet({
     builder: (ctx) {
       return Form(
         key: formKey,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            Sizes.p16,
-            Sizes.p12,
-            Sizes.p16,
-            MediaQuery.of(ctx).viewInsets.bottom + Sizes.p16,
+        child: CatchBottomSheetScaffold(
+          keyboardSafe: true,
+          action: CatchButton(
+            label: 'Done',
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.of(ctx).pop(true);
+              }
+            },
+            fullWidth: true,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const BottomSheetGrabber(),
-              gapH16,
-              CatchTextField(
-                label: title,
-                controller: controller,
-                autofocus: true,
-                maxLines: fieldName == 'bio' ? 4 : 1,
-                textCapitalization: TextCapitalization.sentences,
-                textInputAction: TextInputAction.done,
-                validator: validator,
-                onSubmitted: (_) {
-                  if (formKey.currentState!.validate()) {
-                    Navigator.of(ctx).pop(true);
-                  }
-                },
-              ),
-              gapH16,
-              CatchButton(
-                label: 'Done',
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    Navigator.of(ctx).pop(true);
-                  }
-                },
-                fullWidth: true,
-              ),
-            ],
+          child: CatchTextField(
+            label: title,
+            controller: controller,
+            autofocus: true,
+            maxLines: fieldName == 'bio' ? 4 : 1,
+            textCapitalization: TextCapitalization.sentences,
+            textInputAction: TextInputAction.done,
+            validator: validator,
+            onSubmitted: (_) {
+              if (formKey.currentState!.validate()) {
+                Navigator.of(ctx).pop(true);
+              }
+            },
           ),
         ),
       );
@@ -136,45 +105,31 @@ Future<void> showIntEditSheet({
     builder: (ctx) {
       return Form(
         key: formKey,
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            Sizes.p16,
-            Sizes.p12,
-            Sizes.p16,
-            MediaQuery.of(ctx).viewInsets.bottom + Sizes.p16,
+        child: CatchBottomSheetScaffold(
+          keyboardSafe: true,
+          action: CatchButton(
+            label: 'Done',
+            onPressed: () {
+              if (formKey.currentState!.validate()) {
+                Navigator.of(ctx).pop(true);
+              }
+            },
+            fullWidth: true,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const BottomSheetGrabber(),
-              gapH16,
-              CatchTextField(
-                label: title,
-                controller: controller,
-                autofocus: true,
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                suffixText: title == 'Height' ? 'cm' : null,
-                textInputAction: TextInputAction.done,
-                validator: validator,
-                onSubmitted: (_) {
-                  if (formKey.currentState!.validate()) {
-                    Navigator.of(ctx).pop(true);
-                  }
-                },
-              ),
-              gapH16,
-              CatchButton(
-                label: 'Done',
-                onPressed: () {
-                  if (formKey.currentState!.validate()) {
-                    Navigator.of(ctx).pop(true);
-                  }
-                },
-                fullWidth: true,
-              ),
-            ],
+          child: CatchTextField(
+            label: title,
+            controller: controller,
+            autofocus: true,
+            keyboardType: TextInputType.number,
+            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+            suffixText: title == 'Height' ? 'cm' : null,
+            textInputAction: TextInputAction.done,
+            validator: validator,
+            onSubmitted: (_) {
+              if (formKey.currentState!.validate()) {
+                Navigator.of(ctx).pop(true);
+              }
+            },
           ),
         ),
       );
@@ -209,30 +164,22 @@ Future<void> showSingleEnumSheet<T extends Labelled>({
       T selected = currentValue;
       return StatefulBuilder(
         builder: (ctx, setSheetState) {
-          return Padding(
+          return CatchBottomSheetScaffold(
             padding: const EdgeInsets.fromLTRB(
               Sizes.p16,
               Sizes.p12,
               Sizes.p16,
               Sizes.p32,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const BottomSheetGrabber(),
-                gapH16,
-                ChipField<T>(
-                  label: title,
-                  values: values,
-                  selected: {selected},
-                  multiSelect: false,
-                  onChanged: (next) {
-                    setSheetState(() => selected = next.first);
-                    Navigator.of(ctx).pop(next.first);
-                  },
-                ),
-              ],
+            child: ChipField<T>(
+              label: title,
+              values: values,
+              selected: {selected},
+              multiSelect: false,
+              onChanged: (next) {
+                setSheetState(() => selected = next.first);
+                Navigator.of(ctx).pop(next.first);
+              },
             ),
           );
         },
@@ -262,33 +209,24 @@ Future<void> showMultiEnumSheet<T extends Labelled>({
       Set<T> selected = currentValues.toSet();
       return StatefulBuilder(
         builder: (ctx, setSheetState) {
-          return Padding(
+          return CatchBottomSheetScaffold(
             padding: const EdgeInsets.fromLTRB(
               Sizes.p16,
               Sizes.p12,
               Sizes.p16,
               Sizes.p32,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const BottomSheetGrabber(),
-                gapH16,
-                ChipField<T>(
-                  label: title,
-                  values: values,
-                  selected: selected,
-                  multiSelect: true,
-                  onChanged: (next) => setSheetState(() => selected = next),
-                ),
-                gapH16,
-                CatchButton(
-                  label: 'Done',
-                  onPressed: () => Navigator.of(ctx).pop(selected.toList()),
-                  fullWidth: true,
-                ),
-              ],
+            action: CatchButton(
+              label: 'Done',
+              onPressed: () => Navigator.of(ctx).pop(selected.toList()),
+              fullWidth: true,
+            ),
+            child: ChipField<T>(
+              label: title,
+              values: values,
+              selected: selected,
+              multiSelect: true,
+              onChanged: (next) => setSheetState(() => selected = next),
             ),
           );
         },
@@ -328,46 +266,27 @@ Future<void> _showRangeEditSheet({
     builder: (ctx) {
       return StatefulBuilder(
         builder: (ctx, setSheetState) {
-          return Padding(
+          return CatchBottomSheetScaffold(
+            title: title,
+            subtitle: displayText(range),
             padding: const EdgeInsets.fromLTRB(
               Sizes.p16,
               Sizes.p12,
               Sizes.p16,
               Sizes.p32,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const BottomSheetGrabber(),
-                gapH16,
-                Text(title, style: CatchTextStyles.titleL(context)),
-                gapH4,
-                Text(
-                  displayText(range),
-                  style: CatchTextStyles.bodyS(
-                    context,
-                    color: CatchTokens.of(context).ink3,
-                  ),
-                ),
-                RangeSlider(
-                  min: sliderMin,
-                  max: sliderMax,
-                  divisions: divisions,
-                  values: range,
-                  labels: RangeLabels(
-                    labelText(range.start),
-                    labelText(range.end),
-                  ),
-                  onChanged: (values) => setSheetState(() => range = values),
-                ),
-                gapH16,
-                CatchButton(
-                  label: 'Done',
-                  onPressed: () => Navigator.of(ctx).pop(true),
-                  fullWidth: true,
-                ),
-              ],
+            action: CatchButton(
+              label: 'Done',
+              onPressed: () => Navigator.of(ctx).pop(true),
+              fullWidth: true,
+            ),
+            child: RangeSlider(
+              min: sliderMin,
+              max: sliderMax,
+              divisions: divisions,
+              values: range,
+              labels: RangeLabels(labelText(range.start), labelText(range.end)),
+              onChanged: (values) => setSheetState(() => range = values),
             ),
           );
         },
@@ -478,40 +397,28 @@ Future<void> showBooleanEditSheet({
       final t = CatchTokens.of(ctx);
       return StatefulBuilder(
         builder: (ctx, setSheetState) {
-          return Padding(
+          return CatchBottomSheetScaffold(
             padding: const EdgeInsets.fromLTRB(
               Sizes.p16,
               Sizes.p12,
               Sizes.p16,
               Sizes.p32,
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            action: CatchButton(
+              label: 'Done',
+              onPressed: () => Navigator.of(ctx).pop(value),
+              fullWidth: true,
+            ),
+            child: Row(
               children: [
-                const BottomSheetGrabber(),
-                gapH16,
-                Row(
-                  children: [
-                    Icon(icon, color: t.ink2),
-                    gapW16,
-                    Expanded(
-                      child: Text(
-                        title,
-                        style: CatchTextStyles.titleL(context),
-                      ),
-                    ),
-                    Switch(
-                      value: value,
-                      onChanged: (v) => setSheetState(() => value = v),
-                    ),
-                  ],
+                Icon(icon, color: t.ink2),
+                gapW16,
+                Expanded(
+                  child: Text(title, style: CatchTextStyles.titleL(context)),
                 ),
-                gapH16,
-                CatchButton(
-                  label: 'Done',
-                  onPressed: () => Navigator.of(ctx).pop(value),
-                  fullWidth: true,
+                Switch(
+                  value: value,
+                  onChanged: (v) => setSheetState(() => value = v),
                 ),
               ],
             ),

@@ -1,26 +1,35 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/domain/run_draft.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/runs/presentation/host_run_manage_screen.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'runs_test_helpers.dart';
 
 void main() {
   group('CreateRunScreen', () {
+    setUp(() {
+      SharedPreferences.setMockInitialValues({});
+    });
+
     testWidgets('validates the first step when basics are missing', (
       tester,
     ) async {
       await _pumpCreateRunFlow(tester);
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
+      await _openCreateRunFlow(tester);
 
       await _tapPrimaryButton(tester, 'Next');
       await tester.pump();
@@ -39,8 +48,7 @@ void main() {
             runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
           ],
         );
-        await tester.tap(find.text('Open'));
-        await tester.pumpAndSettle();
+        await _openCreateRunFlow(tester);
 
         await _fillBasicsStep(tester);
 
@@ -50,12 +58,14 @@ void main() {
         await tester.pump();
         expect(find.text('Required'), findsOneWidget);
 
-        await tester.enterText(
-          find.byType(CatchTextField).at(0),
+        await _enterCreateRunText(
+          tester,
+          CreateRunFormKeys.meetingPoint,
           'Bandra Fort',
         );
-        await tester.enterText(
-          find.byType(CatchTextField).at(1),
+        await _enterCreateRunText(
+          tester,
+          CreateRunFormKeys.locationDetails,
           'Meet at the gate',
         );
         await tester.pumpAndSettle();
@@ -64,15 +74,15 @@ void main() {
 
         await _pickFutureDate(tester);
         await _acceptInitialTime(tester);
-        await tester.tap(find.byIcon(Icons.add_rounded));
-        await tester.tap(find.byIcon(Icons.remove_rounded));
+        await tester.tap(find.byTooltip('Increase duration'));
+        await tester.tap(find.byTooltip('Decrease duration'));
         await tester.pump();
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
 
         expect(find.text('Review & rules'), findsOneWidget);
-        await tester.enterText(find.byType(CatchTextField).at(0), '40');
-        await tester.enterText(find.byType(CatchTextField).at(1), '30');
+        await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '40');
+        await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '30');
         await tester.pumpAndSettle();
         await _tapPrimaryButton(tester, 'Schedule run');
         await tester.pump();
@@ -80,10 +90,10 @@ void main() {
         expect(find.text('<= max'), findsOneWidget);
         expect(find.text('>= min'), findsOneWidget);
 
-        await tester.enterText(find.byType(CatchTextField).at(0), '21');
-        await tester.enterText(find.byType(CatchTextField).at(1), '35');
-        await tester.enterText(find.byType(CatchTextField).at(2), '9');
-        await tester.enterText(find.byType(CatchTextField).at(3), '9');
+        await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '21');
+        await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '35');
+        await _enterCreateRunText(tester, CreateRunFormKeys.maxMen, '9');
+        await _enterCreateRunText(tester, CreateRunFormKeys.maxWomen, '9');
         await tester.pumpAndSettle();
         await _tapPrimaryButton(tester, 'Schedule run');
         await tester.pumpAndSettle();
@@ -132,23 +142,23 @@ void main() {
           alwaysUse24HourFormat: true,
           now: () => now,
         );
-        await tester.tap(find.text('Open'));
-        await tester.pumpAndSettle();
+        await _openCreateRunFlow(tester);
 
         await _fillBasicsStep(tester);
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
 
-        await tester.enterText(
-          find.byType(CatchTextField).at(0),
+        await _enterCreateRunText(
+          tester,
+          CreateRunFormKeys.meetingPoint,
           'Bandra Fort',
         );
         await tester.pumpAndSettle();
         await _tapPrimaryButton(tester, 'Next');
         await tester.pumpAndSettle();
 
-        await tester.tap(find.byIcon(Icons.add_rounded));
-        await tester.tap(find.byIcon(Icons.add_rounded));
+        await tester.tap(find.byTooltip('Increase duration'));
+        await tester.tap(find.byTooltip('Increase duration'));
         await tester.pump();
 
         expect(find.text('1h 30m'), findsOneWidget);
@@ -175,14 +185,13 @@ void main() {
       tester,
     ) async {
       await _pumpCreateRunFlow(tester);
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
+      await _openCreateRunFlow(tester);
 
       await _fillBasicsStep(tester);
       await _tapPrimaryButton(tester, 'Next');
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('Pin exact starting point on map'));
+      await tester.tap(find.byKey(CreateRunFormKeys.mapPicker));
       await tester.pumpAndSettle();
 
       final flutterMap = tester.widget<FlutterMap>(find.byType(FlutterMap));
@@ -197,12 +206,12 @@ void main() {
 
       expect(find.text('19.12345, 72.98765'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+      await tester.tap(find.byTooltip('Back'));
       await tester.pumpAndSettle();
       expect(find.text('Run basics'), findsOneWidget);
 
       // Second back — unsaved changes dialog appears since we filled basics.
-      await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
+      await tester.tap(find.byTooltip('Back'));
       await tester.pumpAndSettle();
       await tester.tap(find.text('Discard'));
       await tester.pumpAndSettle();
@@ -221,8 +230,7 @@ void main() {
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
         ],
       );
-      await tester.tap(find.text('Open'));
-      await tester.pumpAndSettle();
+      await _openCreateRunFlow(tester);
 
       await runZonedGuarded(
         () async {
@@ -239,7 +247,117 @@ void main() {
       expect(find.text('create failed'), findsOneWidget);
       expect(find.text('Schedule run'), findsOneWidget);
     });
+
+    testWidgets('host manage roster renders public profile rows', (
+      tester,
+    ) async {
+      final publicProfiles = FakePublicProfileRepository()
+        ..profiles = [
+          buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+          buildPublicProfile(uid: 'runner-3', name: 'Avery'),
+        ];
+      final run = buildRun(
+        priceInPaise: 10000,
+        signedUpUserIds: const ['runner-2'],
+        waitlistUserIds: const ['runner-3'],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            publicProfileRepositoryProvider.overrideWith(
+              (ref) => publicProfiles,
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: HostRunManageScreen(
+              runClub: buildRunClub(),
+              run: run,
+              onBackToSuccess: () {},
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Taylor'), findsOneWidget);
+      expect(find.text('Avery'), findsOneWidget);
+      expect(find.text('runner-2'), findsNothing);
+      expect(find.text('runner-3'), findsNothing);
+      expect(find.text('PAID'), findsOneWidget);
+      expect(find.text('WAITLIST'), findsOneWidget);
+    });
+
+    testWidgets('draft picker deletes persisted drafts and resumes another', (
+      tester,
+    ) async {
+      final draftRepository = RunDraftRepository();
+      await draftRepository.saveDraft(
+        userId: 'runner-1',
+        draft: _buildRunDraft(
+          id: 'keep-draft',
+          savedAt: DateTime.now().subtract(const Duration(minutes: 5)),
+          distance: '9',
+          capacity: '18',
+          meetingPoint: 'Keep Point',
+        ),
+      );
+      await draftRepository.saveDraft(
+        userId: 'runner-1',
+        draft: _buildRunDraft(
+          id: 'delete-draft',
+          savedAt: DateTime.now(),
+          distance: '5',
+          meetingPoint: 'Delete Point',
+        ),
+      );
+
+      await _pumpCreateRunFlow(tester);
+      await _openCreateRunFlow(tester);
+
+      expect(find.text('Your drafts'), findsOneWidget);
+      expect(find.textContaining('Delete Point'), findsOneWidget);
+      expect(find.textContaining('Keep Point'), findsOneWidget);
+
+      await tester.tap(find.byTooltip('Delete draft').first);
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+      await tester.pumpAndSettle();
+
+      final remainingDrafts = await draftRepository.loadDrafts(
+        runClubId: 'club-1',
+        userId: 'runner-1',
+      );
+      expect(remainingDrafts.map((draft) => draft.id), ['keep-draft']);
+      expect(find.textContaining('Delete Point'), findsNothing);
+      expect(find.textContaining('Keep Point'), findsOneWidget);
+
+      await tester.tap(find.textContaining('Keep Point'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Your drafts'), findsNothing);
+      expect(find.text('9'), findsOneWidget);
+      expect(find.text('18'), findsOneWidget);
+    });
   });
+}
+
+RunDraft _buildRunDraft({
+  required String id,
+  required DateTime savedAt,
+  String? distance,
+  String? capacity,
+  String? meetingPoint,
+}) {
+  return RunDraft(
+    id: id,
+    runClubId: 'club-1',
+    savedAt: savedAt,
+    distance: distance,
+    capacity: capacity,
+    meetingPoint: meetingPoint,
+  );
 }
 
 Future<void> _pumpCreateRunFlow(
@@ -250,7 +368,10 @@ Future<void> _pumpCreateRunFlow(
 }) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: [...overrides],
+      overrides: [
+        uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        ...overrides,
+      ],
       child: MaterialApp(
         theme: AppTheme.light,
         builder: (context, child) => MediaQuery(
@@ -285,13 +406,26 @@ Future<void> _pumpCreateRunFlow(
   await tester.pumpAndSettle();
 }
 
+Future<void> _openCreateRunFlow(WidgetTester tester) async {
+  await tester.tap(find.text('Open'));
+  await tester.pumpAndSettle();
+}
+
 Future<void> _submitValidRun(WidgetTester tester) async {
   await _fillBasicsStep(tester);
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
 
-  await tester.enterText(find.byType(CatchTextField).at(0), 'Bandra Fort');
-  await tester.enterText(find.byType(CatchTextField).at(1), 'Meet at the gate');
+  await _enterCreateRunText(
+    tester,
+    CreateRunFormKeys.meetingPoint,
+    'Bandra Fort',
+  );
+  await _enterCreateRunText(
+    tester,
+    CreateRunFormKeys.locationDetails,
+    'Meet at the gate',
+  );
   await tester.pumpAndSettle();
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
@@ -301,32 +435,44 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await _tapPrimaryButton(tester, 'Next');
   await tester.pumpAndSettle();
 
-  await tester.enterText(find.byType(CatchTextField).at(0), '21');
-  await tester.enterText(find.byType(CatchTextField).at(1), '35');
-  await tester.enterText(find.byType(CatchTextField).at(2), '9');
-  await tester.enterText(find.byType(CatchTextField).at(3), '9');
+  await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '21');
+  await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '35');
+  await _enterCreateRunText(tester, CreateRunFormKeys.maxMen, '9');
+  await _enterCreateRunText(tester, CreateRunFormKeys.maxWomen, '9');
   await tester.pumpAndSettle();
   await _tapPrimaryButton(tester, 'Schedule run');
   await tester.pumpAndSettle();
 }
 
 Future<void> _fillBasicsStep(WidgetTester tester) async {
-  await tester.enterText(find.byType(CatchTextField).at(0), '7.5');
-  await tester.enterText(find.byType(CatchTextField).at(1), '18');
-  await tester.enterText(find.byType(CatchTextField).at(2), '249.5');
+  await _enterCreateRunText(tester, CreateRunFormKeys.distance, '7.5');
+  await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
+  await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
   await tester.tap(find.text('MODERATE'));
-  await tester.enterText(
-    find.byType(CatchTextField).at(3),
+  await _enterCreateRunText(
+    tester,
+    CreateRunFormKeys.description,
     'Social pacing with a coffee stop.',
   );
   await tester.pumpAndSettle();
+}
+
+Future<void> _enterCreateRunText(
+  WidgetTester tester,
+  Key fieldKey,
+  String text,
+) async {
+  await tester.enterText(
+    find.descendant(of: find.byKey(fieldKey), matching: find.byType(TextField)),
+    text,
+  );
 }
 
 Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {
   await _dismissKeyboard(tester);
   final buttonFinder = find.widgetWithText(CatchButton, label);
   await tester.ensureVisible(buttonFinder);
-  await tester.tap(buttonFinder, warnIfMissed: false);
+  await tester.tap(buttonFinder);
   await tester.pumpAndSettle();
 }
 
@@ -336,7 +482,7 @@ Future<void> _dismissKeyboard(WidgetTester tester) async {
 }
 
 Future<void> _pickTodayDate(WidgetTester tester, {DateTime? today}) async {
-  await tester.tap(find.byIcon(Icons.calendar_today_outlined));
+  await tester.tap(find.byKey(CreateRunFormKeys.datePicker));
   await tester.pumpAndSettle();
   await tester.tap(find.text('${(today ?? DateTime.now()).day}').last);
   await tester.pumpAndSettle();
@@ -345,7 +491,7 @@ Future<void> _pickTodayDate(WidgetTester tester, {DateTime? today}) async {
 }
 
 Future<void> _pickFutureDate(WidgetTester tester) async {
-  await tester.tap(find.byIcon(Icons.calendar_today_outlined));
+  await tester.tap(find.byKey(CreateRunFormKeys.datePicker));
   await tester.pumpAndSettle();
   await tester.tap(find.byTooltip('Next month'));
   await tester.pumpAndSettle();
@@ -360,7 +506,7 @@ Future<void> _pickTimeInInputMode(
   required String hour,
   required String minute,
 }) async {
-  await tester.tap(find.byIcon(Icons.schedule_outlined));
+  await tester.tap(find.byKey(CreateRunFormKeys.timePicker));
   await tester.pumpAndSettle();
   await tester.tap(find.byIcon(Icons.keyboard_outlined));
   await tester.pumpAndSettle();
@@ -376,7 +522,7 @@ Future<void> _pickTimeInInputMode(
 }
 
 Future<void> _acceptInitialTime(WidgetTester tester) async {
-  await tester.tap(find.byIcon(Icons.schedule_outlined));
+  await tester.tap(find.byKey(CreateRunFormKeys.timePicker));
   await tester.pumpAndSettle();
   await tester.tap(find.text('OK'));
   await tester.pumpAndSettle();

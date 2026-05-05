@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'public_profile_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Handles block and report actions from the public profile screen.
 /// The UI wraps calls in `mutation.run(ref, ...)` to observe lifecycle.
@@ -26,10 +26,12 @@ class PublicProfileController extends _$PublicProfileController {
     required String targetUserId,
     required String reasonCode,
   }) async {
-    await ref.read(safetyRepositoryProvider).reportUser(
-      targetUserId: targetUserId,
-      source: 'profile',
-      reasonCode: reasonCode,
-    );
+    await ref
+        .read(safetyRepositoryProvider)
+        .reportUser(
+          targetUserId: targetUserId,
+          source: 'profile',
+          reasonCode: reasonCode,
+        );
   }
 }

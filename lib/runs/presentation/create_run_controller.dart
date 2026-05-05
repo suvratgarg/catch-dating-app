@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'create_run_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Validates input and delegates run creation to [RunRepository].
 /// [submitMutation] carries the created [Run] on success so the UI can

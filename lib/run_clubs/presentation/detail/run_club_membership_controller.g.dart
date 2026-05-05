@@ -8,7 +8,7 @@ part of 'run_club_membership_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Exposes [joinMutation] and [leaveMutation] for the club detail screen.
 /// The UI watches mutation state to show loading spinners and error banners
@@ -18,14 +18,14 @@ part of 'run_club_membership_controller.dart';
 final runClubMembershipControllerProvider =
     RunClubMembershipControllerProvider._();
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Exposes [joinMutation] and [leaveMutation] for the club detail screen.
 /// The UI watches mutation state to show loading spinners and error banners
 /// during join/leave operations.
 final class RunClubMembershipControllerProvider
     extends $NotifierProvider<RunClubMembershipController, void> {
-  /// **Pattern B: Stateless controller + static Mutations**
+  /// **Pattern A: Action controller + static Mutations**
   ///
   /// Exposes [joinMutation] and [leaveMutation] for the club detail screen.
   /// The UI watches mutation state to show loading spinners and error banners
@@ -58,9 +58,9 @@ final class RunClubMembershipControllerProvider
 }
 
 String _$runClubMembershipControllerHash() =>
-    r'13ca2af8d0460e50f8c45f048de74f2a252f5d71';
+    r'b0439becbe0f7a66e4b43d84bc4ac1f45a1f142a';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Exposes [joinMutation] and [leaveMutation] for the club detail screen.
 /// The UI watches mutation state to show loading spinners and error banners

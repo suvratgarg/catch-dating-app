@@ -1,9 +1,11 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
+import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,11 +17,7 @@ import '../runs/runs_test_helpers.dart';
 Widget _wrapPhoneSized(Widget child) {
   return MaterialApp(
     theme: AppTheme.light,
-    home: SizedBox(
-      width: 375,
-      height: 812,
-      child: child,
-    ),
+    home: SizedBox(width: 375, height: 812, child: child),
   );
 }
 
@@ -28,33 +26,20 @@ void main() {
     testWidgets('shows booking failure details for sign-up failures', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchPaymentsForUserProvider('runner-1').overrideWith(
-              (ref) => Stream.value([
-                Payment(
-                  id: 'pay-1',
-                  userId: 'runner-1',
-                  orderId: 'order-1',
-                  paymentId: 'pay-1',
-                  runId: 'run-1',
-                  amount: 25000,
-                  status: PaymentStatus.completed,
-                  signUpFailed: true,
-                  createdAt: DateTime(2025, 1, 2),
-                ),
-              ]),
-            ),
-            watchRunProvider(
-              'run-1',
-            ).overrideWith((ref) => Stream.value(buildRun(id: 'run-1'))),
-          ],
-          child: _wrapPhoneSized(const PaymentHistoryScreen()),
-        ),
+      await _pumpPaymentHistory(
+        tester,
+        payments: [
+          _payment(
+            id: 'pay-1',
+            orderId: 'order-1',
+            runId: 'run-1',
+            status: PaymentStatus.completed,
+            signUpFailed: true,
+            createdAt: DateTime(2025, 1, 2),
+          ),
+        ],
+        runs: {'run-1': buildRun(id: 'run-1')},
       );
-      await tester.pumpAndSettle();
 
       expect(find.text('Booking failed'), findsOneWidget);
       expect(
@@ -66,33 +51,20 @@ void main() {
     testWidgets('shows refunded recovery details for sign-up failures', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchPaymentsForUserProvider('runner-1').overrideWith(
-              (ref) => Stream.value([
-                Payment(
-                  id: 'pay-2',
-                  userId: 'runner-1',
-                  orderId: 'order-2',
-                  paymentId: 'pay-2',
-                  runId: 'run-2',
-                  amount: 25000,
-                  status: PaymentStatus.refunded,
-                  signUpFailed: true,
-                  createdAt: DateTime(2025, 1, 3),
-                ),
-              ]),
-            ),
-            watchRunProvider(
-              'run-2',
-            ).overrideWith((ref) => Stream.value(buildRun(id: 'run-2'))),
-          ],
-          child: _wrapPhoneSized(const PaymentHistoryScreen()),
-        ),
+      await _pumpPaymentHistory(
+        tester,
+        payments: [
+          _payment(
+            id: 'pay-2',
+            orderId: 'order-2',
+            runId: 'run-2',
+            status: PaymentStatus.refunded,
+            signUpFailed: true,
+            createdAt: DateTime(2025, 1, 3),
+          ),
+        ],
+        runs: {'run-2': buildRun(id: 'run-2')},
       );
-      await tester.pumpAndSettle();
 
       expect(find.text('Refunded'), findsOneWidget);
       expect(
@@ -104,142 +76,144 @@ void main() {
     testWidgets('tapping a payment tile opens detail bottom sheet', (
       tester,
     ) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchPaymentsForUserProvider('runner-1').overrideWith(
-              (ref) => Stream.value([
-                Payment(
-                  id: 'pay-3',
-                  userId: 'runner-1',
-                  orderId: 'order-3',
-                  paymentId: 'pay_XYZ789',
-                  runId: 'run-3',
-                  amount: 19900,
-                  status: PaymentStatus.completed,
-                  signUpFailed: false,
-                  createdAt: DateTime(2025, 2, 10),
-                ),
-              ]),
-            ),
-            watchRunProvider(
-              'run-3',
-            ).overrideWith((ref) => Stream.value(buildRun(id: 'run-3'))),
-          ],
-          child: _wrapPhoneSized(const PaymentHistoryScreen()),
-        ),
+      await _pumpPaymentHistory(
+        tester,
+        payments: [
+          _payment(
+            id: 'pay-3',
+            orderId: 'order-3',
+            paymentId: 'pay_XYZ789',
+            runId: 'run-3',
+            amount: 19900,
+            status: PaymentStatus.completed,
+            createdAt: DateTime(2025, 2, 10),
+          ),
+        ],
+        runs: {'run-3': buildRun(id: 'run-3')},
       );
+
+      await tester.tap(find.byKey(PaymentHistoryKeys.paymentTile('pay-3')));
       await tester.pumpAndSettle();
 
-      // Tap the payment tile badge.
-      await tester.tap(find.text('Paid'));
-      await tester.pumpAndSettle();
-
-      // Detail sheet should be visible.
       expect(find.text('Payment ID'), findsOneWidget);
       expect(find.text('pay_XYZ789'), findsOneWidget);
       expect(find.text('Order ID'), findsOneWidget);
       expect(find.text('order-3'), findsOneWidget);
     });
 
-    testWidgets(
-      'detail sheet shows Get help button for sign-up failures',
-      (tester) async {
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-              watchPaymentsForUserProvider('runner-1').overrideWith(
-                (ref) => Stream.value([
-                  Payment(
-                    id: 'pay-4',
-                    userId: 'runner-1',
-                    orderId: 'order-4',
-                    paymentId: 'pay-4',
-                    runId: 'run-4',
-                    amount: 25000,
-                    status: PaymentStatus.completed,
-                    signUpFailed: true,
-                    createdAt: DateTime(2025, 3, 1),
-                  ),
-                ]),
-              ),
-              watchRunProvider(
-                'run-4',
-              ).overrideWith((ref) => Stream.value(buildRun(id: 'run-4'))),
-            ],
-            child: _wrapPhoneSized(const PaymentHistoryScreen()),
+    testWidgets('detail sheet shows Get help button for sign-up failures', (
+      tester,
+    ) async {
+      await _pumpPaymentHistory(
+        tester,
+        payments: [
+          _payment(
+            id: 'pay-4',
+            orderId: 'order-4',
+            runId: 'run-4',
+            status: PaymentStatus.completed,
+            signUpFailed: true,
+            createdAt: DateTime(2025, 3, 1),
           ),
-        );
-        await tester.pumpAndSettle();
+        ],
+        runs: {'run-4': buildRun(id: 'run-4')},
+      );
 
-        // Tap the payment tile to open detail sheet.
-        await tester.tap(find.text('Booking failed'));
-        await tester.pumpAndSettle();
+      await tester.tap(find.byKey(PaymentHistoryKeys.paymentTile('pay-4')));
+      await tester.pumpAndSettle();
 
-        // SignUpFailed help button should be visible.
-        expect(find.text('Get help with this booking'), findsOneWidget);
-      },
-    );
+      expect(find.text('Get help with this booking'), findsOneWidget);
+    });
 
     testWidgets('shows all status badge variants correctly', (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-            watchPaymentsForUserProvider('runner-1').overrideWith(
-              (ref) => Stream.value([
-                Payment(
-                  id: 'pay-completed',
-                  userId: 'runner-1',
-                  orderId: 'order-c',
-                  paymentId: 'pay-c',
-                  runId: 'run-a',
-                  amount: 10000,
-                  status: PaymentStatus.completed,
-                  createdAt: DateTime(2025, 1, 10),
-                ),
-                Payment(
-                  id: 'pay-failed',
-                  userId: 'runner-1',
-                  orderId: 'order-f',
-                  paymentId: 'pay-f',
-                  runId: 'run-b',
-                  amount: 5000,
-                  status: PaymentStatus.failed,
-                  createdAt: DateTime(2025, 1, 9),
-                ),
-                Payment(
-                  id: 'pay-pending',
-                  userId: 'runner-1',
-                  orderId: 'order-p',
-                  paymentId: 'pay-p',
-                  runId: 'run-c',
-                  amount: 7500,
-                  status: PaymentStatus.pending,
-                  createdAt: DateTime(2025, 1, 8),
-                ),
-              ]),
-            ),
-            watchRunProvider(
-              'run-a',
-            ).overrideWith((ref) => Stream.value(buildRun(id: 'run-a'))),
-            watchRunProvider(
-              'run-b',
-            ).overrideWith((ref) => Stream.value(buildRun(id: 'run-b'))),
-            watchRunProvider(
-              'run-c',
-            ).overrideWith((ref) => Stream.value(buildRun(id: 'run-c'))),
-          ],
-          child: _wrapPhoneSized(const PaymentHistoryScreen()),
-        ),
+      await _pumpPaymentHistory(
+        tester,
+        payments: [
+          _payment(
+            id: 'pay-completed',
+            orderId: 'order-c',
+            paymentId: 'pay-c',
+            runId: 'run-a',
+            amount: 10000,
+            status: PaymentStatus.completed,
+            createdAt: DateTime(2025, 1, 10),
+          ),
+          _payment(
+            id: 'pay-failed',
+            orderId: 'order-f',
+            paymentId: 'pay-f',
+            runId: 'run-b',
+            amount: 5000,
+            status: PaymentStatus.failed,
+            createdAt: DateTime(2025, 1, 9),
+          ),
+          _payment(
+            id: 'pay-pending',
+            orderId: 'order-p',
+            paymentId: 'pay-p',
+            runId: 'run-c',
+            amount: 7500,
+            status: PaymentStatus.pending,
+            createdAt: DateTime(2025, 1, 8),
+          ),
+        ],
+        runs: {
+          'run-a': buildRun(id: 'run-a'),
+          'run-b': buildRun(id: 'run-b'),
+          'run-c': buildRun(id: 'run-c'),
+        },
       );
-      await tester.pumpAndSettle();
 
       expect(find.text('Paid'), findsOneWidget);
       expect(find.text('Failed'), findsOneWidget);
       expect(find.text('Pending'), findsOneWidget);
     });
   });
+}
+
+Future<void> _pumpPaymentHistory(
+  WidgetTester tester, {
+  required List<Payment> payments,
+  required Map<String, Run> runs,
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        watchPaymentsForUserProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value(payments)),
+        for (final entry in runs.entries)
+          watchRunProvider(
+            entry.key,
+          ).overrideWith((ref) => Stream.value(entry.value)),
+      ],
+      child: _wrapPhoneSized(const PaymentHistoryScreen()),
+    ),
+  );
+  await tester.pump();
+  await tester.pump();
+}
+
+Payment _payment({
+  required String id,
+  required String orderId,
+  required String runId,
+  required PaymentStatus status,
+  required DateTime createdAt,
+  String? paymentId,
+  int amount = 25000,
+  bool signUpFailed = false,
+}) {
+  return Payment(
+    id: id,
+    userId: 'runner-1',
+    orderId: orderId,
+    paymentId: paymentId ?? id,
+    runId: runId,
+    amount: amount,
+    status: status,
+    signUpFailed: signUpFailed,
+    createdAt: createdAt,
+  );
 }

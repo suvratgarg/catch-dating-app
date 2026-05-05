@@ -272,7 +272,10 @@ export interface RunDoc {
   attendedUserIds: string[];
   waitlistUserIds: string[];
   constraints: RunConstraints;
-  /** Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'. Denormalized counts maintained atomically by Cloud Functions. */
+  /**
+   * Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
+   * Denormalized counts maintained atomically by Cloud Functions.
+   */
   genderCounts: Record<string, number>;
 }
 
@@ -345,11 +348,15 @@ export interface ChatMessageDoc {
  * /reviews/{reviewId}
  * Dart: lib/reviews/domain/review.dart — Review
  * Note: "id" is the document ID, not stored in the document data.
- * The current client uses one deterministic review document per (runClubId, reviewerUserId) pair.
+ * The current client writes one deterministic review document per (runId,
+ * reviewerUserId) pair.
  */
 export interface ReviewDoc {
   runClubId: string;
-  /** optional — not all reviews are linked to a specific run */
+  /**
+   * Required for new client-created reviews; nullable only for legacy review
+   * documents until migration.
+   */
   runId?: string | null;
   reviewerUserId: string;
   reviewerName: string;
@@ -395,7 +402,13 @@ export interface ReportDoc {
 export interface ModerationFlagDoc {
   targetUserId: string;
   flagType: "explicit_photo" | "banned_text" | "underage_content";
-  source: "profile_photo" | "club_image" | "chat_message" | "user_bio" | "club_description" | "review_comment";
+  source:
+    | "profile_photo"
+    | "club_image"
+    | "chat_message"
+    | "user_bio"
+    | "club_description"
+    | "review_comment";
   status: "pending" | "reviewed" | "dismissed";
   createdAt: FirebaseFirestore.Timestamp;
   reviewedAt?: FirebaseFirestore.Timestamp;

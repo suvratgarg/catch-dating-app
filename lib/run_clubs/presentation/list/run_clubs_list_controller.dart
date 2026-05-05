@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_clubs_list_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Handles the join-club action from the club list screen.
 /// [joinMutation] tracks the async join lifecycle so the list tile can
@@ -18,7 +18,7 @@ class RunClubsListController extends _$RunClubsListController {
   void build() {}
 
   Future<void> joinClub(String clubId) async {
-    final uid = requireSignedInUid(ref, action: 'join a club');
-    await ref.read(runClubsRepositoryProvider).joinClub(clubId, uid);
+    requireSignedInUid(ref, action: 'join a club');
+    await ref.read(runClubsRepositoryProvider).joinClub(clubId);
   }
 }

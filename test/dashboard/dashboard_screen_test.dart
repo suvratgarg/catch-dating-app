@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
@@ -8,7 +7,7 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.da
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -241,6 +240,12 @@ void main() {
 
       await tester.pump();
 
+      await tester.drag(
+        find.byKey(DashboardFull.scrollViewKey),
+        const Offset(0, -500),
+      );
+      await tester.pump();
+
       expect(find.text('Loading recommended runs...'), findsOneWidget);
     });
 
@@ -328,10 +333,9 @@ void main() {
       expect(find.textContaining('NEXT RUN'), findsOneWidget);
       expect(find.textContaining('SWIPE WINDOW CLOSING'), findsOneWidget);
 
-      await tester.scrollUntilVisible(
-        find.text('Recommended runs'),
-        200,
-        scrollable: find.byType(Scrollable),
+      await tester.drag(
+        find.byKey(DashboardFull.scrollViewKey),
+        const Offset(0, -500),
       );
       await tester.pumpAndSettle();
 
@@ -344,7 +348,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: AppTheme.light,
-          home: Scaffold(body: QuickActions(tokens: CatchTokens.sunsetLight)),
+          home: const Scaffold(body: QuickActions()),
         ),
       );
 
@@ -360,8 +364,7 @@ void main() {
         routes: [
           GoRoute(
             path: '/',
-            builder: (_, _) =>
-                Scaffold(body: QuickActions(tokens: CatchTokens.sunsetLight)),
+            builder: (_, _) => const Scaffold(body: QuickActions()),
           ),
           GoRoute(
             path: Routes.runClubsListScreen.path,

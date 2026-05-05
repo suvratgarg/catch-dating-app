@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
@@ -14,29 +14,22 @@ class RecommendCard extends StatelessWidget {
     required this.club,
     required this.dist,
     required this.when,
-    required this.tokens,
   });
 
-  factory RecommendCard.fromRun({
-    Key? key,
-    required Run run,
-    required CatchTokens tokens,
-  }) => RecommendCard(
+  factory RecommendCard.fromRun({Key? key, required Run run}) => RecommendCard(
     key: key,
     club: run.title,
     dist: '${run.distanceKm.toStringAsFixed(0)}K',
     when: DateFormat('EEE d MMM').format(run.startTime),
-    tokens: tokens,
   );
 
   final String club;
   final String dist;
   final String when;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
     return CatchSurface(
       width: 180,
       radius: CatchRadius.md,

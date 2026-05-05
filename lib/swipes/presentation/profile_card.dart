@@ -29,35 +29,35 @@ class ProfileCard extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(20),
         child: LayoutBuilder(
-        builder: (context, constraints) => Stack(
-          children: [
-            ScrollableProfile(
-              profile: profile,
-              cardHeight: constraints.maxHeight,
-            ),
-            Positioned(
-              top: 48,
-              left: 20,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: likeOpacity,
-                  child: SwipeStamp(kind: SwipeStampKind.like, color: t.like),
+          builder: (context, constraints) => Stack(
+            children: [
+              ScrollableProfile(
+                profile: profile,
+                cardHeight: constraints.maxHeight,
+              ),
+              Positioned(
+                top: 48,
+                left: 20,
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: likeOpacity,
+                    child: SwipeStamp(kind: SwipeStampKind.like, color: t.like),
+                  ),
                 ),
               ),
-            ),
-            Positioned(
-              top: 48,
-              right: 20,
-              child: IgnorePointer(
-                child: Opacity(
-                  opacity: nopeOpacity,
-                  child: SwipeStamp(kind: SwipeStampKind.nope, color: t.pass),
+              Positioned(
+                top: 48,
+                right: 20,
+                child: IgnorePointer(
+                  child: Opacity(
+                    opacity: nopeOpacity,
+                    child: SwipeStamp(kind: SwipeStampKind.nope, color: t.pass),
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),
       ),
     );
   }

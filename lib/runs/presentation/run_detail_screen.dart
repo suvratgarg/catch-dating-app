@@ -19,23 +19,22 @@ class RunDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final vmAsync = ref.watch(runDetailViewModelProvider(runId));
 
-    return Scaffold(
-      body: vmAsync.when(
-        loading: () => const CatchLoadingIndicator(),
-        error: (e, _) => CatchErrorText(e),
-        data: (vm) {
-          if (vm == null) {
-            return const Center(child: Text('Run not found.'));
-          }
-          return RunDetailBody(
-            run: vm.run,
-            userProfile: vm.userProfile,
-            runClubId: runClubId,
-            reviews: vm.reviews,
-            isAuthenticated: vm.isAuthenticated,
-          );
-        },
-      ),
+    return vmAsync.when(
+      loading: () => const Scaffold(body: CatchLoadingIndicator()),
+      error: (e, _) => Scaffold(body: CatchErrorText(e)),
+      data: (vm) {
+        if (vm == null) {
+          return const Scaffold(body: Center(child: Text('Run not found.')));
+        }
+        return RunDetailBody(
+          run: vm.run,
+          userProfile: vm.userProfile,
+          runClubId: runClubId,
+          reviews: vm.reviews,
+          isAuthenticated: vm.isAuthenticated,
+          isHost: vm.isHost,
+        );
+      },
     );
   }
 }

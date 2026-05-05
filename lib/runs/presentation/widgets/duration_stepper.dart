@@ -28,6 +28,7 @@ class DurationStepper extends StatelessWidget {
       child: Row(
         children: [
           IconButton(
+            tooltip: 'Decrease duration',
             icon: Icon(Icons.remove_rounded, color: t.ink),
             onPressed: onDecrease,
             visualDensity: VisualDensity.compact,
@@ -41,6 +42,7 @@ class DurationStepper extends StatelessWidget {
             ),
           ),
           IconButton(
+            tooltip: 'Increase duration',
             icon: Icon(Icons.add_rounded, color: t.ink),
             onPressed: onIncrease,
             visualDensity: VisualDensity.compact,

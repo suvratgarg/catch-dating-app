@@ -1,15 +1,17 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/detail_row.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
+import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +32,15 @@ class PaymentHistoryScreen extends ConsumerWidget {
         error: (e, _) => CatchErrorText(e),
         data: (uid) {
           if (uid == null) {
-            return const Center(child: Text('Not signed in.'));
+            return const Center(
+              child: CatchEmptyState(
+                icon: Icons.lock_outline_rounded,
+                title: 'Sign in required',
+                message: 'Sign in again to view payment history.',
+                surface: false,
+                iconStyle: CatchEmptyStateIconStyle.plain,
+              ),
+            );
           }
           return _PaymentList(userId: uid);
         },
@@ -50,10 +60,18 @@ class _PaymentList extends ConsumerWidget {
 
     return paymentsAsync.when(
       loading: () => const CatchLoadingIndicator(),
-      error: (e, _) => Center(child: Text('Error: $e')),
+      error: (e, _) => CatchErrorText(e),
       data: (payments) {
         if (payments.isEmpty) {
-          return const Center(child: Text('No payments yet.'));
+          return const Center(
+            child: CatchEmptyState(
+              icon: Icons.receipt_long_outlined,
+              title: 'No payments yet',
+              message: 'Run bookings and refunds will appear here.',
+              surface: false,
+              iconStyle: CatchEmptyStateIconStyle.plain,
+            ),
+          );
         }
         return ListView.separated(
           padding: const EdgeInsets.symmetric(
@@ -84,49 +102,61 @@ class _PaymentTile extends ConsumerWidget {
     final runTitle = runAsync.asData?.value?.title ?? 'Run booking';
     final statusPresentation = _statusPresentation(payment);
 
-    return GestureDetector(
-      onTap: () => _showDetailSheet(context, ref, runTitle),
+    return Semantics(
+      button: true,
+      label: 'Payment for $runTitle',
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: Sizes.p12),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(runTitle, style: CatchTextStyles.bodyM(context)),
-                  gapH4,
-                  Text(
-                    _dateFormat.format(payment.createdAt),
-                    style: CatchTextStyles.bodyS(context, color: t.ink2),
+        child: InkWell(
+          key: PaymentHistoryKeys.paymentTile(payment.id),
+          borderRadius: BorderRadius.circular(CatchRadius.md),
+          onTap: () => _showDetailSheet(context, ref, runTitle),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Sizes.p4,
+              vertical: Sizes.p8,
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(runTitle, style: CatchTextStyles.bodyM(context)),
+                      gapH4,
+                      Text(
+                        _dateFormat.format(payment.createdAt),
+                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      ),
+                      if (statusPresentation.detail case final detail?) ...[
+                        gapH4,
+                        Text(
+                          detail,
+                          style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        ),
+                      ],
+                    ],
                   ),
-                  if (statusPresentation.detail case final detail?) ...[
-                    gapH4,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
                     Text(
-                      detail,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      RunFormatters.priceInPaise(payment.amount),
+                      style: CatchTextStyles.bodyM(
+                        context,
+                      ).copyWith(fontWeight: FontWeight.w600),
+                    ),
+                    gapH4,
+                    CatchBadge(
+                      label: statusPresentation.label,
+                      tone: statusPresentation.tone,
                     ),
                   ],
-                ],
-              ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  RunFormatters.priceInPaise(payment.amount),
-                  style: CatchTextStyles.bodyM(
-                    context,
-                  ).copyWith(fontWeight: FontWeight.w600),
-                ),
-                gapH4,
-                CatchBadge(
-                  label: statusPresentation.label,
-                  tone: statusPresentation.tone,
                 ),
               ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -148,86 +178,85 @@ class _PaymentTile extends ConsumerWidget {
       builder: (sheetContext) {
         return SafeArea(
           child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              Sizes.p20,
-              Sizes.p20,
-              Sizes.p20,
-              Sizes.p20 + bottomPadding,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const BottomSheetGrabber(),
-                gapH16,
-                // Header
-                Text(runTitle, style: CatchTextStyles.titleL(context)),
-                gapH8,
-                Row(
-                  children: [
-                    CatchBadge(
-                      label: statusPresentation.label,
-                      tone: statusPresentation.tone,
-                      size: CatchBadgeSize.md,
-                    ),
-                    const Spacer(),
-                    Text(
-                      RunFormatters.priceInPaise(payment.amount),
-                      style: CatchTextStyles.displayS(context),
-                    ),
-                  ],
-                ),
-                gapH20,
-                Divider(color: t.line, height: 1),
-                gapH20,
-                // Detail rows
-                DetailRow(label: 'Payment ID', value: payment.paymentId),
-                gapH12,
-                DetailRow(label: 'Order ID', value: payment.orderId),
-                gapH12,
-                DetailRow(label: 'Run ID', value: payment.runId),
-                gapH12,
-                DetailRow(
-                  label: 'Date',
-                  value: _dateFormat.format(payment.createdAt),
-                ),
-                if (statusPresentation.detail case final detail?) ...[
-                  gapH12,
-                  DetailRow(label: 'Status', value: detail),
-                ],
-                if (payment.signUpFailed) ...[
+            child: CatchBottomSheetScaffold(
+              title: runTitle,
+              padding: EdgeInsets.fromLTRB(
+                Sizes.p20,
+                Sizes.p12,
+                Sizes.p20,
+                Sizes.p20 + bottomPadding,
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      CatchBadge(
+                        label: statusPresentation.label,
+                        tone: statusPresentation.tone,
+                        size: CatchBadgeSize.md,
+                      ),
+                      const Spacer(),
+                      Text(
+                        RunFormatters.priceInPaise(payment.amount),
+                        style: CatchTextStyles.displayS(context),
+                      ),
+                    ],
+                  ),
                   gapH20,
                   Divider(color: t.line, height: 1),
-                  gapH16,
-                  SizedBox(
-                    width: double.infinity,
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.of(sheetContext).pop();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text(
-                              'Please contact Catch support for assistance with this booking.',
+                  gapH20,
+                  DetailRow(label: 'Payment ID', value: payment.paymentId),
+                  gapH12,
+                  DetailRow(label: 'Order ID', value: payment.orderId),
+                  gapH12,
+                  DetailRow(label: 'Run ID', value: payment.runId),
+                  gapH12,
+                  DetailRow(
+                    label: 'Date',
+                    value: _dateFormat.format(payment.createdAt),
+                  ),
+                  if (statusPresentation.detail case final detail?) ...[
+                    gapH12,
+                    DetailRow(label: 'Status', value: detail),
+                  ],
+                  if (payment.signUpFailed) ...[
+                    gapH20,
+                    Divider(color: t.line, height: 1),
+                    gapH16,
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.of(sheetContext).pop();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text(
+                                'Please contact Catch support for assistance with this booking.',
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.help_outline_rounded, size: 18),
+                        label: const Text('Get help with this booking'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: t.warning,
+                          side: BorderSide(
+                            color: t.warning.withValues(alpha: 0.4),
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              CatchRadius.pill,
                             ),
                           ),
-                        );
-                      },
-                      icon: const Icon(Icons.help_outline_rounded, size: 18),
-                      label: const Text('Get help with this booking'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: t.warning,
-                        side: BorderSide(
-                          color: t.warning.withValues(alpha: 0.4),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(CatchRadius.pill),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
                       ),
                     ),
-                  ),
+                  ],
                 ],
-              ],
+              ),
             ),
           ),
         );

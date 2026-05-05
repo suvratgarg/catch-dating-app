@@ -3,14 +3,13 @@ import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'create_run_club_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Handles create and edit club submission. [submitMutation] tracks the
 /// lifecycle of the async submit operation. The UI watches
@@ -58,19 +57,9 @@ class CreateRunClubController extends _$CreateRunClubController {
       if (instagramHandle != null) fields['instagramHandle'] = instagramHandle;
       if (phoneNumber != null) fields['phoneNumber'] = phoneNumber;
       if (email != null) fields['email'] = email;
-      await clubsRepo.updateRunClub(
-        clubId: existingRunClub.id,
-        fields: fields,
-      );
+      await clubsRepo.updateRunClub(clubId: existingRunClub.id, fields: fields);
       return;
     }
-
-    final userProfile = ref.read(watchUserProfileProvider).asData?.value;
-    if (userProfile == null) {
-      throw StateError('User profile not loaded. Please try again.');
-    }
-    final hostName = userProfile.name;
-    final hostAvatarUrl = userProfile.photoUrls.firstOrNull;
 
     final clubsRepo = ref.read(runClubsRepositoryProvider);
     String? clubId;
@@ -89,9 +78,6 @@ class CreateRunClubController extends _$CreateRunClubController {
       description: description,
       location: location,
       area: area,
-      hostUserId: uid,
-      hostName: hostName,
-      hostAvatarUrl: hostAvatarUrl,
       imageUrl: imageUrl,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,

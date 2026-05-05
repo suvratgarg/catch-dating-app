@@ -8,7 +8,7 @@ part of 'run_club_detail_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Watches the club, runs, reviews, user profile, and auth streams and
 /// combines them into a single [RunClubDetailViewModel]. Each input is
@@ -18,7 +18,7 @@ part of 'run_club_detail_view_model.dart';
 @ProviderFor(runClubDetailViewModel)
 final runClubDetailViewModelProvider = RunClubDetailViewModelFamily._();
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Watches the club, runs, reviews, user profile, and auth streams and
 /// combines them into a single [RunClubDetailViewModel]. Each input is
@@ -33,7 +33,7 @@ final class RunClubDetailViewModelProvider
           AsyncValue<RunClubDetailViewModel?>
         >
     with $Provider<AsyncValue<RunClubDetailViewModel?>> {
-  /// **Pattern D: Pure computed provider combining multiple async streams**
+  /// **Pattern D: View-model provider**
   ///
   /// Watches the club, runs, reviews, user profile, and auth streams and
   /// combines them into a single [RunClubDetailViewModel]. Each input is
@@ -97,7 +97,7 @@ final class RunClubDetailViewModelProvider
 String _$runClubDetailViewModelHash() =>
     r'2e39fb7572fc06694f5b1b2d40a3294023552c94';
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Watches the club, runs, reviews, user profile, and auth streams and
 /// combines them into a single [RunClubDetailViewModel]. Each input is
@@ -116,7 +116,7 @@ final class RunClubDetailViewModelFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// **Pattern D: Pure computed provider combining multiple async streams**
+  /// **Pattern D: View-model provider**
   ///
   /// Watches the club, runs, reviews, user profile, and auth streams and
   /// combines them into a single [RunClubDetailViewModel]. Each input is

@@ -22,7 +22,7 @@ class CityRepository {
 
   Future<List<CityData>> fetchCities() async {
     try {
-      final snap = await _db.collection('config').doc('cities').get();
+      final snap = await _db.doc(_configDocPath).get();
       if (snap.exists) {
         final data = snap.data();
         final list = data?['cities'] as List<dynamic>?;

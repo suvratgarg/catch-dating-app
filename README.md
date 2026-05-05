@@ -48,19 +48,17 @@ Preferred environment-aware app runs:
 ```
 
 Physical iPhone debug runs require a Firebase App Check debug token when App
-Check enforcement is enabled. The current dev token is baked into
-`tool/dart_defines/dev.json` and passed automatically — no export needed.
+Check enforcement is enabled. Do not commit raw debug tokens. Keep the token in
+your shell environment and let `tool/flutter_with_env.sh` pass it through.
 
 **If the app prints a new debug token** (e.g. after reinstalling the app or
-on a new device), update both places:
+on a new device):
 
 1. Register the token in Firebase Console under
    **App Check > Catch Dev iOS > Manage debug tokens**
-2. Update the `FIREBASE_APP_CHECK_DEBUG_TOKEN` value in
-   `tool/dart_defines/dev.json`
+2. Export it locally before running the app:
 
-The shell wrapper also respects the `FIREBASE_APP_CHECK_DEBUG_TOKEN` env var
-as an override if you need to test with a different token temporarily:
+The shell wrapper respects the `FIREBASE_APP_CHECK_DEBUG_TOKEN` env var:
 
 ```bash
 export FIREBASE_APP_CHECK_DEBUG_TOKEN=some_other_token

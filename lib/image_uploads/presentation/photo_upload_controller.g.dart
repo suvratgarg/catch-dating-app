@@ -8,7 +8,7 @@ part of 'photo_upload_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Custom pattern: Record-type state + serialized writes + Mutation**
+/// **Pattern B: State controller with record state + Mutation**
 ///
 /// Tracks per-index upload loading state via a Dart record
 /// `({Set<int> loadingIndices, Object? uploadError})` and serializes
@@ -23,7 +23,7 @@ part of 'photo_upload_controller.dart';
 @ProviderFor(PhotoUploadController)
 final photoUploadControllerProvider = PhotoUploadControllerProvider._();
 
-/// **Custom pattern: Record-type state + serialized writes + Mutation**
+/// **Pattern B: State controller with record state + Mutation**
 ///
 /// Tracks per-index upload loading state via a Dart record
 /// `({Set<int> loadingIndices, Object? uploadError})` and serializes
@@ -36,7 +36,7 @@ final photoUploadControllerProvider = PhotoUploadControllerProvider._();
 /// avoid Firestore document races.
 final class PhotoUploadControllerProvider
     extends $NotifierProvider<PhotoUploadController, PhotoUploadState> {
-  /// **Custom pattern: Record-type state + serialized writes + Mutation**
+  /// **Pattern B: State controller with record state + Mutation**
   ///
   /// Tracks per-index upload loading state via a Dart record
   /// `({Set<int> loadingIndices, Object? uploadError})` and serializes
@@ -77,7 +77,7 @@ final class PhotoUploadControllerProvider
 String _$photoUploadControllerHash() =>
     r'fae09a20143805c487d3f5c9be5b0e635e114f47';
 
-/// **Custom pattern: Record-type state + serialized writes + Mutation**
+/// **Pattern B: State controller with record state + Mutation**
 ///
 /// Tracks per-index upload loading state via a Dart record
 /// `({Set<int> loadingIndices, Object? uploadError})` and serializes

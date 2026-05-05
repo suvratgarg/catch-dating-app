@@ -6,9 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class QuickActions extends StatelessWidget {
-  const QuickActions({super.key, required this.tokens});
-
-  final CatchTokens tokens;
+  const QuickActions({super.key});
 
   static final _actions = [
     _QuickAction(
@@ -40,7 +38,7 @@ class QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
     return Row(
       children: _actions.map((a) {
         return Expanded(

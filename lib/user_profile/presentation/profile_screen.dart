@@ -34,8 +34,7 @@ class ProfileScreen extends ConsumerWidget {
         body: NestedScrollView(
           headerSliverBuilder: (context, innerBoxIsScrolled) => [
             SliverOverlapAbsorber(
-              handle:
-                  NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+              handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
               sliver: const ProfileSliverHeader(),
             ),
           ],
@@ -47,38 +46,16 @@ class ProfileScreen extends ConsumerWidget {
 
               return TabBarView(
                 children: [
-                  Builder(
-                    builder: (context) => CustomScrollView(
-                      slivers: [
-                        SliverOverlapInjector(
-                          handle:
-                              NestedScrollView
-                                  .sliverOverlapAbsorberHandleFor(context),
-                        ),
-                        SliverToBoxAdapter(
-                          child: ProfileTab(
-                            user: user,
-                            uploadState: uploadState,
-                            physics: const NeverScrollableScrollPhysics(),
-                          ),
-                        ),
-                      ],
+                  _ProfileTabScrollView(
+                    child: ProfileTab(
+                      user: user,
+                      uploadState: uploadState,
+                      physics: const NeverScrollableScrollPhysics(),
                     ),
                   ),
-                  Builder(
-                    builder: (context) => CustomScrollView(
-                      slivers: [
-                        SliverOverlapInjector(
-                          handle:
-                              NestedScrollView
-                                  .sliverOverlapAbsorberHandleFor(context),
-                        ),
-                        SliverToBoxAdapter(
-                          child: PreviewTab(
-                            profile: publicProfileFromUserProfile(user),
-                          ),
-                        ),
-                      ],
+                  _ProfileTabScrollView(
+                    child: PreviewTab(
+                      profile: publicProfileFromUserProfile(user),
                     ),
                   ),
                 ],
@@ -86,6 +63,26 @@ class ProfileScreen extends ConsumerWidget {
             },
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ProfileTabScrollView extends StatelessWidget {
+  const _ProfileTabScrollView({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) => CustomScrollView(
+        slivers: [
+          SliverOverlapInjector(
+            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+          ),
+          SliverToBoxAdapter(child: child),
+        ],
       ),
     );
   }

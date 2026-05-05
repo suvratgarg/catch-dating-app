@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -11,7 +10,7 @@ import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_body.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -33,7 +32,9 @@ void main() {
         tester,
         const RunDetailScreen(runClubId: 'club-1', runId: 'run-1'),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           runDetailViewModelProvider(
             'run-1',
           ).overrideWith((ref) => const AsyncLoading()),
@@ -48,7 +49,9 @@ void main() {
         tester,
         const RunDetailScreen(runClubId: 'club-1', runId: 'run-1'),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           runDetailViewModelProvider('run-1').overrideWith(
             (ref) => AsyncError(StateError('boom'), StackTrace.empty),
           ),
@@ -63,7 +66,9 @@ void main() {
         tester,
         const RunDetailScreen(runClubId: 'club-1', runId: 'run-1'),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           runDetailViewModelProvider(
             'run-1',
           ).overrideWith((ref) => const AsyncData(null)),
@@ -78,7 +83,9 @@ void main() {
         tester,
         const RunDetailScreen(runClubId: 'club-1', runId: 'run-1'),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           runDetailViewModelProvider('run-1').overrideWith(
             (ref) => AsyncData(
               RunDetailViewModel(
@@ -90,6 +97,7 @@ void main() {
                 userProfile: buildUser(),
                 reviews: const [],
                 isAuthenticated: true,
+                isHost: false,
               ),
             ),
           ),
@@ -97,7 +105,7 @@ void main() {
         ],
       );
 
-      expect(find.text('Wednesday Evening Run'), findsNWidgets(2));
+      expect(find.text('Wednesday Evening Run'), findsWidgets);
     });
   });
 
@@ -111,11 +119,14 @@ void main() {
           bottomNavigationBar: RunDetailCta(
             run: buildRun(signedUpUserIds: const ['a', 'b']),
             runClubId: 'club1',
+            isHost: false,
             userProfile: buildUser(),
           ),
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -140,11 +151,14 @@ void main() {
           bottomNavigationBar: RunDetailCta(
             run: buildRun(),
             runClubId: 'club1',
+            isHost: false,
             userProfile: buildUser(),
           ),
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
         ],
       );
@@ -174,11 +188,14 @@ void main() {
           bottomNavigationBar: RunDetailCta(
             run: buildRun(priceInPaise: 15000),
             runClubId: 'club1',
+            isHost: false,
             userProfile: buildUser(),
           ),
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(
             FakePaymentRepository(supportsPaid: false),
           ),
@@ -201,11 +218,14 @@ void main() {
           bottomNavigationBar: RunDetailCta(
             run: buildRun(signedUpUserIds: const ['runner-1']),
             runClubId: 'club1',
+            isHost: false,
             userProfile: buildUser(),
           ),
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
@@ -217,11 +237,38 @@ void main() {
       expect(fakeRunRepository.cancelledRunId, 'run-1');
     });
 
+    testWidgets('shows attendance action for hosts after attendance opens', (
+      tester,
+    ) async {
+      final startTime = DateTime(2026, 1, 1, 9);
+
+      await pumpRunsTestApp(
+        tester,
+        Scaffold(
+          bottomNavigationBar: RunDetailCta(
+            run: buildRun(startTime: startTime),
+            runClubId: 'club1',
+            isHost: true,
+            now: startTime.subtract(const Duration(minutes: 5)),
+            userProfile: buildUser(uid: 'host-1'),
+          ),
+        ),
+        overrides: [
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+
+      expect(find.text('Take Attendance'), findsOneWidget);
+      expect(find.text('Join run — 20 spots left'), findsNothing);
+    });
+
     testWidgets('joins and leaves the waitlist', (tester) async {
       final fakeRunRepository = FakeRunRepository();
       final container = ProviderContainer(
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           uidProvider.overrideWith((ref) => Stream.value('runner-9')),
@@ -250,11 +297,13 @@ void main() {
                       signedUpUserIds: const ['other-runner'],
                     ),
                     runClubId: 'club1',
+                    isHost: false,
                     userProfile: buildUser(uid: 'runner-9'),
                   ),
                   RunDetailCta(
                     run: buildRun(waitlistUserIds: const ['runner-9']),
                     runClubId: 'club1',
+                    isHost: false,
                     userProfile: buildUser(uid: 'runner-9'),
                   ),
                 ],
@@ -285,6 +334,7 @@ void main() {
               RunDetailCta(
                 run: buildRun(attendedUserIds: const ['runner-1']),
                 runClubId: 'club1',
+                isHost: false,
                 userProfile: buildUser(),
               ),
               RunDetailCta(
@@ -293,13 +343,16 @@ void main() {
                   endTime: DateTime.now().subtract(const Duration(hours: 1)),
                 ),
                 runClubId: 'club1',
+                isHost: false,
                 userProfile: buildUser(),
               ),
             ],
           ),
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -328,11 +381,13 @@ void main() {
               RunDetailCta(
                 run: buildRun(constraints: const RunConstraints(minAge: 18)),
                 runClubId: 'club1',
+                isHost: false,
                 userProfile: tooYoungUser,
               ),
               RunDetailCta(
                 run: buildRun(constraints: const RunConstraints(maxAge: 40)),
                 runClubId: 'club1',
+                isHost: false,
                 userProfile: olderUser,
               ),
               RunDetailCta(
@@ -341,13 +396,16 @@ void main() {
                   genderCounts: const {'man': 1},
                 ),
                 runClubId: 'club1',
+                isHost: false,
                 userProfile: buildUser(uid: 'runner-3'),
               ),
             ],
           ),
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -374,23 +432,56 @@ void main() {
           run: run,
           userProfile: user,
           runClubId: 'club-1',
+          isHost: false,
           reviews: const [],
           isAuthenticated: true,
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
 
-      await tester.drag(find.byType(CustomScrollView), const Offset(0, -600));
-      await tester.pump();
+      await _scrollRunDetailUntilVisible(tester, find.text("Who's running"));
 
-      expect(find.text(run.title), findsOneWidget);
+      expect(find.text(run.title), findsWidgets);
       expect(find.text('Requirements'), findsOneWidget);
       expect(find.text("Who's running"), findsOneWidget);
       expect(find.text('Reviews'), findsOneWidget);
       expect(find.text('Write a review'), findsOneWidget);
+    });
+
+    testWidgets('renders guest roster prompt and sign-in CTA', (tester) async {
+      final run = buildRun();
+
+      await pumpRunsTestApp(
+        tester,
+        RunDetailBody(
+          run: run,
+          userProfile: null,
+          runClubId: 'club-1',
+          isHost: false,
+          reviews: const [],
+          isAuthenticated: false,
+        ),
+        signedInUid: null,
+      );
+
+      await _scrollRunDetailUntilVisible(
+        tester,
+        find.text('Sign in to see who has booked this run.'),
+      );
+
+      expect(find.text(run.title), findsWidgets);
+      expect(
+        find.text('Sign in to see who has booked this run.'),
+        findsOneWidget,
+      );
+      expect(find.text('Sign in to book this run'), findsOneWidget);
+      expect(find.text('Reviews'), findsNothing);
+      expect(find.text('Write a review'), findsNothing);
     });
 
     testWidgets('shows a snackbar after a successful booking', (tester) async {
@@ -400,11 +491,14 @@ void main() {
           run: buildRun(),
           userProfile: buildUser(),
           runClubId: 'club-1',
+          isHost: false,
           reviews: const [],
           isAuthenticated: true,
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
       );
@@ -424,11 +518,14 @@ void main() {
           run: buildRun(signedUpUserIds: const ['runner-1']),
           userProfile: buildUser(),
           runClubId: 'club-1',
+          isHost: false,
           reviews: const [],
           isAuthenticated: true,
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
         ],
@@ -449,7 +546,9 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+            runClubsRepositoryProvider.overrideWithValue(
+              FakeRunClubsRepository(),
+            ),
             paymentRepositoryProvider.overrideWithValue(
               FakePaymentRepository(),
             ),
@@ -467,6 +566,7 @@ void main() {
                 run: buildRun(),
                 userProfile: buildUser(),
                 runClubId: 'club-1',
+                isHost: false,
                 reviews: const [],
                 isAuthenticated: true,
                 onShareRun: (_, run) async {
@@ -478,15 +578,15 @@ void main() {
         ),
       );
       await tester.pump();
-      await tester.pump(const Duration(milliseconds: 400));
-      final iconButtons = find.byType(IconBtn);
-      expect(iconButtons, findsNWidgets(3));
-      await tester.tap(iconButtons.at(1));
+      expect(find.byTooltip('Back'), findsOneWidget);
+      expect(find.byTooltip('Share run'), findsOneWidget);
+      expect(find.byTooltip('Save run'), findsOneWidget);
+      await tester.tap(find.byTooltip('Share run'));
       await tester.pump();
-      await tester.tap(iconButtons.at(2));
+      await tester.tap(find.byTooltip('Save run'));
       await tester.pump();
-      await tester.tap(iconButtons.at(0));
-      await tester.pump(const Duration(milliseconds: 400));
+      await tester.tap(find.byTooltip('Back'));
+      await _pumpUntilFound(tester, find.text('Home'));
 
       expect(sharedRunId, 'run-1');
       expect(fakeUserProfileRepository.savedRunId, 'run-1');
@@ -504,11 +604,14 @@ void main() {
           run: buildRun(),
           userProfile: buildUser(savedRunIds: const ['run-1']),
           runClubId: 'club-1',
+          isHost: false,
           reviews: const [],
           isAuthenticated: true,
         ),
         overrides: [
-          runClubsRepositoryProvider.overrideWithValue(FakeRunClubsRepository()),
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
           userProfileRepositoryProvider.overrideWithValue(
             fakeUserProfileRepository,
@@ -516,9 +619,9 @@ void main() {
         ],
       );
 
-      expect(find.byIcon(Icons.bookmark_rounded), findsOneWidget);
+      expect(find.byTooltip('Unsave run'), findsOneWidget);
 
-      await tester.tap(find.byIcon(Icons.bookmark_rounded));
+      await tester.tap(find.byTooltip('Unsave run'));
       await tester.pump();
 
       expect(fakeUserProfileRepository.unsavedUid, 'runner-1');
@@ -526,4 +629,31 @@ void main() {
       expect(find.text('Run removed.'), findsOneWidget);
     });
   });
+}
+
+Future<void> _pumpUntilFound(
+  WidgetTester tester,
+  Finder finder, {
+  int maxFrames = 30,
+}) async {
+  for (var i = 0; i < maxFrames; i += 1) {
+    await tester.pump();
+    if (finder.evaluate().isNotEmpty) return;
+  }
+}
+
+Future<void> _scrollRunDetailUntilVisible(
+  WidgetTester tester,
+  Finder finder,
+) async {
+  await tester.scrollUntilVisible(
+    finder,
+    220,
+    scrollable: find.byWidgetPredicate(
+      (widget) =>
+          widget is Scrollable && widget.axisDirection == AxisDirection.down,
+      description: 'vertical run detail scrollable',
+    ),
+  );
+  await tester.pump();
 }

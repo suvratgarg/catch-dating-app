@@ -1,13 +1,15 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/detail_row.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
+import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -49,7 +51,6 @@ class _ConfirmationBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final clubAsync = ref.watch(watchRunClubProvider(run.runClubId));
     final clubName = clubAsync.asData?.value?.name;
@@ -76,7 +77,7 @@ class _ConfirmationBody extends ConsumerWidget {
                       gapH14,
                       _QuickActions(run: run),
                       gapH18,
-                      _HeadsUp(t: t),
+                      const _HeadsUp(),
                       gapH14,
                       _ReferralBanner(run: run),
                       // Extra space so content clears the sticky CTA.
@@ -88,7 +89,7 @@ class _ConfirmationBody extends ConsumerWidget {
             ),
           ),
         ),
-        _StickyBackToHome(t: t, bottomPadding: bottomPadding),
+        _StickyBackToHome(bottomPadding: bottomPadding),
       ],
     );
   }
@@ -210,13 +211,10 @@ class _RunSummaryCard extends StatelessWidget {
     // Refund deadline: 12 hours before run start
     final refundDeadline = run.startTime.subtract(const Duration(hours: 12));
 
-    return Container(
-      decoration: BoxDecoration(
-        color: t.surface,
-        border: Border.all(color: t.line),
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-      ),
+    return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p16),
+      radius: CatchRadius.md,
+      borderColor: t.line,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -345,24 +343,27 @@ class _QuickActions extends StatelessWidget {
       children: [
         Expanded(
           child: _ActionTile(
-            emoji: '📅',
-            label: 'Add to\ncalendar',
+            key: PaymentConfirmationKeys.addToCalendar,
+            icon: Icons.calendar_month_outlined,
+            label: 'Add to calendar',
             onTap: _addToCalendar,
           ),
         ),
         gapW8,
         Expanded(
           child: _ActionTile(
-            emoji: '📍',
-            label: 'Get\ndirections',
+            key: PaymentConfirmationKeys.directions,
+            icon: Icons.directions_outlined,
+            label: 'Get directions',
             onTap: _openDirections,
           ),
         ),
         gapW8,
         Expanded(
           child: _ActionTile(
-            emoji: '👋',
-            label: 'Invite a\nfriend',
+            key: PaymentConfirmationKeys.inviteFriend,
+            icon: Icons.ios_share_rounded,
+            label: 'Invite a friend',
             onTap: _inviteFriend,
           ),
         ),
@@ -373,59 +374,53 @@ class _QuickActions extends StatelessWidget {
 
 class _ActionTile extends StatelessWidget {
   const _ActionTile({
-    required this.emoji,
+    super.key,
+    required this.icon,
     required this.label,
     required this.onTap,
   });
 
-  final String emoji;
+  final IconData icon;
   final String label;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return GestureDetector(
+    return CatchSurface(
       onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          color: t.surface,
-          border: Border.all(color: t.line),
-          borderRadius: BorderRadius.circular(CatchRadius.sm + 4),
-        ),
-        padding: const EdgeInsets.symmetric(
-          vertical: Sizes.p12,
-          horizontal: Sizes.p8,
-        ),
-        child: Column(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 18)),
-            gapH6,
-            Text(
-              label,
-              style: CatchTextStyles.labelS(context, color: t.ink),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+      padding: const EdgeInsets.symmetric(
+        vertical: Sizes.p12,
+        horizontal: Sizes.p8,
+      ),
+      radius: CatchRadius.sm + 4,
+      borderColor: t.line,
+      child: Column(
+        children: [
+          Icon(icon, size: 20, color: t.primary),
+          gapH6,
+          Text(
+            label,
+            style: CatchTextStyles.labelS(context, color: t.ink),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }
 }
 
 class _HeadsUp extends StatelessWidget {
-  const _HeadsUp({required this.t});
-
-  final CatchTokens t;
+  const _HeadsUp();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: t.primarySoft,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-      ),
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      tone: CatchSurfaceTone.primarySoft,
       padding: const EdgeInsets.all(Sizes.p14),
+      radius: CatchRadius.md,
+      borderWidth: 0,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -465,53 +460,51 @@ class _ReferralBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    return GestureDetector(
+    return CatchSurface(
+      key: PaymentConfirmationKeys.referralShare,
       onTap: _shareReferral,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          border: Border.all(color: t.line2, width: 1.5),
-        ),
-        padding: const EdgeInsets.all(Sizes.p14),
-        child: Row(
-          children: [
-            const Text('🤝', style: TextStyle(fontSize: 24)),
-            gapW12,
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Bring a friend, run together',
-                    style: CatchTextStyles.titleS(context),
-                  ),
-                  gapH2,
-                  Text(
-                    'Share the link · they get ₹100 off',
-                    style: CatchTextStyles.bodyS(context),
-                  ),
-                ],
-              ),
+      padding: const EdgeInsets.all(Sizes.p14),
+      radius: CatchRadius.md,
+      borderColor: t.line2,
+      borderWidth: 1.5,
+      child: Row(
+        children: [
+          const Text('🤝', style: TextStyle(fontSize: 24)),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Bring a friend, run together',
+                  style: CatchTextStyles.titleS(context),
+                ),
+                gapH2,
+                Text(
+                  'Share the link · they get ₹100 off',
+                  style: CatchTextStyles.bodyS(context),
+                ),
+              ],
             ),
-            Text(
-              'Share →',
-              style: CatchTextStyles.labelL(context, color: t.primary),
-            ),
-          ],
-        ),
+          ),
+          Text(
+            'Share →',
+            style: CatchTextStyles.labelL(context, color: t.primary),
+          ),
+        ],
       ),
     );
   }
 }
 
 class _StickyBackToHome extends StatelessWidget {
-  const _StickyBackToHome({required this.t, required this.bottomPadding});
+  const _StickyBackToHome({required this.bottomPadding});
 
-  final CatchTokens t;
   final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Container(
       color: t.surface,
       child: Column(
@@ -526,6 +519,7 @@ class _StickyBackToHome extends StatelessWidget {
               Sizes.p12 + bottomPadding,
             ),
             child: CatchButton(
+              key: PaymentConfirmationKeys.backHome,
               label: 'Back to home',
               onPressed: () =>
                   Navigator.of(context).popUntil((route) => route.isFirst),

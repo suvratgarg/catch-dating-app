@@ -19,6 +19,8 @@ class CatchHorizontalRail extends StatelessWidget {
     this.showDivider = true,
     this.height = 92,
     this.spacing = 12,
+    this.headerPadding = _defaultHeaderPadding,
+    this.listPadding = const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
   });
 
   final String title;
@@ -28,8 +30,10 @@ class CatchHorizontalRail extends StatelessWidget {
   final bool showDivider;
   final double height;
   final double spacing;
+  final EdgeInsets headerPadding;
+  final EdgeInsetsGeometry listPadding;
 
-  static const _headerPadding = EdgeInsets.fromLTRB(
+  static const _defaultHeaderPadding = EdgeInsets.fromLTRB(
     CatchSpacing.s5,
     14,
     CatchSpacing.s5,
@@ -46,13 +50,13 @@ class CatchHorizontalRail extends StatelessWidget {
           title: title,
           uppercase: false,
           titleStyle: CatchTextStyles.titleL(context),
-          padding: _headerPadding,
+          padding: headerPadding,
         ),
         SizedBox(
           height: height,
           child: ListView.separated(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+            padding: listPadding,
             itemCount: itemCount + (trailing != null ? 1 : 0),
             separatorBuilder: (_, _) => SizedBox(width: spacing),
             itemBuilder: (context, index) {
@@ -64,10 +68,7 @@ class CatchHorizontalRail extends StatelessWidget {
         if (showDivider)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
-            child: Divider(
-              color: CatchTokens.of(context).line,
-              height: 24,
-            ),
+            child: Divider(color: CatchTokens.of(context).line, height: 24),
           ),
       ],
     );

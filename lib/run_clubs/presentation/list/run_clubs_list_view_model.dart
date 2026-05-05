@@ -124,7 +124,7 @@ AsyncValue<List<RunClub>> filteredRunClubs(Ref ref) {
   });
 }
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Combines the user profile and filtered clubs streams into a
 /// [RunClubsListViewModel] that partitions clubs into joined and discover

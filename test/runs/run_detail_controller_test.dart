@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -16,6 +18,8 @@ void main() {
         runAsync: const AsyncLoading(),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        currentUid: 'runner-1',
         isAuthenticated: true,
       );
 
@@ -31,6 +35,8 @@ void main() {
         runAsync: AsyncData(run),
         userProfileAsync: AsyncData(user),
         reviewsAsync: AsyncData([review]),
+        runClubAsync: AsyncData(buildRunClub(hostUserId: 'runner-1')),
+        currentUid: 'runner-1',
         isAuthenticated: true,
       );
 
@@ -39,6 +45,7 @@ void main() {
       expect(value!.run, run);
       expect(value.userProfile, user);
       expect(value.reviews, [review]);
+      expect(value.isHost, isTrue);
     });
 
     test('returns null data when the run does not exist', () {
@@ -46,6 +53,8 @@ void main() {
         runAsync: const AsyncData(null),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        currentUid: 'runner-1',
         isAuthenticated: true,
       );
 
@@ -58,6 +67,8 @@ void main() {
         runAsync: AsyncData(buildRun()),
         userProfileAsync: const AsyncData(null),
         reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        currentUid: 'runner-1',
         isAuthenticated: true,
       );
 
@@ -70,6 +81,8 @@ void main() {
         runAsync: AsyncError(StateError('run failed'), StackTrace.empty),
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        currentUid: 'runner-1',
         isAuthenticated: true,
       );
 
@@ -85,6 +98,8 @@ void main() {
           StackTrace.empty,
         ),
         reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        currentUid: 'runner-1',
         isAuthenticated: true,
       );
 
@@ -100,6 +115,8 @@ void main() {
           StateError('reviews failed'),
           StackTrace.empty,
         ),
+        runClubAsync: AsyncData(buildRunClub()),
+        currentUid: 'runner-1',
         isAuthenticated: true,
       );
 
@@ -118,6 +135,9 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value('runner-77')),
             watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            fetchRunClubProvider(run.runClubId).overrideWith(
+              (ref) async => buildRunClub(hostUserId: 'runner-77'),
+            ),
             watchReviewsForRunProvider(
               run.id,
             ).overrideWith((ref) => Stream.value([review])),
@@ -142,7 +162,56 @@ void main() {
         expect(value!.run, run);
         expect(value.userProfile, user);
         expect(value.reviews, [review]);
+        expect(value.isHost, isTrue);
       },
     );
+  });
+
+  group('RunDetailController', () {
+    test('saves an unsaved run and returns the new saved state', () async {
+      final repository = FakeUserProfileRepository();
+      final container = ProviderContainer(
+        overrides: [
+          userProfileRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final nowSaved = await container
+          .read(runDetailControllerProvider.notifier)
+          .toggleSavedRun(
+            run: buildRun(id: 'run-9'),
+            userProfile: buildUser(uid: 'runner-9'),
+            isSaved: false,
+          );
+
+      expect(nowSaved, isTrue);
+      expect(repository.savedUid, 'runner-9');
+      expect(repository.savedRunId, 'run-9');
+      expect(repository.unsavedRunId, isNull);
+    });
+
+    test('unsaves a saved run and returns the new saved state', () async {
+      final repository = FakeUserProfileRepository();
+      final container = ProviderContainer(
+        overrides: [
+          userProfileRepositoryProvider.overrideWith((ref) => repository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final nowSaved = await container
+          .read(runDetailControllerProvider.notifier)
+          .toggleSavedRun(
+            run: buildRun(id: 'run-10'),
+            userProfile: buildUser(uid: 'runner-10'),
+            isSaved: true,
+          );
+
+      expect(nowSaved, isFalse);
+      expect(repository.unsavedUid, 'runner-10');
+      expect(repository.unsavedRunId, 'run-10');
+      expect(repository.savedRunId, isNull);
+    });
   });
 }

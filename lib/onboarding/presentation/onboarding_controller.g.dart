@@ -8,14 +8,12 @@ part of 'onboarding_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+/// **Pattern B: Flow controller with freezed state + Mutations**
 ///
-/// This is the only controller in the app using this hybrid pattern:
 /// - [OnboardingData] (freezed) holds multi-step form state that must survive
 ///   navigation between onboarding pages. This is why [keepAlive] is `true`.
-/// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
-///   single-shot async operations while the UI watches their lifecycle
-///   (idle / pending / error / success).
+/// - [Mutation]s ([saveProfileMutation], [completeMutation]) handle single-shot
+///   async operations while the UI watches their lifecycle.
 /// - The controller self-invalidates at the end of [complete] so its state
 ///   is freed once onboarding is done.
 ///
@@ -25,14 +23,12 @@ part of 'onboarding_controller.dart';
 @ProviderFor(OnboardingController)
 final onboardingControllerProvider = OnboardingControllerProvider._();
 
-/// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+/// **Pattern B: Flow controller with freezed state + Mutations**
 ///
-/// This is the only controller in the app using this hybrid pattern:
 /// - [OnboardingData] (freezed) holds multi-step form state that must survive
 ///   navigation between onboarding pages. This is why [keepAlive] is `true`.
-/// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
-///   single-shot async operations while the UI watches their lifecycle
-///   (idle / pending / error / success).
+/// - [Mutation]s ([saveProfileMutation], [completeMutation]) handle single-shot
+///   async operations while the UI watches their lifecycle.
 /// - The controller self-invalidates at the end of [complete] so its state
 ///   is freed once onboarding is done.
 ///
@@ -40,14 +36,12 @@ final onboardingControllerProvider = OnboardingControllerProvider._();
 /// navigation and a freezed data class captures the full form state.
 final class OnboardingControllerProvider
     extends $NotifierProvider<OnboardingController, OnboardingData> {
-  /// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+  /// **Pattern B: Flow controller with freezed state + Mutations**
   ///
-  /// This is the only controller in the app using this hybrid pattern:
   /// - [OnboardingData] (freezed) holds multi-step form state that must survive
   ///   navigation between onboarding pages. This is why [keepAlive] is `true`.
-  /// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
-  ///   single-shot async operations while the UI watches their lifecycle
-  ///   (idle / pending / error / success).
+  /// - [Mutation]s ([saveProfileMutation], [completeMutation]) handle single-shot
+  ///   async operations while the UI watches their lifecycle.
   /// - The controller self-invalidates at the end of [complete] so its state
   ///   is freed once onboarding is done.
   ///
@@ -81,16 +75,14 @@ final class OnboardingControllerProvider
 }
 
 String _$onboardingControllerHash() =>
-    r'8234f8b56fca8038b6ee8531a78cf99e30300556';
+    r'7436d8d6796b8b52921b073971342c592c0d2db0';
 
-/// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+/// **Pattern B: Flow controller with freezed state + Mutations**
 ///
-/// This is the only controller in the app using this hybrid pattern:
 /// - [OnboardingData] (freezed) holds multi-step form state that must survive
 ///   navigation between onboarding pages. This is why [keepAlive] is `true`.
-/// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
-///   single-shot async operations while the UI watches their lifecycle
-///   (idle / pending / error / success).
+/// - [Mutation]s ([saveProfileMutation], [completeMutation]) handle single-shot
+///   async operations while the UI watches their lifecycle.
 /// - The controller self-invalidates at the end of [complete] so its state
 ///   is freed once onboarding is done.
 ///

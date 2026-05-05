@@ -52,7 +52,7 @@ void main() {
   });
 
   group('RunClubMembershipController', () {
-    test('join forwards club and user ids to the repository', () async {
+    test('join requires sign-in and forwards the club id', () async {
       final fakeRepository = FakeRunClubsRepository();
       final container = ProviderContainer(
         overrides: [
@@ -73,10 +73,9 @@ void main() {
           .join('club-7');
 
       expect(fakeRepository.joinedClubId, 'club-7');
-      expect(fakeRepository.joinedUserId, 'runner-7');
     });
 
-    test('leave forwards club and user ids to the repository', () async {
+    test('leave requires sign-in and forwards the club id', () async {
       final fakeRepository = FakeRunClubsRepository();
       final container = ProviderContainer(
         overrides: [
@@ -97,7 +96,6 @@ void main() {
           .leave('club-9');
 
       expect(fakeRepository.leftClubId, 'club-9');
-      expect(fakeRepository.leftUserId, 'runner-9');
     });
   });
 
@@ -107,6 +105,10 @@ void main() {
       final futureRun = buildRun(
         id: 'future-run',
         startTime: now.add(const Duration(hours: 2)),
+      );
+      final soonerFutureRun = buildRun(
+        id: 'sooner-future-run',
+        startTime: now.add(const Duration(hours: 1)),
       );
       final pastRun = buildRun(
         id: 'past-run',
@@ -119,7 +121,7 @@ void main() {
             memberUserIds: const ['host-1', 'runner-1'],
           ),
         ),
-        runsAsync: AsyncData([futureRun, pastRun]),
+        runsAsync: AsyncData([futureRun, pastRun, soonerFutureRun]),
         reviewsAsync: AsyncData([buildReview()]),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
@@ -129,8 +131,15 @@ void main() {
       final vm = result.requireValue!;
       expect(vm.isHost, isFalse);
       expect(vm.isMember, isTrue);
-      expect(vm.upcomingRuns.map((run) => run.id), ['future-run']);
-      expect(vm.allRuns.map((run) => run.id), ['future-run', 'past-run']);
+      expect(vm.upcomingRuns.map((run) => run.id), [
+        'sooner-future-run',
+        'future-run',
+      ]);
+      expect(vm.allRuns.map((run) => run.id), [
+        'future-run',
+        'past-run',
+        'sooner-future-run',
+      ]);
       expect(vm.reviews, hasLength(1));
     });
 
@@ -231,62 +240,47 @@ void main() {
   });
 
   group('CreateRunClubController', () {
-    test('creates a club directly when there is no cover image', () async {
-      final fakeRepository = FakeRunClubsRepository();
-      final fakeImageUploadRepository = FakeImageUploadRepository();
-      final container = ProviderContainer(
-        overrides: [
-          runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
-          imageUploadRepositoryProvider.overrideWith(
-            (ref) => fakeImageUploadRepository,
-          ),
-          uidProvider.overrideWith((ref) => Stream.value('host-1')),
-          watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(
-              buildUser(
-                uid: 'host-1',
-                name: 'Priya',
-                photoUrls: const ['https://example.com/host.jpg'],
-              ),
+    test(
+      'creates a club through the repository when there is no cover image',
+      () async {
+        final fakeRepository = FakeRunClubsRepository();
+        final fakeImageUploadRepository = FakeImageUploadRepository();
+        final container = ProviderContainer(
+          overrides: [
+            runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+            imageUploadRepositoryProvider.overrideWith(
+              (ref) => fakeImageUploadRepository,
             ),
-          ),
-        ],
-      );
-      addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      final userProfileSubscription = container.listen(
-        watchUserProfileProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(userProfileSubscription.close);
-      await container.pump();
-      await container.pump();
+            uidProvider.overrideWith((ref) => Stream.value('host-1')),
+          ],
+        );
+        addTearDown(container.dispose);
+        final uidSubscription = container.listen(
+          uidProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(uidSubscription.close);
+        await container.pump();
 
-      await container
-          .read(createRunClubControllerProvider.notifier)
-          .submit(
-            name: 'Sunset Striders',
-            location: buildRunClub().location,
-            area: 'Bandra',
-            description: 'Easy social club',
-          );
+        await container
+            .read(createRunClubControllerProvider.notifier)
+            .submit(
+              name: 'Sunset Striders',
+              location: buildRunClub().location,
+              area: 'Bandra',
+              description: 'Easy social club',
+            );
 
-      expect(fakeRepository.lastCreateCall, isNotNull);
-      expect(fakeRepository.lastCreateCall!.clubId, fakeRepository.generatedId);
-      expect(fakeRepository.lastCreateCall!.imageUrl, isNull);
-      expect(fakeRepository.lastCreateCall!.hostName, 'Priya');
-      expect(
-        fakeRepository.lastCreateCall!.hostAvatarUrl,
-        'https://example.com/host.jpg',
-      );
-      expect(fakeImageUploadRepository.lastUploadClubId, isNull);
-    });
+        expect(fakeRepository.lastCreateCall, isNotNull);
+        expect(
+          fakeRepository.lastCreateCall!.clubId,
+          fakeRepository.generatedId,
+        );
+        expect(fakeRepository.lastCreateCall!.imageUrl, isNull);
+        expect(fakeImageUploadRepository.lastUploadClubId, isNull);
+      },
+    );
 
     test('uploads the cover image before creating the club', () async {
       final fakeRepository = FakeRunClubsRepository()..generatedId = 'club-42';
@@ -340,44 +334,39 @@ void main() {
       );
     });
 
-    test(
-      'throws a helpful error when the user profile is unavailable',
-      () async {
-        final container = ProviderContainer(
-          overrides: [
-            uidProvider.overrideWith((ref) => Stream.value('host-1')),
-            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-          ],
-        );
-        addTearDown(container.dispose);
-        final uidSubscription = container.listen(
-          uidProvider,
-          (_, _) {},
-          fireImmediately: true,
-        );
-        addTearDown(uidSubscription.close);
-        final userProfileSubscription = container.listen(
-          watchUserProfileProvider,
-          (_, _) {},
-          fireImmediately: true,
-        );
-        addTearDown(userProfileSubscription.close);
-        await container.pump();
-        await container.pump();
+    test('creates a club without requiring profile state', () async {
+      final fakeRepository = FakeRunClubsRepository();
+      final fakeImageUploadRepository = FakeImageUploadRepository();
+      final container = ProviderContainer(
+        overrides: [
+          runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
 
-        expect(
-          () => container
-              .read(createRunClubControllerProvider.notifier)
-              .submit(
-                name: 'Sunset Striders',
-                location: buildRunClub().location,
-                area: 'Bandra',
-                description: 'Easy social club',
-              ),
-          throwsA(isA<StateError>()),
-        );
-      },
-    );
+      await container
+          .read(createRunClubControllerProvider.notifier)
+          .submit(
+            name: 'Sunset Striders',
+            location: buildRunClub().location,
+            area: 'Bandra',
+            description: 'Easy social club',
+          );
+
+      expect(fakeRepository.lastCreateCall, isNotNull);
+      expect(fakeRepository.lastCreateCall!.clubId, fakeRepository.generatedId);
+    });
 
     test('updates an existing club without requiring profile state', () async {
       final existingClub = buildRunClub(
@@ -475,7 +464,10 @@ void main() {
           );
 
       expect(fakeImageUploadRepository.lastUploadClubId, 'club-1');
-      expect(fakeRepository.lastUpdatedFields!['imageUrl'], 'https://example.com/new.jpg');
+      expect(
+        fakeRepository.lastUpdatedFields!['imageUrl'],
+        'https://example.com/new.jpg',
+      );
     });
 
     test('rejects editing by a non-host user', () async {

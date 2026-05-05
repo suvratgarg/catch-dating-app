@@ -1,5 +1,4 @@
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:flutter/material.dart';
 
 class RunClubsEmptyState extends StatelessWidget {
@@ -7,30 +6,15 @@ class RunClubsEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        vertical: 60,
-        horizontal: CatchSpacing.s5,
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.groups_outlined, size: 64, color: t.ink3),
-          const SizedBox(height: 16),
-          Text(
-            'No run clubs in this city yet',
-            style: CatchTextStyles.titleL(context),
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Be the first to create one!',
-            style: CatchTextStyles.bodyS(context),
-            textAlign: TextAlign.center,
-          ),
-        ],
+    return const Center(
+      child: Padding(
+        padding: EdgeInsets.all(20),
+        child: CatchEmptyState(
+          icon: Icons.groups_outlined,
+          title: 'No run clubs in this city yet',
+          message: 'Be the first to create one!',
+          surface: false,
+        ),
       ),
     );
   }

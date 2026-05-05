@@ -8,7 +8,7 @@ part of 'run_detail_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Watches several stream/future providers and combines them into one
 /// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
@@ -22,7 +22,7 @@ part of 'run_detail_view_model.dart';
 @ProviderFor(runDetailViewModel)
 final runDetailViewModelProvider = RunDetailViewModelFamily._();
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Watches several stream/future providers and combines them into one
 /// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
@@ -41,7 +41,7 @@ final class RunDetailViewModelProvider
           AsyncValue<RunDetailViewModel?>
         >
     with $Provider<AsyncValue<RunDetailViewModel?>> {
-  /// **Pattern D: Pure computed provider combining multiple async streams**
+  /// **Pattern D: View-model provider**
   ///
   /// Watches several stream/future providers and combines them into one
   /// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
@@ -106,9 +106,9 @@ final class RunDetailViewModelProvider
 }
 
 String _$runDetailViewModelHash() =>
-    r'ddee5287bffb7e58a9e06b51dd380a75d75736ff';
+    r'9bf012a62b0b2baa74a641876fb671c6da9f7832';
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Watches several stream/future providers and combines them into one
 /// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
@@ -130,7 +130,7 @@ final class RunDetailViewModelFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// **Pattern D: Pure computed provider combining multiple async streams**
+  /// **Pattern D: View-model provider**
   ///
   /// Watches several stream/future providers and combines them into one
   /// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually

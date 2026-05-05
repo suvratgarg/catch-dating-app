@@ -3,14 +3,17 @@ import 'dart:async';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 
-import 'package:catch_dating_app/core/widgets/bottom_sheet_grabber.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:flutter/material.dart';
 
 Future<RunDraft?> showDraftPickerSheet({
   required BuildContext context,
   required List<RunDraft> drafts,
+  required Future<void> Function(RunDraft draft) onDeleteDraft,
 }) {
   final completer = Completer<RunDraft?>();
   showModalBottomSheet(
@@ -20,8 +23,11 @@ Future<RunDraft?> showDraftPickerSheet({
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(CatchRadius.lg)),
     ),
-    builder: (sheetContext) =>
-        _DraftPickerSheet(drafts: drafts, completer: completer),
+    builder: (sheetContext) => _DraftPickerSheet(
+      drafts: drafts,
+      completer: completer,
+      onDeleteDraft: onDeleteDraft,
+    ),
   ).then((_) {
     if (!completer.isCompleted) completer.complete(null);
   });
@@ -29,10 +35,15 @@ Future<RunDraft?> showDraftPickerSheet({
 }
 
 class _DraftPickerSheet extends StatefulWidget {
-  const _DraftPickerSheet({required this.drafts, required this.completer});
+  const _DraftPickerSheet({
+    required this.drafts,
+    required this.completer,
+    required this.onDeleteDraft,
+  });
 
   final List<RunDraft> drafts;
   final Completer<RunDraft?> completer;
+  final Future<void> Function(RunDraft draft) onDeleteDraft;
 
   @override
   State<_DraftPickerSheet> createState() => _DraftPickerSheetState();
@@ -40,6 +51,7 @@ class _DraftPickerSheet extends StatefulWidget {
 
 class _DraftPickerSheetState extends State<_DraftPickerSheet> {
   late List<RunDraft> _drafts;
+  String? _deletingDraftId;
 
   @override
   void initState() {
@@ -75,65 +87,47 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
         ],
       ),
     );
-    if (confirmed == true && mounted) {
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _deletingDraftId = draft.id);
+    try {
+      await widget.onDeleteDraft(draft);
+      if (!mounted) return;
       setState(() => _drafts.removeWhere((d) => d.id == draft.id));
-      widget.completer.complete(null);
       if (_drafts.isEmpty) {
         Navigator.of(context).pop();
       }
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not delete draft.')));
+    } finally {
+      if (mounted) setState(() => _deletingDraftId = null);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
-
-    return Padding(
-      padding: EdgeInsets.only(bottom: bottomPadding),
+    return CatchBottomSheetScaffold(
+      title: 'Your drafts',
+      subtitle: 'Pick up where you left off or start a new run.',
+      action: CatchButton(
+        label: 'Start fresh',
+        onPressed: _onStartFresh,
+        variant: CatchButtonVariant.secondary,
+        fullWidth: true,
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const SizedBox(height: 8),
-          const BottomSheetGrabber(),
-          // Header
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              16,
-              CatchSpacing.s5,
-              4,
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    'Your Drafts',
-                    style: CatchTextStyles.titleL(context),
-                  ),
-                ),
-                IconButton(
-                  onPressed: _onStartFresh,
-                  icon: const Icon(Icons.close_rounded, size: 20),
-                  visualDensity: VisualDensity.compact,
-                ),
-              ],
-            ),
-          ),
-          // Draft list
           if (_drafts.isEmpty)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                8,
-                CatchSpacing.s5,
-                24,
-              ),
-              child: Text(
-                'No drafts yet',
-                style: CatchTextStyles.bodyM(context, color: t.ink2),
-              ),
+            const CatchEmptyState(
+              icon: Icons.edit_note_rounded,
+              title: 'No drafts yet',
+              message: 'Saved drafts for this run club will appear here.',
+              surface: false,
             )
           else
             Flexible(
@@ -151,27 +145,13 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
                   final draft = _drafts[index];
                   return _DraftCard(
                     draft: draft,
+                    isDeleting: _deletingDraftId == draft.id,
                     onTap: () => _onSelect(draft),
                     onDelete: () => _onDelete(draft),
                   );
                 },
               ),
             ),
-          // Start fresh button
-          Padding(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              8,
-              CatchSpacing.s5,
-              16,
-            ),
-            child: CatchButton(
-              label: 'Start fresh',
-              onPressed: _onStartFresh,
-              variant: CatchButtonVariant.secondary,
-              fullWidth: true,
-            ),
-          ),
         ],
       ),
     );
@@ -181,63 +161,61 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
 class _DraftCard extends StatelessWidget {
   const _DraftCard({
     required this.draft,
+    required this.isDeleting,
     required this.onTap,
     required this.onDelete,
   });
 
   final RunDraft draft;
+  final bool isDeleting;
   final VoidCallback onTap;
   final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Material(
-      color: t.surface,
-      borderRadius: BorderRadius.circular(CatchRadius.lg),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        child: Container(
-          padding: const EdgeInsets.all(14),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(CatchRadius.lg),
-            border: Border.all(color: t.line),
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      draft.summary,
-                      style: CatchTextStyles.labelL(context),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _formatRelative(draft.savedAt),
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
-                    ),
-                  ],
+    return CatchSurface(
+      onTap: isDeleting ? null : onTap,
+      padding: const EdgeInsets.all(14),
+      borderColor: CatchTokens.of(context).line,
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  draft.summary,
+                  style: CatchTextStyles.labelL(context),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              IconButton(
-                onPressed: onDelete,
-                icon: Icon(
-                  Icons.delete_outline_rounded,
-                  size: 20,
-                  color: t.ink2,
+                const SizedBox(height: 4),
+                Text(
+                  _formatRelative(draft.savedAt),
+                  style: CatchTextStyles.bodyS(
+                    context,
+                    color: CatchTokens.of(context).ink2,
+                  ),
                 ),
-                visualDensity: VisualDensity.compact,
-                tooltip: 'Delete draft',
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
+          IconButton(
+            onPressed: isDeleting ? null : onDelete,
+            icon: isDeleting
+                ? const SizedBox.square(
+                    dimension: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Icon(
+                    Icons.delete_outline_rounded,
+                    size: 20,
+                    color: CatchTokens.of(context).ink2,
+                  ),
+            visualDensity: VisualDensity.compact,
+            tooltip: 'Delete draft',
+          ),
+        ],
       ),
     );
   }

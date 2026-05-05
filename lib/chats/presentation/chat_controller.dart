@@ -6,7 +6,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'chat_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Holds no Riverpod state ([build] returns void). [Mutation]s track the
 /// lifecycle of single-shot operations so the UI can show loading spinners
@@ -38,11 +38,9 @@ class ChatController extends _$ChatController {
   }) async {
     final image = await ref.read(chatRepositoryProvider).pickImage();
     if (image == null) return; // User cancelled
-    await ref.read(chatRepositoryProvider).sendImageMessage(
-      matchId: matchId,
-      senderId: senderId,
-      image: image,
-    );
+    await ref
+        .read(chatRepositoryProvider)
+        .sendImageMessage(matchId: matchId, senderId: senderId, image: image);
   }
 
   Future<void> blockUser({required String targetUserId}) async {
@@ -51,16 +49,26 @@ class ChatController extends _$ChatController {
         .blockUser(targetUserId: targetUserId, source: 'chat');
   }
 
-  Future<void> reportUser({required String targetUserId, required String matchId}) async {
-    await ref.read(safetyRepositoryProvider).reportUser(
-      targetUserId: targetUserId,
-      source: 'chat',
-      contextId: matchId,
-      reasonCode: 'chat_safety_concern',
-    );
+  Future<void> reportUser({
+    required String targetUserId,
+    required String matchId,
+  }) async {
+    await ref
+        .read(safetyRepositoryProvider)
+        .reportUser(
+          targetUserId: targetUserId,
+          source: 'chat',
+          contextId: matchId,
+          reasonCode: 'chat_safety_concern',
+        );
   }
 
-  Future<void> resetUnread({required String matchId, required String uid}) async {
-    await ref.read(matchRepositoryProvider).resetUnread(matchId: matchId, uid: uid);
+  Future<void> resetUnread({
+    required String matchId,
+    required String uid,
+  }) async {
+    await ref
+        .read(matchRepositoryProvider)
+        .resetUnread(matchId: matchId, uid: uid);
   }
 }

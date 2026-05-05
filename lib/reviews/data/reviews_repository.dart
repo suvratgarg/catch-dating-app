@@ -11,6 +11,7 @@ class ReviewsRepository {
   const ReviewsRepository(this._db);
 
   static const _collectionPath = 'reviews';
+  static const _reviewIdSeparator = '~';
 
   final FirebaseFirestore _db;
 
@@ -46,23 +47,33 @@ class ReviewsRepository {
   Stream<Review?> watchUserReviewForRun({
     required String runId,
     required String reviewerUserId,
-  }) => _reviewsRef
-      .where('runId', isEqualTo: runId)
-      .where('reviewerUserId', isEqualTo: reviewerUserId)
-      .limit(1)
-      .snapshots()
-      .map((s) => s.docs.isNotEmpty ? s.docs.first.data() : null);
+  }) => _reviewRefForRunUser(
+    runId: runId,
+    reviewerUserId: reviewerUserId,
+  ).snapshots().map((s) => s.exists ? s.data() : null);
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> addReview(Review review) => withFirestoreErrorContext(
-    () {
-      final ref = _reviewsRef.doc(); // auto-generated ID
-      return ref.set(review.copyWith(id: ref.id));
-    },
-    collection: _collectionPath,
-    action: 'add review',
-  );
+  Future<void> addReview(Review review) {
+    final runId = review.runId;
+    if (runId == null || runId.isEmpty) {
+      throw ArgumentError.value(
+        runId,
+        'review.runId',
+        'Run reviews require a runId.',
+      );
+    }
+
+    final ref = _reviewRefForRunUser(
+      runId: runId,
+      reviewerUserId: review.reviewerUserId,
+    );
+    return withFirestoreErrorContext(
+      () => ref.set(review.copyWith(id: ref.id)),
+      collection: _collectionPath,
+      action: 'add review',
+    );
+  }
 
   Future<void> updateReview(Review review) => withFirestoreErrorContext(
     () => _reviewsRef.doc(review.id).update({
@@ -79,6 +90,38 @@ class ReviewsRepository {
     collection: _collectionPath,
     action: 'delete review',
   );
+
+  DocumentReference<Review> _reviewRefForRunUser({
+    required String runId,
+    required String reviewerUserId,
+  }) => _reviewsRef.doc(
+    reviewIdForRunUser(runId: runId, reviewerUserId: reviewerUserId),
+  );
+
+  static String reviewIdForRunUser({
+    required String runId,
+    required String reviewerUserId,
+  }) {
+    if (runId.isEmpty) {
+      throw ArgumentError.value(runId, 'runId', 'Run id cannot be empty.');
+    }
+    if (reviewerUserId.isEmpty) {
+      throw ArgumentError.value(
+        reviewerUserId,
+        'reviewerUserId',
+        'Reviewer user id cannot be empty.',
+      );
+    }
+    if (runId.contains('/') || reviewerUserId.contains('/')) {
+      throw ArgumentError.value(
+        '$runId:$reviewerUserId',
+        'runId/reviewerUserId',
+        'Review id parts cannot contain path separators.',
+      );
+    }
+
+    return '$runId$_reviewIdSeparator$reviewerUserId';
+  }
 }
 
 // ── Providers ─────────────────────────────────────────────────────────────────
@@ -106,7 +149,4 @@ Stream<Review?> watchUserReviewForRun(
   required String reviewerUserId,
 }) => ref
     .watch(reviewsRepositoryProvider)
-    .watchUserReviewForRun(
-      runId: runId,
-      reviewerUserId: reviewerUserId,
-    );
+    .watchUserReviewForRun(runId: runId, reviewerUserId: reviewerUserId);

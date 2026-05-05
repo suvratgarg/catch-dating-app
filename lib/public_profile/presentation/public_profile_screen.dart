@@ -1,9 +1,11 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
@@ -11,7 +13,7 @@ import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PublicProfileScreen extends ConsumerStatefulWidget {
+class PublicProfileScreen extends ConsumerWidget {
   const PublicProfileScreen({
     super.key,
     required this.uid,
@@ -21,57 +23,45 @@ class PublicProfileScreen extends ConsumerStatefulWidget {
   final String uid;
   final PublicProfile? initialProfile;
 
-  @override
-  ConsumerState<PublicProfileScreen> createState() =>
-      _PublicProfileScreenState();
-}
-
-class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
-  bool _submitting = false;
-
-  Future<void> _confirmBlock(PublicProfile profile) async {
+  Future<void> _confirmBlock({
+    required BuildContext context,
+    required WidgetRef ref,
+    required PublicProfile profile,
+  }) async {
     final confirmed = await showBlockUserDialog(
       context: context,
       name: profile.name,
     );
     if (confirmed != true) return;
+    if (!context.mounted) return;
 
-    setState(() => _submitting = true);
-    try {
-      await ref
-          .read(publicProfileControllerProvider.notifier)
+    await PublicProfileController.blockUserMutation.run(ref, (tx) async {
+      await tx
+          .get(publicProfileControllerProvider.notifier)
           .blockUser(targetUserId: profile.uid);
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('${profile.name} has been blocked.')),
-      );
-      await Navigator.of(context).maybePop();
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
+    });
   }
 
-  Future<void> _report(PublicProfile profile) async {
+  Future<void> _report({
+    required BuildContext context,
+    required WidgetRef ref,
+    required PublicProfile profile,
+  }) async {
     final reason = await showModalBottomSheet<String>(
       context: context,
-      showDragHandle: true,
+      useSafeArea: true,
       builder: (context) => SafeArea(
-        child: Padding(
+        child: CatchBottomSheetScaffold(
+          title: 'Report ${profile.name}',
           padding: const EdgeInsets.fromLTRB(
             Sizes.p16,
-            0,
+            Sizes.p12,
             Sizes.p16,
             Sizes.p16,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Report ${profile.name}',
-                style: CatchTextStyles.titleL(context),
-              ),
-              gapH12,
               _ReportReasonTile(
                 label: 'Harassment or abuse',
                 value: 'harassment_or_abuse',
@@ -91,78 +81,109 @@ class _PublicProfileScreenState extends ConsumerState<PublicProfileScreen> {
       ),
     );
     if (reason == null) return;
+    if (!context.mounted) return;
 
-    setState(() => _submitting = true);
-    try {
-      await ref
-          .read(publicProfileControllerProvider.notifier)
+    await PublicProfileController.reportUserMutation.run(ref, (tx) async {
+      await tx
+          .get(publicProfileControllerProvider.notifier)
           .reportUser(targetUserId: profile.uid, reasonCode: reason);
-      if (!mounted) return;
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Report submitted.')));
-    } finally {
-      if (mounted) setState(() => _submitting = false);
-    }
+    });
   }
 
   @override
-  Widget build(BuildContext context) {
-    final profileAsync = ref.watch(watchPublicProfileProvider(widget.uid));
-    final profile = profileAsync.asData?.value ?? widget.initialProfile;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final profileAsync = ref.watch(watchPublicProfileProvider(uid));
+    final profile = profileAsync.asData?.value ?? initialProfile;
+    final blockMutation = ref.watch(PublicProfileController.blockUserMutation);
+    final reportMutation = ref.watch(
+      PublicProfileController.reportUserMutation,
+    );
+    final submitting = blockMutation.isPending || reportMutation.isPending;
     final t = CatchTokens.of(context);
 
-    return Scaffold(
-      appBar: CatchTopBar(
-        title: profile?.name ?? 'Profile',
-        actions: [
-          if (profile != null)
-            CatchTopBarMenuAction<String>(
-              tooltip: 'Profile actions',
-              enabled: !_submitting,
-              onSelected: (value) {
-                if (value == 'report') {
-                  _report(profile);
-                } else if (value == 'block') {
-                  _confirmBlock(profile);
-                }
-              },
-              itemBuilder: (context) => const [
-                PopupMenuItem(value: 'report', child: Text('Report')),
-                PopupMenuItem(value: 'block', child: Text('Block')),
-              ],
-            ),
-        ],
-      ),
-      body: profileAsync.when(
-        loading: () => profile == null
-            ? const CatchLoadingIndicator()
-            : _ProfileBody(profile: profile, submitting: _submitting),
-        error: (_, _) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(Sizes.p24),
-            child: Text(
-              'Unable to load this profile.',
-              style: CatchTextStyles.bodyM(context, color: t.ink2),
-              textAlign: TextAlign.center,
-            ),
+    ref.listen(PublicProfileController.blockUserMutation, (previous, current) {
+      if (previous?.isPending == true && current.isSuccess) {
+        if (profile != null) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('${profile.name} has been blocked.')),
+          );
+        }
+        Navigator.of(context).maybePop();
+      }
+    });
+
+    ref.listen(PublicProfileController.reportUserMutation, (previous, current) {
+      if (previous?.isPending == true && current.isSuccess) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Report submitted.')));
+      }
+    });
+
+    return MutationErrorSnackbarListener(
+      mutation: PublicProfileController.blockUserMutation,
+      child: MutationErrorSnackbarListener(
+        mutation: PublicProfileController.reportUserMutation,
+        child: Scaffold(
+          appBar: CatchTopBar(
+            title: profile?.name ?? 'Profile',
+            actions: [
+              if (profile != null)
+                CatchTopBarMenuAction<String>(
+                  tooltip: 'Profile actions',
+                  enabled: !submitting,
+                  onSelected: (value) {
+                    if (value == 'report') {
+                      _report(context: context, ref: ref, profile: profile);
+                    } else if (value == 'block') {
+                      _confirmBlock(
+                        context: context,
+                        ref: ref,
+                        profile: profile,
+                      );
+                    }
+                  },
+                  itemBuilder: (context) => const [
+                    PopupMenuItem(value: 'report', child: Text('Report')),
+                    PopupMenuItem(value: 'block', child: Text('Block')),
+                  ],
+                ),
+            ],
           ),
-        ),
-        data: (loadedProfile) {
-          if (loadedProfile == null) {
-            return Center(
+          body: profileAsync.when(
+            loading: () => profile == null
+                ? const CatchLoadingIndicator()
+                : _ProfileBody(profile: profile, submitting: submitting),
+            error: (_, _) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(Sizes.p24),
                 child: Text(
-                  'This profile is unavailable.',
+                  'Unable to load this profile.',
                   style: CatchTextStyles.bodyM(context, color: t.ink2),
                   textAlign: TextAlign.center,
                 ),
               ),
-            );
-          }
-          return _ProfileBody(profile: loadedProfile, submitting: _submitting);
-        },
+            ),
+            data: (loadedProfile) {
+              if (loadedProfile == null) {
+                return Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(Sizes.p24),
+                    child: Text(
+                      'This profile is unavailable.',
+                      style: CatchTextStyles.bodyM(context, color: t.ink2),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                );
+              }
+              return _ProfileBody(
+                profile: loadedProfile,
+                submitting: submitting,
+              );
+            },
+          ),
+        ),
       ),
     );
   }

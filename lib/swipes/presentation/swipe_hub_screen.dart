@@ -1,8 +1,9 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -313,43 +314,15 @@ class _CatchesEmptyState extends StatelessWidget {
         children: [
           _CatchesHeader(tokens: t),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.12),
-          CatchSurface(
-            padding: const EdgeInsets.all(Sizes.p20),
-            borderColor: t.line,
-            child: Column(
-              children: [
-                Container(
-                  width: 76,
-                  height: 76,
-                  decoration: BoxDecoration(
-                    color: t.primarySoft,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    Icons.directions_run_rounded,
-                    size: 34,
-                    color: t.primary,
-                  ),
-                ),
-                gapH18,
-                Text(
-                  'No active catches',
-                  style: CatchTextStyles.displayM(context),
-                  textAlign: TextAlign.center,
-                ),
-                gapH8,
-                Text(
-                  'Book a group run, show up, and your 24-hour catch window opens here after check-in.',
-                  style: CatchTextStyles.bodyM(context, color: t.ink2),
-                  textAlign: TextAlign.center,
-                ),
-                gapH18,
-                CatchButton(
-                  label: 'Find a run',
-                  onPressed: () => context.go(Routes.runClubsListScreen.path),
-                  variant: CatchButtonVariant.secondary,
-                ),
-              ],
+          CatchEmptyState(
+            icon: Icons.directions_run_rounded,
+            title: 'No active catches',
+            message:
+                'Book a group run, show up, and your 24-hour catch window opens here after check-in.',
+            action: CatchButton(
+              label: 'Find a run',
+              onPressed: () => context.go(Routes.runClubsListScreen.path),
+              variant: CatchButtonVariant.secondary,
             ),
           ),
           gapH18,

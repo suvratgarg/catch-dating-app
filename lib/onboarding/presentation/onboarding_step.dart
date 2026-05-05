@@ -1,7 +1,5 @@
 enum OnboardingStep {
   welcome,
-  phone,
-  otp,
   nameDob,
   genderInterest,
   instagram,

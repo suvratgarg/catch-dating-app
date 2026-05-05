@@ -109,7 +109,9 @@ Verify in dev (run the app, edit a profile, create a club) before proceeding:
 ./tool/firebase_with_env.sh prod deploy --only firestore:rules
 ```
 
-The `firebase.json` predeploy hook runs `npm test` (which includes the Firestore rules emulator tests) before deploying. A failure here blocks the deploy — that's intentional. Do not use `--no-verify`.
+The `firebase.json` predeploy hook runs Functions tests and the Firestore rules
+emulator tests before deploying. A failure here blocks the deploy; do not use
+`--no-verify`.
 
 ---
 
@@ -175,6 +177,24 @@ After the initial staggered deploy, future changes can be deployed together:
 ## Step 8: Smoke tests (dev)
 
 Run through these flows after deploying to dev:
+
+### Firestore mutation contract
+1. Complete or edit a profile, then verify `users/{uid}` updates without
+   permission errors.
+2. Create a run club, then verify `runClubs/{clubId}.memberUserIds` includes
+   the host and `users/{uid}.joinedRunClubIds` includes the club.
+3. Join the club as another user, then verify both the club membership array
+   and user projection update.
+4. Leave the club, then verify both projections update and `memberCount`
+   matches the member array length.
+5. Create a run as the club host.
+6. Book a free run through the app.
+7. Complete a paid run payment and verify `verifyRazorpayPayment` creates a
+   `payments/{paymentId}` record and books the run.
+8. Send a chat message and verify the match preview, unread count, and
+   `functionEventReceipts` receipt are written once.
+9. Reset unread count from the matches/chats UI.
+10. Block, report, and request account deletion from settings/safety flows.
 
 ### Photo moderation
 1. Upload a profile photo through the app (connected to dev emulators or dev project)

@@ -8,7 +8,7 @@ part of 'run_booking_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// This is the most common mutation pattern in the app (6 controllers use it):
 /// - [build()] returns `void` — the controller holds no Riverpod state.
@@ -26,7 +26,7 @@ part of 'run_booking_controller.dart';
 @ProviderFor(RunBookingController)
 final runBookingControllerProvider = RunBookingControllerProvider._();
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// This is the most common mutation pattern in the app (6 controllers use it):
 /// - [build()] returns `void` — the controller holds no Riverpod state.
@@ -42,7 +42,7 @@ final runBookingControllerProvider = RunBookingControllerProvider._();
 /// state for a specific action.
 final class RunBookingControllerProvider
     extends $NotifierProvider<RunBookingController, void> {
-  /// **Pattern B: Stateless controller + static Mutations**
+  /// **Pattern A: Action controller + static Mutations**
   ///
   /// This is the most common mutation pattern in the app (6 controllers use it):
   /// - [build()] returns `void` — the controller holds no Riverpod state.
@@ -86,7 +86,7 @@ final class RunBookingControllerProvider
 String _$runBookingControllerHash() =>
     r'c56700678fd5506faf95e6a937c60185b0a9ffb5';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// This is the most common mutation pattern in the app (6 controllers use it):
 /// - [build()] returns `void` — the controller holds no Riverpod state.

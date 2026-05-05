@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -6,13 +6,8 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
 
 class StrideCard extends StatelessWidget {
-  const StrideCard({
-    super.key,
-    required this.tokens,
-    required this.attendedRuns,
-  });
+  const StrideCard({super.key, required this.attendedRuns});
 
-  final CatchTokens tokens;
   final List<Run> attendedRuns;
 
   static const _days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
@@ -23,7 +18,7 @@ class StrideCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
 
     final now = DateTime.now();
     final weekStart = _weekStart(now);

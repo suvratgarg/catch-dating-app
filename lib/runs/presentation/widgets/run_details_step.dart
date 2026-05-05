@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -43,6 +44,7 @@ class RunDetailsStep extends StatelessWidget {
             children: [
               Expanded(
                 child: CatchTextField(
+                  key: CreateRunFormKeys.distance,
                   label: 'Distance (km)',
                   controller: distanceController,
                   hintText: '10',
@@ -66,6 +68,7 @@ class RunDetailsStep extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: CatchTextField(
+                  key: CreateRunFormKeys.capacity,
                   label: 'Max runners',
                   controller: capacityController,
                   hintText: '20',
@@ -85,6 +88,7 @@ class RunDetailsStep extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           CatchTextField(
+            key: CreateRunFormKeys.price,
             label: 'Price (₹) — enter 0 for free',
             controller: priceController,
             hintText: '0',
@@ -141,6 +145,7 @@ class RunDetailsStep extends StatelessWidget {
           ),
           const SizedBox(height: 20),
           CatchTextField(
+            key: CreateRunFormKeys.description,
             label: 'Description',
             isOptional: true,
             controller: descriptionController,

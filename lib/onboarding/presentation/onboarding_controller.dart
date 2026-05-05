@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
@@ -11,7 +10,6 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -27,7 +25,6 @@ abstract class OnboardingData with _$OnboardingData {
   const factory OnboardingData({
     @Default(OnboardingStep.welcome) OnboardingStep step,
     @Default(false) bool phoneVerified,
-    String? verificationId,
     @Default(OnboardingProfileDraft()) OnboardingProfileDraft profileDraft,
   }) = _OnboardingData;
 
@@ -41,14 +38,12 @@ abstract class OnboardingData with _$OnboardingData {
   String? get instagramHandle => profileDraft.instagramHandle;
 }
 
-/// **Pattern A: Stateful keepAlive Notifier + freezed state + Mutations**
+/// **Pattern B: Flow controller with freezed state + Mutations**
 ///
-/// This is the only controller in the app using this hybrid pattern:
 /// - [OnboardingData] (freezed) holds multi-step form state that must survive
 ///   navigation between onboarding pages. This is why [keepAlive] is `true`.
-/// - [Mutation]s (sendOtp, verifyOtp, saveProfile, complete) handle
-///   single-shot async operations while the UI watches their lifecycle
-///   (idle / pending / error / success).
+/// - [Mutation]s ([saveProfileMutation], [completeMutation]) handle single-shot
+///   async operations while the UI watches their lifecycle.
 /// - The controller self-invalidates at the end of [complete] so its state
 ///   is freed once onboarding is done.
 ///
@@ -57,16 +52,12 @@ abstract class OnboardingData with _$OnboardingData {
 @Riverpod(keepAlive: true)
 class OnboardingController extends _$OnboardingController {
   static const welcomeStep = OnboardingStep.welcome;
-  static const phoneStep = OnboardingStep.phone;
-  static const otpStep = OnboardingStep.otp;
   static const nameDobStep = OnboardingStep.nameDob;
   static const genderInterestStep = OnboardingStep.genderInterest;
   static const instagramStep = OnboardingStep.instagram;
   static const photosStep = OnboardingStep.photos;
   static const runningPrefsStep = OnboardingStep.runningPrefs;
 
-  static final sendOtpMutation = Mutation<void>();
-  static final verifyOtpMutation = Mutation<void>();
   static final saveProfileMutation = Mutation<void>();
   static final completeMutation = Mutation<void>();
 
@@ -85,38 +76,43 @@ class OnboardingController extends _$OnboardingController {
     }
 
     // Try to resume from a persisted draft first (exact step tracking).
-    final draft =
-        await ref.read(onboardingDraftRepositoryProvider).fetchDraft(uid: uid);
-    final draftStep =
-        draft != null ? OnboardingStep.fromIndex(draft.step) : null;
-    if (draft != null && draftStep != null) {
-      _setStateIfChanged(
-        state.copyWith(
-          step: draftStep,
-          phoneVerified: draftStep.index >= OnboardingStep.nameDob.index,
-          profileDraft: state.profileDraft.copyWith(
-            firstName: draft.firstName,
-            lastName: draft.lastName,
-            dateOfBirth: draft.dateOfBirth,
-            phoneNumber: draft.phoneNumber,
-            countryCode: draft.countryCode,
-            gender: draft.gender,
-            interestedInGenders: draft.interestedInGenders,
-            instagramHandle: draft.instagramHandle,
-          ),
-        ),
+    final draft = await ref
+        .read(onboardingDraftRepositoryProvider)
+        .fetchDraft(uid: uid);
+    if (draft != null) {
+      final migratedStepIndex = _migrateDraftStep(
+        draft.step,
+        draft.draftVersion,
       );
-      return;
+      final draftStep = OnboardingStep.fromIndex(migratedStepIndex);
+      if (draftStep != null) {
+        _setStateIfChanged(
+          state.copyWith(
+            step: draftStep,
+            phoneVerified: draftStep.index >= OnboardingStep.nameDob.index,
+            profileDraft: state.profileDraft.copyWith(
+              firstName: draft.firstName,
+              lastName: draft.lastName,
+              dateOfBirth: draft.dateOfBirth,
+              phoneNumber: draft.phoneNumber,
+              countryCode: draft.countryCode,
+              gender: draft.gender,
+              interestedInGenders: draft.interestedInGenders,
+              instagramHandle: draft.instagramHandle,
+            ),
+          ),
+        );
+        return;
+      }
     }
 
-    // No draft — fall back to the existing heuristic (also handles users
-    // who started onboarding before the draft system was introduced).
+    // No draft — fall back to heuristic (also handles users who started
+    // onboarding before the draft system was introduced).
     if (userProfile == null) {
       final phoneNumber = _authPhoneNumber;
       if (phoneNumber.isEmpty) {
-        _setStateIfChanged(
-          state.copyWith(step: OnboardingStep.phone, phoneVerified: false),
-        );
+        // Not signed in via phone — should re-enter auth.
+        _setStateIfChanged(state.copyWith(step: OnboardingStep.welcome));
         return;
       }
 
@@ -124,7 +120,6 @@ class OnboardingController extends _$OnboardingController {
         return;
       }
 
-      // Authenticated by phone OTP but no profile doc yet.
       _setStateIfChanged(
         state.copyWith(
           step: OnboardingStep.nameDob,
@@ -148,99 +143,6 @@ class OnboardingController extends _$OnboardingController {
   void goToStepAndSaveDraft(OnboardingStep step) {
     state = state.copyWith(step: step);
     _saveDraft();
-  }
-
-  void setCountryCode(String code) {
-    state = state.copyWith(
-      profileDraft: state.profileDraft.copyWith(countryCode: code),
-    );
-  }
-
-  // ── Phone OTP ─────────────────────────────────────────────────────────────
-
-  Future<void> sendOtp(String phoneNumber, String countryCode) async {
-    state = state.copyWith(
-      phoneVerified: false,
-      verificationId: null,
-      profileDraft: state.profileDraft.copyWith(
-        phoneNumber: phoneNumber,
-        countryCode: countryCode,
-      ),
-    );
-
-    final formatted = _formatPhoneNumber(phoneNumber, countryCode);
-    debugPrint('── sendOtp ──');
-    debugPrint('  national number: $phoneNumber');
-    debugPrint('  country code: $countryCode');
-    debugPrint('  formatted: $formatted');
-    debugPrint('  appCheckDebugToken configured: ${AppConfig.firebaseAppCheckDebugToken.isNotEmpty}');
-
-    // verifyPhoneNumber's Future resolves when Firebase submits the request —
-    // before codeSent/verificationFailed fire. A Completer bridges those async
-    // callbacks back into this Future so the mutation catches errors correctly.
-    final completer = Completer<void>();
-
-    unawaited(
-      ref
-          .read(authRepositoryProvider)
-          .verifyPhoneNumber(
-            phoneNumber: formatted,
-            codeSent: (verificationId, _) {
-              debugPrint('sendOtp: codeSent — verificationId received');
-              state = state.copyWith(
-                verificationId: verificationId,
-                step: OnboardingStep.otp,
-              );
-              if (!completer.isCompleted) completer.complete();
-            },
-            verificationFailed: (e) {
-              debugPrint('sendOtp verificationFailed: code=${e.code} message=${e.message}');
-              if (!completer.isCompleted) completer.completeError(e);
-            },
-            verificationCompleted: (credential) async {
-              debugPrint('sendOtp: verificationCompleted (auto)');
-              try {
-                await ref
-                    .read(authRepositoryProvider)
-                    .signInWithCredential(credential);
-                state = state.copyWith(
-                  step: OnboardingStep.nameDob,
-                  phoneVerified: true,
-                );
-                if (!completer.isCompleted) completer.complete();
-              } catch (e, st) {
-                if (!completer.isCompleted) completer.completeError(e, st);
-              }
-            },
-          )
-          .catchError((Object e, StackTrace st) {
-            debugPrint('sendOtp catchError: $e');
-            if (!completer.isCompleted) completer.completeError(e, st);
-          }),
-    );
-
-    return completer.future.timeout(
-      const Duration(seconds: 60),
-      onTimeout: () => throw FirebaseAuthException(
-        code: 'timeout',
-        message:
-            'The verification request timed out. Please check your connection and try again.',
-      ),
-    );
-  }
-
-  Future<void> verifyOtp(String code) async {
-    final verificationId = state.verificationId;
-    if (verificationId == null || verificationId.isEmpty) {
-      throw StateError(
-        'Verification session expired. Please request a new code.',
-      );
-    }
-
-    await ref
-        .read(authRepositoryProvider)
-        .signInWithOtp(verificationId: verificationId, smsCode: code);
-    state = state.copyWith(step: OnboardingStep.nameDob, phoneVerified: true);
   }
 
   // ── Profile creation ──────────────────────────────────────────────────────
@@ -322,10 +224,9 @@ class OnboardingController extends _$OnboardingController {
             gender: draft.gender!,
             phoneNumber: draft.phoneNumber,
             interestedInGenders: draft.interestedInGenders,
-            instagramHandle:
-                (draft.instagramHandle?.trim() ?? '').isEmpty
-                    ? null
-                    : draft.instagramHandle?.trim(),
+            instagramHandle: (draft.instagramHandle?.trim() ?? '').isEmpty
+                ? null
+                : draft.instagramHandle?.trim(),
             profileComplete: false,
           ),
         );
@@ -341,17 +242,20 @@ class OnboardingController extends _$OnboardingController {
     if (userProfile == null) {
       throw const DocumentNotFoundException('users/current');
     }
-    await ref.read(userProfileRepositoryProvider).updateUserProfile(
-      uid: userProfile.uid,
-      fields: {
-        'paceMinSecsPerKm': paceMinSecsPerKm,
-        'paceMaxSecsPerKm': paceMaxSecsPerKm,
-        'preferredDistances':
-            preferredDistances.map((e) => e.name).toList(),
-        'runningReasons': runningReasons.map((e) => e.name).toList(),
-        'profileComplete': true,
-      },
-    );
+    await ref
+        .read(userProfileRepositoryProvider)
+        .updateUserProfile(
+          uid: userProfile.uid,
+          fields: {
+            'paceMinSecsPerKm': paceMinSecsPerKm,
+            'paceMaxSecsPerKm': paceMaxSecsPerKm,
+            'preferredDistances': preferredDistances
+                .map((e) => e.name)
+                .toList(),
+            'runningReasons': runningReasons.map((e) => e.name).toList(),
+            'profileComplete': true,
+          },
+        );
     _deleteDraft();
     // Onboarding is complete — the router will redirect away shortly.
     // Invalidate self so the keepAlive provider is disposed and its
@@ -396,9 +300,10 @@ class OnboardingController extends _$OnboardingController {
       throw StateError('Please verify your phone number before continuing.');
     }
 
-    return draft.copyWith(
-      phoneNumber: _formatPhoneNumber(draft.phoneNumber, draft.countryCode),
-    );
+    final formattedPhone = draft.phoneNumber.startsWith('+')
+        ? draft.phoneNumber
+        : '${draft.countryCode}${draft.phoneNumber}';
+    return draft.copyWith(phoneNumber: formattedPhone);
   }
 
   String get _authPhoneNumber =>
@@ -411,12 +316,17 @@ class OnboardingController extends _$OnboardingController {
     state = nextState;
   }
 
-  String _formatPhoneNumber(String phoneNumber, String countryCode) {
-    final normalized = phoneNumber.trim();
-    if (normalized.startsWith('+')) {
-      return normalized;
-    }
-    return '$countryCode$normalized';
+  int _migrateDraftStep(int storedStep, int draftVersion) {
+    if (draftVersion >= 1) return storedStep;
+    // Legacy draft (version 0) with old 9-step indices:
+    //   welcome(0), phone(1), otp(2), nameDob(3), genderInterest(4),
+    //   instagram(5), photos(6), runningPrefs(7)
+    // New 6-step indices:
+    //   welcome(0), nameDob(1), genderInterest(2), instagram(3),
+    //   photos(4), runningPrefs(5)
+    if (storedStep <= 0) return 0;
+    if (storedStep <= 2) return 0; // phone/otp → welcome (re-enter auth)
+    return storedStep - 2;
   }
 
   String _stripCountryCode(String phoneNumber, String countryCode) {
@@ -433,22 +343,28 @@ class OnboardingController extends _$OnboardingController {
     // Best-effort cache — a failed write is harmless; syncEntryStep falls
     // back to the existing heuristic on next launch.
     unawaited(
-      ref.read(onboardingDraftRepositoryProvider).saveDraft(
-        uid: uid,
-        draft: OnboardingDraft(
-          step: state.step.index,
-          firstName: state.firstName,
-          lastName: state.lastName,
-          dateOfBirth: state.dateOfBirth,
-          phoneNumber: state.phoneNumber,
-          countryCode: state.countryCode,
-          gender: state.gender,
-          interestedInGenders: state.interestedInGenders,
-          instagramHandle: state.instagramHandle,
-        ),
-      ).catchError((Object error, StackTrace stack) {
-        debugPrint('[ERROR] OnboardingController._saveDraft: $error\n$stack');
-      }),
+      ref
+          .read(onboardingDraftRepositoryProvider)
+          .saveDraft(
+            uid: uid,
+            draft: OnboardingDraft(
+              step: state.step.index,
+              draftVersion: 1,
+              firstName: state.firstName,
+              lastName: state.lastName,
+              dateOfBirth: state.dateOfBirth,
+              phoneNumber: state.phoneNumber,
+              countryCode: state.countryCode,
+              gender: state.gender,
+              interestedInGenders: state.interestedInGenders,
+              instagramHandle: state.instagramHandle,
+            ),
+          )
+          .catchError((Object error, StackTrace stack) {
+            debugPrint(
+              '[ERROR] OnboardingController._saveDraft: $error\n$stack',
+            );
+          }),
     );
   }
 
@@ -461,8 +377,10 @@ class OnboardingController extends _$OnboardingController {
           .read(onboardingDraftRepositoryProvider)
           .deleteDraft(uid: uid)
           .catchError((Object error, StackTrace stack) {
-        debugPrint('[ERROR] OnboardingController._deleteDraft: $error\n$stack');
-      }),
+            debugPrint(
+              '[ERROR] OnboardingController._deleteDraft: $error\n$stack',
+            );
+          }),
     );
   }
 }

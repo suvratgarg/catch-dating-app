@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -158,11 +158,11 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               autofillHints: const [AutofillHints.telephoneNumberNational],
               prefixIcon: const Icon(Icons.phone_outlined),
               prefixText: '${data.countryCode} ',
-              helperText: data.phoneVerified ? 'Verified via OTP' : null,
+              helperText: 'Verified via OTP',
               helperTone: CatchTextFieldSupportTone.brand,
               validator: (v) {
-                if (!data.phoneVerified || v == null || v.trim().isEmpty) {
-                  return 'Please verify your phone number before continuing.';
+                if (v == null || v.trim().isEmpty) {
+                  return 'Please enter your phone number.';
                 }
                 return null;
               },

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -8,13 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class EmptyHeroCard extends StatelessWidget {
-  const EmptyHeroCard({super.key, required this.tokens});
-
-  final CatchTokens tokens;
+  const EmptyHeroCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
     return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p20),
       radius: 22,

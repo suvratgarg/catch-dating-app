@@ -1,6 +1,6 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:flutter/material.dart';
 
@@ -11,25 +11,15 @@ class SwipeEmptyState extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Center(
-      child: Padding(
+      child: CatchEmptyState(
+        icon: content.icon,
+        title: content.title,
+        message: content.message,
+        surface: false,
+        iconStyle: CatchEmptyStateIconStyle.plain,
         padding: const EdgeInsets.all(Sizes.p32),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(content.icon, size: 72, color: t.line2),
-            gapH16,
-            Text(content.title, style: CatchTextStyles.displayL(context)),
-            gapH8,
-            Text(
-              content.message,
-              style: CatchTextStyles.bodyM(context, color: t.ink2),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+        titleStyle: CatchTextStyles.displayL(context),
       ),
     );
   }

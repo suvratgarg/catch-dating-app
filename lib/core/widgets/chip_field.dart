@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -21,6 +21,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
     required this.onChanged,
     this.isOptional = false,
     this.validator,
+    this.chipKeyBuilder,
   });
 
   final String label;
@@ -33,6 +34,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
   final void Function(Set<T> next) onChanged;
   final bool isOptional;
   final FormFieldValidator<Set<T>>? validator;
+  final Key? Function(T value)? chipKeyBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -56,6 +58,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
             children: values.map((v) {
               final isSelected = selected.contains(v);
               return CatchChip(
+                key: chipKeyBuilder?.call(v),
                 label: v.label,
                 active: isSelected,
                 onTap: () {

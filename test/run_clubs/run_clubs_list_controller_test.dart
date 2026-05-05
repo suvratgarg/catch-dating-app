@@ -27,14 +27,20 @@ void main() {
         final container = ProviderContainer();
         addTearDown(container.dispose);
 
-        expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.mumbai));
+        expect(
+          container.read(selectedRunClubCityProvider),
+          _cityFromEnum(IndianCity.mumbai),
+        );
 
         container.read(runClubSearchQueryProvider.notifier).setQuery('stride');
         container
             .read(selectedRunClubCityProvider.notifier)
             .setCity(_cityFromEnum(IndianCity.delhi));
 
-        expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.delhi));
+        expect(
+          container.read(selectedRunClubCityProvider),
+          _cityFromEnum(IndianCity.delhi),
+        );
         expect(container.read(runClubSearchQueryProvider), isEmpty);
       },
     );
@@ -43,13 +49,19 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.mumbai));
+      expect(
+        container.read(selectedRunClubCityProvider),
+        _cityFromEnum(IndianCity.mumbai),
+      );
 
       container
           .read(selectedRunClubCityProvider.notifier)
           .autoSelectCity(_cityFromEnum(IndianCity.delhi));
 
-      expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.delhi));
+      expect(
+        container.read(selectedRunClubCityProvider),
+        _cityFromEnum(IndianCity.delhi),
+      );
     });
 
     test('autoSelectCity does not override a manual city choice', () {
@@ -59,7 +71,10 @@ void main() {
       container
           .read(selectedRunClubCityProvider.notifier)
           .setCity(_cityFromEnum(IndianCity.bangalore));
-      expect(container.read(selectedRunClubCityProvider), _cityFromEnum(IndianCity.bangalore));
+      expect(
+        container.read(selectedRunClubCityProvider),
+        _cityFromEnum(IndianCity.bangalore),
+      );
 
       container
           .read(selectedRunClubCityProvider.notifier)
@@ -272,7 +287,6 @@ void main() {
           .joinClub('club-123');
 
       expect(fakeRepository.joinedClubId, 'club-123');
-      expect(fakeRepository.joinedUserId, 'runner-1');
     });
 
     test('joinClub throws when there is no signed-in user', () async {

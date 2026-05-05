@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
@@ -108,6 +109,13 @@ DashboardFullViewModel dashboardFullViewModel(
   return buildDashboardFullViewModel(
     signedUpRuns: signedUpRuns,
     attendedRunsAsync: ref.watch(watchAttendedRunsProvider(uid)),
-    recommendedRunsAsync: ref.watch(recommendedRunsProvider(followedClubIds)),
+    recommendedRunsAsync: ref.watch(
+      dashboardRecommendedRunsProvider(
+        DashboardRecommendationsQuery(
+          userId: uid,
+          followedClubIds: followedClubIds,
+        ),
+      ),
+    ),
   );
 }

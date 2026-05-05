@@ -1,10 +1,8 @@
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'firestore_repository_test_helpers.dart';
 
 class _FakeMatchRepository extends Fake implements MatchRepository {
   final matchesByUser = <String, List<Match>>{};
@@ -23,6 +21,8 @@ Match _buildMatch({
   String id = 'match-1',
   String user1Id = 'runner-1',
   String user2Id = 'runner-2',
+  DateTime? createdAt,
+  MatchStatus status = MatchStatus.active,
   Map<String, int> unreadCounts = const {},
 }) {
   return Match(
@@ -30,30 +30,20 @@ Match _buildMatch({
     user1Id: user1Id,
     user2Id: user2Id,
     runId: 'run-1',
-    createdAt: DateTime(2025, 1, 1, 7),
+    createdAt: createdAt ?? DateTime(2025, 1, 1, 7),
+    status: status,
     unreadCounts: unreadCounts,
   );
 }
 
 void main() {
   group('MatchRepository', () {
-    late TestTypedCollection<Match> typedMatchesCollection;
-    late TestRawCollection<Match> rawMatchesCollection;
+    late FakeFirebaseFirestore firestore;
     late MatchRepository repository;
 
     setUp(() {
-      typedMatchesCollection = TestTypedCollection<Match>(
-        pathPrefix: 'matches',
-      );
-      rawMatchesCollection = TestRawCollection<Match>(
-        pathPrefix: 'matches',
-        convertedCollection: typedMatchesCollection,
-      );
-      repository = MatchRepository(
-        TestFirebaseFirestore(
-          collectionsByPath: {'matches': rawMatchesCollection},
-        ),
-      );
+      firestore = FakeFirebaseFirestore();
+      repository = MatchRepository(firestore);
     });
 
     test(
@@ -64,81 +54,33 @@ void main() {
           id: 'newer',
           user1Id: 'runner-2',
           user2Id: 'runner-1',
-        ).copyWith(createdAt: DateTime(2025, 1, 2, 7));
-        final user1Query = TestTypedQuery<Match>(
-          snapshotStream: Stream.value(
-            TestTypedQuerySnapshot<Match>([
-              TestTypedQueryDocumentSnapshot<Match>(
-                referenceValue: typedMatchesCollection.doc(olderMatch.id),
-                dataValue: olderMatch,
-              ),
-            ]),
-          ),
+          createdAt: DateTime(2025, 1, 2, 7),
         );
-        final user2Query = TestTypedQuery<Match>(
-          snapshotStream: Stream.value(
-            TestTypedQuerySnapshot<Match>([
-              TestTypedQueryDocumentSnapshot<Match>(
-                referenceValue: typedMatchesCollection.doc(newerMatch.id),
-                dataValue: newerMatch,
-              ),
-            ]),
-          ),
+        final blockedMatch = _buildMatch(
+          id: 'blocked',
+          user1Id: 'runner-1',
+          status: MatchStatus.blocked,
+          createdAt: DateTime(2025, 1, 3, 7),
         );
-        typedMatchesCollection.nextWhereResults.addAll([
-          user1Query,
-          user2Query,
-        ]);
+        await _seedMatch(firestore, olderMatch);
+        await _seedMatch(firestore, newerMatch);
+        await _seedMatch(firestore, blockedMatch);
 
         await expectLater(
           repository.watchMatchesForUser(uid: 'runner-1'),
           emits([newerMatch, olderMatch]),
         );
-
-        expect(typedMatchesCollection.whereCalls, hasLength(2));
-        expect(typedMatchesCollection.whereCalls[0].field, 'user1Id');
-        expect(typedMatchesCollection.whereCalls[0].isEqualTo, 'runner-1');
-        expect(typedMatchesCollection.whereCalls[1].field, 'user2Id');
-        expect(typedMatchesCollection.whereCalls[1].isEqualTo, 'runner-1');
-        expect(user1Query.lastWhereField, 'status');
-        expect(user1Query.lastWhereEqualTo, 'active');
-        expect(user1Query.lastOrderByField, 'createdAt');
-        expect(user1Query.lastOrderByDescending, isTrue);
-        expect(user2Query.lastWhereField, 'status');
-        expect(user2Query.lastWhereEqualTo, 'active');
-        expect(user2Query.lastOrderByField, 'createdAt');
-        expect(user2Query.lastOrderByDescending, isTrue);
       },
     );
 
     test('watchMatch emits the match when the document exists', () async {
       final match = _buildMatch();
-      final matchDoc =
-          typedMatchesCollection.doc(match.id)
-              as TestTypedDocumentReference<Match>;
-      matchDoc.snapshotStream = Stream.value(
-        TestTypedDocumentSnapshot<Match>(
-          referenceValue: matchDoc,
-          existsValue: true,
-          dataValue: match,
-        ),
-      );
+      await _seedMatch(firestore, match);
 
       await expectLater(repository.watchMatch(matchId: match.id), emits(match));
     });
 
     test('watchMatch emits null when the document is missing', () async {
-      final matchDoc =
-          typedMatchesCollection.doc('missing-match')
-              as TestTypedDocumentReference<Match>;
-      matchDoc.snapshotStream = Stream.value(
-        TestTypedDocumentSnapshot<Match>(
-          referenceValue: matchDoc,
-          existsValue: false,
-          dataValue: null,
-        ),
-      );
-
       await expectLater(
         repository.watchMatch(matchId: 'missing-match'),
         emits(isNull),
@@ -146,26 +88,23 @@ void main() {
     });
 
     test('resetUnread updates the unread count field for the user', () async {
-      final matchDoc =
-          typedMatchesCollection.doc('match-1')
-              as TestTypedDocumentReference<Match>;
+      final match = _buildMatch(unreadCounts: const {'runner-1': 4});
+      await _seedMatch(firestore, match);
 
       await repository.resetUnread(matchId: 'match-1', uid: 'runner-1');
 
-      expect(matchDoc.updateCalls, [
-        {'unreadCounts.runner-1': 0},
-      ]);
+      final updated = await repository.watchMatch(matchId: 'match-1').first;
+      expect(updated?.unreadCounts['runner-1'], 0);
     });
 
-    test('resetUnread swallows update failures', () async {
-      final matchDoc =
-          typedMatchesCollection.doc('match-1')
-              as TestTypedDocumentReference<Match>;
-      matchDoc.updateError = FirebaseException(plugin: 'firestore', code: 'not-found');
-
+    test('resetUnread swallows missing match updates', () async {
       await repository.resetUnread(matchId: 'match-1', uid: 'runner-1');
 
-      expect(matchDoc.updateCalls, isEmpty);
+      final snapshot = await firestore
+          .collection('matches')
+          .doc('match-1')
+          .get();
+      expect(snapshot.exists, isFalse);
     });
   });
 
@@ -208,4 +147,8 @@ void main() {
 
     expect(container.read(totalUnreadCountProvider('runner-1')), 5);
   });
+}
+
+Future<void> _seedMatch(FakeFirebaseFirestore firestore, Match match) {
+  return firestore.collection('matches').doc(match.id).set(match.toJson());
 }

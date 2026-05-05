@@ -1,11 +1,10 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
-import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class WelcomePage extends ConsumerWidget {
   const WelcomePage({super.key});
@@ -13,7 +12,6 @@ class WelcomePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final controller = ref.read(onboardingControllerProvider.notifier);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
@@ -59,8 +57,7 @@ class WelcomePage extends ConsumerWidget {
                     const SizedBox(height: 26),
                     CatchButton(
                       label: 'Continue with phone',
-                      onPressed: () =>
-                          controller.goToStep(OnboardingStep.phone),
+                      onPressed: () => context.go('/auth'),
                       size: CatchButtonSize.lg,
                       fullWidth: true,
                       backgroundColor: Colors.white,

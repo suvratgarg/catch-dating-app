@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -9,13 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class CatchesCallout extends StatelessWidget {
-  const CatchesCallout({
-    super.key,
-    required this.tokens,
-    required this.activeRun,
-  });
+  const CatchesCallout({super.key, required this.activeRun});
 
-  final CatchTokens tokens;
   final Run activeRun;
 
   static String _formatCountdown(Duration remaining) {
@@ -26,7 +21,7 @@ class CatchesCallout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
 
     final now = DateTime.now();
     final windowClose = swipeWindowClosesAt(activeRun);

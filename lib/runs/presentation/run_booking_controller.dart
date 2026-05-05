@@ -11,7 +11,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_booking_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// This is the most common mutation pattern in the app (6 controllers use it):
 /// - [build()] returns `void` — the controller holds no Riverpod state.
@@ -125,11 +125,13 @@ class RunBookingController extends _$RunBookingController {
       ),
     );
 
-    await ref.read(runRepositoryProvider).selfCheckInAttendance(
-      runId: runId,
-      latitude: position.latitude,
-      longitude: position.longitude,
-    );
+    await ref
+        .read(runRepositoryProvider)
+        .selfCheckInAttendance(
+          runId: runId,
+          latitude: position.latitude,
+          longitude: position.longitude,
+        );
   }
 
   String _requireSignedIn({required String action}) {

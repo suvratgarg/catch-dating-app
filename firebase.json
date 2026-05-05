@@ -86,7 +86,8 @@
     "indexes": "firestore.indexes.json",
     "predeploy": [
       "npm --prefix functions ci",
-      "npm --prefix functions test"
+      "npm --prefix functions test",
+      "firebase emulators:exec --only firestore \"npm --prefix functions run test:rules\""
     ]
   },
   "emulators": {

@@ -102,7 +102,7 @@ void main() {
             uidAsync: const AsyncData('user-1'),
             userProfileAsync: AsyncData(_incompleteUser()),
             location: '/auth?from=%2Fchats%2Fmatch-1',
-            matchedLocation: Routes.legacyAuthRedirect.path,
+            matchedLocation: Routes.authScreen.path,
           ),
           '/onboarding?from=%2Fchats%2Fmatch-1',
         );
@@ -137,29 +137,29 @@ void main() {
     );
 
     test(
-      'fully set-up users visiting the legacy auth route land on dashboard',
+      'fully set-up users visiting the auth route land on dashboard',
       () {
         expect(
           _redirect(
             uidAsync: const AsyncData('user-1'),
             userProfileAsync: AsyncData(_completeUser()),
             location: '/auth',
-            matchedLocation: Routes.legacyAuthRedirect.path,
+            matchedLocation: Routes.authScreen.path,
           ),
           '/',
         );
       },
     );
 
-    test('legacy auth links send signed-out users to the clubs list', () {
+    test('unauthenticated users can access the auth route', () {
       expect(
         _redirect(
           uidAsync: const AsyncData(null),
           userProfileAsync: const AsyncData(null),
           location: '/auth?from=%2Fchats%2Fmatch-1',
-          matchedLocation: Routes.legacyAuthRedirect.path,
+          matchedLocation: Routes.authScreen.path,
         ),
-        '/clubs',
+        null,
       );
     });
 
@@ -169,7 +169,7 @@ void main() {
           uidAsync: const AsyncData('user-1'),
           userProfileAsync: AsyncData(_completeUser()),
           location: '/auth?from=chats/match-1',
-          matchedLocation: Routes.legacyAuthRedirect.path,
+          matchedLocation: Routes.authScreen.path,
         ),
         '/',
       );

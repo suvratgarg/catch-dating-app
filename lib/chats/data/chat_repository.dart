@@ -28,7 +28,6 @@ class ChatRepository {
       _picker = picker ?? ImagePicker();
 
   static const _chatsCollectionPath = 'chats';
-  static const _matchesCollectionPath = 'matches';
 
   final FirebaseFirestore _db;
   final FirebaseStorage _storage;
@@ -43,9 +42,6 @@ class ChatRepository {
         fromJson: ChatMessage.fromJson,
         toJson: (msg) => msg.toJson(),
       );
-
-  DocumentReference<Map<String, dynamic>> _matchRef(String matchId) =>
-      _db.collection(_matchesCollectionPath).doc(matchId);
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
@@ -64,28 +60,16 @@ class ChatRepository {
   }) => withFirestoreErrorContext(
     () async {
       final normalizedText = normalizeOutgoingChatText(text);
-      final now = FieldValue.serverTimestamp();
-      final batch = _db.batch();
-
-      final msgRef = _db
+      await _db
           .collection(_chatsCollectionPath)
           .doc(matchId)
           .collection('messages')
-          .doc();
-
-      batch.set(msgRef, {
-        'senderId': senderId,
-        'text': normalizedText,
-        'sentAt': now,
-      });
-
-      batch.update(_matchRef(matchId), {
-        'lastMessageAt': now,
-        'lastMessagePreview': buildChatPreviewText(normalizedText),
-        'lastMessageSenderId': senderId,
-      });
-
-      await batch.commit();
+          .doc()
+          .set({
+            'senderId': senderId,
+            'text': normalizedText,
+            'sentAt': FieldValue.serverTimestamp(),
+          });
     },
     collection: _chatsCollectionPath,
     action: 'send message',
@@ -116,7 +100,8 @@ class ChatRepository {
           .doc()
           .id;
 
-      final storagePath = 'chats/$matchId/images/${messageId}_'
+      final storagePath =
+          'chats/$matchId/images/${messageId}_'
           '${DateTime.now().millisecondsSinceEpoch}';
       final bytes = await image.readAsBytes();
       final ref = _storage.ref(storagePath);
@@ -124,29 +109,17 @@ class ChatRepository {
       await ref.putData(bytes, metadata);
       final downloadUrl = await ref.getDownloadURL();
 
-      final now = FieldValue.serverTimestamp();
-      final batch = _db.batch();
-
-      final msgRef = _db
+      await _db
           .collection(_chatsCollectionPath)
           .doc(matchId)
           .collection('messages')
-          .doc(messageId);
-
-      batch.set(msgRef, {
-        'senderId': senderId,
-        'text': '',
-        'imageUrl': downloadUrl,
-        'sentAt': now,
-      });
-
-      batch.update(_matchRef(matchId), {
-        'lastMessageAt': now,
-        'lastMessagePreview': '\u{1F4F7} Image',
-        'lastMessageSenderId': senderId,
-      });
-
-      await batch.commit();
+          .doc(messageId)
+          .set({
+            'senderId': senderId,
+            'text': '',
+            'imageUrl': downloadUrl,
+            'sentAt': FieldValue.serverTimestamp(),
+          });
     },
     collection: _chatsCollectionPath,
     action: 'send image',

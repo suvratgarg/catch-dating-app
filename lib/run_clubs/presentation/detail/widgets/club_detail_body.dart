@@ -8,11 +8,11 @@ import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/host_stats_bar.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -22,7 +22,6 @@ class ClubDetailBody extends StatelessWidget {
   const ClubDetailBody({
     super.key,
     required this.runClub,
-    required this.runs,
     required this.upcoming,
     required this.reviews,
     required this.userProfile,
@@ -34,7 +33,6 @@ class ClubDetailBody extends StatelessWidget {
   });
 
   final RunClub runClub;
-  final List<Run> runs;
   final List<Run> upcoming;
   final List<Review> reviews;
   final UserProfile? userProfile;
@@ -103,19 +101,14 @@ class ClubDetailBody extends StatelessWidget {
                   isMember: isMember,
                 ),
               const SizedBox(height: 24),
-              Text('Schedule', style: CatchTextStyles.titleL(context)),
-              const SizedBox(height: 12),
             ],
           ),
         ),
-        SliverFillRemaining(
-          hasScrollBody: true,
-          child: RunScheduleGrid(
-            runs: runs,
-            onRunSelected: (run) => context.pushNamed(
-              Routes.runDetailScreen.name,
-              pathParameters: {'runClubId': runClub.id, 'runId': run.id},
-            ),
+        ClubScheduleSection(
+          runs: upcoming,
+          onRunSelected: (run) => context.pushNamed(
+            Routes.runDetailScreen.name,
+            pathParameters: {'runClubId': runClub.id, 'runId': run.id},
           ),
         ),
       ],
@@ -297,9 +290,7 @@ class _GuestPrompt extends StatelessWidget {
             label: 'Sign in to join',
             onPressed: () => context.pushNamed(
               Routes.onboardingScreen.name,
-              queryParameters: {
-                'from': '/clubs/run-clubs/${runClub.id}',
-              },
+              queryParameters: {'from': '/clubs/run-clubs/${runClub.id}'},
             ),
             fullWidth: true,
           ),

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -16,7 +16,7 @@ class RunClubsSliverHeader extends CatchSliverHeader {
         title: const _TitleRow(),
         bottom: const _SearchRow(),
         titleHeight: 82,
-        bottomHeight: 52,
+        bottomHeight: 80,
       );
 }
 
@@ -66,19 +66,24 @@ class _SearchRow extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        0,
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-      ),
-      child: Row(
-        children: [
-          const CityPicker(),
-          gapW8,
-          const Expanded(child: RunClubsSearchField()),
-        ],
+    final t = CatchTokens.of(context);
+
+    return ColoredBox(
+      color: t.bg,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s5,
+          CatchSpacing.s2,
+          CatchSpacing.s5,
+          CatchSpacing.s2,
+        ),
+        child: Row(
+          children: [
+            const CityPicker(),
+            gapW8,
+            const Expanded(child: RunClubsSearchField()),
+          ],
+        ),
       ),
     );
   }

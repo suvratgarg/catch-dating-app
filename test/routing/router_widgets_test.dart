@@ -10,7 +10,7 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -121,22 +121,21 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
       child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
     ),
   );
-  await _pumpFrames(tester);
+  await _settleRoute(tester);
 
   if (routedProfile != null) {
     router.go('/chats/match-1', extra: routedProfile);
   } else {
     router.go('/chats/match-1', extra: 'unexpected-extra');
   }
-  await _pumpFrames(tester);
+  await _settleRoute(tester);
 
   return (container, router);
 }
 
-Future<void> _pumpFrames(WidgetTester tester, {int count = 60}) async {
-  for (var i = 0; i < count; i += 1) {
-    await tester.pump(const Duration(milliseconds: 16));
-  }
+Future<void> _settleRoute(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pumpAndSettle();
 }
 
 void main() {
@@ -147,12 +146,24 @@ void main() {
       id: 'club-1',
       hostUserId: 'host-1',
     );
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        fetchRunClubProvider('club-1').overrideWith((ref) async => club),
+      ],
+    );
+    addTearDown(container.dispose);
+    final uidSubscription = container.listen(
+      uidProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(uidSubscription.close);
+    await container.pump();
 
     await tester.pumpWidget(
-      ProviderScope(
-        overrides: [
-          fetchRunClubProvider('club-1').overrideWith((ref) async => club),
-        ],
+      UncontrolledProviderScope(
+        container: container,
         child: MaterialApp(
           theme: AppTheme.light,
           home: const CreateRunRouteScreen(runClubId: 'club-1'),
@@ -213,10 +224,10 @@ void main() {
     final router = result.$2;
 
     router.go('/');
-    await _pumpFrames(tester);
+    await _settleRoute(tester);
 
     navigateToMessageRoute(router, {'matchId': 'match-1'});
-    await _pumpFrames(tester);
+    await _settleRoute(tester);
 
     expect(find.byType(ChatScreen), findsOneWidget);
     expect(find.text('Taylor'), findsOneWidget);

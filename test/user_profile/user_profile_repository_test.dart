@@ -1,138 +1,54 @@
-// ignore_for_file: must_be_immutable, override_on_non_overriding_member, subtype_of_sealed_class
-
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
 
-class TestFirebaseFirestore extends Fake implements FirebaseFirestore {
-  TestFirebaseFirestore({required this.usersCollection});
-
-  final CollectionReference<Map<String, dynamic>> usersCollection;
+class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
+  final callables = <String, TestHttpsCallable>{};
 
   @override
-  CollectionReference<Map<String, dynamic>> collection(String collectionPath) {
-    switch (collectionPath) {
-      case 'users':
-        return usersCollection;
-      default:
-        throw UnimplementedError('Unexpected collection path: $collectionPath');
-    }
+  HttpsCallable httpsCallable(String name, {HttpsCallableOptions? options}) {
+    return callables.putIfAbsent(name, () => TestHttpsCallable(name));
   }
 }
 
-class TestRawCollection<T> extends Fake
-    implements CollectionReference<Map<String, dynamic>> {
-  TestRawCollection(this.convertedCollection);
+class TestHttpsCallable extends Fake implements HttpsCallable {
+  TestHttpsCallable(this.name);
 
-  final TestTypedCollection<T> convertedCollection;
-  FromFirestore<T>? lastFromFirestore;
-  ToFirestore<T>? lastToFirestore;
+  final String name;
+  final calls = <Object?>[];
 
   @override
-  CollectionReference<R> withConverter<R>({
-    required FromFirestore<R> fromFirestore,
-    required ToFirestore<R> toFirestore,
-  }) {
-    if (R != T) {
-      throw UnimplementedError('Unexpected converter type: $R');
-    }
-    lastFromFirestore = fromFirestore as FromFirestore<T>;
-    lastToFirestore = toFirestore as ToFirestore<T>;
-    return convertedCollection as CollectionReference<R>;
+  Future<HttpsCallableResult<T>> call<T>([dynamic parameters]) async {
+    calls.add(parameters);
+    return TestHttpsCallableResult<T>(null as T);
   }
 }
 
-class TestTypedCollection<T> extends Fake implements CollectionReference<T> {
-  TestTypedCollection(this.pathPrefix);
+class TestHttpsCallableResult<T> extends Fake
+    implements HttpsCallableResult<T> {
+  TestHttpsCallableResult(this.dataValue);
 
-  final String pathPrefix;
-  final docsById = <String, TestTypedDocumentReference<T>>{};
-
-  @override
-  DocumentReference<T> doc([String? path]) {
-    final id = path ?? 'generated-id';
-    return docsById.putIfAbsent(
-      id,
-      () => TestTypedDocumentReference<T>(pathPrefix: pathPrefix, id: id),
-    );
-  }
-}
-
-class TestTypedDocumentReference<T> extends Fake
-    implements DocumentReference<T> {
-  TestTypedDocumentReference({required this.pathPrefix, required this.id});
-
-  final String pathPrefix;
+  final T dataValue;
 
   @override
-  final String id;
-
-  T? getResultData;
-  bool getResultExists = true;
-  final setCalls = <T>[];
-  final updateCalls = <Map<Object, Object?>>[];
-
-  @override
-  String get path => '$pathPrefix/$id';
-
-  @override
-  Future<DocumentSnapshot<T>> get([GetOptions? options]) async =>
-      TestTypedDocumentSnapshot<T>(
-        referenceValue: this,
-        existsValue: getResultExists,
-        dataValue: getResultData,
-      );
-
-  @override
-  Future<void> set(T data, [SetOptions? options]) async {
-    setCalls.add(data);
-  }
-
-  @override
-  Future<void> update(Map<Object, Object?> data) async {
-    updateCalls.add(data);
-  }
-}
-
-class TestTypedDocumentSnapshot<T> extends Fake implements DocumentSnapshot<T> {
-  TestTypedDocumentSnapshot({
-    required this.referenceValue,
-    required this.existsValue,
-    required this.dataValue,
-  });
-
-  final DocumentReference<T> referenceValue;
-  final bool existsValue;
-  final T? dataValue;
-
-  @override
-  bool get exists => existsValue;
-
-  @override
-  String get id => referenceValue.id;
-
-  @override
-  DocumentReference<T> get reference => referenceValue;
-
-  @override
-  T? data() => dataValue;
+  T get data => dataValue;
 }
 
 void main() {
   group('UserProfileRepository', () {
-    late TestTypedCollection<UserProfile> usersCollection;
+    late FakeFirebaseFirestore firestore;
+    late TestFirebaseFunctions functions;
     late UserProfileRepository repository;
 
     setUp(() {
-      usersCollection = TestTypedCollection<UserProfile>('users');
-      repository = UserProfileRepository(
-        TestFirebaseFirestore(
-          usersCollection: TestRawCollection<UserProfile>(usersCollection),
-        ),
-      );
+      firestore = FakeFirebaseFirestore();
+      functions = TestFirebaseFunctions();
+      repository = UserProfileRepository(firestore, functions);
     });
 
     test('setUserProfile writes the user document', () async {
@@ -148,25 +64,48 @@ void main() {
             relationshipGoal: RelationshipGoal.relationship,
             drinking: DrinkingHabit.socially,
           );
-      final userDoc =
-          usersCollection.doc(user.uid)
-              as TestTypedDocumentReference<UserProfile>;
 
       await repository.setUserProfile(userProfile: user);
 
-      expect(userDoc.setCalls, [user]);
+      final stored = await repository.fetchUserProfile(uid: 'runner-42');
+      expect(stored, user);
     });
 
-    test('updatePhotoUrls updates the user doc', () async {
+    test('updatePhotoUrls delegates to the profile update callable', () async {
       final urls = ['https://img.example/2.jpg', 'https://img.example/3.jpg'];
-      final userDoc =
-          usersCollection.doc('runner-42')
-              as TestTypedDocumentReference<UserProfile>;
 
       await repository.updatePhotoUrls(uid: 'runner-42', photoUrls: urls);
 
-      expect(userDoc.updateCalls, [
-        {'photoUrls': urls},
+      final callable =
+          functions.httpsCallable('updateUserProfile') as TestHttpsCallable;
+      expect(callable.calls, [
+        {
+          'fields': {'photoUrls': urls},
+        },
+      ]);
+    });
+
+    test('updateUserProfile normalizes date values for the callable', () async {
+      final date = DateTime.utc(1998);
+      final timestamp = Timestamp.fromDate(date);
+
+      await repository.updateUserProfile(
+        uid: 'runner-42',
+        fields: {
+          'name': 'Asha',
+          'dateOfBirth': timestamp,
+        },
+      );
+
+      final callable =
+          functions.httpsCallable('updateUserProfile') as TestHttpsCallable;
+      expect(callable.calls, [
+        {
+          'fields': {
+            'name': 'Asha',
+            'dateOfBirth': timestamp.millisecondsSinceEpoch,
+          },
+        },
       ]);
     });
   });

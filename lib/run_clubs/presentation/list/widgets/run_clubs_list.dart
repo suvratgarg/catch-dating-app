@@ -1,10 +1,11 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_empty_state.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_list_body.dart';
-import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_mutation_feedback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -16,20 +17,31 @@ class RunClubsList extends ConsumerWidget {
     final viewModelAsync = ref.watch(runClubsListViewModelProvider);
 
     return switch (viewModelAsync) {
-      AsyncLoading() => const SliverFillRemaining(
-          child: CatchSkeletonList(count: 4),
+      AsyncLoading() => const SliverToBoxAdapter(
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s4,
+            CatchSpacing.s5,
+            CatchSpacing.s6,
+          ),
+          child: CatchSkeletonList(count: 3),
         ),
+      ),
       AsyncError(:final error) => SliverFillRemaining(
-          child: CatchErrorText(error),
-        ),
-      AsyncData(:final value) => value.isEmpty
-          ? const SliverFillRemaining(child: RunClubsEmptyState())
-          : SliverToBoxAdapter(
-              child: MutationErrorSnackbarListener(
+        hasScrollBody: false,
+        child: CatchErrorText(error),
+      ),
+      AsyncData(:final value) =>
+        value.isEmpty
+            ? const SliverFillRemaining(
+                hasScrollBody: false,
+                child: RunClubsEmptyState(),
+              )
+            : MutationErrorSnackbarListener(
                 mutation: RunClubsListController.joinMutation,
                 child: RunClubsListBody(viewModel: value),
               ),
-            ),
     };
   }
 }

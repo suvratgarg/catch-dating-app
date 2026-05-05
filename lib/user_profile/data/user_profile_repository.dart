@@ -4,16 +4,18 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_profile_repository.g.dart';
 
 class UserProfileRepository {
-  const UserProfileRepository(this._db);
+  const UserProfileRepository(this._db, this._functions);
 
   static const _collectionPath = 'users';
 
   final FirebaseFirestore _db;
+  final FirebaseFunctions _functions;
 
   CollectionReference<UserProfile> get _usersRef => _db
       .collection(_collectionPath)
@@ -49,15 +51,18 @@ class UserProfileRepository {
         action: 'set profile',
       );
 
-  /// Updates only the given [fields] on the user document.
+  /// Applies a validated profile patch via the `updateUserProfile` callable.
   ///
-  /// Prefer this over [setUserProfile] for partial updates — it avoids
-  /// the Timestamp → DateTime → Timestamp round-trip on [dateOfBirth].
+  /// Profile edits are server-owned after initial profile creation because this
+  /// document has many fast-evolving fields and Firestore rules hit expression
+  /// limits when they try to validate every changed field directly.
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
   }) => withFirestoreErrorContext(
-    () => _userRef(uid).update(fields),
+    () => _functions.httpsCallable('updateUserProfile').call({
+      'fields': _callableFields(fields),
+    }),
     collection: _collectionPath,
     action: 'update profile',
   );
@@ -66,14 +71,14 @@ class UserProfileRepository {
     required String uid,
     required List<String> photoUrls,
   }) => withFirestoreErrorContext(
-    () => _userRef(uid).update({'photoUrls': photoUrls}),
+    () => updateUserProfile(uid: uid, fields: {'photoUrls': photoUrls}),
     collection: _collectionPath,
     action: 'update photo URLs',
   );
 
   Future<void> setProfileComplete({required String uid}) =>
       withFirestoreErrorContext(
-        () => _userRef(uid).update({'profileComplete': true}),
+        () => updateUserProfile(uid: uid, fields: {'profileComplete': true}),
         collection: _collectionPath,
         action: 'set profile complete',
       );
@@ -98,9 +103,28 @@ class UserProfileRepository {
 
 }
 
+Map<String, Object?> _callableFields(Map<String, dynamic> fields) =>
+    fields.map((key, value) => MapEntry(key, _callableValue(value)));
+
+Object? _callableValue(Object? value) {
+  if (value is Timestamp) {
+    return value.millisecondsSinceEpoch;
+  }
+  if (value is DateTime) {
+    return value.millisecondsSinceEpoch;
+  }
+  if (value is Iterable) {
+    return value.map(_callableValue).toList();
+  }
+  return value;
+}
+
 @Riverpod(keepAlive: true)
 UserProfileRepository userProfileRepository(Ref ref) =>
-    UserProfileRepository(ref.watch(firebaseFirestoreProvider));
+    UserProfileRepository(
+      ref.watch(firebaseFirestoreProvider),
+      ref.watch(firebaseFunctionsProvider),
+    );
 
 @Riverpod(keepAlive: true)
 Stream<UserProfile?> watchUserProfile(Ref ref) {

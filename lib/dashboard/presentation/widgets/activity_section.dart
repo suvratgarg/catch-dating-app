@@ -1,6 +1,7 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
@@ -95,12 +96,15 @@ class ActivitySection extends ConsumerWidget {
           ),
         ] else if (items.isEmpty) ...[
           if (showEmptyState)
-            _ActivityMessage(
+            CatchEmptyState(
               icon: Icons.notifications_none_rounded,
               title: 'No new activity',
-              body:
+              message:
                   'New catches, messages, and run reminders will collect here.',
-              tokens: t,
+              iconStyle: CatchEmptyStateIconStyle.plain,
+              iconSize: 34,
+              titleStyle: CatchTextStyles.titleL(context),
+              messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
             ),
         ] else ...[
           Divider(color: t.line, height: 1),
@@ -203,45 +207,6 @@ class _ActivityTile extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-}
-
-class _ActivityMessage extends StatelessWidget {
-  const _ActivityMessage({
-    required this.icon,
-    required this.title,
-    required this.body,
-    required this.tokens,
-  });
-
-  final IconData icon;
-  final String title;
-  final String body;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(Sizes.p20),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        border: Border.all(color: tokens.line),
-      ),
-      child: Column(
-        children: [
-          Icon(icon, color: tokens.primary, size: 34),
-          gapH12,
-          Text(title, style: CatchTextStyles.titleL(context)),
-          gapH6,
-          Text(
-            body,
-            textAlign: TextAlign.center,
-            style: CatchTextStyles.bodyS(context, color: tokens.ink2),
-          ),
-        ],
       ),
     );
   }

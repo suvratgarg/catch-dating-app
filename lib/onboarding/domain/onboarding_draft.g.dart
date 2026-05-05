@@ -9,6 +9,7 @@ part of 'onboarding_draft.dart';
 _OnboardingDraft _$OnboardingDraftFromJson(Map<String, dynamic> json) =>
     _OnboardingDraft(
       step: (json['step'] as num).toInt(),
+      draftVersion: (json['draftVersion'] as num?)?.toInt() ?? 0,
       firstName: json['firstName'] as String? ?? '',
       lastName: json['lastName'] as String? ?? '',
       dateOfBirth: _$JsonConverterFromJson<Timestamp, DateTime>(
@@ -29,6 +30,7 @@ _OnboardingDraft _$OnboardingDraftFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$OnboardingDraftToJson(_OnboardingDraft instance) =>
     <String, dynamic>{
       'step': instance.step,
+      'draftVersion': instance.draftVersion,
       'firstName': instance.firstName,
       'lastName': instance.lastName,
       'dateOfBirth': _$JsonConverterToJson<Timestamp, DateTime>(

@@ -4,7 +4,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'filters_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Saves swipe filter preferences to the user profile document.
 /// [saveFiltersMutation] tracks the async lifecycle so the UI can
@@ -25,16 +25,18 @@ class FiltersController extends _$FiltersController {
     required List<String> interestedInGenders,
     required List<String> preferredDistances,
   }) async {
-    await ref.read(userProfileRepositoryProvider).updateUserProfile(
-      uid: uid,
-      fields: {
-        'minAgePreference': minAgePreference,
-        'maxAgePreference': maxAgePreference,
-        'paceMinSecsPerKm': paceMinSecsPerKm,
-        'paceMaxSecsPerKm': paceMaxSecsPerKm,
-        'interestedInGenders': interestedInGenders,
-        'preferredDistances': preferredDistances,
-      },
-    );
+    await ref
+        .read(userProfileRepositoryProvider)
+        .updateUserProfile(
+          uid: uid,
+          fields: {
+            'minAgePreference': minAgePreference,
+            'maxAgePreference': maxAgePreference,
+            'paceMinSecsPerKm': paceMinSecsPerKm,
+            'paceMaxSecsPerKm': paceMaxSecsPerKm,
+            'interestedInGenders': interestedInGenders,
+            'preferredDistances': preferredDistances,
+          },
+        );
   }
 }

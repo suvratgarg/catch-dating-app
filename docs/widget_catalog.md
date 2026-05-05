@@ -1,5 +1,157 @@
 # Widget Catalog
 
+## Widget Cleanup Operating Instructions
+
+### User Request
+
+The user wants an ongoing architecture and widget-system cleanup of the Flutter
+app. The goal is to make screens and widgets easier to maintain, easier to test,
+and easier to apply a brand/design system to by reducing duplicate local UI
+implementations and consolidating reusable patterns into appropriate shared
+primitives.
+
+The user specifically wants this work to proceed incrementally:
+
+- Keep a single source of truth for the work in `docs/widget_cleanup_todo.md`.
+- Keep appending newly discovered work, recommendations, and bug fixes to that
+  tracker even when they are outside the current pass.
+- Prefer controller-owned business logic and repository writes, while allowing
+  widgets to own local UI concerns such as focus, scroll, animations, navigation,
+  and temporary input state.
+- Standardize nomenclature around `user_profile`, not `my_profile`.
+- Clean up heavily duplicated widgets and screens in small verified batches.
+- Expand scope to adjacent widgets, repositories, controllers, or tests when
+  needed to make the cleanup coherent.
+- Treat tests as design feedback, not just verification. Whenever a feature,
+  repository, controller, provider, widget, or primitive is tested and the loop
+  is closed, use the test structure, complexity, and brittleness to decide
+  whether the implementation should be reshaped toward better readability,
+  composability, performance, and testability.
+- Treat documentation as part of the architecture. Prefer updating
+  `docs/README.md`, `docs/widget_cleanup_todo.md`, this catalog, or another
+  existing source-of-truth doc over creating a new markdown file. If a temporary
+  audit/report produces durable guidance, migrate that guidance into the owning
+  doc and delete the stale report.
+- Ask questions only when the answer cannot be inferred safely from the repo or
+  when a product/design decision would materially affect the implementation.
+
+### How To Proceed
+
+1. Start every pass by reading this section and
+   `docs/widget_cleanup_todo.md`.
+2. Inspect the target feature plus adjacent shared widgets, controllers, and
+   tests before editing.
+3. Identify duplicated local UI implementations that block design-system work:
+   cards, empty states, bottom sheets, rows, rails, section scaffolds, loading
+   states, mutation feedback, and one-off action surfaces.
+4. Prefer existing primitives before creating new ones. Important current
+   primitives include `CatchSurface`, `CatchButton`, `CatchTextField`,
+   `CatchTopBar`, `CatchBottomSheetScaffold`, `CatchEmptyState`,
+   `CatchHorizontalRail`, `CatchVerticalSection`, `PersonRow`, `PersonAvatar`,
+   `RunCard`, `SettingsRow`, `CatchSkeleton`, `CatchBadge`, and `StatusChip`.
+5. Add a new primitive only when at least one of these is true:
+   repeated UI shells are already present, a primitive removes meaningful
+   complexity, the API is likely to be reused soon, or the component expresses a
+   durable design-system concept.
+6. Keep feature-specific content local. Consolidate shells and patterns, not
+   every line of UI copy or layout.
+7. Do not over-abstract early. If only one surface needs a helper, use a private
+   helper first and promote it later after a second concrete use appears.
+8. Name shared primitives by their durable semantic role, not by a temporary
+   feature use or purely visual treatment. The name should make the widget easy
+   to search for and easy to reason about in future cleanup passes.
+9. Keep business logic, repository writes, and product decisions in controllers
+   unless there is a clear reason for local widget ownership.
+10. Keep screens thin by default. A screen should usually compose feature
+   content, route parameters, scaffold/top-bar structure, and local Flutter UI
+   mechanics. Move provider state dispatch, repository writes, mutation
+   callbacks, and product behavior into feature widgets, providers, or
+   controllers unless the local screen ownership is explicit and justified.
+11. Put state dispatch in a semantic feature content widget when the screen would
+   otherwise become a large `AsyncValue.when` switch. The content widget should
+   own loading, error, empty, and data composition for that feature surface.
+12. Keep feature widgets single-purpose. A search field should be a search field;
+   the parent layout should decide whether it sits next to a city picker,
+   filter, or action.
+13. Put side-effect feedback close to the trigger. For mutation snackbars and
+   banners, wrap the widget that starts the mutation rather than the whole
+   screen when feasible.
+14. Do not pass `WidgetRef` through helper methods. If a helper needs `ref`,
+   make it a `ConsumerWidget`, `ConsumerStatefulWidget`, controller method, or
+   provider.
+15. Feature-specific sliver headers should wrap generic primitives with feature
+   configuration baked in, while keeping layout-only private helper widgets in
+   the header file.
+16. After each meaningful batch, update `docs/widget_cleanup_todo.md` with:
+   completed items, newly discovered backlog items, current findings, and the
+   recommended next step.
+17. After tests pass, inspect how the tests had to be written. If they required
+   fragile finders, excessive provider overrides, private implementation
+   knowledge, awkward setup, timing hacks, or broad integration scaffolding for
+   narrow behavior, treat that as architecture feedback. Refactor or add a
+   backlog item so future passes move the code toward clearer seams, smaller
+   units, stable user-visible assertions, and easier dependency injection.
+18. Update this catalog when adding, deleting, moving, or materially changing
+   widgets.
+19. Verify with focused commands over touched files and relevant tests. Fix
+   analyzer errors and warnings. Do not spend cleanup time on analyzer
+   info-level issues unless they block the task, mask a real bug, or are already
+   being edited for another reason.
+
+### Recurring Anti-Patterns
+
+Use this list as an active checklist during each pass. It should grow as more
+patterns are discovered.
+
+- Prop drilling theme tokens. Prefer `CatchTokens.of(context)` inside leaf
+  widgets instead of passing `CatchTokens` through constructors.
+- Hand-built bottom-sheet shells instead of `CatchBottomSheetScaffold`.
+- Hand-built empty states instead of `CatchEmptyState`.
+- Hand-built rails/sections instead of `CatchHorizontalRail` or
+  `CatchVerticalSection`.
+- General-purpose helpers stranded in feature folders instead of `core/widgets`.
+- Widgets calling repositories or owning product behavior that belongs in a
+  controller.
+- Feature screens owning provider state dispatch, mutation callbacks, or
+  mutation error feedback that would be clearer in semantic feature content
+  widgets.
+- Passing `WidgetRef` through helper methods instead of introducing a provider,
+  controller method, or `ConsumerWidget` boundary.
+- Nesting unrelated widgets together because they share a row or section. Layout
+  belongs to the parent; single-purpose widgets should stay single-purpose.
+- Duplicating feature-specific sliver header setup instead of baking feature
+  configuration into a small wrapper around the shared header primitive.
+- Hiding location/GPS or other product behavior in broad screen shells instead
+  of putting it in the widget/controller/provider that actually needs it.
+- Screen files mixing composition with repeated row/sheet/card plumbing.
+- One-off `Container`/`BoxDecoration` card shells where `CatchSurface`,
+  `RunCard`, `PersonRow`, `SettingsRow`, or another existing primitive fits.
+- Bypassing feature-owned provider/view-model seams to call lower-level
+  providers directly.
+- Tests coupled to incidental nested-scroll implementation details instead of
+  stable user-visible behavior.
+- Passing tests that are hard to write, hard to read, slow, broad, flaky, or
+  tightly coupled to private implementation details. These are signals that the
+  feature may need better seams, clearer controller/provider boundaries, smaller
+  widgets, or more semantic primitives.
+- Split design-system ownership across `lib/constants`, top-level `lib/theme`,
+  and `lib/core/theme`. New design tokens, spacing helpers, typography, app
+  theme, motion, radii, and icon sizing should live under `lib/core/theme`.
+
+### Current Direction
+
+The `CreateRunScreen` split, host-manage roster cleanup, create-run draft UX,
+create-run testability pass, run-clubs list/layout pass, chat thread/list pass,
+run-detail route/body pass, run map, attendance, run-club detail schedule
+cleanup, Auth UI cleanup, design-system theme-folder consolidation,
+Safety/settings UI cleanup, and Reviews UI cleanup are complete. Run-club
+detail no longer uses a
+two-dimensional schedule grid; it reuses the shared agenda UI and receives
+upcoming runs sorted by the detail view model. Theme, typography, spacing
+compatibility helpers, and app theme now live under `lib/core/theme`.
+
+---
+
 Every StatefulWidget, StatelessWidget, ConsumerWidget, and ConsumerStatefulWidget in `lib/`, grouped by feature area with a short description of what each widget does.
 
 Generated 2026-05-05.
@@ -76,7 +228,7 @@ Generated 2026-05-05.
 | `CatchSegmentedControl<T>` | `lib/core/widgets/catch_segmented_control.dart:44` | Pill-style segmented control. Active segment gets dark background with light text; inactive segments are transparent. Used for Day/Agenda calendar switching and Grid/List view toggling. |
 | `CatchSkeleton` | `lib/core/widgets/catch_skeleton.dart:20` | Shimmer-based loading placeholder. Named constructors: `.card()`, `.text()`, `.textBlock()`, `.circle()`, `.custom()`. Uses the `shimmer` package with Catch-themed colors. |
 | `CatchSkeletonList` | `lib/core/widgets/catch_skeleton.dart:127` | Convenience widget rendering a vertical column of `count` skeleton cards with configurable spacing. |
-| `CatchHorizontalRail` | `lib/core/widgets/catch_horizontal_rail.dart:12` | Section with a `SectionHeader` title and a horizontally-scrolling `ListView.separated` of items. Optionally accepts a trailing widget at the end of the rail. |
+| `CatchHorizontalRail` | `lib/core/widgets/catch_horizontal_rail.dart:12` | Section with a `SectionHeader` title and a horizontally-scrolling `ListView.separated` of items. Supports optional trailing content and custom header/list padding for embedded layouts. |
 | `CatchVerticalSection` | `lib/core/widgets/catch_vertical_section.dart:25` | Section with a `SectionHeader` title and a vertical `ListView.separated` of items (non-scrollable, meant for embedding in a parent scroll view). |
 | `CatchLoadingIndicator` | `lib/core/widgets/catch_loading_indicator.dart:3` | Simple centered `CircularProgressIndicator` for use during async loading states. |
 | `CatchErrorText` | `lib/core/widgets/catch_error_text.dart:4` | Minimal error display widget — renders error text centered with error color. |
@@ -90,7 +242,9 @@ Generated 2026-05-05.
 | `CatchBadge` | `lib/core/widgets/catch_badge.dart:10` | Small label badge used for spots-left indicators, distance/pace pills, etc. Supports `solid`, `neutral`, and `outline` tones. |
 | `IconBtn` | `lib/core/widgets/icon_btn.dart:22` | Circular 40x40 icon button used as the base for `CatchTopBar*Action` widgets. Renders `Material` + `InkWell` with a center-aligned child. |
 | `BottomCTA` | `lib/core/widgets/bottom_cta.dart:38` | Sticky bottom action footer. Renders a full-width `CatchButton` in a surface-colored bar separated from content by a hairline divider, with optional leading content and bottom safe-area padding. |
-| `ChipField<T>` | `lib/core/widgets/chip_field.dart:14` | Multi/single-select chip selector wrapping `FormField<Set<T>>`. Uses `CatchChip` children inside a `Wrap`. Parent owns the `selected` set. |
+| `CatchBottomSheetScaffold` | `lib/core/widgets/catch_bottom_sheet.dart:7` | Shared bottom-sheet shell with grabber, optional title/subtitle, keyboard-safe padding, content, and an optional action slot. |
+| `CatchEmptyState` | `lib/core/widgets/catch_empty_state.dart:9` | Shared empty-state primitive with icon, title, message, optional action, and surface/plain presentation modes. |
+| `ChipField<T>` | `lib/core/widgets/chip_field.dart:14` | Multi/single-select chip selector wrapping `FormField<Set<T>>`. Uses `CatchChip` children inside a `Wrap`, lets callers attach semantic chip keys, and keeps the parent-owned `selected` set. |
 | `DetailRow` | `lib/core/widgets/detail_row.dart:5` | Simple row with a label and value, used in detail/read-only views. |
 | `ErrorBanner` | `lib/core/widgets/error_banner.dart:12` | Styled inline error banner for mutation/async errors within page content. Optionally includes a "Try again" button. |
 | `SectionHeader` | `lib/core/widgets/section_header.dart:4` | Section header with uppercase or mixed-case title, optional heavy weight. |
@@ -212,7 +366,7 @@ Generated 2026-05-05.
 | Widget | File | Purpose |
 |---|---|---|
 | `ChatsListScreen` | `lib/matches/presentation/matches_list_screen.dart:8` | "Chats" tab. Renders the chat conversations list with a sliver header (search + new matches rail) and the list of `ChatListTile` widgets. |
-| `ChatsList` | `lib/matches/presentation/widgets/chats_list.dart:12` | The scrollable list body of chat conversations fed from `ChatsListViewModel`. |
+| `ChatsList` | `lib/matches/presentation/widgets/chats_list.dart:13` | Sliver body for chat conversations fed from `ChatsListViewModel`. Uses a padded skeleton loading sliver, empty/error states, and delegates populated data to `ChatsListBody`. |
 | `ChatListTile` | `lib/matches/presentation/chat_list_tile.dart:9` | Single chat thread row in the inbox. Shows `PersonRow` in chat-thread mode with name, last message, timestamp, unread badge, and on-tap navigation to `ChatScreen`. |
 | `ChatNewMatchesRail` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:10` | Horizontal rail of new match avatars at the top of the chats list. |
 | `_NewMatchAvatar` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:40` | Single new-match avatar in the rail — circular photo with name. |
@@ -226,23 +380,32 @@ Generated 2026-05-05.
 | `ChatsEmptyState` | `lib/matches/presentation/widgets/chats_empty_state.dart:6` | Empty state shown when there are no chat conversations. |
 | `ChatsListBody` | `lib/matches/presentation/widgets/chats_list_body.dart:7` | Body wrapper for the chats list (manages scroll controller, etc.). |
 | `_TitleRow` | `lib/matches/presentation/widgets/chats_sliver_header.dart:16` | "Chats" title row in the chats sliver header. |
-| `_SearchRow` | `lib/matches/presentation/widgets/chats_sliver_header.dart:68` | Search field row in the chats sliver header. Implements `PreferredSizeWidget` for use in `SliverAppBar.bottom`. |
+| `_SearchRow` | `lib/matches/presentation/widgets/chats_sliver_header.dart:70` | Pinned search-field row in the chats sliver header. Reserves enough height for the shared compact `CatchTextField`. |
 
 ---
 
 ## Chat Screen
 
+### StatelessWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `ChatScreen` | `lib/chats/presentation/chat_screen.dart:21` | Thin route-facing wrapper for a chat thread. Accepts the route match id and optional routed profile, then delegates thread state and composition to `_ChatContent`. |
+
 ### ConsumerStatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatScreen` | `lib/chats/presentation/chat_screen.dart:26` | Full chat thread screen. Manages a `TextEditingController` for the message input, a `ScrollController` for auto-scrolling to latest messages, and handles message sending (text + image), read-receipt reset, and block/report actions. Renders a `StreamBuilder` of `ChatMessage` widgets with a `ChatInputBar` at the bottom. |
+| `_ChatContent` | `lib/chats/presentation/chat_screen.dart:33` | Stateful chat-thread content. Owns local text/scroll controllers and mounted lifecycle effects, watches match/run/profile/message providers, and routes send/image/report/block actions through `ChatController` mutations. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_RunContextHeader` | `lib/chats/presentation/chat_screen.dart:348` | Header inside the chat showing the shared run context — run icon, run name, and date. |
+| `_ChatMutationListeners` | `lib/chats/presentation/chat_screen.dart:288` | Mutation snackbar boundary for chat send/send-image/report/block errors. Keeps mutation feedback out of the rendering widgets. |
+| `ChatTopBar` | `lib/chats/presentation/widgets/chat_top_bar.dart:10` | Chat app bar with avatar/name title and menu actions for profile/report/block. Navigation stays in the top-bar action because it is route UI, while safety actions are callbacks into the controller layer. |
+| `ChatRunContextHeader` | `lib/chats/presentation/widgets/chat_run_context_header.dart:9` | Header inside the chat showing the shared run context — run icon, run name, and date. |
+| `ChatMessageList` | `lib/chats/presentation/widgets/chat_message_list.dart:11` | Message-list renderer for loading, error, empty, and populated states. Uses `CatchEmptyState` for empty threads and `MessageBubble` for individual messages. |
 | `ChatInputBar` | `lib/chats/presentation/widgets/chat_input_bar.dart:7` | Message input bar with text field, image picker button, and send button. |
 | `MessageBubble` | `lib/chats/presentation/widgets/message_bubble.dart:6` | Single chat message bubble. Renders differently for sent vs. received messages (alignment, color, corner rounding). Shows timestamp and optional image attachment. |
 
@@ -250,41 +413,42 @@ Generated 2026-05-05.
 
 ## Public Profile
 
-### ConsumerStatefulWidget
+### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PublicProfileScreen` | `lib/public_profile/presentation/public_profile_screen.dart:14` | Full-screen public profile view. Fetches `PublicProfile` by UID, renders `ProfileCard`, running stats, bio, lifestyle sections, and report/block actions. Manages block submission state. |
+| `PublicProfileScreen` | `lib/public_profile/presentation/public_profile_screen.dart:16` | Full-screen public profile view. Fetches `PublicProfile` by UID, renders the shared `ProfileCard`, and routes report/block actions through `PublicProfileController` mutations. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_ProfileBody` | `lib/public_profile/presentation/public_profile_screen.dart:171` | Scrollable body of the public profile — stacked profile sections. |
-| `_ReportReasonTile` | `lib/public_profile/presentation/public_profile_screen.dart:197` | Single selectable report reason row. |
+| `_ProfileBody` | `lib/public_profile/presentation/public_profile_screen.dart:192` | Body of the public profile with a shared profile card and pending-action overlay. |
+| `_ReportReasonTile` | `lib/public_profile/presentation/public_profile_screen.dart:218` | Single selectable report reason row. |
 
 ---
 
-## User Profile (My Profile)
+## User Profile
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfileScreen` | `lib/my_profile/presentation/profile_screen.dart:13` | "You" tab. Renders the user's own profile with a sliver header (avatar, name, city), tab bar (Profile / Preview), and tab content. |
-| `ProfileTab` | `lib/my_profile/presentation/widgets/profile_tab.dart:17` | Editable profile tab content — info sections, prompt cards, and edit sheets for each field. |
-| `_OverflowMenu` | `lib/my_profile/presentation/widgets/profile_sliver_header.dart:52` | Overflow menu in the profile sliver header (settings, etc.). |
+| `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:13` | "You" tab. Renders the user's own profile with a sliver header (avatar, name, city), tab bar (Profile / Preview), and tab content. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:17` | Editable profile tab content — info sections, prompt cards, and edit sheets for each field. |
+| `_OverflowMenu` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:56` | Overflow menu in the profile sliver header (settings, payments, sign out). |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PreviewTab` | `lib/my_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others (renders `ProfileCard` + sections). |
-| `ProfileInfoSection` | `lib/my_profile/presentation/widgets/profile_info_section.dart:24` | Grouped section of `ProfileInfoTile` rows with a section header. |
-| `ProfileInfoTile` | `lib/my_profile/presentation/widgets/profile_info_tile.dart:6` | Single tappable info row — icon, label, value, chevron. Opens the corresponding edit sheet on tap. |
-| `_ProfileTitle` | `lib/my_profile/presentation/widgets/profile_sliver_header.dart:22` | Name + city title in the profile sliver header. |
-| `_SettingsButton` | `lib/my_profile/presentation/widgets/profile_sliver_header.dart:39` | Settings gear button in the profile header. |
-| `_PromptCard` | `lib/my_profile/presentation/widgets/profile_tab.dart:449` | Editable prompt card (e.g., "My ideal run...") on the profile tab. |
+| `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared swipe `ProfileCard`. |
+| `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:24` | Grouped section of `ProfileInfoTile` rows with a section header. |
+| `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:6` | Single tappable info row — icon, label, value, chevron. Opens the corresponding edit sheet on tap. |
+| `ProfilePromptCard` | `lib/user_profile/presentation/widgets/profile_prompt_card.dart:6` | Editable profile prompt card used by the signed-in profile bio section. |
+| `_ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:71` | Private helper that applies the `NestedScrollView` overlap injector around each profile tab body. |
+| `_ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:26` | Name + city title in the profile sliver header. |
+| `_SettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:43` | Settings gear button in the profile header. |
 
 ---
 
@@ -295,10 +459,8 @@ Generated 2026-05-05.
 | Widget | File | Purpose |
 |---|---|---|
 | `OnboardingScreen` | `lib/onboarding/presentation/onboarding_screen.dart:16` | Multi-step onboarding flow shell. Manages step navigation via `PageController`, renders the step progress bar, and delegates to individual step pages. |
-| `PhonePage` | `lib/onboarding/presentation/pages/phone_page.dart:17` | Phone number entry page — country code picker + phone input + "Send OTP" button. |
-| `OtpPage` | `lib/onboarding/presentation/pages/otp_page.dart:17` | OTP verification page — 6-digit input with auto-focus, resend timer, and verification via Firebase Auth. |
 | `NameDobPage` | `lib/onboarding/presentation/pages/name_dob_page.dart:11` | Name and date-of-birth entry page — text field + date picker. |
-| `GenderInterestPage` | `lib/onboarding/presentation/pages/gender_interest_page.dart:12` | Gender identity and interest selection page using `ChipField`. |
+| `GenderInterestPage` | `lib/onboarding/presentation/pages/gender_interest_page.dart:12` | Gender identity and interest selection page using `ChipField` with semantic chip keys for self-identification vs interested-in selections. |
 | `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:15` | Running preferences page — pace, distance, days, goals, and experience level. |
 
 ### ConsumerWidget
@@ -316,8 +478,32 @@ Generated 2026-05-05.
 | `_ProgressBar` | `lib/onboarding/presentation/onboarding_screen.dart:138` | Horizontal progress bar showing current step in the onboarding flow. |
 | `OnboardingStepHeader` | `lib/onboarding/presentation/widgets/onboarding_step_header.dart:5` | Title + subtitle header for each onboarding step page. |
 | `_TrackPattern` | `lib/onboarding/presentation/pages/welcome_page.dart:81` | Decorative track/route pattern shown on the welcome page background. |
-| `_OtpDigitField` | `lib/onboarding/presentation/pages/otp_page.dart:204` | 6-digit OTP input row — renders 6 `_OtpDigitBox` widgets with auto-focus management. |
-| `_OtpDigitBox` | `lib/onboarding/presentation/pages/otp_page.dart:280` | Single OTP digit box — shows the digit, cursor, and focus ring. |
+| `OnboardingFormKeys` | `lib/onboarding/presentation/onboarding_form_keys.dart:4` | Stable semantic keys for onboarding form controls whose visible labels repeat across sections. |
+
+---
+
+## Auth
+
+### ConsumerWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `AuthScreen` | `lib/auth/presentation/auth_screen.dart:7` | Phone-auth flow shell. Watches `AuthController.step` and switches between phone entry and OTP entry without owning local UI state. |
+
+### ConsumerStatefulWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `PhonePage` | `lib/auth/presentation/phone_page.dart:16` | Phone number entry step. Owns local text field state, uses `AuthController.sendOtpMutation`, and exposes stable auth form keys for the phone field/send action. |
+| `OtpPage` | `lib/auth/presentation/otp_page.dart:17` | OTP entry step. Owns OTP field focus/timer mechanics, uses `AuthController.verifyOtpMutation`/`sendOtpMutation`, and exposes stable auth form keys for OTP, resend, and change-number actions. |
+
+### StatelessWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `AuthFormKeys` | `lib/auth/presentation/auth_form_keys.dart:3` | Stable semantic keys for auth form controls and actions. |
+| `_OtpDigitField` | `lib/auth/presentation/otp_page.dart:214` | Invisible text field plus visual 6-digit OTP boxes. Reads design tokens locally and forwards changes/submits to `OtpPage`. |
+| `_OtpDigitBox` | `lib/auth/presentation/otp_page.dart:287` | Single visual OTP digit box with active-border state. |
 
 ---
 
@@ -339,18 +525,18 @@ Generated 2026-05-05.
 | Widget | File | Purpose |
 |---|---|---|
 | `CreateRunClubScreen` | `lib/run_clubs/presentation/create/create_run_club_screen.dart:22` | Create/edit run club form. Multi-section form with cover photo picker, details fields, contact fields, and a submit CTA. Handles both create and edit flows (initialized via `initialRunClub`). |
-| `CityPicker` | `lib/run_clubs/presentation/list/widgets/city_picker.dart:11` | City selector dropdown at the top of the clubs list. Watches and updates `selectedRunClubCityProvider`. |
+| `CityPicker` | `lib/run_clubs/presentation/list/widgets/city_picker.dart:11` | City selector dropdown at the top of the clubs list. Watches and updates `selectedRunClubCityProvider`, listens for GPS location updates, and keeps showing the selected city while the remote city list is loading or unavailable. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `RunClubDetailScreen` | `lib/run_clubs/presentation/detail/run_club_detail_screen.dart:16` | Run club detail screen. Fetches the club, current user profile, upcoming runs, reviews, and handles membership state via `RunClubMembershipController`. Renders `ClubDetailBody`. |
-| `RunClubsList` | `lib/run_clubs/presentation/list/widgets/run_clubs_list.dart:11` | The scrollable list body of run club tiles, fed from `RunClubsListViewModel`. |
+| `RunClubsList` | `lib/run_clubs/presentation/list/widgets/run_clubs_list.dart:11` | Sliver state-dispatch widget for the clubs tab. Renders skeleton, error, empty, and data slivers from `RunClubsListViewModel` and owns join-mutation feedback. |
 | `RunClubsSearchField` | `lib/run_clubs/presentation/list/widgets/run_clubs_search_field.dart:6` | Search text field for filtering the clubs list. |
 | `_SearchRow` | `lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart:66` | Search row inside the clubs sliver header. |
 | `MembershipButton` | `lib/run_clubs/presentation/detail/widgets/membership_button.dart:6` | Join/Leave/Request membership button on the club detail screen. Calls `RunClubMembershipController`. |
-| `MutationErrorSnackbarListener` | `lib/run_clubs/presentation/shared/run_clubs_mutation_feedback.dart:22` | Watches a Riverpod `Mutation` and shows a `SnackBar` on error transition. Used to surface join/leave club errors. |
+| `MutationErrorSnackbarListener` | `lib/core/widgets/mutation_error_snackbar_listener.dart:13` | Watches a Riverpod `Mutation` and shows a `SnackBar` on error transition. Used for transient mutation errors such as join/leave club failures. |
 | `_DirectoryCard` | `lib/run_clubs/presentation/list/widgets/run_club_list_tile_parts/directory_card.dart:3` | Directory-style club card — larger layout with cover image, host avatar, stats strip, and "Join Club" CTA. |
 
 ### StatelessWidget
@@ -358,9 +544,9 @@ Generated 2026-05-05.
 | Widget | File | Purpose |
 |---|---|---|
 | `RunClubsListScreen` | `lib/run_clubs/presentation/list/run_clubs_list_screen.dart:6` | "Clubs" tab. Renders the clubs sliver header (city picker, search, create button) + `RunClubsList` body. |
-| `RunClubsListBody` | `lib/run_clubs/presentation/list/widgets/run_clubs_list_body.dart:7` | Body wrapper for the clubs list — manages scroll behavior and empty/loading states. |
-| `RunClubDiscoverList` | `lib/run_clubs/presentation/list/widgets/run_club_discover_list.dart:6` | Discovery section of the clubs list — header + horizontally-scrolling rail of featured clubs. |
-| `RunClubListTile` | `lib/run_clubs/presentation/list/widgets/run_club_list_tile.dart:26` | Single club row tile — club image, name, location, member count, and distance. |
+| `RunClubsListBody` | `lib/run_clubs/presentation/list/widgets/run_clubs_list_body.dart:7` | Sliver-native data body for the clubs tab. Composes the joined-club horizontal rail and discover sliver list without embedding a vertical `ListView` inside the parent `CustomScrollView`. |
+| `RunClubDiscoverList` | `lib/run_clubs/presentation/list/widgets/run_club_discover_list.dart:6` | Discovery section of the clubs list — section header plus a real `SliverList` of directory cards. |
+| `RunClubListTile` | `lib/run_clubs/presentation/list/widgets/run_club_list_tile.dart:26` | Club tile rendered as directory card or avatar chip. Display-only tile rendering does not watch provider state; only the join button owns the mutation provider. |
 | `RunClubsEmptyState` | `lib/run_clubs/presentation/list/widgets/run_clubs_empty_state.dart:5` | Empty state when no clubs are found. |
 | `RunClubAvatarRail` | `lib/run_clubs/presentation/list/widgets/run_club_avatar_rail.dart:9` | Horizontal avatar rail of the user's joined clubs + a create-club button. |
 | `_CreateClubButton` | `lib/run_clubs/presentation/list/widgets/run_club_avatar_rail.dart:34` | "+" button at the end of the avatar rail to create a new club. |
@@ -368,6 +554,7 @@ Generated 2026-05-05.
 | `_AddButton` | `lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart:50` | "+" button next to the title to create a new club. |
 | `ClubHeroAppBar` | `lib/run_clubs/presentation/detail/widgets/club_hero_app_bar.dart:15` | Hero-style app bar for the club detail screen — large cover image, club name, location, and back button. |
 | `ClubDetailBody` | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart:21` | Scrollable club detail body — about section, stats, upcoming runs list, reviews section, and host action panel. |
+| `ClubScheduleSection` | `lib/run_clubs/presentation/detail/widgets/club_schedule_section.dart:7` | Sliver-native agenda section for a club's upcoming runs. Reuses `RunAgendaSliverList`, shows empty state when no upcoming runs exist, and routes selected runs to detail. |
 | `_HostActionPanel` | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart:119` | Action panel shown when the current user is the club host — create run, edit club, etc. |
 | `_ClubContactSection` | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart:177` | Contact info section — Instagram, website, WhatsApp, email rows. |
 | `_ContactRow` | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart:228` | Single contact row (icon + label + value). |
@@ -391,41 +578,44 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateRunScreen` | `lib/runs/presentation/create_run_screen.dart:31` | Multi-step run creation flow (When → Where → Details → Eligibility → Review). Manages `PageController`, draft auto-save/restore, and the create-run mutation. On success transitions to `CreateRunSuccessScreen` or `HostRunManageScreen`. |
-| `RunMapScreen` | `lib/runs/presentation/run_map_screen.dart:20` | Map view showing all upcoming runs as pins. Users can tap a pin to see a bottom sheet with run details. |
+| `CreateRunScreen` | `lib/runs/presentation/create_run_screen.dart:29` | Multi-step run creation flow (When → Where → Details → Eligibility → Review). Manages `PageController`, draft auto-save/restore, local form controllers, and the create-run mutation. On success transitions to `CreateRunSuccessScreen` or `HostRunManageScreen`. |
+| `RunMapScreen` | `lib/runs/presentation/run_map_screen.dart:16` | Map route wrapper. Watches `RunMapViewModel`, owns local selected-run state, and composes the map pins plus `RunMapSheet`. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `RunDetailScreen` | `lib/runs/presentation/run_detail_screen.dart:8` | Run detail screen (public view). Fetches `RunDetailViewModel` and renders `RunDetailBody`. |
-| `RunDetailBody` | `lib/runs/presentation/widgets/run_detail_body.dart:27` | Scrollable run detail body — hero header, stats grid, route map, roster section, and `RunDetailCta`. |
-| `RunDetailCta` | `lib/runs/presentation/widgets/run_detail_cta.dart:25` | Bottom CTA bar for run detail. Shows different states: price + "Join" button, "You're booked" badge, "You attended" label, or disabled (full/cancelled). |
-| `AttendanceSheetScreen` | `lib/runs/presentation/attendance_sheet_screen.dart:20` | Host-facing attendance sheet. Shows a list of booked users with check-in/absent toggles and the attendee count. |
-| `_AttendanceList` | `lib/runs/presentation/attendance_sheet_screen.dart:59` | List body of attendance rows. |
-| `_AttendeeRow` | `lib/runs/presentation/attendance_sheet_screen.dart:146` | Single attendance row — avatar, name, and check-in/absent toggle. |
-| `_RunsMap` | `lib/runs/presentation/run_map_screen.dart:118` | The actual Flutter map widget rendering run pins (used inside `RunMapScreen`). |
+| `RunDetailScreen` | `lib/runs/presentation/run_detail_screen.dart:8` | Route-facing run detail entry. Fetches `RunDetailViewModel`, renders scaffolded loading/error/not-found states, and delegates the loaded screen to `RunDetailBody` without nesting scaffolds. |
+| `RunDetailBody` | `lib/runs/presentation/widgets/run_detail_body.dart:24` | Scrollable run detail body — owns the loaded detail `Scaffold`, composes `RunDetailHeroAppBar`, `RunDetailOverviewSection`, `RunDetailSocialSection`, and the bottom CTA. |
+| `RunDetailCta` | `lib/runs/presentation/widgets/run_detail_cta.dart:24` | Bottom CTA bar for run detail. Consumes host state from `RunDetailViewModel`, supports deterministic time-window tests via optional `now`, and shows booking/cancel/waitlist/check-in/attendance states. |
+| `AttendanceSheetScreen` | `lib/runs/presentation/attendance_sheet_screen.dart:20` | Host-facing attendance sheet. Watches the run stream, renders route-level loading/error/not-found states, and delegates attendance body composition to `_AttendanceList`. |
+| `_AttendanceList` | `lib/runs/presentation/attendance_sheet_screen.dart:59` | Attendance body. Handles empty/profile-loading/profile-error states, mutation error banner, checked-in summary, and the attendee list. |
+| `_AttendeeRow` | `lib/runs/presentation/attendance_sheet_screen.dart:168` | Single attendance row using `CatchSurface`, `PersonRow`, and `CatchBadge`; routes toggle actions through `RunBookingController.markAttendanceMutation`. |
+| `_RunsMap` | `lib/runs/presentation/run_map_screen.dart:81` | The actual Flutter map widget rendering pinned runs. Uses device location only for map centering, not feature data composition. |
 
 ### StatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `LocationPickerScreen` | `lib/runs/presentation/location_picker_screen.dart:8` | Map-based location picker. Lets users long-press or search for a location and returns the selected `LatLng` + address. |
-| `_DraftPickerSheet` | `lib/runs/presentation/widgets/draft_picker_sheet.dart:32` | Bottom sheet listing saved run drafts. Users can tap to resume or swipe to delete. |
+| `_DraftPickerSheet` | `lib/runs/presentation/widgets/draft_picker_sheet.dart:37` | `CatchBottomSheetScaffold` listing saved run drafts. Users can resume, start fresh, or permanently delete persisted drafts through the create-run draft controller. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateRunSuccessScreen` | `lib/runs/presentation/create_run_screen.dart:665` | Success confirmation screen after creating a run — shows run summary, share button, and "Manage Run" CTA. |
-| `HostRunManageScreen` | `lib/runs/presentation/create_run_screen.dart:791` | Host run management screen — shows run stats, roster list, and actions (edit, cancel, view attendance). |
-| `_StatCard` | `lib/runs/presentation/create_run_screen.dart:915` | Single stat card on the manage screen (e.g., "12 / 20 Booked"). |
-| `_HostRunSummaryCard` | `lib/runs/presentation/create_run_screen.dart:944` | Summary card showing run details on the host manage screen. |
-| `_HostSummaryRow` | `lib/runs/presentation/create_run_screen.dart:992` | Single key-value row in the host summary card. |
-| `_HostUserList` | `lib/runs/presentation/create_run_screen.dart:1037` | Scrollable list of booked users on the host manage screen. |
-| `RunScheduleGrid` | `lib/runs/presentation/run_schedule_grid.dart:11` | Grid of scheduled runs for a club — shows day headers and `ScheduleRunCard` tiles. |
-| `ScheduleRunCard` | `lib/runs/presentation/widgets/schedule_run_card.dart:9` | Compact run card for the schedule grid — time, location, distance badge, and price. |
-| `ScheduleDayHeader` | `lib/runs/presentation/widgets/schedule_day_header.dart:7` | Day-of-week + date header in the schedule grid. |
+| `CreateRunSuccessScreen` | `lib/runs/presentation/create_run_success_screen.dart:10` | Success confirmation screen after creating a run — shows live-run confirmation and a "Manage run" CTA. |
+| `HostRunManageScreen` | `lib/runs/presentation/host_run_manage_screen.dart:11` | Host run management screen — shows run stats, summary, profile-backed roster, and waitlist. |
+| `CreateRunStepHeader` | `lib/runs/presentation/widgets/create_run_step_header.dart:7` | Header for the create-run wizard — back action, step title, club name, step count, and progress bar. |
+| `CreateRunFormKeys` | `lib/runs/presentation/create_run_form_keys.dart:3` | Stable semantic keys for create-run form fields so widget tests target fields by purpose rather than layout order. |
+| `_HostRunStatCard` | `lib/runs/presentation/host_run_manage_screen.dart:134` | `CatchSurface` stat card on the manage screen (booked, waitlist, revenue). |
+| `_HostRunSummaryCard` | `lib/runs/presentation/host_run_manage_screen.dart:160` | `CatchSurface` summary card showing run details on the host manage screen. |
+| `_HostRunSummaryRow` | `lib/runs/presentation/host_run_manage_screen.dart:205` | Single key-value row in the host summary card. |
+| `_HostRunUserList` | `lib/runs/presentation/host_run_manage_screen.dart:250` | Profile-backed roster/waitlist list on the host manage screen. Uses `PersonRow`, `CatchBadge`, and `CatchEmptyState`. |
+| `_AttendanceSummaryHeader` | `lib/runs/presentation/attendance_sheet_screen.dart:131` | Header row for host attendance showing checked-in count and the toggle hint. |
+| `RunAgendaList` | `lib/runs/presentation/widgets/run_agenda_list.dart:9` | Box-facing agenda list for runs grouped by day and sorted by start time. Used by Calendar's agenda mode. |
+| `RunAgendaSliverList` | `lib/runs/presentation/widgets/run_agenda_list.dart:35` | Sliver-facing agenda list for runs grouped by day and sorted by start time. Used inside sliver-native feature screens such as run-club detail. |
+| `RunAgendaRunCard` | `lib/runs/presentation/widgets/run_agenda_list.dart:91` | Tappable agenda card for a run — time, meeting point, distance/pace/spots metadata, and optional badge. |
 | `WhenStep` | `lib/runs/presentation/widgets/when_step.dart:7` | "When" form step in create run — date + time pickers. |
 | `WhereStep` | `lib/runs/presentation/widgets/where_step.dart:8` | "Where" form step — location picker, address display, and map preview. |
 | `RunDetailsStep` | `lib/runs/presentation/widgets/run_details_step.dart:9` | "Details" form step — distance, pace, price, capacity, and vibe tags. |
@@ -436,19 +626,21 @@ Generated 2026-05-05.
 | `RunStatsGrid` | `lib/runs/presentation/widgets/run_stats_grid.dart:8` | Grid of stat cells (distance, pace, elevation, etc.) for run detail. |
 | `RunStatCell` | `lib/runs/presentation/widgets/run_stats_grid.dart:39` | Single stat cell with value + label. |
 | `RunStatDivider` | `lib/runs/presentation/widgets/run_stats_grid.dart:81` | Vertical divider between stat cells. |
+| `RunDetailHeroAppBar` | `lib/runs/presentation/widgets/run_detail_hero_app_bar.dart:7` | Sliver hero app bar for run detail. Owns the photo/map hero, back/share controls, and saved-run icon state. |
+| `RunDetailOverviewSection` | `lib/runs/presentation/widgets/run_detail_overview_section.dart:10` | Static run facts section for the loaded run detail body: title, pace/date, stats, when/where, description, and requirements. |
+| `RunDetailSocialSection` | `lib/runs/presentation/widgets/run_detail_social_section.dart:10` | Social context section for the loaded run detail body: roster, guest lock prompt, divider, and reviews for signed-in users. |
+| `RunMapSheet` | `lib/runs/presentation/widgets/run_map_sheet.dart:12` | Overlay sheet for map runs. Uses `CatchSurface`, renders horizontal run chips, and routes the highlighted run to detail. |
 | `RunPhotoHeader` | `lib/runs/presentation/widgets/run_photo_header.dart:6` | Photo/map header for the run detail screen. |
 | `MapPinTile` | `lib/runs/presentation/widgets/map_pin_tile.dart:7` | Route map + pin display tile. |
 | `PickerTile` | `lib/runs/presentation/widgets/picker_tile.dart:6` | Tappable tile that opens a picker (date, time, etc.) — shows label + selected value. |
 | `DurationStepper` | `lib/runs/presentation/widgets/duration_stepper.dart:6` | +/- stepper for selecting duration. |
 | `RequirementsRow` | `lib/runs/presentation/widgets/requirements_row.dart:7` | Read-only row showing eligibility requirements. |
 | `FieldLabel` | `lib/runs/presentation/widgets/field_label.dart:4` | Styled label for form fields in the create-run flow. |
-| `_DraftCard` | `lib/runs/presentation/widgets/draft_picker_sheet.dart:185` | Single draft card in the draft picker sheet — shows run summary + delete swipe action. |
+| `_DraftCard` | `lib/runs/presentation/widgets/draft_picker_sheet.dart:161` | `CatchSurface` draft card in the draft picker sheet — shows run summary, relative save time, and delete state. |
 | `PriceLeading` | `lib/runs/presentation/widgets/run_detail_cta.dart:246` | Price display widget shown as leading content in `RunDetailCta` (price + "incl. coffee"). |
 | `BookedLeading` | `lib/runs/presentation/widgets/run_detail_cta.dart:270` | "You're booked" badge shown when the user already booked. |
 | `AttendedLeading` | `lib/runs/presentation/widgets/run_detail_cta.dart:287` | "You attended" badge shown for past attended runs. |
-| `_MapRunSheet` | `lib/runs/presentation/run_map_screen.dart:192` | Bottom sheet shown when tapping a map pin — run name, location, date, and "View details" CTA. |
-| `_RunMapChip` | `lib/runs/presentation/run_map_screen.dart:264` | Date pill chip on the map sheet. |
-| `_MapEmptyState` | `lib/runs/presentation/run_map_screen.dart:320` | Empty state when no runs are on the map. |
+| `_MapEmptyState` | `lib/runs/presentation/run_map_screen.dart:155` | `CatchEmptyState` shown when the current user has no signed-up or recommended runs for the map. |
 
 ---
 
@@ -464,15 +656,15 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_CalendarHeader` | `lib/calendar/presentation/calendar_screen.dart:74` | Calendar header — "Calendar" title + `CatchSegmentedControl` for Agenda/Timeline toggle. |
-| `_WeekStrip` | `lib/calendar/presentation/calendar_screen.dart:185` | Horizontal week strip showing 7 days with date indicators. |
-| `_WeekDay` | `lib/calendar/presentation/calendar_screen.dart:219` | Single day cell in the week strip — day name, date number, and active indicator. |
-| `_AgendaView` | `lib/calendar/presentation/calendar_screen.dart:276` | Agenda (list) view of booked runs grouped by date. |
-| `_AgendaRunCard` | `lib/calendar/presentation/calendar_screen.dart:316` | Single run card in the agenda view — time, distance badge, club name, location. |
-| `_TimelineView` | `lib/calendar/presentation/calendar_screen.dart:383` | Timeline (week) view of booked runs. |
-| `_TimelineRun` | `lib/calendar/presentation/calendar_screen.dart:410` | Single run block in the timeline view — positioned by time of day. |
-| `_StatDivider` | `lib/calendar/presentation/calendar_screen.dart:481` | Dashed divider between stat items. |
-| `_CalendarMessage` | `lib/calendar/presentation/calendar_screen.dart:497` | Empty/error message for the calendar. |
+| `_CalendarHeader` | `lib/calendar/presentation/calendar_screen.dart:73` | Calendar header — "Calendar" title, `CatchSegmentedControl`, week strip, and `CatchSurface` stats row. |
+| `_WeekStrip` | `lib/calendar/presentation/calendar_screen.dart:171` | Horizontal week strip showing 7 days with date indicators. |
+| `_WeekDay` | `lib/calendar/presentation/calendar_screen.dart:203` | Single day cell in the week strip — day name, date number, and active indicator. |
+| `_AgendaView` | `lib/calendar/presentation/calendar_screen.dart:257` | Agenda (list) view of booked runs grouped by date. |
+| `_AgendaRunCard` | `lib/calendar/presentation/calendar_screen.dart:294` | `CatchSurface` run card in the agenda view — time, distance badge, club name, location. |
+| `_TimelineView` | `lib/calendar/presentation/calendar_screen.dart:358` | Timeline (week) view of booked runs. |
+| `_TimelineRun` | `lib/calendar/presentation/calendar_screen.dart:384` | Single `CatchSurface` run block in the timeline view — positioned by time of day. |
+| `_StatDivider` | `lib/calendar/presentation/calendar_screen.dart:454` | Divider between stat items. |
+| `_CalendarMessage` | `lib/calendar/presentation/calendar_screen.dart:469` | Calendar empty/error state rendered through `CatchEmptyState`. |
 
 ---
 
@@ -482,23 +674,25 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PaymentConfirmationScreen` | `lib/payments/presentation/payment_confirmation_screen.dart:20` | Post-payment confirmation screen. Shows hero animation, run summary card, quick actions (add to calendar, share, view club), and a referral banner. Also manages a "Back to Home" sticky CTA. |
-| `_ConfirmationBody` | `lib/payments/presentation/payment_confirmation_screen.dart:47` | Scrollable body of the confirmation screen. |
-| `PaymentHistoryScreen` | `lib/payments/presentation/payment_history_screen.dart:19` | List of past payment transactions. Watches `watchPaymentsProvider` and renders `_PaymentTile` items. |
+| `PaymentConfirmationScreen` | `lib/payments/presentation/payment_confirmation_screen.dart:21` | Post-payment confirmation screen. Shows hero animation, run summary card, quick actions (add to calendar, share, view club), and a referral banner. Also manages a "Back to Home" sticky CTA. |
+| `_ConfirmationBody` | `lib/payments/presentation/payment_confirmation_screen.dart:45` | Scrollable body of the confirmation screen. |
+| `PaymentConfirmationKeys` | `lib/payments/presentation/payment_confirmation_keys.dart:3` | Stable semantic keys for confirmation quick actions, referral share, and sticky back-home CTA. |
+| `PaymentHistoryScreen` | `lib/payments/presentation/payment_history_screen.dart:20` | List of past payment transactions. Watches `watchPaymentsForUserProvider`, renders `_PaymentTile` items, and shows transaction details in `CatchBottomSheetScaffold`. |
 | `_PaymentList` | `lib/payments/presentation/payment_history_screen.dart:42` | The list view of payment tiles. |
-| `_PaymentTile` | `lib/payments/presentation/payment_history_screen.dart:73` | Single payment transaction row — amount, date, run name, and status. |
+| `_PaymentTile` | `lib/payments/presentation/payment_history_screen.dart:74` | Single semantic payment transaction row — amount, date, run name, and status. Tapping opens the detail bottom sheet. |
+| `PaymentHistoryKeys` | `lib/payments/presentation/payment_history_keys.dart:3` | Stable semantic payment-history tile keys for tests and future automation. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_HeroSection` | `lib/payments/presentation/payment_confirmation_screen.dart:104` | Animated hero section with checkmark and "Payment confirmed" text. |
-| `_RunSummaryCard` | `lib/payments/presentation/payment_confirmation_screen.dart:207` | Card summarizing the booked run — club name, location, date, distance, pace, and price. |
-| `_QuickActions` | `lib/payments/presentation/payment_confirmation_screen.dart:304` | Row of quick-action tiles (Add to Calendar, Share, View Club). |
-| `_ActionTile` | `lib/payments/presentation/payment_confirmation_screen.dart:387` | Single quick-action tile. |
-| `_HeadsUp` | `lib/payments/presentation/payment_confirmation_screen.dart:429` | Info box about cancellation policy. |
-| `_ReferralBanner` | `lib/payments/presentation/payment_confirmation_screen.dart:462` | Referral banner — "Invite friends, earn credit". |
-| `_StickyBackToHome` | `lib/payments/presentation/payment_confirmation_screen.dart:519` | Sticky "Back to Home" button at the bottom of the confirmation screen. |
+| `_HeroSection` | `lib/payments/presentation/payment_confirmation_screen.dart:97` | Animated hero section with checkmark and "Payment confirmed" text. |
+| `_RunSummaryCard` | `lib/payments/presentation/payment_confirmation_screen.dart:195` | `CatchSurface` card summarizing the booked run — club name, location, date, distance, pace, and price. |
+| `_QuickActions` | `lib/payments/presentation/payment_confirmation_screen.dart:287` | Row of quick-action tiles (add to calendar, directions, invite a friend). |
+| `_ActionTile` | `lib/payments/presentation/payment_confirmation_screen.dart:374` | Private icon-based `CatchSurface` quick-action tile. Keep private until this semantic component has a second concrete use. |
+| `_HeadsUp` | `lib/payments/presentation/payment_confirmation_screen.dart:408` | `CatchSurface` info box about cancellation policy. |
+| `_ReferralBanner` | `lib/payments/presentation/payment_confirmation_screen.dart:439` | Tappable `CatchSurface` referral banner — "Invite friends, earn credit". |
+| `_StickyBackToHome` | `lib/payments/presentation/payment_confirmation_screen.dart:494` | Sticky "Back to Home" button at the bottom of the confirmation screen. |
 
 ---
 
@@ -508,20 +702,23 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `SettingsScreen` | `lib/safety/presentation/settings_screen.dart:21` | Full settings screen. Manages notification toggle state (`showOnMap`, `newCatches`, `runReminders`, `weeklyDigest`), account deletion flow, and blocked accounts section. |
+| `SettingsScreen` | `lib/safety/presentation/settings_screen.dart:26` | Full settings screen. Manages optimistic notification toggle state, wraps settings mutations in shared snackbar error feedback, delegates writes to `SettingsController`, and composes account, discovery, notification, safety, about, and delete-account sections. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:302` | Section listing blocked accounts — fetches blocked profiles and renders `_BlockedAccountTile` rows with unblock action. |
-| `_BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:351` | Single blocked account row — avatar, name, and "Unblock" button. |
+| `_BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:345` | Section listing blocked accounts. Uses `CatchLoadingIndicator` for loading, `CatchEmptyState` for empty/error states, and renders `_BlockedAccountTile` rows for blocked users. |
+| `_BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:404` | Single blocked account row. Resolves the blocked user's public profile, renders a `PersonRow`, and routes the semantic unblock button through `SettingsController.unblockUserMutation`. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_SettingsCard` | `lib/safety/presentation/settings_screen.dart:286` | Card wrapper for settings sections. |
+| `_SettingsSection` | `lib/safety/presentation/settings_screen.dart:311` | Private section helper that pairs a `SectionHeader` with the shared settings card shell. |
+| `_SettingsCard` | `lib/safety/presentation/settings_screen.dart:329` | Private `CatchSurface` wrapper for settings row groups. |
+| `SettingsKeys` | `lib/safety/presentation/settings_keys.dart:3` | Stable semantic keys for settings switches, delete-account row, and blocked-user unblock buttons. |
+| `showConfirmDangerDialog` | `lib/core/widgets/confirm_danger_dialog.dart:4` | Shared destructive confirmation dialog helper used by safety/account actions such as block and delete-account confirmations. |
 
 ---
 
@@ -541,14 +738,17 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_WriteReviewSheet` | `lib/reviews/presentation/write_review_sheet.dart:37` | Bottom sheet for writing a review. Manages star rating, text input, and the submit review mutation. |
+| `_WriteReviewSheet` | `lib/reviews/presentation/write_review_sheet.dart:39` | Bottom sheet for writing, editing, or deleting a run review. Uses `CatchBottomSheetScaffold`, semantic star/action keys, inline mutation errors, and `WriteReviewController` submit/delete mutations. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ReviewsSection` | `lib/reviews/presentation/reviews_section.dart:17` | Section header + list of `ReviewCard` widgets for a club's reviews. |
-| `ReviewCard` | `lib/reviews/presentation/reviews_section.dart:172` | Single review card — star rating, text, author name, and relative timestamp. |
+| `ReviewsSection` | `lib/reviews/presentation/reviews_section.dart:22` | Section header, rating summary, empty state, preview list, see-all sheet, and write/edit review CTA for run-scoped reviews. |
+| `ReviewCard` | `lib/reviews/presentation/reviews_section.dart:177` | Single tokenized review surface with reviewer avatar/name, star rating, optional comment, and edit action for the current user's own review. |
+| `StarRating` | `lib/reviews/presentation/star_rating.dart:5` | Read-only token-colored 5-star display. Clamps rating values into the valid visual range. |
+| `StarRatingPicker` | `lib/reviews/presentation/star_rating.dart:31` | Semantic/tappable 5-star picker. Supports caller-provided keys for stable widget tests and exposes tooltip/semantics labels per rating. |
+| `ReviewKeys` | `lib/reviews/presentation/review_keys.dart:3` | Stable semantic keys for review write/edit/delete/submit actions, comment field, see-all button, and rating stars. |
 
 ---
 

@@ -28,7 +28,7 @@ abstract class RunClubDetailViewModel with _$RunClubDetailViewModel {
   }) = _RunClubDetailViewModel;
 }
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Watches the club, runs, reviews, user profile, and auth streams and
 /// combines them into a single [RunClubDetailViewModel]. Each input is
@@ -116,21 +116,21 @@ AsyncValue<RunClubDetailViewModel?> buildRunClubDetailViewModel({
   if (runClub == null) return const AsyncData(null);
 
   final runs = runsAsync.asData?.value ?? const [];
+  final effectiveNow = now ?? DateTime.now();
+  final upcomingRuns =
+      runs.where((run) => run.startTime.isAfter(effectiveNow)).toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
   final reviews = isAuthenticated
       ? (reviewsAsync.asData?.value ?? const [])
       : const <Review>[];
-  final userProfile =
-      isAuthenticated ? (userProfileAsync.asData?.value) : null;
-  final effectiveNow = now ?? DateTime.now();
+  final userProfile = isAuthenticated ? (userProfileAsync.asData?.value) : null;
 
   return AsyncData(
     RunClubDetailViewModel(
       runClub: runClub,
       isHost: isAuthenticated && uid == runClub.hostUserId,
       isMember: isAuthenticated && runClub.hasMember(uid),
-      upcomingRuns: runs
-          .where((run) => run.startTime.isAfter(effectiveNow))
-          .toList(),
+      upcomingRuns: upcomingRuns,
       allRuns: runs,
       reviews: reviews,
       userProfile: userProfile,

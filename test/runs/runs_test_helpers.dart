@@ -10,7 +10,7 @@ import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -201,6 +201,7 @@ class FakeRunRepository extends Fake implements RunRepository {
   String? leftWaitlistRunId;
   String? leftWaitlistUserId;
   String? markedAttendanceRunId;
+  String? markedAttendanceUserId;
   Run? fetchedRun;
   final Map<String, Run?> watchedRuns = {};
   final Map<String, List<Run>> clubRuns = {};
@@ -281,6 +282,7 @@ class FakeRunRepository extends Fake implements RunRepository {
       throw markAttendanceError!;
     }
     markedAttendanceRunId = runId;
+    markedAttendanceUserId = userId;
     return true;
   }
 }

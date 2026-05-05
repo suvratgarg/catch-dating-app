@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/duration_stepper.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/picker_tile.dart';
@@ -46,6 +47,7 @@ class WhenStep extends StatelessWidget {
           const FieldLabel('Date'),
           const SizedBox(height: 8),
           PickerTile(
+            key: CreateRunFormKeys.datePicker,
             icon: Icons.calendar_today_outlined,
             value: dateController.text.isEmpty ? null : dateController.text,
             placeholder: 'Select a date',
@@ -68,6 +70,7 @@ class WhenStep extends StatelessWidget {
           const FieldLabel('Start time'),
           const SizedBox(height: 8),
           PickerTile(
+            key: CreateRunFormKeys.timePicker,
             icon: Icons.schedule_outlined,
             value: startTimeController.text.isEmpty
                 ? null

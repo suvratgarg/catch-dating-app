@@ -2,7 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,9 +43,9 @@ void main() {
         child: MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       ),
     );
-    await tester.pumpAndSettle();
+    await _pumpRouterFrame(tester);
     await tester.tap(find.text('Open destination'));
-    await tester.pumpAndSettle();
+    await _pumpRouterFrame(tester);
   }
 
   testWidgets('calendar back button returns to dashboard', (tester) async {
@@ -56,10 +56,10 @@ void main() {
     );
 
     expect(find.text('Calendar'), findsWidgets);
-    expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsOneWidget);
+    expect(find.byTooltip('Back'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
-    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Back'));
+    await _pumpRouterFrame(tester);
 
     expect(find.text('Open destination'), findsOneWidget);
   });
@@ -72,11 +72,16 @@ void main() {
     );
 
     expect(find.text('Map view'), findsOneWidget);
-    expect(find.byIcon(Icons.arrow_back_ios_new_rounded), findsOneWidget);
+    expect(find.byTooltip('Back'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.arrow_back_ios_new_rounded));
-    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Back'));
+    await _pumpRouterFrame(tester);
 
     expect(find.text('Open destination'), findsOneWidget);
   });
+}
+
+Future<void> _pumpRouterFrame(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump();
 }

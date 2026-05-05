@@ -68,7 +68,7 @@
   "interfaceComments": {
     "PublicProfileDoc": "Written exclusively by syncPublicProfile Cloud Function.",
     "MatchDoc": "Written exclusively by onSwipeCreated Cloud Function.",
-    "ReviewDoc": "The current client uses one deterministic review document per (runClubId, reviewerUserId) pair."
+    "ReviewDoc": "The current client writes one deterministic review document per (runId, reviewerUserId) pair."
   },
 
   "fieldComments": {
@@ -98,7 +98,7 @@
       "id": "Razorpay paymentId for paid, auto-id for free"
     },
     "ReviewDoc": {
-      "runId": "optional — not all reviews are linked to a specific run"
+      "runId": "Required for new client-created reviews; nullable only for legacy review documents until migration."
     }
   }
 }

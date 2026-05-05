@@ -1,10 +1,9 @@
 import 'package:catch_dating_app/chats/data/chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'firestore_repository_test_helpers.dart';
 
 class _FakeChatRepository extends Fake implements ChatRepository {
   final messagesByMatch = <String, List<ChatMessage>>{};
@@ -13,6 +12,8 @@ class _FakeChatRepository extends Fake implements ChatRepository {
   Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
       Stream.value(messagesByMatch[matchId] ?? const []);
 }
+
+class _UnusedFirebaseStorage extends Fake implements FirebaseStorage {}
 
 ChatMessage _buildMessage({
   String id = 'message-1',
@@ -58,116 +59,79 @@ void main() {
   });
 
   group('ChatRepository', () {
-    late TestTypedCollection<ChatMessage> typedMessagesCollection;
-    late TestRawCollection<ChatMessage> rawMessagesCollection;
-    late TestRawCollection<Object?> chatsCollection;
-    late TestRawCollection<Object?> matchesCollection;
-    late TestFirebaseFirestore firestore;
+    late FakeFirebaseFirestore firestore;
     late ChatRepository repository;
 
     setUp(() {
-      typedMessagesCollection = TestTypedCollection<ChatMessage>(
-        pathPrefix: 'chats/match-1/messages',
-        autoDocId: 'generated-message-id',
-      );
-      rawMessagesCollection = TestRawCollection<ChatMessage>(
-        pathPrefix: 'chats/match-1/messages',
-        convertedCollection: typedMessagesCollection,
-        autoDocId: 'generated-message-id',
-      );
-      chatsCollection = TestRawCollection<Object?>(pathPrefix: 'chats');
-      matchesCollection = TestRawCollection<Object?>(pathPrefix: 'matches');
-      final chatDoc =
-          chatsCollection.doc('match-1') as TestRawDocumentReference;
-      chatDoc.subcollections['messages'] = rawMessagesCollection;
-      matchesCollection.doc('match-1');
-      firestore = TestFirebaseFirestore(
-        collectionsByPath: {
-          'chats': chatsCollection,
-          'matches': matchesCollection,
-        },
-      );
-      repository = ChatRepository(firestore);
+      firestore = FakeFirebaseFirestore();
+      repository = ChatRepository(firestore, storage: _UnusedFirebaseStorage());
     });
 
     test('watchMessages orders by sentAt and maps snapshot data', () async {
       final firstMessage = _buildMessage(id: 'message-1', text: 'First');
-      final secondMessage = _buildMessage(id: 'message-2', text: 'Second');
-      typedMessagesCollection.nextOrderByResult = TestTypedQuery<ChatMessage>(
-        snapshotStream: Stream.value(
-          TestTypedQuerySnapshot<ChatMessage>([
-            TestTypedQueryDocumentSnapshot<ChatMessage>(
-              referenceValue:
-                  typedMessagesCollection.doc(firstMessage.id),
-              dataValue: firstMessage,
-            ),
-            TestTypedQueryDocumentSnapshot<ChatMessage>(
-              referenceValue:
-                  typedMessagesCollection.doc(secondMessage.id),
-              dataValue: secondMessage,
-            ),
-          ]),
-        ),
+      final secondMessage = _buildMessage(
+        id: 'message-2',
+        text: 'Second',
+        sentAt: DateTime(2025, 1, 1, 8),
       );
+      await _seedMessage(firestore, 'match-1', secondMessage);
+      await _seedMessage(firestore, 'match-1', firstMessage);
 
       await expectLater(
         repository.watchMessages(matchId: 'match-1'),
         emits([firstMessage, secondMessage]),
       );
-
-      expect(typedMessagesCollection.lastOrderByField, 'sentAt');
-      expect(typedMessagesCollection.lastOrderByDescending, isFalse);
     });
 
-    test('sendMessage writes the message and updates the match preview', () async {
-      final batch = TestWriteBatch();
-      firestore.batchValue = batch;
-
+    test('sendMessage writes only the message document', () async {
       await repository.sendMessage(
         matchId: 'match-1',
         senderId: 'runner-1',
         text: '  hello there  ',
       );
 
-      expect(batch.setCalls, hasLength(1));
-      expect(batch.updateCalls, hasLength(1));
-
-      final messageWrite = batch.setCalls.single;
-      final messageRef = messageWrite.document as DocumentReference;
-      final messageData = messageWrite.data! as Map<String, dynamic>;
-      expect(messageRef.path, 'chats/match-1/messages/generated-message-id');
-      expect(messageData['senderId'], 'runner-1');
-      expect(messageData['text'], 'hello there');
-      expect(messageData['sentAt'], isA<FieldValue>());
-
-      final matchUpdate = batch.updateCalls.single;
-      final matchRef = matchUpdate.document as DocumentReference;
-      expect(matchRef.path, 'matches/match-1');
-      expect(matchUpdate.data['lastMessageSenderId'], 'runner-1');
-      expect(matchUpdate.data['lastMessagePreview'], 'hello there');
-      expect(matchUpdate.data['lastMessageAt'], isA<FieldValue>());
-      expect(batch.commitCalled, isTrue);
+      final messages = await repository.watchMessages(matchId: 'match-1').first;
+      expect(messages, hasLength(1));
+      expect(messages.single.senderId, 'runner-1');
+      expect(messages.single.text, 'hello there');
+      expect(messages.single.sentAt, isA<DateTime>());
     });
   });
 
-  test('watchChatMessagesProvider streams messages from the repository', () async {
-    final fakeRepository = _FakeChatRepository();
-    final message = _buildMessage();
-    final container = ProviderContainer(
-      overrides: [
-        chatRepositoryProvider.overrideWithValue(fakeRepository),
-      ],
-    );
-    addTearDown(container.dispose);
-    fakeRepository.messagesByMatch['match-1'] = [message];
-    final subscription = container.listen<AsyncValue<List<ChatMessage>>>(
-      watchChatMessagesProvider('match-1'),
-      (_, _) {},
-    );
-    addTearDown(subscription.close);
+  test(
+    'watchChatMessagesProvider streams messages from the repository',
+    () async {
+      final fakeRepository = _FakeChatRepository();
+      final message = _buildMessage();
+      final container = ProviderContainer(
+        overrides: [chatRepositoryProvider.overrideWithValue(fakeRepository)],
+      );
+      addTearDown(container.dispose);
+      fakeRepository.messagesByMatch['match-1'] = [message];
+      final subscription = container.listen<AsyncValue<List<ChatMessage>>>(
+        watchChatMessagesProvider('match-1'),
+        (_, _) {},
+      );
+      addTearDown(subscription.close);
 
-    final messages = await container.read(watchChatMessagesProvider('match-1').future);
+      final messages = await container.read(
+        watchChatMessagesProvider('match-1').future,
+      );
 
-    expect(messages, [message]);
-  });
+      expect(messages, [message]);
+    },
+  );
+}
+
+Future<void> _seedMessage(
+  FakeFirebaseFirestore firestore,
+  String matchId,
+  ChatMessage message,
+) {
+  return firestore
+      .collection('chats')
+      .doc(matchId)
+      .collection('messages')
+      .doc(message.id)
+      .set(message.toJson());
 }

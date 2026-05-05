@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -23,6 +23,8 @@ class DashboardFull extends ConsumerWidget {
     required this.user,
     required this.signedUpRuns,
   });
+
+  static const scrollViewKey = ValueKey('dashboard-full-scroll-view');
 
   final UserProfile user;
   final List<Run> signedUpRuns;
@@ -97,6 +99,7 @@ class DashboardFull extends ConsumerWidget {
             ),
             Expanded(
               child: ListView(
+                key: scrollViewKey,
                 padding: const EdgeInsets.fromLTRB(
                   CatchSpacing.s5,
                   Sizes.p4,
@@ -105,19 +108,17 @@ class DashboardFull extends ConsumerWidget {
                 ),
                 children: [
                   if (viewModel.nextRun != null) ...[
-                    NextRunHero(tokens: t, nextRun: viewModel.nextRun!),
+                    NextRunHero(nextRun: viewModel.nextRun!),
                     gapH18,
                   ],
                   ..._buildAttendedRunSection(
                     attendedRunsSection: viewModel.attendedRunsSection,
                     activeSwipeRun: viewModel.activeSwipeRun,
-                    tokens: t,
                   ),
                   gapH18,
-                  QuickActions(tokens: t),
+                  const QuickActions(),
                   ..._buildRecommendedRunsSection(
                     recommendationsSection: viewModel.recommendationsSection,
-                    tokens: t,
                   ),
                   gapH18,
                   ActivitySection(uid: user.uid),
@@ -133,7 +134,6 @@ class DashboardFull extends ConsumerWidget {
   List<Widget> _buildAttendedRunSection({
     required DashboardSectionModel<List<Run>> attendedRunsSection,
     required Run? activeSwipeRun,
-    required CatchTokens tokens,
   }) {
     if (attendedRunsSection.isLoading) {
       return const [
@@ -153,16 +153,15 @@ class DashboardFull extends ConsumerWidget {
     final attendedRuns = attendedRunsSection.data ?? const <Run>[];
     return [
       if (activeSwipeRun != null) ...[
-        CatchesCallout(tokens: tokens, activeRun: activeSwipeRun),
+        CatchesCallout(activeRun: activeSwipeRun),
         gapH14,
       ],
-      StrideCard(tokens: tokens, attendedRuns: attendedRuns),
+      StrideCard(attendedRuns: attendedRuns),
     ];
   }
 
   List<Widget> _buildRecommendedRunsSection({
     required DashboardSectionModel<List<Run>> recommendationsSection,
-    required CatchTokens tokens,
   }) {
     if (recommendationsSection.isLoading) {
       return const [
@@ -182,9 +181,7 @@ class DashboardFull extends ConsumerWidget {
     }
 
     final runs = recommendationsSection.data ?? const <Run>[];
-    return runs.isEmpty
-        ? const []
-        : [gapH18, Recommendations(tokens: tokens, runs: runs)];
+    return runs.isEmpty ? const [] : [gapH18, Recommendations(runs: runs)];
   }
 }
 

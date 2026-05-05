@@ -1,9 +1,8 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
@@ -11,6 +10,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_edit_sheet.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_prompt_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -22,27 +22,23 @@ class ProfileTab extends ConsumerWidget {
     this.physics,
   });
 
+  static const scrollViewKey = ValueKey('profile-tab-scroll-view');
+
   final UserProfile user;
   final PhotoUploadState uploadState;
   final ScrollPhysics? physics;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
     final basics = [
-      ProfileInfoEntry(
+      _textEntry(
+        context: context,
+        ref: ref,
         icon: Icons.person_outlined,
         label: 'Name',
         value: user.name,
-        onTap: () => showTextEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Name',
-          currentValue: user.name,
-          fieldName: 'name',
-          validator: (v) =>
-              (v ?? '').trim().isEmpty ? 'Name is required' : null,
-        ),
+        fieldName: 'name',
+        validator: (v) => (v ?? '').trim().isEmpty ? 'Name is required' : null,
       ),
       ProfileInfoEntry(
         icon: Icons.cake_outlined,
@@ -57,244 +53,183 @@ class ProfileTab extends ConsumerWidget {
           lastDate: latestAllowedDateOfBirth(),
         ),
       ),
-      ProfileInfoEntry(
+      _singleEnumEntry<Gender>(
+        context: context,
+        ref: ref,
         icon: Icons.wc_outlined,
         label: 'Gender',
-        value: user.gender.label,
-        onTap: () => showSingleEnumSheet<Gender>(
-          context: context,
-          ref: ref,
-          title: 'Gender',
-          values: Gender.values,
-          currentValue: user.gender,
-          fieldName: 'gender',
-        ),
+        values: Gender.values,
+        value: user.gender,
+        fallback: Gender.values.first,
+        fieldName: 'gender',
       ),
-      ProfileInfoEntry(
+      _textEntry(
+        context: context,
+        ref: ref,
         icon: Icons.phone_outlined,
         label: 'Phone',
         value: user.phoneNumber,
-        onTap: () => showTextEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Phone number',
-          currentValue: user.phoneNumber,
-          fieldName: 'phoneNumber',
-          validator: (v) =>
-              (v ?? '').trim().isEmpty ? 'Phone is required' : null,
-        ),
+        title: 'Phone number',
+        fieldName: 'phoneNumber',
+        validator: (v) => (v ?? '').trim().isEmpty ? 'Phone is required' : null,
       ),
-      ProfileInfoEntry(
+      _textEntry(
+        context: context,
+        ref: ref,
         icon: Icons.email_outlined,
         label: 'Email',
         value: user.email.isNotEmpty ? user.email : 'Email',
-        onTap: () => showTextEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Email',
-          currentValue: user.email,
-          fieldName: 'email',
-        ),
+        currentValue: user.email,
+        fieldName: 'email',
         isAddAffordance: user.email.isEmpty,
       ),
-      ProfileInfoEntry(
+      _intEntry(
+        context: context,
+        ref: ref,
         icon: Icons.height_outlined,
         label: 'Height',
         value: user.height != null ? '${user.height} cm' : 'Height',
-        onTap: () => showIntEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Height',
-          currentValue: user.height,
-          fieldName: 'height',
-          validator: (v) {
-            final trimmed = (v ?? '').trim();
-            if (trimmed.isEmpty) return null;
-            final n = int.tryParse(trimmed);
-            if (n == null) return 'Enter a number';
-            if (n < 50) return 'Too short';
-            if (n > 300) return 'Too tall';
-            return null;
-          },
-        ),
+        currentValue: user.height,
+        fieldName: 'height',
+        validator: (v) {
+          final trimmed = (v ?? '').trim();
+          if (trimmed.isEmpty) return null;
+          final n = int.tryParse(trimmed);
+          if (n == null) return 'Enter a number';
+          if (n < 50) return 'Too short';
+          if (n > 300) return 'Too tall';
+          return null;
+        },
         isAddAffordance: user.height == null,
       ),
     ];
     final background = [
-      ProfileInfoEntry(
+      _textEntry(
+        context: context,
+        ref: ref,
         icon: Icons.work_outline,
         label: 'Job title',
         value: user.occupation ?? 'Job title',
-        onTap: () => showTextEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Job title',
-          currentValue: user.occupation ?? '',
-          fieldName: 'occupation',
-        ),
+        currentValue: user.occupation ?? '',
+        fieldName: 'occupation',
         isAddAffordance: user.occupation == null,
       ),
-      ProfileInfoEntry(
+      _textEntry(
+        context: context,
+        ref: ref,
         icon: Icons.business_outlined,
         label: 'Company',
         value: user.company ?? 'Company',
-        onTap: () => showTextEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Company',
-          currentValue: user.company ?? '',
-          fieldName: 'company',
-        ),
+        currentValue: user.company ?? '',
+        fieldName: 'company',
         isAddAffordance: user.company == null,
       ),
-      ProfileInfoEntry(
+      _singleEnumEntry<EducationLevel>(
+        context: context,
+        ref: ref,
         icon: Icons.school_outlined,
         label: 'Education',
-        value: user.education?.label ?? 'Education',
-        onTap: () => showSingleEnumSheet<EducationLevel>(
-          context: context,
-          ref: ref,
-          title: 'Education',
-          values: EducationLevel.values,
-          currentValue: user.education ?? EducationLevel.values.first,
-          fieldName: 'education',
-        ),
-        isAddAffordance: user.education == null,
+        values: EducationLevel.values,
+        value: user.education,
+        fallback: EducationLevel.values.first,
+        fieldName: 'education',
       ),
-      ProfileInfoEntry(
+      _singleEnumEntry<Religion>(
+        context: context,
+        ref: ref,
         icon: Icons.volunteer_activism_outlined,
         label: 'Religion',
-        value: user.religion?.label ?? 'Religion',
-        onTap: () => showSingleEnumSheet<Religion>(
-          context: context,
-          ref: ref,
-          title: 'Religion',
-          values: Religion.values,
-          currentValue: user.religion ?? Religion.values.first,
-          fieldName: 'religion',
-        ),
-        isAddAffordance: user.religion == null,
+        values: Religion.values,
+        value: user.religion,
+        fallback: Religion.values.first,
+        fieldName: 'religion',
       ),
-      ProfileInfoEntry(
+      _multiEnumEntry<Language>(
+        context: context,
+        ref: ref,
         icon: Icons.language_outlined,
         label: 'Languages',
-        value: user.languages.isNotEmpty
-            ? user.languages.map((l) => l.label).join(', ')
-            : 'Languages',
-        onTap: () => showMultiEnumSheet<Language>(
-          context: context,
-          ref: ref,
-          title: 'Languages',
-          values: Language.values,
-          currentValues: user.languages,
-          fieldName: 'languages',
-        ),
-        isAddAffordance: user.languages.isEmpty,
+        values: Language.values,
+        selected: user.languages,
+        fieldName: 'languages',
+        placeholder: 'Languages',
       ),
     ];
     final intentions = [
-      ProfileInfoEntry(
+      _singleEnumEntry<RelationshipGoal>(
+        context: context,
+        ref: ref,
         icon: Icons.favorite_outline,
         label: 'Looking for',
-        value: user.relationshipGoal?.label ?? 'Looking for',
-        onTap: () => showSingleEnumSheet<RelationshipGoal>(
-          context: context,
-          ref: ref,
-          title: 'Looking for',
-          values: RelationshipGoal.values,
-          currentValue: user.relationshipGoal ?? RelationshipGoal.values.first,
-          fieldName: 'relationshipGoal',
-        ),
-        isAddAffordance: user.relationshipGoal == null,
+        values: RelationshipGoal.values,
+        value: user.relationshipGoal,
+        fallback: RelationshipGoal.values.first,
+        fieldName: 'relationshipGoal',
       ),
     ];
     final lifestyle = [
-      ProfileInfoEntry(
+      _singleEnumEntry<DrinkingHabit>(
+        context: context,
+        ref: ref,
         icon: Icons.local_bar_outlined,
         label: 'Drinking',
-        value: user.drinking?.label ?? 'Drinking',
-        onTap: () => showSingleEnumSheet<DrinkingHabit>(
-          context: context,
-          ref: ref,
-          title: 'Drinking',
-          values: DrinkingHabit.values,
-          currentValue: user.drinking ?? DrinkingHabit.values.first,
-          fieldName: 'drinking',
-        ),
-        isAddAffordance: user.drinking == null,
+        values: DrinkingHabit.values,
+        value: user.drinking,
+        fallback: DrinkingHabit.values.first,
+        fieldName: 'drinking',
       ),
-      ProfileInfoEntry(
+      _singleEnumEntry<SmokingHabit>(
+        context: context,
+        ref: ref,
         icon: Icons.smoke_free_outlined,
         label: 'Smoking',
-        value: user.smoking?.label ?? 'Smoking',
-        onTap: () => showSingleEnumSheet<SmokingHabit>(
-          context: context,
-          ref: ref,
-          title: 'Smoking',
-          values: SmokingHabit.values,
-          currentValue: user.smoking ?? SmokingHabit.values.first,
-          fieldName: 'smoking',
-        ),
-        isAddAffordance: user.smoking == null,
+        values: SmokingHabit.values,
+        value: user.smoking,
+        fallback: SmokingHabit.values.first,
+        fieldName: 'smoking',
       ),
-      ProfileInfoEntry(
+      _singleEnumEntry<WorkoutFrequency>(
+        context: context,
+        ref: ref,
         icon: Icons.fitness_center_outlined,
         label: 'Workout',
-        value: user.workout?.label ?? 'Workout',
-        onTap: () => showSingleEnumSheet<WorkoutFrequency>(
-          context: context,
-          ref: ref,
-          title: 'Workout',
-          values: WorkoutFrequency.values,
-          currentValue: user.workout ?? WorkoutFrequency.values.first,
-          fieldName: 'workout',
-        ),
-        isAddAffordance: user.workout == null,
+        values: WorkoutFrequency.values,
+        value: user.workout,
+        fallback: WorkoutFrequency.values.first,
+        fieldName: 'workout',
       ),
-      ProfileInfoEntry(
+      _singleEnumEntry<DietaryPreference>(
+        context: context,
+        ref: ref,
         icon: Icons.restaurant_outlined,
         label: 'Diet',
-        value: user.diet?.label ?? 'Diet',
-        onTap: () => showSingleEnumSheet<DietaryPreference>(
-          context: context,
-          ref: ref,
-          title: 'Diet',
-          values: DietaryPreference.values,
-          currentValue: user.diet ?? DietaryPreference.values.first,
-          fieldName: 'diet',
-        ),
-        isAddAffordance: user.diet == null,
+        values: DietaryPreference.values,
+        value: user.diet,
+        fallback: DietaryPreference.values.first,
+        fieldName: 'diet',
       ),
-      ProfileInfoEntry(
+      _singleEnumEntry<ChildrenStatus>(
+        context: context,
+        ref: ref,
         icon: Icons.child_care_outlined,
         label: 'Children',
-        value: user.children?.label ?? 'Children',
-        onTap: () => showSingleEnumSheet<ChildrenStatus>(
-          context: context,
-          ref: ref,
-          title: 'Children',
-          values: ChildrenStatus.values,
-          currentValue: user.children ?? ChildrenStatus.values.first,
-          fieldName: 'children',
-        ),
-        isAddAffordance: user.children == null,
+        values: ChildrenStatus.values,
+        value: user.children,
+        fallback: ChildrenStatus.values.first,
+        fieldName: 'children',
       ),
     ];
     final discovery = [
-      ProfileInfoEntry(
+      _multiEnumEntry<Gender>(
+        context: context,
+        ref: ref,
         icon: Icons.people_outline,
         label: 'Interested in',
-        value: user.interestedInGenders.isEmpty
-            ? 'Everyone'
-            : user.interestedInGenders.map((g) => g.label).join(', '),
-        onTap: () => showMultiEnumSheet<Gender>(
-          context: context,
-          ref: ref,
-          title: 'Interested in',
-          values: Gender.values,
-          currentValues: user.interestedInGenders,
-          fieldName: 'interestedInGenders',
-        ),
+        values: Gender.values,
+        selected: user.interestedInGenders,
+        fieldName: 'interestedInGenders',
+        placeholder: 'Everyone',
+        isAddAffordanceWhenEmpty: false,
       ),
       ProfileInfoEntry(
         icon: Icons.cake_outlined,
@@ -309,19 +244,15 @@ class ProfileTab extends ConsumerWidget {
       ),
     ];
     final location = [
-      ProfileInfoEntry(
+      _singleEnumEntry<IndianCity>(
+        context: context,
+        ref: ref,
         icon: Icons.location_on_outlined,
         label: 'City',
-        value: user.city?.label ?? 'City',
-        onTap: () => showSingleEnumSheet<IndianCity>(
-          context: context,
-          ref: ref,
-          title: 'City',
-          values: IndianCity.values,
-          currentValue: user.city ?? IndianCity.values.first,
-          fieldName: 'city',
-        ),
-        isAddAffordance: user.city == null,
+        values: IndianCity.values,
+        value: user.city,
+        fallback: IndianCity.values.first,
+        fieldName: 'city',
       ),
     ];
     final running = [
@@ -336,41 +267,30 @@ class ProfileTab extends ConsumerWidget {
           currentMax: user.paceMaxSecsPerKm,
         ),
       ),
-      ProfileInfoEntry(
+      _multiEnumEntry<PreferredDistance>(
+        context: context,
+        ref: ref,
         icon: Icons.straighten_outlined,
         label: 'Preferred distances',
-        value: user.preferredDistances.isEmpty
-            ? 'Preferred distances'
-            : user.preferredDistances.map((d) => d.label).join(', '),
-        onTap: () => showMultiEnumSheet<PreferredDistance>(
-          context: context,
-          ref: ref,
-          title: 'Preferred distances',
-          values: PreferredDistance.values,
-          currentValues: user.preferredDistances,
-          fieldName: 'preferredDistances',
-        ),
-        isAddAffordance: user.preferredDistances.isEmpty,
+        values: PreferredDistance.values,
+        selected: user.preferredDistances,
+        fieldName: 'preferredDistances',
+        placeholder: 'Preferred distances',
       ),
-      ProfileInfoEntry(
+      _multiEnumEntry<RunReason>(
+        context: context,
+        ref: ref,
         icon: Icons.directions_run_outlined,
         label: 'Why I run',
-        value: user.runningReasons.isEmpty
-            ? 'Why I run'
-            : user.runningReasons.map((r) => r.label).join(', '),
-        onTap: () => showMultiEnumSheet<RunReason>(
-          context: context,
-          ref: ref,
-          title: 'Why I run',
-          values: RunReason.values,
-          currentValues: user.runningReasons,
-          fieldName: 'runningReasons',
-        ),
-        isAddAffordance: user.runningReasons.isEmpty,
+        values: RunReason.values,
+        selected: user.runningReasons,
+        fieldName: 'runningReasons',
+        placeholder: 'Why I run',
       ),
     ];
 
     return ListView(
+      key: scrollViewKey,
       physics: physics,
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
@@ -388,22 +308,18 @@ class ProfileTab extends ConsumerWidget {
         ),
         gapH14,
         SectionHeader(title: 'Bio'),
-        CatchSurface(
-          borderColor: t.line,
-          child: _PromptCard(
-            eyebrow: 'On a perfect run',
-            text: user.bio.isNotEmpty
-                ? user.bio
-                : 'Add a bio to tell runners about yourself',
-            tokens: t,
-            isPrompt: user.bio.isEmpty,
-            onTap: () => showTextEditSheet(
-              context: context,
-              ref: ref,
-              title: 'Bio',
-              currentValue: user.bio,
-              fieldName: 'bio',
-            ),
+        ProfilePromptCard(
+          eyebrow: 'On a perfect run',
+          text: user.bio.isNotEmpty
+              ? user.bio
+              : 'Add a bio to tell runners about yourself',
+          isPrompt: user.bio.isEmpty,
+          onTap: () => showTextEditSheet(
+            context: context,
+            ref: ref,
+            title: 'Bio',
+            currentValue: user.bio,
+            fieldName: 'bio',
           ),
         ),
         gapH20,
@@ -431,51 +347,116 @@ class ProfileTab extends ConsumerWidget {
       ],
     );
   }
-}
 
-class _PromptCard extends StatelessWidget {
-  const _PromptCard({
-    required this.eyebrow,
-    required this.text,
-    required this.tokens,
-    this.isPrompt = false,
-    this.onTap,
-  });
-
-  final String eyebrow;
-  final String text;
-  final CatchTokens tokens;
-  final bool isPrompt;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final content = Padding(
-      padding: const EdgeInsets.all(Sizes.p16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(eyebrow.toUpperCase(), style: CatchTextStyles.labelM(context)),
-          gapH6,
-          Text(
-            text,
-            style: CatchTextStyles.titleL(
-              context,
-              color: isPrompt ? tokens.ink3 : null,
-            ).copyWith(height: 1.2),
-          ),
-        ],
+  ProfileInfoEntry _textEntry({
+    required BuildContext context,
+    required WidgetRef ref,
+    required IconData icon,
+    required String label,
+    required String value,
+    required String fieldName,
+    String? title,
+    String? currentValue,
+    bool isAddAffordance = false,
+    FormFieldValidator<String>? validator,
+  }) {
+    return ProfileInfoEntry(
+      icon: icon,
+      label: label,
+      value: value,
+      onTap: () => showTextEditSheet(
+        context: context,
+        ref: ref,
+        title: title ?? label,
+        currentValue: currentValue ?? value,
+        fieldName: fieldName,
+        validator: validator,
       ),
+      isAddAffordance: isAddAffordance,
     );
+  }
 
-    if (onTap != null) {
-      return InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        child: content,
-      );
-    }
+  ProfileInfoEntry _intEntry({
+    required BuildContext context,
+    required WidgetRef ref,
+    required IconData icon,
+    required String label,
+    required String value,
+    required int? currentValue,
+    required String fieldName,
+    bool isAddAffordance = false,
+    FormFieldValidator<String>? validator,
+  }) {
+    return ProfileInfoEntry(
+      icon: icon,
+      label: label,
+      value: value,
+      onTap: () => showIntEditSheet(
+        context: context,
+        ref: ref,
+        title: label,
+        currentValue: currentValue,
+        fieldName: fieldName,
+        validator: validator,
+      ),
+      isAddAffordance: isAddAffordance,
+    );
+  }
 
-    return content;
+  ProfileInfoEntry _singleEnumEntry<T extends Labelled>({
+    required BuildContext context,
+    required WidgetRef ref,
+    required IconData icon,
+    required String label,
+    required List<T> values,
+    required T? value,
+    required T fallback,
+    required String fieldName,
+    String? title,
+    String? placeholder,
+  }) {
+    return ProfileInfoEntry(
+      icon: icon,
+      label: label,
+      value: value?.label ?? placeholder ?? label,
+      onTap: () => showSingleEnumSheet<T>(
+        context: context,
+        ref: ref,
+        title: title ?? label,
+        values: values,
+        currentValue: value ?? fallback,
+        fieldName: fieldName,
+      ),
+      isAddAffordance: value == null,
+    );
+  }
+
+  ProfileInfoEntry _multiEnumEntry<T extends Labelled>({
+    required BuildContext context,
+    required WidgetRef ref,
+    required IconData icon,
+    required String label,
+    required List<T> values,
+    required List<T> selected,
+    required String fieldName,
+    required String placeholder,
+    String? title,
+    bool isAddAffordanceWhenEmpty = true,
+  }) {
+    final isEmpty = selected.isEmpty;
+    return ProfileInfoEntry(
+      icon: icon,
+      label: label,
+      value: isEmpty ? placeholder : selected.map((v) => v.label).join(', '),
+      onTap: () => showMultiEnumSheet<T>(
+        context: context,
+        ref: ref,
+        title: title ?? label,
+        values: values,
+        currentValues: selected,
+        fieldName: fieldName,
+      ),
+      isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
+    );
   }
 }

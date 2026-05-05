@@ -1,5 +1,12 @@
 # Catch Dating App — State Management Architecture Audit
 
+> Historical audit snapshot. Do not treat provider counts, issue counts, or
+> remediation status in this file as current without re-verifying the code. The
+> current docs map lives in `docs/README.md`; current controller guidance lives
+> in `docs/controller_patterns.md`; active widget cleanup lives in
+> `docs/widget_cleanup_todo.md` and `docs/widget_catalog.md`; error-handling
+> strategy lives in `docs/error-handling-audit.md`.
+
 **Date:** 2026-05-03
 **Last updated:** 2026-05-03
 **Scope:** Complete mapping of all Riverpod providers, repositories, controllers, mutations, GoRouter routing, caching behavior, Firestore read patterns, and architectural consistency evaluation.
@@ -482,85 +489,41 @@ The `withFirestoreErrorContext` utility exists and is well-designed, but it's us
 
 ## Controller & Mutation Pattern Analysis
 
-### Three Distinct Patterns
+### Consolidated Patterns
 
-The codebase uses **three different patterns** for stateful logic:
+Current source of truth: [`docs/controller_patterns.md`](controller_patterns.md).
 
-#### Pattern A: Stateful keepAlive Notifier + freezed state (1 instance)
-```
-OnboardingController
-  - @Riverpod(keepAlive: true) class
-  - State: OnboardingData (freezed)
-  - Mutations: static final (4)
-  - Methods mutate state directly via state = state.copyWith(...)
-```
+The codebase now uses four sanctioned presentation patterns:
 
-Used for: Multi-step flows where state must survive navigation.
+1. **Pattern A: Action controller** — `@riverpod` notifier with `void build()`
+   and static `Mutation`s. Use for one-shot product actions such as book,
+   cancel, join, leave, submit, delete, sign out, save settings, unblock, or
+   save/unsave a run.
+2. **Pattern B: State/flow controller** — generated notifier with immutable
+   state. Use for multi-step flows and operation state that must survive
+   rebuilds, such as auth, onboarding, photo upload state, city selection, and
+   search query state.
+3. **Pattern C: Async state controller** — `AsyncNotifier<T>` for async-loaded
+   state that is later mutated locally, such as swipe queues.
+4. **Pattern D: View-model provider** — pure generated function provider that
+   combines streams/futures into read-only view-model state.
 
-#### Pattern B: Stateless @riverpod controller + static Mutations (6 instances)
-```
-RunBookingController, CreateRunController, RunClubMembershipController,
-RunClubsListController, CreateRunClubController, WriteReviewController
-  - @riverpod class (autoDispose)
-  - State: void (build() returns nothing)
-  - Mutations: static final Mutation<T>
-  - Methods delegate to repositories, mutations track lifecycle
-```
-
-Used for: Single-shot operations (book, cancel, join, leave, submit, delete).
-
-#### Pattern C: AsyncNotifier with state (3 instances)
-```
-DeviceLocation, LocationInitializer, SwipeQueueNotifier
-  - @Riverpod(keepAlive: true) or @riverpod class
-  - State: AsyncValue<T> (managed by Riverpod's AsyncNotifier base)
-  - build() returns Future<T>
-  - Methods mutate state
-```
-
-Used for: Async initialization that runs once, or async state that needs mutation.
-
-#### Pattern D: Pure computed providers (5 instances)
-```
-runDetailViewModel, runClubDetailViewModel, runClubsListViewModel,
-filteredRunClubs, forceUpdateRequired
-  - @riverpod function (not a class)
-  - Combines multiple providers into a derived value
-  - Freezed data class for the result
-```
+The important boundary is not the exact class name; it is that screens and
+widgets should not call repositories directly for product behavior. UI may own
+Flutter mechanics, watch view-model providers, watch mutation state, and trigger
+controller methods through `Mutation.run`.
 
 ### Pattern Evaluation
 
-**Pattern B (Stateless Controllers + Mutations)** is the most common for user actions. It cleanly separates:
-- Data fetching (Layer 2-3 stream/future providers)
-- Data mutation (Layer 4 controllers)
-- UI state (screens watch both)
-
-However, there's an inconsistency: `OnboardingController` (Pattern A) uses **both** freezed state AND mutations. It mutates `OnboardingData` directly for step tracking while using mutations for OTP/profile operations. This hybrid approach is reasonable for its use case but is unique in the codebase.
-
-**Pattern C** (AsyncNotifier) is appropriate for `DeviceLocation` and `LocationInitializer` (fire-and-cache) and `SwipeQueueNotifier` (async load + sync mutations). The swipe queue's `swipe()` method removes the first profile from the list — this is a synchronous mutation of async-loaded state accessible via `AsyncData(...)`.
-
-### Pattern Decision Guide
-
-When creating new controller/view-model logic, use this decision tree:
+This consolidation keeps the existing Riverpod style while making the decision
+tree simpler:
 
 ```
-Does the state need to survive navigation between screens/pages?
-  ├─ YES → Pattern A: @Riverpod(keepAlive: true) + freezed state + Mutations
-  │         (example: OnboardingController)
-  │
-  └─ NO → Does the state need async initialization?
-            ├─ YES → Does it need mutation after load?
-            │         ├─ YES → Pattern C: AsyncNotifier
-            │         │         (example: SwipeQueueNotifier)
-            │         └─ NO  → Pattern D: @riverpod function returning AsyncValue
-            │                  (example: runDetailViewModel)
-            │
-            └─ NO → Is it a single-shot user action (book, join, submit)?
-                      ├─ YES → Pattern B: Stateless @riverpod + static Mutations
-                      │         (example: RunBookingController)
-                      └─ NO  → Simple @riverpod function or @Riverpod(keepAlive) Notifier
-                                (example: selectedRunClubCity, runClubSearchQuery)
+Is this a user-triggered write or command?
+  ├─ YES → Pattern A: Action controller + Mutation
+  └─ NO  → Does the UI need owned mutable state?
+            ├─ YES → Pattern B or C
+            └─ NO  → Pattern D view-model provider
 ```
 
 ### Mutation Count & Types

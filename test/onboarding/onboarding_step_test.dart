@@ -5,12 +5,12 @@ void main() {
   group('OnboardingStepX', () {
     test('shows progress for every step after welcome', () {
       expect(OnboardingStep.welcome.showsProgress, isFalse);
-      expect(OnboardingStep.phone.showsProgress, isTrue);
+      expect(OnboardingStep.nameDob.showsProgress, isTrue);
       expect(OnboardingStep.runningPrefs.showsProgress, isTrue);
     });
 
     test('locks back navigation to name step once profile steps begin', () {
-      expect(OnboardingStep.phone.minimumBackStep, OnboardingStep.welcome);
+      expect(OnboardingStep.welcome.minimumBackStep, OnboardingStep.welcome);
       expect(OnboardingStep.nameDob.minimumBackStep, OnboardingStep.nameDob);
       expect(
         OnboardingStep.runningPrefs.minimumBackStep,
@@ -20,8 +20,8 @@ void main() {
 
     test('returns the previous step only when still above the minimum', () {
       expect(
-        OnboardingStep.phone.previousWithin(OnboardingStep.welcome),
-        OnboardingStep.welcome,
+        OnboardingStep.genderInterest.previousWithin(OnboardingStep.welcome),
+        OnboardingStep.nameDob,
       );
       expect(
         OnboardingStep.nameDob.previousWithin(OnboardingStep.nameDob),

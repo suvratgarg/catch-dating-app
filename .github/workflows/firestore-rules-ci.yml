@@ -5,22 +5,35 @@ on:
     paths:
       - 'firestore.rules'
       - 'functions/test/firestore.rules.test.cjs'
+      - 'functions/src/shared/firestore.ts'
+      - 'functions/src/runClubs/**'
       - 'functions/package.json'
       - 'functions/package-lock.json'
+      - 'lib/**/domain/**/*.dart'
+      - 'lib/core/indian_city.dart'
+      - 'tool/generate_firestore_types.dart'
+      - 'tool/check_firestore_contract.mjs'
+      - 'tool/firestore_contract.json'
+      - 'tool/firestore_ts_overlay.json'
   push:
     branches: [main]
     paths:
       - 'firestore.rules'
       - 'functions/test/firestore.rules.test.cjs'
+      - 'functions/src/shared/firestore.ts'
+      - 'functions/src/runClubs/**'
       - 'functions/package.json'
       - 'functions/package-lock.json'
+      - 'lib/**/domain/**/*.dart'
+      - 'lib/core/indian_city.dart'
+      - 'tool/generate_firestore_types.dart'
+      - 'tool/check_firestore_contract.mjs'
+      - 'tool/firestore_contract.json'
+      - 'tool/firestore_ts_overlay.json'
 
 jobs:
   test:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: functions
 
     steps:
       - uses: actions/checkout@v4
@@ -29,6 +42,15 @@ jobs:
         with:
           node-version: 20
 
-      - run: npm ci
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
 
-      - run: npm test
+      - run: npm --prefix functions ci
+
+      - run: npm install -g firebase-tools
+
+      - run: node tool/check_firestore_contract.mjs
+
+      - run: firebase emulators:exec --only firestore "npm --prefix functions run test:rules"

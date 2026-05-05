@@ -7,11 +7,67 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function hasField(data, field) {
+      return data.keys().hasAny([field]);
+    }
+
+    function optionalString(data, field) {
+      return !hasField(data, field)
+        || data[field] == null
+        || data[field] is string;
+    }
+
+    function optionalNumber(data, field) {
+      return !hasField(data, field)
+        || data[field] == null
+        || data[field] is number;
+    }
+
+    function optionalBool(data, field) {
+      return !hasField(data, field)
+        || data[field] == null
+        || data[field] is bool;
+    }
+
+    function optionalTimestamp(data, field) {
+      return !hasField(data, field)
+        || data[field] == null
+        || data[field] is timestamp;
+    }
+
+    function optionalIn(data, field, values) {
+      return !hasField(data, field)
+        || data[field] == null
+        || data[field] in values;
+    }
+
+    function isDefaultCity(city) {
+      return city in [
+        'mumbai',
+        'delhi',
+        'bangalore',
+        'hyderabad',
+        'chennai',
+        'kolkata',
+        'pune',
+        'ahmedabad',
+        'indore'
+      ];
+    }
+
+    function isConfiguredCity(city) {
+      return exists(/databases/$(database)/documents/config/cities)
+        && get(/databases/$(database)/documents/config/cities)
+            .data.keys().hasAny(['cityNames'])
+        && get(/databases/$(database)/documents/config/cities)
+            .data.cityNames is list
+        && city in get(/databases/$(database)/documents/config/cities)
+            .data.cityNames;
+    }
+
     function isValidCity(city) {
       return city is string
-        && city in firestore.get(
-          /databases/(default)/documents/config/cities
-        ).data.cityNames;
+        && (isDefaultCity(city) || isConfiguredCity(city));
     }
 
     function blockDocId(blockerUid, blockedUid) {
@@ -80,9 +136,9 @@ service cloud.firestore {
         && data.area is string
         && data.hostUserId is string
         && data.hostName is string
-        && (data.hostAvatarUrl == null || data.hostAvatarUrl is string)
+        && optionalString(data, 'hostAvatarUrl')
         && data.createdAt is timestamp
-        && (data.imageUrl == null || data.imageUrl is string)
+        && optionalString(data, 'imageUrl')
         && data.tags is list
         && data.memberUserIds is list
         && data.memberCount is int
@@ -92,36 +148,51 @@ service cloud.firestore {
         && data.rating <= 5
         && data.reviewCount is int
         && data.reviewCount >= 0
-        && (data.nextRunAt == null || data.nextRunAt is timestamp)
-        && (data.nextRunLabel == null || data.nextRunLabel is string)
-        && (data.instagramHandle == null || data.instagramHandle is string)
-        && (data.phoneNumber == null || data.phoneNumber is string)
-        && (data.email == null || data.email is string);
+        && optionalTimestamp(data, 'nextRunAt')
+        && optionalString(data, 'nextRunLabel')
+        && optionalString(data, 'instagramHandle')
+        && optionalString(data, 'phoneNumber')
+        && optionalString(data, 'email');
     }
 
-    function isValidRunClubCreate() {
-      return hasValidRunClubShape(request.resource.data)
-        && request.resource.data.hostUserId == request.auth.uid
-        && request.resource.data.memberUserIds.size() == 1
-        && request.resource.data.memberUserIds.hasAll([request.auth.uid])
-        && request.resource.data.memberCount == 1
-        && request.resource.data.rating == 0
-        && request.resource.data.reviewCount == 0
-        && request.resource.data.nextRunAt == null
-        && request.resource.data.nextRunLabel == null;
+    function hasValidRunClubHostFieldChanges() {
+      return (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['name'])
+          || request.resource.data.name is string)
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['description'])
+          || request.resource.data.description is string)
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['location'])
+          || isValidCity(request.resource.data.location))
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['area'])
+          || request.resource.data.area is string)
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['hostName'])
+          || request.resource.data.hostName is string)
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['hostAvatarUrl'])
+          || optionalString(request.resource.data, 'hostAvatarUrl'))
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['imageUrl'])
+          || optionalString(request.resource.data, 'imageUrl'))
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['tags'])
+          || request.resource.data.tags is list)
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['instagramHandle'])
+          || optionalString(request.resource.data, 'instagramHandle'))
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['phoneNumber'])
+          || optionalString(request.resource.data, 'phoneNumber'))
+        && (!request.resource.data.diff(resource.data).affectedKeys()
+            .hasAny(['email'])
+          || optionalString(request.resource.data, 'email'));
     }
 
     function isValidRunClubHostUpdate() {
       return resource.data.hostUserId == request.auth.uid
-        && hasValidRunClubShape(request.resource.data)
-        && request.resource.data.hostUserId == resource.data.hostUserId
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.memberUserIds == resource.data.memberUserIds
-        && request.resource.data.memberCount == resource.data.memberCount
-        && request.resource.data.rating == resource.data.rating
-        && request.resource.data.reviewCount == resource.data.reviewCount
-        && request.resource.data.nextRunAt == resource.data.nextRunAt
-        && request.resource.data.nextRunLabel == resource.data.nextRunLabel
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
           'name',
           'description',
@@ -134,55 +205,29 @@ service cloud.firestore {
           'instagramHandle',
           'phoneNumber',
           'email'
-        ]);
+        ])
+        && hasValidRunClubHostFieldChanges();
     }
 
-    function isValidRunClubMembershipUpdate() {
-      return hasValidRunClubShape(request.resource.data)
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(['memberUserIds', 'memberCount'])
-        && request.resource.data.hostUserId == resource.data.hostUserId
-        && request.resource.data.createdAt == resource.data.createdAt
-        && request.resource.data.memberCount
-          == request.resource.data.memberUserIds.size()
-        && (
-          // Adding only self.
-          (
-            request.resource.data.memberUserIds.size()
-              == resource.data.memberUserIds.size() + 1
-            && request.resource.data.memberUserIds
-                .hasAll(resource.data.memberUserIds)
-            && request.resource.data.memberUserIds
-                .hasAll([request.auth.uid])
-          )
-          ||
-          // Removing only self.
-          (
-            request.resource.data.memberUserIds.size()
-              == resource.data.memberUserIds.size() - 1
-            && resource.data.memberUserIds
-                .hasAll(request.resource.data.memberUserIds)
-            && resource.data.memberUserIds.hasAll([request.auth.uid])
-            && !request.resource.data.memberUserIds.hasAll([request.auth.uid])
-          )
-        );
+    function runReviewDocId(runId, reviewerUserId) {
+      return runId + '~' + reviewerUserId;
     }
 
     function hasValidReviewReference(data) {
       return exists(/databases/$(database)/documents/runClubs/$(data.runClubId))
-        && (
-          data.runId == null
-          || (
-            exists(/databases/$(database)/documents/runs/$(data.runId))
-            && get(/databases/$(database)/documents/runs/$(data.runId))
-                .data.runClubId == data.runClubId
-          )
-        );
+        && exists(/databases/$(database)/documents/runs/$(data.runId))
+        && get(/databases/$(database)/documents/runs/$(data.runId))
+            .data.runClubId == data.runClubId
+        && get(/databases/$(database)/documents/runs/$(data.runId))
+            .data.attendedUserIds is list
+        && request.auth.uid in get(/databases/$(database)/documents/runs/$(data.runId))
+            .data.attendedUserIds;
     }
 
-    function isValidReviewPayload(data) {
+    function isValidReviewPayload(reviewId, data) {
       return data.keys().hasAll([
           'runClubId',
+          'runId',
           'reviewerUserId',
           'reviewerName',
           'rating',
@@ -200,8 +245,10 @@ service cloud.firestore {
           'updatedAt'
         ])
         && data.runClubId is string
-        && (data.runId == null || data.runId is string)
+        && data.runId is string
         && data.reviewerUserId == request.auth.uid
+        && reviewId == runReviewDocId(data.runId, data.reviewerUserId)
+        && !isDeletedUser(request.auth.uid)
         && exists(/databases/$(database)/documents/users/$(request.auth.uid))
         && data.reviewerName is string
         && data.reviewerName == get(/databases/$(database)/documents/users/$(request.auth.uid))
@@ -211,7 +258,7 @@ service cloud.firestore {
         && data.rating <= 5
         && data.comment is string
         && data.createdAt is timestamp
-        && (data.updatedAt == null || data.updatedAt is timestamp)
+        && optionalTimestamp(data, 'updatedAt')
         && hasValidReviewReference(data);
     }
 
@@ -219,7 +266,7 @@ service cloud.firestore {
     function hasValidUserShape(data) {
       return data.keys().hasOnly([
           // Core
-          'name', 'email', 'bio', 'phoneNumber', 'dateOfBirth',
+          'name', 'email', 'bio', 'instagramHandle', 'phoneNumber', 'dateOfBirth',
           'gender', 'sexualOrientation', 'profileComplete',
           // Photos
           'photoUrls',
@@ -244,11 +291,15 @@ service cloud.firestore {
           'prefsNewCatches', 'prefsRunReminders',
           'prefsWeeklyDigest', 'prefsShowOnMap',
           // Runtime fields
-          'fcmToken', 'deleted', 'deletedAt'
+          'fcmToken',
+          // Server-owned lifecycle fields. These must be tolerated on existing
+          // retained docs, but clients cannot create or change them.
+          'deleted',
+          'deletedAt'
         ])
         && data.keys().hasAll([
           'name', 'email', 'bio', 'phoneNumber', 'dateOfBirth',
-          'gender', 'sexualOrientation', 'profileComplete',
+          'gender', 'profileComplete',
           'photoUrls', 'joinedRunClubIds', 'savedRunIds',
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
           'languages', 'paceMinSecsPerKm', 'paceMaxSecsPerKm',
@@ -260,19 +311,22 @@ service cloud.firestore {
         && data.name is string
         && data.email is string
         && data.bio is string
+        && optionalString(data, 'instagramHandle')
         && data.phoneNumber is string
         && data.dateOfBirth is timestamp
         && data.gender in ['man', 'woman', 'nonBinary', 'other']
-        && data.sexualOrientation in [
+        // Legacy tolerance: older clients may still have written this field.
+        // New Dart/TypeScript contracts do not include it.
+        && optionalIn(data, 'sexualOrientation', [
           'straight', 'gay', 'bisexual', 'pansexual', 'asexual', 'other'
-        ]
+        ])
         && data.profileComplete is bool
         // Photos
         && data.photoUrls is list
         // Location
-        && (data.city == null || isValidCity(data.city))
-        && (data.latitude == null || data.latitude is number)
-        && (data.longitude == null || data.longitude is number)
+        && (!hasField(data, 'city') || data.city == null || isValidCity(data.city))
+        && optionalNumber(data, 'latitude')
+        && optionalNumber(data, 'longitude')
         // Matching
         && data.joinedRunClubIds is list
         && data.savedRunIds is list
@@ -280,36 +334,36 @@ service cloud.firestore {
         && data.minAgePreference is number
         && data.maxAgePreference is number
         // Background
-        && (data.height == null || data.height is number)
-        && (data.occupation == null || data.occupation is string)
-        && (data.company == null || data.company is string)
-        && (data.education == null || data.education in [
+        && optionalNumber(data, 'height')
+        && optionalString(data, 'occupation')
+        && optionalString(data, 'company')
+        && optionalIn(data, 'education', [
           'highSchool', 'someCollege', 'bachelors', 'masters', 'phd',
           'tradeSchool', 'other'
         ])
-        && (data.religion == null || data.religion in [
+        && optionalIn(data, 'religion', [
           'hindu', 'muslim', 'christian', 'sikh', 'jain', 'buddhist',
           'other', 'nonReligious'
         ])
         && data.languages is list
         // Intentions
-        && (data.relationshipGoal == null || data.relationshipGoal in [
+        && optionalIn(data, 'relationshipGoal', [
           'relationship', 'casual', 'marriage', 'friendship', 'unsure'
         ])
         // Lifestyle
-        && (data.drinking == null || data.drinking in [
+        && optionalIn(data, 'drinking', [
           'never', 'socially', 'often'
         ])
-        && (data.smoking == null || data.smoking in [
+        && optionalIn(data, 'smoking', [
           'never', 'occasionally', 'often'
         ])
-        && (data.workout == null || data.workout in [
+        && optionalIn(data, 'workout', [
           'never', 'sometimes', 'often', 'everyday'
         ])
-        && (data.diet == null || data.diet in [
+        && optionalIn(data, 'diet', [
           'omnivore', 'vegetarian', 'vegan', 'jain', 'other'
         ])
-        && (data.children == null || data.children in [
+        && optionalIn(data, 'children', [
           'dontHave', 'haveWantMore', 'haveNoMore', 'wantSomeday', 'dontWant'
         ])
         // Running
@@ -325,9 +379,63 @@ service cloud.firestore {
         && data.prefsWeeklyDigest is bool
         && data.prefsShowOnMap is bool
         // Runtime fields (optional)
-        && (data.fcmToken == null || data.fcmToken is string)
-        && (data.deleted == null || data.deleted is bool)
-        && (data.deletedAt == null || data.deletedAt is timestamp);
+        && optionalString(data, 'fcmToken')
+        && optionalBool(data, 'deleted')
+        && optionalTimestamp(data, 'deletedAt');
+    }
+
+    function isValidUserCreate(uid) {
+      return isAuthed()
+        && request.auth.uid == uid
+        && !isDeletedUser(uid)
+        && hasValidUserShape(request.resource.data)
+        && request.resource.data.joinedRunClubIds == []
+        && request.resource.data.savedRunIds == []
+        && !hasField(request.resource.data, 'deleted')
+        && !hasField(request.resource.data, 'deletedAt');
+    }
+
+    function userChangedKeys() {
+      return request.resource.data.diff(resource.data).affectedKeys();
+    }
+
+    function isValidSavedRunIdsUpdate() {
+      return userChangedKeys().hasOnly(['savedRunIds'])
+        && request.resource.data.savedRunIds is list;
+    }
+
+    function isValidFcmTokenUpdate() {
+      return userChangedKeys().hasOnly(['fcmToken'])
+        && optionalString(request.resource.data, 'fcmToken');
+    }
+
+    function isValidUserUpdate(uid) {
+      return isAuthed()
+        && request.auth.uid == uid
+        && !isDeletedUser(uid)
+        && (
+          isValidSavedRunIdsUpdate()
+          || isValidFcmTokenUpdate()
+        );
+    }
+
+    function hasValidOnboardingDraftShape(data) {
+      // Private owner-only draft state changes faster than shared production
+      // documents. Keep this intentionally forward-compatible and validate
+      // only the routing-critical invariant.
+      return data.keys().hasAll(['step'])
+        && data.step is int
+        && data.step >= 0;
+    }
+
+    // ── Public config ──────────────────────────────────────────────────────────
+    match /config/cities {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    match /config/{docId} {
+      allow read, write: if false;
     }
 
     // Any authenticated user can read profiles (needed for chat, matches).
@@ -337,15 +445,28 @@ service cloud.firestore {
         && !isDeletedUser(uid)
         && !hasBlockBetween(request.auth.uid, uid);
 
-      // Only the owner can create or update their own document, and the
-      // payload must pass full shape validation.
-      allow create, update: if request.auth.uid == uid
-        && hasValidUserShape(request.resource.data);
+      // Owners create their initial profile directly with full shape validation.
+      // Profile edits go through updateUserProfile so complex field validation
+      // stays in Zod instead of Firestore rules. Direct updates here are limited
+      // to narrow runtime fields that rules can validate cheaply.
+      allow create: if isValidUserCreate(uid);
+      allow update: if isValidUserUpdate(uid);
 
       // Client-side deletes are blocked — account deletion is handled
       // exclusively by the requestAccountDeletion Cloud Function, which
       // uses the admin SDK to anonymize the document in place.
       allow delete: if false;
+    }
+
+    // ── Onboarding drafts ─────────────────────────────────────────────────────
+    // Drafts contain pre-profile onboarding state. Only the signed-in owner can
+    // read/write/delete their draft.
+    match /onboarding_drafts/{uid} {
+      allow read: if isAuthed() && request.auth.uid == uid;
+      allow create, update: if isAuthed()
+        && request.auth.uid == uid
+        && hasValidOnboardingDraftShape(request.resource.data);
+      allow delete: if isAuthed() && request.auth.uid == uid;
     }
 
     // ── Blocks ───────────────────────────────────────────────────────────────
@@ -366,6 +487,11 @@ service cloud.firestore {
 
     // Written exclusively by the rate-limit middleware in Cloud Functions.
     match /rateLimits/{docId} {
+      allow read, write: if false;
+    }
+
+    // Written exclusively by idempotent Cloud Function trigger handlers.
+    match /functionEventReceipts/{receiptId} {
       allow read, write: if false;
     }
 
@@ -392,99 +518,67 @@ service cloud.firestore {
     match /runClubs/{clubId} {
       allow read: if true;
 
-      // Any authenticated user can create a club; they must be its host.
-      allow create: if isAuthed()
-        && isValidRunClubCreate();
+      // Club creation is handled by the createRunClub Cloud Function so the
+      // initial club doc and user membership projection stay atomic.
+      allow create: if false;
 
-      allow update: if isAuthed() && (
-        // Host can edit club profile fields only.
-        isValidRunClubHostUpdate()
+      allow update: if isAuthed()
+        && isValidRunClubHostUpdate();
 
-        // Members can only join/leave themselves and keep memberCount aligned.
-        || isValidRunClubMembershipUpdate()
-      );
+      // Club deletion needs backend cleanup of runs, memberships, reviews, and
+      // images before it can be safely exposed.
+      allow delete: if false;
+    }
 
-      allow delete: if isAuthed()
-        && resource.data.hostUserId == request.auth.uid;
+    // ── Swipes helper ─────────────────────────────────────────────────────────
+    function hasValidSwipeCreate(userId, targetId) {
+      return isAuthed()
+        && request.auth.uid == userId
+        && userId != targetId
+        && request.resource.data.keys().hasOnly([
+          'swiperId',
+          'targetId',
+          'runId',
+          'direction',
+          'createdAt'
+        ])
+        && request.resource.data.keys().hasAll([
+          'swiperId',
+          'targetId',
+          'runId',
+          'direction',
+          'createdAt'
+        ])
+        && request.resource.data.swiperId == userId
+        && request.resource.data.targetId == targetId
+        && request.resource.data.runId is string
+        && request.resource.data.direction in ['like', 'pass']
+        && request.resource.data.createdAt is timestamp
+        && !isDeletedUser(userId)
+        && !isDeletedUser(targetId)
+        && exists(/databases/$(database)/documents/publicProfiles/$(targetId))
+        && exists(/databases/$(database)/documents/runs/$(request.resource.data.runId))
+        && get(/databases/$(database)/documents/runs/$(request.resource.data.runId))
+            .data.attendedUserIds is list
+        && userId in get(/databases/$(database)/documents/runs/$(request.resource.data.runId))
+            .data.attendedUserIds
+        && targetId in get(/databases/$(database)/documents/runs/$(request.resource.data.runId))
+            .data.attendedUserIds
+        && !hasBlockBetween(userId, targetId);
     }
 
     // ── Runs ──────────────────────────────────────────────────────────────────
-    function hasValidRunShape(data) {
-      return data.keys().hasOnly([
-          'runClubId',
-          'startTime',
-          'endTime',
-          'meetingPoint',
-          'startingPointLat',
-          'startingPointLng',
-          'locationDetails',
-          'distanceKm',
-          'pace',
-          'capacityLimit',
-          'description',
-          'priceInPaise',
-          'signedUpUserIds',
-          'attendedUserIds',
-          'waitlistUserIds',
-          'constraints',
-          'genderCounts'
-        ])
-        && data.keys().hasAll([
-          'runClubId',
-          'startTime',
-          'endTime',
-          'meetingPoint',
-          'distanceKm',
-          'pace',
-          'capacityLimit',
-          'description',
-          'priceInPaise'
-        ])
-        && data.runClubId is string
-        && data.startTime is timestamp
-        && data.endTime is timestamp
-        && data.startTime < data.endTime
-        && data.meetingPoint is string
-        && (data.startingPointLat == null || data.startingPointLat is number)
-        && (data.startingPointLng == null || data.startingPointLng is number)
-        && (data.locationDetails == null || data.locationDetails is string)
-        && data.distanceKm is number
-        && data.distanceKm > 0
-        && data.pace in ['easy', 'moderate', 'fast', 'competitive']
-        && data.capacityLimit is int
-        && data.capacityLimit > 0
-        && data.description is string
-        && data.priceInPaise is int
-        && data.priceInPaise >= 0
-        && data.signedUpUserIds == []
-        && data.attendedUserIds == []
-        && data.waitlistUserIds == []
-        && data.constraints is map
-        && data.genderCounts == {};
-    }
-
     match /runs/{runId} {
       allow read: if true;
 
-      // Only the club host can create a run for their club.
-      allow create: if isAuthed()
-        && hasValidRunShape(request.resource.data)
-        && get(/databases/$(database)/documents/runClubs/$(request.resource.data.runClubId))
-            .data.hostUserId == request.auth.uid;
+      // Run creation is callable-owned so host authority and server-owned
+      // booking fields stay in one backend contract.
+      allow create: if false;
 
       allow update: if isAuthed() && (
-        // Host can edit run details but NOT the booking lists or gender counts
-        // — those are managed exclusively by Cloud Functions.
-        (
-          get(/databases/$(database)/documents/runClubs/$(resource.data.runClubId))
-              .data.hostUserId == request.auth.uid
-          && !request.resource.data.diff(resource.data).affectedKeys()
-              .hasAny(['signedUpUserIds', 'attendedUserIds', 'genderCounts'])
-        )
-
         // Users can leave the waitlist directly. Joining goes through the
         // joinRunWaitlist Cloud Function so block checks stay server-side.
-        || (
+        (
           request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['waitlistUserIds'])
           && (
@@ -498,9 +592,9 @@ service cloud.firestore {
         )
       );
 
-      allow delete: if isAuthed()
-        && get(/databases/$(database)/documents/runClubs/$(resource.data.runClubId))
-            .data.hostUserId == request.auth.uid;
+      // Run deletion needs backend cleanup/refunds before it can be safely
+      // exposed.
+      allow delete: if false;
     }
 
     // ── Payments ──────────────────────────────────────────────────────────────
@@ -515,7 +609,7 @@ service cloud.firestore {
     match /reviews/{reviewId} {
       allow read: if isAuthed();
       allow create: if isAuthed()
-        && isValidReviewPayload(request.resource.data);
+        && isValidReviewPayload(reviewId, request.resource.data);
       allow update: if isAuthed()
         && resource.data.reviewerUserId == request.auth.uid
         && request.resource.data.diff(resource.data).affectedKeys()
@@ -533,13 +627,24 @@ service cloud.firestore {
     // Each user owns their outgoing swipes subcollection.
     match /swipes/{userId}/outgoing/{targetId} {
       allow read: if request.auth.uid == userId;
-      allow create: if request.auth.uid == userId
-        && !isDeletedUser(targetId)
-        && !hasBlockBetween(userId, targetId);
+      allow create: if hasValidSwipeCreate(userId, targetId);
     }
 
     // ── Matches ───────────────────────────────────────────────────────────────
     // Created by the onSwipeCreated Cloud Function. Participants can read.
+    function isValidMatchUnreadReset() {
+      return isAuthed()
+        && isMatchParticipant(resource.data, request.auth.uid)
+        && resource.data.status == 'active'
+        && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['unreadCounts'])
+        && resource.data.unreadCounts is map
+        && request.resource.data.unreadCounts is map
+        && request.resource.data.unreadCounts.diff(resource.data.unreadCounts)
+            .affectedKeys().hasOnly([request.auth.uid])
+        && request.resource.data.unreadCounts[request.auth.uid] == 0;
+    }
+
     match /matches/{matchId} {
       allow get: if isAuthed()
         && isMatchParticipant(resource.data, request.auth.uid)
@@ -551,10 +656,31 @@ service cloud.firestore {
       allow list: if isAuthed()
         && resource.data.user2Id == request.auth.uid
         && resource.data.status == 'active';
-      allow write: if false;
+      allow update: if isValidMatchUnreadReset();
+      allow create, delete: if false;
     }
 
     // ── Chat messages ─────────────────────────────────────────────────────────
+    function hasValidChatMessageCreate(matchId) {
+      return request.resource.data.keys().hasOnly([
+          'senderId',
+          'text',
+          'imageUrl',
+          'sentAt'
+        ])
+        && request.resource.data.keys().hasAll(['senderId', 'text', 'sentAt'])
+        && request.resource.data.senderId == request.auth.uid
+        && request.resource.data.text is string
+        && optionalString(request.resource.data, 'imageUrl')
+        && request.resource.data.sentAt is timestamp
+        && isMatchParticipant(
+          get(/databases/$(database)/documents/matches/$(matchId)).data,
+          request.auth.uid
+        )
+        && get(/databases/$(database)/documents/matches/$(matchId))
+            .data.status == 'active';
+    }
+
     match /chats/{matchId}/messages/{messageId} {
       allow read: if isAuthed()
         && isMatchParticipant(
@@ -564,13 +690,8 @@ service cloud.firestore {
         && get(/databases/$(database)/documents/matches/$(matchId))
             .data.status != 'blocked';
       allow create: if isAuthed()
-        && request.resource.data.senderId == request.auth.uid
-        && isMatchParticipant(
-          get(/databases/$(database)/documents/matches/$(matchId)).data,
-          request.auth.uid
-        )
-        && get(/databases/$(database)/documents/matches/$(matchId))
-            .data.status != 'blocked';
+        && hasValidChatMessageCreate(matchId);
+      allow update, delete: if false;
     }
 
   }

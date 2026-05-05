@@ -1,9 +1,14 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
 import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -11,9 +16,9 @@ import 'package:flutter/material.dart';
 
 /// Renders a reviews list with a header summary and a write/edit button.
 ///
-/// Works for both club and run contexts:
-/// - Club: pass [runClubId] only; set [isMember] and [isHost] appropriately.
-/// - Run: pass both [runClubId] and [runId]; set [hasAttended] appropriately.
+/// Club pages use this as a read-only aggregate. Run pages pass both
+/// [runClubId] and [runId], and attended users can write or edit their
+/// run-scoped review.
 class ReviewsSection extends StatelessWidget {
   const ReviewsSection({
     super.key,
@@ -36,7 +41,8 @@ class ReviewsSection extends StatelessWidget {
   /// True when the current user is the host — hides the write-review CTA.
   final bool isHost;
 
-  /// True when the current user is a club member — gates club-level reviews.
+  /// True when the current user is a club member. Club pages currently show
+  /// review aggregates only; writes remain run-scoped.
   final bool isMember;
 
   /// True when the current user attended the run — gates run-level reviews.
@@ -48,25 +54,19 @@ class ReviewsSection extends StatelessWidget {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
-      builder: (_) => DraggableScrollableSheet(
-        expand: false,
-        initialChildSize: 0.75,
-        minChildSize: 0.4,
-        maxChildSize: 0.95,
-        builder: (_, controller) => ListView(
-          controller: controller,
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 40),
-          children: [
-            Text(
-              'All reviews (${reviews.length})',
-              style: CatchTextStyles.titleL(context),
+      useSafeArea: true,
+      builder: (sheetContext) => CatchBottomSheetScaffold(
+        title: 'All reviews (${reviews.length})',
+        child: SizedBox(
+          height: MediaQuery.sizeOf(sheetContext).height * 0.68,
+          child: ListView.separated(
+            itemCount: reviews.length,
+            separatorBuilder: (_, _) => gapH12,
+            itemBuilder: (_, index) => ReviewCard(
+              review: reviews[index],
+              isOwn: reviews[index].reviewerUserId == currentUid,
             ),
-            const SizedBox(height: 16),
-            ...reviews.map(
-              (r) =>
-                  ReviewCard(review: r, isOwn: r.reviewerUserId == currentUid),
-            ),
-          ],
+          ),
         ),
       ),
     );
@@ -76,13 +76,16 @@ class ReviewsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    final existingReview = currentUid != null
+    final canWriteRunReview =
+        userProfile != null && !isHost && runId != null && hasAttended;
+    final existingReview = canWriteRunReview && currentUid != null
         ? reviews.where((r) => r.reviewerUserId == currentUid).firstOrNull
         : null;
 
     final avgRating = reviews.isEmpty
         ? null
         : reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
+    final previewReviews = reviews.take(_previewCount).toList(growable: false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,49 +110,51 @@ class ReviewsSection extends StatelessWidget {
 
         // ── Review list ──────────────────────────────────────────────────────
         if (reviews.isEmpty)
-          Text(
-            'No reviews yet — be the first!',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          CatchEmptyState(
+            icon: Icons.rate_review_outlined,
+            title: 'No reviews yet',
+            message: 'Reviews from runners will appear here after a run.',
+            surface: false,
+            iconSize: 28,
+            padding: const EdgeInsets.symmetric(vertical: Sizes.p12),
+            titleStyle: CatchTextStyles.titleM(context),
+            messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
           )
         else ...[
-          ...reviews
-              .take(_previewCount)
-              .map(
-                (r) => ReviewCard(
-                  review: r,
-                  isOwn: r.reviewerUserId == currentUid,
-                  onEdit: userProfile != null
-                      ? () => showWriteReviewSheet(
-                          context: context,
-                          runClubId: runClubId,
-                          runId: runId,
-                          reviewer: userProfile!,
-                          existingReview: r,
-                        )
-                      : null,
-                ),
-              ),
+          for (var i = 0; i < previewReviews.length; i++) ...[
+            ReviewCard(
+              review: previewReviews[i],
+              isOwn: previewReviews[i].reviewerUserId == currentUid,
+              onEdit:
+                  canWriteRunReview &&
+                      previewReviews[i].reviewerUserId == currentUid
+                  ? () => showWriteReviewSheet(
+                      context: context,
+                      runClubId: runClubId,
+                      runId: runId,
+                      reviewer: userProfile!,
+                      existingReview: previewReviews[i],
+                    )
+                  : null,
+            ),
+            if (i < previewReviews.length - 1) gapH12,
+          ],
           if (reviews.length > _previewCount) ...[
-            const SizedBox(height: 4),
-            GestureDetector(
-              onTap: () => _showAllReviews(context),
-              child: Text(
-                'See all ${reviews.length} reviews',
-                style: CatchTextStyles.labelL(context, color: t.primary),
-              ),
+            gapH4,
+            TextButton(
+              key: ReviewKeys.seeAllReviewsButton,
+              onPressed: () => _showAllReviews(context),
+              child: Text('See all ${reviews.length} reviews'),
             ),
           ],
         ],
 
         // ── CTA ─────────────────────────────────────────────────────────────
-        // Show the write-review button only when the user is allowed to review:
-        // - For run reviews: the user must have attended the run.
-        // - For club reviews: the user must be a member (not the host).
-        if (userProfile != null &&
-            !isHost &&
-            (runId != null ? hasAttended : isMember)) ...[
+        // Review writes are run-scoped so one user can review each run once.
+        if (canWriteRunReview) ...[
           const SizedBox(height: 12),
           CatchButton(
+            key: ReviewKeys.writeReviewButton,
             label: existingReview != null
                 ? 'Edit your review'
                 : 'Write a review',
@@ -185,8 +190,9 @@ class ReviewCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(Sizes.p14),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -207,9 +213,17 @@ class ReviewCard extends StatelessWidget {
                 ),
               ),
               if (isOwn && onEdit != null)
-                IconBtn(
-                  onTap: onEdit!,
-                  child: Icon(Icons.edit_outlined, size: 16, color: t.primary),
+                Tooltip(
+                  message: 'Edit review',
+                  child: IconBtn(
+                    key: ReviewKeys.editReviewButton(review.id),
+                    onTap: onEdit!,
+                    child: Icon(
+                      Icons.edit_outlined,
+                      size: 16,
+                      color: t.primary,
+                    ),
+                  ),
                 ),
             ],
           ),
@@ -220,8 +234,6 @@ class ReviewCard extends StatelessWidget {
               style: CatchTextStyles.bodyM(context, color: t.ink2),
             ),
           ],
-          const SizedBox(height: 10),
-          Divider(height: 1, color: t.line),
         ],
       ),
     );

@@ -7,7 +7,8 @@ import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -119,6 +120,7 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
             chatRepositoryProvider.overrideWithValue(chatRepository),
+            watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
             watchPublicProfileProvider('runner-2').overrideWith(
               (ref) => Stream.value(
                 buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -155,6 +157,7 @@ void main() {
             uidProvider.overrideWith((ref) => uidController.stream),
             matchRepositoryProvider.overrideWithValue(matchRepository),
             chatRepositoryProvider.overrideWithValue(chatRepository),
+            watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -185,6 +188,7 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
             chatRepositoryProvider.overrideWithValue(chatRepository),
+            watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -226,6 +230,7 @@ void main() {
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
             chatRepositoryProvider.overrideWithValue(chatRepository),
+            watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
             watchChatMessagesProvider('match-1').overrideWithValue(
               AsyncError<List<ChatMessage>>(
                 Exception('boom'),

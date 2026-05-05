@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -76,18 +77,19 @@ class RunRepository {
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> createRun({required Run run}) => withFirestoreErrorContext(
-    () => _runRef(run.id).set(run),
+    () => _functions.httpsCallable('createRun').call(_runCreatePayload(run)),
     collection: _collectionPath,
     action: 'create run',
   );
 
-  Future<void> signUpForRun({required String runId, required String userId}) =>
+  Future<void> updateRunDetails({required Run run}) =>
       withFirestoreErrorContext(
-        () => _runRef(runId).update({
-          'signedUpUserIds': FieldValue.arrayUnion([userId]),
+        () => _functions.httpsCallable('updateRun').call({
+          'runId': run.id,
+          'fields': _runUpdatePayload(run),
         }),
         collection: _collectionPath,
-        action: 'sign up for run',
+        action: 'update run',
       );
 
   /// Cancels the current user's sign-up via the [cancelRunSignUp] Cloud
@@ -156,6 +158,37 @@ class RunRepository {
     action: 'self check-in',
   );
 }
+
+Map<String, Object?> _runCreatePayload(Run run) => {
+  'runId': run.id,
+  'runClubId': run.runClubId,
+  ..._runMutableDetailsPayload(run),
+  'capacityLimit': run.capacityLimit,
+  'priceInPaise': run.priceInPaise,
+  'constraints': _constraintsPayload(run.constraints),
+};
+
+Map<String, Object?> _runUpdatePayload(Run run) =>
+    _runMutableDetailsPayload(run);
+
+Map<String, Object?> _runMutableDetailsPayload(Run run) => {
+  'startTimeMillis': run.startTime.millisecondsSinceEpoch,
+  'endTimeMillis': run.endTime.millisecondsSinceEpoch,
+  'meetingPoint': run.meetingPoint,
+  'startingPointLat': run.startingPointLat,
+  'startingPointLng': run.startingPointLng,
+  'locationDetails': run.locationDetails,
+  'distanceKm': run.distanceKm,
+  'pace': run.pace.name,
+  'description': run.description,
+};
+
+Map<String, Object?> _constraintsPayload(RunConstraints constraints) => {
+  'minAge': constraints.minAge,
+  'maxAge': constraints.maxAge,
+  'maxMen': constraints.maxMen,
+  'maxWomen': constraints.maxWomen,
+};
 
 @riverpod
 RunRepository runRepository(Ref ref) => RunRepository(

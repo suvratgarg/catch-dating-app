@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -9,7 +8,6 @@ import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
@@ -28,22 +26,24 @@ class RunDetailCta extends ConsumerWidget {
     required this.run,
     required this.userProfile,
     required this.runClubId,
+    required this.isHost,
+    this.now,
   });
 
   final Run run;
   final UserProfile userProfile;
   final String runClubId;
+  final bool isHost;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clubAsync = ref.watch(fetchRunClubProvider(runClubId));
-    final uid = ref.watch(uidProvider).asData?.value;
-    final isHost = uid != null && clubAsync.asData?.value?.hostUserId == uid;
-    final checkinOpen = DateTime.now().isAfter(
+    final referenceNow = now ?? DateTime.now();
+    final attendanceOpen = referenceNow.isAfter(
       run.startTime.subtract(const Duration(minutes: 10)),
     );
 
-    if (isHost && checkinOpen) {
+    if (isHost && attendanceOpen) {
       return BottomCTA(
         label: 'Take Attendance',
         onPressed: () => GoRouter.of(context).pushNamed(
@@ -129,8 +129,8 @@ class RunDetailCta extends ConsumerWidget {
               const Duration(minutes: 30),
             );
             final checkinOpen =
-                DateTime.now().isAfter(checkinWindowStart) &&
-                DateTime.now().isBefore(checkinWindowEnd);
+                referenceNow.isAfter(checkinWindowStart) &&
+                referenceNow.isBefore(checkinWindowEnd);
 
             // Show "Check in" button when the window is open and the
             // user hasn't already checked in via another device.

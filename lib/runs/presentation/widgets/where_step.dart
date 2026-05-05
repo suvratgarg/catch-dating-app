@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/map_pin_tile.dart';
 import 'package:flutter/material.dart';
@@ -34,6 +35,7 @@ class WhereStep extends StatelessWidget {
         ),
         children: [
           CatchTextField(
+            key: CreateRunFormKeys.meetingPoint,
             label: 'Meeting point',
             controller: meetingPointController,
             hintText: 'e.g. Bandstand Promenade, Bandra',
@@ -45,9 +47,14 @@ class WhereStep extends StatelessWidget {
           const SizedBox(height: 20),
           const FieldLabel('Pin on map', isOptional: true),
           const SizedBox(height: 8),
-          MapPinTile(startingPoint: startingPoint, onTap: onPickLocation),
+          MapPinTile(
+            key: CreateRunFormKeys.mapPicker,
+            startingPoint: startingPoint,
+            onTap: onPickLocation,
+          ),
           const SizedBox(height: 20),
           CatchTextField(
+            key: CreateRunFormKeys.locationDetails,
             label: 'Extra directions',
             isOptional: true,
             controller: locationDetailsController,

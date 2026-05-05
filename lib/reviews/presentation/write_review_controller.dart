@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'write_review_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Most common mutation pattern in the app. [build] returns void — the
 /// controller holds no Riverpod state. [Mutation]s ([submitMutation],
@@ -29,10 +29,15 @@ class WriteReviewController extends _$WriteReviewController {
     required String comment,
     Review? existingReview,
   }) async {
+    if (rating < 1 || rating > 5) {
+      throw ArgumentError.value(rating, 'rating', 'Rating must be 1-5.');
+    }
+
+    final trimmedComment = comment.trim();
     final repo = ref.read(reviewsRepositoryProvider);
     if (existingReview != null) {
       await repo.updateReview(
-        existingReview.copyWith(rating: rating, comment: comment),
+        existingReview.copyWith(rating: rating, comment: trimmedComment),
       );
     } else {
       await repo.addReview(
@@ -43,7 +48,7 @@ class WriteReviewController extends _$WriteReviewController {
           reviewerUserId: reviewerUserId,
           reviewerName: reviewerName,
           rating: rating,
-          comment: comment,
+          comment: trimmedComment,
           createdAt: DateTime.now(),
         ),
       );
@@ -51,6 +56,9 @@ class WriteReviewController extends _$WriteReviewController {
   }
 
   Future<void> delete(String reviewId) async {
+    if (reviewId.isEmpty) {
+      throw ArgumentError.value(reviewId, 'reviewId', 'Review id is required.');
+    }
     await ref.read(reviewsRepositoryProvider).deleteReview(reviewId);
   }
 }

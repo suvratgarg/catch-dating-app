@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_detail_body.dart';
-import 'package:catch_dating_app/run_clubs/presentation/shared/run_clubs_mutation_feedback.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -49,7 +49,6 @@ class RunClubDetailScreen extends ConsumerWidget {
         Scaffold(
           body: _buildBody(
             runClub: vm.runClub,
-            runs: vm.allRuns,
             upcomingRuns: vm.upcomingRuns,
             reviews: vm.reviews,
             userProfile: vm.userProfile,
@@ -69,7 +68,6 @@ class RunClubDetailScreen extends ConsumerWidget {
         Scaffold(
           body: _buildBody(
             runClub: initialRunClub!,
-            runs: const [],
             upcomingRuns: const [],
             reviews: const [],
             userProfile: currentUserProfile,
@@ -94,7 +92,6 @@ class RunClubDetailScreen extends ConsumerWidget {
 
   Widget _buildBody({
     required RunClub runClub,
-    required List<Run> runs,
     required List<Run> upcomingRuns,
     required List<Review> reviews,
     required UserProfile? userProfile,
@@ -106,7 +103,6 @@ class RunClubDetailScreen extends ConsumerWidget {
   }) {
     return ClubDetailBody(
       runClub: runClub,
-      runs: runs,
       upcoming: upcomingRuns,
       reviews: reviews,
       userProfile: userProfile,

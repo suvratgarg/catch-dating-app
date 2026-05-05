@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -18,10 +20,11 @@ abstract class RunDetailViewModel with _$RunDetailViewModel {
     required UserProfile? userProfile,
     required List<Review> reviews,
     required bool isAuthenticated,
+    required bool isHost,
   }) = _RunDetailViewModel;
 }
 
-/// **Pattern D: Pure computed provider combining multiple async streams**
+/// **Pattern D: View-model provider**
 ///
 /// Watches several stream/future providers and combines them into one
 /// [AsyncValue] via [buildRunDetailViewModel]. Each input is individually
@@ -34,12 +37,20 @@ abstract class RunDetailViewModel with _$RunDetailViewModel {
 @riverpod
 AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
   final uidAsync = ref.watch(uidProvider);
-  final isAuthenticated = uidAsync.asData?.value != null;
+  final uid = uidAsync.asData?.value;
+  final isAuthenticated = uid != null;
+  final runAsync = ref.watch(watchRunProvider(runId));
+  final run = runAsync.asData?.value;
+  final runClubAsync = run == null
+      ? const AsyncData<RunClub?>(null)
+      : ref.watch(fetchRunClubProvider(run.runClubId));
 
   return buildRunDetailViewModel(
-    runAsync: ref.watch(watchRunProvider(runId)),
+    runAsync: runAsync,
     userProfileAsync: ref.watch(watchUserProfileProvider),
     reviewsAsync: ref.watch(watchReviewsForRunProvider(runId)),
+    runClubAsync: runClubAsync,
+    currentUid: uid,
     isAuthenticated: isAuthenticated,
   );
 }
@@ -48,6 +59,8 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
   required AsyncValue<Run?> runAsync,
   required AsyncValue<UserProfile?> userProfileAsync,
   required AsyncValue<List<Review>> reviewsAsync,
+  required AsyncValue<RunClub?> runClubAsync,
+  required String? currentUid,
   required bool isAuthenticated,
 }) {
   // Always block on run data (needed for all users).
@@ -86,11 +99,15 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
   final run = runAsync.asData?.value;
   if (run == null) return const AsyncData(null);
 
-  final userProfile =
-      isAuthenticated ? (userProfileAsync.asData?.value) : null;
+  final userProfile = isAuthenticated ? (userProfileAsync.asData?.value) : null;
   final reviews = isAuthenticated
       ? (reviewsAsync.asData?.value ?? const [])
       : const <Review>[];
+  final runClub = runClubAsync.asData?.value;
+  final isHost =
+      isAuthenticated &&
+      currentUid != null &&
+      runClub?.hostUserId == currentUid;
 
   return AsyncData(
     RunDetailViewModel(
@@ -98,6 +115,7 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
       userProfile: userProfile,
       reviews: reviews,
       isAuthenticated: isAuthenticated,
+      isHost: isHost,
     ),
   );
 }

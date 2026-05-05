@@ -8,7 +8,7 @@ part of 'public_profile_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Handles block and report actions from the public profile screen.
 /// The UI wraps calls in `mutation.run(ref, ...)` to observe lifecycle.
@@ -16,13 +16,13 @@ part of 'public_profile_controller.dart';
 @ProviderFor(PublicProfileController)
 final publicProfileControllerProvider = PublicProfileControllerProvider._();
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Handles block and report actions from the public profile screen.
 /// The UI wraps calls in `mutation.run(ref, ...)` to observe lifecycle.
 final class PublicProfileControllerProvider
     extends $NotifierProvider<PublicProfileController, void> {
-  /// **Pattern B: Stateless controller + static Mutations**
+  /// **Pattern A: Action controller + static Mutations**
   ///
   /// Handles block and report actions from the public profile screen.
   /// The UI wraps calls in `mutation.run(ref, ...)` to observe lifecycle.
@@ -56,7 +56,7 @@ final class PublicProfileControllerProvider
 String _$publicProfileControllerHash() =>
     r'd386670142b872140a99a398cc19bd13858d6f20';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Handles block and report actions from the public profile screen.
 /// The UI wraps calls in `mutation.run(ref, ...)` to observe lifecycle.

@@ -8,7 +8,7 @@ part of 'create_run_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Validates input and delegates run creation to [RunRepository].
 /// [submitMutation] carries the created [Run] on success so the UI can
@@ -17,14 +17,14 @@ part of 'create_run_controller.dart';
 @ProviderFor(CreateRunController)
 final createRunControllerProvider = CreateRunControllerProvider._();
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Validates input and delegates run creation to [RunRepository].
 /// [submitMutation] carries the created [Run] on success so the UI can
 /// navigate to the run detail screen.
 final class CreateRunControllerProvider
     extends $NotifierProvider<CreateRunController, void> {
-  /// **Pattern B: Stateless controller + static Mutations**
+  /// **Pattern A: Action controller + static Mutations**
   ///
   /// Validates input and delegates run creation to [RunRepository].
   /// [submitMutation] carries the created [Run] on success so the UI can
@@ -59,7 +59,7 @@ final class CreateRunControllerProvider
 String _$createRunControllerHash() =>
     r'721225f8c2055452a9064c72a030f4a3778bda6f';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Validates input and delegates run creation to [RunRepository].
 /// [submitMutation] carries the created [Run] on success so the UI can

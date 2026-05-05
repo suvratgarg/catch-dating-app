@@ -5,7 +5,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'activity_controller.g.dart';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Performs batch operations on matches. [markAllReadMutation] tracks the
 /// async lifecycle so the UI can show a loading indicator.

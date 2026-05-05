@@ -1,5 +1,10 @@
 # Catch Dating App — Error Handling Architecture Audit
 
+> Audit snapshot. Re-verify counts and remediation status before treating this
+> file as current. Use `docs/README.md` for the docs ownership map and keep new
+> durable error-handling decisions in this document rather than creating parallel
+> trackers.
+
 **Date:** 2026-05-03
 **Scope:** Complete mapping of exception types, error propagation paths, user-facing error rendering, logging/telemetry, and gap analysis.
 

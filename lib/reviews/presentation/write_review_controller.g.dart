@@ -8,7 +8,7 @@ part of 'write_review_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Most common mutation pattern in the app. [build] returns void — the
 /// controller holds no Riverpod state. [Mutation]s ([submitMutation],
@@ -19,7 +19,7 @@ part of 'write_review_controller.dart';
 @ProviderFor(WriteReviewController)
 final writeReviewControllerProvider = WriteReviewControllerProvider._();
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Most common mutation pattern in the app. [build] returns void — the
 /// controller holds no Riverpod state. [Mutation]s ([submitMutation],
@@ -28,7 +28,7 @@ final writeReviewControllerProvider = WriteReviewControllerProvider._();
 /// and checks `.isPending`, `.hasError`, `.isSuccess`.
 final class WriteReviewControllerProvider
     extends $NotifierProvider<WriteReviewController, void> {
-  /// **Pattern B: Stateless controller + static Mutations**
+  /// **Pattern A: Action controller + static Mutations**
   ///
   /// Most common mutation pattern in the app. [build] returns void — the
   /// controller holds no Riverpod state. [Mutation]s ([submitMutation],
@@ -65,7 +65,7 @@ final class WriteReviewControllerProvider
 String _$writeReviewControllerHash() =>
     r'2b090116fd77513ad9ba8e99d67e854ca64dfa96';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Most common mutation pattern in the app. [build] returns void — the
 /// controller holds no Riverpod state. [Mutation]s ([submitMutation],

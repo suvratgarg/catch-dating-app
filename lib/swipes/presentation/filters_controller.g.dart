@@ -8,7 +8,7 @@ part of 'filters_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Saves swipe filter preferences to the user profile document.
 /// [saveFiltersMutation] tracks the async lifecycle so the UI can
@@ -17,14 +17,14 @@ part of 'filters_controller.dart';
 @ProviderFor(FiltersController)
 final filtersControllerProvider = FiltersControllerProvider._();
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Saves swipe filter preferences to the user profile document.
 /// [saveFiltersMutation] tracks the async lifecycle so the UI can
 /// show a loading spinner during the save.
 final class FiltersControllerProvider
     extends $NotifierProvider<FiltersController, void> {
-  /// **Pattern B: Stateless controller + static Mutations**
+  /// **Pattern A: Action controller + static Mutations**
   ///
   /// Saves swipe filter preferences to the user profile document.
   /// [saveFiltersMutation] tracks the async lifecycle so the UI can
@@ -58,7 +58,7 @@ final class FiltersControllerProvider
 
 String _$filtersControllerHash() => r'3d1d2656cd4e89946f8279638a1289c97393a7a9';
 
-/// **Pattern B: Stateless controller + static Mutations**
+/// **Pattern A: Action controller + static Mutations**
 ///
 /// Saves swipe filter preferences to the user profile document.
 /// [saveFiltersMutation] tracks the async lifecycle so the UI can

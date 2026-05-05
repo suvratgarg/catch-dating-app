@@ -4,20 +4,20 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; // FieldValue
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_clubs_repository.g.dart';
 
 class RunClubsRepository {
-  const RunClubsRepository(this._db);
+  const RunClubsRepository(this._db, this._functions);
 
   static const _collectionPath = 'runClubs';
-  static const _usersCollectionPath = 'users';
 
   final FirebaseFirestore _db;
+  final FirebaseFunctions _functions;
 
   CollectionReference<RunClub> get _runClubsRef => _db
       .collection(_collectionPath)
@@ -28,9 +28,6 @@ class RunClubsRepository {
       );
 
   DocumentReference<RunClub> _runClubRef([String? id]) => _runClubsRef.doc(id);
-
-  DocumentReference<Map<String, dynamic>> _userRef(String uid) =>
-      _db.collection(_usersCollectionPath).doc(uid);
 
   // ── Read ───────────────────────────────────────────────────────────────────
 
@@ -67,44 +64,29 @@ class RunClubsRepository {
     required String description,
     required IndianCity location,
     required String area,
-    required String hostUserId,
-    required String hostName,
-    String? hostAvatarUrl,
     String? imageUrl,
     String? instagramHandle,
     String? phoneNumber,
     String? email,
   }) => withFirestoreErrorContext(
     () async {
-      final ref = _runClubRef(clubId);
-      final batch = _db.batch();
-
-      batch.set(
-        ref,
-        RunClub(
-          id: ref.id,
-          name: name,
-          description: description,
-          location: location,
-          area: area,
-          hostUserId: hostUserId,
-          hostName: hostName,
-          hostAvatarUrl: hostAvatarUrl,
-          createdAt: DateTime.now(),
-          imageUrl: imageUrl,
-          memberUserIds: [hostUserId],
-          memberCount: 1,
-          instagramHandle: instagramHandle,
-          phoneNumber: phoneNumber,
-          email: email,
-        ),
-      );
-      batch.set(_userRef(hostUserId), {
-        'joinedRunClubIds': FieldValue.arrayUnion([ref.id]),
-      }, SetOptions(merge: true));
-
-      await batch.commit();
-      return ref.id;
+      final data = <String, dynamic>{
+        'name': name,
+        'description': description,
+        'location': location.name,
+        'area': area,
+        'imageUrl': imageUrl,
+        'instagramHandle': instagramHandle,
+        'phoneNumber': phoneNumber,
+        'email': email,
+      };
+      if (clubId != null) {
+        data['clubId'] = clubId;
+      }
+      final result = await _functions
+          .httpsCallable('createRunClub')
+          .call<Map<String, dynamic>>(data);
+      return result.data['clubId'] as String;
     },
     collection: _collectionPath,
     action: 'create club',
@@ -126,104 +108,59 @@ class RunClubsRepository {
     action: 'update club',
   );
 
-  Future<void> deleteRunClub(String id) => withFirestoreErrorContext(
-    () => _runClubRef(id).delete(),
-    collection: _collectionPath,
-    action: 'delete club',
-  );
-
   // ── Members ────────────────────────────────────────────────────────────────
 
-  /// Adds [userId] to [clubId]'s member list.
+  /// Adds the signed-in user to [clubId] via the `joinRunClub` callable.
   ///
-  /// Uses [FieldValue] operations inside a transaction so only
-  /// `memberUserIds` and `memberCount` are touched — other fields
-  /// (notably `createdAt`) are never deserialized, avoiding a
-  /// Timestamp → DateTime → Timestamp round-trip that would lose
-  /// nanosecond precision and trip the Firestore rules diff check.
-  Future<void> joinClub(String clubId, String userId) =>
-      withFirestoreErrorContext(
-        () => _db.runTransaction((transaction) async {
-          final clubRef = _runClubRef(clubId);
-          final userRef = _userRef(userId);
-          final clubSnapshot = await transaction.get(clubRef);
+  /// Membership touches both `runClubs/{clubId}` and `users/{uid}`, so the
+  /// server owns this mutation and Firestore rules can keep membership fields
+  /// read-only to direct client writes.
+  Future<void> joinClub(String clubId) => withFirestoreErrorContext(
+    () => _functions.httpsCallable('joinRunClub').call({'clubId': clubId}),
+    collection: _collectionPath,
+    action: 'join',
+  );
 
-          if (!clubSnapshot.exists) {
-            throw DocumentNotFoundException('runClubs/$clubId');
-          }
-
-          transaction.update(clubRef, {
-            'memberUserIds': FieldValue.arrayUnion([userId]),
-            'memberCount': FieldValue.increment(1),
-          });
-          transaction.set(userRef, {
-            'joinedRunClubIds': FieldValue.arrayUnion([clubId]),
-          }, SetOptions(merge: true));
-        }),
-        collection: _collectionPath,
-        action: 'join',
-      );
-
-  Future<void> leaveClub(String clubId, String userId) async {
-    // Phase 1 diagnostic: split club and user writes to identify which
-    // document's security rules are rejecting the leave operation.
-    // TODO: re-atomic once rules mismatch is resolved.
-
-    // Step 1 — update club (read + write in transaction for consistency).
-    await withFirestoreErrorContext(
-      () => _db.runTransaction((transaction) async {
-        final clubRef = _runClubRef(clubId);
-        final clubSnapshot = await transaction.get(clubRef);
-
-        if (!clubSnapshot.exists) {
-          throw DocumentNotFoundException('runClubs/$clubId');
-        }
-
-        transaction.update(clubRef, {
-          'memberUserIds': FieldValue.arrayRemove([userId]),
-          'memberCount': FieldValue.increment(-1),
-        });
-      }),
-      collection: _collectionPath,
-      action: 'leave (club)',
-    );
-
-    // Step 2 — update user doc.
-    await withFirestoreErrorContext(
-      () => _userRef(userId).update({
-        'joinedRunClubIds': FieldValue.arrayRemove([clubId]),
-      }),
-      collection: 'users',
-      action: 'leave (user)',
-    );
-  }
+  /// Removes the signed-in user from [clubId] via the `leaveRunClub` callable.
+  Future<void> leaveClub(String clubId) => withFirestoreErrorContext(
+    () => _functions.httpsCallable('leaveRunClub').call({'clubId': clubId}),
+    collection: _collectionPath,
+    action: 'leave',
+  );
 }
 
-@riverpod
-RunClubsRepository runClubsRepository(Ref ref) =>
-    RunClubsRepository(ref.watch(firebaseFirestoreProvider));
+@Riverpod(keepAlive: true)
+RunClubsRepository runClubsRepository(Ref ref) => RunClubsRepository(
+  ref.watch(firebaseFirestoreProvider),
+  ref.watch(firebaseFunctionsProvider),
+);
 
 @Riverpod(keepAlive: true)
-Stream<RunClub?> watchRunClub(Ref ref, String id) =>
-    ref.watch(runClubsRepositoryProvider).watchRunClub(id).timeout(
-      const Duration(seconds: 10),
-    );
+Stream<RunClub?> watchRunClub(Ref ref, String id) {
+  final repository = ref.watch(runClubsRepositoryProvider);
+  return _withFirestoreTimeout(repository.watchRunClub(id));
+}
 
 @Riverpod(keepAlive: true)
-Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) =>
-    ref.watch(runClubsRepositoryProvider).watchRunClubsByLocation(location).timeout(
-      const Duration(seconds: 10),
-    );
+Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) {
+  final repository = ref.watch(runClubsRepositoryProvider);
+  return _withFirestoreTimeout(repository.watchRunClubsByLocation(location));
+}
 
 @Riverpod(keepAlive: true)
 Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
   Ref ref,
   IndianCity location,
-) => ref
-    .watch(runClubsRepositoryProvider)
-    .watchRunClubsByLocationSortedByRating(location)
-    .timeout(const Duration(seconds: 10));
+) {
+  final repository = ref.watch(runClubsRepositoryProvider);
+  return _withFirestoreTimeout(
+    repository.watchRunClubsByLocationSortedByRating(location),
+  );
+}
 
 @riverpod
 Future<RunClub?> fetchRunClub(Ref ref, String id) =>
     ref.watch(runClubsRepositoryProvider).fetchRunClub(id);
+
+Stream<T> _withFirestoreTimeout<T>(Stream<T> stream) =>
+    stream.timeout(const Duration(seconds: 10));

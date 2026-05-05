@@ -11,7 +11,7 @@ Core product loop:
 1. A user signs in with a verified phone OTP.
 2. The user completes an onboarding flow with dating + running preferences.
 3. The user browses run clubs by city, joins clubs, and views scheduled runs.
-4. A club host creates clubs and creates runs.
+4. A club host creates clubs and runs through callable Cloud Functions.
 5. Users book a run.
    - Free runs use a callable Cloud Function.
    - Paid runs use Razorpay on Android/iOS, then a Cloud Function verifies payment and signs the user up.
@@ -49,8 +49,9 @@ Backend:
 Design system:
 
 - Theme tokens in [`lib/core/theme/catch_tokens.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/theme/catch_tokens.dart)
+- Spacing helpers in [`lib/core/theme/catch_spacing.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/theme/catch_spacing.dart)
 - Typography helpers in [`lib/core/theme/catch_text_styles.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/theme/catch_text_styles.dart)
-- App theme in [`lib/theme/app_theme.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/theme/app_theme.dart)
+- App theme in [`lib/core/theme/app_theme.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/theme/app_theme.dart)
 
 ## 3. High-level architecture
 
@@ -234,10 +235,12 @@ Files:
 
 Behavior:
 
-- Shows club details, schedule, reviews, and membership controls.
-- Hosts see host stats and a floating create-run action.
+- Shows club details, schedule, aggregate reviews, and membership controls.
+- Hosts see host stats and create/edit tools, but they cannot leave a club they
+  host.
 - Non-host members can join/leave the club.
-- Club reviews are gated by membership and hidden for the host.
+- Club pages show review aggregates only. Review writes are run-scoped from the
+  run detail page.
 
 ### 6.5 Run creation and booking
 
@@ -251,7 +254,7 @@ Files:
 
 Run creation:
 
-- Host-only
+- Host-only through the `createRun` callable.
 - 4-step wizard:
   1. When
   2. Where
@@ -318,7 +321,10 @@ Files:
 
 Behavior:
 
-- Club review CTA requires membership and hides for the host.
+- Reviews are run-scoped: one deterministic `reviews/{runId~reviewerUserId}`
+  document per user per run.
+- Club pages show aggregate reviews for the club but do not expose a club-level
+  write CTA.
 - Run review CTA requires attendance.
 - UI previews 5 reviews, then shows “See all”.
 
@@ -442,11 +448,12 @@ Reviews:
 
 - `reviews/{reviewId}`
 
-The TypeScript mirror of the Firestore schema is:
+The generated TypeScript mirror of the Firestore schema is:
 
-- [`functions/src/types/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/types/firestore.ts)
+- [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
 
-If you change a Dart model that a Cloud Function reads or writes, update the TS type mirror too.
+If you change a Dart model that a Cloud Function reads or writes, run
+`dart tool/generate_firestore_types.dart` and commit the generated TS mirror.
 
 ## 8. Backend contract
 
@@ -467,6 +474,14 @@ Callable functions:
 - `signUpForFreeRun`
   - validates free run
   - reuses shared sign-up logic
+- `createRun`
+  - host-only run creation
+  - derives host authority from the authenticated user and `runClubs/{clubId}`
+  - initializes booking, attendance, waitlist, and gender count state server-side
+- `updateRun`
+  - host-only schedule/descriptive run edits
+  - keeps run ownership, capacity, payment, eligibility, booking, attendance,
+    waitlist, and gender counts out of direct client writes
 - `cancelRunSignUp`
   - removes user from sign-up
   - decrements gender counts
@@ -474,6 +489,13 @@ Callable functions:
   - attempts Razorpay refund if paid
 - `joinRunWaitlist`
   - adds user to a run's waitlist
+- `createRunClub`
+  - creates the club, derives host name/avatar from `users/{uid}`, and mirrors
+    host membership onto `users/{uid}.joinedRunClubIds`
+- `joinRunClub` / `leaveRunClub`
+  - atomically maintain `runClubs/{clubId}.memberUserIds`,
+    `runClubs/{clubId}.memberCount`, and `users/{uid}.joinedRunClubIds`
+  - direct client updates to club membership fields are denied by rules
 - `markRunAttendance`
   - host-only
   - can run only after run end
@@ -506,7 +528,9 @@ Firestore triggers:
 - `onMatchCreated`
   - sends match push notifications
 - `onMessageCreated`
-  - increments unread count and sends message push notification
+  - idempotently updates match preview/unread counts using
+    `functionEventReceipts/{receiptId}`
+  - sends message push notification after the metadata transaction applies
 - `syncRunClubReviewStats`
   - recalculates `runClubs/{clubId}.rating` and `reviewCount`
 - `onBlockCreated`
@@ -518,16 +542,26 @@ Files:
 
 - Firestore rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
 - Storage rules: [`storage.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/storage.rules)
+- Firestore ownership contract:
+  [`tool/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/firestore_contract.json)
+- Repeatable data-contract check:
+  [`tool/check_data_contract.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/check_data_contract.sh)
 
 Summary:
 
 - Most Firestore reads require auth.
 - Users can write only their own `users/{uid}` docs.
+- `users/{uid}.joinedRunClubIds`, run club creation, run club membership, run
+  creation, and host run edits are backend-owned through callables.
 - `publicProfiles` are read-only to clients.
 - `payments` are backend-write-only.
 - `matches` are backend-write-only.
+- `functionEventReceipts` are backend-write-only idempotency receipts for
+  retry-safe triggers.
 - `chats` are writable only by match participants.
 - `swipes` are writable only by the owner of the outgoing subcollection.
+- Direct run and club deletes are denied until backend cleanup/refund behavior
+  exists.
 - Storage is currently permissive for any authenticated user.
 
 ## 10. Maps and location
@@ -704,8 +738,9 @@ These are the most important things for future Codex sessions to know before edi
 
 ### 14.1 Keep `runClubs` schema aligned across client, rules, and Functions
 
-The current Dart `RunClub` model, Firestore rules, rules tests, and Functions
-shared TS interface are aligned for fields such as:
+The current Dart `RunClub` model, Firestore ownership contract, Firestore
+rules, rules tests, and Functions shared TS interface are aligned for fields
+such as:
 
 - `area`
 - `hostName`
@@ -719,25 +754,31 @@ Files involved:
 - Dart model: [`lib/run_clubs/domain/run_club.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/domain/run_club.dart)
 - Rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
 - TS types: [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
+- Ownership contract: [`tool/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/firestore_contract.json)
 - Rules tests: [`functions/test/firestore.rules.test.cjs`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/test/firestore.rules.test.cjs)
+- Combined checker: [`tool/check_data_contract.sh`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/check_data_contract.sh)
 
 Impact:
 
 - Future backend changes can easily drift if the TS types are not updated.
-- When changing `RunClub`, update the Dart model, rules shape validation,
-  Functions TS type, and rules tests in the same pass.
+- When changing `RunClub`, update the Dart model, ownership contract, rules
+  validation, Functions TS type, and rules tests in the same pass.
 
-### 14.2 Review identity is club-scoped, not truly run-scoped
+### 14.2 Review identity is run-scoped
 
-Review document IDs are deterministic per `(runClubId, reviewerUserId)`:
-
-- [`lib/reviews/domain/review_document_id.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/reviews/domain/review_document_id.dart)
+Review document IDs are deterministic per `(runId, reviewerUserId)` using
+`runId~reviewerUserId`.
 
 Impact:
 
-- A user can only have one review doc per club.
-- Run-level reviews still reuse that same club-scoped ID.
-- If product intent is “one review per run”, the ID strategy, repo, and rules all need to change.
+- A user can have one review per run.
+- New review creates require `runId`, matching path/data identity, matching
+  reviewer name, and attended-run membership in Firestore rules.
+- Club pages aggregate run reviews for display but do not create club-level
+  reviews.
+- Existing random-ID or missing-`runId` reviews should be found by
+  `node tool/validate_firestore_data.mjs --env <env>` and migrated or archived
+  before tightening production data further.
 
 ### 14.3 Auth is phone-only and onboarding owns profile creation
 
@@ -784,10 +825,11 @@ The repo now supports real `dev`, `staging`, and `prod` Firebase projects:
 
 All three have Android, iOS/macOS, and web app registrations, App Check
 providers, App Check enforcement for Firestore, Storage, Auth, and callable
-Functions, and the same 17 deployed v2 Node.js 24 Functions in `asia-south1`.
-Those Functions were redeployed and re-listed across dev, staging, and prod on
-2026-05-01. Firestore rules are also deployed and aligned across all three
-projects; dev and staging were updated on 2026-05-01.
+Functions. The local Functions entrypoint currently exports 20 v2 Functions in
+`asia-south1`; the deployed count can lag until the next environment deploy.
+The previous 17-Function set was redeployed and re-listed across dev, staging,
+and prod on 2026-05-01. Firestore rules are also deployed and aligned across
+all three projects; dev and staging were updated on 2026-05-01.
 
 Files involved:
 
@@ -825,7 +867,9 @@ When working in this repo:
 
 1. Read this file.
 2. Read the feature’s `domain`, `data`, and `presentation` files together.
-3. If a change touches a model used by Cloud Functions, update both Dart and `functions/src/types/firestore.ts`.
+3. If a change touches a model used by Cloud Functions, update Dart, run
+   `dart tool/generate_firestore_types.dart`, and commit
+   `functions/src/shared/firestore.ts`.
 4. If a change touches rules-sensitive documents, check `firestore.rules` immediately.
 5. Run `build_runner` after annotation/model changes.
 6. Prefer updating repository/controller layers instead of pushing Firebase calls directly into widgets.
@@ -871,9 +915,10 @@ rejections gracefully so users (and developers) aren't left guessing.
   display.** Don't show `error.toString()` to users — it's either raw
   exception text or uselessly truncated. The `ErrorBanner` widget and
   `listenForMutationErrorSnackbar` utility are the right display channels.
-- **Firestore rules tests run in CI** on every PR that touches
-  `firestore.rules` or `functions/test/firestore.rules.test.cjs`. Keep the
-  test file in sync with rule changes.
+- **Firestore rules tests and the contract checker run in CI** on every PR
+  that touches rules, schema, or contract files. Keep
+  `functions/test/firestore.rules.test.cjs` and `tool/firestore_contract.json`
+  in sync with rule changes.
 - **Log Firestore write failures to Analytics** via
   `AppAnalytics.logFirestoreWriteFailed()` so permission spikes and quota
   issues are visible in dashboards, not just Crashlytics.

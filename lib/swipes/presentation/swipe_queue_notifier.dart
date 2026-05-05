@@ -8,7 +8,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_queue_notifier.g.dart';
 
-/// **Pattern C: AsyncNotifier with async state**
+/// **Pattern C: Async state controller**
 ///
 /// Used when state is loaded asynchronously AND needs to be mutated after load:
 /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle

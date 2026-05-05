@@ -8,7 +8,7 @@ part of 'swipe_queue_notifier.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// **Pattern C: AsyncNotifier with async state**
+/// **Pattern C: Async state controller**
 ///
 /// Used when state is loaded asynchronously AND needs to be mutated after load:
 /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
@@ -26,7 +26,7 @@ part of 'swipe_queue_notifier.dart';
 @ProviderFor(SwipeQueueNotifier)
 final swipeQueueProvider = SwipeQueueNotifierFamily._();
 
-/// **Pattern C: AsyncNotifier with async state**
+/// **Pattern C: Async state controller**
 ///
 /// Used when state is loaded asynchronously AND needs to be mutated after load:
 /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
@@ -42,7 +42,7 @@ final swipeQueueProvider = SwipeQueueNotifierFamily._();
 /// local filtering of fetched data).
 final class SwipeQueueNotifierProvider
     extends $AsyncNotifierProvider<SwipeQueueNotifier, List<PublicProfile>> {
-  /// **Pattern C: AsyncNotifier with async state**
+  /// **Pattern C: Async state controller**
   ///
   /// Used when state is loaded asynchronously AND needs to be mutated after load:
   /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
@@ -95,7 +95,7 @@ final class SwipeQueueNotifierProvider
 String _$swipeQueueNotifierHash() =>
     r'a6a1b140086c291d58594e550a821603724ff7ce';
 
-/// **Pattern C: AsyncNotifier with async state**
+/// **Pattern C: Async state controller**
 ///
 /// Used when state is loaded asynchronously AND needs to be mutated after load:
 /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
@@ -128,7 +128,7 @@ final class SwipeQueueNotifierFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// **Pattern C: AsyncNotifier with async state**
+  /// **Pattern C: Async state controller**
   ///
   /// Used when state is loaded asynchronously AND needs to be mutated after load:
   /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle
@@ -155,7 +155,7 @@ final class SwipeQueueNotifierFamily extends $Family
   String toString() => r'swipeQueueProvider';
 }
 
-/// **Pattern C: AsyncNotifier with async state**
+/// **Pattern C: Async state controller**
 ///
 /// Used when state is loaded asynchronously AND needs to be mutated after load:
 /// - [build()] returns `Future<T>` — Riverpod manages the AsyncValue lifecycle

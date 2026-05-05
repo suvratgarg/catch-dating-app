@@ -21,6 +21,8 @@ options when specific functions need higher or lower limits.
 | `signUpForFreeRun` | `src/runs/` | Book a free run |
 | `cancelRunSignUp` | `src/runs/` | Cancel booking (refunds paid runs) |
 | `joinRunWaitlist` | `src/runs/` | Join a full run's waitlist |
+| `createRunClub` | `src/runClubs/` | Create a run club and follow it as host |
+| `joinRunClub` / `leaveRunClub` | `src/runClubs/` | Join/leave a run club and mirror user membership |
 | `markRunAttendance` | `src/runs/` | Host marks attendance |
 | `selfCheckInAttendance` | `src/runs/` | Participant self-check-in with GPS |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
@@ -181,10 +183,12 @@ smoke tests, and rollback procedures.
 
 ## Firestore rules
 
-`firebase.json` includes a predeploy hook that runs `npm test` before every
-`firebase deploy --only firestore:rules`. Broken rules will fail the deploy
-before reaching Firebase. The same tests run in CI on every PR that touches
-`firestore.rules` (`.github/workflows/firestore-rules-ci.yml`).
+`firebase.json` includes a predeploy hook that runs Functions tests and the
+Firestore rules emulator suite before every
+`firebase deploy --only firestore:rules`. Broken rules fail the deploy before
+reaching Firebase. The same rules tests run in CI on every PR that touches
+`firestore.rules` or the schema/contract files
+(`.github/workflows/firestore-rules-ci.yml`).
 
 Rules tests live at `test/firestore.rules.test.cjs` and use the
 `@firebase/rules-unit-testing` emulator. Add test cases for any new rule
@@ -195,6 +199,7 @@ conditions, especially `diff()` checks and `hasOnly`/`hasAll` shape validation.
 ```bash
 npm run lint
 npm test
+npm run test:rules
 ./tool/firebase_with_env.sh dev deploy --only functions
 ./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions

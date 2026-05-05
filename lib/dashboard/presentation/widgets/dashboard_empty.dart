@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
@@ -93,7 +93,7 @@ class DashboardEmpty extends StatelessWidget {
                   Sizes.p24,
                 ),
                 children: [
-                  EmptyHeroCard(tokens: t),
+                  const EmptyHeroCard(),
                   gapH20,
                   Text(
                     'How Catch works',
@@ -143,7 +143,10 @@ class DashboardEmpty extends StatelessWidget {
                       ],
                     );
                   }),
-                  if (user != null) ...[gapH20, ActivitySection(uid: user!.uid, showEmptyState: false)],
+                  if (user != null) ...[
+                    gapH20,
+                    ActivitySection(uid: user!.uid, showEmptyState: false),
+                  ],
                 ],
               ),
             ),

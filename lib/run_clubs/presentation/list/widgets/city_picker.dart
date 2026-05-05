@@ -41,15 +41,12 @@ class _CityPickerState extends ConsumerState<CityPicker> {
             ref.read(selectedRunClubCityProvider.notifier).setCity(city),
         itemBuilder: (context) => [
           for (final city in cities)
-            PopupMenuItem<CityData>(
-              value: city,
-              child: Text(city.label),
-            ),
+            PopupMenuItem<CityData>(value: city, child: Text(city.label)),
         ],
         child: _trigger(context, selectedCity),
       ),
       loading: () => _trigger(context, selectedCity),
-      error: (_, _) => const SizedBox.shrink(),
+      error: (_, _) => _trigger(context, selectedCity),
     );
   }
 

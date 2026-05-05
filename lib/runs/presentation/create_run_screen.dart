@@ -1,24 +1,22 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
-import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_controller.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_draft_controller.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_success_screen.dart';
+import 'package:catch_dating_app/runs/presentation/host_run_manage_screen.dart';
 import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/create_run_step_header.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/draft_picker_sheet.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/eligibility_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_details_step.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/step_progress_bar.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/where_step.dart';
@@ -309,16 +307,12 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       // Delete the restored-from draft after successful submission.
       final draftId = _activeDraftId;
       if (draftId != null) {
-        final uid = ref.read(uidProvider).asData?.value;
-        if (uid != null) {
-          await ref
-              .read(runDraftRepositoryProvider)
-              .deleteDraft(
-                runClubId: widget.runClub.id,
-                userId: uid,
-                draftId: draftId,
-              );
-        }
+        await CreateRunDraftController.deleteDraftMutation.run(
+          ref,
+          (tx) async => tx
+              .get(createRunDraftControllerProvider.notifier)
+              .deleteDraft(runClubId: widget.runClub.id, draftId: draftId),
+        );
       }
 
       return createdRun;
@@ -344,15 +338,16 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
           _trimmedTextOrNull(_maxWomenController) != null);
 
   Future<void> _checkForDrafts() async {
-    final uid = ref.read(uidProvider).asData?.value;
-    if (uid == null) return;
-
     final drafts = await ref
-        .read(runDraftRepositoryProvider)
-        .loadDrafts(runClubId: widget.runClub.id, userId: uid);
+        .read(createRunDraftControllerProvider.notifier)
+        .loadDrafts(runClubId: widget.runClub.id);
     if (!mounted || drafts.isEmpty) return;
 
-    final picked = await showDraftPickerSheet(context: context, drafts: drafts);
+    final picked = await showDraftPickerSheet(
+      context: context,
+      drafts: drafts,
+      onDeleteDraft: _deleteDraftFromPicker,
+    );
     if (!mounted) return;
 
     if (picked != null) {
@@ -435,10 +430,16 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     });
   }
 
-  Future<void> _saveDraft() async {
-    final uid = ref.read(uidProvider).asData?.value;
-    if (uid == null) return;
+  Future<void> _deleteDraftFromPicker(RunDraft draft) {
+    return CreateRunDraftController.deleteDraftMutation.run(
+      ref,
+      (tx) async => tx
+          .get(createRunDraftControllerProvider.notifier)
+          .deleteDraft(runClubId: widget.runClub.id, draftId: draft.id),
+    );
+  }
 
+  Future<void> _saveDraft() async {
     final draft = RunDraft(
       id: _activeDraftId ?? DateTime.now().millisecondsSinceEpoch.toString(),
       runClubId: widget.runClub.id,
@@ -462,17 +463,20 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       maxWomen: _trimmedTextOrNull(_maxWomenController),
     );
 
-    if (draft.isEmpty) return;
+    final wasUpdate = _activeDraftId != null;
+    final savedDraft = await CreateRunDraftController.saveDraftMutation.run(
+      ref,
+      (tx) async =>
+          tx.get(createRunDraftControllerProvider.notifier).saveDraft(draft),
+    );
+    if (savedDraft == null) return;
 
-    await ref
-        .read(runDraftRepositoryProvider)
-        .saveDraft(userId: uid, draft: draft);
-    _activeDraftId = draft.id;
+    _activeDraftId = savedDraft.id;
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text(_activeDraftId != null ? 'Draft updated' : 'Draft saved'),
+        content: Text(wasUpdate ? 'Draft updated' : 'Draft saved'),
         duration: const Duration(seconds: 2),
       ),
     );
@@ -549,57 +553,12 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       body: SafeArea(
         child: Column(
           children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                12,
-                CatchSpacing.s5,
-                0,
-              ),
-              child: Row(
-                children: [
-                  IconBtn(
-                    onTap: _back,
-                    child: Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      size: 18,
-                      color: t.ink,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          _stepTitle(_currentStep),
-                          style: CatchTextStyles.titleL(context),
-                        ),
-                        Text(
-                          widget.runClub.name,
-                          style: CatchTextStyles.bodyS(context, color: t.ink2),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Text(
-                    '${_currentStep + 1}/$_totalSteps',
-                    style: CatchTextStyles.labelL(context, color: t.ink2),
-                  ),
-                ],
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                12,
-                CatchSpacing.s5,
-                0,
-              ),
-              child: StepProgressBar(
-                currentStep: _currentStep,
-                totalSteps: _totalSteps,
-              ),
+            CreateRunStepHeader(
+              title: _stepTitle(_currentStep),
+              runClubName: widget.runClub.name,
+              currentStep: _currentStep,
+              totalSteps: _totalSteps,
+              onBack: _back,
             ),
             const SizedBox(height: 4),
             Expanded(
@@ -646,9 +605,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
               ),
             ),
             if (submitMutation.hasError)
-              ErrorBanner(
-                message: mutationErrorMessage(submitMutation),
-              ),
+              ErrorBanner(message: mutationErrorMessage(submitMutation)),
             StepperFooter(
               isLastStep: _currentStep == _totalSteps - 1,
               isLoading: submitMutation.isPending,
@@ -658,449 +615,6 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class CreateRunSuccessScreen extends StatelessWidget {
-  const CreateRunSuccessScreen({
-    super.key,
-    required this.runClub,
-    required this.run,
-    required this.onManageRun,
-    required this.onDone,
-  });
-
-  final RunClub runClub;
-  final Run run;
-  final VoidCallback onManageRun;
-  final VoidCallback onDone;
-
-  @override
-  Widget build(BuildContext context) {
-    const successInk = Color(0xFF1A1410);
-
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(gradient: CatchTokens.sunsetLight.heroGrad),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(CatchSpacing.s5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: IconBtn(
-                    background: successInk.withValues(alpha: 0.16),
-                    onTap: onDone,
-                    child: const Icon(Icons.close_rounded, color: successInk),
-                  ),
-                ),
-                const Spacer(),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Container(
-                    width: 78,
-                    height: 78,
-                    decoration: BoxDecoration(
-                      color: successInk.withValues(alpha: 0.12),
-                      shape: BoxShape.circle,
-                      border: Border.all(
-                        color: successInk.withValues(alpha: 0.18),
-                      ),
-                    ),
-                    child: const Icon(
-                      Icons.check_rounded,
-                      color: successInk,
-                      size: 38,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Text(
-                  'Your run is live.',
-                  style: CatchTextStyles.displayXL(
-                    context,
-                    color: Colors.white,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  '${run.title} is now listed on ${runClub.name}. Followers can discover it from their home feed.',
-                  style: CatchTextStyles.bodyL(context, color: Colors.white),
-                ),
-                const SizedBox(height: 20),
-                Container(
-                  padding: const EdgeInsets.all(14),
-                  decoration: BoxDecoration(
-                    color: successInk.withValues(alpha: 0.14),
-                    borderRadius: BorderRadius.circular(CatchRadius.lg),
-                    border: Border.all(
-                      color: successInk.withValues(alpha: 0.18),
-                    ),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(
-                        Icons.bolt_rounded,
-                        color: successInk,
-                        size: 18,
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          'Bookings, waitlist, and attendance are tracked from Manage run.',
-                          style: CatchTextStyles.bodyS(
-                            context,
-                            color: successInk,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 28),
-                CatchButton(
-                  label: 'Manage run',
-                  onPressed: onManageRun,
-                  fullWidth: true,
-                  backgroundColor: Colors.white,
-                  foregroundColor: successInk,
-                  borderColor: Colors.transparent,
-                ),
-                const SizedBox(height: 10),
-                CatchButton(
-                  label: 'Back to club',
-                  onPressed: onDone,
-                  variant: CatchButtonVariant.secondary,
-                  fullWidth: true,
-                  backgroundColor: Colors.white.withValues(alpha: 0.72),
-                  foregroundColor: successInk,
-                  borderColor: successInk.withValues(alpha: 0.20),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HostRunManageScreen extends StatelessWidget {
-  const HostRunManageScreen({
-    super.key,
-    required this.runClub,
-    required this.run,
-    required this.onBackToSuccess,
-  });
-
-  final RunClub runClub;
-  final Run run;
-  final VoidCallback onBackToSuccess;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final revenueRupees = run.signedUpCount * (run.priceInPaise ~/ 100);
-
-    return Scaffold(
-      backgroundColor: t.bg,
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            12,
-            CatchSpacing.s5,
-            24,
-          ),
-          children: [
-            Row(
-              children: [
-                IconBtn(
-                  onTap: onBackToSuccess,
-                  child: Icon(
-                    Icons.arrow_back_ios_new_rounded,
-                    size: 18,
-                    color: t.ink,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'HOST MANAGE',
-                        style: CatchTextStyles.labelM(context, color: t.ink3)
-                            .copyWith(
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 1.2,
-                            ),
-                      ),
-                      Text(run.title, style: CatchTextStyles.titleL(context)),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 18),
-            if (run.isFull) ...[
-              Container(
-                padding: const EdgeInsets.all(14),
-                decoration: BoxDecoration(
-                  color: t.ink,
-                  borderRadius: BorderRadius.circular(CatchRadius.lg),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.lock_rounded, color: t.surface, size: 18),
-                    const SizedBox(width: 10),
-                    Text(
-                      'FULL',
-                      style: CatchTextStyles.titleM(context, color: t.surface),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-            ],
-            Row(
-              children: [
-                _StatCard(
-                  icon: Icons.check_circle_outline_rounded,
-                  value: '${run.signedUpCount}/${run.capacityLimit}',
-                  label: 'Booked',
-                ),
-                const SizedBox(width: 8),
-                _StatCard(
-                  icon: Icons.access_time_rounded,
-                  value: '${run.waitlistUserIds.length}',
-                  label: 'Waitlist',
-                ),
-                const SizedBox(width: 8),
-                _StatCard(
-                  icon: Icons.currency_rupee_rounded,
-                  value: revenueRupees > 0 ? '₹$revenueRupees' : '—',
-                  label: 'Revenue',
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            _HostRunSummaryCard(runClub: runClub, run: run),
-            const SizedBox(height: 20),
-            Text('Roster', style: CatchTextStyles.titleL(context)),
-            const SizedBox(height: 10),
-            _HostUserList(
-              userIds: run.signedUpUserIds,
-              emptyText: 'No bookings yet.',
-              trailingLabel: run.isFree ? 'FREE' : 'PAID',
-            ),
-            const SizedBox(height: 20),
-            Text('Waitlist', style: CatchTextStyles.titleL(context)),
-            const SizedBox(height: 10),
-            _HostUserList(
-              userIds: run.waitlistUserIds,
-              emptyText: 'No one is waiting.',
-              trailingLabel: 'WAITLIST',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _StatCard extends StatelessWidget {
-  const _StatCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
-        decoration: BoxDecoration(
-          color: t.surface,
-          borderRadius: BorderRadius.circular(CatchRadius.lg),
-          border: Border.all(color: t.line),
-        ),
-        child: StatColumn(icon: icon, value: value, label: label),
-      ),
-    );
-  }
-}
-
-class _HostRunSummaryCard extends StatelessWidget {
-  const _HostRunSummaryCard({required this.runClub, required this.run});
-
-  final RunClub runClub;
-  final Run run;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final price = run.isFree ? 'Free' : '₹${run.priceInPaise ~/ 100}';
-
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        border: Border.all(color: t.line),
-      ),
-      child: Column(
-        children: [
-          _HostSummaryRow(
-            icon: Icons.groups_rounded,
-            label: 'Club',
-            value: runClub.name,
-          ),
-          _HostSummaryRow(
-            icon: Icons.location_on_outlined,
-            label: 'Meet',
-            value: run.meetingPoint,
-          ),
-          _HostSummaryRow(
-            icon: Icons.route_rounded,
-            label: 'Run',
-            value:
-                '${run.distanceKm.toStringAsFixed(1)} km · ${run.pace.label}',
-          ),
-          _HostSummaryRow(
-            icon: Icons.payments_outlined,
-            label: 'Price',
-            value: price,
-            showDivider: false,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _HostSummaryRow extends StatelessWidget {
-  const _HostSummaryRow({
-    required this.icon,
-    required this.label,
-    required this.value,
-    this.showDivider = true,
-  });
-
-  final IconData icon;
-  final String label;
-  final String value;
-  final bool showDivider;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Column(
-      children: [
-        Row(
-          children: [
-            Icon(icon, color: t.ink2, size: 18),
-            const SizedBox(width: 10),
-            Text(label, style: CatchTextStyles.bodyS(context, color: t.ink2)),
-            const Spacer(),
-            Flexible(
-              child: Text(
-                value,
-                style: CatchTextStyles.labelL(context),
-                textAlign: TextAlign.right,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-          ],
-        ),
-        if (showDivider) ...[
-          const SizedBox(height: 12),
-          Divider(color: t.line, height: 1),
-          const SizedBox(height: 12),
-        ],
-      ],
-    );
-  }
-}
-
-class _HostUserList extends StatelessWidget {
-  const _HostUserList({
-    required this.userIds,
-    required this.emptyText,
-    required this.trailingLabel,
-  });
-
-  final List<String> userIds;
-  final String emptyText;
-  final String trailingLabel;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        border: Border.all(color: t.line),
-      ),
-      child: userIds.isEmpty
-          ? Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                emptyText,
-                style: CatchTextStyles.bodyM(context, color: t.ink2),
-              ),
-            )
-          : Column(
-              children: [
-                for (var i = 0; i < userIds.length; i++) ...[
-                  ListTile(
-                    leading: CircleAvatar(
-                      backgroundColor: t.primarySoft,
-                      child: Text(
-                        userIds[i].characters.first.toUpperCase(),
-                        style: CatchTextStyles.labelL(
-                          context,
-                          color: t.primary,
-                        ),
-                      ),
-                    ),
-                    title: Text('Runner ${i + 1}'),
-                    subtitle: Text(userIds[i]),
-                    trailing: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 9,
-                        vertical: 4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: t.primarySoft,
-                        borderRadius: BorderRadius.circular(CatchRadius.pill),
-                      ),
-                      child: Text(
-                        trailingLabel,
-                        style: CatchTextStyles.labelM(
-                          context,
-                          color: t.primary,
-                        ),
-                      ),
-                    ),
-                  ),
-                  if (i < userIds.length - 1) Divider(color: t.line, height: 1),
-                ],
-              ],
-            ),
     );
   }
 }

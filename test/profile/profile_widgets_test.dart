@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
@@ -30,6 +30,17 @@ Future<void> _pumpProfileTab(WidgetTester tester, UserProfile user) async {
   addTearDown(tester.view.resetDevicePixelRatio);
   await tester.pumpWidget(_profileTab(user));
   await tester.pump();
+}
+
+Future<void> _dragProfileTabUntilVisible(
+  WidgetTester tester,
+  Finder finder,
+) async {
+  await tester.dragUntilVisible(
+    finder,
+    find.byKey(ProfileTab.scrollViewKey),
+    const Offset(0, -300),
+  );
 }
 
 void main() {
@@ -92,11 +103,7 @@ void main() {
     // Email row is visible with add affordance (shows "+ Email")
     expect(find.textContaining('Email'), findsAtLeastNWidgets(1));
     expect(find.textContaining('Engineer'), findsAtLeastNWidgets(1));
-    await tester.scrollUntilVisible(
-      find.text('+919876543210'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await _dragProfileTabUntilVisible(tester, find.text('+919876543210'));
     expect(find.text('+919876543210'), findsOneWidget);
   });
 
@@ -137,11 +144,7 @@ void main() {
     await _pumpProfileTab(tester, user);
 
     // Scroll to and tap the age range row.
-    await tester.scrollUntilVisible(
-      find.textContaining('18 – 99'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await _dragProfileTabUntilVisible(tester, find.textContaining('18 – 99'));
     await tester.tap(find.textContaining('18 – 99'));
     await tester.pumpAndSettle();
 
@@ -164,11 +167,7 @@ void main() {
       await _pumpProfileTab(tester, user);
 
       // Scroll to and tap the pace range row.
-      await tester.scrollUntilVisible(
-        find.text('Pace range'),
-        300,
-        scrollable: find.byType(Scrollable).first,
-      );
+      await _dragProfileTabUntilVisible(tester, find.text('Pace range'));
       await tester.tap(find.text('Pace range'));
       await tester.pumpAndSettle();
 

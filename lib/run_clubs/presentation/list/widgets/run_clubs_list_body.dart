@@ -11,17 +11,18 @@ class RunClubsListBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
+    return SliverMainAxisGroup(
+      slivers: [
         if (viewModel.joinedClubs.isNotEmpty)
-          RunClubAvatarRail(clubs: viewModel.joinedClubs),
+          SliverToBoxAdapter(
+            child: RunClubAvatarRail(clubs: viewModel.joinedClubs),
+          ),
         if (viewModel.allClubs.isNotEmpty)
           RunClubDiscoverList(
             clubs: viewModel.allClubs,
             joinedClubIds: viewModel.joinedClubIds,
           ),
-        const SizedBox(height: CatchSpacing.s6),
+        const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
       ],
     );
   }

@@ -1,9 +1,10 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
+import 'package:catch_dating_app/onboarding/presentation/onboarding_form_keys.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -64,6 +65,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
               values: Gender.values,
               selected: _gender != null ? {_gender!} : {},
               multiSelect: false,
+              chipKeyBuilder: OnboardingFormKeys.genderChip,
               validator: (_) =>
                   _gender == null ? 'Please select your gender' : null,
               onChanged: (next) {
@@ -78,6 +80,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
               values: Gender.values,
               selected: _interestedIn,
               multiSelect: true,
+              chipKeyBuilder: OnboardingFormKeys.interestedInChip,
               onChanged: (next) {
                 OnboardingController.saveProfileMutation.reset(ref);
                 setState(() => _interestedIn = next);
@@ -85,9 +88,7 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
             ),
             if (mutation.hasError) ...[
               gapH16,
-              ErrorBanner(
-                message: mutationErrorMessage(mutation),
-              ),
+              ErrorBanner(message: mutationErrorMessage(mutation)),
             ],
             const SizedBox(height: 40),
             CatchButton(

@@ -1,5 +1,10 @@
 # Catch Dating App — Pre-Launch Audit
 
+> Audit snapshot. Re-verify code paths, statuses, and severity before treating
+> any item as current launch risk. Use `docs/README.md` for the docs ownership
+> map and avoid creating parallel pre-launch trackers unless this file is first
+> updated or split with a clear owner.
+
 **Date:** 2026-05-04
 **Author:** Claude (verified against source at `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`)
 **Scope:** Full-stack audit covering architecture, security, UX, and business operations.

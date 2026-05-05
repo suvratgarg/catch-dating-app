@@ -43,10 +43,11 @@ Current state:
   registered on the dev web app. Do not commit raw debug tokens.
 - Firestore rules are deployed and aligned across dev, staging, and prod. All
   client access is governed by the normal auth/ownership rules. A predeploy hook
-  in `firebase.json` runs the rules test suite (`npm test`) before every
-  `firebase deploy --only firestore:rules`, so broken rules cannot ship from
-  the CLI. A GitHub Actions workflow (`.github/workflows/firestore-rules-ci.yml`)
-  runs the same tests on every PR that touches `firestore.rules`.
+  in `firebase.json` runs Functions tests plus the Firestore rules emulator
+  suite before every `firebase deploy --only firestore:rules`, so broken rules
+  cannot ship from the CLI. A GitHub Actions workflow
+  (`.github/workflows/firestore-rules-ci.yml`) runs the contract checker and
+  rules tests on every PR that touches rules or schema files.
 - Production now has only the current app registrations active:
   `Catch Prod Android`, `Catch Prod iOS`, and `Catch Prod Web`. The old
   `com.example.*` Android/iOS registrations and the old Windows web
@@ -125,6 +126,24 @@ Run Firebase CLI commands against a configured alias:
 ./tool/firebase_with_env.sh dev deploy --only functions,firestore,storage
 ./tool/firebase_with_env.sh staging deploy --only functions
 ```
+
+Validate Firestore data before tightening rules or writing migrations:
+
+```bash
+node tool/validate_firestore_data.mjs --env dev
+node tool/validate_firestore_data.mjs --env staging --json
+node tool/validate_firestore_data.mjs --env dev --emulator
+```
+
+The validator is read-only. It checks document shape, approximate document
+size, high-growth array lengths, and cross-document references for users, run
+clubs, runs, reviews, swipes, matches, chat messages, and onboarding drafts.
+Live validation uses the Firebase Admin SDK, so the shell must have Application
+Default Credentials configured, for example through
+`GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json` or
+`gcloud auth application-default login`. Emulator validation does not need live
+credentials.
+Use it against dev/staging before production and before running any migration.
 
 ## How to refresh an environment
 

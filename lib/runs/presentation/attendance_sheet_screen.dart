@@ -1,20 +1,20 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AttendanceSheetScreen extends ConsumerWidget {
@@ -63,16 +63,18 @@ class _AttendanceList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
     final signedUpIds = run.signedUpUserIds;
     final attendedIds = run.attendedUserIds;
     final mutation = ref.watch(RunBookingController.markAttendanceMutation);
 
     if (signedUpIds.isEmpty) {
-      return Center(
-        child: Text(
-          'No one has signed up for this run yet.',
-          style: CatchTextStyles.bodyM(context, color: t.ink2),
+      return const Center(
+        child: CatchEmptyState(
+          icon: Icons.group_outlined,
+          title: 'No runners yet',
+          message: 'No one has signed up for this run yet.',
+          surface: false,
+          iconStyle: CatchEmptyStateIconStyle.plain,
         ),
       );
     }
@@ -87,41 +89,25 @@ class _AttendanceList extends ConsumerWidget {
     return Column(
       children: [
         if (mutation.hasError)
-          ErrorBanner(
-            message: _attendanceErrorMessage((mutation as MutationError).error),
-          ),
-        Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s5,
-            Sizes.p12,
-            CatchSpacing.s5,
-            Sizes.p4,
-          ),
-          child: Row(
-            children: [
-              Text(
-                '$attendedCount / ${signedUpIds.length} checked in',
-                style: CatchTextStyles.titleM(context),
-              ),
-              const Spacer(),
-              Text(
-                'Tap to toggle',
-                style: CatchTextStyles.bodyS(context, color: t.ink2),
-              ),
-            ],
-          ),
+          ErrorBanner(message: mutationErrorMessage(mutation)),
+        _AttendanceSummaryHeader(
+          checkedInCount: attendedCount,
+          totalCount: signedUpIds.length,
         ),
         Expanded(
           child: profilesAsync.isLoading
               ? const CatchLoadingIndicator()
-              : ListView.builder(
+              : profilesAsync.hasError
+              ? CatchErrorText(profilesAsync.error!)
+              : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,
-                    0,
+                    Sizes.p8,
                     CatchSpacing.s5,
                     Sizes.p24,
                   ),
                   itemCount: signedUpIds.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
                     final uid = signedUpIds[index];
                     final profile = profiles[uid];
@@ -133,12 +119,48 @@ class _AttendanceList extends ConsumerWidget {
                       photoUrl: profile?.$2,
                       isAttended: isAttended,
                       runId: run.id,
-                      runClubId: run.runClubId,
                     );
                   },
                 ),
         ),
       ],
+    );
+  }
+}
+
+class _AttendanceSummaryHeader extends StatelessWidget {
+  const _AttendanceSummaryHeader({
+    required this.checkedInCount,
+    required this.totalCount,
+  });
+
+  final int checkedInCount;
+  final int totalCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        Sizes.p12,
+        CatchSpacing.s5,
+        Sizes.p4,
+      ),
+      child: Row(
+        children: [
+          Text(
+            '$checkedInCount / $totalCount checked in',
+            style: CatchTextStyles.titleM(context),
+          ),
+          const Spacer(),
+          Text(
+            'Tap to toggle',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -150,7 +172,6 @@ class _AttendeeRow extends ConsumerWidget {
     required this.photoUrl,
     required this.isAttended,
     required this.runId,
-    required this.runClubId,
   });
 
   final String uid;
@@ -158,64 +179,42 @@ class _AttendeeRow extends ConsumerWidget {
   final String? photoUrl;
   final bool isAttended;
   final String runId;
-  final String runClubId;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
     final mutation = ref.watch(RunBookingController.markAttendanceMutation);
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4),
-      child: Material(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        child: InkWell(
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          onTap: mutation.isPending
-              ? null
-              : () {
-                  RunBookingController.markAttendanceMutation.run(
-                    ref,
-                    (tx) async => tx
-                        .get(runBookingControllerProvider.notifier)
-                        .markAttendance(runId: runId, userId: uid),
-                  );
-                },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: Sizes.p14,
-              vertical: Sizes.p12,
-            ),
-            child: Row(
-              children: [
-                PersonAvatar(size: 40, name: name, imageUrl: photoUrl),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(name, style: CatchTextStyles.bodyM(context)),
-                ),
-                Icon(
-                  isAttended
-                      ? Icons.check_circle_rounded
-                      : Icons.radio_button_unchecked,
-                  color: isAttended ? t.primary : t.ink3,
-                  size: 28,
-                ),
-              ],
-            ),
-          ),
+    return CatchSurface(
+      borderColor: t.line,
+      radius: CatchRadius.md,
+      clipBehavior: Clip.antiAlias,
+      child: PersonRow(
+        data: PersonRowData(
+          name: name,
+          imageUrl: photoUrl,
+          seed: uid,
+          metaLine: isAttended ? 'Checked in' : 'Not checked in',
         ),
+        trailing: CatchBadge(
+          label: isAttended ? 'checked in' : 'absent',
+          tone: isAttended ? CatchBadgeTone.success : CatchBadgeTone.neutral,
+          icon: isAttended
+              ? Icons.check_circle_rounded
+              : Icons.radio_button_unchecked,
+          uppercase: true,
+        ),
+        onTap: mutation.isPending
+            ? null
+            : () {
+                RunBookingController.markAttendanceMutation.run(
+                  ref,
+                  (tx) async => tx
+                      .get(runBookingControllerProvider.notifier)
+                      .markAttendance(runId: runId, userId: uid),
+                );
+              },
       ),
     );
   }
-}
-
-String _attendanceErrorMessage(Object error) {
-  if (error is AppException) return error.message;
-  if (error is FirebaseFunctionsException) {
-    final message = error.message;
-    if (message != null && message.trim().isNotEmpty) return message.trim();
-  }
-  if (error is StateError && error.message.isNotEmpty) return error.message;
-  return firestoreErrorMessage(error);
 }

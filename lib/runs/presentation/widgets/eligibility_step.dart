@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -76,6 +77,7 @@ class EligibilityStep extends StatelessWidget {
             children: [
               Expanded(
                 child: CatchTextField(
+                  key: CreateRunFormKeys.minAge,
                   label: 'Min age',
                   isOptional: true,
                   controller: minAgeController,
@@ -94,6 +96,7 @@ class EligibilityStep extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: CatchTextField(
+                  key: CreateRunFormKeys.maxAge,
                   label: 'Max age',
                   isOptional: true,
                   controller: maxAgeController,
@@ -118,6 +121,7 @@ class EligibilityStep extends StatelessWidget {
             children: [
               Expanded(
                 child: CatchTextField(
+                  key: CreateRunFormKeys.maxMen,
                   label: 'Max men',
                   isOptional: true,
                   controller: maxMenController,
@@ -137,6 +141,7 @@ class EligibilityStep extends StatelessWidget {
               const SizedBox(width: 12),
               Expanded(
                 child: CatchTextField(
+                  key: CreateRunFormKeys.maxWomen,
                   label: 'Max women',
                   isOptional: true,
                   controller: maxWomenController,

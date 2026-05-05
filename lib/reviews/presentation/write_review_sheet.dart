@@ -1,10 +1,12 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/confirm_danger_dialog.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
 import 'package:catch_dating_app/reviews/presentation/star_rating.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -54,6 +56,7 @@ class _WriteReviewSheet extends ConsumerStatefulWidget {
 class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
   late int _rating;
   late final TextEditingController _commentController;
+  bool _didResetMutations = false;
 
   bool get _isEdit => widget.existingReview != null;
 
@@ -67,62 +70,123 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didResetMutations) return;
+    _didResetMutations = true;
+    WriteReviewController.submitMutation.reset(ref);
+    WriteReviewController.deleteMutation.reset(ref);
+  }
+
+  @override
   void dispose() {
     _commentController.dispose();
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
     if (_rating == 0) return;
-    WriteReviewController.submitMutation.run(ref, (tx) async {
-      await tx
-          .get(writeReviewControllerProvider.notifier)
-          .submit(
-            runClubId: widget.runClubId,
-            runId: widget.runId,
-            reviewerUserId: widget.reviewer.uid,
-            reviewerName: widget.reviewer.name,
-            rating: _rating,
-            comment: _commentController.text.trim(),
-            existingReview: widget.existingReview,
-          );
-    });
+    try {
+      await WriteReviewController.submitMutation.run(ref, (tx) async {
+        await tx
+            .get(writeReviewControllerProvider.notifier)
+            .submit(
+              runClubId: widget.runClubId,
+              runId: widget.runId,
+              reviewerUserId: widget.reviewer.uid,
+              reviewerName: widget.reviewer.name,
+              rating: _rating,
+              comment: _commentController.text.trim(),
+              existingReview: widget.existingReview,
+            );
+      });
+    } catch (_) {
+      // Inline ErrorBanner owns user-facing error display.
+    }
+  }
+
+  Future<void> _confirmDelete() async {
+    final review = widget.existingReview;
+    if (review == null) return;
+
+    final confirmed = await showConfirmDangerDialog(
+      context: context,
+      title: 'Delete review?',
+      message: 'This removes your review from this run.',
+      confirmLabel: 'Delete',
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await WriteReviewController.deleteMutation.run(ref, (tx) async {
+        await tx.get(writeReviewControllerProvider.notifier).delete(review.id);
+      });
+    } catch (_) {
+      // Inline ErrorBanner owns user-facing error display.
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     final mutation = ref.watch(WriteReviewController.submitMutation);
+    final deleteMutation = ref.watch(WriteReviewController.deleteMutation);
+    final submitting = mutation.isPending || deleteMutation.isPending;
 
     ref.listen(WriteReviewController.submitMutation, (prev, next) {
       if (prev?.isPending == true && next.isSuccess) {
         Navigator.of(context).pop();
       }
     });
+    ref.listen(WriteReviewController.deleteMutation, (prev, next) {
+      if (prev?.isPending == true && next.isSuccess) {
+        Navigator.of(context).pop();
+      }
+    });
 
-    return Padding(
+    return CatchBottomSheetScaffold(
+      title: _isEdit ? 'Edit review' : 'Write a review',
+      keyboardSafe: true,
       padding: EdgeInsets.fromLTRB(
-        Sizes.p24,
-        Sizes.p24,
-        Sizes.p24,
-        Sizes.p24 + MediaQuery.viewInsetsOf(context).bottom,
+        Sizes.p16,
+        Sizes.p12,
+        Sizes.p16,
+        Sizes.p16 + MediaQuery.viewInsetsOf(context).bottom,
+      ),
+      action: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (_isEdit) ...[
+            CatchButton(
+              key: ReviewKeys.deleteReviewButton,
+              label: 'Delete review',
+              onPressed: submitting ? null : _confirmDelete,
+              isLoading: deleteMutation.isPending,
+              variant: CatchButtonVariant.danger,
+              fullWidth: true,
+            ),
+            gapH12,
+          ],
+          CatchButton(
+            key: ReviewKeys.submitReviewButton,
+            label: _isEdit ? 'Save' : 'Submit',
+            onPressed: _rating == 0 || submitting ? null : _submit,
+            isLoading: mutation.isPending,
+            fullWidth: true,
+          ),
+        ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            _isEdit ? 'Edit review' : 'Write a review',
-            style: CatchTextStyles.titleL(
-              context,
-            ).copyWith(fontWeight: FontWeight.bold),
-          ),
-          gapH16,
           StarRatingPicker(
             rating: _rating,
             onChanged: (r) => setState(() => _rating = r),
+            keyBuilder: ReviewKeys.ratingStar,
           ),
           gapH16,
           CatchTextField(
+            key: ReviewKeys.commentField,
             label: 'Review',
             isOptional: true,
             controller: _commentController,
@@ -134,13 +198,10 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
             gapH12,
             ErrorBanner(message: mutationErrorMessage(mutation)),
           ],
-          gapH20,
-          CatchButton(
-            label: _isEdit ? 'Save' : 'Submit',
-            onPressed: _rating == 0 ? null : _submit,
-            isLoading: mutation.isPending,
-            fullWidth: true,
-          ),
+          if (deleteMutation.hasError) ...[
+            gapH12,
+            ErrorBanner(message: mutationErrorMessage(deleteMutation)),
+          ],
         ],
       ),
     );

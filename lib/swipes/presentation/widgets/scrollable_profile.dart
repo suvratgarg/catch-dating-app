@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -106,7 +106,10 @@ class _RunningIdentityCard extends StatelessWidget {
               children: [
                 _RunStatPill(
                   label: 'Pace',
-                  value: formatPaceRange(profile.paceMinSecsPerKm, profile.paceMaxSecsPerKm),
+                  value: formatPaceRange(
+                    profile.paceMinSecsPerKm,
+                    profile.paceMaxSecsPerKm,
+                  ),
                 ),
                 gapW8,
                 _RunStatPill(
@@ -135,10 +138,7 @@ class _RunningIdentityCard extends StatelessWidget {
 }
 
 class _RunStatPill extends StatelessWidget {
-  const _RunStatPill({
-    required this.label,
-    required this.value,
-  });
+  const _RunStatPill({required this.label, required this.value});
 
   final String label;
   final String value;
@@ -178,7 +178,6 @@ class _RunStatPill extends StatelessWidget {
     );
   }
 }
-
 
 String _formatDistanceSummary(PublicProfile profile) {
   if (profile.preferredDistances.isEmpty) return 'Any run';

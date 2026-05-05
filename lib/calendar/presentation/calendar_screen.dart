@@ -1,14 +1,17 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -39,7 +42,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           error: (_, _) => _CalendarMessage(
             title: 'Calendar unavailable',
             body: 'Your booked runs could not be loaded.',
-            tokens: t,
           ),
           data: (runs) => Column(
             children: [
@@ -47,7 +49,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 mode: _mode,
                 onModeChanged: (mode) => setState(() => _mode = mode),
                 runs: runs,
-                tokens: t,
               ),
               Expanded(
                 child: runs.isEmpty
@@ -55,11 +56,10 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                         title: 'No booked runs yet',
                         body:
                             'Runs you book will show up here by day and time.',
-                        tokens: t,
                       )
                     : _mode == CalendarViewMode.agenda
-                    ? _AgendaView(runs: runs, tokens: t)
-                    : _TimelineView(runs: runs, tokens: t),
+                    ? RunAgendaList(runs: runs, badgeLabel: 'JOINED')
+                    : _TimelineView(runs: runs),
               ),
             ],
           ),
@@ -76,16 +76,15 @@ class _CalendarHeader extends StatelessWidget {
     required this.mode,
     required this.onModeChanged,
     required this.runs,
-    required this.tokens,
   });
 
   final CalendarViewMode mode;
   final ValueChanged<CalendarViewMode> onModeChanged;
   final List<Run> runs;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final sortedRuns = [...runs]
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
     final totalDistance = sortedRuns.fold<double>(
@@ -128,28 +127,25 @@ class _CalendarHeader extends StatelessWidget {
             ],
           ),
           gapH14,
-          _WeekStrip(runs: sortedRuns, tokens: tokens),
+          _WeekStrip(runs: sortedRuns),
           gapH14,
-          Container(
+          CatchSurface(
             padding: const EdgeInsets.all(Sizes.p14),
-            decoration: BoxDecoration(
-              color: tokens.surface,
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-              border: Border.all(color: tokens.line),
-            ),
+            radius: CatchRadius.md,
+            borderColor: t.line,
             child: Row(
               children: [
                 Expanded(
                   child: StatColumn(label: 'Booked', value: '${runs.length}'),
                 ),
-                _StatDivider(tokens: tokens),
+                const _StatDivider(),
                 Expanded(
                   child: StatColumn(
                     label: 'Distance',
                     value: '${totalDistance.round()} km',
                   ),
                 ),
-                _StatDivider(tokens: tokens),
+                const _StatDivider(),
                 Expanded(
                   child: StatColumn(
                     label: 'Next',
@@ -174,10 +170,9 @@ class _CalendarHeader extends StatelessWidget {
 }
 
 class _WeekStrip extends StatelessWidget {
-  const _WeekStrip({required this.runs, required this.tokens});
+  const _WeekStrip({required this.runs});
 
   final List<Run> runs;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
@@ -197,7 +192,6 @@ class _WeekStrip extends StatelessWidget {
               hasRun: runDays.contains(
                 DateUtils.dateOnly(monday.add(Duration(days: i))),
               ),
-              tokens: tokens,
             ),
           ),
           if (i < 6) gapW4,
@@ -212,22 +206,21 @@ class _WeekDay extends StatelessWidget {
     required this.date,
     required this.active,
     required this.hasRun,
-    required this.tokens,
   });
 
   final DateTime date;
   final bool active;
   final bool hasRun;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final day = const ['M', 'T', 'W', 'T', 'F', 'S', 'S'][date.weekday - 1];
 
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: active ? tokens.ink : Colors.transparent,
+        color: active ? t.ink : Colors.transparent,
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -236,9 +229,7 @@ class _WeekDay extends StatelessWidget {
             day,
             style: CatchTextStyles.bodyS(
               context,
-              color: active
-                  ? tokens.surface.withValues(alpha: 0.72)
-                  : tokens.ink3,
+              color: active ? t.surface.withValues(alpha: 0.72) : t.ink3,
             ),
           ),
           gapH2,
@@ -246,7 +237,7 @@ class _WeekDay extends StatelessWidget {
             '${date.day}',
             style: CatchTextStyles.labelL(
               context,
-              color: active ? tokens.surface : tokens.ink,
+              color: active ? t.surface : t.ink,
             ),
           ),
           gapH4,
@@ -254,7 +245,7 @@ class _WeekDay extends StatelessWidget {
             width: 4,
             height: 4,
             decoration: BoxDecoration(
-              color: hasRun ? tokens.primary : Colors.transparent,
+              color: hasRun ? t.primary : Colors.transparent,
               shape: BoxShape.circle,
             ),
           ),
@@ -264,118 +255,10 @@ class _WeekDay extends StatelessWidget {
   }
 }
 
-class _AgendaView extends StatelessWidget {
-  const _AgendaView({required this.runs, required this.tokens});
-
-  final List<Run> runs;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    final grouped = _groupRuns(runs);
-
-    return ListView(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        Sizes.p4,
-        CatchSpacing.s5,
-        Sizes.p24,
-      ),
-      children: [
-        for (final entry in grouped.entries) ...[
-          Text(
-            _dayLabel(entry.key).toUpperCase(),
-            style: CatchTextStyles.labelM(
-              context,
-              color: DateUtils.isSameDay(entry.key, DateTime.now())
-                  ? tokens.primary
-                  : tokens.ink3,
-            ),
-          ),
-          gapH8,
-          for (final run in entry.value) ...[
-            _AgendaRunCard(run: run, tokens: tokens),
-            gapH10,
-          ],
-          gapH10,
-        ],
-      ],
-    );
-  }
-}
-
-class _AgendaRunCard extends StatelessWidget {
-  const _AgendaRunCard({required this.run, required this.tokens});
-
-  final Run run;
-  final CatchTokens tokens;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(Sizes.p14),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        border: Border.all(color: tokens.line),
-      ),
-      child: Row(
-        children: [
-          Container(
-            width: 4,
-            height: 64,
-            decoration: BoxDecoration(
-              color: tokens.primary,
-              borderRadius: BorderRadius.circular(99),
-            ),
-          ),
-          gapW12,
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  RunFormatters.time(run.startTime),
-                  style: CatchTextStyles.labelM(context),
-                ),
-                gapH4,
-                Text(
-                  run.meetingPoint,
-                  style: CatchTextStyles.labelL(context),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                gapH4,
-                Text(
-                  '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label} · ${run.signedUpUserIds.length}/${run.capacityLimit}',
-                  style: CatchTextStyles.bodyS(context, color: tokens.ink2),
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(width: 8),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
-            decoration: BoxDecoration(
-              color: tokens.primarySoft,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-            ),
-            child: Text(
-              'JOINED',
-              style: CatchTextStyles.labelM(context, color: tokens.primary),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class _TimelineView extends StatelessWidget {
-  const _TimelineView({required this.runs, required this.tokens});
+  const _TimelineView({required this.runs});
 
   final List<Run> runs;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
@@ -392,20 +275,20 @@ class _TimelineView extends StatelessWidget {
       children: [
         Text('Day timeline', style: CatchTextStyles.labelM(context)),
         gapH12,
-        for (final run in sorted) _TimelineRun(run: run, tokens: tokens),
+        for (final run in sorted) _TimelineRun(run: run),
       ],
     );
   }
 }
 
 class _TimelineRun extends StatelessWidget {
-  const _TimelineRun({required this.run, required this.tokens});
+  const _TimelineRun({required this.run});
 
   final Run run;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return IntrinsicHeight(
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -414,7 +297,7 @@ class _TimelineRun extends StatelessWidget {
             width: 56,
             child: Text(
               RunFormatters.time(run.startTime),
-              style: CatchTextStyles.bodyS(context, color: tokens.ink3),
+              style: CatchTextStyles.bodyS(context, color: t.ink3),
             ),
           ),
           Column(
@@ -423,23 +306,22 @@ class _TimelineRun extends StatelessWidget {
                 width: 10,
                 height: 10,
                 decoration: BoxDecoration(
-                  color: tokens.primary,
+                  color: t.primary,
                   shape: BoxShape.circle,
                 ),
               ),
-              Expanded(child: Container(width: 1, color: tokens.line)),
+              Expanded(child: Container(width: 1, color: t.line)),
             ],
           ),
           gapW12,
           Expanded(
             child: Padding(
               padding: const EdgeInsets.only(bottom: 14),
-              child: Container(
+              child: CatchSurface(
                 padding: const EdgeInsets.all(Sizes.p14),
-                decoration: BoxDecoration(
-                  color: tokens.primary,
-                  borderRadius: BorderRadius.circular(CatchRadius.md),
-                ),
+                backgroundColor: t.primary,
+                radius: CatchRadius.md,
+                borderWidth: 0,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -447,7 +329,7 @@ class _TimelineRun extends StatelessWidget {
                       run.meetingPoint,
                       style: CatchTextStyles.labelL(
                         context,
-                        color: tokens.primaryInk,
+                        color: t.primaryInk,
                       ),
                     ),
                     gapH4,
@@ -455,7 +337,7 @@ class _TimelineRun extends StatelessWidget {
                       '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label}',
                       style: CatchTextStyles.bodyS(
                         context,
-                        color: tokens.primaryInk.withValues(alpha: 0.84),
+                        color: t.primaryInk.withValues(alpha: 0.84),
                       ),
                     ),
                   ],
@@ -470,77 +352,41 @@ class _TimelineRun extends StatelessWidget {
 }
 
 class _StatDivider extends StatelessWidget {
-  const _StatDivider({required this.tokens});
-
-  final CatchTokens tokens;
+  const _StatDivider();
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     return Container(
       width: 1,
       height: 44,
       margin: const EdgeInsets.symmetric(horizontal: 10),
-      color: tokens.line,
+      color: t.line,
     );
   }
 }
 
 class _CalendarMessage extends StatelessWidget {
-  const _CalendarMessage({
-    required this.title,
-    required this.body,
-    required this.tokens,
-  });
+  const _CalendarMessage({required this.title, required this.body});
 
   final String title;
   final String body;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Padding(
+      child: CatchEmptyState(
+        icon: Icons.calendar_month_outlined,
+        title: title,
+        message: body,
+        surface: false,
+        iconStyle: CatchEmptyStateIconStyle.plain,
+        iconSize: 44,
         padding: const EdgeInsets.all(Sizes.p24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.calendar_month_outlined,
-              color: tokens.primary,
-              size: 44,
-            ),
-            gapH12,
-            Text(title, style: CatchTextStyles.titleL(context)),
-            gapH6,
-            Text(
-              body,
-              textAlign: TextAlign.center,
-              style: CatchTextStyles.bodyM(context, color: tokens.ink2),
-            ),
-          ],
-        ),
+        titleStyle: CatchTextStyles.titleL(context),
       ),
     );
   }
-}
-
-Map<DateTime, List<Run>> _groupRuns(List<Run> runs) {
-  final sorted = [...runs]..sort((a, b) => a.startTime.compareTo(b.startTime));
-  final grouped = <DateTime, List<Run>>{};
-  for (final run in sorted) {
-    final day = DateUtils.dateOnly(run.startTime);
-    grouped.putIfAbsent(day, () => []).add(run);
-  }
-  return grouped;
-}
-
-String _dayLabel(DateTime date) {
-  if (DateUtils.isSameDay(date, DateTime.now())) return 'Today';
-  return '${_weekdayName(date.weekday)} · ${date.day} ${_monthName(date.month)}';
-}
-
-String _weekdayName(int weekday) {
-  return const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'][weekday - 1];
 }
 
 String _monthName(int month) {

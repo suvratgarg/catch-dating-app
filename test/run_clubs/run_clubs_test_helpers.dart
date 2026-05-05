@@ -5,7 +5,7 @@ import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -142,9 +142,7 @@ Future<void> pumpTestApp(WidgetTester tester, Widget child) async {
 class FakeRunClubsRepository implements RunClubsRepository {
   String generatedId = 'generated-club-id';
   String? joinedClubId;
-  String? joinedUserId;
   String? leftClubId;
-  String? leftUserId;
   Object? createError;
   Object? joinError;
   Object? leaveError;
@@ -165,9 +163,6 @@ class FakeRunClubsRepository implements RunClubsRepository {
     required String description,
     required IndianCity location,
     required String area,
-    required String hostUserId,
-    required String hostName,
-    String? hostAvatarUrl,
     String? imageUrl,
     String? instagramHandle,
     String? phoneNumber,
@@ -183,9 +178,6 @@ class FakeRunClubsRepository implements RunClubsRepository {
       description: description,
       location: location,
       area: area,
-      hostUserId: hostUserId,
-      hostName: hostName,
-      hostAvatarUrl: hostAvatarUrl,
       imageUrl: imageUrl,
       instagramHandle: instagramHandle,
       phoneNumber: phoneNumber,
@@ -195,31 +187,23 @@ class FakeRunClubsRepository implements RunClubsRepository {
   }
 
   @override
-  Future<void> deleteRunClub(String id) async {
-    clubsById.remove(id);
-  }
-
-  @override
   Future<RunClub?> fetchRunClub(String id) async => clubsById[id];
 
   @override
-  Future<void> joinClub(String clubId, String userId) async {
+  Future<void> joinClub(String clubId) async {
     if (joinError != null) {
       throw joinError!;
     }
     joinedClubId = clubId;
-    joinedUserId = userId;
   }
 
   @override
-  Future<void> leaveClub(String clubId, String userId) async {
+  Future<void> leaveClub(String clubId) async {
     if (leaveError != null) {
       throw leaveError!;
     }
     leftClubId = clubId;
-    leftUserId = userId;
   }
-
 
   @override
   Future<void> updateRunClub({
@@ -254,9 +238,6 @@ class CreateRunClubCall {
     required this.description,
     required this.location,
     required this.area,
-    required this.hostUserId,
-    required this.hostName,
-    this.hostAvatarUrl,
     this.imageUrl,
     this.instagramHandle,
     this.phoneNumber,
@@ -268,9 +249,6 @@ class CreateRunClubCall {
   final String description;
   final IndianCity location;
   final String area;
-  final String hostUserId;
-  final String hostName;
-  final String? hostAvatarUrl;
   final String? imageUrl;
   final String? instagramHandle;
   final String? phoneNumber;

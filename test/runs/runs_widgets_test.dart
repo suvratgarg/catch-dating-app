@@ -2,16 +2,14 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/duration_stepper.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/picker_tile.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/requirements_row.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_photo_header.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_stats_grid.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/schedule_day_header.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/schedule_run_card.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/step_progress_bar.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_step.dart';
@@ -76,8 +74,8 @@ void main() {
 
       await tester.tap(find.text('Select a date'));
       await tester.tap(find.text('Pin exact starting point on map'));
-      await tester.tap(find.byIcon(Icons.remove_rounded));
-      await tester.tap(find.byIcon(Icons.add_rounded));
+      await tester.tap(find.byTooltip('Decrease duration'));
+      await tester.tap(find.byTooltip('Increase duration'));
       await tester.pump();
 
       expect(pickerTapped, isTrue);
@@ -199,10 +197,10 @@ void main() {
       expect(find.text('Start time must be in the future'), findsOneWidget);
     });
 
-    testWidgets('schedule and progress widgets render and handle selection', (
+    testWidgets('agenda and progress widgets render and handle selection', (
       tester,
     ) async {
-      final now = DateTime.now();
+      final now = DateTime(2026, 5, 5);
       final run = buildRun(
         id: 'run-7',
         startTime: DateTime(now.year, now.month, now.day, 8),
@@ -218,12 +216,6 @@ void main() {
         Scaffold(
           body: ListView(
             children: [
-              ScheduleDayHeader(day: now),
-              ScheduleRunCard(
-                run: run,
-                isSelected: true,
-                onTap: () => selectedRunId = run.id,
-              ),
               const StepProgressBar(currentStep: 1, totalSteps: 4),
               StepperFooter(
                 isLastStep: false,
@@ -236,11 +228,11 @@ void main() {
                 onNext: _noop,
               ),
               SizedBox(
-                width: 900,
-                height: 500,
-                child: RunScheduleGrid(
+                height: 240,
+                child: RunAgendaList(
                   runs: [run],
-                  selectedRunId: run.id,
+                  badgeLabel: 'VIEW',
+                  today: now,
                   onRunSelected: (selected) => selectedRunId = selected.id,
                 ),
               ),
@@ -249,9 +241,10 @@ void main() {
         ),
       );
 
-      expect(find.textContaining('km · Easy'), findsWidgets);
-      expect(find.text('08:00–09:00'), findsWidgets);
-      expect(find.text('2/20'), findsWidgets);
+      expect(find.text('TODAY'), findsOneWidget);
+      expect(find.text('08:00'), findsOneWidget);
+      expect(find.text('7km · Easy · 2/20'), findsOneWidget);
+      expect(find.text('VIEW'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('Schedule run'), findsNothing);
       expect(
@@ -261,7 +254,7 @@ void main() {
         findsOneWidget,
       );
 
-      await tester.tap(find.text('7km · Easy').first);
+      await tester.tap(find.text('7km · Easy · 2/20'));
       await tester.tap(find.text('Next'));
       await tester.pump();
 
@@ -269,15 +262,21 @@ void main() {
       expect(footerTapped, isTrue);
     });
 
-    testWidgets('schedule grid forwards taps to the selected-run callback', (
+    testWidgets('agenda list sorts runs and forwards selected-run taps', (
       tester,
     ) async {
-      final now = DateTime.now();
-      final run = buildRun(
-        id: 'run-grid',
+      final now = DateTime(2026, 5, 5);
+      final laterRun = buildRun(
+        id: 'run-later',
+        startTime: DateTime(now.year, now.month, now.day, 10),
+        endTime: DateTime(now.year, now.month, now.day, 11),
+        meetingPoint: 'Later start',
+      );
+      final soonerRun = buildRun(
+        id: 'run-sooner',
         startTime: DateTime(now.year, now.month, now.day, 8),
         endTime: DateTime(now.year, now.month, now.day, 9),
-        distanceKm: 7,
+        meetingPoint: 'Sooner start',
       );
       String? tappedRunId;
 
@@ -285,25 +284,26 @@ void main() {
         tester,
         Scaffold(
           body: SizedBox(
-            width: 900,
-            height: 500,
-            child: RunScheduleGrid(
-              runs: [run],
+            height: 360,
+            child: RunAgendaList(
+              runs: [laterRun, soonerRun],
+              today: now,
               onRunSelected: (selected) => tappedRunId = selected.id,
             ),
           ),
         ),
       );
 
-      await tester.tap(
-        find.descendant(
-          of: find.byType(RunScheduleGrid),
-          matching: find.text('7km · Easy'),
-        ),
+      expect(
+        tester.getTopLeft(find.text('Sooner start')).dy <
+            tester.getTopLeft(find.text('Later start')).dy,
+        isTrue,
       );
+
+      await tester.tap(find.text('Sooner start'));
       await tester.pump();
 
-      expect(tappedRunId, run.id);
+      expect(tappedRunId, 'run-sooner');
     });
 
     testWidgets('run photo header repaints when the token mode changes', (

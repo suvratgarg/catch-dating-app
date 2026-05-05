@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/constants/app_sizes.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';

@@ -1,0 +1,84 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'auth_session_controller.dart';
+
+// **************************************************************************
+// RiverpodGenerator
+// **************************************************************************
+
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// ignore_for_file: type=lint, type=warning
+/// **Pattern A: Action controller + static Mutations**
+///
+/// Owns session-level auth side effects such as sign-out. This keeps widgets
+/// from calling [AuthRepository] directly and centralizes cleanup of keepAlive
+/// flow controllers that should not survive a completed sign-out.
+
+@ProviderFor(AuthSessionController)
+final authSessionControllerProvider = AuthSessionControllerProvider._();
+
+/// **Pattern A: Action controller + static Mutations**
+///
+/// Owns session-level auth side effects such as sign-out. This keeps widgets
+/// from calling [AuthRepository] directly and centralizes cleanup of keepAlive
+/// flow controllers that should not survive a completed sign-out.
+final class AuthSessionControllerProvider
+    extends $NotifierProvider<AuthSessionController, void> {
+  /// **Pattern A: Action controller + static Mutations**
+  ///
+  /// Owns session-level auth side effects such as sign-out. This keeps widgets
+  /// from calling [AuthRepository] directly and centralizes cleanup of keepAlive
+  /// flow controllers that should not survive a completed sign-out.
+  AuthSessionControllerProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authSessionControllerProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authSessionControllerHash();
+
+  @$internal
+  @override
+  AuthSessionController create() => AuthSessionController();
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(void value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<void>(value),
+    );
+  }
+}
+
+String _$authSessionControllerHash() =>
+    r'de617a2ad9c543002373b083216daec676e82dc3';
+
+/// **Pattern A: Action controller + static Mutations**
+///
+/// Owns session-level auth side effects such as sign-out. This keeps widgets
+/// from calling [AuthRepository] directly and centralizes cleanup of keepAlive
+/// flow controllers that should not survive a completed sign-out.
+
+abstract class _$AuthSessionController extends $Notifier<void> {
+  void build();
+  @$mustCallSuper
+  @override
+  void runBuild() {
+    final ref = this.ref as $Ref<void, void>;
+    final element =
+        ref.element
+            as $ClassProviderElement<
+              AnyNotifier<void, void>,
+              void,
+              Object?,
+              Object?
+            >;
+    element.handleCreate(ref, build);
+  }
+}

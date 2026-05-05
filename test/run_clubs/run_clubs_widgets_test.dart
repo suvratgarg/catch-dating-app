@@ -2,8 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/data/city_repository.dart';
+import 'package:catch_dating_app/core/device_location.dart';
+import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -25,46 +29,92 @@ import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_cont
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_list.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_list_body.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart';
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_schedule_grid.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'run_clubs_test_helpers.dart';
+
+const _testCities = [
+  CityData(
+    name: 'mumbai',
+    label: 'Mumbai',
+    latitude: 19.0760,
+    longitude: 72.8777,
+  ),
+  CityData(
+    name: 'delhi',
+    label: 'Delhi',
+    latitude: 28.7041,
+    longitude: 77.1025,
+  ),
+];
+
+class _NoDeviceLocation extends DeviceLocation {
+  @override
+  Future<LatLng?> build() async => null;
+}
+
+Future<void> _pumpRunClubsSlivers(
+  WidgetTester tester,
+  List<Widget> slivers,
+) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      child: MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(body: CustomScrollView(slivers: slivers)),
+      ),
+    ),
+  );
+  await tester.pump();
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Run clubs widgets', () {
-    testWidgets(
-      'RunClubsContent shows the empty state when there are no clubs',
-      (tester) async {
-        await pumpTestApp(
-          tester,
-          const RunClubsListBody(
-            viewModel: RunClubsListViewModel(joinedClubs: [], allClubs: []),
+    testWidgets('RunClubsList shows the empty state when there are no clubs', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            runClubsListViewModelProvider.overrideWithValue(
+              const AsyncData(
+                RunClubsListViewModel(joinedClubs: [], allClubs: []),
+              ),
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const Scaffold(
+              body: CustomScrollView(slivers: [RunClubsList()]),
+            ),
           ),
-        );
+        ),
+      );
+      await tester.pump();
 
-        expect(find.text('No run clubs in this city yet'), findsOneWidget);
-        expect(find.text('Be the first to create one!'), findsOneWidget);
-      },
-    );
+      expect(find.text('No run clubs in this city yet'), findsOneWidget);
+      expect(find.text('Be the first to create one!'), findsOneWidget);
+    });
 
     testWidgets('RunClubsContent renders avatar rail and discover sections', (
       tester,
     ) async {
-      await pumpTestApp(
-        tester,
+      await _pumpRunClubsSlivers(tester, [
         RunClubsListBody(
           viewModel: RunClubsListViewModel(
             joinedClubs: [
@@ -77,7 +127,7 @@ void main() {
             joinedClubIds: {'joined-1'},
           ),
         ),
-      );
+      ]);
 
       expect(find.text('Your clubs'), findsOneWidget);
       expect(find.text('Discover'), findsOneWidget);
@@ -86,7 +136,12 @@ void main() {
     testWidgets(
       'RunClubsHeader updates search query and clears it when the city changes',
       (tester) async {
-        final container = ProviderContainer();
+        final container = ProviderContainer(
+          overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+          ],
+        );
         addTearDown(container.dispose);
 
         await tester.pumpWidget(
@@ -124,7 +179,7 @@ void main() {
         await tester.tap(find.text('Delhi').last);
         await tester.pumpAndSettle();
 
-        expect(container.read(selectedRunClubCityProvider), IndianCity.delhi);
+        expect(container.read(selectedRunClubCityProvider).name, 'delhi');
         expect(container.read(runClubSearchQueryProvider), isEmpty);
 
         final searchField = tester.widget<TextField>(find.byType(TextField));
@@ -244,7 +299,10 @@ void main() {
     ) async {
       final fakeRepository = FakeRunClubsRepository();
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
+          cityListProvider.overrideWith((ref) async => _testCities),
+          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
         ],
@@ -290,9 +348,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(fakeRepository.joinedClubId, 'club-join');
-      expect(fakeRepository.joinedUserId, 'runner-1');
       expect(fakeRepository.leftClubId, 'club-leave');
-      expect(fakeRepository.leftUserId, 'runner-1');
     });
 
     testWidgets('HostStatsBar and StatsStrip show computed values', (
@@ -509,7 +565,6 @@ void main() {
             builder: (_, _) => Scaffold(
               body: ClubDetailBody(
                 runClub: club,
-                runs: const [],
                 upcoming: [buildRun(runClubId: club.id)],
                 reviews: const [],
                 userProfile: buildUser(uid: 'host-1'),
@@ -547,6 +602,7 @@ void main() {
 
       expect(find.text('Booked'), findsOneWidget);
       expect(find.text('Join club'), findsNothing);
+      expect(find.text('Leave club'), findsNothing);
       expect(find.text('HOST TOOLS'), findsOneWidget);
       expect(find.byIcon(Icons.ios_share_rounded), findsOneWidget);
       expect(find.text('Share'), findsNothing);
@@ -567,14 +623,47 @@ void main() {
       expect(find.text('Create club-host'), findsOneWidget);
     });
 
-    testWidgets('ClubDetailBody schedule taps navigate to the selected run', (
+    testWidgets('ClubDetailBody keeps club review aggregate read-only', (
+      tester,
+    ) async {
+      final club = buildRunClub(id: 'club-reviews');
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: ClubDetailBody(
+              runClub: club,
+              upcoming: const [],
+              reviews: const [],
+              userProfile: buildUser(uid: 'runner-1'),
+              uid: 'runner-1',
+              isHost: false,
+              isMember: true,
+              isMutating: false,
+              isAuthenticated: true,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Reviews'), findsOneWidget);
+      expect(find.text('No reviews yet — be the first!'), findsOneWidget);
+      expect(find.text('Write a review'), findsNothing);
+      expect(find.text('Edit your review'), findsNothing);
+    });
+
+    testWidgets('ClubDetailBody agenda taps navigate to the selected run', (
       tester,
     ) async {
       final club = buildRunClub(id: 'club-schedule');
+      final today = DateTime.now();
       final run = buildRun(
         id: 'run-42',
         runClubId: club.id,
-        startTime: DateTime.now().add(const Duration(hours: 2)),
+        startTime: DateTime(today.year, today.month, today.day, 8),
+        endTime: DateTime(today.year, today.month, today.day, 9),
       );
       final router = GoRouter(
         initialLocation: '/',
@@ -584,7 +673,6 @@ void main() {
             builder: (_, _) => Scaffold(
               body: ClubDetailBody(
                 runClub: club,
-                runs: [run],
                 upcoming: [run],
                 reviews: const [],
                 userProfile: buildUser(uid: 'runner-1'),
@@ -615,10 +703,7 @@ void main() {
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
       await tester.pumpAndSettle();
 
-      final scheduleGrid = tester.widget<RunScheduleGrid>(
-        find.byType(RunScheduleGrid),
-      );
-      scheduleGrid.onRunSelected!(run);
+      await tester.tap(find.text('Start'));
       await tester.pumpAndSettle();
 
       expect(find.text('Run run-42'), findsOneWidget);
@@ -629,6 +714,7 @@ void main() {
     ) async {
       final fakeRepository = FakeRunClubsRepository();
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
@@ -664,15 +750,16 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(fakeRepository.joinedClubId, 'club-99');
-      expect(fakeRepository.joinedUserId, 'runner-1');
     });
 
-    testWidgets('RunClubsListScreen shows a spinner while loading', (
+    testWidgets('RunClubsListScreen shows skeleton cards while loading', (
       tester,
     ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             runClubsListViewModelProvider.overrideWithValue(
               const AsyncLoading(),
             ),
@@ -685,7 +772,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.byType(CircularProgressIndicator), findsOneWidget);
+      expect(find.byType(CatchSkeleton), findsNWidgets(3));
     });
 
     testWidgets('RunClubsListScreen shows a readable error message', (
@@ -694,6 +781,8 @@ void main() {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
+            cityListProvider.overrideWith((ref) async => _testCities),
+            deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             runClubsListViewModelProvider.overrideWithValue(
               AsyncError(StateError('boom'), StackTrace.empty),
             ),
@@ -714,6 +803,8 @@ void main() {
     ) async {
       final container = ProviderContainer(
         overrides: [
+          cityListProvider.overrideWith((ref) async => _testCities),
+          deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           runClubsListViewModelProvider.overrideWithValue(
             AsyncData(
               RunClubsListViewModel(
@@ -874,7 +965,7 @@ void main() {
       RunClubMembershipController.joinMutation.reset(container);
       await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
       container.dispose();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
     });
 
     testWidgets('RunClubDetailScreen listens for leave mutation errors', (
@@ -924,7 +1015,7 @@ void main() {
       RunClubMembershipController.leaveMutation.reset(container);
       await tester.pumpWidget(const MaterialApp(home: SizedBox.shrink()));
       container.dispose();
-      await tester.pump(const Duration(milliseconds: 500));
+      await tester.pumpAndSettle();
     });
 
     testWidgets('CreateRunClubScreen picks and previews a cover image', (
