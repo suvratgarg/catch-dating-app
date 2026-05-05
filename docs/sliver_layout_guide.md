@@ -1,7 +1,7 @@
 ---
 doc_id: sliver_layout
-version: 2.0.0
-updated: 2026-05-05
+version: 2.1.0
+updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -19,6 +19,16 @@ surfaces, sticky headers, or scroll-heavy widget tests. For other work, use the
 audit registry's `SLIVER-001` rule summary instead of loading this full guide.
 
 ## Rule Changelog
+
+### 2.1.0
+
+- Collapsible title headers must move upward as they collapse. Pinned bottom
+  rows, such as search/filter/tab rows, must not visually scroll over and cover
+  the title.
+- `CatchSliverHeader` now translates the title by the current shrink offset so
+  the title behaves like normal scroll content while the bottom row pins.
+- Apply this contract consistently to Profile, Run Clubs, Chats, and any future
+  sliver-native feature header.
 
 ### 2.0.0
 
@@ -251,6 +261,11 @@ That means header overflows are usually contract bugs, not cosmetic bugs:
   shrinking height as the user scrolls. If the title content should visually
   scroll away rather than compress, lay it out at its full height and clip the
   visible area as it collapses.
+- When a collapsible title is followed by a pinned bottom row, the title must
+  translate upward with the scroll offset. Do not let the bottom row appear to
+  scroll over the title and cover it. This applies to Run Clubs, Chats, Profile,
+  and any future screen with a scroll-away title plus sticky search/filter/tab
+  row.
 - Do not fix sticky-header overflows by repeatedly nudging feature heights until
   the error disappears. First calculate whether the declared extent matches the
   child layout: text line heights, gaps, vertical padding, icons, and input

@@ -238,7 +238,35 @@ void main() {
       expect(fakeRunRepository.cancelledRunId, 'run-1');
     });
 
-    testWidgets('shows attendance action for hosts after attendance opens', (
+    testWidgets(
+      'does not render host attendance as a run-detail bottom action',
+      (tester) async {
+        final startTime = DateTime(2026, 1, 1, 9);
+
+        await pumpRunsTestApp(
+          tester,
+          Scaffold(
+            bottomNavigationBar: RunDetailCta(
+              run: buildRun(startTime: startTime),
+              runClubId: 'club1',
+              isHost: true,
+              now: startTime.subtract(const Duration(minutes: 5)),
+              userProfile: buildUser(uid: 'host-1'),
+            ),
+          ),
+          overrides: [
+            paymentRepositoryProvider.overrideWithValue(
+              FakePaymentRepository(),
+            ),
+          ],
+        );
+
+        expect(find.text('Take Attendance'), findsNothing);
+        expect(find.text('Join run — 20 spots left'), findsNothing);
+      },
+    );
+
+    testWidgets('does not render self check-in as a run-detail bottom action', (
       tester,
     ) async {
       final startTime = DateTime(2026, 1, 1, 9);
@@ -247,11 +275,14 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: RunDetailCta(
-            run: buildRun(startTime: startTime),
+            run: buildRun(
+              startTime: startTime,
+              signedUpUserIds: const ['runner-1'],
+            ),
             runClubId: 'club1',
-            isHost: true,
+            isHost: false,
             now: startTime.subtract(const Duration(minutes: 5)),
-            userProfile: buildUser(uid: 'host-1'),
+            userProfile: buildUser(uid: 'runner-1'),
           ),
         ),
         overrides: [
@@ -259,8 +290,8 @@ void main() {
         ],
       );
 
-      expect(find.text('Take Attendance'), findsOneWidget);
-      expect(find.text('Join run — 20 spots left'), findsNothing);
+      expect(find.text('Check in'), findsNothing);
+      expect(find.text('Cancel booking'), findsNothing);
     });
 
     testWidgets('joins and leaves the waitlist', (tester) async {

@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
@@ -102,9 +101,9 @@ class _AttendanceList extends ConsumerWidget {
               : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,
-                    Sizes.p8,
+                    CatchSpacing.s2,
                     CatchSpacing.s5,
-                    Sizes.p24,
+                    CatchSpacing.s6,
                   ),
                   itemCount: signedUpIds.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 8),
@@ -144,9 +143,9 @@ class _AttendanceSummaryHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        Sizes.p12,
+        CatchSpacing.s3,
         CatchSpacing.s5,
-        Sizes.p4,
+        CatchSpacing.s1,
       ),
       child: Row(
         children: [

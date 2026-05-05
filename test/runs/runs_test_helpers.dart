@@ -202,6 +202,7 @@ class FakeRunRepository extends Fake implements RunRepository {
   String? leftWaitlistUserId;
   String? markedAttendanceRunId;
   String? markedAttendanceUserId;
+  String? selfCheckedInRunId;
   Run? fetchedRun;
   final Map<String, Run?> watchedRuns = {};
   final Map<String, List<Run>> clubRuns = {};
@@ -284,6 +285,15 @@ class FakeRunRepository extends Fake implements RunRepository {
     markedAttendanceRunId = runId;
     markedAttendanceUserId = userId;
     return true;
+  }
+
+  @override
+  Future<void> selfCheckInAttendance({
+    required String runId,
+    required double? latitude,
+    required double? longitude,
+  }) async {
+    selfCheckedInRunId = runId;
   }
 }
 

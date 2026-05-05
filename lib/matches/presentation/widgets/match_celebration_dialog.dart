@@ -66,7 +66,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
         borderRadius: BorderRadius.circular(CatchRadius.lg),
       ),
       child: Padding(
-        padding: const EdgeInsets.all(Sizes.p24),
+        padding: const EdgeInsets.all(CatchSpacing.s6),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [

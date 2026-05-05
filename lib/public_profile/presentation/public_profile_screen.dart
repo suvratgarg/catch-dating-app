@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
@@ -54,10 +53,10 @@ class PublicProfileScreen extends ConsumerWidget {
         child: CatchBottomSheetScaffold(
           title: 'Report ${profile.name}',
           padding: const EdgeInsets.fromLTRB(
-            Sizes.p16,
-            Sizes.p12,
-            Sizes.p16,
-            Sizes.p16,
+            CatchSpacing.s4,
+            CatchSpacing.s3,
+            CatchSpacing.s4,
+            CatchSpacing.s4,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -156,7 +155,7 @@ class PublicProfileScreen extends ConsumerWidget {
                 : _ProfileBody(profile: profile, submitting: submitting),
             error: (_, _) => Center(
               child: Padding(
-                padding: const EdgeInsets.all(Sizes.p24),
+                padding: const EdgeInsets.all(CatchSpacing.s6),
                 child: Text(
                   'Unable to load this profile.',
                   style: CatchTextStyles.bodyM(context, color: t.ink2),
@@ -168,7 +167,7 @@ class PublicProfileScreen extends ConsumerWidget {
               if (loadedProfile == null) {
                 return Center(
                   child: Padding(
-                    padding: const EdgeInsets.all(Sizes.p24),
+                    padding: const EdgeInsets.all(CatchSpacing.s6),
                     child: Text(
                       'This profile is unavailable.',
                       style: CatchTextStyles.bodyM(context, color: t.ink2),
@@ -200,7 +199,7 @@ class _ProfileBody extends StatelessWidget {
     return Stack(
       children: [
         Padding(
-          padding: const EdgeInsets.all(Sizes.p16),
+          padding: const EdgeInsets.all(CatchSpacing.s4),
           child: ProfileCard(profile: profile),
         ),
         if (submitting)

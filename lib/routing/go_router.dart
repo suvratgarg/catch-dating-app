@@ -44,6 +44,7 @@ enum Routes {
   authScreen('/auth'),
   onboardingScreen('/onboarding'),
   calendarScreen('/calendar'),
+  calendarRunDetailScreen('/calendar/run-clubs/:runClubId/runs/:runId'),
   filtersScreen('/filters'),
   runMapScreen('/map'),
   // Home / Dashboard branch (index 0)
@@ -63,7 +64,7 @@ enum Routes {
   // Chats branch (index 3)
   matchesListScreen('/chats'),
   chatScreen('/chats/:matchId'),
-  // You / Profile branch (index 4)
+  // Profile branch (index 4)
   profileScreen('/you'),
   publicProfileScreen('/profiles/:uid'),
   settingsScreen('/settings'),
@@ -127,6 +128,14 @@ GoRouter goRouter(Ref ref) {
         path: Routes.calendarScreen.path,
         name: Routes.calendarScreen.name,
         builder: (context, state) => const CalendarScreen(),
+      ),
+      GoRoute(
+        path: Routes.calendarRunDetailScreen.path,
+        name: Routes.calendarRunDetailScreen.name,
+        builder: (context, state) => RunDetailScreen(
+          runClubId: state.pathParameters['runClubId']!,
+          runId: state.pathParameters['runId']!,
+        ),
       ),
       GoRoute(
         path: Routes.filtersScreen.path,
@@ -319,7 +328,7 @@ GoRouter goRouter(Ref ref) {
             ],
           ),
 
-          // ── Branch 4: You / Profile ──────────────────────────────────
+          // ── Branch 4: Profile ────────────────────────────────────────
           StatefulShellBranch(
             navigatorKey: _profileShellKey,
             observers: [AnalyticsRouteObserver(analytics)],

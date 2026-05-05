@@ -154,7 +154,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                       CatchSpacing.s5,
                       0,
                       CatchSpacing.s5,
-                      Sizes.p20,
+                      CatchSpacing.s5,
                     ),
                     children: [
                       _FilterSection(
@@ -255,9 +255,9 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                 Container(
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,
-                    Sizes.p12,
+                    CatchSpacing.s3,
                     CatchSpacing.s5,
-                    Sizes.p20,
+                    CatchSpacing.s5,
                   ),
                   decoration: BoxDecoration(
                     color: t.surface,

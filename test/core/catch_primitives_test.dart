@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
@@ -176,6 +177,44 @@ void main() {
     await tester.tap(find.text('Surface content'));
     await tester.pump();
     expect(tapped, isTrue);
+  });
+
+  testWidgets('CatchFrameworkErrorView renders branded recovery UI', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchFrameworkErrorView(
+          details: FlutterErrorDetails(exception: StateError('boom')),
+          showDebugDetails: false,
+        ),
+      ),
+    );
+
+    expect(find.text('Something went wrong'), findsOneWidget);
+    expect(
+      find.textContaining('This screen hit a temporary app error'),
+      findsOneWidget,
+    );
+    expect(find.text('Developer details'), findsNothing);
+    expect(find.textContaining('boom'), findsNothing);
+  });
+
+  testWidgets('CatchFrameworkErrorView can expose debug details', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchFrameworkErrorView(
+          details: FlutterErrorDetails(exception: StateError('boom')),
+        ),
+      ),
+    );
+
+    expect(find.text('Developer details'), findsOneWidget);
+    await tester.tap(find.text('Developer details'));
+    await pumpFeatureUi(tester);
+    expect(find.textContaining('Bad state: boom'), findsOneWidget);
   });
 
   testWidgets(

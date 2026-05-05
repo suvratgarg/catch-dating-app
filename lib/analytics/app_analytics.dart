@@ -51,7 +51,7 @@ final class FirebaseAnalyticsReporter implements AnalyticsReporter {
   }
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 AppAnalytics appAnalytics(Ref ref) => AppAnalytics();
 
 /// Vendor-neutral analytics facade for product and navigation events.

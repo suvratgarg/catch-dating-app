@@ -34,7 +34,7 @@ final class LocationInitializerProvider
 }
 
 String _$locationInitializerHash() =>
-    r'4800600efc6bdd0bb7d5124c0fdf1e2f7f600585';
+    r'7cac3282de31e7b298c29f59c3705bc85580ea5e';
 
 abstract class _$LocationInitializer extends $AsyncNotifier<void> {
   FutureOr<void> build();

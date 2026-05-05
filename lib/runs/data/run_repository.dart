@@ -197,28 +197,20 @@ RunRepository runRepository(Ref ref) => RunRepository(
 );
 
 @riverpod
-Stream<Run?> watchRun(Ref ref, String runId) => ref
-    .watch(runRepositoryProvider)
-    .watchRun(runId)
-    .timeout(const Duration(seconds: 10));
+Stream<Run?> watchRun(Ref ref, String runId) =>
+    ref.watch(runRepositoryProvider).watchRun(runId);
 
 @riverpod
-Stream<List<Run>> watchRunsForClub(Ref ref, String runClubId) => ref
-    .watch(runRepositoryProvider)
-    .watchRunsForClub(runClubId: runClubId)
-    .timeout(const Duration(seconds: 10));
+Stream<List<Run>> watchRunsForClub(Ref ref, String runClubId) =>
+    ref.watch(runRepositoryProvider).watchRunsForClub(runClubId: runClubId);
 
 @riverpod
-Stream<List<Run>> watchAttendedRuns(Ref ref, String uid) => ref
-    .watch(runRepositoryProvider)
-    .watchAttendedRuns(uid: uid)
-    .timeout(const Duration(seconds: 10));
+Stream<List<Run>> watchAttendedRuns(Ref ref, String uid) =>
+    ref.watch(runRepositoryProvider).watchAttendedRuns(uid: uid);
 
 @riverpod
-Stream<List<Run>> watchSignedUpRuns(Ref ref, String uid) => ref
-    .watch(runRepositoryProvider)
-    .watchSignedUpRuns(uid: uid)
-    .timeout(const Duration(seconds: 10));
+Stream<List<Run>> watchSignedUpRuns(Ref ref, String uid) =>
+    ref.watch(runRepositoryProvider).watchSignedUpRuns(uid: uid);
 
 /// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
 @riverpod

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -147,10 +148,10 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
       title: _isEdit ? 'Edit review' : 'Write a review',
       keyboardSafe: true,
       padding: EdgeInsets.fromLTRB(
-        Sizes.p16,
-        Sizes.p12,
-        Sizes.p16,
-        Sizes.p16 + MediaQuery.viewInsetsOf(context).bottom,
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+        CatchSpacing.s4,
+        CatchSpacing.s4 + MediaQuery.viewInsetsOf(context).bottom,
       ),
       action: Column(
         mainAxisSize: MainAxisSize.min,

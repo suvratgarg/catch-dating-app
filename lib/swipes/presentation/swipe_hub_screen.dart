@@ -70,9 +70,9 @@ class _CatchesHubContent extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
           CatchSpacing.s5,
-          Sizes.p8,
+          CatchSpacing.s2,
           CatchSpacing.s5,
-          Sizes.p24,
+          CatchSpacing.s6,
         ),
         children: [
           const _CatchesHeader(),
@@ -161,7 +161,7 @@ class _CatchesIntroCard extends StatelessWidget {
 
     return CatchSurface(
       onTap: onTap,
-      padding: const EdgeInsets.all(Sizes.p20),
+      padding: const EdgeInsets.all(CatchSpacing.s5),
       gradient: t.heroGrad,
       borderWidth: 0,
       clipBehavior: Clip.antiAlias,
@@ -291,9 +291,9 @@ class _CatchesEmptyState extends StatelessWidget {
       child: ListView(
         padding: const EdgeInsets.fromLTRB(
           CatchSpacing.s5,
-          Sizes.p8,
+          CatchSpacing.s2,
           CatchSpacing.s5,
-          Sizes.p24,
+          CatchSpacing.s6,
         ),
         children: [
           const _CatchesHeader(),
@@ -311,7 +311,7 @@ class _CatchesEmptyState extends StatelessWidget {
           ),
           gapH18,
           CatchSurface(
-            padding: const EdgeInsets.all(Sizes.p16),
+            padding: const EdgeInsets.all(CatchSpacing.s4),
             tone: CatchSurfaceTone.raised,
             borderColor: t.line,
             child: Row(

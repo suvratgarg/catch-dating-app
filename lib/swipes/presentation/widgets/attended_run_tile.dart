@@ -24,7 +24,7 @@ class AttendedRunTile extends StatelessWidget {
     final countdown = _formatCountdown(remaining);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(Sizes.p16),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       borderColor: t.line,
       onTap: () => context.pushNamed(
         Routes.swipeRunScreen.name,

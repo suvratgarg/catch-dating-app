@@ -76,6 +76,11 @@ if [[ -n "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" ]]; then
     "--dart-define=FIREBASE_APP_CHECK_DEBUG_TOKEN=${FIREBASE_APP_CHECK_DEBUG_TOKEN}"
   )
 fi
+if [[ -n "${VERBOSE_AUTH_DEBUG_LOGS:-}" ]]; then
+  extra_dart_defines+=(
+    "--dart-define=VERBOSE_AUTH_DEBUG_LOGS=${VERBOSE_AUTH_DEBUG_LOGS}"
+  )
+fi
 
 if [[ ${#extra_dart_defines[@]} -gt 0 ]]; then
   exec flutter "${flutter_args[@]}" \

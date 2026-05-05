@@ -63,9 +63,9 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
           return ListView(
             padding: const EdgeInsets.fromLTRB(
               CatchSpacing.s5,
-              Sizes.p12,
+              CatchSpacing.s3,
               CatchSpacing.s5,
-              Sizes.p24,
+              CatchSpacing.s6,
             ),
             children: [
               _RecapHero(run: run),
@@ -142,7 +142,7 @@ class _RecapHero extends StatelessWidget {
         : 'Catch window closed';
 
     return CatchSurface(
-      padding: const EdgeInsets.all(Sizes.p20),
+      padding: const EdgeInsets.all(CatchSpacing.s5),
       backgroundColor: t.ink,
       borderWidth: 0,
       radius: CatchRadius.lg,

@@ -147,7 +147,7 @@ void main() {
     expect(selected, 'edit');
   });
 
-  testWidgets('CatchSliverHeader clips collapsible title while scrolling', (
+  testWidgets('CatchSliverHeader scrolls title up beneath pinned bottom', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -159,6 +159,7 @@ void main() {
               slivers: [
                 ...const CatchSliverHeader(
                   titleHeight: 112,
+                  bottomHeight: 48,
                   title: Padding(
                     padding: EdgeInsets.all(16),
                     child: Column(
@@ -169,6 +170,10 @@ void main() {
                         Text('Subtitle'),
                       ],
                     ),
+                  ),
+                  bottom: ColoredBox(
+                    color: Colors.white,
+                    child: Center(child: Text('Pinned bottom')),
                   ),
                 ).buildSlivers(context),
                 const SliverToBoxAdapter(child: SizedBox(height: 400)),
@@ -181,11 +186,30 @@ void main() {
     await tester.pump();
 
     expect(tester.takeException(), isNull);
+    final initialTitleTop = tester.getTopLeft(find.text('Sticky title')).dy;
+    final initialBottomTop = tester.getTopLeft(find.text('Pinned bottom')).dy;
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -48));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(
+      tester.getTopLeft(find.text('Sticky title')).dy,
+      lessThan(initialTitleTop),
+    );
+    expect(
+      tester.getTopLeft(find.text('Pinned bottom')).dy,
+      lessThan(initialBottomTop),
+    );
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -120));
     await tester.pump();
 
-    expect(tester.takeException(), isNull);
+    expect(
+      tester.getBottomLeft(find.text('Sticky title')).dy,
+      lessThan(tester.getTopLeft(find.text('Pinned bottom')).dy),
+    );
+    expect(find.text('Pinned bottom').hitTestable(), findsOneWidget);
   });
 }
 

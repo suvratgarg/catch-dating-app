@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
@@ -6,11 +7,42 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class DashboardScreen extends ConsumerWidget {
+class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
+}
+
+class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+  String? _lastVisibleUid;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isHomeTabActive) {
+      _invalidateBookedRunsSubscription();
+    }
+  }
+
+  bool get _isHomeTabActive {
+    final activeTabIndex = AppShellActiveTab.maybeIndexOf(context);
+    return activeTabIndex == null || activeTabIndex == 0;
+  }
+
+  void _invalidateBookedRunsSubscription() {
+    final uid = _lastVisibleUid;
+    if (uid == null) return;
+    _lastVisibleUid = null;
+    ref.invalidate(watchSignedUpRunsProvider(uid));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (!_isHomeTabActive) {
+      return const SizedBox.shrink();
+    }
+
     final userAsync = ref.watch(watchUserProfileProvider);
 
     return userAsync.when(
@@ -19,7 +51,12 @@ class DashboardScreen extends ConsumerWidget {
         message: 'Unable to load your dashboard.',
       ),
       data: (user) {
-        if (user == null) return DashboardEmpty(user: null);
+        if (user == null) {
+          _lastVisibleUid = null;
+          return DashboardEmpty(user: null);
+        }
+
+        _lastVisibleUid = user.uid;
 
         final signedUpRunsAsync = ref.watch(
           watchSignedUpRunsProvider(user.uid),

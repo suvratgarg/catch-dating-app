@@ -117,6 +117,14 @@ export FIREBASE_APP_CHECK_DEBUG_TOKEN=some_other_token
 ./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
 ```
 
+For auth-specific phone debugging, opt into verbose masked OTP-flow logs only
+for that run:
+
+```bash
+export VERBOSE_AUTH_DEBUG_LOGS=true
+./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
+```
+
 Android, iOS, and macOS builds use native flavors. The environment wrapper automatically adds the matching flavor for APK, App Bundle, iOS, and macOS builds:
 
 ```bash

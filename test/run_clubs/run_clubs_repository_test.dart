@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -154,6 +156,18 @@ void main() {
       );
     });
 
+    test('watchRunClubsHostedBy filters by host user id', () async {
+      final hosted = buildRunClub(id: 'hosted', hostUserId: 'host-1');
+      final other = buildRunClub(id: 'other', hostUserId: 'host-2');
+      await _seedRunClub(firestore, hosted);
+      await _seedRunClub(firestore, other);
+
+      await expectLater(
+        repository.watchRunClubsHostedBy('host-1'),
+        emits([hosted]),
+      );
+    });
+
     test('createRunClub delegates creation to the callable', () async {
       final callable =
           functions.httpsCallable('createRunClub') as TestHttpsCallable;
@@ -290,6 +304,7 @@ void main() {
         rating: 4.9,
       );
       fakeRepository.clubsById[club.id] = club;
+      fakeRepository.clubsById[topClub.id] = topClub;
       fakeRepository.clubsByLocation[IndianCity.mumbai] = [club, topClub];
 
       final container = ProviderContainer(
@@ -314,19 +329,72 @@ void main() {
         (_, _) {},
         fireImmediately: true,
       );
+      final hostedSubscription = container.listen(
+        watchRunClubsHostedByProvider(club.hostUserId),
+        (_, _) {},
+        fireImmediately: true,
+      );
       addTearDown(clubSubscription.close);
       addTearDown(locationSubscription.close);
       addTearDown(ratingSubscription.close);
+      addTearDown(hostedSubscription.close);
       await container.pump();
 
       expect(clubSubscription.read().value, club);
       expect(locationSubscription.read().value, [club, topClub]);
       expect(ratingSubscription.read().value?.first.id, 'club-top');
+      expect(hostedSubscription.read().value, [club, topClub]);
       expect(await container.read(fetchRunClubProvider(club.id).future), club);
     });
+
+    testWidgets(
+      'watchRunClubsByLocationProvider keeps realtime streams alive while idle',
+      (tester) async {
+        final club = buildRunClub(id: 'club-1', location: IndianCity.mumbai);
+        final clubsController = StreamController<List<RunClub>>();
+        addTearDown(clubsController.close);
+
+        final container = ProviderContainer(
+          overrides: [
+            runClubsRepositoryProvider.overrideWith(
+              (ref) => _IdleRunClubsRepository(
+                clubsByLocationStream: clubsController.stream,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final provider = watchRunClubsByLocationProvider(IndianCity.mumbai);
+        final subscription = container.listen(provider, (_, _) {});
+        addTearDown(subscription.close);
+
+        clubsController.add([club]);
+        await container.pump();
+        expect(subscription.read().value, [club]);
+
+        await tester.pump(_pastLegacyStreamTimeout);
+        await container.pump();
+
+        expect(subscription.read(), isA<AsyncData<List<RunClub>>>());
+        expect(subscription.read().value, [club]);
+      },
+    );
   });
 }
 
 Future<void> _seedRunClub(FakeFirebaseFirestore firestore, RunClub club) {
   return firestore.collection('runClubs').doc(club.id).set(club.toJson());
 }
+
+class _IdleRunClubsRepository extends Fake implements RunClubsRepository {
+  _IdleRunClubsRepository({required this.clubsByLocationStream});
+
+  final Stream<List<RunClub>> clubsByLocationStream;
+
+  @override
+  Stream<List<RunClub>> watchRunClubsByLocation(IndianCity location) =>
+      clubsByLocationStream;
+}
+
+const _pastLegacyStreamTimeout = Duration(seconds: 11);

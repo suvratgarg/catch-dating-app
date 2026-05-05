@@ -107,7 +107,7 @@ final class WatchMatchesForUserProvider
 }
 
 String _$watchMatchesForUserHash() =>
-    r'321ba7e9162210d73104b007ed2e23082d59e569';
+    r'7affe5ae3ac818af86e664d11b5e16fe4f8cdecd';
 
 final class WatchMatchesForUserFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Match>>, String> {

@@ -22,7 +22,7 @@ import 'package:go_router/go_router.dart';
 //   1  Clubs     (RunClubsListScreen)
 //   2  Catches   (SwipeHubScreen)
 //   3  Chats     (MatchesListScreen)
-//   4  You       (ProfileScreen)
+//   4  Profile   (ProfileScreen)
 
 final appShellFcmInitializationProvider = FutureProvider.autoDispose
     .family<void, String>((ref, uid) async {
@@ -92,7 +92,12 @@ class AppShell extends ConsumerWidget {
       body: Column(
         children: [
           if (isOffline) const _ConnectivityBanner(),
-          Expanded(child: navigationShell),
+          Expanded(
+            child: AppShellActiveTab(
+              index: navigationShell.currentIndex,
+              child: navigationShell,
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: isAuthenticated
@@ -103,6 +108,26 @@ class AppShell extends ConsumerWidget {
           : null,
     );
   }
+}
+
+class AppShellActiveTab extends InheritedWidget {
+  const AppShellActiveTab({
+    super.key,
+    required this.index,
+    required super.child,
+  });
+
+  final int index;
+
+  static int? maybeIndexOf(BuildContext context) {
+    return context
+        .dependOnInheritedWidgetOfExactType<AppShellActiveTab>()
+        ?.index;
+  }
+
+  @override
+  bool updateShouldNotify(AppShellActiveTab oldWidget) =>
+      index != oldWidget.index;
 }
 
 class _AppShellNavigationBar extends StatelessWidget {
@@ -158,11 +183,11 @@ class _AppShellNavigationBar extends StatelessWidget {
               : const Icon(Icons.chat_bubble_rounded),
           label: 'Chats',
         ),
-        // 4 — You
+        // 4 — Profile
         const NavigationDestination(
           icon: Icon(Icons.person_outline_rounded),
           selectedIcon: Icon(Icons.person_rounded),
-          label: 'You',
+          label: 'Profile',
         ),
       ],
     );

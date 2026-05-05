@@ -37,6 +37,22 @@
         "Docs index and doc_versions remain current for five broad passes"
       ]
     },
+    "CODEGEN-001": {
+      "title": "Keep generated Dart outputs synchronized during iterative work",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "audit_registry",
+        "version": "2.2.0"
+      },
+      "applies_to": [
+        "lib/**/*.dart",
+        "test/**/*.dart"
+      ],
+      "instruction": "When editing Riverpod, Freezed, json_serializable, envied, or other build_runner-backed Dart sources, keep generated outputs from build_runner instead of manually reverting hash/output churn. Prefer running `dart run build_runner watch --delete-conflicting-outputs` during iterative cleanup loops, and stop it only when the user asks or when the session no longer needs codegen.",
+      "sunset_when": [
+        "Code generation is enforced by CI or a repository-local dev daemon"
+      ]
+    },
     "DESIGN-PRIMITIVES-001": {
       "title": "Prefer shared design primitives over repeated local shells",
       "status": "active",
@@ -51,6 +67,23 @@
       "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check existing primitives such as CatchSurface, CatchBottomSheetScaffold, CatchEmptyState, CatchHorizontalRail, CatchVerticalSection, PersonRow, RunCard, SettingsRow, CatchBadge, and CatchSkeleton.",
       "sunset_when": [
         "Widget catalog shows no repeated local shells outside intentional feature-specific UI"
+      ]
+    },
+    "WIDGET-CATALOG-001": {
+      "title": "Keep widget catalog current when widget architecture changes",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "widget_catalog",
+        "version": "2.1.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**",
+        "docs/widget_catalog.md"
+      ],
+      "instruction": "Update docs/widget_catalog.md in the same pass when adding, deleting, moving, renaming, or materially changing a widget, primitive API, screen ownership model, sliver/tab structure, or reusable design-system role. Do not update the catalog for tiny implementation-only edits that do not change inventory or usage guidance.",
+      "sunset_when": [
+        "A generated widget inventory or CI check makes catalog drift visible automatically"
       ]
     },
     "DESIGN-TOKENS-001": {
@@ -112,6 +145,59 @@
       "instruction": "If a feature has a view model, controller, or feature-specific provider, screens should use that seam rather than reaching around it to a lower-level repository provider.",
       "sunset_when": [
         "Feature screens consistently read view models/controllers and no scanner reaches remain"
+      ]
+    },
+    "STREAM-LIFECYCLE-001": {
+      "title": "Do not idle-timeout realtime Firestore listeners",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "audit_rules",
+        "version": "2.3.0"
+      },
+      "applies_to": [
+        "lib/**/data/**",
+        "lib/**/presentation/**",
+        "test/**/*.dart"
+      ],
+      "instruction": "Do not wrap Firestore snapshot streams in Stream.timeout to detect stalled loads; realtime streams may legitimately stay silent after initial data. Prefer Riverpod autoDispose, screen-active gating, explicit refresh/retry UI, and focused tests that advance fake time past prior timeout thresholds.",
+      "sunset_when": [
+        "A scanner prevents Stream.timeout usage on repository/provider realtime listeners",
+        "All retained stream timeouts are documented as non-Firestore protocol deadlines"
+      ]
+    },
+    "ERROR-UI-001": {
+      "title": "Use branded error surfaces for app-facing failures",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "error_handling_audit",
+        "version": "2.1.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**",
+        "test/**/*.dart"
+      ],
+      "instruction": "Do not add new raw Center(Text(...)) or bare CatchErrorText full-screen errors. Route app-facing data-load failures through a branded full-screen/sliver/inline error primitive with mapped user copy and optional retry. Keep CatchFrameworkErrorView for Flutter framework crashes only.",
+      "sunset_when": [
+        "A canonical app error primitive covers full-screen, sliver, and inline contexts",
+        "Existing AsyncValue error branches have migrated away from raw centered text except where explicitly justified"
+      ]
+    },
+    "FLOW-MUTATION-001": {
+      "title": "Advance multi-step flows only after required mutations succeed",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "controller_patterns",
+        "version": "2.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "test/**/*.dart"
+      ],
+      "instruction": "In multi-step controllers and widgets, do not change the durable flow step or navigate past the current step before the required repository write or external mutation succeeds, unless the transition is intentionally optimistic and has explicit rollback/error UI.",
+      "sunset_when": [
+        "Controller tests cover failure paths for all multi-step flow mutations",
+        "No flow controller advances state before awaited persistence without an explicit optimistic contract"
       ]
     },
     "EXTERNAL-SIDE-EFFECT-001": {
@@ -202,9 +288,10 @@
       },
       "applies_to": [
         "lib/**/presentation/**",
+        "lib/core/widgets/catch_top_bar.dart",
         "test/**/*.dart"
       ],
-      "instruction": "If a parent owns a CustomScrollView, children should usually return slivers; NestedScrollView tabs must inject absorbed overlap or own the inner scroll view.",
+      "instruction": "If a parent owns a CustomScrollView, children should usually return slivers; NestedScrollView tabs must inject absorbed overlap or own the inner scroll view. Collapsible title headers followed by pinned bottom rows must move the title upward as it collapses; do not let sticky search/filter/tab rows visually scroll over and cover the title.",
       "sunset_when": [
         "Sliver screens have dedicated regression tests and no known blank/overflow regressions"
       ]

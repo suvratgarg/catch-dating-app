@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
+import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -46,6 +47,32 @@ void main() {
         );
         expect(repository.credential, isNull);
         expect(repository.otpVerificationId, isNull);
+      },
+    );
+
+    test(
+      'rejects invalid phone numbers before calling Firebase Auth',
+      () async {
+        final repository = FakeAuthRepository();
+        final container = ProviderContainer(
+          overrides: [authRepositoryProvider.overrideWithValue(repository)],
+        );
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+
+        await expectLater(
+          container.read(authControllerProvider.notifier).sendOtp('123', '+91'),
+          throwsA(
+            isA<StateError>().having(
+              (error) => error.message,
+              'message',
+              AuthInput.invalidPhoneNumberMessage,
+            ),
+          ),
+        );
+
+        expect(repository.verifyPhoneNumberCallCount, 0);
+        expect(container.read(authControllerProvider), const AuthScreenState());
       },
     );
 
@@ -128,6 +155,40 @@ void main() {
 
       expect(repository.otpVerificationId, 'verification-id');
       expect(repository.otpSmsCode, '123456');
+    });
+
+    test('rejects malformed OTP codes before repository sign-in', () async {
+      final repository = FakeAuthRepository()
+        ..onVerifyPhoneNumber =
+            ({
+              required verificationCompleted,
+              required verificationFailed,
+              required codeSent,
+              required codeAutoRetrievalTimeout,
+            }) {
+              codeSent('verification-id', 11);
+            };
+      final container = ProviderContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      final notifier = container.read(authControllerProvider.notifier);
+
+      await notifier.sendOtp('9999999999', '+91');
+      await expectLater(
+        notifier.verifyOtp('12345a'),
+        throwsA(
+          isA<StateError>().having(
+            (error) => error.message,
+            'message',
+            AuthInput.invalidOtpCodeMessage,
+          ),
+        ),
+      );
+
+      expect(repository.otpVerificationId, isNull);
+      expect(repository.otpSmsCode, isNull);
     });
   });
 

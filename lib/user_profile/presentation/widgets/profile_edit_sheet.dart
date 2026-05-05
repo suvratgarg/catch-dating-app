@@ -36,51 +36,81 @@ Future<void> showTextEditSheet({
   required String fieldName,
   FormFieldValidator<String>? validator,
 }) async {
-  final formKey = GlobalKey<FormState>();
-  final controller = TextEditingController(text: currentValue);
-  final confirmed = await showModalBottomSheet<bool>(
+  final newValue = await showModalBottomSheet<String>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (ctx) {
-      return Form(
-        key: formKey,
-        child: CatchBottomSheetScaffold(
-          keyboardSafe: true,
-          action: CatchButton(
-            label: 'Done',
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(ctx).pop(true);
-              }
-            },
-            fullWidth: true,
-          ),
-          child: CatchTextField(
-            label: title,
-            controller: controller,
-            autofocus: true,
-            maxLines: fieldName == 'bio' ? 4 : 1,
-            textCapitalization: TextCapitalization.sentences,
-            textInputAction: TextInputAction.done,
-            validator: validator,
-            onSubmitted: (_) {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(ctx).pop(true);
-              }
-            },
-          ),
-        ),
-      );
-    },
+    builder: (ctx) => _TextEditSheet(
+      title: title,
+      currentValue: currentValue,
+      maxLines: fieldName == 'bio' ? 4 : 1,
+      validator: validator,
+    ),
   );
-  controller.dispose();
 
-  if (confirmed == true) {
-    final newValue = controller.text.trim();
-    if (newValue != currentValue) {
-      await _saveField(ref: ref, fields: {fieldName: newValue});
+  if (newValue != null && newValue != currentValue) {
+    await _saveField(ref: ref, fields: {fieldName: newValue});
+  }
+}
+
+class _TextEditSheet extends StatefulWidget {
+  const _TextEditSheet({
+    required this.title,
+    required this.currentValue,
+    required this.maxLines,
+    this.validator,
+  });
+
+  final String title;
+  final String currentValue;
+  final int maxLines;
+  final FormFieldValidator<String>? validator;
+
+  @override
+  State<_TextEditSheet> createState() => _TextEditSheetState();
+}
+
+class _TextEditSheetState extends State<_TextEditSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(text: widget.currentValue);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (_formKey.currentState!.validate()) {
+      Navigator.of(context).pop(_controller.text.trim());
     }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: CatchBottomSheetScaffold(
+        keyboardSafe: true,
+        action: CatchButton(label: 'Done', onPressed: _submit, fullWidth: true),
+        child: CatchTextField(
+          label: widget.title,
+          controller: _controller,
+          autofocus: true,
+          maxLines: widget.maxLines,
+          textCapitalization: TextCapitalization.sentences,
+          textInputAction: TextInputAction.done,
+          validator: widget.validator,
+          onSubmitted: (_) => _submit(),
+        ),
+      ),
+    );
   }
 }
 
@@ -94,55 +124,91 @@ Future<void> showIntEditSheet({
   required String fieldName,
   FormFieldValidator<String>? validator,
 }) async {
-  final formKey = GlobalKey<FormState>();
-  final controller = TextEditingController(
-    text: currentValue?.toString() ?? '',
-  );
-  final confirmed = await showModalBottomSheet<bool>(
+  final result = await showModalBottomSheet<_IntEditResult>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
-    builder: (ctx) {
-      return Form(
-        key: formKey,
-        child: CatchBottomSheetScaffold(
-          keyboardSafe: true,
-          action: CatchButton(
-            label: 'Done',
-            onPressed: () {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(ctx).pop(true);
-              }
-            },
-            fullWidth: true,
-          ),
-          child: CatchTextField(
-            label: title,
-            controller: controller,
-            autofocus: true,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            suffixText: title == 'Height' ? 'cm' : null,
-            textInputAction: TextInputAction.done,
-            validator: validator,
-            onSubmitted: (_) {
-              if (formKey.currentState!.validate()) {
-                Navigator.of(ctx).pop(true);
-              }
-            },
-          ),
-        ),
-      );
-    },
+    builder: (ctx) => _IntEditSheet(
+      title: title,
+      currentValue: currentValue,
+      validator: validator,
+    ),
   );
-  controller.dispose();
 
-  if (confirmed == true) {
-    final text = controller.text.trim();
-    final newValue = text.isEmpty ? null : int.tryParse(text);
-    if (newValue != currentValue) {
-      await _saveField(ref: ref, fields: {fieldName: newValue});
+  if (result != null && result.value != currentValue) {
+    await _saveField(ref: ref, fields: {fieldName: result.value});
+  }
+}
+
+class _IntEditResult {
+  const _IntEditResult(this.value);
+
+  final int? value;
+}
+
+class _IntEditSheet extends StatefulWidget {
+  const _IntEditSheet({
+    required this.title,
+    required this.currentValue,
+    this.validator,
+  });
+
+  final String title;
+  final int? currentValue;
+  final FormFieldValidator<String>? validator;
+
+  @override
+  State<_IntEditSheet> createState() => _IntEditSheetState();
+}
+
+class _IntEditSheetState extends State<_IntEditSheet> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController(
+      text: widget.currentValue?.toString() ?? '',
+    );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _submit() {
+    if (!_formKey.currentState!.validate()) {
+      return;
     }
+    final text = _controller.text.trim();
+    Navigator.of(
+      context,
+    ).pop(_IntEditResult(text.isEmpty ? null : int.tryParse(text)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: CatchBottomSheetScaffold(
+        keyboardSafe: true,
+        action: CatchButton(label: 'Done', onPressed: _submit, fullWidth: true),
+        child: CatchTextField(
+          label: widget.title,
+          controller: _controller,
+          autofocus: true,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          suffixText: widget.title == 'Height' ? 'cm' : null,
+          textInputAction: TextInputAction.done,
+          validator: widget.validator,
+          onSubmitted: (_) => _submit(),
+        ),
+      ),
+    );
   }
 }
 
@@ -166,10 +232,10 @@ Future<void> showSingleEnumSheet<T extends Labelled>({
         builder: (ctx, setSheetState) {
           return CatchBottomSheetScaffold(
             padding: const EdgeInsets.fromLTRB(
-              Sizes.p16,
-              Sizes.p12,
-              Sizes.p16,
-              Sizes.p32,
+              CatchSpacing.s4,
+              CatchSpacing.s3,
+              CatchSpacing.s4,
+              CatchSpacing.s8,
             ),
             child: ChipField<T>(
               label: title,
@@ -211,10 +277,10 @@ Future<void> showMultiEnumSheet<T extends Labelled>({
         builder: (ctx, setSheetState) {
           return CatchBottomSheetScaffold(
             padding: const EdgeInsets.fromLTRB(
-              Sizes.p16,
-              Sizes.p12,
-              Sizes.p16,
-              Sizes.p32,
+              CatchSpacing.s4,
+              CatchSpacing.s3,
+              CatchSpacing.s4,
+              CatchSpacing.s8,
             ),
             action: CatchButton(
               label: 'Done',
@@ -270,10 +336,10 @@ Future<void> _showRangeEditSheet({
             title: title,
             subtitle: displayText(range),
             padding: const EdgeInsets.fromLTRB(
-              Sizes.p16,
-              Sizes.p12,
-              Sizes.p16,
-              Sizes.p32,
+              CatchSpacing.s4,
+              CatchSpacing.s3,
+              CatchSpacing.s4,
+              CatchSpacing.s8,
             ),
             action: CatchButton(
               label: 'Done',
@@ -399,10 +465,10 @@ Future<void> showBooleanEditSheet({
         builder: (ctx, setSheetState) {
           return CatchBottomSheetScaffold(
             padding: const EdgeInsets.fromLTRB(
-              Sizes.p16,
-              Sizes.p12,
-              Sizes.p16,
-              Sizes.p32,
+              CatchSpacing.s4,
+              CatchSpacing.s3,
+              CatchSpacing.s4,
+              CatchSpacing.s8,
             ),
             action: CatchButton(
               label: 'Done',

@@ -14,6 +14,7 @@ import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
@@ -43,30 +44,59 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
             title: 'Calendar unavailable',
             body: 'Your booked runs could not be loaded.',
           ),
-          data: (runs) => Column(
-            children: [
-              _CalendarHeader(
-                mode: _mode,
-                onModeChanged: (mode) => setState(() => _mode = mode),
-                runs: runs,
-              ),
-              Expanded(
-                child: runs.isEmpty
-                    ? _CalendarMessage(
+          data: (runs) {
+            final summary = _CalendarRunSummary.from(runs, now: DateTime.now());
+
+            return Builder(
+              builder: (context) => CustomScrollView(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: _CalendarHeader(
+                      mode: _mode,
+                      onModeChanged: (mode) => setState(() => _mode = mode),
+                      summary: summary,
+                    ),
+                  ),
+                  if (runs.isEmpty)
+                    const SliverFillRemaining(
+                      hasScrollBody: false,
+                      child: _CalendarMessage(
                         title: 'No booked runs yet',
                         body:
                             'Runs you book will show up here by day and time.',
-                      )
-                    : _mode == CalendarViewMode.agenda
-                    ? RunAgendaList(runs: runs, badgeLabel: 'JOINED')
-                    : _TimelineView(runs: runs),
+                      ),
+                    )
+                  else if (_mode == CalendarViewMode.agenda)
+                    RunAgendaSliverList(
+                      runs: summary.agendaRuns,
+                      badgeLabel: 'JOINED',
+                      today: summary.today,
+                      preserveInputOrder: true,
+                      onRunSelected: (run) => _openRunDetail(context, run),
+                    )
+                  else
+                    _TimelineSliverList(
+                      runs: summary.agendaRuns,
+                      onRunSelected: (run) => _openRunDetail(context, run),
+                    ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         ),
       ),
     );
   }
+
+  void _openRunDetail(BuildContext context, Run run) {
+    GoRouter.of(context).push(_calendarRunDetailPath(run));
+  }
+}
+
+String _calendarRunDetailPath(Run run) {
+  final runClubId = Uri.encodeComponent(run.runClubId);
+  final runId = Uri.encodeComponent(run.id);
+  return '/calendar/run-clubs/$runClubId/runs/$runId';
 }
 
 enum CalendarViewMode { agenda, timeline }
@@ -75,29 +105,23 @@ class _CalendarHeader extends StatelessWidget {
   const _CalendarHeader({
     required this.mode,
     required this.onModeChanged,
-    required this.runs,
+    required this.summary,
   });
 
   final CalendarViewMode mode;
   final ValueChanged<CalendarViewMode> onModeChanged;
-  final List<Run> runs;
+  final _CalendarRunSummary summary;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final sortedRuns = [...runs]
-      ..sort((a, b) => a.startTime.compareTo(b.startTime));
-    final totalDistance = sortedRuns.fold<double>(
-      0,
-      (sum, run) => sum + run.distanceKm,
-    );
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        Sizes.p8,
+        CatchSpacing.s2,
         CatchSpacing.s5,
-        Sizes.p12,
+        CatchSpacing.s3,
       ),
       child: Column(
         children: [
@@ -108,7 +132,7 @@ class _CalendarHeader extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      _monthLabel(sortedRuns),
+                      _monthLabel(summary.anchorDate),
                       style: CatchTextStyles.labelM(context),
                     ),
                     gapH2,
@@ -127,7 +151,7 @@ class _CalendarHeader extends StatelessWidget {
             ],
           ),
           gapH14,
-          _WeekStrip(runs: sortedRuns),
+          _WeekStrip(summary: summary),
           gapH14,
           CatchSurface(
             padding: const EdgeInsets.all(Sizes.p14),
@@ -136,22 +160,25 @@ class _CalendarHeader extends StatelessWidget {
             child: Row(
               children: [
                 Expanded(
-                  child: StatColumn(label: 'Booked', value: '${runs.length}'),
+                  child: StatColumn(
+                    label: 'Booked',
+                    value: '${summary.runs.length}',
+                  ),
                 ),
                 const _StatDivider(),
                 Expanded(
                   child: StatColumn(
                     label: 'Distance',
-                    value: '${totalDistance.round()} km',
+                    value: '${summary.totalDistance.round()} km',
                   ),
                 ),
                 const _StatDivider(),
                 Expanded(
                   child: StatColumn(
                     label: 'Next',
-                    value: sortedRuns.isEmpty
+                    value: summary.nextRun == null
                         ? 'None'
-                        : RunFormatters.time(sortedRuns.first.startTime),
+                        : RunFormatters.time(summary.nextRun!.startTime),
                   ),
                 ),
               ],
@@ -162,23 +189,21 @@ class _CalendarHeader extends StatelessWidget {
     );
   }
 
-  static String _monthLabel(List<Run> runs) {
-    if (runs.isEmpty) return 'Your runs';
-    final date = runs.first.startTime;
+  static String _monthLabel(DateTime date) {
     return '${_monthName(date.month)} ${date.year}';
   }
 }
 
 class _WeekStrip extends StatelessWidget {
-  const _WeekStrip({required this.runs});
+  const _WeekStrip({required this.summary});
 
-  final List<Run> runs;
+  final _CalendarRunSummary summary;
 
   @override
   Widget build(BuildContext context) {
-    final anchor = runs.isEmpty ? DateTime.now() : runs.first.startTime;
+    final anchor = summary.anchorDate;
     final monday = anchor.subtract(Duration(days: anchor.weekday - 1));
-    final runDays = runs
+    final runDays = summary.runs
         .map((run) => DateUtils.dateOnly(run.startTime))
         .toSet();
 
@@ -255,36 +280,38 @@ class _WeekDay extends StatelessWidget {
   }
 }
 
-class _TimelineView extends StatelessWidget {
-  const _TimelineView({required this.runs});
+class _TimelineSliverList extends StatelessWidget {
+  const _TimelineSliverList({required this.runs, required this.onRunSelected});
 
   final List<Run> runs;
+  final ValueChanged<Run> onRunSelected;
 
   @override
   Widget build(BuildContext context) {
-    final sorted = [...runs]
-      ..sort((a, b) => a.startTime.compareTo(b.startTime));
-
-    return ListView(
+    return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        Sizes.p8,
+        CatchSpacing.s2,
         CatchSpacing.s5,
-        Sizes.p24,
+        CatchSpacing.s6,
       ),
-      children: [
-        Text('Day timeline', style: CatchTextStyles.labelM(context)),
-        gapH12,
-        for (final run in sorted) _TimelineRun(run: run),
-      ],
+      sliver: SliverList.list(
+        children: [
+          Text('Day timeline', style: CatchTextStyles.labelM(context)),
+          gapH12,
+          for (final run in runs)
+            _TimelineRun(run: run, onTap: () => onRunSelected(run)),
+        ],
+      ),
     );
   }
 }
 
 class _TimelineRun extends StatelessWidget {
-  const _TimelineRun({required this.run});
+  const _TimelineRun({required this.run, required this.onTap});
 
   final Run run;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -322,6 +349,7 @@ class _TimelineRun extends StatelessWidget {
                 backgroundColor: t.primary,
                 radius: CatchRadius.md,
                 borderWidth: 0,
+                onTap: onTap,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -382,9 +410,61 @@ class _CalendarMessage extends StatelessWidget {
         surface: false,
         iconStyle: CatchEmptyStateIconStyle.plain,
         iconSize: 44,
-        padding: const EdgeInsets.all(Sizes.p24),
+        padding: const EdgeInsets.all(CatchSpacing.s6),
         titleStyle: CatchTextStyles.titleL(context),
       ),
+    );
+  }
+}
+
+class _CalendarRunSummary {
+  const _CalendarRunSummary({
+    required this.runs,
+    required this.agendaRuns,
+    required this.today,
+    required this.anchorDate,
+    required this.totalDistance,
+    this.nextRun,
+  });
+
+  final List<Run> runs;
+  final List<Run> agendaRuns;
+  final DateTime today;
+  final DateTime anchorDate;
+  final double totalDistance;
+  final Run? nextRun;
+
+  static _CalendarRunSummary from(List<Run> runs, {required DateTime now}) {
+    final sorted = [...runs]
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    final today = DateUtils.dateOnly(now);
+    final totalDistance = sorted.fold<double>(
+      0,
+      (sum, run) => sum + run.distanceKm,
+    );
+
+    final upcoming = <Run>[];
+    final past = <Run>[];
+    for (final run in sorted) {
+      if (run.startTime.isBefore(now)) {
+        past.add(run);
+      } else {
+        upcoming.add(run);
+      }
+    }
+
+    final nextRun = upcoming.isEmpty ? null : upcoming.first;
+    final latestPastFirst = [...past]
+      ..sort((a, b) => b.startTime.compareTo(a.startTime));
+    final anchorDate = nextRun?.startTime ?? today;
+
+    return _CalendarRunSummary(
+      runs: sorted,
+      agendaRuns: [...upcoming, ...latestPastFirst],
+      today: today,
+      anchorDate: anchorDate,
+      totalDistance: totalDistance,
+      nextRun: nextRun,
     );
   }
 }

@@ -1,6 +1,6 @@
 {
-  "version": "2.1.0",
-  "updated": "2026-05-05",
+  "version": "2.4.0",
+  "updated": "2026-05-06",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -26,10 +26,11 @@
       ]
     },
     "docs/widget_cleanup_todo.md": {
-      "purpose": "Short human-readable widget cleanup status pointer.",
+      "purpose": "Short human-readable widget cleanup status pointer, including stream lifecycle and branded error UI queue summaries.",
       "read_when": [
         "User asks what is next in widget cleanup",
-        "Need current pending queue in prose form"
+        "Need current pending queue in prose form",
+        "Need a quick summary of stream lifecycle or branded error UI debt"
       ],
       "skip_when": [
         "Use backlog.json for machine-readable current state",
@@ -40,24 +41,39 @@
       "purpose": "Widget inventory and feature ownership map.",
       "read_when": [
         "Auditing a specific feature's widget surface",
-        "Checking whether a primitive already exists"
+        "Checking whether a primitive already exists",
+        "Updating widget APIs, screen ownership models, sliver/tab structures, or reusable design-system roles"
       ],
       "skip_when": [
         "Only process rules are needed; use rules.json instead"
       ]
     },
+    "docs/audit_registry/rules.json": {
+      "purpose": "Active/watch/archived recursive audit rules, including provider stream lifecycle constraints and branded error UI requirements.",
+      "read_when": [
+        "Starting an audit or cleanup pass",
+        "Adding or updating recurring process rules",
+        "Checking whether widget catalog updates are required",
+        "Changing realtime Firestore stream providers or listener lifecycles",
+        "Changing app-facing error presentation"
+      ],
+      "skip_when": [
+        "A task is a trivial one-off command"
+      ]
+    },
     "docs/controller_patterns.md": {
-      "purpose": "Current controller and view-model boundary rules.",
+      "purpose": "Current controller, view-model, and realtime stream lifecycle boundary rules.",
       "read_when": [
         "Controller/state-management/refactor work",
-        "Moving business logic out of widgets"
+        "Moving business logic out of widgets",
+        "Changing keepAlive, autoDispose, or retained-tab stream ownership"
       ],
       "skip_when": [
         "Pure visual primitive work"
       ]
     },
     "docs/sliver_layout_guide.md": {
-      "purpose": "Sliver-native layout guide and Catch-specific scroll contracts.",
+      "purpose": "Sliver-native layout guide and Catch-specific scroll contracts, including the scroll-away title plus pinned bottom-row header rule.",
       "read_when": [
         "Changing CustomScrollView, SliverList, SliverPersistentHeader, or NestedScrollView surfaces",
         "Debugging blank/overflow scroll bugs"
@@ -76,9 +92,10 @@
       ]
     },
     "docs/error-handling-audit.md": {
-      "purpose": "Error handling architecture snapshot and remediation map.",
+      "purpose": "Error handling architecture snapshot, remediation map, and branded error surface guidance.",
       "read_when": [
-        "Changing exceptions, error mapping, logging, or user-facing error rendering"
+        "Changing exceptions, error mapping, logging, or user-facing error rendering",
+        "Replacing raw AsyncValue error branches"
       ],
       "skip_when": [
         "No error behavior is touched"
@@ -140,6 +157,37 @@
       ],
       "skip_when": [
         "Task is a trivial one-off command"
+      ]
+    },
+    "docs/audit_registry/backlog.json": {
+      "purpose": "Active backlog, next-up queue, stable debt ids, and scanner counts.",
+      "read_when": [
+        "Choosing the next audit task",
+        "Updating debt status or scanner snapshots",
+        "Answering what remains pending"
+      ],
+      "skip_when": [
+        "A user only needs high-level prose from widget_cleanup_todo.md"
+      ]
+    },
+    "docs/audit_registry/doc_versions.json": {
+      "purpose": "Version metadata and read policies for durable docs.",
+      "read_when": [
+        "Adding, deleting, renaming, archiving, or materially changing durable docs",
+        "Checking whether markdown front matter and registry metadata agree"
+      ],
+      "skip_when": [
+        "No durable docs or read policies changed"
+      ]
+    },
+    "docs/audit_registry/doc_summaries.json": {
+      "purpose": "Compact read/skip policies for durable docs.",
+      "read_when": [
+        "Deciding which docs to open for a task",
+        "Changing doc read policies or durable doc ownership"
+      ],
+      "skip_when": [
+        "The relevant doc was already identified by a stable debt id"
       ]
     }
   }

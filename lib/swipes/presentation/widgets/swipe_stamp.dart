@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 enum SwipeStampKind {
@@ -24,12 +25,12 @@ class SwipeStamp extends StatelessWidget {
       angle: kind.rotation,
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: Sizes.p12,
+          horizontal: CatchSpacing.s3,
           vertical: Sizes.p6,
         ),
         decoration: BoxDecoration(
           border: Border.all(color: color, width: 3),
-          borderRadius: BorderRadius.circular(Sizes.p8),
+          borderRadius: BorderRadius.circular(CatchSpacing.s2),
         ),
         child: Text(
           kind.label,

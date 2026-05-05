@@ -99,7 +99,7 @@ final class WatchRunProvider
   }
 }
 
-String _$watchRunHash() => r'871b4572751818a738699f84ce8505831411961d';
+String _$watchRunHash() => r'98f031bde136bc17743d37b6b7080a91c1af5e4b';
 
 final class WatchRunFamily extends $Family
     with $FunctionalFamilyOverride<Stream<Run?>, String> {
@@ -169,7 +169,7 @@ final class WatchRunsForClubProvider
   }
 }
 
-String _$watchRunsForClubHash() => r'94ae2425b0c76ca84607ebf1b7decfecf122565f';
+String _$watchRunsForClubHash() => r'1bcf559bd18a2178d81a58d08773de65b74eea21';
 
 final class WatchRunsForClubFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {
@@ -239,7 +239,7 @@ final class WatchAttendedRunsProvider
   }
 }
 
-String _$watchAttendedRunsHash() => r'47e47603ad911756b60455a9524cb4718b987b3e';
+String _$watchAttendedRunsHash() => r'392e510b745df8664d14ef96bdec3b4ebbc561d8';
 
 final class WatchAttendedRunsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {
@@ -309,7 +309,7 @@ final class WatchSignedUpRunsProvider
   }
 }
 
-String _$watchSignedUpRunsHash() => r'b7ebee6fc666497bfeec4b87d76da54296b2807f';
+String _$watchSignedUpRunsHash() => r'f634f0fa145c2e9eadc1a8c57da3ec75728feeca';
 
 final class WatchSignedUpRunsFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<Run>>, String> {

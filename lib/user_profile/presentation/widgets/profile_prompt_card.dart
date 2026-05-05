@@ -22,7 +22,7 @@ class ProfilePromptCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final content = Padding(
-      padding: const EdgeInsets.all(Sizes.p16),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

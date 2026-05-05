@@ -130,9 +130,10 @@ class CatchTopBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class CatchTopBarTabBar extends StatelessWidget implements PreferredSizeWidget {
-  const CatchTopBarTabBar({super.key, required this.tabs});
+  const CatchTopBarTabBar({super.key, required this.tabs, this.controller});
 
   final List<Widget> tabs;
+  final TabController? controller;
 
   @override
   Size get preferredSize => const Size.fromHeight(48);
@@ -142,6 +143,7 @@ class CatchTopBarTabBar extends StatelessWidget implements PreferredSizeWidget {
     final t = CatchTokens.of(context);
 
     return TabBar(
+      controller: controller,
       tabs: tabs,
       labelColor: t.ink,
       unselectedLabelColor: t.ink3,
@@ -347,10 +349,13 @@ class _CollapsibleHeaderDelegate extends SliverPersistentHeaderDelegate {
           maxWidth: constraints.maxWidth,
           minHeight: height,
           maxHeight: height,
-          child: SizedBox(
-            width: constraints.maxWidth,
-            height: height,
-            child: child,
+          child: Transform.translate(
+            offset: Offset(0, -shrinkOffset),
+            child: SizedBox(
+              width: constraints.maxWidth,
+              height: height,
+              child: child,
+            ),
           ),
         ),
       ),

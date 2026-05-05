@@ -1,7 +1,7 @@
 ---
 doc_id: controller_patterns
-version: 2.0.0
-updated: 2026-05-05
+version: 2.1.0
+updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -11,10 +11,18 @@ status: active
 ## Read Policy
 
 Read this before architecture, state-management, controller, or repository/UI
-boundary work. Stamp applied version `controller_patterns@2.0.0` in
+boundary work. Stamp applied version `controller_patterns@2.1.0` in
 `docs/audit_registry/files.jsonl` when a file is reviewed against these rules.
 
 ## Rule Changelog
+
+### 2.1.0
+
+- Added realtime stream lifecycle guidance after the dashboard booked-runs
+  stream regression. Firestore listeners must not use idle `Stream.timeout`;
+  lifecycle should be controlled by provider auto-dispose, explicit keepAlive
+  rationale, route/tab visibility, and test coverage that advances fake time
+  past any previous timeout threshold.
 
 ### 2.0.0
 
@@ -92,3 +100,33 @@ Screens and widgets may read view-model providers, watch mutation state, and
 call controller methods through mutations. They should not call repositories
 directly for product behavior unless the operation is purely local UI plumbing
 or the surrounding feature has an explicit reason to keep it there.
+
+## Realtime Stream Lifecycle
+
+Firestore snapshot streams are long-lived realtime listeners. Silence after the
+initial emission is normal and must not be treated as failure. Do not wrap these
+streams in `Stream.timeout` to detect stalled initial loads; that converts a
+healthy listener into an error if no document changes arrive before the timeout.
+
+Use these lifecycle rules instead:
+
+- Prefer generated `@riverpod` auto-dispose stream providers for route-owned
+  reads. Let the provider close when the route is popped or when the screen
+  stops watching it.
+- Use `@Riverpod(keepAlive: true)` only when the stream is deliberately global
+  or prewarmed. Document the reason at the call site or provider.
+- For bottom-tab branches retained by `StatefulShellRoute.indexedStack`, decide
+  whether the stream should remain active while its tab is inactive. If it
+  should not, gate the screen/view model on `AppShellActiveTab` and invalidate
+  the specific stream provider when the tab becomes inactive.
+- Keep small global streams alive when they support shell-wide behavior, such as
+  auth state, current user profile, connectivity, or unread-count badges.
+- Add regression tests for lifecycle-sensitive streams. A good test opens the
+  stream, emits data, advances fake time beyond any historical timeout window,
+  and asserts the provider still holds data rather than `AsyncError`.
+
+Apply this pattern carefully. Reopening a listener can cost a fresh query read,
+while leaving it open can incur reads when matching documents change in the
+background. The right owner is the surface that needs the data: shell-wide data
+belongs in the shell; first-viewport tab data should usually pause when the tab
+is inactive; pushed detail-route data should usually auto-dispose when popped.

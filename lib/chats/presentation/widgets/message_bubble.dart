@@ -24,7 +24,7 @@ class MessageBubble extends StatelessWidget {
         '${sentAt.hour.toString().padLeft(2, '0')}:${sentAt.minute.toString().padLeft(2, '0')}';
 
     return Padding(
-      padding: const EdgeInsets.only(bottom: Sizes.p8),
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
       child: Row(
         mainAxisAlignment: isMe
             ? MainAxisAlignment.end

@@ -107,7 +107,7 @@ final class WatchRunClubProvider
   }
 }
 
-String _$watchRunClubHash() => r'd248f9623f493c3f5dd4e1ea513bbb4a9bea9552';
+String _$watchRunClubHash() => r'2aa424e09914fd87353bb1cc81736ca08216eac6';
 
 final class WatchRunClubFamily extends $Family
     with $FunctionalFamilyOverride<Stream<RunClub?>, String> {
@@ -184,7 +184,7 @@ final class WatchRunClubsByLocationProvider
 }
 
 String _$watchRunClubsByLocationHash() =>
-    r'136f253c991481c572956aaeda33cdfa0095a556';
+    r'4bfc4bde482a82210e8539390dc4f43ad1368bba';
 
 final class WatchRunClubsByLocationFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<RunClub>>, IndianCity> {
@@ -263,7 +263,7 @@ final class WatchRunClubsByLocationSortedByRatingProvider
 }
 
 String _$watchRunClubsByLocationSortedByRatingHash() =>
-    r'f45ad2e469d4d42fddeb262eb37b8a14ce080c97';
+    r'f52dd0e8f456608f0a05e583e80ca2e3b9142cee';
 
 final class WatchRunClubsByLocationSortedByRatingFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<RunClub>>, IndianCity> {
@@ -284,6 +284,82 @@ final class WatchRunClubsByLocationSortedByRatingFamily extends $Family
 
   @override
   String toString() => r'watchRunClubsByLocationSortedByRatingProvider';
+}
+
+@ProviderFor(watchRunClubsHostedBy)
+final watchRunClubsHostedByProvider = WatchRunClubsHostedByFamily._();
+
+final class WatchRunClubsHostedByProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<List<RunClub>>,
+          List<RunClub>,
+          Stream<List<RunClub>>
+        >
+    with $FutureModifier<List<RunClub>>, $StreamProvider<List<RunClub>> {
+  WatchRunClubsHostedByProvider._({
+    required WatchRunClubsHostedByFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchRunClubsHostedByProvider',
+         isAutoDispose: false,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchRunClubsHostedByHash();
+
+  @override
+  String toString() {
+    return r'watchRunClubsHostedByProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<RunClub>> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<RunClub>> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchRunClubsHostedBy(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchRunClubsHostedByProvider && other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchRunClubsHostedByHash() =>
+    r'4a5458bac99c3a3a0a65e48b07d0a15817e08622';
+
+final class WatchRunClubsHostedByFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<RunClub>>, String> {
+  WatchRunClubsHostedByFamily._()
+    : super(
+        retry: null,
+        name: r'watchRunClubsHostedByProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: false,
+      );
+
+  WatchRunClubsHostedByProvider call(String uid) =>
+      WatchRunClubsHostedByProvider._(argument: uid, from: this);
+
+  @override
+  String toString() => r'watchRunClubsHostedByProvider';
 }
 
 @ProviderFor(fetchRunClub)

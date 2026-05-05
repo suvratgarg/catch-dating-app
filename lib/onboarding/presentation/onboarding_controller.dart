@@ -80,6 +80,11 @@ class OnboardingController extends _$OnboardingController {
         .read(onboardingDraftRepositoryProvider)
         .fetchDraft(uid: uid);
     if (draft != null) {
+      if (_authPhoneNumber.isEmpty) {
+        _setStateIfChanged(state.copyWith(step: OnboardingStep.welcome));
+        return;
+      }
+
       final migratedStepIndex = _migrateDraftStep(
         draft.step,
         draft.draftVersion,
@@ -210,9 +215,7 @@ class OnboardingController extends _$OnboardingController {
   Future<void> saveProfile() async {
     final uid = requireSignedInUid(ref, action: 'save profile');
     final draft = _requireProfileDraft();
-
-    state = state.copyWith(step: OnboardingStep.instagram);
-    _saveDraft();
+    final verifiedPhoneNumber = _requireVerifiedAuthPhoneNumber();
 
     await ref
         .read(userProfileRepositoryProvider)
@@ -222,7 +225,7 @@ class OnboardingController extends _$OnboardingController {
             name: draft.fullName,
             dateOfBirth: draft.dateOfBirth!,
             gender: draft.gender!,
-            phoneNumber: draft.phoneNumber,
+            phoneNumber: verifiedPhoneNumber,
             interestedInGenders: draft.interestedInGenders,
             instagramHandle: (draft.instagramHandle?.trim() ?? '').isEmpty
                 ? null
@@ -230,6 +233,9 @@ class OnboardingController extends _$OnboardingController {
             profileComplete: false,
           ),
         );
+
+    state = state.copyWith(step: OnboardingStep.instagram);
+    _saveDraft();
   }
 
   Future<void> complete({
@@ -300,14 +306,23 @@ class OnboardingController extends _$OnboardingController {
       throw StateError('Please verify your phone number before continuing.');
     }
 
-    final formattedPhone = draft.phoneNumber.startsWith('+')
-        ? draft.phoneNumber
-        : '${draft.countryCode}${draft.phoneNumber}';
-    return draft.copyWith(phoneNumber: formattedPhone);
+    return draft;
   }
 
   String get _authPhoneNumber =>
       ref.read(authRepositoryProvider).currentUser?.phoneNumber ?? '';
+
+  String _requireVerifiedAuthPhoneNumber() {
+    if (!state.phoneVerified) {
+      throw StateError('Please verify your phone number before continuing.');
+    }
+
+    final phoneNumber = _authPhoneNumber.trim();
+    if (phoneNumber.isEmpty) {
+      throw StateError('Please verify your phone number before continuing.');
+    }
+    return phoneNumber;
+  }
 
   void _setStateIfChanged(OnboardingData nextState) {
     if (nextState == state) {

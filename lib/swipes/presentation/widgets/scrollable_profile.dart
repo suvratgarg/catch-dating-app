@@ -79,7 +79,7 @@ class _RunningIdentityCard extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: Sizes.p16),
+      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
       child: Container(
         padding: const EdgeInsets.all(Sizes.p18),
         decoration: BoxDecoration(

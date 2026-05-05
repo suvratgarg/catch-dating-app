@@ -81,6 +81,11 @@ class AppConfig {
     defaultValue: '',
   );
 
+  static const bool verboseAuthDebugLogs = bool.fromEnvironment(
+    'VERBOSE_AUTH_DEBUG_LOGS',
+    defaultValue: false,
+  );
+
   static const String firebaseAppCheckWebRecaptchaEnterpriseSiteKey =
       String.fromEnvironment(
         'FIREBASE_APP_CHECK_WEB_RECAPTCHA_ENTERPRISE_SITE_KEY',

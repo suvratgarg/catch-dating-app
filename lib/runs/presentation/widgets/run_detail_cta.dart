@@ -1,20 +1,18 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
+import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
+import 'package:catch_dating_app/runs/presentation/run_booking_error_message.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -39,23 +37,9 @@ class RunDetailCta extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final referenceNow = now ?? DateTime.now();
-    final attendanceOpen = referenceNow.isAfter(
-      run.startTime.subtract(const Duration(minutes: 10)),
-    );
 
-    if (isHost && attendanceOpen) {
-      return BottomCTA(
-        label: 'Take Attendance',
-        onPressed: () => GoRouter.of(context).pushNamed(
-          Routes.attendanceSheet.name,
-          pathParameters: {'runClubId': runClubId, 'runId': run.id},
-        ),
-        leadingContent: Icon(
-          Icons.checklist_rounded,
-          color: CatchTokens.of(context).primary,
-          size: 18,
-        ),
-      );
+    if (isHost && isHostAttendanceOpen(run: run, now: referenceNow)) {
+      return const SizedBox.shrink();
     }
 
     final status = run.statusFor(userProfile);
@@ -69,16 +53,12 @@ class RunDetailCta extends ConsumerWidget {
     final leaveWMutation = ref.watch(
       RunBookingController.leaveWaitlistMutation,
     );
-    final selfCheckInMutation = ref.watch(
-      RunBookingController.selfCheckInMutation,
-    );
 
     final errorMutation = [
       bookMutation,
       cancelMutation,
       joinWMutation,
       leaveWMutation,
-      selfCheckInMutation,
     ].firstWhere((m) => m.hasError, orElse: () => bookMutation);
 
     return Column(
@@ -122,39 +102,14 @@ class RunDetailCta extends ConsumerWidget {
                   ),
           ),
           RunSignUpStatus.signedUp => (() {
-            final checkinWindowStart = run.startTime.subtract(
-              const Duration(minutes: 30),
-            );
-            final checkinWindowEnd = run.startTime.add(
-              const Duration(minutes: 30),
-            );
-            final checkinOpen =
-                referenceNow.isAfter(checkinWindowStart) &&
-                referenceNow.isBefore(checkinWindowEnd);
-
-            // Show "Check in" button when the window is open and the
-            // user hasn't already checked in via another device.
-            if (checkinOpen && !run.hasAttended(userProfile.uid)) {
-              return BottomCTA(
-                label: 'Check in',
-                onPressed: selfCheckInMutation.isPending
-                    ? null
-                    : () => RunBookingController.selfCheckInMutation.run(
-                        ref,
-                        (tx) async => tx
-                            .get(runBookingControllerProvider.notifier)
-                            .selfCheckIn(runId: run.id),
-                      ),
-                isLoading: selfCheckInMutation.isPending,
-                leadingContent: Icon(
-                  Icons.location_on_rounded,
-                  color: CatchTokens.of(context).primary,
-                  size: 18,
-                ),
-              );
+            if (isSelfCheckInOpen(
+              run: run,
+              uid: userProfile.uid,
+              now: referenceNow,
+            )) {
+              return const SizedBox.shrink();
             }
 
-            // Outside check-in window: normal cancel button.
             return BottomCTA(
               label: 'Cancel booking',
               onPressed: cancelMutation.isPending
@@ -215,29 +170,6 @@ class RunDetailCta extends ConsumerWidget {
       ],
     );
   }
-}
-
-String runBookingErrorMessage(Object error) {
-  if (error is AppException) {
-    return error.message;
-  }
-  if (error is FirebaseException) {
-    return firestoreErrorMessage(error);
-  }
-  if (error is FirebaseFunctionsException) {
-    if (error.code == 'unauthenticated') {
-      return const SignInRequiredException('book a run').message;
-    }
-
-    final message = error.message;
-    if (message != null && message.trim().isNotEmpty) {
-      return message.trim();
-    }
-  }
-  if (error is StateError && error.message.isNotEmpty) {
-    return error.message;
-  }
-  return 'Unable to update this booking right now.';
 }
 
 class PriceLeading extends StatelessWidget {

@@ -7,9 +7,11 @@ import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/catches_callout.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/run_arrival_action_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -56,57 +58,33 @@ class DashboardFull extends ConsumerWidget {
     return Scaffold(
       backgroundColor: t.bg,
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
+        child: CustomScrollView(
+          key: scrollViewKey,
+          slivers: [
+            ...DashboardSliverHeader(
+              eyebrow: dayCity(user.city?.label).toUpperCase(),
+              title: '${greeting()}, $firstName',
+              avatar: PersonAvatar(
+                size: 42,
+                name: user.name,
+                imageUrl: user.photoUrls.firstOrNull,
+                borderWidth: 2,
+                borderColor: t.primary,
+              ),
+            ).buildSlivers(context),
+            SliverPadding(
               padding: const EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
-                CatchSpacing.s2,
+                CatchSpacing.s1,
                 CatchSpacing.s5,
-                Sizes.p10,
+                CatchSpacing.s6,
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          dayCity(user.city?.label).toUpperCase(),
-                          style: CatchTextStyles.labelM(context, color: t.ink3)
-                              .copyWith(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                              ),
-                        ),
-                        gapH2,
-                        Text(
-                          '${greeting()}, $firstName',
-                          style: CatchTextStyles.displayL(context),
-                        ),
-                      ],
-                    ),
-                  ),
-                  PersonAvatar(
-                    size: 42,
-                    name: user.name,
-                    imageUrl: user.photoUrls.firstOrNull,
-                    borderWidth: 2,
-                    borderColor: t.primary,
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                key: scrollViewKey,
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s1,
-                  CatchSpacing.s5,
-                  CatchSpacing.s6,
-                ),
-                children: [
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
+                  if (viewModel.arrivalAction != null) ...[
+                    RunArrivalActionCard(action: viewModel.arrivalAction!),
+                    gapH18,
+                  ],
                   if (viewModel.nextRun != null) ...[
                     NextRunHero(nextRun: viewModel.nextRun!),
                     gapH18,
@@ -122,7 +100,7 @@ class DashboardFull extends ConsumerWidget {
                   ),
                   gapH18,
                   ActivitySection(uid: user.uid),
-                ],
+                ]),
               ),
             ),
           ],

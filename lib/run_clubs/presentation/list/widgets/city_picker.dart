@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -53,25 +54,32 @@ class _CityPickerState extends ConsumerState<CityPicker> {
   Widget _trigger(BuildContext context, CityData city) {
     final t = CatchTokens.of(context);
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-      decoration: BoxDecoration(
-        color: t.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: t.line),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Icon(Icons.location_on_outlined, size: 16, color: t.ink2),
-          const SizedBox(width: 6),
-          Text(
-            city.label,
-            style: CatchTextStyles.labelL(context, color: t.ink),
-          ),
-          const SizedBox(width: 4),
-          Icon(Icons.expand_more_rounded, size: 18, color: t.ink2),
-        ],
+    return Semantics(
+      button: true,
+      label: 'City',
+      value: city.label,
+      hint: 'Change run club city',
+      child: Container(
+        height: CatchTextField.compactControlHeight,
+        padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s3),
+        decoration: BoxDecoration(
+          color: t.surface,
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          border: Border.all(color: t.line2, width: 1.5),
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.location_on_outlined, size: 18, color: t.ink3),
+            const SizedBox(width: CatchSpacing.s2),
+            Text(
+              city.label,
+              style: CatchTextStyles.bodyL(context, color: t.ink),
+            ),
+            const SizedBox(width: CatchSpacing.s1),
+            Icon(Icons.expand_more_rounded, size: 20, color: t.ink3),
+          ],
+        ),
       ),
     );
   }

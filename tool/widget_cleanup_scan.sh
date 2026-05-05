@@ -108,8 +108,12 @@ scan "Feature widgets prop-drilling CatchTokens" \
 
 scan_tappables
 
-scan "Legacy spacing compatibility helpers" \
-  'Sizes\.p[0-9]+' \
+scan "Legacy 4-point spacing migration candidates" \
+  'Sizes\.p(4|8|12|16|20|24|32|40|48|64)\b' \
+  lib test
+
+scan "Fine-grained spacing compatibility helpers" \
+  'Sizes\.p(2|3|6|10|14|18)\b' \
   lib test
 
 scan "Plugin/platform side effects inside presentation code" \

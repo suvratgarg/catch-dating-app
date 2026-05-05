@@ -5,6 +5,7 @@ import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
@@ -177,17 +178,8 @@ void _registerErrorHandlers(ErrorLogger errorLogger) {
     return true;
   };
 
-  // Widget build failures — show a readable error screen instead of a
-  // blank red widget in debug mode.
-  if (kDebugMode) {
-    ErrorWidget.builder = (details) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.red,
-          title: const Text('An error occurred'),
-        ),
-        body: Center(child: Text(details.toString())),
-      );
-    };
-  }
+  // Widget build failures should still look like Catch. Debug builds keep the
+  // useful framework details, but the raw Flutter red screen should not leak
+  // into the product shell.
+  ErrorWidget.builder = (details) => CatchFrameworkErrorView(details: details);
 }

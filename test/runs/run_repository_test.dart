@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -406,6 +408,40 @@ void main() {
       expect(value, [run]);
     });
 
+    testWidgets(
+      'watchSignedUpRunsProvider keeps realtime streams alive while idle',
+      (tester) async {
+        final run = buildRun(id: 'run-1', signedUpUserIds: const ['runner-1']);
+        final signedUpRunsController = StreamController<List<Run>>();
+        addTearDown(signedUpRunsController.close);
+
+        final container = ProviderContainer(
+          overrides: [
+            runRepositoryProvider.overrideWith(
+              (ref) => _IdleRunRepository(
+                signedUpRunsStream: signedUpRunsController.stream,
+              ),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final provider = watchSignedUpRunsProvider('runner-1');
+        final subscription = container.listen(provider, (_, _) {});
+        addTearDown(subscription.close);
+
+        signedUpRunsController.add([run]);
+        await container.pump();
+        expect(subscription.read().value, [run]);
+
+        await tester.pump(_pastLegacyStreamTimeout);
+        await container.pump();
+
+        expect(subscription.read(), isA<AsyncData<List<Run>>>());
+        expect(subscription.read().value, [run]);
+      },
+    );
+
     test('recommendedRunsProvider delegates to the repository', () async {
       final run = buildRun(id: 'run-1', runClubId: 'club-1');
       await _seedRun(firestore, run);
@@ -422,3 +458,15 @@ void main() {
 Future<void> _seedRun(FakeFirebaseFirestore firestore, Run run) {
   return firestore.collection('runs').doc(run.id).set(run.toJson());
 }
+
+class _IdleRunRepository extends Fake implements RunRepository {
+  _IdleRunRepository({required this.signedUpRunsStream});
+
+  final Stream<List<Run>> signedUpRunsStream;
+
+  @override
+  Stream<List<Run>> watchSignedUpRuns({required String uid}) =>
+      signedUpRunsStream;
+}
+
+const _pastLegacyStreamTimeout = Duration(seconds: 11);

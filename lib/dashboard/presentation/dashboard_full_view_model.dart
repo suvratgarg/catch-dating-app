@@ -1,6 +1,9 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -35,12 +38,14 @@ class DashboardSectionModel<T> {
 class DashboardFullViewModel {
   const DashboardFullViewModel({
     required this.nextRun,
+    required this.arrivalAction,
     required this.activeSwipeRun,
     required this.attendedRunsSection,
     required this.recommendationsSection,
   });
 
   final Run? nextRun;
+  final RunArrivalAction? arrivalAction;
   final Run? activeSwipeRun;
   final DashboardSectionModel<List<Run>> attendedRunsSection;
   final DashboardSectionModel<List<Run>> recommendationsSection;
@@ -48,6 +53,8 @@ class DashboardFullViewModel {
 
 DashboardFullViewModel buildDashboardFullViewModel({
   required List<Run> signedUpRuns,
+  String? uid,
+  List<Run> hostedRuns = const [],
   required AsyncValue<List<Run>> attendedRunsAsync,
   required AsyncValue<List<Run>> recommendedRunsAsync,
   DateTime? now,
@@ -88,9 +95,18 @@ DashboardFullViewModel buildDashboardFullViewModel({
           attendedRunsSection.data!,
           now: effectiveNow,
         );
+  final arrivalAction = uid == null
+      ? null
+      : selectRunArrivalAction(
+          signedUpRuns: signedUpRuns,
+          hostedRuns: hostedRuns,
+          uid: uid,
+          now: effectiveNow,
+        );
 
   return DashboardFullViewModel(
     nextRun: nextRun,
+    arrivalAction: arrivalAction,
     activeSwipeRun: activeSwipeRun,
     attendedRunsSection: attendedRunsSection,
     recommendationsSection: recommendationsSection,
@@ -106,8 +122,22 @@ DashboardFullViewModel dashboardFullViewModel(
   required String uid,
   required List<String> followedClubIds,
 }) {
+  final hostedClubs = ref
+      .watch(watchRunClubsHostedByProvider(uid))
+      .asData
+      ?.value;
+  final hostedRuns = <Run>[];
+  for (final club in hostedClubs ?? const <RunClub>[]) {
+    final runs = ref.watch(watchRunsForClubProvider(club.id)).asData?.value;
+    if (runs != null) {
+      hostedRuns.addAll(runs);
+    }
+  }
+
   return buildDashboardFullViewModel(
     signedUpRuns: signedUpRuns,
+    uid: uid,
+    hostedRuns: hostedRuns,
     attendedRunsAsync: ref.watch(watchAttendedRunsProvider(uid)),
     recommendedRunsAsync: ref.watch(
       dashboardRecommendedRunsProvider(

@@ -29,6 +29,7 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_str
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/widgets/city_picker.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_club_list_tile.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_list.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_list_body.dart';
@@ -208,6 +209,15 @@ void main() {
           ),
         );
         await _pumpRunClubUi(tester);
+
+        expect(
+          tester.getSize(find.byType(CityPicker)).height,
+          CatchTextField.compactControlHeight,
+        );
+        expect(
+          tester.getSize(find.byType(CatchTextField)).height,
+          CatchTextField.compactControlHeight,
+        );
 
         await tester.enterText(find.byType(TextField), 'asha');
         await tester.pump();

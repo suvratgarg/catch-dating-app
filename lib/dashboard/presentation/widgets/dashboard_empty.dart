@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -44,50 +45,26 @@ class DashboardEmpty extends StatelessWidget {
     return Scaffold(
       backgroundColor: t.bg,
       body: SafeArea(
-        child: Column(
-          children: [
-            Padding(
+        child: CustomScrollView(
+          slivers: [
+            ...DashboardSliverHeader(
+              eyebrow: 'WELCOME TO CATCH',
+              title: "Let's find your first run",
+              avatar: DashedAvatar(
+                size: 42,
+                imageUrl: photoUrl,
+                name: firstName,
+              ),
+            ).buildSlivers(context),
+            SliverPadding(
               padding: const EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
-                CatchSpacing.s2,
+                CatchSpacing.s1,
                 CatchSpacing.s5,
-                Sizes.p10,
+                CatchSpacing.s6,
               ),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'WELCOME TO CATCH',
-                          style: CatchTextStyles.labelM(context, color: t.ink3)
-                              .copyWith(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 1.0,
-                              ),
-                        ),
-                        gapH2,
-                        Text(
-                          "Let's find your first run",
-                          style: CatchTextStyles.displayL(context),
-                        ),
-                      ],
-                    ),
-                  ),
-                  DashedAvatar(size: 42, imageUrl: photoUrl, name: firstName),
-                ],
-              ),
-            ),
-            Expanded(
-              child: ListView(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  CatchSpacing.s1,
-                  CatchSpacing.s5,
-                  CatchSpacing.s6,
-                ),
-                children: [
+              sliver: SliverList(
+                delegate: SliverChildListDelegate([
                   const EmptyHeroCard(),
                   gapH20,
                   Text(
@@ -142,7 +119,7 @@ class DashboardEmpty extends StatelessWidget {
                     gapH20,
                     ActivitySection(uid: user!.uid, showEmptyState: false),
                   ],
-                ],
+                ]),
               ),
             ),
           ],

@@ -21,7 +21,7 @@ final class AppAnalyticsProvider
         argument: null,
         retry: null,
         name: r'appAnalyticsProvider',
-        isAutoDispose: true,
+        isAutoDispose: false,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
@@ -48,4 +48,4 @@ final class AppAnalyticsProvider
   }
 }
 
-String _$appAnalyticsHash() => r'393b530b3b47bb8a368c5f6e12335ae618b170a8';
+String _$appAnalyticsHash() => r'928b2d519ec69a1bfc46af85435ed7990042682d';

@@ -7,20 +7,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ProfileSliverHeader extends CatchSliverTopBar {
-  const ProfileSliverHeader({super.key})
-    : super(
-        titleWidget: const _ProfileTitle(),
-        leading: const SizedBox.shrink(),
-        actions: const [_SettingsButton(), _OverflowMenu()],
-        bottom: const CatchTopBarTabBar(
-          tabs: [
-            Tab(text: 'Profile'),
-            Tab(text: 'Preview'),
-          ],
-        ),
-        expandedHeight: 112,
-      );
+class ProfileSliverHeader {
+  const ProfileSliverHeader({required this.controller});
+
+  final TabController controller;
+
+  List<Widget> buildSlivers(BuildContext context) {
+    final topPadding = MediaQuery.paddingOf(context).top;
+    final header = CatchSliverHeader(
+      title: const _ProfileTitle(),
+      titleHeight: topPadding + 72,
+      bottomHeight: 48,
+      bottom: _ProfileTabBar(controller: controller),
+    );
+
+    return header.buildSlivers(context);
+  }
 }
 
 class _ProfileTitle extends StatelessWidget {
@@ -28,14 +30,62 @@ class _ProfileTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        kToolbarHeight + 8,
-        CatchSpacing.s4,
-        CatchSpacing.s3,
+    final t = CatchTokens.of(context);
+
+    return Material(
+      color: t.bg,
+      child: SafeArea(
+        bottom: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s4,
+            CatchSpacing.s2,
+            CatchSpacing.s4,
+            CatchSpacing.s3,
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Profile',
+                  style: CatchTextStyles.displayL(context),
+                ),
+              ),
+              const SizedBox(width: CatchSpacing.s2),
+              const _SettingsButton(),
+              const SizedBox(width: CatchSpacing.s2),
+              const _OverflowMenu(),
+            ],
+          ),
+        ),
       ),
-      child: Text('You', style: CatchTextStyles.displayL(context)),
+    );
+  }
+}
+
+class _ProfileTabBar extends StatelessWidget {
+  const _ProfileTabBar({required this.controller});
+
+  final TabController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Material(
+      color: t.bg,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: t.line)),
+        ),
+        child: CatchTopBarTabBar(
+          controller: controller,
+          tabs: const [
+            Tab(text: 'Edit'),
+            Tab(text: 'Preview'),
+          ],
+        ),
+      ),
     );
   }
 }

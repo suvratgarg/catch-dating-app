@@ -1,7 +1,7 @@
 ---
 doc_id: error_handling_audit
-version: 2.0.0
-updated: 2026-05-05
+version: 2.1.0
+updated: 2026-05-06
 owner: recursive_audit_loop
 status: snapshot
 ---
@@ -18,6 +18,40 @@ status: snapshot
 Use this as an error-handling snapshot and remediation map. Re-run focused
 searches/tests before treating counts as current. Stamp files reviewed against
 this doc in the audit registry rather than copying findings into new trackers.
+
+## Current Guidance Addendum
+
+### 2026-05-06: Branded Error Surface Gap
+
+The app now has a branded Flutter framework-crash fallback,
+`CatchFrameworkErrorView`, used for widget build/layout failures from
+`ErrorWidget.builder`. That is not the same thing as a canonical app data-load
+error surface.
+
+Current app-facing primitives are fragmented:
+
+- `CatchFrameworkErrorView` handles framework errors and must stay minimal and
+  robust because the normal widget tree may already be failing.
+- `ErrorBanner` handles inline mutation or form errors.
+- `MutationErrorSnackbarListener` handles transient mutation failures.
+- `CatchErrorText` and `AsyncValueWidget` still render mostly raw centered text.
+- Several screens use `CatchEmptyState` as an error state, but the icon, copy,
+  retry affordance, and sliver/full-screen layout contracts are not centralized.
+
+Going forward, screen-level and sliver-level data-load failures should migrate
+to one branded app error primitive rather than local `Center(Text(...))` or
+`CatchErrorText` branches. The intended primitive should support:
+
+- full-screen scaffold usage for tab/root screens;
+- sliver usage inside `CustomScrollView` / `SliverFillRemaining`;
+- inline/card usage inside an existing section;
+- mapped user-facing copy via `firestoreErrorMessage`, `authErrorMessage`, or a
+  feature-specific message mapper;
+- optional retry action via `ref.invalidate(provider)` or controller refresh;
+- no debug stack trace in normal app UI.
+
+Until that primitive exists, new code should prefer `CatchEmptyState` for
+branded visual layout and avoid introducing new raw centered error text.
 
 **Date:** 2026-05-03
 **Scope:** Complete mapping of exception types, error propagation paths, user-facing error rendering, logging/telemetry, and gap analysis.

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
@@ -50,7 +51,9 @@ void main() {
             authRepositoryProvider.overrideWithValue(repository),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-            onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
           ],
         );
         addTearDown(repository.dispose);
@@ -98,18 +101,53 @@ void main() {
       );
     });
 
+    test('starts at welcome for signed-in users without a phone', () async {
+      final repository = FakeAuthRepository()
+        ..currentUserValue = TestUser(uid: 'runner-1');
+      final draftRepository = FakeOnboardingDraftRepository();
+      final container = createOnboardingTestContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
+        ],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      await primeOnboardingAsyncProviders(container);
+
+      await container.read(onboardingControllerProvider.notifier).initStep();
+
+      expect(
+        container.read(onboardingControllerProvider).step,
+        OnboardingStep.welcome,
+      );
+    });
+
     test(
-      'starts at welcome for signed-in users without a phone',
+      'does not resume a persisted draft when the signed-in user has no phone',
       () async {
         final repository = FakeAuthRepository()
           ..currentUserValue = TestUser(uid: 'runner-1');
-        final draftRepository = FakeOnboardingDraftRepository();
+        final draftRepository = FakeOnboardingDraftRepository()
+          ..draft = OnboardingDraft(
+            step: OnboardingStep.genderInterest.index,
+            firstName: 'Asha',
+            lastName: 'Runner',
+            dateOfBirth: DateTime(1997, 4, 15),
+            phoneNumber: '9876543210',
+            gender: Gender.woman,
+            interestedInGenders: const [Gender.man],
+          );
         final container = createOnboardingTestContainer(
           overrides: [
             authRepositoryProvider.overrideWithValue(repository),
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
-            onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
           ],
         );
         addTearDown(repository.dispose);
@@ -121,6 +159,10 @@ void main() {
         expect(
           container.read(onboardingControllerProvider).step,
           OnboardingStep.welcome,
+        );
+        expect(
+          container.read(onboardingControllerProvider).phoneVerified,
+          false,
         );
       },
     );
@@ -214,6 +256,59 @@ void main() {
         OnboardingStep.instagram,
       );
     });
+
+    test(
+      'stays on gender preferences when profile persistence fails',
+      () async {
+        final repository = FakeAuthRepository()
+          ..currentUserValue = TestUser(
+            uid: 'runner-1',
+            phoneNumber: '+919876543210',
+          );
+        final userProfileRepository = _FailingSetUserProfileRepository();
+        final draftRepository = FakeOnboardingDraftRepository();
+        final container = createOnboardingTestContainer(
+          overrides: [
+            authRepositoryProvider.overrideWithValue(repository),
+            userProfileRepositoryProvider.overrideWith(
+              (ref) => userProfileRepository,
+            ),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+            onboardingDraftRepositoryProvider.overrideWithValue(
+              draftRepository,
+            ),
+          ],
+        );
+        addTearDown(repository.dispose);
+        addTearDown(container.dispose);
+        await primeOnboardingAsyncProviders(container);
+
+        final notifier = container.read(onboardingControllerProvider.notifier);
+        await notifier.initStep();
+        notifier
+          ..setNameDob(
+            firstName: 'Asha',
+            lastName: 'Runner',
+            dateOfBirth: DateTime(1997, 4, 15),
+            phoneNumber: '9876543210',
+            countryCode: '+91',
+          )
+          ..setGenderInterest(
+            gender: Gender.woman,
+            interestedInGenders: const [Gender.man],
+          )
+          ..goToStep(OnboardingStep.genderInterest);
+
+        await expectLater(notifier.saveProfile(), throwsA(isA<StateError>()));
+
+        expect(
+          container.read(onboardingControllerProvider).step,
+          OnboardingStep.genderInterest,
+        );
+        expect(draftRepository.draft, isNull);
+      },
+    );
   });
 
   group('OnboardingController.complete', () {
@@ -298,4 +393,12 @@ void main() {
       expect(userProfileRepository.lastSavedUser!.profileComplete, isTrue);
     });
   });
+}
+
+class _FailingSetUserProfileRepository
+    extends FakeOnboardingUserProfileRepository {
+  @override
+  Future<void> setUserProfile({required UserProfile userProfile}) async {
+    throw StateError('write failed');
+  }
 }

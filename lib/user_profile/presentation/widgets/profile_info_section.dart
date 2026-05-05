@@ -52,18 +52,16 @@ class ProfileInfoSection extends StatelessWidget {
         ),
       );
       if (grouped && i < entries.length - 1) {
-        tiles.add(Divider(
-          height: 1,
-          indent: 52,
-          color: CatchTokens.of(context).line,
-        ));
+        tiles.add(
+          Divider(height: 1, indent: 52, color: CatchTokens.of(context).line),
+        );
       }
     }
 
     final body = grouped
         ? CatchSurface(
             borderColor: CatchTokens.of(context).line,
-            padding: const EdgeInsets.symmetric(horizontal: Sizes.p16),
+            padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s4),
             child: Column(children: tiles),
           )
         : Column(children: tiles);
@@ -75,7 +73,7 @@ class ProfileInfoSection extends StatelessWidget {
           gapH16,
           Padding(
             padding: EdgeInsets.only(
-              left: grouped ? Sizes.p4 : 0,
+              left: grouped ? CatchSpacing.s1 : 0,
               bottom: Sizes.p2,
             ),
             child: Text(

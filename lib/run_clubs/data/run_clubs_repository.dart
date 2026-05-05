@@ -54,6 +54,11 @@ class RunClubsRepository {
       .snapshots()
       .map((snap) => snap.docs.map((d) => d.data()).toList());
 
+  Stream<List<RunClub>> watchRunClubsHostedBy(String uid) => _runClubsRef
+      .where('hostUserId', isEqualTo: uid)
+      .snapshots()
+      .map((snap) => snap.docs.map((d) => d.data()).toList());
+
   // ── Write ──────────────────────────────────────────────────────────────────
 
   String generateId() => _runClubRef().id;
@@ -138,13 +143,13 @@ RunClubsRepository runClubsRepository(Ref ref) => RunClubsRepository(
 @Riverpod(keepAlive: true)
 Stream<RunClub?> watchRunClub(Ref ref, String id) {
   final repository = ref.watch(runClubsRepositoryProvider);
-  return _withFirestoreTimeout(repository.watchRunClub(id));
+  return repository.watchRunClub(id);
 }
 
 @Riverpod(keepAlive: true)
 Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) {
   final repository = ref.watch(runClubsRepositoryProvider);
-  return _withFirestoreTimeout(repository.watchRunClubsByLocation(location));
+  return repository.watchRunClubsByLocation(location);
 }
 
 @Riverpod(keepAlive: true)
@@ -153,14 +158,15 @@ Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
   IndianCity location,
 ) {
   final repository = ref.watch(runClubsRepositoryProvider);
-  return _withFirestoreTimeout(
-    repository.watchRunClubsByLocationSortedByRating(location),
-  );
+  return repository.watchRunClubsByLocationSortedByRating(location);
+}
+
+@Riverpod(keepAlive: true)
+Stream<List<RunClub>> watchRunClubsHostedBy(Ref ref, String uid) {
+  final repository = ref.watch(runClubsRepositoryProvider);
+  return repository.watchRunClubsHostedBy(uid);
 }
 
 @riverpod
 Future<RunClub?> fetchRunClub(Ref ref, String id) =>
     ref.watch(runClubsRepositoryProvider).fetchRunClub(id);
-
-Stream<T> _withFirestoreTimeout<T>(Stream<T> stream) =>
-    stream.timeout(const Duration(seconds: 10));

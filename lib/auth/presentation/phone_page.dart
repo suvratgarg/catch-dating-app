@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
+import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -94,16 +95,13 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                           AuthController.sendOtpMutation.reset(ref),
                       inputFormatters: [
                         FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(15),
+                        LengthLimitingTextInputFormatter(
+                          AuthInput.maxPhoneDigits,
+                        ),
                       ],
                       hintText: '98765 43210',
                       prefixIcon: _buildCountryCodePicker(t),
-                      validator: (v) {
-                        if (v == null || v.trim().length < 7) {
-                          return 'Please enter a valid phone number';
-                        }
-                        return null;
-                      },
+                      validator: AuthInput.phoneNumberError,
                     ),
                     if (mutation.hasError) ...[
                       gapH16,

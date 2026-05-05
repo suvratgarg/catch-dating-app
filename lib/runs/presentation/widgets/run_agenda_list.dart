@@ -13,12 +13,14 @@ class RunAgendaList extends StatelessWidget {
     this.onRunSelected,
     this.badgeLabel,
     this.today,
+    this.preserveInputOrder = false,
   });
 
   final List<Run> runs;
   final ValueChanged<Run>? onRunSelected;
   final String? badgeLabel;
   final DateTime? today;
+  final bool preserveInputOrder;
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +31,7 @@ class RunAgendaList extends StatelessWidget {
           onRunSelected: onRunSelected,
           badgeLabel: badgeLabel,
           today: today,
+          preserveInputOrder: preserveInputOrder,
         ),
       ],
     );
@@ -42,25 +45,27 @@ class RunAgendaSliverList extends StatelessWidget {
     this.onRunSelected,
     this.badgeLabel,
     this.today,
+    this.preserveInputOrder = false,
   });
 
   final List<Run> runs;
   final ValueChanged<Run>? onRunSelected;
   final String? badgeLabel;
   final DateTime? today;
+  final bool preserveInputOrder;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final grouped = _groupRuns(runs);
+    final grouped = _groupRuns(runs, preserveInputOrder: preserveInputOrder);
     final effectiveToday = today ?? DateTime.now();
 
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        Sizes.p4,
+        CatchSpacing.s1,
         CatchSpacing.s5,
-        Sizes.p24,
+        CatchSpacing.s6,
       ),
       sliver: SliverList.list(
         children: [
@@ -167,8 +172,13 @@ class RunAgendaRunCard extends StatelessWidget {
   }
 }
 
-Map<DateTime, List<Run>> _groupRuns(List<Run> runs) {
-  final sorted = [...runs]..sort((a, b) => a.startTime.compareTo(b.startTime));
+Map<DateTime, List<Run>> _groupRuns(
+  List<Run> runs, {
+  required bool preserveInputOrder,
+}) {
+  final sorted = preserveInputOrder
+      ? runs
+      : ([...runs]..sort((a, b) => a.startTime.compareTo(b.startTime)));
   final grouped = <DateTime, List<Run>>{};
   for (final run in sorted) {
     final day = DateUtils.dateOnly(run.startTime);

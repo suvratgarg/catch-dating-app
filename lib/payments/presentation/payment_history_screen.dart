@@ -75,8 +75,8 @@ class _PaymentList extends ConsumerWidget {
         }
         return ListView.separated(
           padding: const EdgeInsets.symmetric(
-            horizontal: Sizes.p16,
-            vertical: Sizes.p12,
+            horizontal: CatchSpacing.s4,
+            vertical: CatchSpacing.s3,
           ),
           itemCount: payments.length,
           separatorBuilder: (_, _) => const Divider(height: 1),
@@ -106,15 +106,15 @@ class _PaymentTile extends ConsumerWidget {
       button: true,
       label: 'Payment for $runTitle',
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: Sizes.p12),
+        padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
         child: InkWell(
           key: PaymentHistoryKeys.paymentTile(payment.id),
           borderRadius: BorderRadius.circular(CatchRadius.md),
           onTap: () => _showDetailSheet(context, ref, runTitle),
           child: Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: Sizes.p4,
-              vertical: Sizes.p8,
+              horizontal: CatchSpacing.s1,
+              vertical: CatchSpacing.s2,
             ),
             child: Row(
               children: [
@@ -181,10 +181,10 @@ class _PaymentTile extends ConsumerWidget {
             child: CatchBottomSheetScaffold(
               title: runTitle,
               padding: EdgeInsets.fromLTRB(
-                Sizes.p20,
-                Sizes.p12,
-                Sizes.p20,
-                Sizes.p20 + bottomPadding,
+                CatchSpacing.s5,
+                CatchSpacing.s3,
+                CatchSpacing.s5,
+                CatchSpacing.s5 + bottomPadding,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,

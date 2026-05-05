@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
@@ -49,20 +50,23 @@ class AuthController extends _$AuthController {
   void goToStep(AuthStep step) => state = state.copyWith(step: step);
 
   Future<void> sendOtp(String phoneNumber, String countryCode) async {
-    state = state.copyWith(
-      verificationId: null,
-      phoneNumber: phoneNumber,
-      countryCode: countryCode,
+    final normalizedCountryCode = AuthInput.normalizeCountryCode(countryCode);
+    final normalizedPhoneNumber = AuthInput.normalizePhoneInput(phoneNumber);
+    final formatted = AuthInput.formatPhoneNumber(
+      phoneNumber: normalizedPhoneNumber,
+      countryCode: normalizedCountryCode,
     );
 
-    final formatted = _formatPhoneNumber(phoneNumber, countryCode);
-    debugPrint('── AuthController.sendOtp ──');
-    debugPrint('  national number: $phoneNumber');
-    debugPrint('  country code: $countryCode');
-    debugPrint('  formatted: $formatted');
-    debugPrint(
-      '  appCheckDebugToken configured: ${AppConfig.firebaseAppCheckDebugToken.isNotEmpty}',
+    state = state.copyWith(
+      verificationId: null,
+      phoneNumber: AuthInput.phoneNumberForState(
+        phoneNumber: normalizedPhoneNumber,
+        countryCode: normalizedCountryCode,
+      ),
+      countryCode: normalizedCountryCode,
     );
+
+    _debugLogOtpRequest(formatted);
 
     final completer = Completer<void>();
 
@@ -72,7 +76,7 @@ class AuthController extends _$AuthController {
           .verifyPhoneNumber(
             phoneNumber: formatted,
             codeSent: (verificationId, _) {
-              debugPrint('AuthController.sendOtp: codeSent');
+              _debugLog('AuthController.sendOtp: codeSent');
               state = state.copyWith(
                 verificationId: verificationId,
                 step: AuthStep.otp,
@@ -80,15 +84,13 @@ class AuthController extends _$AuthController {
               if (!completer.isCompleted) completer.complete();
             },
             verificationFailed: (e) {
-              debugPrint(
+              _debugLog(
                 'AuthController.sendOtp verificationFailed: code=${e.code}',
               );
               if (!completer.isCompleted) completer.completeError(e);
             },
             verificationCompleted: (credential) async {
-              debugPrint(
-                'AuthController.sendOtp: verificationCompleted (auto)',
-              );
+              _debugLog('AuthController.sendOtp: verificationCompleted (auto)');
               try {
                 await ref
                     .read(authRepositoryProvider)
@@ -100,7 +102,7 @@ class AuthController extends _$AuthController {
             },
           )
           .catchError((Object e, StackTrace st) {
-            debugPrint('AuthController.sendOtp catchError: $e');
+            _debugLog('AuthController.sendOtp catchError: $e');
             if (!completer.isCompleted) completer.completeError(e, st);
           }),
     );
@@ -123,9 +125,10 @@ class AuthController extends _$AuthController {
       );
     }
 
+    final smsCode = AuthInput.normalizeOtpCode(code);
     await ref
         .read(authRepositoryProvider)
-        .signInWithOtp(verificationId: verificationId, smsCode: code);
+        .signInWithOtp(verificationId: verificationId, smsCode: smsCode);
   }
 
   void reset() {
@@ -134,11 +137,18 @@ class AuthController extends _$AuthController {
     verifyOtpMutation.reset(ref);
   }
 
-  String _formatPhoneNumber(String phoneNumber, String countryCode) {
-    final normalized = phoneNumber.trim();
-    if (normalized.startsWith('+')) {
-      return normalized;
+  void _debugLogOtpRequest(String formattedPhoneNumber) {
+    _debugLog('── AuthController.sendOtp ──');
+    _debugLog('  phone: ${AuthInput.maskedPhoneNumber(formattedPhoneNumber)}');
+    _debugLog(
+      '  appCheckDebugToken configured: ${AppConfig.firebaseAppCheckDebugToken.isNotEmpty}',
+    );
+  }
+
+  void _debugLog(String message) {
+    if (!kDebugMode || !AppConfig.verboseAuthDebugLogs) {
+      return;
     }
-    return '$countryCode$normalized';
+    debugPrint(message);
   }
 }

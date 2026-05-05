@@ -1,7 +1,7 @@
 ---
 doc_id: audit_registry
-version: 2.1.0
-updated: 2026-05-05
+version: 2.2.0
+updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -49,6 +49,17 @@ Use this registry before reading long tracker docs. The goal is to answer:
    ```
 
 3. Work in a focused batch and verify with scoped analyzer/tests/scanners.
+
+   For Riverpod, Freezed, json_serializable, envied, or other build_runner-backed
+   source edits, keep generated files synchronized. During iterative cleanup
+   loops, prefer:
+
+   ```sh
+   dart run build_runner watch --delete-conflicting-outputs
+   ```
+
+   Do not manually revert generated output just to reduce diff size when the
+   source change legitimately caused regeneration.
 
 4. Stamp the pass:
 

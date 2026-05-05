@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -16,7 +17,9 @@ class RunClubsSliverHeader extends CatchSliverHeader {
         title: const _TitleRow(),
         bottom: _SearchRow(showSearchField: showSearchField),
         titleHeight: CatchSliverHeader.twoLineTitleHeight,
-        bottomHeight: showSearchField ? 80 : 64,
+        bottomHeight:
+            CatchTextField.compactControlHeight +
+            (showSearchField ? CatchSpacing.s4 : CatchSpacing.s2),
       );
 }
 

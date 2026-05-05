@@ -64,9 +64,9 @@ class _ConfirmationBody extends ConsumerWidget {
                 _HeroSection(data: data, run: run),
                 Padding(
                   padding: const EdgeInsets.fromLTRB(
-                    Sizes.p20,
-                    Sizes.p20,
-                    Sizes.p20,
+                    CatchSpacing.s5,
+                    CatchSpacing.s5,
+                    CatchSpacing.s5,
                     0,
                   ),
                   child: Column(
@@ -124,10 +124,10 @@ class _HeroSection extends StatelessWidget {
           ),
           Padding(
             padding: EdgeInsets.fromLTRB(
-              Sizes.p20,
-              MediaQuery.paddingOf(context).top + Sizes.p24,
-              Sizes.p20,
-              Sizes.p32,
+              CatchSpacing.s5,
+              MediaQuery.paddingOf(context).top + CatchSpacing.s6,
+              CatchSpacing.s5,
+              CatchSpacing.s8,
             ),
             child: Column(
               children: [
@@ -211,7 +211,7 @@ class _RunSummaryCard extends StatelessWidget {
     final refundDeadline = run.startTime.subtract(const Duration(hours: 12));
 
     return CatchSurface(
-      padding: const EdgeInsets.all(Sizes.p16),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       radius: CatchRadius.md,
       borderColor: t.line,
       child: Column(
@@ -343,8 +343,8 @@ class _ActionTile extends StatelessWidget {
     return CatchSurface(
       onTap: onTap,
       padding: const EdgeInsets.symmetric(
-        vertical: Sizes.p12,
-        horizontal: Sizes.p8,
+        vertical: CatchSpacing.s3,
+        horizontal: CatchSpacing.s2,
       ),
       radius: CatchRadius.sm + 4,
       borderColor: t.line,
@@ -457,10 +457,10 @@ class _StickyBackToHome extends StatelessWidget {
           Divider(color: t.line, height: 1, thickness: 1),
           Padding(
             padding: EdgeInsets.fromLTRB(
-              Sizes.p16,
-              Sizes.p12,
-              Sizes.p16,
-              Sizes.p12 + bottomPadding,
+              CatchSpacing.s4,
+              CatchSpacing.s3,
+              CatchSpacing.s4,
+              CatchSpacing.s3 + bottomPadding,
             ),
             child: CatchButton(
               key: PaymentConfirmationKeys.backHome,

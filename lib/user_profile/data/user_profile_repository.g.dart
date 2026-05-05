@@ -55,7 +55,7 @@ final class UserProfileRepositoryProvider
 }
 
 String _$userProfileRepositoryHash() =>
-    r'b19e03e10d5cccfff77ccdf6561cdf36a0c39a07';
+    r'fbbfc488a51060b80a28e1389c57f22d24cdf228';
 
 @ProviderFor(watchUserProfile)
 final watchUserProfileProvider = WatchUserProfileProvider._();

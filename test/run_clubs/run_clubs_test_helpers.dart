@@ -229,6 +229,11 @@ class FakeRunClubsRepository implements RunClubsRepository {
       ..sort((a, b) => b.rating.compareTo(a.rating));
     return Stream.value(clubs);
   }
+
+  @override
+  Stream<List<RunClub>> watchRunClubsHostedBy(String uid) => Stream.value(
+    clubsById.values.where((club) => club.hostUserId == uid).toList(),
+  );
 }
 
 class CreateRunClubCall {

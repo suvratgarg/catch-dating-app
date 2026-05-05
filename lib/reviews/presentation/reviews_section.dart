@@ -116,7 +116,7 @@ class ReviewsSection extends StatelessWidget {
             message: 'Reviews from runners will appear here after a run.',
             surface: false,
             iconSize: 28,
-            padding: const EdgeInsets.symmetric(vertical: Sizes.p12),
+            padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
             titleStyle: CatchTextStyles.titleM(context),
             messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
           )

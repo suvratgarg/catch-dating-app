@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -80,6 +81,50 @@ void main() {
         viewModel.recommendationsSection.message,
         'Loading recommended runs...',
       );
+    });
+
+    test('selects self check-in during the run check-in window', () {
+      final now = DateTime(2026, 4, 23, 8, 55);
+      final run = buildRun(
+        id: 'check-in-run',
+        signedUpUserIds: const ['runner-1'],
+        startTime: DateTime(2026, 4, 23, 9),
+      );
+
+      final viewModel = buildDashboardFullViewModel(
+        signedUpRuns: [run],
+        uid: 'runner-1',
+        attendedRunsAsync: const AsyncData<List<Run>>([]),
+        recommendedRunsAsync: const AsyncData<List<Run>>([]),
+        now: now,
+      );
+
+      expect(viewModel.arrivalAction?.kind, RunArrivalActionKind.selfCheckIn);
+      expect(viewModel.arrivalAction?.run.id, 'check-in-run');
+    });
+
+    test('selects host attendance for active hosted runs', () {
+      final now = DateTime(2026, 4, 23, 9, 5);
+      final hostedRun = buildRun(
+        id: 'hosted-run',
+        startTime: DateTime(2026, 4, 23, 9),
+        endTime: DateTime(2026, 4, 23, 10),
+      );
+
+      final viewModel = buildDashboardFullViewModel(
+        signedUpRuns: const [],
+        uid: 'host-1',
+        hostedRuns: [hostedRun],
+        attendedRunsAsync: const AsyncData<List<Run>>([]),
+        recommendedRunsAsync: const AsyncData<List<Run>>([]),
+        now: now,
+      );
+
+      expect(
+        viewModel.arrivalAction?.kind,
+        RunArrivalActionKind.takeAttendance,
+      );
+      expect(viewModel.arrivalAction?.run.id, 'hosted-run');
     });
   });
 }

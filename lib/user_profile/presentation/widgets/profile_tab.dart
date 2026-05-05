@@ -73,9 +73,9 @@ typedef _ProfileTabContentBuilder =
 
 const _profileTabPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s5,
-  Sizes.p8,
+  CatchSpacing.s2,
   CatchSpacing.s5,
-  Sizes.p32,
+  CatchSpacing.s8,
 );
 
 class _ProfileTabContent extends ConsumerWidget {

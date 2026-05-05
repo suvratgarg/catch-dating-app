@@ -91,7 +91,7 @@ class _RunMapChip extends StatelessWidget {
       label: '${run.meetingPoint} run',
       child: CatchSurface(
         width: 180,
-        padding: const EdgeInsets.all(Sizes.p12),
+        padding: const EdgeInsets.all(CatchSpacing.s3),
         tone: selected ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
         radius: CatchRadius.md,
         borderColor: selected ? t.primary : t.line,
