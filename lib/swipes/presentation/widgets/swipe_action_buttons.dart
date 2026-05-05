@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter/material.dart';
 
 class SwipeActionButtons extends StatelessWidget {
@@ -21,18 +22,20 @@ class SwipeActionButtons extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           SwipeCircleButton(
+            key: SwipeKeys.passButton,
             icon: Icons.close_rounded,
             color: colorScheme.error,
             onTap: onPass,
-            surface: t.surface,
-            semanticLabel: 'Pass — swipe left',
+            tooltip: 'Pass',
+            semanticLabel: 'Pass, swipe left',
           ),
           SwipeCircleButton(
+            key: SwipeKeys.likeButton,
             icon: Icons.favorite_rounded,
             color: t.like,
             onTap: onLike,
-            surface: t.surface,
-            semanticLabel: 'Like — swipe right',
+            tooltip: 'Like',
+            semanticLabel: 'Like, swipe right',
           ),
         ],
       ),
@@ -46,31 +49,36 @@ class SwipeCircleButton extends StatelessWidget {
     required this.icon,
     required this.color,
     required this.onTap,
-    required this.surface,
+    required this.tooltip,
     this.semanticLabel,
   });
 
   final IconData icon;
   final Color color;
   final VoidCallback onTap;
-  final Color surface;
+  final String tooltip;
   final String? semanticLabel;
 
   @override
   Widget build(BuildContext context) {
-    return Semantics(
-      label: semanticLabel ?? '',
-      button: true,
-      child: Material(
-        shape: const CircleBorder(),
-        elevation: 4,
-        color: surface,
-        child: InkWell(
-          customBorder: const CircleBorder(),
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.all(18),
-            child: Icon(icon, color: color, size: 32),
+    final t = CatchTokens.of(context);
+
+    return Tooltip(
+      message: tooltip,
+      child: Semantics(
+        label: semanticLabel ?? tooltip,
+        button: true,
+        child: Material(
+          shape: const CircleBorder(),
+          elevation: 4,
+          color: t.surface,
+          child: InkWell(
+            customBorder: const CircleBorder(),
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.all(18),
+              child: Icon(icon, color: color, size: 32),
+            ),
           ),
         ),
       ),

@@ -3,9 +3,10 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/force_update/data/app_version_config_provider.dart';
+import 'package:catch_dating_app/force_update/presentation/update_required_controller.dart';
+import 'package:catch_dating_app/force_update/presentation/update_required_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Blocking screen shown when the running app version is below [minVersion].
 ///
@@ -44,12 +45,21 @@ class UpdateRequiredScreen extends ConsumerWidget {
               ),
               gapH48,
               CatchButton(
+                key: UpdateRequiredKeys.updateNowButton,
                 label: 'Update now',
-                onPressed: () => _openStore(
-                  context,
-                  config.storeUrlAndroid,
-                  config.storeUrlIos,
-                ),
+                onPressed: () async {
+                  final opened = await ref
+                      .read(updateRequiredControllerProvider)
+                      .openStore(
+                        platform: Theme.of(context).platform,
+                        config: config,
+                      );
+                  if (!opened && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Could not open store')),
+                    );
+                  }
+                },
                 icon: const Icon(Icons.open_in_new),
                 fullWidth: true,
               ),
@@ -58,25 +68,5 @@ class UpdateRequiredScreen extends ConsumerWidget {
         ),
       ),
     );
-  }
-
-  Future<void> _openStore(
-    BuildContext context,
-    String androidUrl,
-    String iosUrl,
-  ) async {
-    final url = Theme.of(context).platform == TargetPlatform.iOS
-        ? iosUrl
-        : androidUrl;
-    if (url.isEmpty) return;
-    final uri = Uri.parse(url);
-    if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
-      // ignore: use_build_context_synchronously
-      if (context.mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Could not open store')));
-      }
-    }
   }
 }

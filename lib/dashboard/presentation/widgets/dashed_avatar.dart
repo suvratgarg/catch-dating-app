@@ -10,22 +10,21 @@ class DashedAvatar extends StatelessWidget {
     required this.size,
     required this.imageUrl,
     required this.name,
-    required this.tokens,
   });
 
   final double size;
   final String? imageUrl;
   final String name;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
     if (imageUrl != null && imageUrl!.isNotEmpty) {
       return PersonAvatar(size: size, name: name, imageUrl: imageUrl);
     }
+    final t = CatchTokens.of(context);
     return CustomPaint(
       size: Size.square(size),
-      painter: _DashedCirclePainter(color: tokens.line2),
+      painter: _DashedCirclePainter(color: t.line2),
     );
   }
 }

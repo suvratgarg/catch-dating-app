@@ -84,7 +84,6 @@ class StrideCard extends StatelessWidget {
                       fraction: maxKm > 0 ? kmPerDay[i] / maxKm : 0,
                       dayLabel: _days[i],
                       isToday: i == isToday,
-                      tokens: t,
                     ),
                   ),
                 ],
@@ -103,16 +102,16 @@ class StrideBarColumn extends StatelessWidget {
     required this.fraction,
     required this.dayLabel,
     required this.isToday,
-    required this.tokens,
   });
 
   final double fraction;
   final String dayLabel;
   final bool isToday;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -124,8 +123,8 @@ class StrideBarColumn extends StatelessWidget {
               child: Container(
                 decoration: BoxDecoration(
                   color: fraction > 0
-                      ? tokens.primary.withValues(alpha: isToday ? 0.5 : 1)
-                      : tokens.line2,
+                      ? t.primary.withValues(alpha: isToday ? 0.5 : 1)
+                      : t.line2,
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
@@ -139,7 +138,7 @@ class StrideBarColumn extends StatelessWidget {
             fontSize: 9,
             fontWeight: FontWeight.w600,
             letterSpacing: 0.4,
-            color: tokens.ink3,
+            color: t.ink3,
           ),
         ),
       ],

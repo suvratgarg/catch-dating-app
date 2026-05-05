@@ -14,9 +14,9 @@ class SwipeCandidateRepository {
   const SwipeCandidateRepository(
     this._runRepository,
     this._swipeRepository,
-    this._publicProfileRepository,
-    [this._safetyRepository]
-  );
+    this._publicProfileRepository, [
+    this._safetyRepository,
+  ]);
 
   final RunRepository _runRepository;
   final SwipeRepository _swipeRepository;
@@ -41,9 +41,8 @@ class SwipeCandidateRepository {
     final swipedIds = await _swipeRepository.fetchSwipedUserIds(
       uid: currentUser.uid,
     );
-    final blockedIds = await _safetyRepository?.fetchBlockedUserIds(
-          uid: currentUser.uid,
-        ) ??
+    final blockedIds =
+        await _safetyRepository?.fetchBlockedUserIds(uid: currentUser.uid) ??
         const <String>{};
     final candidateIds = attendedUserIds
         .where((id) => !swipedIds.contains(id))

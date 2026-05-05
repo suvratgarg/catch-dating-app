@@ -143,6 +143,17 @@ Default Credentials configured, for example through
 `GOOGLE_APPLICATION_CREDENTIALS=/path/to/service-account.json` or
 `gcloud auth application-default login`. Emulator validation does not need live
 credentials.
+
+Delete all review documents and reset derived review aggregates:
+
+```bash
+node tool/delete_firestore_reviews.mjs --env dev
+node tool/delete_firestore_reviews.mjs --env dev --apply --confirm-delete-all-reviews
+```
+
+The review deletion tool also defaults to dry-run. It maps affected review
+documents, run clubs, runs, reviewer users, and any detected review-reference
+fields before applying destructive writes.
 Use it against dev/staging before production and before running any migration.
 
 ## How to refresh an environment

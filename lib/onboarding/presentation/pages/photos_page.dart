@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -68,9 +70,15 @@ class PhotosPage extends ConsumerWidget {
           PhotoGrid(
             photoUrls: photoUrls,
             loadingIndices: uploadState.loadingIndices,
-            onSlotTapped: (index) => ref
-                .read(photoUploadControllerProvider.notifier)
-                .pickAndUpload(index),
+            onSlotTapped: (index) {
+              unawaited(
+                PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                  await tx
+                      .get(photoUploadControllerProvider.notifier)
+                      .pickAndUpload(index);
+                }),
+              );
+            },
           ),
           gapH24,
           CatchButton(

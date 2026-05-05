@@ -10,6 +10,8 @@ part 'photo_upload_controller.g.dart';
 
 typedef PhotoUploadState = ({Set<int> loadingIndices, Object? uploadError});
 
+const maxProfilePhotoCount = 6;
+
 /// **Pattern B: State controller with record state + Mutation**
 ///
 /// Tracks per-index upload loading state via a Dart record
@@ -32,6 +34,12 @@ class PhotoUploadController extends _$PhotoUploadController {
   PhotoUploadState build() => (loadingIndices: {}, uploadError: null);
 
   Future<void> pickAndUpload(int index) async {
+    RangeError.checkValueInInterval(
+      index,
+      0,
+      maxProfilePhotoCount - 1,
+      'index',
+    );
     if (_isPickingImage || state.loadingIndices.contains(index)) return;
 
     final repo = ref.read(imageUploadRepositoryProvider);

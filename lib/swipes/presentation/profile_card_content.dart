@@ -73,7 +73,8 @@ class ProfileCardContent {
     final running = <ProfileCardFact>[
       (
         icon: Icons.speed_outlined,
-        text: '${formatPace(profile.paceMinSecsPerKm)}-${formatPace(profile.paceMaxSecsPerKm)} /km',
+        text:
+            '${formatPace(profile.paceMinSecsPerKm)}-${formatPace(profile.paceMaxSecsPerKm)} /km',
       ),
       if (profile.preferredDistances.isNotEmpty)
         (

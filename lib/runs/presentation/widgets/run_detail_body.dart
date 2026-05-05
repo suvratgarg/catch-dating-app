@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -16,7 +17,6 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:share_plus/share_plus.dart';
 
 typedef RunShareHandler = Future<void> Function(BuildContext context, Run run);
 
@@ -49,6 +49,7 @@ class RunDetailBody extends ConsumerWidget {
     final userProfile = this.userProfile;
     final isSaved = userProfile?.savedRunIds.contains(run.id) ?? false;
     final saveMutation = ref.watch(RunDetailController.toggleSavedRunMutation);
+    final share = ref.watch(externalShareControllerProvider);
 
     if (isAuthenticated) {
       ref.listen(RunBookingController.bookMutation, (prev, next) {
@@ -76,8 +77,11 @@ class RunDetailBody extends ConsumerWidget {
             isSaved: isSaved,
             savePending: saveMutation.isPending,
             onBack: () => Navigator.of(context).pop(),
-            onShare: (buttonContext) =>
-                unawaited((onShareRun ?? _shareRun)(buttonContext, run)),
+            onShare: (buttonContext) => unawaited(
+              onShareRun != null
+                  ? onShareRun!(buttonContext, run)
+                  : _shareRun(buttonContext, run, share),
+            ),
             onToggleSaved: () => _toggleSavedRun(
               context,
               ref,
@@ -156,19 +160,21 @@ void _toggleSavedRun(
   });
 }
 
-Future<void> _shareRun(BuildContext context, Run run) async {
+Future<void> _shareRun(
+  BuildContext context,
+  Run run,
+  ExternalShareController share,
+) async {
   final box = context.findRenderObject() as RenderBox?;
   final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
   final uri = AppDeepLinks.run(runClubId: run.runClubId, runId: run.id);
 
   try {
-    await SharePlus.instance.share(
-      ShareParams(
-        text:
-            'Join me for ${run.title} at ${run.meetingPoint}: ${uri.toString()}',
-        subject: run.title,
-        sharePositionOrigin: origin,
-      ),
+    await share.shareText(
+      text:
+          'Join me for ${run.title} at ${run.meetingPoint}: ${uri.toString()}',
+      subject: run.title,
+      origin: origin,
     );
   } on Object catch (error, stack) {
     debugPrint('[ERROR] RunDetailBody share failed: $error\n$stack');

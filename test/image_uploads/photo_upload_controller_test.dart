@@ -68,6 +68,19 @@ class SlowPickingImageUploadRepository extends Fake
 
 void main() {
   test(
+    'rejects out-of-range photo slots before starting upload work',
+    () async {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      await expectLater(
+        container.read(photoUploadControllerProvider.notifier).pickAndUpload(6),
+        throwsRangeError,
+      );
+    },
+  );
+
+  test(
     'serializes overlapping photo writes so newer state is preserved',
     () async {
       final userProfileRepository = FakePhotoUserProfileRepository(

@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
+import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/image_uploads/presentation/widgets/photo_slot.dart';
 import 'package:flutter/material.dart';
 
@@ -18,7 +20,6 @@ class PhotoGrid extends StatelessWidget {
   final void Function(int index) onSlotTapped;
   final Set<int> loadingIndices;
 
-  static const _slotCount = 6;
   static const _crossAxisCount = 3;
 
   @override
@@ -32,8 +33,10 @@ class PhotoGrid extends StatelessWidget {
         crossAxisSpacing: 8,
         childAspectRatio: 3 / 4,
       ),
-      itemCount: _slotCount,
+      itemCount: maxProfilePhotoCount,
       itemBuilder: (context, index) => PhotoSlot(
+        key: PhotoGridKeys.slot(index),
+        index: index,
         url: index < photoUrls.length ? photoUrls[index] : null,
         isLoading: loadingIndices.contains(index),
         isActive: index <= photoUrls.length,

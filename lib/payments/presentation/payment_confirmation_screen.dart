@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/detail_row.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
+import 'package:catch_dating_app/payments/presentation/payment_confirmation_controller.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -16,8 +17,6 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:share_plus/share_plus.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class PaymentConfirmationScreen extends ConsumerWidget {
   const PaymentConfirmationScreen({super.key, required this.data});
@@ -284,61 +283,15 @@ class _RunSummaryCard extends StatelessWidget {
   }
 }
 
-class _QuickActions extends StatelessWidget {
+class _QuickActions extends ConsumerWidget {
   const _QuickActions({required this.run});
 
   final Run run;
 
-  // ── Calendar ─────────────────────────────────────────────────────────
-
-  Future<void> _addToCalendar() async {
-    final start = run.startTime;
-    final end = run.endTime;
-    String fmt(DateTime d) =>
-        '${d.year}${d.month.toString().padLeft(2, '0')}'
-        '${d.day.toString().padLeft(2, '0')}T'
-        '${d.hour.toString().padLeft(2, '0')}'
-        '${d.minute.toString().padLeft(2, '0')}00';
-
-    final uri = Uri.parse(
-      'https://calendar.google.com/calendar/render'
-      '?action=TEMPLATE'
-      '&text=${Uri.encodeComponent(run.title)}'
-      '&dates=${fmt(start)}/${fmt(end)}'
-      '&details=${Uri.encodeComponent('Catch run — ${run.meetingPoint}')}'
-      '&location=${Uri.encodeComponent(run.meetingPoint)}',
-    );
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-  // ── Directions ───────────────────────────────────────────────────────
-
-  Future<void> _openDirections() async {
-    final lat = run.startingPointLat;
-    final lng = run.startingPointLng;
-    final uri = lat != null && lng != null
-        ? Uri.parse('https://maps.google.com/maps?daddr=$lat,$lng')
-        : Uri.parse(
-            'https://maps.google.com/maps?q='
-            '${Uri.encodeComponent(run.meetingPoint)}',
-          );
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
-  }
-
-  // ── Invite ───────────────────────────────────────────────────────────
-
-  Future<void> _inviteFriend() async {
-    await SharePlus.instance.share(
-      ShareParams(
-        text:
-            'Join me for a run! ${run.title} — ${run.meetingPoint}. '
-            'Download Catch: https://catchdates.com',
-      ),
-    );
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final controller = ref.watch(paymentConfirmationControllerProvider);
+
     return Row(
       children: [
         Expanded(
@@ -346,7 +299,7 @@ class _QuickActions extends StatelessWidget {
             key: PaymentConfirmationKeys.addToCalendar,
             icon: Icons.calendar_month_outlined,
             label: 'Add to calendar',
-            onTap: _addToCalendar,
+            onTap: () => unawaited(controller.addToCalendar(run)),
           ),
         ),
         gapW8,
@@ -355,7 +308,7 @@ class _QuickActions extends StatelessWidget {
             key: PaymentConfirmationKeys.directions,
             icon: Icons.directions_outlined,
             label: 'Get directions',
-            onTap: _openDirections,
+            onTap: () => unawaited(controller.openDirections(run)),
           ),
         ),
         gapW8,
@@ -364,7 +317,7 @@ class _QuickActions extends StatelessWidget {
             key: PaymentConfirmationKeys.inviteFriend,
             icon: Icons.ios_share_rounded,
             label: 'Invite a friend',
-            onTap: _inviteFriend,
+            onTap: () => unawaited(controller.inviteFriend(run)),
           ),
         ),
       ],
@@ -441,28 +394,19 @@ class _HeadsUp extends StatelessWidget {
   }
 }
 
-class _ReferralBanner extends StatelessWidget {
+class _ReferralBanner extends ConsumerWidget {
   const _ReferralBanner({required this.run});
 
   final Run run;
 
-  Future<void> _shareReferral() async {
-    await SharePlus.instance.share(
-      ShareParams(
-        text:
-            'I just signed up for ${run.title}! '
-            'Join me — download Catch and book a run: '
-            'https://catchdates.com',
-      ),
-    );
-  }
-
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final controller = ref.watch(paymentConfirmationControllerProvider);
+
     return CatchSurface(
       key: PaymentConfirmationKeys.referralShare,
-      onTap: _shareReferral,
+      onTap: () => unawaited(controller.shareReferral(run)),
       padding: const EdgeInsets.all(Sizes.p14),
       radius: CatchRadius.md,
       borderColor: t.line2,

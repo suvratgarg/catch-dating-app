@@ -16,7 +16,6 @@ import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/run_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
-import 'package:catch_dating_app/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';

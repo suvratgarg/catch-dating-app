@@ -34,7 +34,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final data = ref.watch(onboardingControllerProvider);
-    final t = CatchTokens.of(context);
     final minStep = data.step.minimumBackStep;
     final previousStep = data.step.previousWithin(minStep);
     final currentStep = KeyedSubtree(
@@ -60,7 +59,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                     if (data.step.showsProgress) ...[
                       _OnboardingTopBar(
                         step: data.step,
-                        tokens: t,
                         onBack: previousStep == null
                             ? null
                             : () => ref
@@ -90,18 +88,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 }
 
 class _OnboardingTopBar extends StatelessWidget {
-  const _OnboardingTopBar({
-    required this.step,
-    required this.tokens,
-    required this.onBack,
-  });
+  const _OnboardingTopBar({required this.step, required this.onBack});
 
   final OnboardingStep step;
-  final CatchTokens tokens;
   final VoidCallback? onBack;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(12, 12, 20, 8),
       child: Row(
@@ -114,8 +109,8 @@ class _OnboardingTopBar extends StatelessWidget {
                     tooltip: 'Back',
                     onPressed: onBack,
                     style: IconButton.styleFrom(
-                      backgroundColor: tokens.surface,
-                      foregroundColor: tokens.ink,
+                      backgroundColor: t.surface,
+                      foregroundColor: t.ink,
                     ),
                     icon: const Icon(
                       Icons.arrow_back_ios_new_rounded,
@@ -124,9 +119,7 @@ class _OnboardingTopBar extends StatelessWidget {
                   ),
           ),
           const SizedBox(width: 8),
-          Expanded(
-            child: _ProgressBar(step: step, tokens: tokens),
-          ),
+          Expanded(child: _ProgressBar(step: step)),
         ],
       ),
     );
@@ -134,13 +127,13 @@ class _OnboardingTopBar extends StatelessWidget {
 }
 
 class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({required this.step, required this.tokens});
+  const _ProgressBar({required this.step});
 
   final OnboardingStep step;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final total = OnboardingStep.values.length;
 
     return Row(
@@ -151,7 +144,7 @@ class _ProgressBar extends StatelessWidget {
               duration: const Duration(milliseconds: 200),
               height: 3,
               decoration: BoxDecoration(
-                color: i <= step.index ? tokens.primary : tokens.line,
+                color: i <= step.index ? t.primary : t.line,
                 borderRadius: BorderRadius.circular(2),
               ),
             ),

@@ -39,61 +39,65 @@ The user specifically wants this work to proceed incrementally:
 
 1. Start every pass by reading this section and
    `docs/widget_cleanup_todo.md`.
-2. Inspect the target feature plus adjacent shared widgets, controllers, and
+2. For broad cleanup passes, run `bash tool/widget_cleanup_scan.sh` before
+   editing and again before wrapping up. Treat the output as a triage report,
+   not a lint gate: inspect each match, fix high-signal repeated smells, and
+   refine the scanner when it becomes noisy.
+3. Inspect the target feature plus adjacent shared widgets, controllers, and
    tests before editing.
-3. Identify duplicated local UI implementations that block design-system work:
+4. Identify duplicated local UI implementations that block design-system work:
    cards, empty states, bottom sheets, rows, rails, section scaffolds, loading
    states, mutation feedback, and one-off action surfaces.
-4. Prefer existing primitives before creating new ones. Important current
+5. Prefer existing primitives before creating new ones. Important current
    primitives include `CatchSurface`, `CatchButton`, `CatchTextField`,
    `CatchTopBar`, `CatchBottomSheetScaffold`, `CatchEmptyState`,
    `CatchHorizontalRail`, `CatchVerticalSection`, `PersonRow`, `PersonAvatar`,
    `RunCard`, `SettingsRow`, `CatchSkeleton`, `CatchBadge`, and `StatusChip`.
-5. Add a new primitive only when at least one of these is true:
+6. Add a new primitive only when at least one of these is true:
    repeated UI shells are already present, a primitive removes meaningful
    complexity, the API is likely to be reused soon, or the component expresses a
    durable design-system concept.
-6. Keep feature-specific content local. Consolidate shells and patterns, not
+7. Keep feature-specific content local. Consolidate shells and patterns, not
    every line of UI copy or layout.
-7. Do not over-abstract early. If only one surface needs a helper, use a private
+8. Do not over-abstract early. If only one surface needs a helper, use a private
    helper first and promote it later after a second concrete use appears.
-8. Name shared primitives by their durable semantic role, not by a temporary
+9. Name shared primitives by their durable semantic role, not by a temporary
    feature use or purely visual treatment. The name should make the widget easy
    to search for and easy to reason about in future cleanup passes.
-9. Keep business logic, repository writes, and product decisions in controllers
+10. Keep business logic, repository writes, and product decisions in controllers
    unless there is a clear reason for local widget ownership.
-10. Keep screens thin by default. A screen should usually compose feature
+11. Keep screens thin by default. A screen should usually compose feature
    content, route parameters, scaffold/top-bar structure, and local Flutter UI
    mechanics. Move provider state dispatch, repository writes, mutation
    callbacks, and product behavior into feature widgets, providers, or
    controllers unless the local screen ownership is explicit and justified.
-11. Put state dispatch in a semantic feature content widget when the screen would
+12. Put state dispatch in a semantic feature content widget when the screen would
    otherwise become a large `AsyncValue.when` switch. The content widget should
    own loading, error, empty, and data composition for that feature surface.
-12. Keep feature widgets single-purpose. A search field should be a search field;
+13. Keep feature widgets single-purpose. A search field should be a search field;
    the parent layout should decide whether it sits next to a city picker,
    filter, or action.
-13. Put side-effect feedback close to the trigger. For mutation snackbars and
+14. Put side-effect feedback close to the trigger. For mutation snackbars and
    banners, wrap the widget that starts the mutation rather than the whole
    screen when feasible.
-14. Do not pass `WidgetRef` through helper methods. If a helper needs `ref`,
+15. Do not pass `WidgetRef` through helper methods. If a helper needs `ref`,
    make it a `ConsumerWidget`, `ConsumerStatefulWidget`, controller method, or
    provider.
-15. Feature-specific sliver headers should wrap generic primitives with feature
+16. Feature-specific sliver headers should wrap generic primitives with feature
    configuration baked in, while keeping layout-only private helper widgets in
    the header file.
-16. After each meaningful batch, update `docs/widget_cleanup_todo.md` with:
+17. After each meaningful batch, update `docs/widget_cleanup_todo.md` with:
    completed items, newly discovered backlog items, current findings, and the
    recommended next step.
-17. After tests pass, inspect how the tests had to be written. If they required
+18. After tests pass, inspect how the tests had to be written. If they required
    fragile finders, excessive provider overrides, private implementation
    knowledge, awkward setup, timing hacks, or broad integration scaffolding for
    narrow behavior, treat that as architecture feedback. Refactor or add a
    backlog item so future passes move the code toward clearer seams, smaller
    units, stable user-visible assertions, and easier dependency injection.
-18. Update this catalog when adding, deleting, moving, or materially changing
+19. Update this catalog when adding, deleting, moving, or materially changing
    widgets.
-19. Verify with focused commands over touched files and relevant tests. Fix
+20. Verify with focused commands over touched files and relevant tests. Fix
    analyzer errors and warnings. Do not spend cleanup time on analyzer
    info-level issues unless they block the task, mask a real bug, or are already
    being edited for another reason.
@@ -137,6 +141,30 @@ patterns are discovered.
 - Split design-system ownership across `lib/constants`, top-level `lib/theme`,
   and `lib/core/theme`. New design tokens, spacing helpers, typography, app
   theme, motion, radii, and icon sizing should live under `lib/core/theme`.
+- Declared controller mutations that the UI does not actually use. If a
+  controller exposes a `Mutation`, the triggering widget should normally run the
+  action through that mutation so loading/error/success behavior is observable
+  and testable.
+- Custom interactive widgets without semantic keys, tooltips, or labels. Any
+  button-like tile, photo slot, swipe action, segmented action, or grid cell
+  that users tap should have a stable semantic target before tests are written
+  around it.
+- Platform or plugin side effects embedded directly in widgets. Store launches,
+  connectivity subscriptions, FCM initialization, and similar runtime effects
+  should sit behind providers/controllers so they can be tested and replaced in
+  harnesses.
+- Share sheets, external URL launches, image pickers, and platform/store
+  actions called directly from presentation widgets. Put these behind a small
+  provider/controller seam so tests can replace the side effect and the widget
+  only chooses when the action is requested.
+- No local feedback loop for recurring cleanup smells. When the same
+  anti-pattern appears repeatedly, add or refine a lightweight repo-local
+  scanner/checklist, then keep it high-signal enough that future passes will
+  actually use it.
+- Scanner output that cannot distinguish real widget smells from valid
+  controller/provider seams. Cleanup scans should exclude generated files,
+  controllers, notifiers, and data layers where appropriate so they point at
+  surfaces that actually need design-system attention.
 
 ### Current Direction
 
@@ -144,8 +172,14 @@ The `CreateRunScreen` split, host-manage roster cleanup, create-run draft UX,
 create-run testability pass, run-clubs list/layout pass, chat thread/list pass,
 run-detail route/body pass, run map, attendance, run-club detail schedule
 cleanup, Auth UI cleanup, design-system theme-folder consolidation,
-Safety/settings UI cleanup, and Reviews UI cleanup are complete. Run-club
-detail no longer uses a
+Safety/settings UI cleanup, Reviews UI cleanup, Swipes deep pass, image
+uploads/photo grid cleanup, force-update/app-shell cleanup, and the first
+external link/share side-effect seam cleanup are complete. A recursive cleanup
+scanner now lives at `tool/widget_cleanup_scan.sh` and should be used to keep
+future passes focused on repeated anti-patterns instead of relying only on
+manual memory. The scanner's `CatchTokens` prop-drilling category is currently
+clear after moving onboarding/dashboard leaf widgets to local token reads.
+Run-club detail no longer uses a
 two-dimensional schedule grid; it reuses the shared agenda UI and receives
 upcoming runs sorted by the detail view model. Theme, typography, spacing
 compatibility helpers, and app theme now live under `lib/core/theme`.
@@ -183,17 +217,18 @@ Generated 2026-05-05.
 
 ## Core — Presentation (AppShell & Routing)
 
-### ConsumerStatefulWidget
+### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `AppShell` | `lib/core/presentation/app_shell.dart:26` | Main tab shell with a `NavigationBar` (Home, Clubs, Catches, Chats, You). Initializes FCM, watches connectivity for an offline banner, pre-warms the clubs list stream, and keeps Crashlytics user ID synced with auth state. |
+| `AppShell` | `lib/core/presentation/app_shell.dart:48` | Main tab shell with a `NavigationBar` (Home, Clubs, Catches, Chats, You). Watches provider-backed connectivity for the offline banner, initializes FCM through `appShellFcmInitializationProvider`, pre-warms the clubs list stream, and keeps Crashlytics user ID synced with auth state. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_ConnectivityBanner` | `lib/core/presentation/app_shell.dart:173` | Inline `MaterialBanner` shown at the top of the shell when the device goes offline. |
+| `_AppShellNavigationBar` | `lib/core/presentation/app_shell.dart:119` | Private bottom-navigation wrapper with stable key and unread chat badge handling. |
+| `_ConnectivityBanner` | `lib/core/presentation/app_shell.dart:183` | Inline keyed `MaterialBanner` shown at the top of the shell when provider-backed connectivity reports offline. |
 | `_RouterLoadingScreen` | `lib/routing/go_router.dart:438` | Minimal scaffold with `CatchLoadingIndicator` shown during route-level async data resolution. |
 
 ### ConsumerWidget
@@ -313,17 +348,17 @@ Generated 2026-05-05.
 | Widget | File | Purpose |
 |---|---|---|
 | `SwipeScreen` | `lib/swipes/presentation/swipe_screen.dart:18` | Main swipe screen. Manages a `CardSwiperController`, watches the swipe queue provider, and renders swipeable profile cards with pass/like action buttons. Handles swipe direction logic (right = like, left = pass). |
-| `FiltersScreen` | `lib/swipes/presentation/filters_screen.dart:17` | Swipe filters screen. Lets users filter the swipe queue by vibe, run, gender, and age range. |
-| `RunRecapScreen` | `lib/swipes/presentation/run_recap_screen.dart:21` | Post-run recap screen showing the run details, swipe stats (likes, matches, passes), and the full attendee roster with photo grid and swipable profile cards. |
+| `FiltersScreen` | `lib/swipes/presentation/filters_screen.dart:19` | Swipe filters screen. Owns local draft slider/chip state, saves through `FiltersController.saveFiltersMutation`, exposes semantic filter keys, and pops on successful save. |
+| `RunRecapScreen` | `lib/swipes/presentation/run_recap_screen.dart:23` | Post-run recap screen showing run details and a checked-in attendee vibe grid. Uses keyed vibe tiles, `CatchSurface` for the recap hero, and `CatchEmptyState` for an empty attendee roster. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `SwipeHubScreen` | `lib/swipes/presentation/swipe_hub_screen.dart:19` | "Catches" tab. Lists all attended runs with open catch windows (24h post-check-in swiping). Shows an intro card for the featured run with countdown timer, and a list of all active runs with `AttendedRunTile` widgets. |
+| `SwipeHubScreen` | `lib/swipes/presentation/swipe_hub_screen.dart:19` | "Catches" tab. Lists attended runs with open catch windows, uses leaf widgets to read theme tokens locally, shows a `CatchSurface` intro card for the featured run, and lists active runs with `AttendedRunTile` widgets. |
 | `ScrollableProfile` | `lib/swipes/presentation/widgets/scrollable_profile.dart:17` | Full-length scrollable profile card used on the swipe screen. Renders running identity, bio, photos, attributes, running/lifestyle sections. |
 | `ProfileCard` | `lib/swipes/presentation/profile_card.dart:7` | The primary swipe card. Shows the user's photos (via `CardPhotoSection`), name overlay, and attribute chips in a card layout. |
-| `_VibeTile` | `lib/swipes/presentation/run_recap_screen.dart:218` | Single vibe/filter chip tile on the recap screen. |
+| `_VibeTile` | `lib/swipes/presentation/run_recap_screen.dart:221` | Keyed attendee tile on the recap screen. Fetches its public profile, exposes tooltip/semantic selected state, and toggles local recap selection. |
 
 ### StatelessWidget
 
@@ -343,14 +378,14 @@ Generated 2026-05-05.
 | `ProfileRunningSection` | `lib/swipes/presentation/widgets/profile_running_section.dart:6` | Running preferences section (pace, distance, days, etc.). |
 | `ProfileLifestyleSection` | `lib/swipes/presentation/widgets/profile_lifestyle_section.dart:6` | Lifestyle section (occupation, education, drinking, smoking, etc.). |
 | `ProfileInfoChip` | `lib/swipes/presentation/widgets/profile_info_chip.dart:3` | Single info chip on the profile card — icon + label. |
-| `SwipeActionButtons` | `lib/swipes/presentation/widgets/swipe_action_buttons.dart:4` | Pass and Like action buttons at the bottom of the swipe screen. |
-| `SwipeCircleButton` | `lib/swipes/presentation/widgets/swipe_action_buttons.dart:43` | Individual circular swipe action button (pass = X, like = heart). |
+| `SwipeActionButtons` | `lib/swipes/presentation/widgets/swipe_action_buttons.dart:5` | Pass and Like action buttons at the bottom of the swipe screen with stable keys, tooltips, and semantic labels. |
+| `SwipeCircleButton` | `lib/swipes/presentation/widgets/swipe_action_buttons.dart:45` | Individual circular swipe action button (pass = X, like = heart). Reads theme tokens locally. |
 | `SwipeStamp` | `lib/swipes/presentation/widgets/swipe_stamp.dart:15` | "LIKE" or "NOPE" stamp overlay that appears during swipe gestures. |
 | `SwipeEmptyState` | `lib/swipes/presentation/widgets/swipe_empty_state.dart:7` | Empty state shown when the swipe queue is exhausted. |
 | `AttendedRunTile` | `lib/swipes/presentation/widgets/attended_run_tile.dart:14` | Row tile for an attended run in the catches hub list — shows run title, date, location, and a CTA arrow. |
 | `_RunningIdentityCard` | `lib/swipes/presentation/widgets/scrollable_profile.dart:72` | Card inside `ScrollableProfile` showing the user's running identity (pace, distance, frequency). |
 | `_RunStatPill` | `lib/swipes/presentation/widgets/scrollable_profile.dart:137` | Small stat pill inside the running identity card. |
-| `_RecapHero` | `lib/swipes/presentation/run_recap_screen.dart:126` | Hero section of the run recap screen — run name, date, location, and a CTA. |
+| `_RecapHero` | `lib/swipes/presentation/run_recap_screen.dart:127` | `CatchSurface` hero section of the run recap screen — run name, distance, checked-in count, and catch-window status. |
 | `_RecapStat` | `lib/swipes/presentation/run_recap_screen.dart:182` | Single stat counter on the recap screen (e.g., "12 Likes", "4 Matches"). |
 | `_ProfilePhoto` | `lib/swipes/presentation/run_recap_screen.dart:295` | Single profile photo in the recap attendee grid. |
 | `_EmptyRoster` | `lib/swipes/presentation/run_recap_screen.dart:316` | Empty state when the recap roster has no one. |
@@ -513,8 +548,8 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:9` | Grid of photo slots for profile photo management. Handles add, remove, and reorder. |
-| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:5` | Single photo slot — shows the image, an add button for empty slots, and a remove button for filled slots. |
+| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:10` | Grid of profile photo slots. Uses `maxProfilePhotoCount`, keyed slots, and delegates taps to the owning upload caller. |
+| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:6` | Single keyed photo slot. Renders through `CatchSurface`, exposes semantic labels/tooltips for add/replace/uploading/unavailable states, and blocks taps while inactive or loading. |
 
 ---
 
@@ -728,7 +763,8 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `UpdateRequiredScreen` | `lib/force_update/presentation/update_required_screen.dart:13` | Blocking full-screen prompting the user to update the app. Reads store URLs from `AppVersionConfig` and opens the appropriate store on tap. The user cannot dismiss this screen. |
+| `UpdateRequiredScreen` | `lib/force_update/presentation/update_required_screen.dart:15` | Blocking full-screen prompting the user to update the app. Reads store URLs from `AppVersionConfig`, delegates store URL selection/launching to `UpdateRequiredController`, and shows a snackbar if launch fails. The user cannot dismiss this screen. |
+| `UpdateRequiredController` | `lib/force_update/presentation/update_required_controller.dart:18` | Provider-backed controller for choosing the platform store URL and launching it through an injectable `StoreLauncher`. |
 
 ---
 

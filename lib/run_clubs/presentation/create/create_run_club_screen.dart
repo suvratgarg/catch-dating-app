@@ -1,7 +1,5 @@
-import 'dart:typed_data';
-
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/app_form_layout.dart';
@@ -9,7 +7,6 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
-import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_run_club_contact_fields.dart';
@@ -17,7 +14,6 @@ import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_ru
 import 'package:catch_dating_app/run_clubs/presentation/create/widgets/create_run_club_details_fields.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:image_picker/image_picker.dart';
 
 class CreateRunClubScreen extends ConsumerStatefulWidget {
   const CreateRunClubScreen({super.key, this.initialRunClub});
@@ -38,8 +34,7 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
   IndianCity? _selectedCity;
-  XFile? _coverImage;
-  Uint8List? _coverImageBytes;
+  PickedRunClubCover? _coverImage;
 
   bool get _isEditing => widget.initialRunClub != null;
 
@@ -73,18 +68,13 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
 
   Future<void> _pickCoverImage() async {
     final image = await ref
-        .read(imageUploadRepositoryProvider)
-        .pickImage(imageQuality: 85);
+        .read(createRunClubControllerProvider.notifier)
+        .pickCoverImage();
     if (!mounted || image == null) {
-      return;
-    }
-    final imageBytes = await image.readAsBytes();
-    if (!mounted) {
       return;
     }
     setState(() {
       _coverImage = image;
-      _coverImageBytes = imageBytes;
     });
   }
 
@@ -99,7 +89,7 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
               area: _areaController.text.trim(),
               description: _descriptionController.text.trim(),
               existingRunClub: widget.initialRunClub,
-              coverImage: _coverImage,
+              coverImage: _coverImage?.image,
               instagramHandle: _instagramController.text.trim().isEmpty
                   ? null
                   : _instagramController.text.trim(),
@@ -150,7 +140,7 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
           ),
           gapH48,
           CreateRunClubCoverPicker(
-            coverImageBytes: _coverImageBytes,
+            coverImageBytes: _coverImage?.bytes,
             existingImageUrl: widget.initialRunClub?.imageUrl,
             onTap: submitMutation.isPending ? null : _pickCoverImage,
           ),

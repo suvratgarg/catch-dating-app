@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -15,8 +18,8 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_str
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ClubDetailBody extends StatelessWidget {
   const ClubDetailBody({
@@ -60,7 +63,7 @@ class ClubDetailBody extends StatelessWidget {
           sliver: SliverList.list(
             children: [
               if (isHost) ...[
-                _HostActionPanel(runClub: runClub, tokens: t),
+                _HostActionPanel(runClub: runClub),
                 const SizedBox(height: 16),
               ],
               StatsStrip(club: runClub, upcomingCount: upcoming.length),
@@ -73,7 +76,7 @@ class ClubDetailBody extends StatelessWidget {
               if (runClub.instagramHandle != null ||
                   runClub.phoneNumber != null ||
                   runClub.email != null) ...[
-                _ClubContactSection(runClub: runClub, tokens: t),
+                _ClubContactSection(runClub: runClub),
                 const SizedBox(height: 20),
               ],
               if (isHost) ...[
@@ -117,14 +120,13 @@ class ClubDetailBody extends StatelessWidget {
 }
 
 class _HostActionPanel extends StatelessWidget {
-  const _HostActionPanel({required this.runClub, required this.tokens});
+  const _HostActionPanel({required this.runClub});
 
   final RunClub runClub;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
 
     return CatchSurface(
       borderColor: t.line,
@@ -174,15 +176,15 @@ class _HostActionPanel extends StatelessWidget {
   }
 }
 
-class _ClubContactSection extends StatelessWidget {
-  const _ClubContactSection({required this.runClub, required this.tokens});
+class _ClubContactSection extends ConsumerWidget {
+  const _ClubContactSection({required this.runClub});
 
   final RunClub runClub;
-  final CatchTokens tokens;
 
   @override
-  Widget build(BuildContext context) {
-    final t = tokens;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final links = ref.watch(externalLinkControllerProvider);
 
     return CatchSurface(
       borderColor: t.line,
@@ -196,33 +198,35 @@ class _ClubContactSection extends StatelessWidget {
             _ContactRow(
               icon: Icons.alternate_email_rounded,
               label: runClub.instagramHandle!,
-              onTap: () => _launchUrl(
-                'https://instagram.com/${runClub.instagramHandle!.replaceFirst('@', '')}',
+              onTap: () => unawaited(
+                links.openExternal(_instagramUri(runClub.instagramHandle!)),
               ),
             ),
           if (runClub.phoneNumber != null)
             _ContactRow(
               icon: Icons.call_outlined,
               label: runClub.phoneNumber!,
-              onTap: () => _launchUrl('tel:${runClub.phoneNumber}'),
+              onTap: () =>
+                  unawaited(links.open(_phoneUri(runClub.phoneNumber!))),
             ),
           if (runClub.email != null)
             _ContactRow(
               icon: Icons.email_outlined,
               label: runClub.email!,
-              onTap: () => _launchUrl('mailto:${runClub.email}'),
+              onTap: () => unawaited(links.open(_emailUri(runClub.email!))),
             ),
         ],
       ),
     );
   }
 
-  Future<void> _launchUrl(String urlString) async {
-    final uri = Uri.parse(urlString);
-    if (await canLaunchUrl(uri)) {
-      await launchUrl(uri);
-    }
-  }
+  static Uri _instagramUri(String handle) =>
+      Uri.parse('https://instagram.com/${handle.replaceFirst('@', '')}');
+
+  static Uri _phoneUri(String phoneNumber) =>
+      Uri(scheme: 'tel', path: phoneNumber);
+
+  static Uri _emailUri(String email) => Uri(scheme: 'mailto', path: email);
 }
 
 class _ContactRow extends StatelessWidget {

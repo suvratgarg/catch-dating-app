@@ -1,7 +1,9 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'dart:async';
+
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
@@ -302,9 +304,15 @@ class ProfileTab extends ConsumerWidget {
         PhotoGrid(
           photoUrls: user.photoUrls,
           loadingIndices: uploadState.loadingIndices,
-          onSlotTapped: (index) => ref
-              .read(photoUploadControllerProvider.notifier)
-              .pickAndUpload(index),
+          onSlotTapped: (index) {
+            unawaited(
+              PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                await tx
+                    .get(photoUploadControllerProvider.notifier)
+                    .pickAndUpload(index);
+              }),
+            );
+          },
         ),
         gapH14,
         SectionHeader(title: 'Bio'),

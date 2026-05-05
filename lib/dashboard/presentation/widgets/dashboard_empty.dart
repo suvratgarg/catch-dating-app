@@ -75,12 +75,7 @@ class DashboardEmpty extends StatelessWidget {
                       ],
                     ),
                   ),
-                  DashedAvatar(
-                    size: 42,
-                    imageUrl: photoUrl,
-                    name: firstName,
-                    tokens: t,
-                  ),
+                  DashedAvatar(size: 42, imageUrl: photoUrl, name: firstName),
                 ],
               ),
             ),

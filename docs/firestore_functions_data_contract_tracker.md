@@ -375,13 +375,13 @@ client repository contracts, and live-data readiness.
     hard-coding production credentials.
   - [x] Document how to run the validator and how to interpret failures before
     tightening production/staging rules.
-- [ ] Prepare but do not rush live migration.
-  - [ ] Run validation against dev/staging first.
-  - [ ] Inspect the small current production dataset before writing migration
+- [x] Prepare but do not rush live migration.
+  - [x] Run validation against dev/staging first.
+  - [x] Inspect the small current production dataset before writing migration
     code.
-  - [ ] Add migration scripts only after validation output identifies the
+  - [x] Add migration scripts only after validation output identifies the
     concrete data drift to repair.
-  - [ ] Deploy to dev and staging before production.
+  - [ ] Deploy code/rules/functions to dev and staging before production.
 
 Approved decisions:
 
@@ -398,6 +398,41 @@ Approved decisions:
 
 Append newest entries at the top.
 
+- 2026-05-05: Deleted all live review test data after mapping dependencies.
+  Added `tool/delete_firestore_reviews.mjs`, a dry-run-first Admin SDK cleanup
+  tool that maps all `reviews/{id}` docs, affected `runClubs`, affected `runs`,
+  reviewer `users`, detected review-reference fields, and required
+  `runClubs.rating`/`reviewCount` resets before applying deletion with
+  `--apply --confirm-delete-all-reviews`. Live dry-runs showed that all current
+  dev/prod reviews were legacy club-scoped reviews without `runId`; no affected
+  run documents or user documents contained review reference fields. Applied
+  cleanup to dev and prod. Dev deleted 3 reviews and reset
+  `runClubs/frrOLITIukUcUCFFFACS` from rating 3.6666666666666665/reviewCount 3
+  to 0/0. Prod deleted 5 reviews and reset
+  `runClubs/CPEXusszu0gnrZANT8fE`, `runClubs/Zvm256jqQmL5de98KIoj`,
+  `runClubs/fJlZbx9BewUXsOZwQKv3`, and
+  `runClubs/kqadT73GGy1o0VRlo98I` to rating 0/reviewCount 0. Staging had no
+  reviews. Post-cleanup validation passed:
+  `node tool/validate_firestore_data.mjs --env dev --json` scanned 9 docs with
+  0 errors and 0 warnings;
+  `node tool/validate_firestore_data.mjs --env prod --json` scanned 29 docs
+  with 0 errors and 0 warnings. Final local verification passed:
+  `./tool/check_data_contract.sh` completed generated TypeScript drift check,
+  generator analysis, Firestore contract metadata check, validator/cleanup
+  script syntax checks, Functions lint/tests, Firestore rules emulator tests,
+  focused Flutter analysis, and focused Flutter tests.
+- 2026-05-05: ADC configured and read-only live validation completed.
+  `gcloud auth application-default login` saved credentials at
+  `~/.config/gcloud/application_default_credentials.json`, and
+  `gcloud auth application-default set-quota-project catchdates-dev` attached a
+  quota project. Validation results:
+  `node tool/validate_firestore_data.mjs --env dev --json` scanned 12 docs with
+  0 errors and 3 legacy review warnings;
+  `node tool/validate_firestore_data.mjs --env staging --json` scanned 0 docs
+  with 0 errors and 0 warnings;
+  `node tool/validate_firestore_data.mjs --env prod --json` scanned 34 docs
+  with 0 errors and 5 legacy review warnings. The only live-data migration
+  surface found so far is old club-scoped reviews without `runId`.
 - 2026-05-05: Attempted read-only live validation for dev with
   `node tool/validate_firestore_data.mjs --env dev --json`. The Firebase CLI is
   logged in and can list dev/staging/prod projects, but the Admin SDK validator

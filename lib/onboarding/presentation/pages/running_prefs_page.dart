@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
@@ -144,9 +144,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
           if (mutation.hasError) ...[
             gapH16,
-            ErrorBanner(
-              message: mutationErrorMessage(mutation),
-            ),
+            ErrorBanner(message: mutationErrorMessage(mutation)),
           ],
           const SizedBox(height: 40),
           CatchButton(

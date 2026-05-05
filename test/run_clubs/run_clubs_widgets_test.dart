@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -35,7 +36,6 @@ import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_s
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -649,7 +649,11 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Reviews'), findsOneWidget);
-      expect(find.text('No reviews yet — be the first!'), findsOneWidget);
+      expect(find.text('No reviews yet'), findsOneWidget);
+      expect(
+        find.text('Reviews from runners will appear here after a run.'),
+        findsOneWidget,
+      );
       expect(find.text('Write a review'), findsNothing);
       expect(find.text('Edit your review'), findsNothing);
     });

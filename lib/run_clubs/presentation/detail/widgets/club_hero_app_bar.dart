@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -7,7 +8,7 @@ import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
 import 'package:flutter/material.dart';
-import 'package:share_plus/share_plus.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef RunClubShareHandler =
     Future<void> Function(BuildContext context, RunClub club);
@@ -55,8 +56,18 @@ class ClubHeroAppBar extends StatelessWidget {
               tooltip: 'Share club',
               backgroundColor: Colors.black.withValues(alpha: 0.35),
               foregroundColor: Colors.white,
-              onPressed: () =>
-                  unawaited((onShareClub ?? shareRunClub)(buttonContext, club)),
+              onPressed: () => unawaited(
+                onShareClub != null
+                    ? onShareClub!(buttonContext, club)
+                    : shareRunClub(
+                        buttonContext,
+                        club,
+                        ProviderScope.containerOf(
+                          buttonContext,
+                          listen: false,
+                        ).read(externalShareControllerProvider),
+                      ),
+              ),
             ),
           ),
         ),
@@ -154,19 +165,21 @@ class ClubHeroAppBar extends StatelessWidget {
   }
 }
 
-Future<void> shareRunClub(BuildContext context, RunClub club) async {
+Future<void> shareRunClub(
+  BuildContext context,
+  RunClub club,
+  ExternalShareController share,
+) async {
   final box = context.findRenderObject() as RenderBox?;
   final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
   final uri = AppDeepLinks.runClub(club.id);
 
   try {
-    await SharePlus.instance.share(
-      ShareParams(
-        text:
-            'Check out ${club.name}, a run club in ${club.area}, ${club.location.label}: ${uri.toString()}',
-        subject: club.name,
-        sharePositionOrigin: origin,
-      ),
+    await share.shareText(
+      text:
+          'Check out ${club.name}, a run club in ${club.area}, ${club.location.label}: ${uri.toString()}',
+      subject: club.name,
+      origin: origin,
     );
   } on Object catch (error, stack) {
     debugPrint('[ERROR] ClubHeroAppBar share failed: $error\n$stack');

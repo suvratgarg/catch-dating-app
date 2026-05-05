@@ -31,6 +31,7 @@ node tool/check_firestore_contract.mjs
 
 echo "==> Checking Firestore data validator syntax"
 node --check tool/validate_firestore_data.mjs
+node --check tool/delete_firestore_reviews.mjs
 
 echo "==> Running Functions lint"
 npm --prefix functions run lint

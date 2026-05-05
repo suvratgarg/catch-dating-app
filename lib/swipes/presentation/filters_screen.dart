@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -7,7 +7,9 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -26,7 +28,15 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   RangeValues? _paceRange;
   Set<Gender>? _interestedIn;
   Set<PreferredDistance>? _distances;
-  bool _saving = false;
+  bool _didResetMutation = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_didResetMutation) return;
+    _didResetMutation = true;
+    FiltersController.saveFiltersMutation.reset(ref);
+  }
 
   void _syncFromProfile(UserProfile user) {
     _ageRange ??= _rangeValues(
@@ -48,24 +58,26 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   Future<void> _save(UserProfile user) async {
     final ageRange = _ageRange!;
     final paceRange = _paceRange!;
-    setState(() => _saving = true);
     try {
-      await ref
-          .read(filtersControllerProvider.notifier)
-          .saveFilters(
-            uid: user.uid,
-            minAgePreference: ageRange.start.round(),
-            maxAgePreference: ageRange.end.round(),
-            paceMinSecsPerKm: paceRange.start.round(),
-            paceMaxSecsPerKm: paceRange.end.round(),
-            interestedInGenders: (_interestedIn ?? {})
-                .map((e) => e.name)
-                .toList(),
-            preferredDistances: (_distances ?? {}).map((e) => e.name).toList(),
-          );
-      if (mounted) context.pop();
-    } finally {
-      if (mounted) setState(() => _saving = false);
+      await FiltersController.saveFiltersMutation.run(ref, (tx) async {
+        await tx
+            .get(filtersControllerProvider.notifier)
+            .saveFilters(
+              uid: user.uid,
+              minAgePreference: ageRange.start.round(),
+              maxAgePreference: ageRange.end.round(),
+              paceMinSecsPerKm: paceRange.start.round(),
+              paceMaxSecsPerKm: paceRange.end.round(),
+              interestedInGenders: (_interestedIn ?? {})
+                  .map((e) => e.name)
+                  .toList(),
+              preferredDistances: (_distances ?? {})
+                  .map((e) => e.name)
+                  .toList(),
+            );
+      });
+    } catch (_) {
+      // MutationErrorSnackbarListener owns user-facing error display.
     }
   }
 
@@ -91,159 +103,178 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   @override
   Widget build(BuildContext context) {
     final profileAsync = ref.watch(watchUserProfileProvider);
+    final saveMutation = ref.watch(FiltersController.saveFiltersMutation);
+    final saving = saveMutation.isPending;
     final t = CatchTokens.of(context);
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: CatchTopBar(
-        title: 'Filters',
-        leading: CatchTopBarIconAction(
-          icon: Icons.close_rounded,
-          tooltip: 'Close filters',
-          onPressed: () => context.pop(),
-        ),
-        actions: [
-          CatchTopBarTextAction(
-            label: 'Reset',
-            onPressed: profileAsync.asData?.value == null || _saving
-                ? null
-                : () => _reset(profileAsync.asData!.value!),
+    ref.listen(FiltersController.saveFiltersMutation, (prev, next) {
+      if (prev?.isPending == true && next.isSuccess) {
+        context.pop();
+      }
+    });
+
+    return MutationErrorSnackbarListener(
+      mutation: FiltersController.saveFiltersMutation,
+      child: Scaffold(
+        backgroundColor: t.bg,
+        appBar: CatchTopBar(
+          title: 'Filters',
+          leading: CatchTopBarIconAction(
+            icon: Icons.close_rounded,
+            tooltip: 'Close filters',
+            onPressed: () => context.pop(),
           ),
-        ],
-      ),
-      body: profileAsync.when(
-        loading: () => const CatchLoadingIndicator(),
-        error: (error, _) => CatchErrorText(error),
-        data: (user) {
-          if (user == null) return const SizedBox.shrink();
-          _syncFromProfile(user);
+          actions: [
+            CatchTopBarTextAction(
+              key: SwipeKeys.resetFiltersButton,
+              label: 'Reset',
+              onPressed: profileAsync.asData?.value == null || saving
+                  ? null
+                  : () => _reset(profileAsync.asData!.value!),
+            ),
+          ],
+        ),
+        body: profileAsync.when(
+          loading: () => const CatchLoadingIndicator(),
+          error: (error, _) => CatchErrorText(error),
+          data: (user) {
+            if (user == null) return const SizedBox.shrink();
+            _syncFromProfile(user);
 
-          final ageRange = _ageRange!;
-          final paceRange = _paceRange!;
-          final interestedIn = _interestedIn!;
-          final distances = _distances!;
+            final ageRange = _ageRange!;
+            final paceRange = _paceRange!;
+            final interestedIn = _interestedIn!;
+            final distances = _distances!;
 
-          return Column(
-            children: [
-              Expanded(
-                child: ListView(
+            return Column(
+              children: [
+                Expanded(
+                  child: ListView(
+                    padding: const EdgeInsets.fromLTRB(
+                      CatchSpacing.s5,
+                      0,
+                      CatchSpacing.s5,
+                      Sizes.p20,
+                    ),
+                    children: [
+                      _FilterSection(
+                        title: 'Pace range',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _FilterValue(
+                              value:
+                                  '${formatPace(paceRange.start)} - ${formatPace(paceRange.end)} /km',
+                            ),
+                            RangeSlider(
+                              key: SwipeKeys.paceRangeSlider,
+                              min: 240,
+                              max: 540,
+                              divisions: 20,
+                              values: paceRange,
+                              labels: RangeLabels(
+                                formatPace(paceRange.start),
+                                formatPace(paceRange.end),
+                              ),
+                              onChanged: (values) =>
+                                  setState(() => _paceRange = values),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _FilterSection(
+                        title: 'Age',
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            _FilterValue(
+                              value:
+                                  '${ageRange.start.round()} - ${ageRange.end.round()}',
+                            ),
+                            RangeSlider(
+                              key: SwipeKeys.ageRangeSlider,
+                              min: 18,
+                              max: 99,
+                              divisions: 81,
+                              values: ageRange,
+                              labels: RangeLabels(
+                                '${ageRange.start.round()}',
+                                '${ageRange.end.round()}',
+                              ),
+                              onChanged: (values) =>
+                                  setState(() => _ageRange = values),
+                            ),
+                          ],
+                        ),
+                      ),
+                      _FilterSection(
+                        title: 'Interested in',
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final gender in Gender.values)
+                              CatchChip(
+                                key: SwipeKeys.genderFilterChip(gender.name),
+                                label: gender.label,
+                                active: interestedIn.contains(gender),
+                                onTap: () => setState(() {
+                                  interestedIn.contains(gender)
+                                      ? interestedIn.remove(gender)
+                                      : interestedIn.add(gender);
+                                }),
+                              ),
+                          ],
+                        ),
+                      ),
+                      _FilterSection(
+                        title: 'Run type',
+                        child: Wrap(
+                          spacing: 8,
+                          runSpacing: 8,
+                          children: [
+                            for (final distance in PreferredDistance.values)
+                              CatchChip(
+                                key: SwipeKeys.distanceFilterChip(
+                                  distance.name,
+                                ),
+                                label: distance.label,
+                                active: distances.contains(distance),
+                                onTap: () => setState(() {
+                                  distances.contains(distance)
+                                      ? distances.remove(distance)
+                                      : distances.add(distance);
+                                }),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Container(
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,
-                    0,
+                    Sizes.p12,
                     CatchSpacing.s5,
                     Sizes.p20,
                   ),
-                  children: [
-                    _FilterSection(
-                      title: 'Pace range',
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _FilterValue(
-                            value:
-                                '${formatPace(paceRange.start)} - ${formatPace(paceRange.end)} /km',
-                          ),
-                          RangeSlider(
-                            min: 240,
-                            max: 540,
-                            divisions: 20,
-                            values: paceRange,
-                            labels: RangeLabels(
-                              formatPace(paceRange.start),
-                              formatPace(paceRange.end),
-                            ),
-                            onChanged: (values) =>
-                                setState(() => _paceRange = values),
-                          ),
-                        ],
-                      ),
-                    ),
-                    _FilterSection(
-                      title: 'Age',
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          _FilterValue(
-                            value:
-                                '${ageRange.start.round()} - ${ageRange.end.round()}',
-                          ),
-                          RangeSlider(
-                            min: 18,
-                            max: 99,
-                            divisions: 81,
-                            values: ageRange,
-                            labels: RangeLabels(
-                              '${ageRange.start.round()}',
-                              '${ageRange.end.round()}',
-                            ),
-                            onChanged: (values) =>
-                                setState(() => _ageRange = values),
-                          ),
-                        ],
-                      ),
-                    ),
-                    _FilterSection(
-                      title: 'Interested in',
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final gender in Gender.values)
-                            CatchChip(
-                              label: gender.label,
-                              active: interestedIn.contains(gender),
-                              onTap: () => setState(() {
-                                interestedIn.contains(gender)
-                                    ? interestedIn.remove(gender)
-                                    : interestedIn.add(gender);
-                              }),
-                            ),
-                        ],
-                      ),
-                    ),
-                    _FilterSection(
-                      title: 'Run type',
-                      child: Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: [
-                          for (final distance in PreferredDistance.values)
-                            CatchChip(
-                              label: distance.label,
-                              active: distances.contains(distance),
-                              onTap: () => setState(() {
-                                distances.contains(distance)
-                                    ? distances.remove(distance)
-                                    : distances.add(distance);
-                              }),
-                            ),
-                        ],
-                      ),
-                    ),
-                  ],
+                  decoration: BoxDecoration(
+                    color: t.surface,
+                    border: Border(top: BorderSide(color: t.line)),
+                  ),
+                  child: CatchButton(
+                    key: SwipeKeys.applyFiltersButton,
+                    label: 'Apply filters',
+                    onPressed: saving ? null : () => _save(user),
+                    isLoading: saving,
+                    fullWidth: true,
+                  ),
                 ),
-              ),
-              Container(
-                padding: const EdgeInsets.fromLTRB(
-                  CatchSpacing.s5,
-                  Sizes.p12,
-                  CatchSpacing.s5,
-                  Sizes.p20,
-                ),
-                decoration: BoxDecoration(
-                  color: t.surface,
-                  border: Border(top: BorderSide(color: t.line)),
-                ),
-                child: CatchButton(
-                  label: 'Apply filters',
-                  onPressed: () => _save(user),
-                  isLoading: _saving,
-                  fullWidth: true,
-                ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }

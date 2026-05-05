@@ -8,6 +8,10 @@ as they appear, even when they are outside the current pass.
 - Treat this file as the single source of truth for the widget cleanup effort.
 - Start every future pass by reading this file and the operating instructions at
   the top of `docs/widget_catalog.md`.
+- For broad cleanup passes, run `bash tool/widget_cleanup_scan.sh` near the
+  beginning and end of the pass. Treat it as a triage aid, not a failing lint:
+  inspect matches before editing, refine the scanner when it becomes noisy, and
+  prefer the highest-signal repeated smells over mechanical rewrites.
 - Keep appending newly discovered work, recommendations, bug fixes, and process
   improvements here, even when they are outside the current pass.
 - Continue in small verified batches. Prefer shared primitives only where they
@@ -99,6 +103,30 @@ future passes should actively scan for them.
   radius, motion, icon sizes, and compatibility layout helpers should live under
   `lib/core/theme`. Do not add new design primitives under generic
   `lib/constants` or a parallel top-level `lib/theme` folder.
+- Declared controller mutations that the UI does not actually use. If a
+  controller exposes a `Mutation`, the triggering widget should normally run the
+  action through that mutation so loading/error/success behavior is observable
+  and testable.
+- Custom interactive widgets without semantic keys, tooltips, or labels. Any
+  button-like tile, photo slot, swipe action, segmented action, or grid cell
+  that users tap should have a stable semantic target before tests are written
+  around it.
+- Platform or plugin side effects embedded directly in widgets. Store launches,
+  connectivity subscriptions, FCM initialization, and similar runtime effects
+  should sit behind providers/controllers so they can be tested and replaced in
+  harnesses.
+- Share sheets, external URL launches, image pickers, and platform/store
+  actions called directly from presentation widgets. Put these behind a small
+  provider/controller seam so tests can replace the side effect and the widget
+  only chooses when the action is requested.
+- No local feedback loop for recurring cleanup smells. When the same
+  anti-pattern appears repeatedly, add a lightweight repo-local scanner or
+  checklist, then keep tuning it so it stays useful instead of becoming ignored
+  noise.
+- Scanner output that cannot distinguish real widget smells from valid
+  controller/provider seams. Cleanup scans should exclude generated files,
+  controllers, notifiers, and data layers where appropriate so they point at
+  surfaces that actually need design-system attention.
 
 ## Current Pass: Signed-In User Profile
 
@@ -242,6 +270,37 @@ file is the source of truth for where we pick up next.
   `CatchBottomSheetScaffold`, the edit sheet exposes the existing delete
   mutation, star picking has semantic keys/tooltips, and review controller plus
   widget tests cover create, edit, delete, validation, and sheet behavior.
+- [completed] Complete the Swipes deep pass. Filter saves now use
+  `FiltersController.saveFiltersMutation`, filters/actions/recap tiles expose
+  semantic keys, swipe action buttons have tooltips/semantic labels, recap empty
+  state uses `CatchEmptyState`, recap/hub token prop drilling was reduced, and
+  focused swipes tests cover controller, filter, action, card-content, empty
+  state, repository, and swipe-window behavior.
+- [completed] Complete the image uploads/photo grid pass. `PhotoGrid` now uses
+  the shared profile-photo limit from `PhotoUploadController`, `PhotoSlot`
+  renders through `CatchSurface` with semantic labels/tooltips, onboarding and
+  profile call uploads through `PhotoUploadController.uploadPhotoMutation`, the
+  controller rejects out-of-range slots, and focused tests cover slot
+  interactivity plus upload serialization.
+- [completed] Complete the force update and app shell pass.
+  `UpdateRequiredScreen` delegates store-opening logic to
+  `UpdateRequiredController`, the update action has a semantic key, AppShell
+  connectivity and FCM initialization are behind provider seams, the bottom
+  navigation bar/offline banner have stable keys, and focused tests cover store
+  URL selection plus offline-state logic.
+- [completed] Add a recursive cleanup scanner at
+  `tool/widget_cleanup_scan.sh`. It reports brittle test timing, positional
+  finders, repository-provider reaches from presentation, `CatchTokens` prop
+  drilling, custom tappable candidates, legacy `Sizes.p*` use, and plugin
+  side-effect imports in presentation code.
+- [completed] Move external URL and share side effects behind core
+  provider/controller seams. `ExternalLinkController` now owns URL launch
+  calls, `ExternalShareController` owns share-sheet calls, and payment
+  confirmation quick actions route through `PaymentConfirmationController`.
+- [completed] Clear the scanner's remaining `CatchTokens` prop-drilling
+  matches. Onboarding top-bar/progress widgets, dashboard activity tiles,
+  stride bars, and dashed avatar leaves now read tokens from their own build
+  context.
 - [pending] Gradually replace legacy `Sizes.p*` usage with canonical
   `CatchSpacing.s*` values where the layout is on the 4-point scale. Keep
   `Sizes.p*` only for intentional fine-grained component spacing.
@@ -257,12 +316,19 @@ file is the source of truth for where we pick up next.
 Continue through the remaining unaudited or lightly audited feature surfaces in
 this order unless a product bug changes priority:
 
-1. Swipes deep pass: `SwipeScreen`, `FiltersScreen`, `RunRecapScreen`,
-   `SwipeActionButtons`, and remaining swipe queue UI.
-2. Image uploads/photo grid: `PhotoGrid`, `PhotoSlot`, and
-   `PhotoUploadController` seams used by onboarding/profile.
-3. Force update and app shell: `UpdateRequiredScreen`,
-   `force_update_diagnostics.dart`, and `AppShell` side-effect boundaries.
+The previously queued Swipes, image upload/photo grid, force update, and app
+shell passes are complete. Continue with one of these next focused queues:
+
+1. Scanner-led cleanup from `bash tool/widget_cleanup_scan.sh`: use the report
+   to pick one repeated smell at a time, then update the scanner and this doc
+   when a match is fixed or proven noisy.
+2. Remaining brittle widget-test cleanup: create-run, onboarding, payment,
+   run-club, dashboard, and profile timing/scroll helpers.
+3. Remaining legacy spacing cleanup: gradually migrate `Sizes.p*` to
+   `CatchSpacing.s*` where the layout is on the canonical 4-point scale.
+4. Cross-feature key/semantic audit: scan remaining custom tappable tiles and
+   grid/list cells for missing keys/tooltips/semantic labels before adding more
+   widget tests.
 
 ## Recommended Order
 
@@ -344,6 +410,20 @@ this order unless a product bug changes priority:
   row inline. Keep `RunDetailOverviewSection` responsible for static run facts
   and `RunDetailSocialSection` responsible for roster/review/guest social
   context.
+- Swipes exposed a mutation-seam drift: `FiltersController.saveFiltersMutation`
+  existed but `FiltersScreen` still managed `_saving` locally and called the
+  controller directly. Future passes should check that declared mutations are
+  actually used at the UI trigger site.
+- Photo uploads exposed the same issue: `PhotoUploadController.uploadPhotoMutation`
+  existed but onboarding/profile called `pickAndUpload` directly. Shared
+  controller mutations should be treated as the canonical action seam unless a
+  screen has a specific reason to bypass them.
+- AppShell exposed side-effect ownership drift. Connectivity and FCM
+  initialization are runtime effects that belong behind provider/controller
+  seams, not direct widget subscriptions and flags.
+- Update-required store launching is platform/product logic. Keeping it in
+  `UpdateRequiredController` makes URL selection and launch failures testable
+  without invoking `url_launcher` in widget tests.
 - Tests exposed that exact text counts are brittle when the same run title is
   legitimately rendered in both the hero and the overview. Prefer presence or
   section-specific assertions over incidental global counts.
@@ -514,3 +594,36 @@ this order unless a product bug changes priority:
   `initState`. The review sheet now resets static mutations in
   `didChangeDependencies`, which avoids inherited-scope lifecycle assertions
   while still clearing stale submit/delete state when the sheet opens.
+- The recursive cleanup scanner is now part of the workflow. Its current output
+  should guide triage, not dictate edits: it intentionally reports candidates
+  such as `pumpAndSettle`, positional finders, custom tappables, token
+  prop-drilling, plugin imports, and legacy spacing. Refine the scan when false
+  positives outnumber useful leads.
+- Current scanner snapshot after refinement and token-drilling cleanup: 149
+  brittle timing candidates, 8 positional finder candidates, 1
+  repository-provider reach, no token prop-drilling matches, 35 custom tappable
+  candidates, 139 legacy spacing matches, and 3 presentation plugin/platform
+  imports. The highest-value next seams are likely create-run/onboarding timing
+  helpers, create-run-club image picking, and app-shell/main platform
+  initialization ownership.
+- Direct `url_launcher` and `share_plus` calls in widgets were a repeated
+  side-effect smell. `ExternalLinkController` now backs settings contact links,
+  run-club contact links, force-update store links, and payment confirmation
+  calendar/directions actions. `ExternalShareController` now backs payment
+  invite/referral sharing plus run/run-club hero sharing.
+- Payment confirmation was doing product-action construction in the widget.
+  `PaymentConfirmationController` now owns calendar URI construction,
+  directions URI construction, invite text, referral text, URL launching, and
+  sharing. Unit tests cover the pure action builders without pumping the
+  confirmation screen.
+- Isolated sliver widgets should stay easy to render in tests. Converting the
+  whole `ClubHeroAppBar` to `ConsumerWidget` forced unrelated tests to carry a
+  `ProviderScope`; the final version keeps the app bar stateless and reads the
+  share provider only when the default share action is invoked.
+- Stale tests are useful product feedback when copy moves into shared
+  primitives. The run-club review empty-state test was updated to assert the
+  current `CatchEmptyState` copy rather than the old inline message.
+- Token objects should almost never be constructor parameters for normal leaf
+  widgets. The scanner reached zero `CatchTokens` prop-drilling matches after
+  changing onboarding/dashboard leaves to call `CatchTokens.of(context)`
+  locally, and the focused onboarding/dashboard tests stayed green.

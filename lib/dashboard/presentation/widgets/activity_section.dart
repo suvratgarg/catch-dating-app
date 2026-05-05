@@ -113,7 +113,7 @@ class ActivitySection extends ConsumerWidget {
             SectionHeader(title: group.label),
             gapH8,
             for (final item in group.items) ...[
-              _ActivityTile(item: item, tokens: t),
+              _ActivityTile(item: item),
               if (item != group.items.last) Divider(color: t.line),
             ],
             gapH18,
@@ -144,13 +144,14 @@ class ActivitySection extends ConsumerWidget {
 }
 
 class _ActivityTile extends StatelessWidget {
-  const _ActivityTile({required this.item, required this.tokens});
+  const _ActivityTile({required this.item});
 
   final _ActivityItem item;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -168,12 +169,12 @@ class _ActivityTile extends StatelessWidget {
                 width: 46,
                 height: 46,
                 decoration: BoxDecoration(
-                  color: item.isPrimary ? tokens.primary : tokens.primarySoft,
+                  color: item.isPrimary ? t.primary : t.primarySoft,
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
                   item.icon,
-                  color: item.isPrimary ? tokens.primaryInk : tokens.primary,
+                  color: item.isPrimary ? t.primaryInk : t.primary,
                   size: 21,
                 ),
               ),
@@ -184,7 +185,7 @@ class _ActivityTile extends StatelessWidget {
                   children: [
                     Text(
                       item.title,
-                      style: CatchTextStyles.bodyM(context, color: tokens.ink)
+                      style: CatchTextStyles.bodyM(context, color: t.ink)
                           .copyWith(
                             fontWeight: item.isPrimary
                                 ? FontWeight.w800
@@ -194,7 +195,7 @@ class _ActivityTile extends StatelessWidget {
                     gapH4,
                     Text(
                       item.subtitle,
-                      style: CatchTextStyles.bodyS(context, color: tokens.ink2),
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
                     ),
                   ],
                 ),
@@ -202,7 +203,7 @@ class _ActivityTile extends StatelessWidget {
               gapW8,
               Text(
                 item.timeLabel,
-                style: CatchTextStyles.bodyS(context, color: tokens.ink3),
+                style: CatchTextStyles.bodyS(context, color: t.ink3),
               ),
             ],
           ),

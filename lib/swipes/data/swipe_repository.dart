@@ -26,19 +26,17 @@ class SwipeRepository {
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> recordSwipe({required Swipe swipe}) =>
-      withFirestoreErrorContext(
-        () => _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
-          'swiperId': swipe.swiperId,
-          'targetId': swipe.targetId,
-          'runId': swipe.runId,
-          'direction': swipe.direction.name,
-          'createdAt': FieldValue.serverTimestamp(),
-        }),
-        collection: _collectionPath,
-        action: 'record swipe',
-      );
-
+  Future<void> recordSwipe({required Swipe swipe}) => withFirestoreErrorContext(
+    () => _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
+      'swiperId': swipe.swiperId,
+      'targetId': swipe.targetId,
+      'runId': swipe.runId,
+      'direction': swipe.direction.name,
+      'createdAt': FieldValue.serverTimestamp(),
+    }),
+    collection: _collectionPath,
+    action: 'record swipe',
+  );
 }
 
 @riverpod

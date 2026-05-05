@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -8,6 +10,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'create_run_club_controller.g.dart';
+
+class PickedRunClubCover {
+  const PickedRunClubCover({required this.image, required this.bytes});
+
+  final XFile image;
+  final Uint8List bytes;
+}
 
 /// **Pattern A: Action controller + static Mutations**
 ///
@@ -20,6 +29,17 @@ class CreateRunClubController extends _$CreateRunClubController {
 
   @override
   void build() {}
+
+  Future<PickedRunClubCover?> pickCoverImage({int imageQuality = 85}) async {
+    final image = await ref
+        .read(imageUploadRepositoryProvider)
+        .pickImage(imageQuality: imageQuality);
+    if (image == null) {
+      return null;
+    }
+
+    return PickedRunClubCover(image: image, bytes: await image.readAsBytes());
+  }
 
   Future<void> submit({
     required String name,

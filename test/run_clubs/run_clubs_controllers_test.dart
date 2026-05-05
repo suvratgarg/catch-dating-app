@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -240,6 +242,31 @@ void main() {
   });
 
   group('CreateRunClubController', () {
+    test('picks a cover image and reads preview bytes', () async {
+      final image = XFile.fromData(
+        Uint8List.fromList(const [1, 2, 3]),
+        name: 'club-cover.png',
+      );
+      final fakeImageUploadRepository = FakeImageUploadRepository(
+        pickedImage: image,
+      );
+      final container = ProviderContainer(
+        overrides: [
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final picked = await container
+          .read(createRunClubControllerProvider.notifier)
+          .pickCoverImage();
+
+      expect(picked?.image, image);
+      expect(picked?.bytes, [1, 2, 3]);
+    });
+
     test(
       'creates a club through the repository when there is no cover image',
       () async {

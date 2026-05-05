@@ -11,9 +11,7 @@ void main() {
     test('returns false when no gate is configured', () async {
       final container = ProviderContainer(
         overrides: [
-          appVersionConfigProvider.overrideWithValue(
-            const AppVersionConfig(),
-          ),
+          appVersionConfigProvider.overrideWithValue(const AppVersionConfig()),
           appPackageInfoProvider.overrideWith(
             (ref) async => (version: '2.0.0', buildNumber: '99'),
           ),
@@ -100,14 +98,11 @@ void main() {
     });
 
     test('surfaces error when package info fails', () async {
-      final completer =
-          Completer<({String version, String buildNumber})>();
+      final completer = Completer<({String version, String buildNumber})>();
 
       final container = ProviderContainer(
         overrides: [
-          appVersionConfigProvider.overrideWithValue(
-            const AppVersionConfig(),
-          ),
+          appVersionConfigProvider.overrideWithValue(const AppVersionConfig()),
           appPackageInfoProvider.overrideWith((ref) => completer.future),
         ],
       );

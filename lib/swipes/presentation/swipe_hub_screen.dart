@@ -23,10 +23,9 @@ class SwipeHubScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final uidAsync = ref.watch(uidProvider);
-    final t = CatchTokens.of(context);
 
     return Scaffold(
-      backgroundColor: t.bg,
+      backgroundColor: CatchTokens.of(context).bg,
       body: uidAsync.when(
         loading: () => const CatchSkeletonList(count: 3),
         error: (e, _) => CatchErrorText(e),
@@ -42,10 +41,10 @@ class SwipeHubScreen extends ConsumerWidget {
               final activeRuns = runsWithOpenSwipeWindow(runs);
 
               if (activeRuns.isEmpty) {
-                return _CatchesEmptyState(tokens: t);
+                return const _CatchesEmptyState();
               }
 
-              return _CatchesHubContent(activeRuns: activeRuns, tokens: t);
+              return _CatchesHubContent(activeRuns: activeRuns);
             },
           );
         },
@@ -55,14 +54,13 @@ class SwipeHubScreen extends ConsumerWidget {
 }
 
 class _CatchesHubContent extends StatelessWidget {
-  const _CatchesHubContent({required this.activeRuns, required this.tokens});
+  const _CatchesHubContent({required this.activeRuns});
 
   final List<Run> activeRuns;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
     final featuredRun = activeRuns.first;
     final remaining = swipeWindowClosesAt(
       featuredRun,
@@ -77,10 +75,9 @@ class _CatchesHubContent extends StatelessWidget {
           Sizes.p24,
         ),
         children: [
-          _CatchesHeader(tokens: t),
+          const _CatchesHeader(),
           gapH16,
           _CatchesIntroCard(
-            tokens: t,
             run: featuredRun,
             remaining: remaining,
             onTap: () => context.pushNamed(
@@ -115,13 +112,11 @@ class _CatchesHubContent extends StatelessWidget {
 }
 
 class _CatchesHeader extends StatelessWidget {
-  const _CatchesHeader({required this.tokens});
-
-  final CatchTokens tokens;
+  const _CatchesHeader();
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
 
     return Row(
       children: [
@@ -151,20 +146,18 @@ class _CatchesHeader extends StatelessWidget {
 
 class _CatchesIntroCard extends StatelessWidget {
   const _CatchesIntroCard({
-    required this.tokens,
     required this.run,
     required this.remaining,
     required this.onTap,
   });
 
-  final CatchTokens tokens;
   final Run run;
   final Duration remaining;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
 
     return CatchSurface(
       onTap: onTap,
@@ -215,13 +208,11 @@ class _CatchesIntroCard extends StatelessWidget {
                   _PillStat(
                     label: 'Closes in',
                     value: _formatCountdown(remaining),
-                    tokens: t,
                   ),
                   gapW10,
                   _PillStat(
                     label: 'Roster',
                     value: '${run.attendedUserIds.length}',
-                    tokens: t,
                   ),
                 ],
               ),
@@ -254,15 +245,10 @@ class _CatchesIntroCard extends StatelessWidget {
 }
 
 class _PillStat extends StatelessWidget {
-  const _PillStat({
-    required this.label,
-    required this.value,
-    required this.tokens,
-  });
+  const _PillStat({required this.label, required this.value});
 
   final String label;
   final String value;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
@@ -295,13 +281,11 @@ class _PillStat extends StatelessWidget {
 }
 
 class _CatchesEmptyState extends StatelessWidget {
-  const _CatchesEmptyState({required this.tokens});
-
-  final CatchTokens tokens;
+  const _CatchesEmptyState();
 
   @override
   Widget build(BuildContext context) {
-    final t = tokens;
+    final t = CatchTokens.of(context);
 
     return SafeArea(
       child: ListView(
@@ -312,7 +296,7 @@ class _CatchesEmptyState extends StatelessWidget {
           Sizes.p24,
         ),
         children: [
-          _CatchesHeader(tokens: t),
+          const _CatchesHeader(),
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.12),
           CatchEmptyState(
             icon: Icons.directions_run_rounded,

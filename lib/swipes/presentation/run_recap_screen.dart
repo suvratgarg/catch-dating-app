@@ -1,11 +1,13 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -14,6 +16,7 @@ import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -34,10 +37,9 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
   Widget build(BuildContext context) {
     final runAsync = ref.watch(watchRunProvider(widget.runId));
     final uid = ref.watch(uidProvider).asData?.value;
-    final t = CatchTokens.of(context);
 
     return Scaffold(
-      backgroundColor: t.bg,
+      backgroundColor: CatchTokens.of(context).bg,
       appBar: CatchTopBar(
         title: 'Run recap',
         leading: CatchTopBarIconAction(
@@ -53,6 +55,7 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
           if (run == null) {
             return const Center(child: Text('Run not found'));
           }
+          final t = CatchTokens.of(context);
           final attendeeIds = run.attendedUserIds
               .where((attendeeId) => attendeeId != uid)
               .toList();
@@ -65,7 +68,7 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
               Sizes.p24,
             ),
             children: [
-              _RecapHero(run: run, tokens: t),
+              _RecapHero(run: run),
               gapH24,
               Text(
                 'Who brought the vibe?',
@@ -78,7 +81,7 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
               ),
               gapH14,
               if (attendeeIds.isEmpty)
-                _EmptyRoster(tokens: t)
+                const _EmptyRoster()
               else
                 GridView.builder(
                   itemCount: attendeeIds.length,
@@ -95,6 +98,7 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
                   itemBuilder: (context, index) {
                     final attendeeId = attendeeIds[index];
                     return _VibeTile(
+                      key: SwipeKeys.vibeTile(attendeeId),
                       uid: attendeeId,
                       selected: _selectedVibes.contains(attendeeId),
                       onTap: () => setState(() {
@@ -107,6 +111,7 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
                 ),
               gapH24,
               CatchButton(
+                key: SwipeKeys.openCatchesDeckButton,
                 label: 'Open catches deck',
                 onPressed: () => context.goNamed(
                   Routes.swipeRunScreen.name,
@@ -124,24 +129,23 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
 }
 
 class _RecapHero extends StatelessWidget {
-  const _RecapHero({required this.run, required this.tokens});
+  const _RecapHero({required this.run});
 
   final Run run;
-  final CatchTokens tokens;
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
     final closesAt = swipeWindowClosesAt(run);
     final windowLabel = closesAt.isAfter(DateTime.now())
         ? 'Catches open until ${RunFormatters.time(closesAt)}'
         : 'Catch window closed';
 
-    return Container(
+    return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p20),
-      decoration: BoxDecoration(
-        color: tokens.ink,
-        borderRadius: BorderRadius.circular(24),
-      ),
+      backgroundColor: t.ink,
+      borderWidth: 0,
+      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -149,20 +153,20 @@ class _RecapHero extends StatelessWidget {
             '${run.title.toUpperCase()} · COMPLETE',
             style: CatchTextStyles.labelM(
               context,
-              color: tokens.surface.withValues(alpha: 0.68),
+              color: t.surface.withValues(alpha: 0.68),
             ).copyWith(letterSpacing: 1.1),
           ),
           gapH10,
           Text(
             RunFormatters.distanceKm(run.distanceKm),
-            style: CatchTextStyles.displayL(context, color: tokens.surface),
+            style: CatchTextStyles.displayL(context, color: t.surface),
           ),
           gapH4,
           Text(
             '${run.pace.label} pace · ${run.attendedUserIds.length} checked in',
             style: CatchTextStyles.bodyS(
               context,
-              color: tokens.surface.withValues(alpha: 0.76),
+              color: t.surface.withValues(alpha: 0.76),
             ),
           ),
           gapH18,
@@ -217,6 +221,7 @@ class _RecapStat extends StatelessWidget {
 
 class _VibeTile extends ConsumerWidget {
   const _VibeTile({
+    super.key,
     required this.uid,
     required this.selected,
     required this.onTap,
@@ -231,61 +236,71 @@ class _VibeTile extends ConsumerWidget {
     final profile = ref.watch(watchPublicProfileProvider(uid)).asData?.value;
     final t = CatchTokens.of(context);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 180),
-        decoration: BoxDecoration(
-          color: t.surface,
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          border: Border.all(
-            color: selected ? t.primary : t.line,
-            width: selected ? 3 : 1,
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            _ProfilePhoto(profile: profile),
-            DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: 0.74),
-                  ],
-                ),
+    final name = profile?.name ?? 'runner';
+
+    return Tooltip(
+      message: selected ? 'Remove $name' : 'Remember $name',
+      child: Semantics(
+        button: true,
+        selected: selected,
+        label: profile?.name ?? 'Runner',
+        child: GestureDetector(
+          onTap: onTap,
+          child: AnimatedContainer(
+            duration: const Duration(milliseconds: 180),
+            decoration: BoxDecoration(
+              color: t.surface,
+              borderRadius: BorderRadius.circular(CatchRadius.md),
+              border: Border.all(
+                color: selected ? t.primary : t.line,
+                width: selected ? 3 : 1,
               ),
             ),
-            Positioned(
-              left: 8,
-              right: 8,
-              bottom: 8,
-              child: Text(
-                profile?.name ?? 'Runner',
-                style: CatchTextStyles.labelM(context, color: Colors.white),
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            if (selected)
-              Positioned(
-                right: 8,
-                top: 8,
-                child: CircleAvatar(
-                  radius: 14,
-                  backgroundColor: t.primary,
-                  child: Icon(
-                    Icons.check_rounded,
-                    size: 16,
-                    color: t.primaryInk,
+            clipBehavior: Clip.antiAlias,
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                _ProfilePhoto(profile: profile),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Colors.transparent,
+                        Colors.black.withValues(alpha: 0.74),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-          ],
+                Positioned(
+                  left: 8,
+                  right: 8,
+                  bottom: 8,
+                  child: Text(
+                    profile?.name ?? 'Runner',
+                    style: CatchTextStyles.labelM(context, color: Colors.white),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                if (selected)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: CircleAvatar(
+                      radius: 14,
+                      backgroundColor: t.primary,
+                      child: Icon(
+                        Icons.check_rounded,
+                        size: 16,
+                        color: t.primaryInk,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          ),
         ),
       ),
     );
@@ -314,24 +329,15 @@ class _ProfilePhoto extends StatelessWidget {
 }
 
 class _EmptyRoster extends StatelessWidget {
-  const _EmptyRoster({required this.tokens});
-
-  final CatchTokens tokens;
+  const _EmptyRoster();
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(Sizes.p18),
-      decoration: BoxDecoration(
-        color: tokens.surface,
-        borderRadius: BorderRadius.circular(CatchRadius.lg),
-        border: Border.all(color: tokens.line),
-      ),
-      child: Text(
-        'No other checked-in runners are attached to this run yet.',
-        style: CatchTextStyles.bodyS(context, color: tokens.ink2),
-        textAlign: TextAlign.center,
-      ),
+    return const CatchEmptyState(
+      icon: Icons.group_off_rounded,
+      title: 'No runners to tag',
+      message: 'No other checked-in runners are attached to this run yet.',
+      surface: true,
     );
   }
 }

@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -21,7 +24,6 @@ import 'package:country_code_picker/country_code_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class SettingsScreen extends ConsumerStatefulWidget {
   const SettingsScreen({super.key});
@@ -83,6 +85,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
     } catch (_) {
       // MutationErrorSnackbarListener owns user-facing error display.
     }
+  }
+
+  void _openExternal(Uri uri) {
+    unawaited(ref.read(externalLinkControllerProvider).openExternal(uri));
   }
 
   @override
@@ -239,27 +245,24 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       label: 'Help & support',
                       value: 'Contact us',
                       icon: Icons.help_outline,
-                      onTap: () => launchUrl(
+                      onTap: () => _openExternal(
                         Uri.parse('https://catchdates.com/help'),
-                        mode: LaunchMode.externalApplication,
                       ),
                     ),
                     SettingsRow(
                       label: 'Privacy',
                       value: 'Policy',
                       icon: Icons.lock_outline,
-                      onTap: () => launchUrl(
+                      onTap: () => _openExternal(
                         Uri.parse('https://catchdates.com/privacy'),
-                        mode: LaunchMode.externalApplication,
                       ),
                     ),
                     SettingsRow(
                       label: 'Terms',
                       value: 'Legal',
                       icon: Icons.description_outlined,
-                      onTap: () => launchUrl(
+                      onTap: () => _openExternal(
                         Uri.parse('https://catchdates.com/terms'),
-                        mode: LaunchMode.externalApplication,
                       ),
                     ),
                   ],
