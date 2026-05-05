@@ -42,8 +42,7 @@ class ProfileInfoTile extends StatelessWidget {
             ],
           ),
         ),
-        if (onTap != null)
-          Icon(Icons.chevron_right, color: t.ink3, size: 20),
+        if (onTap != null) Icon(Icons.chevron_right, color: t.ink3, size: 20),
       ],
     );
 
@@ -54,12 +53,16 @@ class ProfileInfoTile extends StatelessWidget {
       );
     }
 
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(CatchRadius.sm),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: Sizes.p10),
-        child: row,
+    return Semantics(
+      button: true,
+      label: '$label: $value',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(CatchRadius.sm),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: Sizes.p10),
+          child: row,
+        ),
       ),
     );
   }

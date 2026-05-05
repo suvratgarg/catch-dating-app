@@ -10,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   group('CalendarScreen', () {
@@ -141,7 +142,7 @@ void main() {
       expect(find.text('Day timeline'), findsNothing);
 
       await tester.tap(find.text('Day'));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Day timeline'), findsOneWidget);
       expect(find.text('Carter Road Promenade'), findsOneWidget);

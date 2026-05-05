@@ -33,7 +33,7 @@ class CatchesCallout extends StatelessWidget {
         pathParameters: {'runId': activeRun.id},
       ),
       backgroundColor: t.primary,
-      padding: const EdgeInsets.all(Sizes.p16),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       child: Row(
         children: [
           Container(

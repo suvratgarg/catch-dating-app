@@ -1,0 +1,121 @@
+{
+  "architecture_audit": {
+    "path": "docs/architecture-audit.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "historical",
+    "read_policy": "Use for historical provider/state-management context; prefer controller_patterns for current controller rules."
+  },
+  "audit_registry": {
+    "path": "docs/audit_registry/README.md",
+    "version": "2.1.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Read first for recursive audit workflow, registry files, completion criteria, and pruning policy."
+  },
+  "audit_backlog": {
+    "path": "docs/audit_registry/backlog.json",
+    "version": "2.1.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Use for active backlog, next-up order, stable debt ids, and scanner counts."
+  },
+  "audit_doc_summaries": {
+    "path": "docs/audit_registry/doc_summaries.json",
+    "version": "2.1.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Use for compact read/skip policies before opening long markdown docs."
+  },
+  "controller_patterns": {
+    "path": "docs/controller_patterns.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Read for controller/view-model boundary rules before architecture or state-management cleanup."
+  },
+  "docs_index": {
+    "path": "docs/README.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Read before adding, deleting, or consolidating docs."
+  },
+  "deploy_runbook": {
+    "path": "docs/deploy_runbook_2026_05_04.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "runbook",
+    "read_policy": "Use for the May 2026 deployment sequence; re-verify environment and command outputs before acting."
+  },
+  "error_handling_audit": {
+    "path": "docs/error-handling-audit.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "snapshot",
+    "read_policy": "Use as an error-handling snapshot; re-verify counts before treating them as current."
+  },
+  "firestore_contract_tracker": {
+    "path": "docs/firestore_functions_data_contract_tracker.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, or data-contract work."
+  },
+  "firestore_type_sync": {
+    "path": "docs/firestore_type_sync_2026_05_05.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Read before changing Dart domain models, Functions TypeScript interfaces, or Firestore type generation."
+  },
+  "compensation_bar_assessment": {
+    "path": "docs/one_crore_compensation_bar_2026_05_05.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "snapshot",
+    "read_policy": "Use as dated quality-assessment context only; re-run current verification before acting."
+  },
+  "pre_launch_audit": {
+    "path": "docs/pre_launch_audit_2026_05_04.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "snapshot",
+    "read_policy": "Use for launch-readiness context; re-verify code paths and statuses before acting."
+  },
+  "project_context": {
+    "path": "PROJECT_CONTEXT.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Use as the high-level repo map; prefer audit registry and focused docs for pass-specific rules."
+  },
+  "repo_readme": {
+    "path": "README.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Use for self-serve setup/runbook context; re-check scripts before giving commands."
+  },
+  "sliver_layout": {
+    "path": "docs/sliver_layout_guide.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Read before changing sliver-native screens, NestedScrollView tabs, or scroll tests."
+  },
+  "widget_catalog": {
+    "path": "docs/widget_catalog.md",
+    "version": "2.0.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Use as widget inventory; prefer audit_registry and widget_cleanup_todo for active process rules."
+  },
+  "widget_cleanup": {
+    "path": "docs/widget_cleanup_todo.md",
+    "version": "2.1.0",
+    "updated": "2026-05-05",
+    "status": "active",
+    "read_policy": "Use as a short human-readable pointer; use backlog.json for active machine-readable state."
+  }
+}

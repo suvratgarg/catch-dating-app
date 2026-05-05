@@ -244,25 +244,29 @@ class _ContactRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 10),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            children: [
-              Icon(icon, size: 18, color: t.primary),
-              const SizedBox(width: 10),
-              Expanded(
-                child: Text(
-                  label,
-                  style: CatchTextStyles.bodyM(context, color: t.ink),
+    return Semantics(
+      button: true,
+      label: label,
+      child: Padding(
+        padding: const EdgeInsets.only(bottom: 10),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(8),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 4),
+            child: Row(
+              children: [
+                Icon(icon, size: 18, color: t.primary),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    label,
+                    style: CatchTextStyles.bodyM(context, color: t.ink),
+                  ),
                 ),
-              ),
-              Icon(Icons.open_in_new_rounded, size: 14, color: t.ink3),
-            ],
+                Icon(Icons.open_in_new_rounded, size: 14, color: t.ink3),
+              ],
+            ),
           ),
         ),
       ),

@@ -47,6 +47,58 @@ Preferred environment-aware app runs:
 ./tool/flutter_with_env.sh prod run
 ```
 
+## Interactive Phone Debugging Loop
+
+Use this workflow when debugging UI/layout/runtime issues while one person
+interacts with a connected physical phone and another watches logs:
+
+1. Start with an interactive terminal, not a fire-and-forget run:
+
+   ```bash
+   ./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
+   ```
+
+   Wait for Flutter to print the run key commands and VM Service URL before
+   testing. In Codex, the run command must be launched with an interactive TTY
+   so `r`, `R`, `d`, and `q` keep working.
+
+2. Use App Check debug-token output as setup evidence, not as a code issue. If
+   Firebase rejects App Check, register the printed debug token in Firebase
+   Console and restart the app. Do not commit debug tokens.
+
+3. Have the device user reproduce one concrete interaction at a time. Poll the
+   terminal logs immediately after each interaction and work from the exact
+   stack trace: widget name, file path, line number, and error class.
+
+4. For sliver/sticky-header/layout bugs, diagnose the layout contract first:
+   `minExtent`/`maxExtent`, child height, padding, input control height, and
+   whether a sliver body is incorrectly embedding another vertical scrollable.
+   Avoid trial-and-error height bumps unless the calculation proves the declared
+   extent is actually too small.
+
+5. Make a narrow fix, then run focused verification before returning to the
+   phone:
+
+   ```bash
+   flutter analyze <touched files and focused tests>
+   flutter test <focused widget/unit tests>
+   ```
+
+6. Use Flutter's interactive commands intentionally:
+
+   - `r` hot reloads pure visual changes.
+   - `R` hot restarts when constructors, providers, controllers, lifecycle, or
+     state initialization changed.
+   - `d` detaches from `flutter run` while leaving the app running on the phone.
+   - `q` quits the app/run session.
+
+7. After hot restart, treat only logs printed after `Restarted application` as
+   fresh evidence. Old buffered `[FATAL]` lines can be stale.
+
+8. Repeat the same user interaction on the phone and require a clean log window
+   before calling the issue fixed. When finished, detach or quit the session so
+   there is no orphaned `flutter run` process.
+
 Physical iPhone debug runs require a Firebase App Check debug token when App
 Check enforcement is enabled. Do not commit raw debug tokens. Keep the token in
 your shell environment and let `tool/flutter_with_env.sh` pass it through.

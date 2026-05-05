@@ -4,7 +4,20 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:flutter/material.dart';
 
 class ChatsEmptyState extends StatelessWidget {
-  const ChatsEmptyState({super.key});
+  const ChatsEmptyState({
+    super.key,
+    this.title = 'No catches yet',
+    this.message =
+        'When someone catches you back after a shared run, '
+        'the conversation opens here with that run as context.',
+  });
+
+  const ChatsEmptyState.noSearchResults({super.key})
+    : title = 'No chats match your search',
+      message = 'Try another name or clear the search field.';
+
+  final String title;
+  final String message;
 
   @override
   Widget build(BuildContext context) {
@@ -16,10 +29,8 @@ class ChatsEmptyState extends StatelessWidget {
           SizedBox(height: MediaQuery.sizeOf(context).height * 0.10),
           CatchEmptyState(
             icon: Icons.favorite_rounded,
-            title: 'No catches yet',
-            message:
-                'When someone catches you back after a shared run, '
-                'the conversation opens here with that run as context.',
+            title: title,
+            message: message,
             titleStyle: CatchTextStyles.displayM(context),
           ),
         ],

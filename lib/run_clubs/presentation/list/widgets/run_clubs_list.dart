@@ -1,7 +1,9 @@
+import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_empty_state.dart';
@@ -15,6 +17,20 @@ class RunClubsList extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final viewModelAsync = ref.watch(runClubsListViewModelProvider);
+    final city = ref.watch(selectedRunClubCityProvider);
+    final query = ref.watch(runClubSearchQueryProvider).trim();
+    final sourceClubCount =
+        ref
+            .watch(
+              watchRunClubsByLocationProvider(
+                IndianCity.fromName(city.name) ?? IndianCity.mumbai,
+              ),
+            )
+            .asData
+            ?.value
+            .length ??
+        0;
+    final isSearchEmpty = query.isNotEmpty && sourceClubCount > 0;
 
     return switch (viewModelAsync) {
       AsyncLoading() => const SliverToBoxAdapter(
@@ -34,9 +50,11 @@ class RunClubsList extends ConsumerWidget {
       ),
       AsyncData(:final value) =>
         value.isEmpty
-            ? const SliverFillRemaining(
+            ? SliverFillRemaining(
                 hasScrollBody: false,
-                child: RunClubsEmptyState(),
+                child: isSearchEmpty
+                    ? const RunClubsEmptyState.noSearchResults()
+                    : const RunClubsEmptyState(),
               )
             : MutationErrorSnackbarListener(
                 mutation: RunClubsListController.joinMutation,

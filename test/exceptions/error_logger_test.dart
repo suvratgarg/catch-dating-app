@@ -4,6 +4,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   setUp(() {
     PackageInfo.setMockInitialValues(
@@ -24,7 +26,7 @@ void main() {
 
     await logger.initialize();
     logger.logError(StateError('hidden'), StackTrace.current, fatal: true);
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue();
 
     expect(reporter.collectionEnabled, isFalse);
     expect(reporter.customKeys, isEmpty);
@@ -45,7 +47,7 @@ void main() {
       fatal: true,
       reason: 'test failure',
     );
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue();
 
     expect(reporter.collectionEnabled, isTrue);
     expect(reporter.customKeys['app_environment'], 'dev');
@@ -64,7 +66,7 @@ void main() {
     );
 
     logger.logAppException(const PaymentCancelledException());
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue();
 
     expect(reporter.recordedErrors, isEmpty);
   });
@@ -80,7 +82,7 @@ void main() {
       FlutterErrorDetails(exception: StateError('widget failed')),
       fatal: true,
     );
-    await Future<void>.delayed(Duration.zero);
+    await flushTestEventQueue();
 
     expect(reporter.recordedFlutterErrors, hasLength(1));
     expect(reporter.recordedFlutterErrors.single.fatal, isTrue);

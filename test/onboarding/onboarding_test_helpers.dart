@@ -195,7 +195,7 @@ Future<void> pumpOnboardingPage(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await pumpOnboardingUi(tester);
 }
 
 Future<void> pumpOnboardingScreen(
@@ -214,7 +214,14 @@ Future<void> pumpOnboardingScreen(
     ),
   );
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 400));
+  await pumpOnboardingUi(tester);
+}
+
+const _onboardingAnimationDuration = Duration(milliseconds: 400);
+
+Future<void> pumpOnboardingUi(WidgetTester tester) async {
+  await tester.pump(_onboardingAnimationDuration);
+  await tester.pump();
 }
 
 Future<void> primeOnboardingAsyncProviders(ProviderContainer container) async {

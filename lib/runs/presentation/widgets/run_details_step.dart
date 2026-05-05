@@ -118,15 +118,20 @@ class RunDetailsStep extends StatelessWidget {
                   runSpacing: 8,
                   children: PaceLevel.values
                       .map(
-                        (p) => GestureDetector(
-                          onTap: () {
-                            final next = selectedPace == p ? null : p;
-                            onPaceChanged(next);
-                            field.didChange(next);
-                          },
-                          child: VibeTag(
-                            label: p.label,
-                            active: selectedPace == p,
+                        (p) => Semantics(
+                          button: true,
+                          selected: selectedPace == p,
+                          label: 'Select ${p.label} pace',
+                          child: GestureDetector(
+                            onTap: () {
+                              final next = selectedPace == p ? null : p;
+                              onPaceChanged(next);
+                              field.didChange(next);
+                            },
+                            child: VibeTag(
+                              label: p.label,
+                              active: selectedPace == p,
+                            ),
                           ),
                         ),
                       )

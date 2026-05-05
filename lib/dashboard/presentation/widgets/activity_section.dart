@@ -52,19 +52,16 @@ class ActivitySection extends ConsumerWidget {
         if (hasUnread && items.isNotEmpty) ...[
           Align(
             alignment: Alignment.centerRight,
-            child: GestureDetector(
-              onTap: () => _markAllRead(ref, matches, context),
-              child: Text(
-                'Mark all read',
-                style: CatchTextStyles.bodyM(context, color: t.primary),
-              ),
+            child: TextButton(
+              onPressed: () => _markAllRead(ref, matches, context),
+              child: const Text('Mark all read'),
             ),
           ),
           gapH8,
         ],
         if (isLoading) ...[
           CatchSurface(
-            padding: const EdgeInsets.all(Sizes.p16),
+            padding: const EdgeInsets.all(CatchSpacing.s4),
             borderColor: t.line,
             child: Row(
               children: [
@@ -82,7 +79,7 @@ class ActivitySection extends ConsumerWidget {
           ),
         ] else if (error != null) ...[
           CatchSurface(
-            padding: const EdgeInsets.all(Sizes.p16),
+            padding: const EdgeInsets.all(CatchSpacing.s4),
             borderColor: t.line,
             child: Row(
               children: [
@@ -152,60 +149,64 @@ class _ActivityTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          final route = item.route;
-          if (route != null) context.push(route);
-        },
-        borderRadius: BorderRadius.circular(CatchRadius.md),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: item.isPrimary ? t.primary : t.primarySoft,
-                  shape: BoxShape.circle,
+    return Semantics(
+      button: item.route != null,
+      label: '${item.title}. ${item.subtitle}',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            final route = item.route;
+            if (route != null) context.push(route);
+          },
+          borderRadius: BorderRadius.circular(CatchRadius.md),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  width: 46,
+                  height: 46,
+                  decoration: BoxDecoration(
+                    color: item.isPrimary ? t.primary : t.primarySoft,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    item.icon,
+                    color: item.isPrimary ? t.primaryInk : t.primary,
+                    size: 21,
+                  ),
                 ),
-                child: Icon(
-                  item.icon,
-                  color: item.isPrimary ? t.primaryInk : t.primary,
-                  size: 21,
+                gapW12,
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        item.title,
+                        style: CatchTextStyles.bodyM(context, color: t.ink)
+                            .copyWith(
+                              fontWeight: item.isPrimary
+                                  ? FontWeight.w800
+                                  : FontWeight.w600,
+                            ),
+                      ),
+                      gapH4,
+                      Text(
+                        item.subtitle,
+                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      item.title,
-                      style: CatchTextStyles.bodyM(context, color: t.ink)
-                          .copyWith(
-                            fontWeight: item.isPrimary
-                                ? FontWeight.w800
-                                : FontWeight.w600,
-                          ),
-                    ),
-                    gapH4,
-                    Text(
-                      item.subtitle,
-                      style: CatchTextStyles.bodyS(context, color: t.ink2),
-                    ),
-                  ],
+                gapW8,
+                Text(
+                  item.timeLabel,
+                  style: CatchTextStyles.bodyS(context, color: t.ink3),
                 ),
-              ),
-              gapW8,
-              Text(
-                item.timeLabel,
-                style: CatchTextStyles.bodyS(context, color: t.ink3),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

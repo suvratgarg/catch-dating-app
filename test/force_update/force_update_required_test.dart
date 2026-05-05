@@ -6,6 +6,8 @@ import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   group('forceUpdateRequiredProvider', () {
     test('returns false when no gate is configured', () async {
@@ -115,7 +117,7 @@ void main() {
       expect(container.read(forceUpdateRequiredProvider).isLoading, isTrue);
 
       completer.completeError(Exception('platform error'));
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
 
       expect(container.read(forceUpdateRequiredProvider).hasError, isTrue);
 

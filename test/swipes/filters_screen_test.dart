@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('saves filters through the controller mutation and pops', (
@@ -53,13 +54,13 @@ void main() {
     );
 
     await tester.tap(find.text('Open filters'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.byKey(SwipeKeys.genderFilterChip(Gender.man.name)));
     await tester.tap(
       find.byKey(SwipeKeys.distanceFilterChip(PreferredDistance.fiveK.name)),
     );
     await tester.tap(find.byKey(SwipeKeys.applyFiltersButton));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Open filters'), findsOneWidget);
     expect(repository.updatedUid, 'runner-1');

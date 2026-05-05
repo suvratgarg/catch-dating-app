@@ -11,6 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 /// Wraps [child] in a MaterialApp with an iPhone SE-sized surface so that
 /// bottom sheets don't overflow during tests.
@@ -93,7 +94,7 @@ void main() {
       );
 
       await tester.tap(find.byKey(PaymentHistoryKeys.paymentTile('pay-3')));
-      await tester.pumpAndSettle();
+      await _pumpPaymentSheet(tester);
 
       expect(find.text('Payment ID'), findsOneWidget);
       expect(find.text('pay_XYZ789'), findsOneWidget);
@@ -120,7 +121,7 @@ void main() {
       );
 
       await tester.tap(find.byKey(PaymentHistoryKeys.paymentTile('pay-4')));
-      await tester.pumpAndSettle();
+      await _pumpPaymentSheet(tester);
 
       expect(find.text('Get help with this booking'), findsOneWidget);
     });
@@ -169,6 +170,10 @@ void main() {
       expect(find.text('Pending'), findsOneWidget);
     });
   });
+}
+
+Future<void> _pumpPaymentSheet(WidgetTester tester) async {
+  await pumpFeatureUi(tester);
 }
 
 Future<void> _pumpPaymentHistory(

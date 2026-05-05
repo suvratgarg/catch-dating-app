@@ -16,7 +16,7 @@ class CatchEmptyState extends StatelessWidget {
     this.surface = true,
     this.iconStyle = CatchEmptyStateIconStyle.bubble,
     this.iconSize,
-    this.padding = const EdgeInsets.all(Sizes.p20),
+    this.padding = const EdgeInsets.all(CatchSpacing.s5),
     this.titleStyle,
     this.messageStyle,
   });

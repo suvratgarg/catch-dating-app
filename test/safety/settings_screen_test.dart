@@ -12,6 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('renders profile-backed settings and empty blocked state', (
@@ -44,7 +45,7 @@ void main() {
 
     await _pumpSettings(tester, container);
     await tester.tap(find.byKey(SettingsKeys.weeklyDigestSwitch));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(userRepository.updatedUid, 'runner-1');
     expect(userRepository.updatedFields, {'prefsWeeklyDigest': true});
@@ -65,7 +66,7 @@ void main() {
 
     await _pumpSettings(tester, container);
     await tester.tap(find.byKey(SettingsKeys.weeklyDigestSwitch));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     final weeklyDigestSwitch = tester.widget<Switch>(
       find.byKey(SettingsKeys.weeklyDigestSwitch),
@@ -100,7 +101,7 @@ void main() {
     expect(find.text('chat'), findsOneWidget);
 
     await tester.tap(find.byKey(SettingsKeys.unblockButton('blocked-1')));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(safetyRepository.unblockedUserId, 'blocked-1');
     expect(find.text('Account unblocked.'), findsOneWidget);
@@ -121,7 +122,7 @@ void main() {
     await tester.ensureVisible(find.byKey(SettingsKeys.deleteAccountRow));
     await tester.pump();
     await tester.tap(find.byKey(SettingsKeys.deleteAccountRow));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Delete account?'), findsOneWidget);
 

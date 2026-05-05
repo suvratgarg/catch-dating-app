@@ -293,6 +293,14 @@ class CatchSliverHeader {
     this.bottomHeight = 52,
   });
 
+  /// Two-line feature title height for `displayL + bodyS` headers with `s4`
+  /// top padding, `s2` bottom padding, and one `s1` line gap.
+  static const double twoLineTitleHeight = 96;
+
+  /// Pinned search header height for one compact search field plus the
+  /// vertical padding used by simple search-only headers.
+  static const double compactSearchBottomHeight = 64;
+
   final Widget title;
   final Widget? bottom;
   final double titleHeight;
@@ -302,18 +310,12 @@ class CatchSliverHeader {
     return [
       SliverPersistentHeader(
         pinned: false,
-        delegate: _CollapsibleHeaderDelegate(
-          child: title,
-          height: titleHeight,
-        ),
+        delegate: _CollapsibleHeaderDelegate(child: title, height: titleHeight),
       ),
       if (bottom != null)
         SliverPersistentHeader(
           pinned: true,
-          delegate: _PinnedHeaderDelegate(
-            child: bottom!,
-            height: bottomHeight,
-          ),
+          delegate: _PinnedHeaderDelegate(child: bottom!, height: bottomHeight),
         ),
     ];
   }
@@ -336,7 +338,24 @@ class _CollapsibleHeaderDelegate extends SliverPersistentHeaderDelegate {
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
-  ) => SizedBox.expand(child: child);
+  ) {
+    return LayoutBuilder(
+      builder: (context, constraints) => ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.topCenter,
+          minWidth: constraints.maxWidth,
+          maxWidth: constraints.maxWidth,
+          minHeight: height,
+          maxHeight: height,
+          child: SizedBox(
+            width: constraints.maxWidth,
+            height: height,
+            child: child,
+          ),
+        ),
+      ),
+    );
+  }
 
   @override
   bool shouldRebuild(covariant _CollapsibleHeaderDelegate old) =>

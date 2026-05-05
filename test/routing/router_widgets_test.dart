@@ -19,6 +19,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../run_clubs/run_clubs_test_helpers.dart' as run_club_helpers;
 import '../runs/runs_test_helpers.dart' as run_helpers;
+import '../test_pump_helpers.dart';
 
 class _FakeMatchRepository implements MatchRepository {
   _FakeMatchRepository({this.match});
@@ -135,7 +136,7 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
 
 Future<void> _settleRoute(WidgetTester tester) async {
   await tester.pump();
-  await tester.pumpAndSettle();
+  await pumpFeatureUi(tester);
 }
 
 void main() {

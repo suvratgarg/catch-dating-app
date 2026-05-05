@@ -53,8 +53,8 @@ class ChipField<T extends Labelled> extends StatelessWidget {
           ),
           gapH8,
           Wrap(
-            spacing: Sizes.p8,
-            runSpacing: Sizes.p8,
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
             children: values.map((v) {
               final isSelected = selected.contains(v);
               return CatchChip(

@@ -109,16 +109,20 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                               index,
                               horizontalOffsetPercentage,
                               verticalOffsetPercentage,
-                            ) => GestureDetector(
-                              onTap: () => context.pushNamed(
-                                Routes.publicProfileScreen.name,
-                                pathParameters: {'uid': profiles[index].uid},
-                                extra: profiles[index],
-                              ),
-                              child: ProfileCard(
-                                profile: profiles[index],
-                                horizontalOffsetPercentage:
-                                    horizontalOffsetPercentage,
+                            ) => Semantics(
+                              button: true,
+                              label: 'Open ${profiles[index].name} profile',
+                              child: GestureDetector(
+                                onTap: () => context.pushNamed(
+                                  Routes.publicProfileScreen.name,
+                                  pathParameters: {'uid': profiles[index].uid},
+                                  extra: profiles[index],
+                                ),
+                                child: ProfileCard(
+                                  profile: profiles[index],
+                                  horizontalOffsetPercentage:
+                                      horizontalOffsetPercentage,
+                                ),
                               ),
                             ),
                       ),

@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 Widget _profileTab(UserProfile user) {
   return ProviderScope(
@@ -146,7 +147,7 @@ void main() {
     // Scroll to and tap the age range row.
     await _dragProfileTabUntilVisible(tester, find.textContaining('18 – 99'));
     await tester.tap(find.textContaining('18 – 99'));
-    await tester.pumpAndSettle();
+    await _pumpProfileSheet(tester);
 
     // Bottom sheet is open with RangeSlider and Done button.
     expect(find.byType(RangeSlider), findsOneWidget);
@@ -154,7 +155,7 @@ void main() {
 
     // Dismiss with Done button.
     await tester.tap(find.text('Done'));
-    await tester.pumpAndSettle();
+    await _pumpProfileSheet(tester);
 
     // Sheet closed, no exceptions.
     expect(tester.takeException(), isNull);
@@ -169,7 +170,7 @@ void main() {
       // Scroll to and tap the pace range row.
       await _dragProfileTabUntilVisible(tester, find.text('Pace range'));
       await tester.tap(find.text('Pace range'));
-      await tester.pumpAndSettle();
+      await _pumpProfileSheet(tester);
 
       // Bottom sheet is open with RangeSlider and Done button.
       expect(find.byType(RangeSlider), findsOneWidget);
@@ -177,10 +178,14 @@ void main() {
 
       // Dismiss with Done button.
       await tester.tap(find.text('Done'));
-      await tester.pumpAndSettle();
+      await _pumpProfileSheet(tester);
 
       // Sheet closed, no exceptions.
       expect(tester.takeException(), isNull);
     },
   );
+}
+
+Future<void> _pumpProfileSheet(WidgetTester tester) async {
+  await pumpFeatureUi(tester);
 }

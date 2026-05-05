@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:flutter/material.dart';
 
 Future<RunDraft?> showDraftPickerSheet({
@@ -201,6 +202,7 @@ class _DraftCard extends StatelessWidget {
             ),
           ),
           IconButton(
+            key: CreateRunFormKeys.deleteDraft(draft.id),
             onPressed: isDeleting ? null : onDelete,
             icon: isDeleting
                 ? const SizedBox.square(

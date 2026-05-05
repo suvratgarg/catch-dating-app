@@ -13,7 +13,6 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
@@ -42,17 +41,18 @@ Future<void> main() async {
       observers: [
         AsyncErrorLogger(
           errorLogger,
-          onFirestoreWriteFailed: ({
-            required String collection,
-            required String action,
-            required String errorCode,
-          }) {
-            analytics.logFirestoreWriteFailed(
-              collection: collection,
-              action: action,
-              errorCode: errorCode,
-            );
-          },
+          onFirestoreWriteFailed:
+              ({
+                required String collection,
+                required String action,
+                required String errorCode,
+              }) {
+                analytics.logFirestoreWriteFailed(
+                  collection: collection,
+                  action: action,
+                  errorCode: errorCode,
+                );
+              },
         ),
       ],
       child: const MyApp(),
@@ -67,14 +67,15 @@ Future<void> _initializeFirebaseServices() async {
 
   // Enable offline persistence explicitly — defaults differ by platform
   // (mobile: enabled, web: disabled). Setting it ensures consistent behavior.
-  FirebaseFirestore.instance.settings =
-      const Settings(persistenceEnabled: true);
+  FirebaseFirestore.instance.settings = const Settings(
+    persistenceEnabled: true,
+  );
 
   await _activateFirebaseAppCheck();
   await _initializeRemoteConfig();
 
   if (AppConfig.supportsPushMessagingOnCurrentPlatform) {
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    registerFirebaseMessagingBackgroundHandler();
   }
 
   if (AppConfig.useFirebaseEmulators) {

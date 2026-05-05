@@ -73,6 +73,16 @@ void main() {
       },
     );
 
+    test(
+      'watchMatchesForUser emits an empty list when both queries are empty',
+      () async {
+        await expectLater(
+          repository.watchMatchesForUser(uid: 'runner-1'),
+          emits(isEmpty),
+        );
+      },
+    );
+
     test('watchMatch emits the match when the document exists', () async {
       final match = _buildMatch();
       await _seedMatch(firestore, match);

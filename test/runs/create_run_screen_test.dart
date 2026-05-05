@@ -17,6 +17,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../test_pump_helpers.dart';
 import 'runs_test_helpers.dart';
 
 void main() {
@@ -53,7 +54,7 @@ void main() {
         await _fillBasicsStep(tester);
 
         await _tapPrimaryButton(tester, 'Next');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
         await _tapPrimaryButton(tester, 'Next');
         await tester.pump();
         expect(find.text('Required'), findsOneWidget);
@@ -68,9 +69,9 @@ void main() {
           CreateRunFormKeys.locationDetails,
           'Meet at the gate',
         );
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
         await _tapPrimaryButton(tester, 'Next');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
 
         await _pickFutureDate(tester);
         await _acceptInitialTime(tester);
@@ -78,12 +79,12 @@ void main() {
         await tester.tap(find.byTooltip('Decrease duration'));
         await tester.pump();
         await _tapPrimaryButton(tester, 'Next');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
 
         expect(find.text('Review & rules'), findsOneWidget);
         await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '40');
         await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '30');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
         await _tapPrimaryButton(tester, 'Schedule run');
         await tester.pump();
 
@@ -94,9 +95,9 @@ void main() {
         await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '35');
         await _enterCreateRunText(tester, CreateRunFormKeys.maxMen, '9');
         await _enterCreateRunText(tester, CreateRunFormKeys.maxWomen, '9');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
         await _tapPrimaryButton(tester, 'Schedule run');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
 
         expect(find.text('Your run is live.'), findsOneWidget);
         expect(find.text('Manage run'), findsOneWidget);
@@ -126,7 +127,7 @@ void main() {
         expect(fakeRunRepository.createdRun!.constraints.maxWomen, 9);
 
         await tester.tap(find.text('Manage run'));
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
 
         expect(find.text('HOST MANAGE'), findsOneWidget);
         expect(find.text('Roster'), findsOneWidget);
@@ -146,16 +147,16 @@ void main() {
 
         await _fillBasicsStep(tester);
         await _tapPrimaryButton(tester, 'Next');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
 
         await _enterCreateRunText(
           tester,
           CreateRunFormKeys.meetingPoint,
           'Bandra Fort',
         );
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
         await _tapPrimaryButton(tester, 'Next');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
 
         await tester.tap(find.byTooltip('Increase duration'));
         await tester.tap(find.byTooltip('Increase duration'));
@@ -175,7 +176,7 @@ void main() {
         expect(find.text('Choose a start time later than now'), findsNothing);
 
         await _tapPrimaryButton(tester, 'Next');
-        await tester.pumpAndSettle();
+        await _pumpTestAnimation(tester);
 
         expect(find.text('Review & rules'), findsOneWidget);
       },
@@ -189,10 +190,10 @@ void main() {
 
       await _fillBasicsStep(tester);
       await _tapPrimaryButton(tester, 'Next');
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
 
       await tester.tap(find.byKey(CreateRunFormKeys.mapPicker));
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
 
       final flutterMap = tester.widget<FlutterMap>(find.byType(FlutterMap));
       const selectedPoint = LatLng(19.12345, 72.98765);
@@ -202,19 +203,19 @@ void main() {
       );
       await tester.pump();
       await tester.tap(find.text('Confirm'));
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
 
       expect(find.text('19.12345, 72.98765'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Back'));
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
       expect(find.text('Run basics'), findsOneWidget);
 
       // Second back — unsaved changes dialog appears since we filled basics.
       await tester.tap(find.byTooltip('Back'));
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
       await tester.tap(find.text('Discard'));
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
       expect(find.text('Open'), findsOneWidget);
     });
 
@@ -279,7 +280,7 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
 
       expect(find.text('Taylor'), findsOneWidget);
       expect(find.text('Avery'), findsOneWidget);
@@ -320,10 +321,12 @@ void main() {
       expect(find.textContaining('Delete Point'), findsOneWidget);
       expect(find.textContaining('Keep Point'), findsOneWidget);
 
-      await tester.tap(find.byTooltip('Delete draft').first);
-      await tester.pumpAndSettle();
+      await tester.tap(
+        find.byKey(CreateRunFormKeys.deleteDraft('delete-draft')),
+      );
+      await _pumpTestAnimation(tester);
       await tester.tap(find.widgetWithText(TextButton, 'Delete'));
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
 
       final remainingDrafts = await draftRepository.loadDrafts(
         runClubId: 'club-1',
@@ -334,7 +337,7 @@ void main() {
       expect(find.textContaining('Keep Point'), findsOneWidget);
 
       await tester.tap(find.textContaining('Keep Point'));
-      await tester.pumpAndSettle();
+      await _pumpTestAnimation(tester);
 
       expect(find.text('Your drafts'), findsNothing);
       expect(find.text('9'), findsOneWidget);
@@ -403,18 +406,18 @@ Future<void> _pumpCreateRunFlow(
       ),
     ),
   );
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _openCreateRunFlow(WidgetTester tester) async {
   await tester.tap(find.text('Open'));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _submitValidRun(WidgetTester tester) async {
   await _fillBasicsStep(tester);
   await _tapPrimaryButton(tester, 'Next');
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 
   await _enterCreateRunText(
     tester,
@@ -426,22 +429,22 @@ Future<void> _submitValidRun(WidgetTester tester) async {
     CreateRunFormKeys.locationDetails,
     'Meet at the gate',
   );
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Next');
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 
   await _pickFutureDate(tester);
   await _acceptInitialTime(tester);
   await _tapPrimaryButton(tester, 'Next');
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 
   await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '21');
   await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '35');
   await _enterCreateRunText(tester, CreateRunFormKeys.maxMen, '9');
   await _enterCreateRunText(tester, CreateRunFormKeys.maxWomen, '9');
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Schedule run');
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _fillBasicsStep(WidgetTester tester) async {
@@ -454,7 +457,7 @@ Future<void> _fillBasicsStep(WidgetTester tester) async {
     CreateRunFormKeys.description,
     'Social pacing with a coffee stop.',
   );
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _enterCreateRunText(
@@ -473,7 +476,7 @@ Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {
   final buttonFinder = find.widgetWithText(CatchButton, label);
   await tester.ensureVisible(buttonFinder);
   await tester.tap(buttonFinder);
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _dismissKeyboard(WidgetTester tester) async {
@@ -483,22 +486,22 @@ Future<void> _dismissKeyboard(WidgetTester tester) async {
 
 Future<void> _pickTodayDate(WidgetTester tester, {DateTime? today}) async {
   await tester.tap(find.byKey(CreateRunFormKeys.datePicker));
-  await tester.pumpAndSettle();
-  await tester.tap(find.text('${(today ?? DateTime.now()).day}').last);
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
+  await tester.tap(find.text('${(today ?? DateTime.now()).day}').hitTestable());
+  await _pumpTestAnimation(tester);
   await tester.tap(find.text('OK'));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _pickFutureDate(WidgetTester tester) async {
   await tester.tap(find.byKey(CreateRunFormKeys.datePicker));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
   await tester.tap(find.byTooltip('Next month'));
-  await tester.pumpAndSettle();
-  await tester.tap(find.text('1').last);
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
+  await tester.tap(find.text('1').hitTestable());
+  await _pumpTestAnimation(tester);
   await tester.tap(find.text('OK'));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _pickTimeInInputMode(
@@ -507,9 +510,9 @@ Future<void> _pickTimeInInputMode(
   required String minute,
 }) async {
   await tester.tap(find.byKey(CreateRunFormKeys.timePicker));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
   await tester.tap(find.byIcon(Icons.keyboard_outlined));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 
   final timeFields = find.descendant(
     of: find.byType(Dialog),
@@ -518,12 +521,16 @@ Future<void> _pickTimeInInputMode(
   await tester.enterText(timeFields.at(0), hour);
   await tester.enterText(timeFields.at(1), minute);
   await tester.tap(find.text('OK'));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _acceptInitialTime(WidgetTester tester) async {
   await tester.tap(find.byKey(CreateRunFormKeys.timePicker));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
   await tester.tap(find.text('OK'));
-  await tester.pumpAndSettle();
+  await _pumpTestAnimation(tester);
+}
+
+Future<void> _pumpTestAnimation(WidgetTester tester) async {
+  await pumpFeatureUi(tester);
 }

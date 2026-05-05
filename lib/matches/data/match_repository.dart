@@ -102,11 +102,13 @@ class MatchRepository {
   /// document may not exist yet if a Cloud Function hasn't created it.
   /// All other errors (permission-denied, network, etc.) propagate.
   Future<void> resetUnread({required String matchId, required String uid}) =>
-      _matchRef(matchId).update({'unreadCounts.$uid': 0}).catchError(
-        (Object _) {},
-        test: (Object error) =>
-            error is FirebaseException && error.code == 'not-found',
-      );
+      _matchRef(matchId)
+          .update({'unreadCounts.$uid': 0})
+          .catchError(
+            (Object _) {},
+            test: (Object error) =>
+                error is FirebaseException && error.code == 'not-found',
+          );
 }
 
 @riverpod
@@ -115,9 +117,7 @@ MatchRepository matchRepository(Ref ref) =>
 
 @riverpod
 Stream<List<Match>> watchMatchesForUser(Ref ref, String uid) =>
-    ref.watch(matchRepositoryProvider).watchMatchesForUser(uid: uid).timeout(
-      const Duration(seconds: 10),
-    );
+    ref.watch(matchRepositoryProvider).watchMatchesForUser(uid: uid);
 
 @riverpod
 Stream<Match?> matchStream(Ref ref, String matchId) =>
@@ -125,7 +125,8 @@ Stream<Match?> matchStream(Ref ref, String matchId) =>
 
 @riverpod
 int totalUnreadCount(Ref ref, String uid) {
-  final matches = ref.watch(watchMatchesForUserProvider(uid)).asData?.value ?? [];
+  final matches =
+      ref.watch(watchMatchesForUserProvider(uid)).asData?.value ?? [];
   return matches
       .where((match) => !match.isBlocked)
       .fold(0, (total, m) => total + (m.unreadCounts[uid] ?? 0));

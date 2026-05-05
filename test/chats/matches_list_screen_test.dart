@@ -5,7 +5,9 @@ import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart';
+import 'package:catch_dating_app/matches/presentation/widgets/chats_sliver_header.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -16,6 +18,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 class _FakeMatchRepository implements MatchRepository {
   _FakeMatchRepository({required this.matches, this.match});
@@ -79,6 +82,44 @@ Match _buildMatch({
 }
 
 void main() {
+  testWidgets('chat sliver header search fits while pinned and editable', (
+    tester,
+  ) async {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => CustomScrollView(
+                slivers: ChatsSliverHeader(count: 0).buildSlivers(context),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+
+    await tester.enterText(find.byType(TextField), 'taylor');
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(container.read(chatSearchQueryProvider), 'taylor');
+
+    await tester.tap(find.byIcon(Icons.close_rounded));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(container.read(chatSearchQueryProvider), isEmpty);
+  });
+
   testWidgets('shows the empty state when there are no matches', (
     tester,
   ) async {
@@ -102,15 +143,59 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('No catches yet'), findsOneWidget);
+    expect(find.byType(TextField), findsNothing);
     expect(
       find.text(
         'When someone catches you back after a shared run, the conversation opens here with that run as context.',
       ),
       findsOneWidget,
     );
+  });
+
+  testWidgets('shows search-specific empty copy when a query has no matches', (
+    tester,
+  ) async {
+    final match = _buildMatch();
+    final matchRepository = _FakeMatchRepository(matches: [match]);
+    final chatRepository = _FakeChatRepository();
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        matchRepositoryProvider.overrideWithValue(matchRepository),
+        chatRepositoryProvider.overrideWithValue(chatRepository),
+        watchMatchesForUserProvider(
+          'runner-1',
+        ).overrideWith((ref) => Stream.value([match])),
+        watchPublicProfileProvider('runner-2').overrideWith(
+          (ref) => Stream.value(buildPublicProfile(uid: 'runner-2')),
+        ),
+      ],
+    );
+    addTearDown(container.dispose);
+    container.read(chatSearchQueryProvider.notifier).setQuery('zara');
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ChatsListScreen(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(TextField), findsOneWidget);
+    expect(find.text('No chats match your search'), findsOneWidget);
+    expect(
+      find.text('Try another name or clear the search field.'),
+      findsOneWidget,
+    );
+    expect(find.text('No catches yet'), findsNothing);
   });
 
   testWidgets('navigates from matches list to chat without route extra', (
@@ -169,12 +254,12 @@ void main() {
       ),
     );
 
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Taylor'), findsOneWidget);
 
     await tester.tap(find.text('Taylor'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.byType(ChatScreen), findsOneWidget);
     expect(find.text('Say hi to Taylor!'), findsOneWidget);

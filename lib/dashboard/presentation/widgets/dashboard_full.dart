@@ -61,7 +61,7 @@ class DashboardFull extends ConsumerWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
-                Sizes.p8,
+                CatchSpacing.s2,
                 CatchSpacing.s5,
                 Sizes.p10,
               ),
@@ -102,9 +102,9 @@ class DashboardFull extends ConsumerWidget {
                 key: scrollViewKey,
                 padding: const EdgeInsets.fromLTRB(
                   CatchSpacing.s5,
-                  Sizes.p4,
+                  CatchSpacing.s1,
                   CatchSpacing.s5,
-                  Sizes.p24,
+                  CatchSpacing.s6,
                 ),
                 children: [
                   if (viewModel.nextRun != null) ...[
@@ -199,7 +199,7 @@ class _DashboardSectionStateCard extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(Sizes.p16),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       borderColor: t.line,
       child: Row(
         children: [

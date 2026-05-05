@@ -332,8 +332,8 @@ Behavior:
 
 Files:
 
-- Profile screen: [`lib/profile/presentation/profile_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/profile/presentation/profile_screen.dart)
-- Edit controller: [`lib/profile/presentation/edit_profile_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/profile/presentation/edit_profile_controller.dart)
+- Profile screen: [`lib/user_profile/presentation/profile_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/user_profile/presentation/profile_screen.dart)
+- Edit controller: [`lib/user_profile/presentation/profile_edit_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/user_profile/presentation/profile_edit_controller.dart)
 - Upload controller: [`lib/image_uploads/presentation/photo_upload_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/image_uploads/presentation/photo_upload_controller.dart)
 - Upload repo: [`lib/image_uploads/data/image_upload_repository.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/image_uploads/data/image_upload_repository.dart)
 

@@ -5,6 +5,7 @@ import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
 import 'auth_test_helpers.dart';
 
 void main() {
@@ -131,7 +132,7 @@ void main() {
           smsCode: '123456',
         ),
       );
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
 
       expect(events, contains('user-42'));
     });
@@ -159,9 +160,9 @@ void main() {
           smsCode: '123456',
         ),
       );
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
       await auth.signOut();
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
 
       expect(values, containsAllInOrder(['user-7', null]));
     });

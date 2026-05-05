@@ -9,6 +9,8 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets(
     'CatchButton supports size, full width, tap, and loading states',
@@ -53,7 +55,11 @@ void main() {
       await tester.pump();
       expect(taps, 1);
 
-      await tester.tap(find.byType(CatchButton).last);
+      await tester.tap(
+        find.byWidgetPredicate(
+          (widget) => widget is CatchButton && widget.label == 'Loading',
+        ),
+      );
       await tester.pump();
       expect(taps, 1);
       expect(find.text('Loading'), findsNothing);
@@ -291,9 +297,9 @@ void main() {
     expect(find.text('Please select a city'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.keyboard_arrow_down_rounded));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Mumbai').last);
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Mumbai').hitTestable());
+    await pumpFeatureUi(tester);
 
     expect(selected, IndianCity.mumbai);
     expect(formKey.currentState!.validate(), isTrue);

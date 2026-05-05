@@ -9,6 +9,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 void main() {
   testWidgets('empty attended run section can submit a review', (tester) async {
@@ -27,12 +28,12 @@ void main() {
     expect(find.text('No reviews yet'), findsOneWidget);
 
     await tester.tap(find.byKey(ReviewKeys.writeReviewButton));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     await tester.tap(find.byKey(ReviewKeys.ratingStar(4)));
     await tester.enterText(find.byType(TextField), '  Friendly crew.  ');
     await tester.tap(find.byKey(ReviewKeys.submitReviewButton));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(repository.addedReview?.runClubId, 'club-1');
     expect(repository.addedReview?.runId, 'run-1');
@@ -66,18 +67,18 @@ void main() {
     );
 
     await tester.tap(find.byKey(ReviewKeys.editReviewButton('review-1')));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Edit review'), findsOneWidget);
     expect(find.byKey(ReviewKeys.deleteReviewButton), findsOneWidget);
 
     await tester.tap(find.byKey(ReviewKeys.deleteReviewButton));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(find.text('Delete review?'), findsOneWidget);
 
     await tester.tap(find.text('Delete'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(repository.deletedReviewId, 'review-1');
   });

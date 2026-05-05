@@ -1,0 +1,213 @@
+{
+  "rules": {
+    "AUDIT-REGISTRY-001": {
+      "title": "Stamp every cleanup pass in the audit registry",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "docs_index",
+        "version": "2.0.0"
+      },
+      "applies_to": [
+        "lib/**",
+        "test/**",
+        "functions/src/**",
+        "tool/**",
+        "docs/**"
+      ],
+      "instruction": "Refresh file inventory before broad work, then stamp touched files and pass proof before finalizing.",
+      "sunset_when": [
+        "The registry update is enforced by automation or CI",
+        "Three consecutive cleanup passes include complete pass receipts"
+      ]
+    },
+    "DOC-HYGIENE-001": {
+      "title": "Prefer versioned owners over new markdown sprawl",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "docs_index",
+        "version": "2.0.0"
+      },
+      "applies_to": [
+        "docs/**",
+        "PROJECT_CONTEXT.md",
+        "README.md"
+      ],
+      "instruction": "Update an existing source-of-truth doc or registry entry before creating a new doc. Mark stale snapshots historical instead of letting conflicting instructions accumulate.",
+      "sunset_when": [
+        "Docs index and doc_versions remain current for five broad passes"
+      ]
+    },
+    "DESIGN-PRIMITIVES-001": {
+      "title": "Prefer shared design primitives over repeated local shells",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "widget_cleanup",
+        "version": "2.1.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**"
+      ],
+      "instruction": "Before creating local card, sheet, empty-state, rail, row, badge, skeleton, or section UI, check existing primitives such as CatchSurface, CatchBottomSheetScaffold, CatchEmptyState, CatchHorizontalRail, CatchVerticalSection, PersonRow, RunCard, SettingsRow, CatchBadge, and CatchSkeleton.",
+      "sunset_when": [
+        "Widget catalog shows no repeated local shells outside intentional feature-specific UI"
+      ]
+    },
+    "DESIGN-TOKENS-001": {
+      "title": "Keep design-system ownership centralized",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "widget_cleanup",
+        "version": "2.1.0"
+      },
+      "applies_to": [
+        "lib/**"
+      ],
+      "instruction": "Theme tokens, typography, app theme, spacing, radius, motion, icon sizes, and compatibility layout helpers should live under lib/core/theme. Do not add new design primitives under generic lib/constants or a parallel top-level lib/theme folder.",
+      "sunset_when": [
+        "Legacy spacing compatibility usage is either migrated or intentionally documented"
+      ]
+    },
+    "DEBUG-LOOP-001": {
+      "title": "Use interactive phone debug logs as feedback evidence",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "widget_cleanup",
+        "version": "2.0.0"
+      },
+      "applies_to": [
+        "lib/**",
+        "test/**"
+      ],
+      "instruction": "When user is clicking through the app on a physical phone, run an interactive flutter run session through tool/flutter_with_env.sh, keep stdin open for reload/restart, and summarize fresh logs in pass proof.",
+      "sunset_when": [
+        "A stable automated device-smoke workflow replaces manual debug sessions"
+      ]
+    },
+    "CONTROLLER-BOUNDARY-001": {
+      "title": "Keep product behavior out of presentation widgets",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "controller_patterns",
+        "version": "2.1.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**"
+      ],
+      "instruction": "Widgets may own focus, scroll, animations, navigation, temporary input state, and rendering. Move repository writes, validation decisions, mutation orchestration, and product side effects into controllers, view-model providers, or repositories.",
+      "sunset_when": [
+        "Presentation repository-provider scanner stays clean for five cleanup passes"
+      ]
+    },
+    "PROVIDER-SEAM-001": {
+      "title": "Use feature-owned provider seams",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "controller_patterns",
+        "version": "2.1.0"
+      },
+      "applies_to": [
+        "lib/**"
+      ],
+      "instruction": "If a feature has a view model, controller, or feature-specific provider, screens should use that seam rather than reaching around it to a lower-level repository provider.",
+      "sunset_when": [
+        "Feature screens consistently read view models/controllers and no scanner reaches remain"
+      ]
+    },
+    "EXTERNAL-SIDE-EFFECT-001": {
+      "title": "Put plugin and platform side effects behind seams",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "widget_cleanup",
+        "version": "2.1.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/**"
+      ],
+      "instruction": "Store launches, URL launches, share sheets, image pickers, connectivity subscriptions, FCM setup, and other platform/plugin effects should sit behind providers/controllers/services so tests can replace them.",
+      "sunset_when": [
+        "Presentation plugin/platform import scanner remains clean for five passes"
+      ]
+    },
+    "TOKEN-DRILLING-001": {
+      "title": "Avoid prop drilling CatchTokens",
+      "status": "watch",
+      "introduced_in": {
+        "doc_id": "widget_cleanup",
+        "version": "2.1.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**"
+      ],
+      "instruction": "Prefer CatchTokens.of(context) inside leaf widgets instead of passing CatchTokens through constructors unless intentionally rendering with a non-current token set.",
+      "sunset_when": [
+        "Token prop-drilling scanner remains clean for three passes"
+      ]
+    },
+    "TEST-ASYNC-001": {
+      "title": "Use named async test flushing helpers",
+      "status": "watch",
+      "introduced_in": {
+        "doc_id": "widget_cleanup",
+        "version": "2.0.0"
+      },
+      "applies_to": [
+        "test/**/*.dart"
+      ],
+      "instruction": "Use flushTestEventQueue instead of raw Future<void>.delayed(Duration.zero) when tests need queued provider stream or callback delivery.",
+      "sunset_when": [
+        "Scanner reports no raw zero-delay async flushes for three passes"
+      ]
+    },
+    "WIDGET-TEST-001": {
+      "title": "Centralize broad widget test settling",
+      "status": "watch",
+      "introduced_in": {
+        "doc_id": "widget_cleanup",
+        "version": "2.0.0"
+      },
+      "applies_to": [
+        "test/**/*.dart"
+      ],
+      "instruction": "Use semantic/domain pump helpers or pumpFeatureUi instead of scattered raw pumpAndSettle calls in feature tests.",
+      "sunset_when": [
+        "Only the approved centralized helper-level broad wait remains",
+        "No feature-level raw pumpAndSettle appears for three passes"
+      ]
+    },
+    "WIDGET-SEMANTICS-001": {
+      "title": "Make custom tappables semantic before testing them",
+      "status": "watch",
+      "introduced_in": {
+        "doc_id": "widget_cleanup",
+        "version": "2.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "test/**/*.dart"
+      ],
+      "instruction": "Before adding fragile widget finders, give custom tap targets stable semantics, labels, tooltips, or keys that describe real user actions.",
+      "sunset_when": [
+        "Feature tappable scanner remains clean for three cleanup passes"
+      ]
+    },
+    "SLIVER-001": {
+      "title": "Respect sliver ownership and NestedScrollView overlap contracts",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "sliver_layout",
+        "version": "2.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "test/**/*.dart"
+      ],
+      "instruction": "If a parent owns a CustomScrollView, children should usually return slivers; NestedScrollView tabs must inject absorbed overlap or own the inner scroll view.",
+      "sunset_when": [
+        "Sliver screens have dedicated regression tests and no known blank/overflow regressions"
+      ]
+    }
+  }
+}

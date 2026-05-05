@@ -8,13 +8,12 @@ class RunClubsSearchField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final city = ref.watch(selectedRunClubCityProvider);
+    final query = ref.watch(runClubSearchQueryProvider);
 
     return CatchTextField(
-      key: ValueKey('search-${city.name}'),
       label: 'Search clubs',
       showLabel: false,
-      initialValue: ref.read(runClubSearchQueryProvider),
+      initialValue: query,
       onChanged: (q) =>
           ref.read(runClubSearchQueryProvider.notifier).setQuery(q),
       hintText: 'Search clubs',

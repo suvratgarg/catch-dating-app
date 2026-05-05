@@ -1,4 +1,26 @@
+---
+doc_id: controller_patterns
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: active
+---
+
 # Controller Patterns
+
+## Read Policy
+
+Read this before architecture, state-management, controller, or repository/UI
+boundary work. Stamp applied version `controller_patterns@2.0.0` in
+`docs/audit_registry/files.jsonl` when a file is reviewed against these rules.
+
+## Rule Changelog
+
+### 2.0.0
+
+- Controller/view-model boundary rules are now versioned for recursive audits.
+- UI files reviewed under older versions should be rechecked for repository
+  writes, mutation ergonomics, and testability seams.
 
 Use controllers when UI code would otherwise own product behavior, persistence
 rules, validation, or repository calls. Widgets should stay focused on rendering,

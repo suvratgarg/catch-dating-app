@@ -32,6 +32,65 @@ class ProfileTab extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return _ProfileTabContent(
+      user: user,
+      uploadState: uploadState,
+      builder: (context, children) => ListView(
+        key: scrollViewKey,
+        physics: physics,
+        padding: _profileTabPadding,
+        children: children,
+      ),
+    );
+  }
+}
+
+class ProfileTabSliverBody extends ConsumerWidget {
+  const ProfileTabSliverBody({
+    super.key,
+    required this.user,
+    required this.uploadState,
+  });
+
+  final UserProfile user;
+  final PhotoUploadState uploadState;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return _ProfileTabContent(
+      user: user,
+      uploadState: uploadState,
+      builder: (context, children) => SliverPadding(
+        padding: _profileTabPadding,
+        sliver: SliverList.list(children: children),
+      ),
+    );
+  }
+}
+
+typedef _ProfileTabContentBuilder =
+    Widget Function(BuildContext context, List<Widget> children);
+
+const _profileTabPadding = EdgeInsets.fromLTRB(
+  CatchSpacing.s5,
+  Sizes.p8,
+  CatchSpacing.s5,
+  Sizes.p32,
+);
+
+class _ProfileTabContent extends ConsumerWidget {
+  const _ProfileTabContent({
+    required this.user,
+    required this.uploadState,
+    required this.builder,
+  });
+
+  final UserProfile user;
+  final PhotoUploadState uploadState;
+  final _ProfileTabContentBuilder builder;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
     final basics = [
       _textEntry(
         context: context,
@@ -291,69 +350,59 @@ class ProfileTab extends ConsumerWidget {
       ),
     ];
 
-    return ListView(
-      key: scrollViewKey,
-      physics: physics,
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        Sizes.p8,
-        CatchSpacing.s5,
-        Sizes.p32,
+    return builder(context, [
+      PhotoGrid(
+        photoUrls: user.photoUrls,
+        loadingIndices: uploadState.loadingIndices,
+        onSlotTapped: (index) {
+          unawaited(
+            PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+              await tx
+                  .get(photoUploadControllerProvider.notifier)
+                  .pickAndUpload(index);
+            }),
+          );
+        },
       ),
-      children: [
-        PhotoGrid(
-          photoUrls: user.photoUrls,
-          loadingIndices: uploadState.loadingIndices,
-          onSlotTapped: (index) {
-            unawaited(
-              PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
-                await tx
-                    .get(photoUploadControllerProvider.notifier)
-                    .pickAndUpload(index);
-              }),
-            );
-          },
+      gapH14,
+      SectionHeader(title: 'Bio'),
+      ProfilePromptCard(
+        eyebrow: 'On a perfect run',
+        text: user.bio.isNotEmpty
+            ? user.bio
+            : 'Add a bio to tell runners about yourself',
+        isPrompt: user.bio.isEmpty,
+        onTap: () => showTextEditSheet(
+          context: context,
+          ref: ref,
+          title: 'Bio',
+          currentValue: user.bio,
+          fieldName: 'bio',
         ),
-        gapH14,
-        SectionHeader(title: 'Bio'),
-        ProfilePromptCard(
-          eyebrow: 'On a perfect run',
-          text: user.bio.isNotEmpty
-              ? user.bio
-              : 'Add a bio to tell runners about yourself',
-          isPrompt: user.bio.isEmpty,
-          onTap: () => showTextEditSheet(
-            context: context,
-            ref: ref,
-            title: 'Bio',
-            currentValue: user.bio,
-            fieldName: 'bio',
-          ),
-        ),
-        gapH20,
-        SectionHeader(title: 'About'),
-        ProfileInfoSection(entries: basics, grouped: true),
-        gapH20,
-        SectionHeader(title: 'Location'),
-        ProfileInfoSection(entries: location, grouped: true),
-        gapH20,
-        SectionHeader(title: 'Background'),
-        ProfileInfoSection(entries: background, grouped: true),
-        gapH20,
-        SectionHeader(title: 'Discovery'),
-        ProfileInfoSection(entries: discovery, grouped: true),
-        gapH20,
-        SectionHeader(title: 'Intentions'),
-        ProfileInfoSection(entries: intentions, grouped: true),
-        gapH20,
-        SectionHeader(title: 'Lifestyle'),
-        ProfileInfoSection(entries: lifestyle, grouped: true),
-        gapH20,
-        SectionHeader(title: 'Running Details'),
-        ProfileInfoSection(entries: running, grouped: true),
-        gapH32,
-      ],
-    );
+      ),
+      gapH20,
+      SectionHeader(title: 'About'),
+      ProfileInfoSection(entries: basics, grouped: true),
+      gapH20,
+      SectionHeader(title: 'Location'),
+      ProfileInfoSection(entries: location, grouped: true),
+      gapH20,
+      SectionHeader(title: 'Background'),
+      ProfileInfoSection(entries: background, grouped: true),
+      gapH20,
+      SectionHeader(title: 'Discovery'),
+      ProfileInfoSection(entries: discovery, grouped: true),
+      gapH20,
+      SectionHeader(title: 'Intentions'),
+      ProfileInfoSection(entries: intentions, grouped: true),
+      gapH20,
+      SectionHeader(title: 'Lifestyle'),
+      ProfileInfoSection(entries: lifestyle, grouped: true),
+      gapH20,
+      SectionHeader(title: 'Running Details'),
+      ProfileInfoSection(entries: running, grouped: true),
+      gapH32,
+    ]);
   }
 
   ProfileInfoEntry _textEntry({

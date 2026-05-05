@@ -1,9 +1,24 @@
+---
+doc_id: pre_launch_audit
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: snapshot
+---
+
 # Catch Dating App — Pre-Launch Audit
 
 > Audit snapshot. Re-verify code paths, statuses, and severity before treating
 > any item as current launch risk. Use `docs/README.md` for the docs ownership
 > map and avoid creating parallel pre-launch trackers unless this file is first
 > updated or split with a clear owner.
+
+## Read Policy
+
+This is a dated launch-readiness snapshot. Use it for risk context and launch
+checklist memory, but re-verify any code path, count, or status before acting.
+Move durable recurring rules into `docs/audit_registry/rules.json` instead of
+adding more snapshot prose.
 
 **Date:** 2026-05-04
 **Author:** Claude (verified against source at `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`)

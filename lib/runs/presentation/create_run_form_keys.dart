@@ -14,4 +14,7 @@ abstract final class CreateRunFormKeys {
   static const maxAge = ValueKey('create-run-max-age-field');
   static const maxMen = ValueKey('create-run-max-men-field');
   static const maxWomen = ValueKey('create-run-max-women-field');
+
+  static ValueKey<String> deleteDraft(String draftId) =>
+      ValueKey('create-run-delete-draft-$draftId');
 }

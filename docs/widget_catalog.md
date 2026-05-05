@@ -1,4 +1,27 @@
+---
+doc_id: widget_catalog
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: active
+---
+
 # Widget Catalog
+
+## Read Policy
+
+Use this as inventory, not as the primary process prompt. For process rules,
+start with `docs/audit_registry/README.md`,
+`docs/audit_registry/rules.json`, and `docs/widget_cleanup_todo.md`. Read a
+feature section here only when auditing that feature's widget surface.
+
+## Rule Changelog
+
+### 2.0.0
+
+- Widget inventory is versioned under the recursive audit loop.
+- Active workflow rules moved to the audit registry and widget cleanup tracker
+  so future passes can read deltas instead of the full catalog.
 
 ## Widget Cleanup Operating Instructions
 
@@ -52,7 +75,10 @@ The user specifically wants this work to proceed incrementally:
    primitives include `CatchSurface`, `CatchButton`, `CatchTextField`,
    `CatchTopBar`, `CatchBottomSheetScaffold`, `CatchEmptyState`,
    `CatchHorizontalRail`, `CatchVerticalSection`, `PersonRow`, `PersonAvatar`,
-   `RunCard`, `SettingsRow`, `CatchSkeleton`, `CatchBadge`, and `StatusChip`.
+   `RunCard`, `SettingsRow`, `CatchSkeleton`, `CatchBadge`, `StatusChip`,
+   `CatchFormFieldLabel`, `ChipField`, `RunAgendaList`,
+   `RunAgendaSliverList`, `MutationErrorSnackbarListener`, and
+   `showConfirmDangerDialog`.
 6. Add a new primitive only when at least one of these is true:
    repeated UI shells are already present, a primitive removes meaningful
    complexity, the API is likely to be reused soon, or the component expresses a
@@ -86,18 +112,27 @@ The user specifically wants this work to proceed incrementally:
 16. Feature-specific sliver headers should wrap generic primitives with feature
    configuration baked in, while keeping layout-only private helper widgets in
    the header file.
-17. After each meaningful batch, update `docs/widget_cleanup_todo.md` with:
+17. Keep platform and plugin side effects behind provider/controller seams where
+   feasible. Current examples include `ExternalLinkController`,
+   `ExternalShareController`, `PaymentConfirmationController`,
+   `UpdateRequiredController`, `CreateRunClubController`, and app-shell
+   provider seams.
+18. Keep status out of this catalog. Pending, completed, next-up, and scanner
+   snapshots belong in `docs/widget_cleanup_todo.md`; this file should describe
+   reusable instructions, anti-patterns, widget inventory, and durable
+   consolidation guidance.
+19. After each meaningful batch, update `docs/widget_cleanup_todo.md` with:
    completed items, newly discovered backlog items, current findings, and the
    recommended next step.
-18. After tests pass, inspect how the tests had to be written. If they required
+20. After tests pass, inspect how the tests had to be written. If they required
    fragile finders, excessive provider overrides, private implementation
    knowledge, awkward setup, timing hacks, or broad integration scaffolding for
    narrow behavior, treat that as architecture feedback. Refactor or add a
    backlog item so future passes move the code toward clearer seams, smaller
    units, stable user-visible assertions, and easier dependency injection.
-19. Update this catalog when adding, deleting, moving, or materially changing
+21. Update this catalog when adding, deleting, moving, or materially changing
    widgets.
-20. Verify with focused commands over touched files and relevant tests. Fix
+22. Verify with focused commands over touched files and relevant tests. Fix
    analyzer errors and warnings. Do not spend cleanup time on analyzer
    info-level issues unless they block the task, mask a real bug, or are already
    being edited for another reason.
@@ -166,23 +201,26 @@ patterns are discovered.
   controllers, notifiers, and data layers where appropriate so they point at
   surfaces that actually need design-system attention.
 
-### Current Direction
+### Catalog Ownership
 
-The `CreateRunScreen` split, host-manage roster cleanup, create-run draft UX,
-create-run testability pass, run-clubs list/layout pass, chat thread/list pass,
-run-detail route/body pass, run map, attendance, run-club detail schedule
-cleanup, Auth UI cleanup, design-system theme-folder consolidation,
-Safety/settings UI cleanup, Reviews UI cleanup, Swipes deep pass, image
-uploads/photo grid cleanup, force-update/app-shell cleanup, and the first
-external link/share side-effect seam cleanup are complete. A recursive cleanup
-scanner now lives at `tool/widget_cleanup_scan.sh` and should be used to keep
-future passes focused on repeated anti-patterns instead of relying only on
-manual memory. The scanner's `CatchTokens` prop-drilling category is currently
-clear after moving onboarding/dashboard leaf widgets to local token reads.
-Run-club detail no longer uses a
-two-dimensional schedule grid; it reuses the shared agenda UI and receives
-upcoming runs sorted by the detail view model. Theme, typography, spacing
-compatibility helpers, and app theme now live under `lib/core/theme`.
+This catalog is the durable widget inventory and cleanup playbook. It should
+not carry the active backlog; use `docs/widget_cleanup_todo.md` for pending,
+completed, next-up, scanner snapshots, and findings. Keep this file current
+when widgets are added, deleted, moved, renamed, or when a shared primitive or
+controller seam becomes part of the standard operating model.
+
+Current durable direction:
+
+- Theme, typography, spacing compatibility helpers, radii, and app theme belong
+  under `lib/core/theme`.
+- Run-club detail uses the shared agenda UI instead of a two-dimensional
+  schedule grid.
+- Normal leaf widgets should read `CatchTokens.of(context)` locally instead of
+  receiving token objects through constructors.
+- URL/share/store/image-picking side effects should go through controller or
+  provider seams before reaching plugins.
+- Broad cleanup passes should use `tool/widget_cleanup_scan.sh` as a triage
+  aid, then update the tracker with what was fixed or intentionally deferred.
 
 ---
 
@@ -246,7 +284,7 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CatchTextField` | `lib/core/widgets/catch_text_field.dart:12` | Canonical text input. Wraps `FormField<String>` + `TextField` in a token-driven shell with label, helper/error copy, prefix/suffix icons, clear button, and theming via `CatchTextFieldSize`, `CatchTextFieldShape`, and `CatchTextFieldTone` enums. |
+| `CatchTextField` | `lib/core/widgets/catch_text_field.dart:12` | Canonical text input. Wraps `FormField<String>` + `TextField` in a token-driven shell with label, helper/error copy, prefix/suffix icons, clear button, stable single-line control heights, initial-value syncing, and theming via `CatchTextFieldSize`, `CatchTextFieldShape`, and `CatchTextFieldTone` enums. |
 | `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, and `danger` variants; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; and an optional leading icon. |
 | `CatchDropdownField<T>` | `lib/core/widgets/catch_dropdown_field.dart:8` | Token-driven single-select dropdown for `Labelled` enum-like values. Wraps `FormField<T>` + `DropdownButton<T>` with focus-ring styling and label decoration. |
 
@@ -469,8 +507,9 @@ Generated 2026-05-05.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:13` | "You" tab. Renders the user's own profile with a sliver header (avatar, name, city), tab bar (Profile / Preview), and tab content. |
-| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:17` | Editable profile tab content — info sections, prompt cards, and edit sheets for each field. |
+| `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:13` | "You" tab. Renders the user's own profile with a `NestedScrollView`, compact sliver header, Profile/Preview tabs, and overlap-injected tab bodies. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone editable profile tab content. Wraps the shared editable profile sections in a `ListView` for isolated/non-sliver usage. |
+| `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:45` | Sliver-native editable profile tab body. Reuses the same editable profile sections as `ProfileTab` but contributes a `SliverList` for `NestedScrollView` tab bodies. |
 | `_OverflowMenu` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:56` | Overflow menu in the profile sliver header (settings, payments, sign out). |
 
 ### StatelessWidget
@@ -481,7 +520,8 @@ Generated 2026-05-05.
 | `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:24` | Grouped section of `ProfileInfoTile` rows with a section header. |
 | `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:6` | Single tappable info row — icon, label, value, chevron. Opens the corresponding edit sheet on tap. |
 | `ProfilePromptCard` | `lib/user_profile/presentation/widgets/profile_prompt_card.dart:6` | Editable profile prompt card used by the signed-in profile bio section. |
-| `_ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:71` | Private helper that applies the `NestedScrollView` overlap injector around each profile tab body. |
+| `_ProfileTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:71` | Private helper that applies the `NestedScrollView` overlap injector and renders the editable profile body through `ProfileTabSliverBody`. |
+| `_PreviewTabScrollView` | `lib/user_profile/presentation/profile_screen.dart:95` | Private helper that applies the overlap injector and gives the shared preview card bounded remaining viewport height. |
 | `_ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:26` | Name + city title in the profile sliver header. |
 | `_SettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:43` | Settings gear button in the profile header. |
 
@@ -799,94 +839,28 @@ Generated 2026-05-05.
 
 ---
 
-## Consolidation Opportunities
+## Consolidation Candidates
 
-### High impact — clear duplicates, should be merged
+Keep this section current and conservative. It is for durable consolidation
+ideas that still appear valid after the widget cleanup passes, not for active
+status. Move any selected item into `docs/widget_cleanup_todo.md` before
+implementing it.
 
-#### 1. `FieldLabel` (runs) is a useless wrapper around `CatchFormFieldLabel`
+### High Signal
 
-`lib/runs/presentation/widgets/field_label.dart` is a one-line pass-through:
-
-```dart
-class FieldLabel extends StatelessWidget {
-  const FieldLabel(this.label, {super.key, this.isOptional = false});
-  @override
-  Widget build(BuildContext context) =>
-      CatchFormFieldLabel(label: label, isOptional: isOptional, large: true);
-}
-```
-
-It exists solely to pass `large: true`. **Fix**: delete `FieldLabel` and have its 2 call sites pass `large: true` to `CatchFormFieldLabel` directly.
-
-#### 2. `_DashboardLoadingScreen` and `_RouterLoadingScreen` are identical
-
-Both are `Scaffold(body: CatchLoadingIndicator())`. **Fix**: extract a shared `CatchLoadingScreen` in `lib/core/widgets/` and reuse from both places.
-
-#### 3. `_DashboardMessageScreen` and `_CalendarMessage` are near-identical
-
-Both render a centered text message on a scaffold. `_CalendarMessage` adds a title + body column; `_DashboardMessageScreen` is body-only. **Fix**: unify into a single `CatchMessageScreen` widget with optional title.
-
-#### 4. Six different empty-state widgets duplicate the same layout
-
-| Widget | File | Pattern |
+| Candidate | Current State | Recommended Direction |
 |---|---|---|
-| `ChatsEmptyState` | `lib/matches/presentation/widgets/chats_empty_state.dart` | Icon in circle → title → body text |
-| `RunClubsEmptyState` | `lib/run_clubs/presentation/list/widgets/run_clubs_empty_state.dart` | Icon → title → body text |
-| `_CatchesEmptyState` | `lib/swipes/presentation/swipe_hub_screen.dart:296` | Icon in circle → title → body text → CTA |
-| `SwipeEmptyState` | `lib/swipes/presentation/widgets/swipe_empty_state.dart` | Icon → title → body text |
-| `_EmptyRoster` | `lib/swipes/presentation/run_recap_screen.dart:316` | Similar empty pattern |
-| `_MapEmptyState` | `lib/runs/presentation/run_map_screen.dart:320` | Body text only |
+| `FieldLabel` | Thin create-run wrapper around `CatchFormFieldLabel(large: true)`. | Delete only if call sites stay clearer with direct `CatchFormFieldLabel`; otherwise keep as a create-run semantic wrapper. |
+| `_DashboardLoadingScreen`, `_RouterLoadingScreen`, route-level loading scaffolds | Several screens still create a full-screen loading scaffold by hand. | Consider `CatchLoadingScreen` only if another pass touches two or more route-level loading screens together. |
+| `_DashboardMessageScreen`, route-level error/message scaffolds | Message screens are similar but not identical. | Consider `CatchMessageScreen` with optional title/body/action if repeated route-level message screens continue to grow. |
+| `ChatsSliverHeader`, `RunClubsSliverHeader` | Feature-specific wrappers around `CatchSliverHeader` still share structure. | Parameterize the shared sliver header only if a third feature needs the same title/search/action pattern. |
+| `ProfileInfoChip` | Swipe profile chip overlaps conceptually with `CatchChip`, but has overlay styling needs. | Extend `CatchChip` only if overlay-style info chips recur outside swipes. |
 
-`SwipeEmptyState` already has the right architecture — it takes a `SwipeEmptyContent` data class. **Fix**: create a single `CatchEmptyState` widget in core accepting `icon`, `title`, `message`, and optional `cta` (label + onPressed). Replace all six. Feature-specific content data classes stay where they are; only the layout widget is shared.
+### Watch, Do Not Force
 
-#### 5. `ChatsSliverHeader` and `RunClubsSliverHeader` share the same skeleton
-
-Both extend `CatchSliverHeader` with identical structure:
-
-- `_TitleRow`: displayL title + bodyS subtitle + right-side action widget
-- `_SearchRow`: horizontal padding + search/action content
-
-Only the text strings and action widget differ. **Fix**: add `title`, `subtitle`, `actions`, and `search` parameters to `CatchSliverHeader` so the two subclasses can be deleted. The base already accepts `title` and `bottom` widgets — the change is making the title-building pattern reusable instead of duplicated.
-
-#### 6. `ProfileInfoChip` (swipes) duplicates `CatchChip` (core)
-
-`lib/swipes/presentation/widgets/profile_info_chip.dart` renders an icon + label chip with hardcoded white-transparent colors. `CatchChip` already supports icon + label with token-driven theming. **Fix**: add optional `backgroundColor`/`foregroundColor` overrides to `CatchChip` (matching the pattern already used in `CatchBadge` and `CatchButton`), then delete `ProfileInfoChip` and use `CatchChip` instead.
-
----
-
-### Medium impact — worth considering
-
-#### 7. Stat display widgets overlap
-
-| Widget | File | Layout |
-|---|---|---|
-| `StatColumn` | `lib/core/widgets/stat_column.dart` | Value + label vertically, optional icon, highlight, mono/center |
-| `RunStatCell` | `lib/runs/presentation/widgets/run_stats_grid.dart` | Value + unit on baseline row, label below, always centered |
-| `HostStatChip` | `lib/run_clubs/presentation/detail/widgets/host_stats_bar.dart` | Already wraps `StatColumn` in a surface container |
-
-`RunStatCell` could become a variant of `StatColumn` by accepting a Widget for the "value" slot instead of a String. Low urgency since the baseline-aligned layout is unique to `RunStatCell`, but the 3 widgets share the same value-above-label conceptual model.
-
-#### 8. `StatusChip` and `CatchBadge` both render status labels
-
-`StatusChip` is enum-driven (run status → color mapping). `CatchBadge` is a general-purpose label badge with 7 tone variants. `StatusChip` could be rebuilt to use `CatchBadge` internally. Optional — they serve different semantic purposes and the dedup win is small.
-
----
-
-### Low impact — OK as-is
-
-- **`_DashboardSectionStateCard`** and **`_ActivityMessage`** — slightly different layouts for section-level loading/error states. Could share a widget but the payoff is small.
-- **`VibeTag`** vs **`CatchChip`** — different visual design. Vibe tags are softer accent tags; `CatchChip` is a binary active/inactive selector chip. Different use cases.
-
----
-
-### Consolidation scorecard
-
-| Category | Widgets eliminated | Replaced by |
-|---|---|---|
-| Useless wrapper | 1 (`FieldLabel`) | `CatchFormFieldLabel` with `large: true` |
-| Identical loading screens | 2 (`_DashboardLoadingScreen`, `_RouterLoadingScreen`) | 1 `CatchLoadingScreen` |
-| Near-identical message screens | 2 (`_DashboardMessageScreen`, `_CalendarMessage`) | 1 `CatchMessageScreen` |
-| Near-identical empty states | 6 (all empty state widgets) | 1 `CatchEmptyState` |
-| Near-identical sliver headers | 2 (`ChatsSliverHeader`, `RunClubsSliverHeader`) | Parameterized `CatchSliverHeader` |
-| Feature chip duplicates core | 1 (`ProfileInfoChip`) | Extended `CatchChip` |
-| **Total** | **14 widgets → 5 shared** | |
+| Candidate | Reason To Wait |
+|---|---|
+| Feature empty-state wrappers | Most now delegate to `CatchEmptyState`. Keep wrappers when they encode feature-specific copy/content semantics; inline only when the wrapper adds no meaning. |
+| `StatColumn`, `RunStatCell`, `HostStatChip` | They share a value-over-label concept, but baseline alignment and surface ownership differ enough that forced unification may reduce clarity. |
+| `StatusChip` and `CatchBadge` | `StatusChip` is enum-driven and semantic; `CatchBadge` is a general label primitive. Rebuild `StatusChip` on `CatchBadge` only if it removes real styling drift. |
+| `VibeTag` and `CatchChip` | Different interaction and visual roles. Keep separate unless a broader chip/token audit proves they should converge. |

@@ -1,0 +1,92 @@
+{
+  "version": "2.1.0",
+  "updated": "2026-05-05",
+  "owner": "recursive_audit_loop",
+  "read_policy": "Use this file for active backlog, next actions, scanner counts, and stable debt ids. Do not reread archived markdown history unless a debt id points there.",
+  "scanner_snapshot": {
+    "updated": "2026-05-05",
+    "command": "bash tool/widget_cleanup_scan.sh",
+    "counts": {
+      "centralized_widget_timing": 1,
+      "async_unit_flush": 0,
+      "positional_widget_finders": 0,
+      "presentation_repository_reaches": 0,
+      "catch_tokens_prop_drilling": 0,
+      "feature_tappable_candidates": 0,
+      "legacy_spacing_matches": 139,
+      "presentation_plugin_imports": 0
+    },
+    "notes": [
+      "The one widget timing match is the intentional centralized pumpFeatureUi helper.",
+      "Feature tappable scanner now skips built-in labeled buttons, tooltipped controls, and tappables already wrapped in Semantics or Tooltip.",
+      "Legacy spacing migration should be piecemeal and touch-driven."
+    ]
+  },
+  "pending": [
+    {
+      "id": "PROFILE-001",
+      "title": "Fix profile tab and preview tab blank rendering",
+      "status": "deferred",
+      "area": "user_profile",
+      "priority": "high",
+      "rules": [
+        "SLIVER-001"
+      ],
+      "summary": "ProfileScreen still has a route-level NestedScrollView/sliver composition risk. The profile tab body should be sliver-native or restored as the actual inner scroll view, and preview constraints must stay finite.",
+      "paths": [
+        "lib/user_profile/presentation/profile_screen.dart",
+        "lib/user_profile/presentation/widgets/profile_tab.dart",
+        "test/profile/profile_widgets_test.dart"
+      ]
+    },
+    {
+      "id": "SPACING-001",
+      "title": "Piecemeal legacy spacing migration",
+      "status": "pending",
+      "area": "design_system",
+      "priority": "medium",
+      "rules": [
+        "DESIGN-TOKENS-001"
+      ],
+      "summary": "Replace legacy Sizes.p* with CatchSpacing.s* where layouts are on the 4-point scale. Keep Sizes.p* for intentional fine-grained compatibility spacing.",
+      "paths": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**"
+      ]
+    },
+    {
+      "id": "DOC-HYGIENE-QUEUE",
+      "title": "Keep docs index and registry synchronized",
+      "status": "active",
+      "area": "docs",
+      "priority": "medium",
+      "rules": [
+        "DOC-HYGIENE-001"
+      ],
+      "summary": "Whenever a durable doc owner is added, renamed, archived, or deleted, update docs/README.md, doc_versions.json, and doc_summaries.json in the same pass.",
+      "paths": [
+        "docs/README.md",
+        "docs/audit_registry/doc_versions.json",
+        "docs/audit_registry/doc_summaries.json"
+      ]
+    }
+  ],
+  "next_up": [
+    "SPACING-001",
+    "PROFILE-001"
+  ],
+  "completed": [
+    {
+      "id": "WIDGET-SEMANTICS-QUEUE",
+      "title": "Audit remaining feature tappable candidates",
+      "completed": "2026-05-05",
+      "rules": [
+        "WIDGET-SEMANTICS-001"
+      ],
+      "summary": "Reviewed the 24 syntactic tappable candidates. Existing controls already had user-visible text, tooltips, or Semantics wrappers, so the useful fix was scanner refinement. The scanner now reports zero unresolved tappable candidates."
+    }
+  ],
+  "archive": {
+    "widget_cleanup_full_history": "docs/audit_registry/archive/widget_cleanup_todo_2026_05_05_full.md"
+  }
+}

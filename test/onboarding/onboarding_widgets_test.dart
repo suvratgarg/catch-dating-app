@@ -54,10 +54,10 @@ void main() {
         container
             .read(onboardingControllerProvider.notifier)
             .goToStep(OnboardingStep.genderInterest);
-        await tester.pumpAndSettle();
+        await pumpOnboardingUi(tester);
 
         await tester.tap(find.byTooltip('Back'));
-        await tester.pumpAndSettle();
+        await pumpOnboardingUi(tester);
 
         expect(
           container.read(onboardingControllerProvider).step,
@@ -79,7 +79,7 @@ void main() {
       );
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
-      await tester.pumpAndSettle();
+      await pumpOnboardingUi(tester);
 
       expect(find.text('Required'), findsWidgets);
     });
@@ -111,7 +111,7 @@ void main() {
       expect(find.text('9876543210'), findsOneWidget);
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
-      await tester.pumpAndSettle();
+      await pumpOnboardingUi(tester);
 
       expect(
         container.read(onboardingControllerProvider).step,
@@ -166,7 +166,7 @@ void main() {
       );
 
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
-      await tester.pumpAndSettle();
+      await pumpOnboardingUi(tester);
 
       expect(find.text('Please select your gender'), findsOneWidget);
     });

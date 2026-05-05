@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/message_bubble.dart';
-import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -49,8 +48,8 @@ class ChatMessageList extends StatelessWidget {
         return ListView.builder(
           controller: scrollController,
           padding: const EdgeInsets.symmetric(
-            horizontal: Sizes.p12,
-            vertical: Sizes.p16,
+            horizontal: CatchSpacing.s3,
+            vertical: CatchSpacing.s4,
           ),
           itemCount: messages.length,
           prototypeItem: MessageBubble(

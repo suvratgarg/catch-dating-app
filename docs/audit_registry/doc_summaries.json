@@ -1,0 +1,146 @@
+{
+  "version": "2.1.0",
+  "updated": "2026-05-05",
+  "owner": "recursive_audit_loop",
+  "summaries": {
+    "PROJECT_CONTEXT.md": {
+      "purpose": "High-level repo map and durable project context.",
+      "read_when": [
+        "Starting broad repo work",
+        "Explaining app architecture",
+        "Verifying setup or product context"
+      ],
+      "skip_when": [
+        "A narrow file-level pass already has scope and registry context"
+      ]
+    },
+    "README.md": {
+      "purpose": "Human setup and runbook entry point.",
+      "read_when": [
+        "Running the app",
+        "Checking environment commands",
+        "Helping the user self-serve"
+      ],
+      "skip_when": [
+        "Only source refactoring is needed"
+      ]
+    },
+    "docs/widget_cleanup_todo.md": {
+      "purpose": "Short human-readable widget cleanup status pointer.",
+      "read_when": [
+        "User asks what is next in widget cleanup",
+        "Need current pending queue in prose form"
+      ],
+      "skip_when": [
+        "Use backlog.json for machine-readable current state",
+        "Use archived history only for old detailed findings"
+      ]
+    },
+    "docs/widget_catalog.md": {
+      "purpose": "Widget inventory and feature ownership map.",
+      "read_when": [
+        "Auditing a specific feature's widget surface",
+        "Checking whether a primitive already exists"
+      ],
+      "skip_when": [
+        "Only process rules are needed; use rules.json instead"
+      ]
+    },
+    "docs/controller_patterns.md": {
+      "purpose": "Current controller and view-model boundary rules.",
+      "read_when": [
+        "Controller/state-management/refactor work",
+        "Moving business logic out of widgets"
+      ],
+      "skip_when": [
+        "Pure visual primitive work"
+      ]
+    },
+    "docs/sliver_layout_guide.md": {
+      "purpose": "Sliver-native layout guide and Catch-specific scroll contracts.",
+      "read_when": [
+        "Changing CustomScrollView, SliverList, SliverPersistentHeader, or NestedScrollView surfaces",
+        "Debugging blank/overflow scroll bugs"
+      ],
+      "skip_when": [
+        "No scroll/sliver behavior is involved; use SLIVER-001 summary instead"
+      ]
+    },
+    "docs/architecture-audit.md": {
+      "purpose": "Historical state-management/provider audit snapshot.",
+      "read_when": [
+        "Need historical provider inventory or architecture rationale"
+      ],
+      "skip_when": [
+        "Current controller rules are enough; prefer controller_patterns.md"
+      ]
+    },
+    "docs/error-handling-audit.md": {
+      "purpose": "Error handling architecture snapshot and remediation map.",
+      "read_when": [
+        "Changing exceptions, error mapping, logging, or user-facing error rendering"
+      ],
+      "skip_when": [
+        "No error behavior is touched"
+      ]
+    },
+    "docs/pre_launch_audit_2026_05_04.md": {
+      "purpose": "Dated launch-readiness risk snapshot.",
+      "read_when": [
+        "Prioritizing launch blockers",
+        "Revalidating product/security/ops risks"
+      ],
+      "skip_when": [
+        "Assuming current status without re-verification"
+      ]
+    },
+    "docs/firestore_functions_data_contract_tracker.md": {
+      "purpose": "Firestore rules, Cloud Functions boundaries, schema drift, and data-contract tracker.",
+      "read_when": [
+        "Changing Firestore rules",
+        "Changing Functions mutation boundaries",
+        "Changing shared data contracts"
+      ],
+      "skip_when": [
+        "Pure Flutter presentation work"
+      ]
+    },
+    "docs/firestore_type_sync_2026_05_05.md": {
+      "purpose": "Dart-to-TypeScript Firestore type generation workflow.",
+      "read_when": [
+        "Changing domain models used by Functions",
+        "Regenerating Firestore TypeScript interfaces"
+      ],
+      "skip_when": [
+        "No schema/type contract changes"
+      ]
+    },
+    "docs/deploy_runbook_2026_05_04.md": {
+      "purpose": "May 2026 deployment sequence and prerequisites.",
+      "read_when": [
+        "Deploying Firebase/Functions/rules/storage changes"
+      ],
+      "skip_when": [
+        "Not deploying"
+      ]
+    },
+    "docs/one_crore_compensation_bar_2026_05_05.md": {
+      "purpose": "Dated quality assessment snapshot.",
+      "read_when": [
+        "User asks about quality rating or compensation-bar assessment"
+      ],
+      "skip_when": [
+        "Current verification has not been refreshed"
+      ]
+    },
+    "docs/audit_registry/README.md": {
+      "purpose": "Recursive audit workflow, registry files, pruning policy, and completion criteria.",
+      "read_when": [
+        "Starting any repeated cleanup/audit pass"
+      ],
+      "skip_when": [
+        "Task is a trivial one-off command"
+      ]
+    }
+  }
+}

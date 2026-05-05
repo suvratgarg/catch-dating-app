@@ -1,4 +1,18 @@
+---
+doc_id: firestore_type_sync
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: active
+---
+
 # Firestore Type Synchronization — Auto-Generated TypeScript Interfaces
+
+## Read Policy
+
+Read this before changing Dart domain models, Functions TypeScript interfaces,
+or `tool/generate_firestore_types.dart`. Re-run the documented type-generation
+and validation commands instead of assuming the generated contract is current.
 
 **Date:** 2026-05-05
 **Context:** Eliminating manual Dart ↔ TypeScript type drift that caused production errors when model fields or enum values fell out of sync.

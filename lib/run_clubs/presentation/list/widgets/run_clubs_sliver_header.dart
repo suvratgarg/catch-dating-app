@@ -11,12 +11,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class RunClubsSliverHeader extends CatchSliverHeader {
-  RunClubsSliverHeader()
+  RunClubsSliverHeader({bool showSearchField = true})
     : super(
         title: const _TitleRow(),
-        bottom: const _SearchRow(),
-        titleHeight: 82,
-        bottomHeight: 80,
+        bottom: _SearchRow(showSearchField: showSearchField),
+        titleHeight: CatchSliverHeader.twoLineTitleHeight,
+        bottomHeight: showSearchField ? 80 : 64,
       );
 }
 
@@ -62,7 +62,9 @@ class _TitleRow extends StatelessWidget {
 }
 
 class _SearchRow extends ConsumerWidget {
-  const _SearchRow();
+  const _SearchRow({required this.showSearchField});
+
+  final bool showSearchField;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -71,17 +73,19 @@ class _SearchRow extends ConsumerWidget {
     return ColoredBox(
       color: t.bg,
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(
+        padding: EdgeInsets.fromLTRB(
           CatchSpacing.s5,
-          CatchSpacing.s2,
+          showSearchField ? CatchSpacing.s2 : CatchSpacing.s1,
           CatchSpacing.s5,
-          CatchSpacing.s2,
+          showSearchField ? CatchSpacing.s2 : CatchSpacing.s1,
         ),
         child: Row(
           children: [
             const CityPicker(),
-            gapW8,
-            const Expanded(child: RunClubsSearchField()),
+            if (showSearchField) ...[
+              gapW8,
+              const Expanded(child: RunClubsSearchField()),
+            ],
           ],
         ),
       ),

@@ -43,10 +43,14 @@ class ProfilePromptCard extends StatelessWidget {
       borderColor: t.line,
       child: onTap == null
           ? content
-          : InkWell(
-              onTap: onTap,
-              borderRadius: BorderRadius.circular(CatchRadius.lg),
-              child: content,
+          : Semantics(
+              button: true,
+              label: eyebrow,
+              child: InkWell(
+                onTap: onTap,
+                borderRadius: BorderRadius.circular(CatchRadius.lg),
+                child: content,
+              ),
             ),
     );
   }

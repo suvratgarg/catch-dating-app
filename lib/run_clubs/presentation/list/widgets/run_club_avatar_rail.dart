@@ -40,40 +40,47 @@ class _CreateClubButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: 64,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: t.line2,
-                  width: 1.5,
-                  style: BorderStyle.solid,
+    return Tooltip(
+      message: 'Create run club',
+      child: Semantics(
+        button: true,
+        label: 'Create run club',
+        child: GestureDetector(
+          onTap: onTap,
+          child: SizedBox(
+            width: 64,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 64,
+                  height: 64,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: t.line2,
+                      width: 1.5,
+                      style: BorderStyle.solid,
+                    ),
+                    color: t.raised,
+                  ),
+                  child: Icon(Icons.add_rounded, size: 24, color: t.ink2),
                 ),
-                color: t.raised,
-              ),
-              child: Icon(Icons.add_rounded, size: 24, color: t.ink2),
+                const SizedBox(height: 6),
+                Text(
+                  'Create',
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                    color: t.ink2,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
             ),
-            const SizedBox(height: 6),
-            Text(
-              'Create',
-              style: TextStyle(
-                fontSize: 10,
-                fontWeight: FontWeight.w600,
-                color: t.ink2,
-              ),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+          ),
         ),
       ),
     );

@@ -1,8 +1,30 @@
+---
+doc_id: sliver_layout
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: active
+---
+
 # Sliver Layout Guide
 
 This document explains the sliver-native layout pattern now used in several
 Catch screens. It is meant to be both a maintenance guide for this codebase and
 a short "Sliver 101" lesson for future implementation passes.
+
+## Read Policy
+
+Read this before changing sliver-native screens, tabbed `NestedScrollView`
+surfaces, sticky headers, or scroll-heavy widget tests. For other work, use the
+audit registry's `SLIVER-001` rule summary instead of loading this full guide.
+
+## Rule Changelog
+
+### 2.0.0
+
+- Sliver ownership and `NestedScrollView` overlap rules are now versioned as
+  `SLIVER-001` in `docs/audit_registry/rules.json`.
+- Future sliver fixes should stamp files with the applied guide version.
 
 ## Short Verdict
 
@@ -212,6 +234,35 @@ Common performance and layout traps:
 - Pinned headers must reserve enough height for their child. In this repo, a
   pinned search header must fit the compact `CatchTextField`; otherwise tests
   and small screens expose overflows.
+
+## Persistent Header Extents
+
+`SliverPersistentHeaderDelegate` is not a normal shrink-wrap layout slot. The
+delegate's `minExtent` and `maxExtent` are the source of truth for how much
+vertical space Flutter gives the child as the header scrolls. During layout,
+Flutter renders the child somewhere between those two extents based on
+`shrinkOffset`.
+
+That means header overflows are usually contract bugs, not cosmetic bugs:
+
+- If a pinned header has `minExtent == maxExtent`, that extent must be at least
+  as tall as the child plus its padding.
+- If a collapsible header has `minExtent < maxExtent`, the child will receive a
+  shrinking height as the user scrolls. If the title content should visually
+  scroll away rather than compress, lay it out at its full height and clip the
+  visible area as it collapses.
+- Do not fix sticky-header overflows by repeatedly nudging feature heights until
+  the error disappears. First calculate whether the declared extent matches the
+  child layout: text line heights, gaps, vertical padding, icons, and input
+  control height.
+- Search headers should use a stable input-control height. In this app,
+  `CatchTextField.compactControlHeight` is the control-height contract for
+  compact search fields inside pinned sliver headers.
+
+Catch's shared `CatchSliverHeader` now exposes
+`CatchSliverHeader.twoLineTitleHeight` for feature headers that combine
+`displayL`, `bodyS`, one small line gap, and standard title padding. Reuse that
+constant before inventing another one-off title height.
 
 ## Current Codebase Patterns
 

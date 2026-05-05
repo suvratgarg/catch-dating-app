@@ -4,6 +4,8 @@ import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   testWidgets('CatchTopBar renders the handoff-sized title row', (
     tester,
@@ -138,11 +140,52 @@ void main() {
     expect(find.text('Preview'), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.more_horiz_rounded));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
     await tester.tap(find.text('Edit profile'));
-    await tester.pumpAndSettle();
+    await pumpFeatureUi(tester);
 
     expect(selected, 'edit');
+  });
+
+  testWidgets('CatchSliverHeader clips collapsible title while scrolling', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => CustomScrollView(
+              slivers: [
+                ...const CatchSliverHeader(
+                  titleHeight: 112,
+                  title: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text('Sticky title'),
+                        SizedBox(height: 12),
+                        Text('Subtitle'),
+                      ],
+                    ),
+                  ),
+                ).buildSlivers(context),
+                const SliverToBoxAdapter(child: SizedBox(height: 400)),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -120));
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
   });
 }
 

@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
@@ -10,7 +13,6 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -22,12 +24,6 @@ import 'package:go_router/go_router.dart';
 //   3  Chats     (MatchesListScreen)
 //   4  You       (ProfileScreen)
 
-final appShellConnectivityProvider = StreamProvider<List<ConnectivityResult>>((
-  ref,
-) {
-  return Connectivity().onConnectivityChanged;
-});
-
 final appShellFcmInitializationProvider = FutureProvider.autoDispose
     .family<void, String>((ref, uid) async {
       final fcmService = ref.watch(fcmServiceProvider);
@@ -35,12 +31,6 @@ final appShellFcmInitializationProvider = FutureProvider.autoDispose
 
       await fcmService.initialize(uid: uid, router: ref.read(goRouterProvider));
     });
-
-@visibleForTesting
-bool appShellIsOffline(List<ConnectivityResult> results) {
-  return results.isEmpty ||
-      results.every((result) => result == ConnectivityResult.none);
-}
 
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.navigationShell});
@@ -55,11 +45,12 @@ class AppShell extends ConsumerWidget {
         ? ref.watch(totalUnreadCountProvider(uid))
         : 0;
     final connectivityResults = ref
-        .watch(appShellConnectivityProvider)
+        .watch(appConnectivityProvider)
         .asData
         ?.value;
     final isOffline =
-        connectivityResults != null && appShellIsOffline(connectivityResults);
+        connectivityResults != null &&
+        connectivityResultsAreOffline(connectivityResults);
 
     if (isAuthenticated) {
       ref.watch(appShellFcmInitializationProvider(uid));
@@ -82,6 +73,7 @@ class AppShell extends ConsumerWidget {
       final uid = next.asData?.value;
       ref.read(errorLoggerProvider).setUserId(uid);
       if (uid == null && prev?.asData?.value != null) {
+        unawaited(ref.read(fcmServiceProvider).reset());
         ref.invalidate(watchUserProfileProvider);
       }
     });

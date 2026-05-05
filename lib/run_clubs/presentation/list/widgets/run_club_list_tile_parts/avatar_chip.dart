@@ -15,47 +15,51 @@ class _AvatarChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return GestureDetector(
-      onTap: onTap,
-      child: SizedBox(
-        width: 64,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                Container(
-                  width: 64,
-                  height: 64,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: t.line2, width: 1.5),
-                  ),
-                  child: ClipOval(child: _ClubImage(club: club)),
-                ),
-                if (showLiveBadge)
-                  Positioned(
-                    bottom: -2,
-                    right: -6,
-                    child: CatchBadge(
-                      label: 'LIVE',
-                      tone: CatchBadgeTone.live,
-                      size: CatchBadgeSize.sm,
-                      uppercase: true,
+    return Semantics(
+      button: onTap != null,
+      label: 'Open ${club.name} run club',
+      child: GestureDetector(
+        onTap: onTap,
+        child: SizedBox(
+          width: 64,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: t.line2, width: 1.5),
                     ),
+                    child: ClipOval(child: _ClubImage(club: club)),
                   ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              club.name,
-              style: CatchTextStyles.labelM(context, color: t.ink),
-              textAlign: TextAlign.center,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-          ],
+                  if (showLiveBadge)
+                    Positioned(
+                      bottom: -2,
+                      right: -6,
+                      child: CatchBadge(
+                        label: 'LIVE',
+                        tone: CatchBadgeTone.live,
+                        size: CatchBadgeSize.sm,
+                        uppercase: true,
+                      ),
+                    ),
+                ],
+              ),
+              const SizedBox(height: 6),
+              Text(
+                club.name,
+                style: CatchTextStyles.labelM(context, color: t.ink),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
         ),
       ),
     );

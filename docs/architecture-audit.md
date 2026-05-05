@@ -1,3 +1,11 @@
+---
+doc_id: architecture_audit
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: historical
+---
+
 # Catch Dating App — State Management Architecture Audit
 
 > Historical audit snapshot. Do not treat provider counts, issue counts, or
@@ -6,6 +14,12 @@
 > in `docs/controller_patterns.md`; active widget cleanup lives in
 > `docs/widget_cleanup_todo.md` and `docs/widget_catalog.md`; error-handling
 > strategy lives in `docs/error-handling-audit.md`.
+
+## Read Policy
+
+Prefer `docs/controller_patterns.md` and `docs/audit_registry/rules.json` for
+current rules. Read this document only for historical provider/state-management
+context, and re-verify provider counts and file paths before acting.
 
 **Date:** 2026-05-03
 **Last updated:** 2026-05-03

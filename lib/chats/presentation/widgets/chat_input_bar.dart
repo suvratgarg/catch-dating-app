@@ -28,8 +28,8 @@ class ChatInputBar extends StatelessWidget {
     return SafeArea(
       child: Container(
         padding: const EdgeInsets.symmetric(
-          horizontal: Sizes.p12,
-          vertical: Sizes.p8,
+          horizontal: CatchSpacing.s3,
+          vertical: CatchSpacing.s2,
         ),
         decoration: BoxDecoration(
           color: t.surface,
@@ -68,6 +68,7 @@ class ChatInputBar extends StatelessWidget {
             gapW8,
             IconButton.filled(
               onPressed: disabled ? null : onSend,
+              tooltip: 'Send message',
               icon: sending
                   ? const SizedBox(
                       width: 20,

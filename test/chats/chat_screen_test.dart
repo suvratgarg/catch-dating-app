@@ -15,6 +15,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 class FakeMatchRepository implements MatchRepository {
   FakeMatchRepository({this.match});
@@ -134,7 +135,7 @@ void main() {
         ),
       );
 
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(find.text('Taylor'), findsOneWidget);
       expect(find.text('Say hi to Taylor!'), findsOneWidget);
@@ -200,11 +201,11 @@ void main() {
         ),
       );
 
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       await tester.enterText(find.byType(TextField), '  Hello Taylor  ');
       await tester.tap(find.byIcon(Icons.send_rounded));
-      await tester.pumpAndSettle();
+      await pumpFeatureUi(tester);
 
       expect(chatRepository.sendCalls, hasLength(1));
       expect(chatRepository.sendCalls.single.$1, 'match-1');

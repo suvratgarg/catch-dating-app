@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
@@ -46,14 +47,8 @@ class ProfileScreen extends ConsumerWidget {
 
               return TabBarView(
                 children: [
-                  _ProfileTabScrollView(
-                    child: ProfileTab(
-                      user: user,
-                      uploadState: uploadState,
-                      physics: const NeverScrollableScrollPhysics(),
-                    ),
-                  ),
-                  _ProfileTabScrollView(
+                  _ProfileTabScrollView(user: user, uploadState: uploadState),
+                  _PreviewTabScrollView(
                     child: PreviewTab(
                       profile: publicProfileFromUserProfile(user),
                     ),
@@ -69,7 +64,28 @@ class ProfileScreen extends ConsumerWidget {
 }
 
 class _ProfileTabScrollView extends StatelessWidget {
-  const _ProfileTabScrollView({required this.child});
+  const _ProfileTabScrollView({required this.user, required this.uploadState});
+
+  final UserProfile user;
+  final PhotoUploadState uploadState;
+
+  @override
+  Widget build(BuildContext context) {
+    return Builder(
+      builder: (context) => CustomScrollView(
+        slivers: [
+          SliverOverlapInjector(
+            handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+          ),
+          ProfileTabSliverBody(user: user, uploadState: uploadState),
+        ],
+      ),
+    );
+  }
+}
+
+class _PreviewTabScrollView extends StatelessWidget {
+  const _PreviewTabScrollView({required this.child});
 
   final Widget child;
 
@@ -81,7 +97,10 @@ class _ProfileTabScrollView extends StatelessWidget {
           SliverOverlapInjector(
             handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
           ),
-          SliverToBoxAdapter(child: child),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+            sliver: SliverFillRemaining(child: child),
+          ),
         ],
       ),
     );

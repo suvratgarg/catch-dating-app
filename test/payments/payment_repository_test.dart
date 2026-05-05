@@ -5,6 +5,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 
+import '../test_pump_helpers.dart';
+
 class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
   final callables = <String, TestHttpsCallable>{};
 
@@ -119,7 +121,7 @@ void main() {
           userEmail: 'priya@example.com',
           userContact: '+919876543210',
         );
-        await Future<void>.delayed(Duration.zero);
+        await flushTestEventQueue();
 
         expect(functions.callables['createRazorpayOrder']!.calls.single, {
           'runId': 'run-1',
@@ -243,7 +245,7 @@ void main() {
           userEmail: 'priya@example.com',
           userContact: '+919876543210',
         );
-        await Future<void>.delayed(Duration.zero);
+        await flushTestEventQueue();
 
         razorpay.emitSuccess(
           PaymentSuccessResponse('pay_123', 'order_123', null, {}),
@@ -272,7 +274,7 @@ void main() {
         userEmail: 'priya@example.com',
         userContact: '+919876543210',
       );
-      await Future<void>.delayed(Duration.zero);
+      await flushTestEventQueue();
 
       razorpay.emitError(
         PaymentFailureResponse(
@@ -309,7 +311,7 @@ void main() {
           userEmail: 'priya@example.com',
           userContact: '+919876543210',
         );
-        await Future<void>.delayed(Duration.zero);
+        await flushTestEventQueue();
 
         razorpay.emitSuccess(
           PaymentSuccessResponse('pay_123', 'order_123', 'sig_123', {}),

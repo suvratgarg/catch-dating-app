@@ -20,11 +20,16 @@ class ChatRunContextHeader extends StatelessWidget {
         : DateFormat('EEE d MMM').format(run!.startTime);
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(Sizes.p12, Sizes.p8, Sizes.p12, 0),
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s3,
+        CatchSpacing.s2,
+        CatchSpacing.s3,
+        0,
+      ),
       child: CatchSurface(
         tone: CatchSurfaceTone.primarySoft,
         borderColor: t.line,
-        padding: const EdgeInsets.all(Sizes.p12),
+        padding: const EdgeInsets.all(CatchSpacing.s3),
         child: Row(
           children: [
             Container(

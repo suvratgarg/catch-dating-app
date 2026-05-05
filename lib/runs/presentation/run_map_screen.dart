@@ -118,28 +118,33 @@ class _RunsMap extends ConsumerWidget {
                 point: LatLng(run.startingPointLat!, run.startingPointLng!),
                 width: 52,
                 height: 52,
-                child: GestureDetector(
-                  onTap: () => onRunSelected(run),
-                  child: AnimatedScale(
-                    scale: selectedRunId == run.id ? 1.14 : 1,
-                    duration: const Duration(milliseconds: 160),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: selectedRunId == run.id ? t.primary : t.ink,
-                        shape: BoxShape.circle,
-                        boxShadow: const [
-                          BoxShadow(
-                            color: Color(0x33000000),
-                            blurRadius: 12,
-                            offset: Offset(0, 6),
-                          ),
-                        ],
-                      ),
-                      child: Icon(
-                        Icons.directions_run_rounded,
-                        color: selectedRunId == run.id
-                            ? t.primaryInk
-                            : t.surface,
+                child: Semantics(
+                  button: true,
+                  selected: selectedRunId == run.id,
+                  label: 'Select ${run.title}',
+                  child: GestureDetector(
+                    onTap: () => onRunSelected(run),
+                    child: AnimatedScale(
+                      scale: selectedRunId == run.id ? 1.14 : 1,
+                      duration: const Duration(milliseconds: 160),
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: selectedRunId == run.id ? t.primary : t.ink,
+                          shape: BoxShape.circle,
+                          boxShadow: const [
+                            BoxShadow(
+                              color: Color(0x33000000),
+                              blurRadius: 12,
+                              offset: Offset(0, 6),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          Icons.directions_run_rounded,
+                          color: selectedRunId == run.id
+                              ? t.primaryInk
+                              : t.surface,
+                        ),
                       ),
                     ),
                   ),

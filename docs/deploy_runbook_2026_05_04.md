@@ -1,4 +1,19 @@
+---
+doc_id: deploy_runbook
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: runbook
+---
+
 # Deploy Runbook — May 2026 Audit Changes
+
+## Read Policy
+
+Use this for the May 2026 deployment sequence only. Re-verify branch state,
+environment, Firebase project, and command outputs before running deployment
+steps. Do not copy deployment notes into new trackers; update this runbook or
+`docs/audit_registry/doc_versions.json`.
 
 **Date:** 2026-05-04
 **Context:** Deploying 14 audit fixes across functions, Firestore rules, and Storage rules.

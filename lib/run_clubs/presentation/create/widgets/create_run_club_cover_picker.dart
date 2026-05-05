@@ -28,64 +28,70 @@ class CreateRunClubCoverPicker extends StatelessWidget {
       children: [
         const CatchFormFieldLabel(label: 'Cover photo', isOptional: true),
         gapH8,
-        GestureDetector(
-          onTap: onTap,
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-              child: hasCover
-                  ? Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        if (coverImageBytes != null)
-                          Image.memory(coverImageBytes!, fit: BoxFit.cover)
-                        else
-                          Image.network(
-                            existingImageUrl!,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, _, _) =>
-                                Container(color: t.raised),
-                          ),
-                        Positioned(
-                          bottom: 8,
-                          right: 8,
-                          child: Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: t.surface.withValues(alpha: 0.85),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              Icons.edit_outlined,
-                              size: 16,
-                              color: t.ink,
-                            ),
-                          ),
-                        ),
-                      ],
-                    )
-                  : Container(
-                      color: t.raised,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
+        Semantics(
+          button: true,
+          label: hasCover
+              ? 'Change run club cover photo'
+              : 'Add run club cover photo',
+          child: GestureDetector(
+            onTap: onTap,
+            child: AspectRatio(
+              aspectRatio: 16 / 9,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(CatchRadius.md),
+                child: hasCover
+                    ? Stack(
+                        fit: StackFit.expand,
                         children: [
-                          Icon(
-                            Icons.add_photo_alternate_outlined,
-                            size: 40,
-                            color: t.ink2,
-                          ),
-                          gapH8,
-                          Text(
-                            'Add cover photo',
-                            style: CatchTextStyles.bodyM(
-                              context,
-                              color: t.ink2,
+                          if (coverImageBytes != null)
+                            Image.memory(coverImageBytes!, fit: BoxFit.cover)
+                          else
+                            Image.network(
+                              existingImageUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) =>
+                                  Container(color: t.raised),
+                            ),
+                          Positioned(
+                            bottom: 8,
+                            right: 8,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: t.surface.withValues(alpha: 0.85),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Icon(
+                                Icons.edit_outlined,
+                                size: 16,
+                                color: t.ink,
+                              ),
                             ),
                           ),
                         ],
+                      )
+                    : Container(
+                        color: t.raised,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.add_photo_alternate_outlined,
+                              size: 40,
+                              color: t.ink2,
+                            ),
+                            gapH8,
+                            Text(
+                              'Add cover photo',
+                              style: CatchTextStyles.bodyM(
+                                context,
+                                color: t.ink2,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+              ),
             ),
           ),
         ),

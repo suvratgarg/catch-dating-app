@@ -8,12 +8,13 @@ class ChatSearchField extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final query = ref.watch(chatSearchQueryProvider);
+
     return CatchTextField(
       label: 'Search chats',
       showLabel: false,
-      initialValue: ref.read(chatSearchQueryProvider),
-      onChanged: (q) =>
-          ref.read(chatSearchQueryProvider.notifier).setQuery(q),
+      initialValue: query,
+      onChanged: (q) => ref.read(chatSearchQueryProvider.notifier).setQuery(q),
       hintText: 'Search by name',
       size: CatchTextFieldSize.compact,
       shape: CatchTextFieldShape.pill,

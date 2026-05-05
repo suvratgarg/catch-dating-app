@@ -27,17 +27,13 @@ class LocationInitializer extends _$LocationInitializer {
     if (location == null) return;
 
     final nearest = IndianCity.nearestCity(location);
-    final fields = <String, dynamic>{
-      'latitude': location.latitude,
-      'longitude': location.longitude,
-    };
-    if (nearest != null && userProfile.city == null) {
-      fields['city'] = nearest.name;
-    }
-
-    await ref.read(userProfileRepositoryProvider).updateUserProfile(
-      uid: userProfile.uid,
-      fields: fields,
-    );
+    await ref
+        .read(userProfileRepositoryProvider)
+        .updateDetectedLocation(
+          uid: userProfile.uid,
+          latitude: location.latitude,
+          longitude: location.longitude,
+          city: userProfile.city == null ? nearest : null,
+        );
   }
 }

@@ -16,6 +16,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 import '../runs/runs_test_helpers.dart';
+import '../test_pump_helpers.dart';
 
 DashboardRecommendationsQuery _recommendationsQueryForUser(UserProfile user) =>
     DashboardRecommendationsQuery(
@@ -328,7 +329,7 @@ void main() {
         ),
       );
 
-      await tester.pumpAndSettle();
+      await _pumpDashboardUi(tester);
 
       expect(find.textContaining('NEXT RUN'), findsOneWidget);
       expect(find.textContaining('SWIPE WINDOW CLOSING'), findsOneWidget);
@@ -337,7 +338,7 @@ void main() {
         find.byKey(DashboardFull.scrollViewKey),
         const Offset(0, -500),
       );
-      await tester.pumpAndSettle();
+      await _pumpDashboardUi(tester);
 
       expect(find.text('Recommended runs'), findsOneWidget);
     });
@@ -384,28 +385,32 @@ void main() {
       await tester.pumpWidget(
         MaterialApp.router(theme: AppTheme.light, routerConfig: router),
       );
-      await tester.pumpAndSettle();
+      await _pumpDashboardUi(tester);
 
       await tester.tap(find.text('Map view'));
-      await tester.pumpAndSettle();
+      await _pumpDashboardUi(tester);
 
       expect(find.text('Map screen'), findsOneWidget);
 
       router.go('/');
-      await tester.pumpAndSettle();
+      await _pumpDashboardUi(tester);
 
       await tester.tap(find.text('Browse runs'));
-      await tester.pumpAndSettle();
+      await _pumpDashboardUi(tester);
 
       expect(find.text('Clubs screen'), findsOneWidget);
 
       router.go('/');
-      await tester.pumpAndSettle();
+      await _pumpDashboardUi(tester);
 
       await tester.tap(find.text('Calendar'));
-      await tester.pumpAndSettle();
+      await _pumpDashboardUi(tester);
 
       expect(find.text('Calendar screen'), findsOneWidget);
     });
   });
+}
+
+Future<void> _pumpDashboardUi(WidgetTester tester) async {
+  await pumpFeatureUi(tester);
 }

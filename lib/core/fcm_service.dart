@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart'
@@ -13,6 +16,10 @@ part 'fcm_service.g.dart';
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // No UI available here. The OS shows the notification automatically.
   // Data-only processing (if needed) goes here.
+}
+
+void registerFirebaseMessagingBackgroundHandler() {
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 }
 
 String? chatRouteFromMessageData(Map<String, Object?> data) {
@@ -30,6 +37,10 @@ class FcmService {
   FcmService(this._db);
 
   final FirebaseFirestore _db;
+  Future<void>? _initialization;
+  String? _initializedUid;
+  StreamSubscription<String>? _tokenRefreshSubscription;
+  StreamSubscription<RemoteMessage>? _messageOpenedSubscription;
 
   bool get isSupportedPlatform =>
       AppConfig.supportsPushMessagingOnCurrentPlatform;
@@ -40,6 +51,41 @@ class FcmService {
     required GoRouter router,
   }) async {
     if (!isSupportedPlatform) return;
+    final currentInitialization = _initialization;
+    if (_initializedUid == uid && currentInitialization != null) {
+      return currentInitialization;
+    }
+
+    _initializedUid = uid;
+    final initialization = _initialize(uid: uid, router: router);
+    _initialization = initialization;
+
+    try {
+      await initialization;
+    } catch (_) {
+      if (identical(_initialization, initialization)) {
+        _initialization = null;
+        _initializedUid = null;
+      }
+      rethrow;
+    }
+  }
+
+  Future<void> reset() async {
+    _initialization = null;
+    _initializedUid = null;
+    await _tokenRefreshSubscription?.cancel();
+    await _messageOpenedSubscription?.cancel();
+    _tokenRefreshSubscription = null;
+    _messageOpenedSubscription = null;
+  }
+
+  Future<void> _initialize({
+    required String uid,
+    required GoRouter router,
+  }) async {
+    await reset();
+    _initializedUid = uid;
 
     // Request permission (no-op on Android < 13, required on iOS).
     await FirebaseMessaging.instance.requestPermission(
@@ -48,7 +94,8 @@ class FcmService {
       sound: true,
     );
 
-    FirebaseMessaging.instance.onTokenRefresh.listen((t) => _saveToken(uid, t));
+    _tokenRefreshSubscription = FirebaseMessaging.instance.onTokenRefresh
+        .listen((token) => unawaited(_saveToken(uid, token)));
     final token = await _currentToken();
     if (token != null) await _saveToken(uid, token);
 
@@ -56,7 +103,7 @@ class FcmService {
     // We don't display an OS notification while the app is open, so no handler needed.
 
     // Background tap: app was open in background, user tapped notification.
-    FirebaseMessaging.onMessageOpenedApp.listen(
+    _messageOpenedSubscription = FirebaseMessaging.onMessageOpenedApp.listen(
       (msg) => _handleTap(router, msg),
     );
 
@@ -102,4 +149,8 @@ class FcmService {
 }
 
 @Riverpod(keepAlive: true)
-FcmService fcmService(Ref ref) => FcmService(FirebaseFirestore.instance);
+FcmService fcmService(Ref ref) {
+  final service = FcmService(ref.watch(firebaseFirestoreProvider));
+  ref.onDispose(() => unawaited(service.reset()));
+  return service;
+}

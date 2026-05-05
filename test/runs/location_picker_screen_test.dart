@@ -6,6 +6,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../test_pump_helpers.dart';
 import 'runs_test_helpers.dart';
 
 void main() {
@@ -92,10 +93,10 @@ void main() {
             ),
           ),
         );
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
 
         await tester.tap(find.text('Open'));
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
 
         expect(find.text('19.076000, 72.877700'), findsOneWidget);
         expect(
@@ -108,7 +109,7 @@ void main() {
         );
 
         await tester.tap(find.widgetWithText(CatchTopBarTextAction, 'Confirm'));
-        await tester.pumpAndSettle();
+        await pumpFeatureUi(tester);
 
         expect(find.text('Open'), findsOneWidget);
       },

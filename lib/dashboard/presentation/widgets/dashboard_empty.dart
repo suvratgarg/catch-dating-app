@@ -49,7 +49,7 @@ class DashboardEmpty extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
-                Sizes.p8,
+                CatchSpacing.s2,
                 CatchSpacing.s5,
                 Sizes.p10,
               ),
@@ -83,9 +83,9 @@ class DashboardEmpty extends StatelessWidget {
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(
                   CatchSpacing.s5,
-                  Sizes.p4,
+                  CatchSpacing.s1,
                   CatchSpacing.s5,
-                  Sizes.p24,
+                  CatchSpacing.s6,
                 ),
                 children: [
                   const EmptyHeroCard(),

@@ -46,6 +46,9 @@ class CatchTextField extends StatefulWidget {
     this.showClearButton = false,
   });
 
+  static const double compactControlHeight = 52;
+  static const double mdControlHeight = 56;
+
   final String label;
   final bool isOptional;
   final bool showLabel;
@@ -122,6 +125,15 @@ class _CatchTextFieldState extends State<CatchTextField> {
       _attachControllerListener(_controller);
       _syncFieldValue();
     }
+    if (widget.controller == null &&
+        oldWidget.controller == null &&
+        widget.initialValue != oldWidget.initialValue &&
+        widget.initialValue != _internalController.text) {
+      _internalController.value = TextEditingValue(
+        text: widget.initialValue ?? '',
+      );
+      _syncFieldValue();
+    }
   }
 
   @override
@@ -161,9 +173,11 @@ class _CatchTextFieldState extends State<CatchTextField> {
         final supportText = error ?? widget.helperText;
         final t = CatchTokens.of(context);
         final borderColor = _borderColor(t, hasError);
+        final controlHeight = _singleLineControlHeight;
         final inputShell = AnimatedContainer(
           duration: CatchMotion.fast,
           curve: CatchMotion.standardCurve,
+          height: controlHeight,
           decoration: BoxDecoration(
             color: _fillColor(t),
             borderRadius: BorderRadius.circular(_radius),
@@ -219,12 +233,14 @@ class _CatchTextFieldState extends State<CatchTextField> {
               prefixStyle: CatchTextStyles.bodyL(context, color: t.ink2),
               suffixText: widget.suffixText,
               suffixStyle: CatchTextStyles.bodyM(context, color: t.ink2),
+              prefixIconConstraints: _iconConstraints,
               prefixIcon: widget.prefixIcon == null
                   ? null
                   : IconTheme(
                       data: IconThemeData(color: t.ink3, size: CatchIcon.md),
                       child: widget.prefixIcon!,
                     ),
+              suffixIconConstraints: _iconConstraints,
               suffixIcon: _buildSuffixIcon(t),
             ),
           ),
@@ -329,12 +345,36 @@ class _CatchTextFieldState extends State<CatchTextField> {
     return switch (widget.size) {
       CatchTextFieldSize.compact => const EdgeInsets.symmetric(
         horizontal: 12,
-        vertical: 10,
+        vertical: 8,
       ),
       CatchTextFieldSize.md => const EdgeInsets.symmetric(
         horizontal: 14,
         vertical: 14,
       ),
+    };
+  }
+
+  BoxConstraints? get _iconConstraints {
+    if (widget.maxLines != 1 || widget.minLines != null) return null;
+
+    return switch (widget.size) {
+      CatchTextFieldSize.compact => const BoxConstraints.tightFor(
+        width: CatchTextField.compactControlHeight,
+        height: CatchTextField.compactControlHeight,
+      ),
+      CatchTextFieldSize.md => const BoxConstraints.tightFor(
+        width: CatchTextField.mdControlHeight,
+        height: CatchTextField.mdControlHeight,
+      ),
+    };
+  }
+
+  double? get _singleLineControlHeight {
+    if (widget.maxLines != 1 || widget.minLines != null) return null;
+
+    return switch (widget.size) {
+      CatchTextFieldSize.compact => CatchTextField.compactControlHeight,
+      CatchTextFieldSize.md => CatchTextField.mdControlHeight,
     };
   }
 }

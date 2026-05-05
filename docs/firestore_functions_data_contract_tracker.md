@@ -1,4 +1,18 @@
+---
+doc_id: firestore_contract_tracker
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: active
+---
+
 # Firestore, Functions, and Data Contract Cleanup Tracker
+
+## Read Policy
+
+Read this before Firestore rules, Functions mutation, schema-sync, or data
+contract work. Stamp touched files against this doc version in the audit
+registry when applying contract rules.
 
 ## User Instructions
 

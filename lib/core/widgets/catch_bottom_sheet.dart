@@ -31,10 +31,10 @@ class CatchBottomSheetScaffold extends StatelessWidget {
     final effectivePadding =
         padding ??
         EdgeInsets.fromLTRB(
-          Sizes.p16,
-          Sizes.p12,
-          Sizes.p16,
-          bottomInset + Sizes.p16,
+          CatchSpacing.s4,
+          CatchSpacing.s3,
+          CatchSpacing.s4,
+          bottomInset + CatchSpacing.s4,
         );
 
     return Padding(

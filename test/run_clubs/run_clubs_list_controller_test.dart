@@ -10,6 +10,7 @@ import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart'
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../test_pump_helpers.dart';
 import 'run_clubs_test_helpers.dart';
 
 CityData _cityFromEnum(IndianCity c) => CityData(
@@ -162,8 +163,7 @@ void main() {
         );
         addTearDown(subscription.close);
 
-        await Future<void>.delayed(Duration.zero);
-        await Future<void>.delayed(Duration.zero);
+        await flushTestEventQueue();
 
         final viewModel = subscription.read().value!;
 

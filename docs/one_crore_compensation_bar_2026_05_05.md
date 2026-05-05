@@ -1,4 +1,18 @@
+---
+doc_id: compensation_bar_assessment
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: snapshot
+---
+
 # One Crore Compensation Bar Assessment
+
+## Read Policy
+
+This is a dated quality assessment snapshot. Use it for context only; re-run the
+audit registry report, focused tests, analyzer, and relevant scanners before
+treating the assessment as current.
 
 Date: 2026-05-05  
 Repo: `/Users/suvratgarg/Development/catch-dating-app/catch_dating_app`  

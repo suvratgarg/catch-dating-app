@@ -6,12 +6,12 @@ import 'package:catch_dating_app/matches/presentation/widgets/chat_search_field.
 import 'package:flutter/material.dart';
 
 class ChatsSliverHeader extends CatchSliverHeader {
-  ChatsSliverHeader({required int count})
+  ChatsSliverHeader({required int count, bool showSearchField = true})
     : super(
         title: _TitleRow(count: count),
-        bottom: const _SearchRow(),
-        titleHeight: 82,
-        bottomHeight: 64,
+        bottom: showSearchField ? const _SearchRow() : null,
+        titleHeight: CatchSliverHeader.twoLineTitleHeight,
+        bottomHeight: CatchSliverHeader.compactSearchBottomHeight,
       );
 }
 

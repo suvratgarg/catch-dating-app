@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -76,6 +77,22 @@ class UserProfileRepository {
     action: 'update photo URLs',
   );
 
+  Future<void> updateDetectedLocation({
+    required String uid,
+    required double latitude,
+    required double longitude,
+    IndianCity? city,
+  }) {
+    return updateUserProfile(
+      uid: uid,
+      fields: {
+        'latitude': latitude,
+        'longitude': longitude,
+        if (city != null) 'city': city.name,
+      },
+    );
+  }
+
   Future<void> setProfileComplete({required String uid}) =>
       withFirestoreErrorContext(
         () => updateUserProfile(uid: uid, fields: {'profileComplete': true}),
@@ -100,7 +117,6 @@ class UserProfileRepository {
         collection: _collectionPath,
         action: 'unsave run',
       );
-
 }
 
 Map<String, Object?> _callableFields(Map<String, dynamic> fields) =>
@@ -120,11 +136,10 @@ Object? _callableValue(Object? value) {
 }
 
 @Riverpod(keepAlive: true)
-UserProfileRepository userProfileRepository(Ref ref) =>
-    UserProfileRepository(
-      ref.watch(firebaseFirestoreProvider),
-      ref.watch(firebaseFunctionsProvider),
-    );
+UserProfileRepository userProfileRepository(Ref ref) => UserProfileRepository(
+  ref.watch(firebaseFirestoreProvider),
+  ref.watch(firebaseFunctionsProvider),
+);
 
 @Riverpod(keepAlive: true)
 Stream<UserProfile?> watchUserProfile(Ref ref) {

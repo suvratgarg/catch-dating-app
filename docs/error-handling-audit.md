@@ -1,9 +1,23 @@
+---
+doc_id: error_handling_audit
+version: 2.0.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: snapshot
+---
+
 # Catch Dating App — Error Handling Architecture Audit
 
 > Audit snapshot. Re-verify counts and remediation status before treating this
 > file as current. Use `docs/README.md` for the docs ownership map and keep new
 > durable error-handling decisions in this document rather than creating parallel
 > trackers.
+
+## Read Policy
+
+Use this as an error-handling snapshot and remediation map. Re-run focused
+searches/tests before treating counts as current. Stamp files reviewed against
+this doc in the audit registry rather than copying findings into new trackers.
 
 **Date:** 2026-05-03
 **Scope:** Complete mapping of exception types, error propagation paths, user-facing error rendering, logging/telemetry, and gap analysis.

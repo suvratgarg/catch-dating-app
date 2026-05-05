@@ -19,6 +19,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../test_pump_helpers.dart';
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -67,10 +69,10 @@ void main() {
           ),
         ),
       );
-      await tester.pumpAndSettle();
+      await _pumpRunClubFlow(tester);
 
-      await tester.tap(find.text(club.name).first);
-      await tester.pumpAndSettle();
+      await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+      await _pumpRunClubFlow(tester);
 
       expect(find.text('Club ${club.id}'), findsOneWidget);
     });
@@ -103,7 +105,7 @@ void main() {
             ),
           ),
         );
-        await tester.pumpAndSettle();
+        await _pumpRunClubFlow(tester);
 
         expect(find.text(club.name), findsOneWidget);
         expect(find.text('Run club not found.'), findsNothing);
@@ -146,7 +148,7 @@ void main() {
         // Pump once so the provider subscribes to controller.stream, then emit initial value.
         await tester.pump();
         controller.add(club);
-        await tester.pumpAndSettle();
+        await _pumpRunClubFlow(tester);
 
         expect(find.text('Join club'), findsOneWidget);
         expect(find.text('Leave club'), findsNothing);
@@ -154,13 +156,17 @@ void main() {
         controller.add(
           club.copyWith(memberUserIds: [...club.memberUserIds, 'runner-2']),
         );
-        await tester.pumpAndSettle();
+        await _pumpRunClubFlow(tester);
 
         expect(find.text('Join club'), findsNothing);
         expect(find.text('Leave club'), findsOneWidget);
       },
     );
   });
+}
+
+Future<void> _pumpRunClubFlow(WidgetTester tester) async {
+  await pumpFeatureUi(tester);
 }
 
 RunClub _buildClub({

@@ -1,9 +1,24 @@
+---
+doc_id: docs_index
+version: 2.1.0
+updated: 2026-05-05
+owner: recursive_audit_loop
+status: active
+---
+
 # Docs Index
 
 This folder should contain durable source-of-truth documents, not every session
 report or temporary audit note. When a cleanup pass discovers new guidance, move
 the durable decision into the relevant source-of-truth doc and delete the stale
 or duplicated note once it has served its purpose.
+
+## Read Policy
+
+Start with `docs/audit_registry/README.md` and
+`docs/audit_registry/doc_versions.json` before rereading long docs. Use this
+index to find the durable owner for a topic, then read only the relevant
+section unless the task requires a full historical audit.
 
 ## Documentation Hygiene
 
@@ -21,7 +36,7 @@ or duplicated note once it has served its purpose.
 
 | Area | Document | Purpose |
 |---|---|---|
-| Widget cleanup process | `widget_cleanup_todo.md` | Active backlog, findings, completed widget-cleanup work, and next actions. |
+| Widget cleanup process | `widget_cleanup_todo.md` | Short human-readable pointer for widget cleanup. Active state lives in `audit_registry/backlog.json`. |
 | Widget inventory and cleanup skill | `widget_catalog.md` | Operating instructions, recurring anti-patterns, and catalog of Flutter widgets. |
 | Sliver layout guidance | `sliver_layout_guide.md` | Sliver-native screen pattern, performance tradeoffs, migration rubric, and Catch code examples. |
 | Controller architecture | `controller_patterns.md` | Current controller/view-model patterns and UI/controller boundary rules. |
@@ -30,6 +45,7 @@ or duplicated note once it has served its purpose.
 | Deployment | `deploy_runbook_2026_05_04.md` | Deployment order and operational prerequisites for May 2026 audit changes. |
 | Firestore type sync | `firestore_type_sync_2026_05_05.md` | Dart-to-TypeScript Firestore type-generation workflow and rationale. |
 | Historical architecture audit | `architecture-audit.md` | Historical state-management audit. Use `controller_patterns.md` for current controller guidance. |
+| Recursive audit registry | `audit_registry/` | Machine-readable file inventory, pass receipts, rule versions, and doc versions for repeated cleanup loops. |
 
 ## Before Adding A New Doc
 
