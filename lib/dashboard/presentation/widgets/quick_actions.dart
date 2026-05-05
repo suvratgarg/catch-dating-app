@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -7,6 +8,9 @@ import 'package:go_router/go_router.dart';
 
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
+
+  static const double _tileHeight = 122;
+  static const double _iconBoxSize = 36;
 
   static final _actions = [
     _QuickAction(
@@ -38,50 +42,65 @@ class QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     return Row(
-      children: _actions.map((a) {
-        return Expanded(
-          child: Padding(
-            padding: EdgeInsets.only(right: a == _actions.last ? 0 : 10),
+      children: [
+        for (var i = 0; i < _actions.length; i++) ...[
+          Expanded(
             child: Opacity(
-              opacity: a.route == null ? 0.7 : 1,
-              child: CatchSurface(
-                onTap: a.route == null ? null : () => _onTap(context, a),
-                padding: const EdgeInsets.all(14),
-                radius: 16,
-                borderColor: t.line,
-                backgroundColor: t.surface,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Container(
-                          width: 36,
-                          height: 36,
-                          decoration: BoxDecoration(
-                            color: t.primarySoft,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(a.icon, color: t.primary, size: 18),
-                        ),
-                        const Spacer(),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      a.label,
-                      style: CatchTextStyles.labelL(context),
-                      maxLines: 2,
-                    ),
-                  ],
-                ),
+              opacity: _actions[i].route == null ? 0.7 : 1,
+              child: _QuickActionTile(
+                action: _actions[i],
+                onTap: _actions[i].route == null
+                    ? null
+                    : () => _onTap(context, _actions[i]),
               ),
             ),
           ),
-        );
-      }).toList(),
+          if (i < _actions.length - 1) gapW10,
+        ],
+      ],
+    );
+  }
+}
+
+class _QuickActionTile extends StatelessWidget {
+  const _QuickActionTile({required this.action, required this.onTap});
+
+  final _QuickAction action;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      onTap: onTap,
+      height: QuickActions._tileHeight,
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      radius: CatchRadius.md,
+      borderColor: t.line,
+      backgroundColor: t.surface,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            width: QuickActions._iconBoxSize,
+            height: QuickActions._iconBoxSize,
+            decoration: BoxDecoration(
+              color: t.primarySoft,
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+            ),
+            child: Icon(action.icon, color: t.primary, size: 18),
+          ),
+          gapH8,
+          Text(
+            action.label,
+            style: CatchTextStyles.labelL(context),
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ],
+      ),
     );
   }
 }

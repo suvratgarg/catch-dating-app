@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
@@ -577,6 +578,26 @@ void main() {
       expect(find.text('Calendar'), findsOneWidget);
     });
 
+    testWidgets('keeps primary action tiles visually consistent', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(body: QuickActions()),
+        ),
+      );
+
+      final browseSize = tester.getSize(_quickActionSurface('Browse runs'));
+      final mapSize = tester.getSize(_quickActionSurface('Map view'));
+      final calendarSize = tester.getSize(_quickActionSurface('Calendar'));
+
+      expect(mapSize.height, browseSize.height);
+      expect(calendarSize.height, browseSize.height);
+      expect(mapSize.width, browseSize.width);
+      expect(calendarSize.width, browseSize.width);
+    });
+
     testWidgets('navigates for all primary actions', (tester) async {
       final router = GoRouter(
         initialLocation: '/',
@@ -631,6 +652,13 @@ void main() {
 
 Future<void> _pumpDashboardUi(WidgetTester tester) async {
   await pumpFeatureUi(tester);
+}
+
+Finder _quickActionSurface(String label) {
+  return find.ancestor(
+    of: find.text(label),
+    matching: find.byType(CatchSurface),
+  );
 }
 
 List _dashboardHostOverrides(

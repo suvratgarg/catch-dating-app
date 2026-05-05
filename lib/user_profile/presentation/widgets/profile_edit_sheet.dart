@@ -7,10 +7,10 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 Future<void> _saveField({
@@ -34,7 +34,11 @@ Future<void> showTextEditSheet({
   required String title,
   required String currentValue,
   required String fieldName,
+  TextInputType? keyboardType,
+  TextCapitalization textCapitalization = TextCapitalization.sentences,
+  Iterable<String>? autofillHints,
   FormFieldValidator<String>? validator,
+  Object? Function(String value)? toFieldValue,
 }) async {
   final newValue = await showModalBottomSheet<String>(
     context: context,
@@ -44,12 +48,18 @@ Future<void> showTextEditSheet({
       title: title,
       currentValue: currentValue,
       maxLines: fieldName == 'bio' ? 4 : 1,
+      keyboardType: keyboardType,
+      textCapitalization: textCapitalization,
+      autofillHints: autofillHints,
       validator: validator,
     ),
   );
 
   if (newValue != null && newValue != currentValue) {
-    await _saveField(ref: ref, fields: {fieldName: newValue});
+    await _saveField(
+      ref: ref,
+      fields: {fieldName: toFieldValue?.call(newValue) ?? newValue},
+    );
   }
 }
 
@@ -58,12 +68,18 @@ class _TextEditSheet extends StatefulWidget {
     required this.title,
     required this.currentValue,
     required this.maxLines,
+    this.keyboardType,
+    this.textCapitalization = TextCapitalization.sentences,
+    this.autofillHints,
     this.validator,
   });
 
   final String title;
   final String currentValue;
   final int maxLines;
+  final TextInputType? keyboardType;
+  final TextCapitalization textCapitalization;
+  final Iterable<String>? autofillHints;
   final FormFieldValidator<String>? validator;
 
   @override
@@ -104,8 +120,10 @@ class _TextEditSheetState extends State<_TextEditSheet> {
           controller: _controller,
           autofocus: true,
           maxLines: widget.maxLines,
-          textCapitalization: TextCapitalization.sentences,
+          keyboardType: widget.keyboardType,
+          textCapitalization: widget.textCapitalization,
           textInputAction: TextInputAction.done,
+          autofillHints: widget.autofillHints,
           validator: widget.validator,
           onSubmitted: (_) => _submit(),
         ),
@@ -114,98 +132,90 @@ class _TextEditSheetState extends State<_TextEditSheet> {
   }
 }
 
-// ── Integer fields ─────────────────────────────────────────────────────────────
+// ── Height field ───────────────────────────────────────────────────────────────
 
-Future<void> showIntEditSheet({
+Future<void> showHeightEditSheet({
   required BuildContext context,
   required WidgetRef ref,
-  required String title,
   required int? currentValue,
-  required String fieldName,
-  FormFieldValidator<String>? validator,
 }) async {
-  final result = await showModalBottomSheet<_IntEditResult>(
+  final initialValue = normalizeHeightCm(currentValue);
+  final result = await showModalBottomSheet<int>(
     context: context,
-    isScrollControlled: true,
     useSafeArea: true,
-    builder: (ctx) => _IntEditSheet(
-      title: title,
-      currentValue: currentValue,
-      validator: validator,
-    ),
+    builder: (ctx) => _HeightEditSheet(initialValue: initialValue),
   );
 
-  if (result != null && result.value != currentValue) {
-    await _saveField(ref: ref, fields: {fieldName: result.value});
+  if (result != null && result != currentValue) {
+    await _saveField(ref: ref, fields: {'height': result});
   }
 }
 
-class _IntEditResult {
-  const _IntEditResult(this.value);
-
-  final int? value;
-}
-
-class _IntEditSheet extends StatefulWidget {
-  const _IntEditSheet({
-    required this.title,
-    required this.currentValue,
-    this.validator,
-  });
-
-  final String title;
-  final int? currentValue;
-  final FormFieldValidator<String>? validator;
+class _HeightEditSheet extends StatefulWidget {
+  const _HeightEditSheet({required this.initialValue});
 
   @override
-  State<_IntEditSheet> createState() => _IntEditSheetState();
+  State<_HeightEditSheet> createState() => _HeightEditSheetState();
+
+  final int initialValue;
 }
 
-class _IntEditSheetState extends State<_IntEditSheet> {
-  final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _controller;
+class _HeightEditSheetState extends State<_HeightEditSheet> {
+  late int _heightCm;
 
   @override
   void initState() {
     super.initState();
-    _controller = TextEditingController(
-      text: widget.currentValue?.toString() ?? '',
-    );
+    _heightCm = widget.initialValue;
   }
 
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  VoidCallback? get _decrease =>
+      _heightCm > minimumHeightCm ? () => setState(() => _heightCm--) : null;
 
-  void _submit() {
-    if (!_formKey.currentState!.validate()) {
-      return;
-    }
-    final text = _controller.text.trim();
-    Navigator.of(
-      context,
-    ).pop(_IntEditResult(text.isEmpty ? null : int.tryParse(text)));
-  }
+  VoidCallback? get _increase =>
+      _heightCm < maximumHeightCm ? () => setState(() => _heightCm++) : null;
 
   @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: CatchBottomSheetScaffold(
-        keyboardSafe: true,
-        action: CatchButton(label: 'Done', onPressed: _submit, fullWidth: true),
-        child: CatchTextField(
-          label: widget.title,
-          controller: _controller,
-          autofocus: true,
-          keyboardType: TextInputType.number,
-          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          suffixText: widget.title == 'Height' ? 'cm' : null,
-          textInputAction: TextInputAction.done,
-          validator: widget.validator,
-          onSubmitted: (_) => _submit(),
+    final t = CatchTokens.of(context);
+
+    return CatchBottomSheetScaffold(
+      title: 'Height',
+      subtitle: '$minimumHeightCm-$maximumHeightCm cm',
+      action: CatchButton(
+        label: 'Done',
+        onPressed: () => Navigator.of(context).pop(_heightCm),
+        fullWidth: true,
+      ),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: t.raised,
+          borderRadius: BorderRadius.circular(CatchRadius.md),
+          border: Border.all(color: t.line),
+        ),
+        child: Row(
+          children: [
+            IconButton(
+              tooltip: 'Decrease height',
+              icon: Icon(Icons.remove_rounded, color: t.ink),
+              onPressed: _decrease,
+              visualDensity: VisualDensity.compact,
+            ),
+            Expanded(
+              child: Center(
+                child: Text(
+                  '$_heightCm cm',
+                  style: CatchTextStyles.mono(context),
+                ),
+              ),
+            ),
+            IconButton(
+              tooltip: 'Increase height',
+              icon: Icon(Icons.add_rounded, color: t.ink),
+              onPressed: _increase,
+              visualDensity: VisualDensity.compact,
+            ),
+          ],
         ),
       ),
     );
@@ -321,6 +331,8 @@ Future<void> _showRangeEditSheet({
   required int divisions,
   required String Function(RangeValues) displayText,
   required String Function(double) labelText,
+  int Function(int)? saveEndValue,
+  int? savedCurrentMax,
   required String minFieldName,
   required String maxFieldName,
 }) async {
@@ -362,8 +374,8 @@ Future<void> _showRangeEditSheet({
 
   if (confirmed == true) {
     final newMin = range.start.round();
-    final newMax = range.end.round();
-    if (newMin != currentMin || newMax != currentMax) {
+    final newMax = saveEndValue?.call(range.end.round()) ?? range.end.round();
+    if (newMin != currentMin || newMax != (savedCurrentMax ?? currentMax)) {
       await _saveField(
         ref: ref,
         fields: {minFieldName: newMin, maxFieldName: newMax},
@@ -380,17 +392,27 @@ Future<void> showAgeRangeSheet({
   required int currentMin,
   required int currentMax,
 }) {
+  final normalizedRange = normalizeAgePreferenceRange(
+    minAgePreference: currentMin,
+    maxAgePreference: currentMax,
+  );
+
   return _showRangeEditSheet(
     context: context,
     ref: ref,
     title: 'Age range',
-    currentMin: currentMin,
-    currentMax: currentMax,
-    sliderMin: 18,
-    sliderMax: 99,
-    divisions: 81,
-    displayText: (r) => '${r.start.round()} – ${r.end.round()}',
-    labelText: (v) => '${v.round()}',
+    currentMin: normalizedRange.minAge,
+    currentMax: normalizedRange.maxAge
+        .clamp(minimumProfileAge, preferredMatchAgeOpenEndedDisplayAge)
+        .toInt(),
+    sliderMin: minimumProfileAge.toDouble(),
+    sliderMax: preferredMatchAgeOpenEndedDisplayAge.toDouble(),
+    divisions: preferredMatchAgeOpenEndedDisplayAge - minimumProfileAge,
+    displayText: (r) =>
+        '${r.start.round()} – ${formatPreferredMatchAge(r.end.round())}',
+    labelText: (v) => formatPreferredMatchAge(v.round()),
+    saveEndValue: preferredMatchAgeStorageValue,
+    savedCurrentMax: normalizedRange.maxAge,
     minFieldName: 'minAgePreference',
     maxFieldName: 'maxAgePreference',
   );

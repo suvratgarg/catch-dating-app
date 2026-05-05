@@ -92,37 +92,21 @@ class _ProfileTabContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final basics = [
-      _textEntry(
-        context: context,
-        ref: ref,
+      ProfileInfoEntry(
         icon: Icons.person_outlined,
         label: 'Name',
-        value: user.name,
-        fieldName: 'name',
-        validator: (v) => (v ?? '').trim().isEmpty ? 'Name is required' : null,
+        value: user.accountDisplayName,
       ),
       ProfileInfoEntry(
         icon: Icons.cake_outlined,
         label: 'Date of birth',
         value:
             '${user.dateOfBirth.day.toString().padLeft(2, '0')}/${user.dateOfBirth.month.toString().padLeft(2, '0')}/${user.dateOfBirth.year}  (${user.age} years)',
-        onTap: () => showDateOfBirthEdit(
-          context: context,
-          ref: ref,
-          currentDate: user.dateOfBirth,
-          firstDate: DateTime(1920),
-          lastDate: latestAllowedDateOfBirth(),
-        ),
       ),
-      _singleEnumEntry<Gender>(
-        context: context,
-        ref: ref,
+      ProfileInfoEntry(
         icon: Icons.wc_outlined,
         label: 'Gender',
-        values: Gender.values,
-        value: user.gender,
-        fallback: Gender.values.first,
-        fieldName: 'gender',
+        value: user.gender.label,
       ),
       _textEntry(
         context: context,
@@ -132,7 +116,9 @@ class _ProfileTabContent extends ConsumerWidget {
         value: user.phoneNumber,
         title: 'Phone number',
         fieldName: 'phoneNumber',
-        validator: (v) => (v ?? '').trim().isEmpty ? 'Phone is required' : null,
+        keyboardType: TextInputType.phone,
+        autofillHints: const [AutofillHints.telephoneNumber],
+        validator: validateRequiredPhoneNumber,
       ),
       _textEntry(
         context: context,
@@ -143,24 +129,38 @@ class _ProfileTabContent extends ConsumerWidget {
         currentValue: user.email,
         fieldName: 'email',
         isAddAffordance: user.email.isEmpty,
+        keyboardType: TextInputType.emailAddress,
+        autofillHints: const [AutofillHints.email],
+        validator: validateOptionalEmail,
       ),
-      _intEntry(
+      _textEntry(
         context: context,
         ref: ref,
+        icon: Icons.alternate_email_outlined,
+        label: 'Instagram',
+        value: user.instagramHandle?.isNotEmpty == true
+            ? '@${user.instagramHandle}'
+            : 'Instagram',
+        currentValue: user.instagramHandle ?? '',
+        fieldName: 'instagramHandle',
+        isAddAffordance: user.instagramHandle?.isNotEmpty != true,
+        keyboardType: TextInputType.text,
+        textCapitalization: TextCapitalization.none,
+        validator: validateOptionalInstagramHandle,
+        toFieldValue: (value) {
+          final handle = normalizeInstagramHandle(value);
+          return handle.isEmpty ? null : handle;
+        },
+      ),
+      ProfileInfoEntry(
         icon: Icons.height_outlined,
         label: 'Height',
         value: user.height != null ? '${user.height} cm' : 'Height',
-        currentValue: user.height,
-        fieldName: 'height',
-        validator: (v) {
-          final trimmed = (v ?? '').trim();
-          if (trimmed.isEmpty) return null;
-          final n = int.tryParse(trimmed);
-          if (n == null) return 'Enter a number';
-          if (n < 50) return 'Too short';
-          if (n > 300) return 'Too tall';
-          return null;
-        },
+        onTap: () => showHeightEditSheet(
+          context: context,
+          ref: ref,
+          currentValue: user.height,
+        ),
         isAddAffordance: user.height == null,
       ),
     ];
@@ -295,7 +295,10 @@ class _ProfileTabContent extends ConsumerWidget {
       ProfileInfoEntry(
         icon: Icons.cake_outlined,
         label: 'Age range',
-        value: '${user.minAgePreference} – ${user.maxAgePreference}',
+        value: formatPreferredMatchAgeRange(
+          minAgePreference: user.minAgePreference,
+          maxAgePreference: user.maxAgePreference,
+        ),
         onTap: () => showAgeRangeSheet(
           context: context,
           ref: ref,
@@ -415,7 +418,11 @@ class _ProfileTabContent extends ConsumerWidget {
     String? title,
     String? currentValue,
     bool isAddAffordance = false,
+    TextInputType? keyboardType,
+    TextCapitalization textCapitalization = TextCapitalization.sentences,
+    Iterable<String>? autofillHints,
     FormFieldValidator<String>? validator,
+    Object? Function(String value)? toFieldValue,
   }) {
     return ProfileInfoEntry(
       icon: icon,
@@ -427,34 +434,11 @@ class _ProfileTabContent extends ConsumerWidget {
         title: title ?? label,
         currentValue: currentValue ?? value,
         fieldName: fieldName,
+        keyboardType: keyboardType,
+        textCapitalization: textCapitalization,
+        autofillHints: autofillHints,
         validator: validator,
-      ),
-      isAddAffordance: isAddAffordance,
-    );
-  }
-
-  ProfileInfoEntry _intEntry({
-    required BuildContext context,
-    required WidgetRef ref,
-    required IconData icon,
-    required String label,
-    required String value,
-    required int? currentValue,
-    required String fieldName,
-    bool isAddAffordance = false,
-    FormFieldValidator<String>? validator,
-  }) {
-    return ProfileInfoEntry(
-      icon: icon,
-      label: label,
-      value: value,
-      onTap: () => showIntEditSheet(
-        context: context,
-        ref: ref,
-        title: label,
-        currentValue: currentValue,
-        fieldName: fieldName,
-        validator: validator,
+        toFieldValue: toFieldValue,
       ),
       isAddAffordance: isAddAffordance,
     );

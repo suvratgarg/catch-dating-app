@@ -117,7 +117,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.givenName],
                     validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Required' : null,
+                        validateRequiredProfileName(v, label: 'First name'),
                   ),
                 ),
                 gapW12,
@@ -129,7 +129,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.familyName],
                     validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Required' : null,
+                        validateRequiredProfileName(v, label: 'Last name'),
                   ),
                 ),
               ],
@@ -142,11 +142,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               onTap: _pickDate,
               prefixIcon: const Icon(Icons.calendar_today_outlined),
               suffixText: age != null ? 'Age $age' : null,
-              validator: (v) => v == null || v.isEmpty
-                  ? 'Please select your date of birth'
-                  : _selectedDate == null || !isAtLeastAge(_selectedDate!)
-                  ? 'You must be at least $minimumProfileAge years old'
-                  : null,
+              validator: (_) => validateRequiredDateOfBirth(_selectedDate),
             ),
             gapH24,
             CatchTextField(
@@ -160,12 +156,7 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               prefixText: '${data.countryCode} ',
               helperText: 'Verified via OTP',
               helperTone: CatchTextFieldSupportTone.brand,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) {
-                  return 'Please enter your phone number.';
-                }
-                return null;
-              },
+              validator: validateRequiredPhoneNumber,
             ),
             const SizedBox(height: 40),
             CatchButton(

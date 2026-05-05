@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/scrollable_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
@@ -53,11 +55,20 @@ void main() {
   testWidgets(
     'Profile sliver header uses Profile title with Edit and Preview tabs',
     (tester) async {
+      const topSafeArea = 47.0;
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(390, 844);
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
       await tester.pumpWidget(
         ProviderScope(
           child: MaterialApp(
             theme: AppTheme.light,
-            home: const _ProfileHeaderHarness(),
+            home: const MediaQuery(
+              data: MediaQueryData(padding: EdgeInsets.only(top: topSafeArea)),
+              child: _ProfileHeaderHarness(),
+            ),
           ),
         ),
       );
@@ -68,6 +79,11 @@ void main() {
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Preview'), findsOneWidget);
       expect(find.text('You'), findsNothing);
+      expect(
+        tester.getTopRight(find.byTooltip('More profile actions')).dx,
+        lessThanOrEqualTo(370),
+      );
+      expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThan(190));
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -260));
       await pumpFeatureUi(tester);
@@ -75,11 +91,14 @@ void main() {
       expect(find.text('Profile').hitTestable(), findsNothing);
       expect(find.text('Edit'), findsOneWidget);
       expect(find.text('Preview'), findsOneWidget);
-      expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThanOrEqualTo(1));
+      expect(
+        tester.getTopLeft(find.byType(TabBar)).dy,
+        greaterThanOrEqualTo(topSafeArea),
+      );
     },
   );
 
-  testWidgets('ProfileScreen supports horizontal swipes between tabs', (
+  testWidgets('ProfileScreen uses native horizontal tab paging', (
     tester,
   ) async {
     tester.view.devicePixelRatio = 1.0;
@@ -99,20 +118,63 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
+    expect(find.byType(TabBarView), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
     expect(find.byType(PreviewTab), findsNothing);
 
-    await tester.drag(find.byType(CustomScrollView), const Offset(-320, 0));
+    await tester.drag(find.byType(TabBarView), const Offset(-320, 0));
     await pumpFeatureUi(tester);
 
     expect(find.byType(PreviewTab), findsOneWidget);
     expect(find.byType(ProfileTabSliverBody), findsNothing);
 
-    await tester.drag(find.byType(CustomScrollView), const Offset(320, 0));
+    await tester.drag(find.byType(TabBarView), const Offset(320, 0));
     await pumpFeatureUi(tester);
 
     expect(find.byType(ProfileTabSliverBody), findsOneWidget);
     expect(find.byType(PreviewTab), findsNothing);
+  });
+
+  testWidgets('Profile preview card can scroll back to the top', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(name: 'Suvrat Garg')),
+          ),
+        ],
+        child: MaterialApp(theme: AppTheme.light, home: const ProfileScreen()),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Preview'));
+    await pumpFeatureUi(tester);
+
+    final previewScrollView = find.byKey(ScrollableProfile.scrollViewKey);
+    final previewScroll = tester.widget<SingleChildScrollView>(
+      previewScrollView,
+    );
+    final previewController = previewScroll.controller!;
+
+    expect(previewController.offset, 0);
+
+    await tester.drag(previewScrollView, const Offset(0, -420));
+    await pumpFeatureUi(tester);
+
+    expect(previewController.offset, greaterThan(0));
+
+    await tester.drag(previewScrollView, const Offset(0, 900));
+    await pumpFeatureUi(tester);
+
+    expect(previewController.offset, 0);
   });
 
   testWidgets('ProfileInfoTile wraps long values without overflowing', (
@@ -205,7 +267,48 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byType(PhotoGrid), findsOneWidget);
-    expect(find.text('ON A PERFECT RUN'), findsOneWidget);
+    expect(find.text('On a perfect run'), findsOneWidget);
+  });
+
+  testWidgets('ProfileTab keeps identity fields readonly and edits Instagram', (
+    tester,
+  ) async {
+    final user = buildUser(
+      name: 'Suvrat Garg',
+      firstName: 'Suvrat',
+      lastName: 'Garg',
+    ).copyWith(instagramHandle: 'suvrat_runs');
+    await _pumpProfileTab(tester, user);
+
+    final nameTile = tester.widget<ProfileInfoTile>(
+      find.byWidgetPredicate(
+        (widget) => widget is ProfileInfoTile && widget.label == 'Name',
+      ),
+    );
+    final dobTile = tester.widget<ProfileInfoTile>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is ProfileInfoTile && widget.label == 'Date of birth',
+      ),
+    );
+    final genderTile = tester.widget<ProfileInfoTile>(
+      find.byWidgetPredicate(
+        (widget) => widget is ProfileInfoTile && widget.label == 'Gender',
+      ),
+    );
+
+    expect(nameTile.value, 'Suvrat Garg');
+    expect(nameTile.onTap, isNull);
+    expect(dobTile.onTap, isNull);
+    expect(genderTile.onTap, isNull);
+
+    final instagramTile = tester.widget<ProfileInfoTile>(
+      find.byWidgetPredicate(
+        (widget) => widget is ProfileInfoTile && widget.label == 'Instagram',
+      ),
+    );
+    expect(instagramTile.value, '@suvrat_runs');
+    expect(instagramTile.onTap, isNotNull);
   });
 
   testWidgets('Age range sheet opens via RangeSlider and can be dismissed', (
@@ -215,8 +318,8 @@ void main() {
     await _pumpProfileTab(tester, user);
 
     // Scroll to and tap the age range row.
-    await _dragProfileTabUntilVisible(tester, find.textContaining('18 – 99'));
-    await tester.tap(find.textContaining('18 – 99'));
+    await _dragProfileTabUntilVisible(tester, find.textContaining('18 – 60+'));
+    await tester.tap(find.textContaining('18 – 60+'));
     await _pumpProfileSheet(tester);
 
     // Bottom sheet is open with RangeSlider and Done button.
@@ -272,10 +375,26 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('integer edit sheet owns its controller through dismissal', (
+  testWidgets('email edit sheet uses the email keyboard', (tester) async {
+    final user = buildUser(name: 'Suvrat Garg', email: 'runner@example.com');
+    await _pumpProfileTab(tester, user);
+
+    final emailTile = find.byWidgetPredicate(
+      (widget) => widget is ProfileInfoTile && widget.label == 'Email',
+    );
+    await _dragProfileTabUntilVisible(tester, emailTile);
+    await tester.tap(emailTile);
+    await _pumpProfileSheet(tester);
+
+    final field = tester.widget<CatchTextField>(find.byType(CatchTextField));
+    expect(field.keyboardType, TextInputType.emailAddress);
+    expect(field.autofillHints, contains(AutofillHints.email));
+  });
+
+  testWidgets('height edit sheet uses bounded plus-minus controls', (
     tester,
   ) async {
-    final user = buildUser(name: 'Suvrat Garg');
+    final user = buildUser(name: 'Suvrat Garg').copyWith(height: 172);
     await _pumpProfileTab(tester, user);
 
     final heightTile = find.byWidgetPredicate(
@@ -285,6 +404,10 @@ void main() {
     await tester.tap(heightTile);
     await _pumpProfileSheet(tester);
 
+    expect(find.byType(CatchTextField), findsNothing);
+    expect(find.text('172 cm'), findsAtLeastNWidgets(1));
+    expect(find.byTooltip('Decrease height'), findsOneWidget);
+    expect(find.byTooltip('Increase height'), findsOneWidget);
     expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
@@ -324,15 +447,20 @@ class _ProfileHeaderHarnessState extends State<_ProfileHeaderHarness>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: CustomScrollView(
-        slivers: [
-          ...ProfileSliverHeader(controller: _controller).buildSlivers(context),
-          SliverList.builder(
-            itemCount: 30,
-            itemBuilder: (context, index) =>
-                SizedBox(height: 56, child: Text('Profile content $index')),
-          ),
-        ],
+      body: SafeArea(
+        bottom: false,
+        child: CustomScrollView(
+          slivers: [
+            ...ProfileSliverHeader(
+              controller: _controller,
+            ).buildSlivers(context),
+            SliverList.builder(
+              itemCount: 30,
+              itemBuilder: (context, index) =>
+                  SizedBox(height: 56, child: Text('Profile content $index')),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -45,4 +45,17 @@ void main() {
 
     expect(user.toJson().containsKey('uid'), isFalse);
   });
+
+  test('public display name never includes last name', () {
+    final structured = buildUser(
+      dateOfBirth: DateTime(1995, 6, 15),
+    ).copyWith(name: 'Suvrat Garg', firstName: 'Suvrat', lastName: 'Garg');
+    final legacy = buildUser(
+      dateOfBirth: DateTime(1995, 6, 15),
+    ).copyWith(name: 'Asha Runner');
+
+    expect(structured.accountDisplayName, 'Suvrat Garg');
+    expect(structured.publicDisplayName, 'Suvrat');
+    expect(legacy.publicDisplayName, 'Asha');
+  });
 }

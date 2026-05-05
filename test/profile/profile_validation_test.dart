@@ -32,5 +32,37 @@ void main() {
       );
     });
 
+    test('formats open ended preferred match age as 60 plus', () {
+      expect(
+        formatPreferredMatchAgeRange(
+          minAgePreference: 18,
+          maxAgePreference: 99,
+        ),
+        '18 – 60+',
+      );
+      expect(preferredMatchAgeStorageValue(59), 59);
+      expect(preferredMatchAgeStorageValue(60), 99);
+    });
+
+    test('validates shared profile input fields', () {
+      expect(
+        validateRequiredProfileName('', label: 'Name'),
+        'Name is required',
+      );
+      expect(validateRequiredProfileName('Suvrat', label: 'Name'), isNull);
+      expect(validateRequiredPhoneNumber(''), 'Phone is required');
+      expect(validateOptionalEmail('not-an-email'), 'Enter a valid email');
+      expect(validateOptionalEmail('runner@example.com'), isNull);
+      expect(validateOptionalEmail(''), isNull);
+    });
+
+    test('normalizes and validates profile height', () {
+      expect(normalizeHeightCm(null), defaultHeightCm);
+      expect(normalizeHeightCm(80), minimumHeightCm);
+      expect(normalizeHeightCm(250), maximumHeightCm);
+      expect(validateOptionalHeightCm(119), contains('$minimumHeightCm cm'));
+      expect(validateOptionalHeightCm(221), contains('$maximumHeightCm cm'));
+      expect(validateOptionalHeightCm(170), isNull);
+    });
   });
 }

@@ -20,59 +20,20 @@ class ProfileScreen extends ConsumerStatefulWidget {
 
 class _ProfileScreenState extends ConsumerState<ProfileScreen>
     with SingleTickerProviderStateMixin {
-  static const _tabSwipeDistanceThreshold = 80.0;
-  static const _tabSwipeVelocityThreshold = 250.0;
-
   late final TabController _tabController;
-  int _selectedTabIndex = 0;
-  double _horizontalDragDistance = 0;
+  late final ScrollController _previewScrollController;
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 2, vsync: this)
-      ..addListener(_handleTabChanged);
-  }
-
-  void _handleTabChanged() {
-    if (_selectedTabIndex == _tabController.index) return;
-    setState(() => _selectedTabIndex = _tabController.index);
-  }
-
-  void _handleHorizontalDragStart(DragStartDetails details) {
-    _horizontalDragDistance = 0;
-  }
-
-  void _handleHorizontalDragUpdate(DragUpdateDetails details) {
-    _horizontalDragDistance += details.primaryDelta ?? 0;
-  }
-
-  void _handleHorizontalDragEnd(DragEndDetails details) {
-    final velocity = details.primaryVelocity;
-    final isDistanceSwipe =
-        _horizontalDragDistance.abs() >= _tabSwipeDistanceThreshold;
-    final isVelocitySwipe =
-        velocity != null && velocity.abs() >= _tabSwipeVelocityThreshold;
-    if (!isDistanceSwipe && !isVelocitySwipe) {
-      return;
-    }
-
-    final swipeOffset = isDistanceSwipe ? _horizontalDragDistance : -velocity!;
-    final direction = swipeOffset < 0 ? 1 : -1;
-    final nextIndex = (_tabController.index + direction).clamp(
-      0,
-      _tabController.length - 1,
-    );
-    if (nextIndex == _tabController.index) return;
-
-    _tabController.animateTo(nextIndex);
+    _tabController = TabController(length: 2, vsync: this);
+    _previewScrollController = ScrollController();
   }
 
   @override
   void dispose() {
-    _tabController
-      ..removeListener(_handleTabChanged)
-      ..dispose();
+    _tabController.dispose();
+    _previewScrollController.dispose();
     super.dispose();
   }
 
@@ -92,54 +53,49 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
 
     return Scaffold(
       backgroundColor: t.bg,
-      body: Semantics(
-        label: 'Profile tabs',
-        hint: 'Swipe left or right to switch between Edit and Preview.',
-        child: GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onHorizontalDragStart: _handleHorizontalDragStart,
-          onHorizontalDragUpdate: _handleHorizontalDragUpdate,
-          onHorizontalDragEnd: _handleHorizontalDragEnd,
-          child: CustomScrollView(
-            slivers: [
-              ...ProfileSliverHeader(
-                controller: _tabController,
-              ).buildSlivers(context),
-              ...userProfileAsync.when<List<Widget>>(
-                loading: () => const [
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: CatchLoadingIndicator()),
-                  ),
-                ],
-                error: (e, _) => [
-                  SliverFillRemaining(
-                    hasScrollBody: false,
-                    child: Center(child: CatchErrorText(e)),
-                  ),
-                ],
-                data: (user) {
-                  if (user == null) {
-                    return const [_ProfileUnavailableSliver()];
-                  }
+      body: SafeArea(
+        bottom: false,
+        child: Semantics(
+          label: 'Profile tabs',
+          hint: 'Swipe left or right to switch between Edit and Preview.',
+          child: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) =>
+                ProfileSliverHeader(
+                  controller: _tabController,
+                ).buildSlivers(context),
+            body: userProfileAsync.when<Widget>(
+              loading: () => const Center(child: CatchLoadingIndicator()),
+              error: (e, _) => Center(child: CatchErrorText(e)),
+              data: (user) {
+                if (user == null) {
+                  return const _ProfileUnavailableBody();
+                }
 
-                  if (_selectedTabIndex == 0) {
-                    return [
-                      ProfileTabSliverBody(
-                        user: user,
-                        uploadState: uploadState,
-                      ),
-                    ];
-                  }
-
-                  return [
-                    _PreviewTabSliverBody(
-                      profile: publicProfileFromUserProfile(user),
+                return TabBarView(
+                  controller: _tabController,
+                  children: [
+                    CustomScrollView(
+                      key: const PageStorageKey('profile-edit-tab-scroll'),
+                      slivers: [
+                        ProfileTabSliverBody(
+                          user: user,
+                          uploadState: uploadState,
+                        ),
+                      ],
                     ),
-                  ];
-                },
-              ),
-            ],
+                    CustomScrollView(
+                      key: const PageStorageKey('profile-preview-tab-scroll'),
+                      slivers: [
+                        _PreviewTabSliverBody(
+                          profile: publicProfileFromUserProfile(user),
+                          scrollController: _previewScrollController,
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ),
       ),
@@ -147,30 +103,31 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   }
 }
 
-class _ProfileUnavailableSliver extends StatelessWidget {
-  const _ProfileUnavailableSliver();
+class _ProfileUnavailableBody extends StatelessWidget {
+  const _ProfileUnavailableBody();
 
   @override
   Widget build(BuildContext context) {
-    return const SliverFillRemaining(
-      hasScrollBody: false,
-      child: Center(
-        child: CatchEmptyState(
-          icon: Icons.person_off_outlined,
-          title: 'Profile not available',
-          message: 'Finish onboarding or sign in again to load your profile.',
-          surface: false,
-          iconStyle: CatchEmptyStateIconStyle.plain,
-        ),
+    return const Center(
+      child: CatchEmptyState(
+        icon: Icons.person_off_outlined,
+        title: 'Profile not available',
+        message: 'Finish onboarding or sign in again to load your profile.',
+        surface: false,
+        iconStyle: CatchEmptyStateIconStyle.plain,
       ),
     );
   }
 }
 
 class _PreviewTabSliverBody extends StatelessWidget {
-  const _PreviewTabSliverBody({required this.profile});
+  const _PreviewTabSliverBody({
+    required this.profile,
+    required this.scrollController,
+  });
 
   final PublicProfile profile;
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -181,7 +138,9 @@ class _PreviewTabSliverBody extends StatelessWidget {
         CatchSpacing.s4,
         CatchSpacing.s6,
       ),
-      sliver: SliverFillRemaining(child: PreviewTab(profile: profile)),
+      sliver: SliverFillRemaining(
+        child: PreviewTab(profile: profile, scrollController: scrollController),
+      ),
     );
   }
 }

@@ -223,6 +223,8 @@ class OnboardingController extends _$OnboardingController {
           userProfile: UserProfile(
             uid: uid,
             name: draft.fullName,
+            firstName: draft.firstName.trim(),
+            lastName: draft.lastName.trim(),
             dateOfBirth: draft.dateOfBirth!,
             gender: draft.gender!,
             phoneNumber: verifiedPhoneNumber,
@@ -278,17 +280,13 @@ class OnboardingController extends _$OnboardingController {
     final dateOfBirth = draft.dateOfBirth;
     final gender = draft.gender;
 
-    if (draft.firstName.isEmpty ||
-        draft.lastName.isEmpty ||
-        dateOfBirth == null) {
+    if (validateRequiredProfileName(draft.firstName, label: 'First name') !=
+            null ||
+        validateRequiredProfileName(draft.lastName, label: 'Last name') !=
+            null ||
+        validateRequiredDateOfBirth(dateOfBirth) != null) {
       throw StateError(
         'Please complete your basic profile details before continuing.',
-      );
-    }
-
-    if (!isAtLeastAge(dateOfBirth)) {
-      throw StateError(
-        'You must be at least $minimumProfileAge years old to continue.',
       );
     }
 
@@ -298,7 +296,7 @@ class OnboardingController extends _$OnboardingController {
       );
     }
 
-    if (draft.phoneNumber.isEmpty) {
+    if (validateRequiredPhoneNumber(draft.phoneNumber) != null) {
       throw StateError('Please add a valid phone number before continuing.');
     }
 

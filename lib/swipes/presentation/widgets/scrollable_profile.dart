@@ -19,10 +19,14 @@ class ScrollableProfile extends ConsumerWidget {
     super.key,
     required this.profile,
     required this.cardHeight,
+    this.scrollController,
   });
+
+  static const scrollViewKey = ValueKey('scrollable-profile-scroll-view');
 
   final PublicProfile profile;
   final double cardHeight;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -37,6 +41,9 @@ class ScrollableProfile extends ConsumerWidget {
     return ColoredBox(
       color: const Color(0xFF111111),
       child: SingleChildScrollView(
+        key: scrollViewKey,
+        controller: scrollController,
+        primary: false,
         physics: const ClampingScrollPhysics(),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,

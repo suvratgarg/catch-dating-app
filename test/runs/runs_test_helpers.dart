@@ -63,6 +63,8 @@ Run buildRun({
 UserProfile buildUser({
   String uid = 'runner-1',
   String name = 'Runner',
+  String? firstName,
+  String? lastName,
   String email = 'runner@example.com',
   Gender gender = Gender.man,
   DateTime? dateOfBirth,
@@ -71,10 +73,14 @@ UserProfile buildUser({
   List<String> savedRunIds = const [],
   List<String> photoUrls = const [],
 }) {
+  final nameParts = name.trim().split(RegExp(r'\s+'));
   return UserProfile(
     uid: uid,
     email: email,
     name: name,
+    firstName: firstName ?? nameParts.first,
+    lastName:
+        lastName ?? (nameParts.length > 1 ? nameParts.skip(1).join(' ') : ''),
     dateOfBirth: dateOfBirth ?? DateTime(1995, 6, 15),
     bio: 'Here for the run.',
     gender: gender,

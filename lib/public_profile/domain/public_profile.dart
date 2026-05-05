@@ -56,7 +56,7 @@ abstract class PublicProfile with _$PublicProfile {
 /// persisted `publicProfiles/{uid}` document is owned by Cloud Functions.
 PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   uid: user.uid,
-  name: user.name,
+  name: user.publicDisplayName,
   age: user.age,
   bio: user.bio,
   gender: user.gender,

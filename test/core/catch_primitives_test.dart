@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -127,6 +128,31 @@ void main() {
     await tester.tap(find.byIcon(Icons.close_rounded));
     await tester.pump();
     expect(removed, isTrue);
+  });
+
+  testWidgets('ChipField single select keeps a selected chip selected', (
+    tester,
+  ) async {
+    Set<IndianCity> selected = {IndianCity.indore};
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => ChipField<IndianCity>(
+            label: 'City',
+            values: IndianCity.values,
+            selected: selected,
+            multiSelect: false,
+            onChanged: (next) => setState(() => selected = next),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text(IndianCity.indore.label));
+    await tester.pump();
+
+    expect(selected, {IndianCity.indore});
   });
 
   testWidgets('CatchBadge renders status tones and uppercase option', (

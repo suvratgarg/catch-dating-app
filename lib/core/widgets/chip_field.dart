@@ -63,8 +63,13 @@ class ChipField<T extends Labelled> extends StatelessWidget {
                 active: isSelected,
                 onTap: () {
                   final next = Set<T>.from(selected);
-                  if (!multiSelect) next.clear();
-                  isSelected ? next.remove(v) : next.add(v);
+                  if (!multiSelect) {
+                    next
+                      ..clear()
+                      ..add(v);
+                  } else {
+                    isSelected ? next.remove(v) : next.add(v);
+                  }
                   onChanged(next);
                   field.didChange(next);
                 },

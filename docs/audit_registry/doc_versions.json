@@ -15,7 +15,7 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.2.0",
+    "version": "2.2.1",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, stream lifecycle queue, and branded error UI queue."
@@ -120,7 +120,7 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.4.1",
+    "version": "2.4.7",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."

@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
+import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -9,7 +11,8 @@ import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_success_screen.dart';
+import 'package:catch_dating_app/runs/presentation/host_run_manage_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
@@ -21,6 +24,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:latlong2/latlong.dart';
 
 void main() {
   final liveRun = _run(
@@ -51,13 +55,18 @@ void main() {
     unreadCounts: const {'runner-1': 2},
   );
   final user = _visualReviewUser();
+  final publicProfiles = _publicProfiles();
 
   runApp(
     ProviderScope(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
         userProfileRepositoryProvider.overrideWithValue(
           _VisualReviewUserProfileRepository(user),
+        ),
+        publicProfileRepositoryProvider.overrideWithValue(
+          _VisualReviewPublicProfileRepository(publicProfiles),
         ),
         watchAttendedRunsProvider(
           'runner-1',
@@ -65,21 +74,16 @@ void main() {
         watchSignedUpRunsProvider(
           'runner-1',
         ).overrideWithValue(AsyncData([upcomingRun])),
+        recommendedRunsProvider(
+          user.joinedRunClubIds,
+        ).overrideWithValue(AsyncData([upcomingRun])),
         watchMatchesForUserProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value([match])),
         watchRunProvider(
           liveRun.id,
         ).overrideWith((ref) => Stream.value(liveRun)),
-        watchPublicProfileProvider('runner-2').overrideWith(
-          (ref) => Stream.value(_publicProfile('runner-2', 'Riya')),
-        ),
-        watchPublicProfileProvider('runner-3').overrideWith(
-          (ref) => Stream.value(_publicProfile('runner-3', 'Zoya')),
-        ),
-        watchPublicProfileProvider('runner-4').overrideWith(
-          (ref) => Stream.value(_publicProfile('runner-4', 'Dev')),
-        ),
+        watchBlockedUsersProvider.overrideWithValue(const AsyncData([])),
       ],
       child: VisualReviewApp(liveRun: liveRun),
     ),
@@ -150,29 +154,14 @@ class VisualReviewApp extends StatelessWidget {
                 ),
                 _PhoneFrame(
                   label: 'Profile',
-                  child: ProviderScope(
-                    child: Scaffold(
-                      body: ProfileTab(
-                        user: user,
-                        uploadState: (
-                          loadingIndices: <int>{},
-                          uploadError: null,
-                        ),
-                      ),
+                  child: Scaffold(
+                    body: ProfileTab(
+                      user: user,
+                      uploadState: (loadingIndices: <int>{}, uploadError: null),
                     ),
                   ),
                 ),
-                _PhoneFrame(
-                  label: 'Settings',
-                  child: ProviderScope(
-                    overrides: [
-                      watchBlockedUsersProvider.overrideWithValue(
-                        const AsyncData([]),
-                      ),
-                    ],
-                    child: const SettingsScreen(),
-                  ),
-                ),
+                _PhoneFrame(label: 'Settings', child: const SettingsScreen()),
               ],
             ),
           ),
@@ -206,6 +195,14 @@ final class _VisualReviewUserProfileRepository
   }) async {}
 
   @override
+  Future<void> updateDetectedLocation({
+    required String uid,
+    required double latitude,
+    required double longitude,
+    IndianCity? city,
+  }) async {}
+
+  @override
   Future<void> setProfileComplete({required String uid}) async {}
 
   @override
@@ -219,15 +216,32 @@ final class _VisualReviewUserProfileRepository
     required String uid,
     required Map<String, dynamic> fields,
   }) async {}
+}
+
+final class _VisualReviewPublicProfileRepository
+    implements PublicProfileRepository {
+  const _VisualReviewPublicProfileRepository(this._profiles);
+
+  final Map<String, PublicProfile> _profiles;
 
   @override
-  Future<void> updatePreferences({
-    required String uid,
-    bool? prefsNewCatches,
-    bool? prefsRunReminders,
-    bool? prefsWeeklyDigest,
-    bool? prefsShowOnMap,
-  }) async {}
+  Stream<PublicProfile?> watchPublicProfile({required String uid}) =>
+      Stream.value(_profiles[uid]);
+
+  @override
+  Future<PublicProfile?> fetchPublicProfile({required String uid}) async =>
+      _profiles[uid];
+
+  @override
+  Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) async => [
+    for (final uid in uids)
+      if (_profiles[uid] != null) _profiles[uid]!,
+  ];
+}
+
+class _NoDeviceLocation extends DeviceLocation {
+  @override
+  Future<LatLng?> build() async => null;
 }
 
 class _PhoneFrame extends StatelessWidget {
@@ -367,3 +381,12 @@ PublicProfile _publicProfile(String uid, String name) {
     gender: Gender.woman,
   );
 }
+
+Map<String, PublicProfile> _publicProfiles() => {
+  'runner-1': _publicProfile('runner-1', 'Aarav'),
+  'runner-2': _publicProfile('runner-2', 'Riya'),
+  'runner-3': _publicProfile('runner-3', 'Zoya'),
+  'runner-4': _publicProfile('runner-4', 'Dev'),
+  'runner-5': _publicProfile('runner-5', 'Maya'),
+  'runner-6': _publicProfile('runner-6', 'Kabir'),
+};

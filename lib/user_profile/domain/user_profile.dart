@@ -179,6 +179,8 @@ abstract class UserProfile with _$UserProfile {
     // Core (required at sign-up)
     @JsonKey(includeToJson: false) required String uid,
     required String name,
+    @Default('') String firstName,
+    @Default('') String lastName,
     @TimestampConverter() required DateTime dateOfBirth,
     required Gender gender,
     required String phoneNumber,
@@ -202,7 +204,7 @@ abstract class UserProfile with _$UserProfile {
     @Default([]) List<String> savedRunIds,
     @Default([]) List<Gender> interestedInGenders,
     @Default(18) int minAgePreference,
-    @Default(99) int maxAgePreference,
+    @Default(maximumPreferredMatchAge) int maxAgePreference,
 
     // Background (optional)
     int? height,
@@ -239,4 +241,21 @@ abstract class UserProfile with _$UserProfile {
       _$UserProfileFromJson(json);
 
   int get age => calculateAge(dateOfBirth);
+
+  String get accountDisplayName {
+    final parts = [
+      firstName.trim(),
+      lastName.trim(),
+    ].where((part) => part.isNotEmpty);
+    final structuredName = parts.join(' ');
+    return structuredName.isNotEmpty ? structuredName : name.trim();
+  }
+
+  String get publicDisplayName {
+    final first = firstName.trim();
+    if (first.isNotEmpty) return first;
+    final legacyName = name.trim();
+    if (legacyName.isEmpty) return 'Runner';
+    return legacyName.split(RegExp(r'\s+')).first;
+  }
 }

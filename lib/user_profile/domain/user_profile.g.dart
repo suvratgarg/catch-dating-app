@@ -9,6 +9,8 @@ part of 'user_profile.dart';
 _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   uid: json['uid'] as String,
   name: json['name'] as String,
+  firstName: json['firstName'] as String? ?? '',
+  lastName: json['lastName'] as String? ?? '',
   dateOfBirth: const TimestampConverter().fromJson(
     json['dateOfBirth'] as Timestamp,
   ),
@@ -40,7 +42,8 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
           .toList() ??
       const [],
   minAgePreference: (json['minAgePreference'] as num?)?.toInt() ?? 18,
-  maxAgePreference: (json['maxAgePreference'] as num?)?.toInt() ?? 99,
+  maxAgePreference:
+      (json['maxAgePreference'] as num?)?.toInt() ?? maximumPreferredMatchAge,
   height: (json['height'] as num?)?.toInt(),
   occupation: json['occupation'] as String?,
   company: json['company'] as String?,
@@ -82,6 +85,8 @@ Map<String, dynamic> _$UserProfileToJson(
   _UserProfile instance,
 ) => <String, dynamic>{
   'name': instance.name,
+  'firstName': instance.firstName,
+  'lastName': instance.lastName,
   'dateOfBirth': const TimestampConverter().toJson(instance.dateOfBirth),
   'gender': _$GenderEnumMap[instance.gender]!,
   'phoneNumber': instance.phoneNumber,

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.4.1
+version: 2.4.7
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,41 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.4.7
+
+- `ProfilePromptCard` now uses the same label/value typography hierarchy as
+  the rest of Edit Profile instead of oversized prompt-card title text.
+
+### 2.4.6
+
+- Profile safe-area ownership moved to the route boundary so the pinned
+  Edit/Preview row stays below the Dynamic Island without reserving a visible
+  top-inset gap while the title header is expanded.
+
+### 2.4.5
+
+- Profile's pinned Edit/Preview tab row now reserves the top safe area when it
+  sticks, and the route uses native `TabBarView` paging instead of manually
+  swapping tab bodies at the end of a horizontal drag.
+
+### 2.4.4
+
+- Profile edit surfaces now keep signup identity fields readonly after
+  onboarding, expose Instagram editing, and treat public profile names as
+  first-name-only projections.
+
+### 2.4.3
+
+- `ProfileCard`/`ScrollableProfile` now accept an explicit preview scroll
+  controller and keep the internal card scroll view non-primary so sliver route
+  parents do not steal or share its vertical offset.
+
+### 2.4.2
+
+- Profile edit sheets now route text validation, keyboard/autofill behavior,
+  bounded height edits, and open-ended age display/storage through shared
+  profile validation helpers.
 
 ### 2.4.1
 
@@ -447,8 +482,8 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `SwipeHubScreen` | `lib/swipes/presentation/swipe_hub_screen.dart:19` | "Catches" tab. Lists attended runs with open catch windows, uses leaf widgets to read theme tokens locally, shows a `CatchSurface` intro card for the featured run, and lists active runs with `AttendedRunTile` widgets. |
-| `ScrollableProfile` | `lib/swipes/presentation/widgets/scrollable_profile.dart:17` | Full-length scrollable profile card used on the swipe screen. Renders running identity, bio, photos, attributes, running/lifestyle sections. |
-| `ProfileCard` | `lib/swipes/presentation/profile_card.dart:7` | The primary swipe card. Shows the user's photos (via `CardPhotoSection`), name overlay, and attribute chips in a card layout. |
+| `ScrollableProfile` | `lib/swipes/presentation/widgets/scrollable_profile.dart:17` | Full-length scrollable profile card used on swipe/public/profile-preview surfaces. Renders running identity, bio, photos, attributes, running/lifestyle sections. Its internal vertical scroll view is non-primary and can accept an explicit controller when embedded in a sliver route. |
+| `ProfileCard` | `lib/swipes/presentation/profile_card.dart:7` | The primary swipe card. Shows the user's photos (via `CardPhotoSection`), name overlay, and attribute chips in a card layout. Accepts an optional scroll controller for owner routes such as Profile Preview. |
 | `_VibeTile` | `lib/swipes/presentation/run_recap_screen.dart:221` | Keyed attendee tile on the recap screen. Fetches its public profile, exposes tooltip/semantic selected state, and toggles local recap selection. |
 
 ### StatelessWidget
@@ -560,24 +595,31 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:13` | Profile tab destination. Sliver-native route with one `CustomScrollView`, a scroll-away profile title header, a pinned Edit/Preview tab row, horizontal swipe gestures between tabs, and tab-selected sliver bodies. Owns the `TabController` locally because tab selection is route UI state. |
-| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone editable profile tab content. Wraps the shared editable profile sections in a `ListView` for isolated/non-sliver usage. |
-| `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:45` | Sliver-native editable profile tab body. Reuses the same editable profile sections as `ProfileTab` but contributes a `SliverList` for parent `CustomScrollView` usage. |
-| `_OverflowMenu` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:107` | Overflow menu in the scroll-away profile title header (payments, sign out). |
+| `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:14` | Profile tab destination. Owns the route-level top safe area, uses `NestedScrollView` for a scroll-away profile title header plus pinned Edit/Preview tab row, and native `TabBarView` paging for smooth horizontal tab swipes. Owns the `TabController` locally because tab selection is route UI state. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone profile tab content. Wraps the shared profile sections in a `ListView` for isolated/non-sliver usage. Identity fields from onboarding are readonly; optional/profile-detail fields, including Instagram, remain editable. |
+| `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:45` | Sliver-native profile tab body. Reuses the same profile sections as `ProfileTab` but contributes a `SliverList` for parent `CustomScrollView` usage. |
+| `_OverflowMenu` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:109` | Overflow menu in the scroll-away profile title header (payments, sign out). |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared swipe `ProfileCard`. |
+| `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared swipe `ProfileCard`, with an owner-provided scroll controller when mounted inside ProfileScreen. |
 | `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:24` | Grouped section of `ProfileInfoTile` rows with a section header. |
 | `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:6` | Single tappable info row — icon, label, value, chevron. Opens the corresponding edit sheet on tap. |
-| `ProfilePromptCard` | `lib/user_profile/presentation/widgets/profile_prompt_card.dart:6` | Editable profile prompt card used by the signed-in profile bio section. |
-| `_ProfileUnavailableSliver` | `lib/user_profile/presentation/profile_screen.dart:89` | Sliver-native missing-profile state. Prevents the profile route from rendering a blank body when the signed-in user profile is unavailable. |
-| `_PreviewTabSliverBody` | `lib/user_profile/presentation/profile_screen.dart:107` | Sliver-native preview body. Gives the shared `ProfileCard` bounded remaining viewport height inside the profile route's single `CustomScrollView`. |
+| `ProfilePromptCard` | `lib/user_profile/presentation/widgets/profile_prompt_card.dart:6` | Editable profile prompt card used by the signed-in profile bio section. Keeps its text hierarchy aligned with profile info rows: subdued body label plus body value/placeholder text. |
+| `_ProfileUnavailableBody` | `lib/user_profile/presentation/profile_screen.dart:103` | Missing-profile state. Prevents the profile route from rendering a blank body when the signed-in user profile is unavailable. |
+| `_PreviewTabSliverBody` | `lib/user_profile/presentation/profile_screen.dart:120` | Sliver-native preview body. Gives the shared `ProfileCard` bounded remaining viewport height inside the profile route's preview tab scroll view and passes a dedicated card scroll controller. |
 | `_ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:29` | Scroll-away Profile title row with settings and overflow actions. |
-| `_ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:67` | Pinned Edit/Preview tab bar surface for the sliver-native profile route. |
-| `_SettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:94` | Settings gear button in the scroll-away profile title header. |
+| `_ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:66` | Pinned Edit/Preview tab bar surface for the sliver-native profile route. The route-level `SafeArea` keeps it below device cutouts without adding an expanded-header gap. |
+| `_SettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:96` | Settings gear button in the scroll-away profile title header. |
+
+### StatefulWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `_TextEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:58` | Modal text editor for profile fields. Accepts field-specific keyboard, capitalization, autofill, shared validators from `profile_validation.dart`, and optional value normalization before repository patches. |
+| `_HeightEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:146` | Bounded height editor using minus/plus controls instead of free-text input. Saves only values between the shared profile height minimum and maximum. |
 
 ---
 

@@ -13,10 +13,9 @@ class ProfileSliverHeader {
   final TabController controller;
 
   List<Widget> buildSlivers(BuildContext context) {
-    final topPadding = MediaQuery.paddingOf(context).top;
     final header = CatchSliverHeader(
       title: const _ProfileTitle(),
-      titleHeight: topPadding + 72,
+      titleHeight: 104,
       bottomHeight: 48,
       bottom: _ProfileTabBar(controller: controller),
     );
@@ -34,29 +33,23 @@ class _ProfileTitle extends StatelessWidget {
 
     return Material(
       color: t.bg,
-      child: SafeArea(
-        bottom: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(
-            CatchSpacing.s4,
-            CatchSpacing.s2,
-            CatchSpacing.s4,
-            CatchSpacing.s3,
-          ),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  'Profile',
-                  style: CatchTextStyles.displayL(context),
-                ),
-              ),
-              const SizedBox(width: CatchSpacing.s2),
-              const _SettingsButton(),
-              const SizedBox(width: CatchSpacing.s2),
-              const _OverflowMenu(),
-            ],
-          ),
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s5,
+          CatchSpacing.s4,
+          CatchSpacing.s5,
+          CatchSpacing.s3,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text('Profile', style: CatchTextStyles.displayL(context)),
+            ),
+            const SizedBox(width: CatchSpacing.s2),
+            const _SettingsButton(),
+            const SizedBox(width: CatchSpacing.s2),
+            const _OverflowMenu(),
+          ],
         ),
       ),
     );

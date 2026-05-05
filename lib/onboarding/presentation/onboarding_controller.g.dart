@@ -75,7 +75,7 @@ final class OnboardingControllerProvider
 }
 
 String _$onboardingControllerHash() =>
-    r'8489d74f3f8ee4145b2f70ae2945f8eca802f273';
+    r'f06afd8dc58427bd80afcb3d562eb18f850bf402';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///

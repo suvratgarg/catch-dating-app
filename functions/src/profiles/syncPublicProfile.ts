@@ -42,7 +42,7 @@ export const syncPublicProfile = onDocumentWritten(
     }
 
     const publicProfile: PublicProfileDoc = {
-      name: user.name,
+      name: publicDisplayName(user),
       age,
       bio: user.bio,
       gender: user.gender,
@@ -73,3 +73,17 @@ export const syncPublicProfile = onDocumentWritten(
     await publicProfileRef.set(publicProfile);
   }
 );
+
+/**
+ * Returns the public-safe display name for discovery surfaces.
+ * @param {UserProfileDoc} user Private user profile document.
+ * @return {string} First name only, with legacy fallback.
+ */
+function publicDisplayName(user: UserProfileDoc): string {
+  const firstName = user.firstName?.trim();
+  if (firstName) return firstName;
+
+  const legacyName = user.name?.trim();
+  if (!legacyName) return "Runner";
+  return legacyName.split(/\s+/)[0];
+}

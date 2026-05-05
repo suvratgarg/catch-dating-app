@@ -124,6 +124,8 @@ export type WorkoutFrequency = "never" | "sometimes" | "often" | "everyday";
  */
 export interface UserProfileDoc {
   name: string;
+  firstName?: string;
+  lastName?: string;
   dateOfBirth: FirebaseFirestore.Timestamp;
   gender: Gender;
   /** Authentication is phone-only */
@@ -416,4 +418,3 @@ export interface ModerationFlagDoc {
   context?: string;
   safeSearchResults?: Record<string, string>;
 }
-

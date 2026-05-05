@@ -26,14 +26,14 @@ class ProfilePromptCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(eyebrow.toUpperCase(), style: CatchTextStyles.labelM(context)),
-          gapH6,
+          Text(eyebrow, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+          gapH4,
           Text(
             text,
-            style: CatchTextStyles.titleL(
+            style: CatchTextStyles.bodyL(
               context,
               color: isPrompt ? t.ink3 : null,
-            ).copyWith(height: 1.2),
+            ),
           ),
         ],
       ),

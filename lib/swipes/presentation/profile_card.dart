@@ -9,6 +9,7 @@ class ProfileCard extends StatelessWidget {
     super.key,
     required this.profile,
     this.horizontalOffsetPercentage = 0,
+    this.scrollController,
   });
 
   final PublicProfile profile;
@@ -16,6 +17,7 @@ class ProfileCard extends StatelessWidget {
   /// Horizontal drag progress from CardSwiper (-100 to 100).
   /// Positive = dragging right (like), negative = dragging left (nope).
   final int horizontalOffsetPercentage;
+  final ScrollController? scrollController;
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +36,7 @@ class ProfileCard extends StatelessWidget {
               ScrollableProfile(
                 profile: profile,
                 cardHeight: constraints.maxHeight,
+                scrollController: scrollController,
               ),
               Positioned(
                 top: 48,

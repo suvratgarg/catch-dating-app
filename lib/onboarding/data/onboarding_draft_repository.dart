@@ -31,14 +31,13 @@ class OnboardingDraftRepository {
     action: 'save draft',
   );
 
-  Future<void> deleteDraft({required String uid}) =>
-      withFirestoreErrorContext(
-        () => _draftRef(uid).delete(),
-        collection: _collectionPath,
-        action: 'delete draft',
-      );
+  Future<void> deleteDraft({required String uid}) => withFirestoreErrorContext(
+    () => _draftRef(uid).delete(),
+    collection: _collectionPath,
+    action: 'delete draft',
+  );
 }
 
-@riverpod
+@Riverpod(keepAlive: true)
 OnboardingDraftRepository onboardingDraftRepository(Ref ref) =>
     OnboardingDraftRepository(ref.watch(firebaseFirestoreProvider));
