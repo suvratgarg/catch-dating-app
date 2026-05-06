@@ -36,10 +36,10 @@ options when specific functions need higher or lower limits.
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
 | `onSwipeCreated` | `src/matching/` | `swipes/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
-| `onMessageCreated` | `src/matching/` | `chats/{id}/messages/{id}` onCreate — unread counts + FCM |
+| `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread counts + FCM |
 | `syncRunClubReviewStats` | `src/reviews/` | `reviews/{id}` onWrite — recalculates club rating |
 | `onBlockCreated` | `src/safety/` | `blocks/{id}` onCreate — closes existing matches |
-| `moderateChatMessage` | `src/moderation/` | `chats/{id}/messages/{id}` onCreate — banned-word filter |
+| `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
 
 ### Storage-triggered
 

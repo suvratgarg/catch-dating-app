@@ -421,10 +421,16 @@ void main() {
               runs: [
                 buildRun(
                   priceInPaise: 1500,
-                  signedUpUserIds: const ['a', 'b'],
-                  waitlistUserIds: const ['c'],
+                  bookedCount: 2,
+                  waitlistedCount: 1,
+                  signedUpUserIds: const ['stale-array-user'],
+                  waitlistUserIds: const [],
                 ),
-                buildRun(priceInPaise: 0, signedUpUserIds: const ['d']),
+                buildRun(
+                  priceInPaise: 0,
+                  bookedCount: 1,
+                  signedUpUserIds: const [],
+                ),
               ],
             ),
             StatsStrip(

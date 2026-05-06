@@ -220,7 +220,8 @@ String _$filteredRunClubsHash() => r'fa2dc7dc25481dceba433fd984e5c1f9d218fd93';
 
 /// **Pattern D: View-model provider**
 ///
-/// Combines the user profile and filtered clubs streams into a
+/// Combines the signed-in user, membership edges, and filtered club streams into
+/// a
 /// [RunClubsListViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 
@@ -229,7 +230,8 @@ final runClubsListViewModelProvider = RunClubsListViewModelProvider._();
 
 /// **Pattern D: View-model provider**
 ///
-/// Combines the user profile and filtered clubs streams into a
+/// Combines the signed-in user, membership edges, and filtered club streams into
+/// a
 /// [RunClubsListViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 
@@ -243,7 +245,8 @@ final class RunClubsListViewModelProvider
     with $Provider<AsyncValue<RunClubsListViewModel>> {
   /// **Pattern D: View-model provider**
   ///
-  /// Combines the user profile and filtered clubs streams into a
+  /// Combines the signed-in user, membership edges, and filtered club streams into
+  /// a
   /// [RunClubsListViewModel] that partitions clubs into joined and discover
   /// lists for the UI.
   RunClubsListViewModelProvider._()
@@ -283,4 +286,4 @@ final class RunClubsListViewModelProvider
 }
 
 String _$runClubsListViewModelHash() =>
-    r'63d5ff670791aac54c06263f0d9e6f6fb4894bf4';
+    r'592c22b89e9ca48e42f9b8c7b3b760908c4426a5';

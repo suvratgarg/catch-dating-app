@@ -196,3 +196,27 @@ test("updateUserProfileHandler rejects unsafe account states", async () => {
     (error) => assertHttpsCode(error, "failed-precondition")
   );
 });
+
+test("updateUserProfileHandler rate limits before profile writes", async () => {
+  const h = harness({"users/runner-1": {name: "Runner One"}});
+
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {displayName: "Runner"}}),
+      {
+        ...h.deps,
+        checkRateLimit: async (_db, uid, action) => {
+          assert.equal(uid, "runner-1");
+          assert.equal(action, "updateUserProfile");
+          throw new HttpsError(
+            "resource-exhausted",
+            "Too many profile edits."
+          );
+        },
+      }
+    ),
+    (error) => assertHttpsCode(error, "resource-exhausted")
+  );
+
+  assert.deepEqual(h.firestore.get("users/runner-1"), {name: "Runner One"});
+});

@@ -1,13 +1,17 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_participation_roster.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,7 +31,11 @@ class HostRunManageScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final revenueRupees = run.signedUpCount * (run.priceInPaise ~/ 100);
+    final rosterAsync = ref.watch(watchRunParticipationRosterProvider(run.id));
+    final roster = rosterAsync.asData?.value;
+    final bookedCount = roster?.bookedCount ?? run.signedUpCount;
+    final waitlistCount = roster?.waitlistedCount ?? run.waitlistCount;
+    final revenueRupees = bookedCount * (run.priceInPaise ~/ 100);
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -93,13 +101,13 @@ class HostRunManageScreen extends ConsumerWidget {
               children: [
                 _HostRunStatCard(
                   icon: Icons.check_circle_outline_rounded,
-                  value: '${run.signedUpCount}/${run.capacityLimit}',
+                  value: '$bookedCount/${run.capacityLimit}',
                   label: 'Booked',
                 ),
                 const SizedBox(width: 8),
                 _HostRunStatCard(
                   icon: Icons.access_time_rounded,
-                  value: '${run.waitlistUserIds.length}',
+                  value: '$waitlistCount',
                   label: 'Waitlist',
                 ),
                 const SizedBox(width: 8),
@@ -115,17 +123,23 @@ class HostRunManageScreen extends ConsumerWidget {
             const SizedBox(height: 20),
             Text('Roster', style: CatchTextStyles.titleL(context)),
             const SizedBox(height: 10),
-            _HostRunUserList(
-              userIds: run.signedUpUserIds,
+            _HostRunRosterSection(
+              rosterAsync: rosterAsync,
+              runId: run.id,
+              selector: (roster) => roster.bookedIds,
               emptyText: 'No bookings yet.',
+              loadingText: 'Loading bookings...',
               trailingLabel: run.isFree ? 'FREE' : 'PAID',
             ),
             const SizedBox(height: 20),
             Text('Waitlist', style: CatchTextStyles.titleL(context)),
             const SizedBox(height: 10),
-            _HostRunUserList(
-              userIds: run.waitlistUserIds,
+            _HostRunRosterSection(
+              rosterAsync: rosterAsync,
+              runId: run.id,
+              selector: (roster) => roster.waitlistedIds,
               emptyText: 'No one is waiting.',
+              loadingText: 'Loading waitlist...',
               trailingLabel: 'WAITLIST',
             ),
           ],
@@ -247,6 +261,71 @@ class _HostRunSummaryRow extends StatelessWidget {
           const SizedBox(height: 12),
         ],
       ],
+    );
+  }
+}
+
+class _HostRunRosterSection extends ConsumerWidget {
+  const _HostRunRosterSection({
+    required this.rosterAsync,
+    required this.runId,
+    required this.selector,
+    required this.emptyText,
+    required this.loadingText,
+    required this.trailingLabel,
+  });
+
+  final AsyncValue<RunParticipationRoster> rosterAsync;
+  final String runId;
+  final List<String> Function(RunParticipationRoster roster) selector;
+  final String emptyText;
+  final String loadingText;
+  final String trailingLabel;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return rosterAsync.when(
+      loading: () => _HostRunRosterLoading(text: loadingText),
+      error: (e, _) => CatchInlineErrorState.fromError(
+        e,
+        context: AppErrorContext.run,
+        compact: true,
+        onRetry: () =>
+            ref.invalidate(watchRunParticipationRosterProvider(runId)),
+      ),
+      data: (roster) => _HostRunUserList(
+        userIds: selector(roster),
+        emptyText: emptyText,
+        trailingLabel: trailingLabel,
+      ),
+    );
+  }
+}
+
+class _HostRunRosterLoading extends StatelessWidget {
+  const _HostRunRosterLoading({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: const EdgeInsets.all(16),
+      borderColor: t.line,
+      radius: CatchRadius.lg,
+      child: Row(
+        children: [
+          SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2, color: t.primary),
+          ),
+          const SizedBox(width: 12),
+          Text(text, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+        ],
+      ),
     );
   }
 }

@@ -10,6 +10,9 @@ void main() {
     DateTime? endTime,
     int capacityLimit = 20,
     int priceInPaise = 0,
+    int? bookedCount,
+    int? checkedInCount,
+    int? waitlistedCount,
     List<String> signedUpUserIds = const [],
     List<String> attendedUserIds = const [],
     List<String> waitlistUserIds = const [],
@@ -26,6 +29,9 @@ void main() {
       capacityLimit: capacityLimit,
       description: 'A test run',
       priceInPaise: priceInPaise,
+      bookedCount: bookedCount,
+      checkedInCount: checkedInCount,
+      waitlistedCount: waitlistedCount,
       signedUpUserIds: signedUpUserIds,
       attendedUserIds: attendedUserIds,
       waitlistUserIds: waitlistUserIds,
@@ -98,6 +104,30 @@ void main() {
     test('true when signedUpCount exceeds capacityLimit', () {
       final run = buildRun(capacityLimit: 2, signedUpUserIds: ['a', 'b', 'c']);
       expect(run.isFull, isTrue);
+    });
+
+    test('uses projected bookedCount before legacy arrays', () {
+      final run = buildRun(
+        capacityLimit: 5,
+        bookedCount: 4,
+        signedUpUserIds: ['stale-array-user'],
+      );
+
+      expect(run.signedUpCount, 4);
+      expect(run.spotsRemaining, 1);
+      expect(run.isFull, isFalse);
+    });
+
+    test('uses projected checked-in and waitlist counts', () {
+      final run = buildRun(
+        checkedInCount: 3,
+        waitlistedCount: 2,
+        attendedUserIds: ['stale-attended'],
+        waitlistUserIds: ['stale-waitlist'],
+      );
+
+      expect(run.attendedCount, 3);
+      expect(run.waitlistCount, 2);
     });
   });
 

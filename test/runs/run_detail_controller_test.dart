@@ -2,7 +2,11 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
+import 'package:catch_dating_app/runs/domain/saved_run.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -19,6 +23,8 @@ void main() {
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
         runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
         isAuthenticated: true,
       );
@@ -36,6 +42,8 @@ void main() {
         userProfileAsync: AsyncData(user),
         reviewsAsync: AsyncData([review]),
         runClubAsync: AsyncData(buildRunClub(hostUserId: 'runner-1')),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
         isAuthenticated: true,
       );
@@ -46,6 +54,51 @@ void main() {
       expect(value.userProfile, user);
       expect(value.reviews, [review]);
       expect(value.isHost, isTrue);
+      expect(value.isSaved, isFalse);
+      expect(value.participation, isNull);
+    });
+
+    test('returns saved state from the saved run relationship doc', () {
+      final result = buildRunDetailViewModel(
+        runAsync: AsyncData(buildRun(id: 'run-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
+        reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: AsyncData(
+          SavedRun(
+            id: savedRunId(uid: 'runner-1', runId: 'run-1'),
+            uid: 'runner-1',
+            runId: 'run-1',
+            savedAt: DateTime(2026, 1, 1),
+          ),
+        ),
+        currentUid: 'runner-1',
+        isAuthenticated: true,
+        participationAsync: const AsyncData(null),
+      );
+
+      expect(result.requireValue!.isSaved, isTrue);
+    });
+
+    test('returns participation state from the run participation edge', () {
+      final participation = _participation(
+        runId: 'run-1',
+        uid: 'runner-1',
+        status: RunParticipationStatus.signedUp,
+      );
+
+      final result = buildRunDetailViewModel(
+        runAsync: AsyncData(buildRun(id: 'run-1')),
+        userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
+        reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: AsyncData(participation),
+        currentUid: 'runner-1',
+        isAuthenticated: true,
+      );
+
+      expect(result.requireValue!.participation, participation);
     });
 
     test('returns null data when the run does not exist', () {
@@ -54,6 +107,8 @@ void main() {
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
         runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
         isAuthenticated: true,
       );
@@ -68,6 +123,8 @@ void main() {
         userProfileAsync: const AsyncData(null),
         reviewsAsync: const AsyncData(<Review>[]),
         runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
         isAuthenticated: true,
       );
@@ -82,6 +139,8 @@ void main() {
         userProfileAsync: AsyncData(buildUser()),
         reviewsAsync: const AsyncData(<Review>[]),
         runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
         isAuthenticated: true,
       );
@@ -99,6 +158,8 @@ void main() {
         ),
         reviewsAsync: const AsyncData(<Review>[]),
         runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
         isAuthenticated: true,
       );
@@ -116,6 +177,8 @@ void main() {
           StackTrace.empty,
         ),
         runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: const AsyncData(null),
         currentUid: 'runner-1',
         isAuthenticated: true,
       );
@@ -141,6 +204,14 @@ void main() {
             watchReviewsForRunProvider(
               run.id,
             ).overrideWith((ref) => Stream.value([review])),
+            watchSavedRunProvider(
+              user.uid,
+              run.id,
+            ).overrideWith((ref) => Stream.value(null)),
+            watchRunParticipationProvider(
+              run.id,
+              user.uid,
+            ).overrideWith((ref) => Stream.value(null)),
           ],
         );
         addTearDown(container.dispose);
@@ -154,6 +225,10 @@ void main() {
         await container.read(watchRunProvider(run.id).future);
         await container.read(watchUserProfileProvider.future);
         await container.read(watchReviewsForRunProvider(run.id).future);
+        await container.read(watchSavedRunProvider(user.uid, run.id).future);
+        await container.read(
+          watchRunParticipationProvider(run.id, user.uid).future,
+        );
         await container.pump();
         await container.pump();
 
@@ -163,17 +238,17 @@ void main() {
         expect(value.userProfile, user);
         expect(value.reviews, [review]);
         expect(value.isHost, isTrue);
+        expect(value.isSaved, isFalse);
+        expect(value.participation, isNull);
       },
     );
   });
 
   group('RunDetailController', () {
     test('saves an unsaved run and returns the new saved state', () async {
-      final repository = FakeUserProfileRepository();
+      final repository = FakeSavedRunRepository();
       final container = ProviderContainer(
-        overrides: [
-          userProfileRepositoryProvider.overrideWith((ref) => repository),
-        ],
+        overrides: [savedRunRepositoryProvider.overrideWithValue(repository)],
       );
       addTearDown(container.dispose);
 
@@ -192,11 +267,9 @@ void main() {
     });
 
     test('unsaves a saved run and returns the new saved state', () async {
-      final repository = FakeUserProfileRepository();
+      final repository = FakeSavedRunRepository();
       final container = ProviderContainer(
-        overrides: [
-          userProfileRepositoryProvider.overrideWith((ref) => repository),
-        ],
+        overrides: [savedRunRepositoryProvider.overrideWithValue(repository)],
       );
       addTearDown(container.dispose);
 
@@ -214,4 +287,21 @@ void main() {
       expect(repository.savedRunId, isNull);
     });
   });
+}
+
+RunParticipation _participation({
+  required String runId,
+  required String uid,
+  required RunParticipationStatus status,
+}) {
+  final now = DateTime(2026, 1, 1);
+  return RunParticipation(
+    id: runParticipationId(runId: runId, uid: uid),
+    runId: runId,
+    runClubId: 'club-1',
+    uid: uid,
+    status: status,
+    createdAt: now,
+    updatedAt: now,
+  );
 }

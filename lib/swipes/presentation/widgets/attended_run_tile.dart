@@ -62,7 +62,7 @@ class AttendedRunTile extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  '$dateStr · ${run.attendedUserIds.length} runners checked in',
+                  '$dateStr · ${run.attendedCount} runners checked in',
                   style: CatchTextStyles.bodyS(context, color: t.ink2),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,

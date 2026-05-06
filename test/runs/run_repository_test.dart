@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -149,17 +150,33 @@ void main() {
       () async {
         final older = buildRun(
           id: 'older',
-          attendedUserIds: const ['runner-1'],
           startTime: DateTime.now().subtract(const Duration(days: 2)),
         );
         final newer = buildRun(
           id: 'newer',
-          attendedUserIds: const ['runner-1'],
           startTime: DateTime.now().subtract(const Duration(days: 1)),
         );
         await _seedRun(firestore, older);
         await _seedRun(firestore, newer);
         await _seedRun(firestore, buildRun(id: 'not-attended'));
+        await _seedParticipation(
+          firestore,
+          run: older,
+          uid: 'runner-1',
+          status: RunParticipationStatus.attended,
+        );
+        await _seedParticipation(
+          firestore,
+          run: newer,
+          uid: 'runner-1',
+          status: RunParticipationStatus.attended,
+        );
+        await _seedParticipation(
+          firestore,
+          run: buildRun(id: 'not-attended'),
+          uid: 'runner-1',
+          status: RunParticipationStatus.signedUp,
+        );
 
         await expectLater(
           repository.watchAttendedRuns(uid: 'runner-1'),
@@ -173,17 +190,33 @@ void main() {
       () async {
         final later = buildRun(
           id: 'later',
-          signedUpUserIds: const ['runner-1'],
           startTime: DateTime.now().add(const Duration(hours: 5)),
         );
         final earlier = buildRun(
           id: 'earlier',
-          signedUpUserIds: const ['runner-1'],
           startTime: DateTime.now().add(const Duration(hours: 2)),
         );
         await _seedRun(firestore, later);
         await _seedRun(firestore, earlier);
         await _seedRun(firestore, buildRun(id: 'not-signed-up'));
+        await _seedParticipation(
+          firestore,
+          run: later,
+          uid: 'runner-1',
+          status: RunParticipationStatus.signedUp,
+        );
+        await _seedParticipation(
+          firestore,
+          run: earlier,
+          uid: 'runner-1',
+          status: RunParticipationStatus.signedUp,
+        );
+        await _seedParticipation(
+          firestore,
+          run: buildRun(id: 'not-signed-up'),
+          uid: 'runner-1',
+          status: RunParticipationStatus.waitlisted,
+        );
 
         await expectLater(
           repository.watchSignedUpRuns(uid: 'runner-1'),
@@ -420,8 +453,14 @@ void main() {
     });
 
     test('watchAttendedRunsProvider delegates to the repository', () async {
-      final run = buildRun(id: 'run-1', attendedUserIds: const ['runner-1']);
+      final run = buildRun(id: 'run-1');
       await _seedRun(firestore, run);
+      await _seedParticipation(
+        firestore,
+        run: run,
+        uid: 'runner-1',
+        status: RunParticipationStatus.attended,
+      );
 
       final provider = watchAttendedRunsProvider('runner-1');
       final subscription = container.listen(provider, (_, _) {});
@@ -433,8 +472,14 @@ void main() {
     });
 
     test('watchSignedUpRunsProvider delegates to the repository', () async {
-      final run = buildRun(id: 'run-1', signedUpUserIds: const ['runner-1']);
+      final run = buildRun(id: 'run-1');
       await _seedRun(firestore, run);
+      await _seedParticipation(
+        firestore,
+        run: run,
+        uid: 'runner-1',
+        status: RunParticipationStatus.signedUp,
+      );
 
       final provider = watchSignedUpRunsProvider('runner-1');
       final subscription = container.listen(provider, (_, _) {});
@@ -484,7 +529,9 @@ void main() {
       await _seedRun(firestore, run);
 
       final results = await container.read(
-        recommendedRunsProvider(const ['club-1']).future,
+        recommendedRunsProvider(
+          RecommendedRunsQuery.fromClubIds(const ['club-1']),
+        ).future,
       );
 
       expect(results, [run]);
@@ -494,6 +541,28 @@ void main() {
 
 Future<void> _seedRun(FakeFirebaseFirestore firestore, Run run) {
   return firestore.collection('runs').doc(run.id).set(run.toJson());
+}
+
+Future<void> _seedParticipation(
+  FakeFirebaseFirestore firestore, {
+  required Run run,
+  required String uid,
+  required RunParticipationStatus status,
+}) {
+  final now = DateTime(2026, 1, 1);
+  final participation = RunParticipation(
+    id: runParticipationId(runId: run.id, uid: uid),
+    runId: run.id,
+    runClubId: run.runClubId,
+    uid: uid,
+    status: status,
+    createdAt: now,
+    updatedAt: now,
+  );
+  return firestore
+      .collection('runParticipations')
+      .doc(participation.id)
+      .set(participation.toJson());
 }
 
 class _IdleRunRepository extends Fake implements RunRepository {

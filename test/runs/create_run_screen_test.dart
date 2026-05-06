@@ -5,8 +5,10 @@ import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/host_run_manage_screen.dart';
@@ -257,17 +259,29 @@ void main() {
           buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
           buildPublicProfile(uid: 'runner-3', name: 'Avery'),
         ];
+      final participationRepository = FakeRunParticipationRepository();
       final run = buildRun(
         priceInPaise: 10000,
-        signedUpUserIds: const ['runner-2'],
-        waitlistUserIds: const ['runner-3'],
+        signedUpUserIds: const ['stale-booking'],
+        waitlistUserIds: const ['stale-waitlist'],
       );
+      participationRepository.runParticipations[run.id] = [
+        buildRunParticipation(run: run, uid: 'runner-2'),
+        buildRunParticipation(
+          run: run,
+          uid: 'runner-3',
+          status: RunParticipationStatus.waitlisted,
+        ),
+      ];
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             publicProfileRepositoryProvider.overrideWith(
               (ref) => publicProfiles,
+            ),
+            runParticipationRepositoryProvider.overrideWith(
+              (ref) => participationRepository,
             ),
           ],
           child: MaterialApp(

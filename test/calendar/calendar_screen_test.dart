@@ -7,8 +7,11 @@ import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -121,7 +124,16 @@ void main() {
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('07:15'), findsAtLeastNWidgets(1));
 
-      expect(find.text('THU · 7 MAY'), findsOneWidget);
+      await _scrollCalendarDown(tester);
+
+      expect(
+        find.text(
+          DateUtils.isSameDay(runs.last.startTime, DateTime.now())
+              ? 'TODAY'
+              : 'THU · 7 MAY',
+        ),
+        findsOneWidget,
+      );
       expect(find.text('FRI · 8 MAY'), findsOneWidget);
       expect(find.text('Carter Road Promenade'), findsOneWidget);
       expect(find.text('Juhu Beach Gate'), findsOneWidget);
@@ -314,6 +326,19 @@ void main() {
                 user.uid,
               ).overrideWithValue(AsyncData<List<Run>>([run])),
               watchRunProvider(run.id).overrideWithValue(AsyncData(run)),
+              watchSavedRunProvider(
+                user.uid,
+                run.id,
+              ).overrideWithValue(const AsyncData(null)),
+              watchRunParticipationProvider(run.id, user.uid).overrideWithValue(
+                AsyncData(
+                  _participation(
+                    run: run,
+                    uid: user.uid,
+                    status: RunParticipationStatus.signedUp,
+                  ),
+                ),
+              ),
               fetchRunClubProvider(
                 runClub.id,
               ).overrideWithValue(AsyncData(runClub)),
@@ -334,6 +359,8 @@ void main() {
 
         expect(find.text('Calendar'), findsWidgets);
         expect(_routerPath(router), app_router.Routes.calendarScreen.path);
+
+        await _scrollCalendarDown(tester);
 
         final runCard = find.byType(RunAgendaRunCard);
         expect(tester.widget<RunAgendaRunCard>(runCard).onTap, isNotNull);
@@ -376,6 +403,30 @@ Future<void> _pumpRouterFrame(WidgetTester tester) async {
   await tester.pump();
   await tester.pump(const Duration(milliseconds: 100));
   await tester.pump(const Duration(seconds: 1));
+}
+
+Future<void> _scrollCalendarDown(WidgetTester tester) async {
+  for (var i = 0; i < 3; i += 1) {
+    await tester.drag(find.byType(CustomScrollView), const Offset(0, -320));
+    await tester.pump();
+  }
+}
+
+RunParticipation _participation({
+  required Run run,
+  required String uid,
+  required RunParticipationStatus status,
+}) {
+  final now = DateTime(2026, 1, 1);
+  return RunParticipation(
+    id: runParticipationId(runId: run.id, uid: uid),
+    runId: run.id,
+    runClubId: run.runClubId,
+    uid: uid,
+    status: status,
+    createdAt: now,
+    updatedAt: now,
+  );
 }
 
 String _timeLabel(DateTime date) =>

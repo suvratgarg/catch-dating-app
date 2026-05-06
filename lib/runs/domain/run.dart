@@ -65,6 +65,9 @@ abstract class Run with _$Run {
     required int capacityLimit,
     required String description,
     required int priceInPaise,
+    @JsonKey(includeIfNull: false) int? bookedCount,
+    @JsonKey(includeIfNull: false) int? checkedInCount,
+    @JsonKey(includeIfNull: false) int? waitlistedCount,
     @Default([]) List<String> signedUpUserIds,
     @Default([]) List<String> attendedUserIds,
     @Default([]) List<String> waitlistUserIds,
@@ -77,9 +80,11 @@ abstract class Run with _$Run {
   factory Run.fromJson(Map<String, dynamic> json) => _$RunFromJson(json);
 
   double get distanceMiles => distanceKm * 0.621371;
-  int get signedUpCount => signedUpUserIds.length;
+  int get signedUpCount => bookedCount ?? signedUpUserIds.length;
+  int get attendedCount => checkedInCount ?? attendedUserIds.length;
+  int get waitlistCount => waitlistedCount ?? waitlistUserIds.length;
   int get spotsRemaining => math.max(0, capacityLimit - signedUpCount);
-  bool get isFull => signedUpUserIds.length >= capacityLimit;
+  bool get isFull => signedUpCount >= capacityLimit;
   bool get isFree => priceInPaise == 0;
   bool get isUpcoming => startTime.isAfter(DateTime.now());
   bool get hasRequirements => constraints.hasRequirements;

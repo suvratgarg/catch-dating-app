@@ -1,5 +1,5 @@
 {
-  "version": "2.2.15",
+  "version": "2.3.9",
   "updated": "2026-05-06",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, and stable debt ids. Do not reread archived markdown history unless a debt id points there.",
@@ -23,25 +23,29 @@
       "Feature tappable scanner now skips built-in labeled buttons, tooltipped controls, and tappables already wrapped in Semantics or Tooltip.",
       "Legacy spacing scanner is split between canonical 4-point migration candidates and intentional fine-grained compatibility helpers.",
       "Canonical spacing migration should be piecemeal and touch-driven.",
-      "Raw error-surface candidates are clean after the hard CatchErrorText removal and direct primitive migration."
+      "Raw error-surface candidates are clean after the hard CatchErrorText removal and direct primitive migration.",
+      "Stream lifecycle watch audit on 2026-05-06 found only one-shot auth/payment protocol timeout usage, not Firestore snapshot listener timeouts.",
+      "Error UI watch audit on 2026-05-06 found no CatchErrorText regression and zero scanner raw error-surface candidates."
     ]
   },
   "pending": [
     {
       "id": "PROFILE-001",
       "title": "Fix profile tab and preview tab blank rendering",
-      "status": "needs_device_confirmation",
+      "status": "active",
       "area": "user_profile",
       "priority": "high",
       "rules": [
         "SLIVER-001"
       ],
-      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. The previous single-CustomScrollView registry text was stale. On 2026-05-06 the iPhone debug loop reproduced a profile edit-sheet lifecycle crash (`TextEditingController was used after being disposed`) during profile interaction. `profile_edit_sheet.dart` now owns text/int controllers inside the modal route, regression tests cover Done dismissal, and nullable single-choice sheets now have root-cause coverage for empty fields, visible immediate-save pending feedback, and failed-save pending-highlight cleanup. The Profile NestedScrollView overlap contract is now explicit: the scroll-away title remains a normal outer sliver, the pinned Edit/Preview row is wrapped in SliverOverlapAbsorber, each tab CustomScrollView starts with SliverOverlapInjector, and widget coverage verifies the body starts below the pinned tab row. Remaining Profile work is physical-device visual confirmation.",
+      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. The previous single-CustomScrollView registry text was stale. On 2026-05-06 the iPhone debug loop reproduced a profile edit-sheet lifecycle crash (`TextEditingController was used after being disposed`) during profile interaction; `profile_edit_sheet.dart` now owns text/int controllers inside the modal route, regression tests cover Done dismissal, and nullable single-choice sheets have root-cause coverage. The Profile NestedScrollView overlap contract is explicit in code, but physical testing still shows an unresolved bug: when the user scrolls upward from the Preview tab at the top of the internal profile card, the outer Profile header does not reliably return unless the gesture starts near the tab row. Do not mark this complete until the preview-card leading overscroll expands the outer header continuously on device.",
       "paths": [
         "lib/user_profile/presentation/profile_screen.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
         "lib/user_profile/presentation/widgets/profile_edit_sheet.dart",
-        "test/profile/profile_widgets_test.dart"
+        "test/profile/profile_widgets_test.dart",
+        "docs/sliver_layout_guide.md",
+        "docs/ui_layout_spacing.md"
       ]
     },
     {
@@ -84,7 +88,7 @@
     {
       "id": "PROFILE-CARD-POLISH-001",
       "title": "Polish shared public-facing profile card",
-      "status": "active",
+      "status": "needs_device_confirmation",
       "area": "swipes,user_profile,public_profile",
       "priority": "high",
       "rules": [
@@ -93,7 +97,7 @@
         "WIDGET-CATALOG-001",
         "WIDGET-TEST-001"
       ],
-      "summary": "First polish pass completed on 2026-05-06. Swipes, Profile Preview, and Public Profile still share one `ProfileCard` rendering path. The card remains dark and immersive in both light and dark app themes through `ProfileCardPalette`, shows display name + age + optional city on the hero, moves relationship goal into detail chips, promotes the bio prompt ahead of running stats, and uses a branded missing-photo fallback. Visual review follow-up: retain `_RunningIdentityCard` as the single canonical `RUN PROFILE` section, remove redundant lower `RUNNING` pace/distance chips unless they contain non-duplicative running content, verify every profile section uses the dark palette on device, and inset/round additional photos with consistent margins/padding. Continue visual iteration here rather than forking Preview from Swipes.",
+      "summary": "Implementation polish pass completed on 2026-05-06. Swipes, Profile Preview, and Public Profile still share one `ProfileCard` rendering path. The card remains dark and immersive in both light and dark app themes through `ProfileCardPalette`, shows display name + age + optional city on the hero, moves relationship goal into detail chips, promotes the bio prompt ahead of running stats, and uses a branded missing-photo fallback. `_RunningIdentityCard` is now the single canonical `RUN PROFILE` section; the redundant lower `ProfileRunningSection` was removed. Non-hero photos are inset and rounded inside the card while the hero remains full-bleed. Remaining work is physical-device visual review before deciding whether to continue more opinionated refinements.",
       "paths": [
         "lib/swipes/presentation/profile_card.dart",
         "lib/swipes/presentation/profile_card_content.dart",
@@ -101,7 +105,6 @@
         "lib/swipes/presentation/widgets/name_overlay.dart",
         "lib/swipes/presentation/widgets/profile_card_style.dart",
         "lib/swipes/presentation/widgets/profile_info_chip.dart",
-        "lib/swipes/presentation/widgets/profile_running_section.dart",
         "lib/swipes/presentation/widgets/profile_section_card.dart",
         "lib/swipes/presentation/widgets/scrollable_profile.dart",
         "lib/user_profile/presentation/widgets/preview_tab.dart",
@@ -114,7 +117,7 @@
     {
       "id": "CELEBRATION-SOUND-001",
       "title": "Add optional sound to full-screen celebration moments",
-      "status": "identified",
+      "status": "watch",
       "area": "core,runs,payments,matches",
       "priority": "low",
       "rules": [
@@ -130,6 +133,110 @@
         "lib/runs/presentation/run_check_in_celebration_screen.dart",
         "lib/matches/presentation/widgets/match_celebration_dialog.dart",
         "test/core/catch_celebration_screen_test.dart"
+      ]
+    },
+    {
+      "id": "FUNCTIONS-RATE-LIMIT-001",
+      "title": "Apply callable rate limits consistently",
+      "status": "watch",
+      "area": "functions",
+      "priority": "high",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Closed on 2026-05-06. `verifyRazorpayPayment`, `cancelRunSignUp`, `joinRunWaitlist`, `blockUser`, `unblockUser`, and `requestAccountDeletion` now enforce shared `checkRateLimit` before expensive or destructive work. `updateUserProfile` is now configured and enforced at 60/minute so field-by-field profile edits remain ergonomic while write loops are bounded. Watch future callables for the same App Check + auth + Zod validation + rate-limit ordering.",
+      "paths": [
+        "functions/src/shared/rateLimit.ts",
+        "functions/src/payments/verifyRazorpayPayment.ts",
+        "functions/src/payments/verifyRazorpayPayment.test.ts",
+        "functions/src/runs/cancelRunSignUp.ts",
+        "functions/src/runs/joinRunWaitlist.ts",
+        "functions/src/safety/blocking.ts",
+        "functions/src/safety/blocking.test.ts",
+        "functions/src/safety/accountDeletion.ts",
+        "functions/src/safety/accountDeletion.test.ts",
+        "functions/src/profiles/updateUserProfile.ts",
+        "functions/src/profiles/updateUserProfile.test.ts"
+      ]
+    },
+    {
+      "id": "NOTIFICATIONS-QUEUE",
+      "title": "Design backend-owned notification fan-out",
+      "status": "identified",
+      "area": "functions,core,dashboard",
+      "priority": "medium",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001"
+      ],
+      "summary": "Before adding more notifications, decide whether durable in-app activity/timeline events live in a server-owned Firestore collection or whether specific moments remain push-only. Candidate moments: new message, match, upcoming run reminder, signup/waitlist promotion, run cancellation/schedule change, and club/hosted-run updates. Client writes to any notification timeline should be denied; fan-out should happen in Functions.",
+      "paths": [
+        "docs/backend_operation_catalog.md",
+        "functions/src/shared/notifications.ts",
+        "functions/src/matching/onMessageCreated.ts",
+        "functions/src/matching/onMatchCreated.ts",
+        "lib/dashboard/presentation/widgets/activity_section.dart",
+        "lib/dashboard/presentation/activity_controller.dart"
+      ]
+    },
+    {
+      "id": "RELATIONSHIP-DOC-MIGRATION",
+      "title": "Move relationship reads off compatibility arrays",
+      "status": "active",
+      "area": "firestore,runs,run_clubs,user_profile,chats",
+      "priority": "high",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "PROVIDER-SEAM-001",
+        "CONTROLLER-BOUNDARY-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Relationship/action documents now exist for run-club memberships, run participations, saved runs, and match-scoped messages. Run detail saved-state reads now use `savedRuns/{uid_runId}`. Dashboard recommendations, Run Clubs list/detail membership state, and Run Map recommendations now read `runClubMemberships` rather than `users.joinedRunClubIds` or `runClubs.memberUserIds`; `RecommendedRunsQuery` gives recommendation providers stable value-equality keys. Run detail now reads the current viewer's booking/waitlist/attendance/review-gate state from `runParticipations/{runId_uid}` instead of compatibility participant arrays. Shared `watchSignedUpRunsProvider` and `watchAttendedRunsProvider` now query `runParticipations` by user/status and then watch matching run documents, so Dashboard, Calendar, Run Map, Activity, and Swipe Hub consume edge-backed run streams through the existing provider seam. Host attendance management derives roster/check-in state from `runParticipations` through `AttendanceSheetViewModel`. Swipe candidate generation, swipe empty-state attendance gating, and run recap attendee/checked-in state now use `runParticipations`. Run participation count projections are explicit `Run` fields (`bookedCount`, `waitlistedCount`, `checkedInCount`) maintained by Functions, while exact roster surfaces (`WhoIsRunning`, `HostRunManageScreen`) use `RunParticipationRoster` from edge docs. Production UI no longer directly reads `runs.signedUpUserIds`/`waitlistUserIds`/`attendedUserIds`; compatibility arrays remain only in generated serialization, backend write compatibility, migration tooling, and tests until beta migration/reset policy is finalized.",
+      "paths": [
+        "docs/firestore_relationship_documents_migration.md",
+        "lib/run_clubs/data/run_club_membership_repository.dart",
+        "lib/runs/data/run_participation_repository.dart",
+        "lib/runs/data/saved_run_repository.dart",
+        "lib/runs/presentation/run_detail_controller.dart",
+        "lib/dashboard/presentation/dashboard_screen.dart",
+        "lib/calendar/presentation/calendar_screen.dart",
+        "lib/run_clubs/presentation/list/run_clubs_list_screen.dart",
+        "lib/runs/presentation/attendance_sheet_screen.dart",
+        "lib/swipes/data/swipe_repository.dart",
+        "lib/reviews/data/reviews_repository.dart"
+      ]
+    },
+    {
+      "id": "MIGRATION-VALIDATION-001",
+      "title": "Add seeded tests and count validation for relationship migration apply",
+      "status": "identified",
+      "area": "tooling,firestore",
+      "priority": "medium",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "`tool/firestore_relationship_migration.mjs` supports dry-run and apply modes for creating relationship docs and copying legacy chat messages. Before running apply on shared beta data, add seeded fixture tests for duplicates, missing docs, deleted users, legacy chats, and count mismatches, and make apply output validate aggregate counts instead of only reporting planned writes.",
+      "paths": [
+        "tool/firestore_relationship_migration.mjs",
+        "tool/validate_firestore_data.mjs",
+        "docs/firestore_relationship_documents_migration.md"
+      ]
+    },
+    {
+      "id": "DELETE-METHODOLOGY-QUEUE",
+      "title": "Rewrite deletion and anonymization around relationship-doc queries",
+      "status": "identified",
+      "area": "functions,safety,firestore",
+      "priority": "high",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "Relationship docs make deletes query-driven. Rewrite account deletion to query runClubMemberships by uid, runParticipations by uid, savedRuns by uid, reviews/payments by user, matches by participant, swipes by source/target, public profile, private profile, Storage, and Auth. Add run deletion and club deletion plans that use runParticipations/runClubMemberships instead of scanning parent arrays.",
+      "paths": [
+        "functions/src/safety/accountDeletion.ts",
+        "functions/src/safety/accountDeletion.test.ts",
+        "docs/firestore_relationship_documents_migration.md",
+        "docs/backend_operation_catalog.md"
       ]
     },
     {
@@ -216,9 +323,11 @@
     }
   ],
   "next_up": [
-    "PROFILE-CARD-POLISH-001",
-    "PROFILE-001",
-    "DOC-HYGIENE-QUEUE"
+    "NOTIFICATIONS-QUEUE",
+    "DOC-HYGIENE-QUEUE",
+    "STREAM-LIFECYCLE-QUEUE",
+    "ERROR-UI-QUEUE",
+    "PROFILE-001"
   ],
   "completed": [
     {

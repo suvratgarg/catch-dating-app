@@ -85,6 +85,15 @@ class FakeTransaction {
     });
   }
 
+  set(ref: FakeDocRef, patch: FakeData, options?: {merge?: boolean}) {
+    this.writes.push(() => {
+      const current = options?.merge ?
+        this.firestore.get(ref.path) ?? {} :
+        {};
+      this.firestore.set(ref.path, applyPatch(current, patch));
+    });
+  }
+
   commit() {
     for (const write of this.writes) write();
   }
@@ -214,6 +223,20 @@ test("createRunClubHandler creates a club and mirrors host membership",
     assert.deepEqual(h.firestore.get("users/host-1")?.joinedRunClubIds, [
       "club-1",
     ]);
+    assert.deepEqual(
+      {
+        clubId: h.firestore.get("runClubMemberships/club-1_host-1")?.clubId,
+        uid: h.firestore.get("runClubMemberships/club-1_host-1")?.uid,
+        role: h.firestore.get("runClubMemberships/club-1_host-1")?.role,
+        status: h.firestore.get("runClubMemberships/club-1_host-1")?.status,
+      },
+      {
+        clubId: "club-1",
+        uid: "host-1",
+        role: "host",
+        status: "active",
+      }
+    );
   }
 );
 
@@ -234,6 +257,10 @@ test("createRunClubHandler can generate the club id server-side", async () => {
   assert.deepEqual(h.firestore.get("users/host-1")?.joinedRunClubIds, [
     "generated-club-id",
   ]);
+  assert.equal(
+    h.firestore.get("runClubMemberships/generated-club-id_host-1")?.status,
+    "active"
+  );
 });
 
 test("createRunClubHandler rejects unsafe creation states", async () => {

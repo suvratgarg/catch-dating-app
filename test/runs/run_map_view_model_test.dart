@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -5,6 +7,18 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'runs_test_helpers.dart';
+
+RunClubMembership _membership({
+  required String clubId,
+  String uid = 'runner-1',
+}) => RunClubMembership(
+  id: runClubMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: RunClubMembershipRole.member,
+  status: RunClubMembershipStatus.active,
+  joinedAt: DateTime(2026, 1, 1),
+);
 
 void main() {
   group('buildRunMapViewModel', () {
@@ -68,10 +82,7 @@ void main() {
   group('runMapViewModelProvider', () {
     test('combines profile, signed-up runs, and recommended runs', () async {
       final repository = FakeRunRepository();
-      final user = buildUser(
-        uid: 'runner-1',
-        joinedRunClubIds: const ['club-1'],
-      );
+      final user = buildUser(uid: 'runner-1');
       final signedUpRun = buildRun(
         id: 'signed-up',
         startTime: DateTime(2026, 1, 1, 7),
@@ -91,6 +102,9 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+          watchActiveRunClubMembershipsForUserProvider(user.uid).overrideWith(
+            (ref) => Stream.value([_membership(clubId: 'club-1')]),
+          ),
           runRepositoryProvider.overrideWith((ref) => repository),
         ],
       );
@@ -104,9 +118,14 @@ void main() {
       addTearDown(subscription.close);
 
       await container.read(watchUserProfileProvider.future);
+      await container.read(
+        watchActiveRunClubMembershipsForUserProvider(user.uid).future,
+      );
       await container.read(watchSignedUpRunsProvider(user.uid).future);
       await container.read(
-        recommendedRunsProvider(user.joinedRunClubIds).future,
+        recommendedRunsProvider(
+          RecommendedRunsQuery.fromClubIds(const ['club-1']),
+        ).future,
       );
       await container.pump();
 

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_cleanup
-version: 2.3.18
+version: 2.3.21
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
@@ -30,6 +30,47 @@ For future passes:
    old finding points there.
 
 ## Rule Changelog
+
+### 2.3.21
+
+- Added `docs/backend_operation_catalog.md` as the human-readable map of
+  direct client writes, callable-owned mutations, trigger-owned projections,
+  server-only collections, and notification starting points.
+- Functions audit found and fixed two contract issues: `tool/firestore_contract.json`
+  now includes `firstName`, `lastName`, and `displayName`, and account deletion
+  now clears retained `firstName`, `lastName`, and `displayName` fields.
+- Added `FUNCTIONS-RATE-LIMIT-001` to the backlog for callables whose shared
+  rate-limit configuration is not yet applied at the handler.
+- Added `NOTIFICATIONS-QUEUE` so notification/activity timeline work starts
+  from an explicit backend-owned fan-out design instead of ad hoc client writes.
+
+### 2.3.20
+
+- Added `docs/ui_layout_spacing.md` as the durable owner for shared screen
+  padding, tab body insets, sliver body gaps, and card/photo spacing contracts.
+  The current Profile tab body inset is now documented as 20 px left/right, 8
+  px top, and 32 px bottom.
+- Reopened `PROFILE-001` from device-confirmation state to active bug state:
+  physical testing still shows Profile Preview does not continuously restore
+  the outer Profile header when dragging upward/downward from the top of the
+  internal preview card unless the gesture starts near the tab row. This is
+  documented but intentionally deferred while doc hygiene, stream lifecycle,
+  and error UI watch queues are audited.
+- Stream lifecycle watch audit found no Firestore listener timeout regression.
+  The only remaining `.timeout` matches are one-shot auth/payment protocol
+  callbacks, not snapshot streams.
+- Error UI watch audit found no `CatchErrorText` regression and the scanner
+  still reports zero raw app-facing error surface candidates. Remaining
+  `"Unable to load..."` / `"Something went wrong"` matches are branded
+  primitive copy, mappers, framework fallback, or tests.
+
+### 2.3.19
+
+- Closed the low-hanging `PROFILE-CARD-POLISH-001` implementation items:
+  removed the redundant lower `ProfileRunningSection`, retained one canonical
+  dark `RUN PROFILE` card, and inset/rounded all non-hero photos inside the
+  shared Swipes/Profile Preview/Public Profile card path. Remaining work is
+  visual device review and any product-driven refinements after inspection.
 
 ### 2.3.18
 
@@ -223,7 +264,8 @@ status. Snapshot as of 2026-05-06:
 
 | Debt | Status | Next action |
 |---|---|---|
-| `PROFILE-CARD-POLISH-001` | active | Continue visual iteration on the shared Swipes/Profile Preview/Public Profile card without forking Preview from Swipes. Next fix: keep one `RUN PROFILE` summary card, remove duplicated pace/distance chips from the lower `RUNNING` section, confirm dark palette usage on real device, and give all non-hero photos consistent inset, radius, and spacing. |
+| `PROFILE-CARD-POLISH-001` | needs_device_confirmation | Shared Swipes/Profile Preview/Public Profile card now uses one canonical dark `RUN PROFILE` section and inset/rounded non-hero photos. Device visual review is deferred by user request. |
+| `PROFILE-001` | active | Sliver/rendering is not complete: Profile Preview still does not continuously restore the outer header from the preview-card top gesture on device. Defer implementation until after doc hygiene / stream lifecycle / error UI queue pass. |
 | `CELEBRATION-SOUND-001` | identified | Haptics are live for full-screen celebration moments. Add optional sound later through `CelebrationEffectsController`, with mute/silent-mode/accessibility respect and tests using an injected fake effects controller. |
 | `STREAM-LIFECYCLE-QUEUE` | watch | Known Firestore listener lifecycle issues are resolved. Keep the rule active as a guardrail: new realtime streams should be auto-dispose, retained-tab gated, or explicitly documented as shell/global. |
 | `ERROR-UI-QUEUE` | watch | Branded error primitives are in place, `CatchErrorText` is deleted, and the raw error-surface scanner is clean. Keep watching for regressions and add typed catalogue entries only when repeated product/domain failures need branching, analytics, retry policy, or tests. |

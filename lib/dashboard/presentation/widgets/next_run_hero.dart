@@ -99,7 +99,7 @@ class NextRunHero extends StatelessWidget {
                               left: i * (28 - 8.0),
                               child: PersonAvatar(
                                 size: 28,
-                                name: nextRun.signedUpUserIds[i],
+                                name: '${nextRun.id}-$i',
                                 borderWidth: 2,
                                 borderColor: t.ink,
                               ),

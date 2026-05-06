@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -9,15 +10,22 @@ void main() {
       final content = buildSwipeEmptyContent(
         run: null,
         currentUser: buildUser(uid: 'runner-1'),
+        currentUserParticipation: null,
       );
 
       expect(content.title, 'Catch unavailable');
     });
 
     test('explains that swiping opens after the run ends', () {
+      final run = buildRun(attendedUserIds: const []);
       final content = buildSwipeEmptyContent(
-        run: buildRun(attendedUserIds: const ['runner-1']),
+        run: run,
         currentUser: buildUser(uid: 'runner-1'),
+        currentUserParticipation: buildRunParticipation(
+          run: run,
+          uid: 'runner-1',
+          status: RunParticipationStatus.attended,
+        ),
       );
 
       expect(content.title, 'Run in progress');
@@ -29,13 +37,19 @@ void main() {
 
     test('explains when the user did not attend the run', () {
       final endedAt = DateTime.now().subtract(const Duration(hours: 3));
+      final run = buildRun(
+        startTime: endedAt.subtract(const Duration(hours: 1)),
+        endTime: endedAt,
+        attendedUserIds: const ['runner-1'],
+      );
       final content = buildSwipeEmptyContent(
-        run: buildRun(
-          startTime: endedAt.subtract(const Duration(hours: 1)),
-          endTime: endedAt,
-          attendedUserIds: const ['runner-2'],
-        ),
+        run: run,
         currentUser: buildUser(uid: 'runner-1'),
+        currentUserParticipation: buildRunParticipation(
+          run: run,
+          uid: 'runner-1',
+          status: RunParticipationStatus.signedUp,
+        ),
       );
 
       expect(content.title, 'Catch unavailable');
@@ -47,13 +61,19 @@ void main() {
 
     test('explains when the swipe window has closed', () {
       final endedAt = DateTime.now().subtract(const Duration(hours: 26));
+      final run = buildRun(
+        startTime: endedAt.subtract(const Duration(hours: 1)),
+        endTime: endedAt,
+        attendedUserIds: const [],
+      );
       final content = buildSwipeEmptyContent(
-        run: buildRun(
-          startTime: endedAt.subtract(const Duration(hours: 1)),
-          endTime: endedAt,
-          attendedUserIds: const ['runner-1'],
-        ),
+        run: run,
         currentUser: buildUser(uid: 'runner-1'),
+        currentUserParticipation: buildRunParticipation(
+          run: run,
+          uid: 'runner-1',
+          status: RunParticipationStatus.attended,
+        ),
       );
 
       expect(content.title, 'Swipe window closed');
@@ -63,13 +83,19 @@ void main() {
       'falls back to the default empty message when the window is active',
       () {
         final endedAt = DateTime.now().subtract(const Duration(hours: 2));
+        final run = buildRun(
+          startTime: endedAt.subtract(const Duration(hours: 1)),
+          endTime: endedAt,
+          attendedUserIds: const [],
+        );
         final content = buildSwipeEmptyContent(
-          run: buildRun(
-            startTime: endedAt.subtract(const Duration(hours: 1)),
-            endTime: endedAt,
-            attendedUserIds: const ['runner-1'],
-          ),
+          run: run,
           currentUser: buildUser(uid: 'runner-1'),
+          currentUserParticipation: buildRunParticipation(
+            run: run,
+            uid: 'runner-1',
+            status: RunParticipationStatus.attended,
+          ),
         );
 
         expect(content, defaultSwipeEmptyContent);

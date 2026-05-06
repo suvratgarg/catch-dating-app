@@ -1,6 +1,6 @@
 ---
 doc_id: firestore_contract_tracker
-version: 2.0.2
+version: 2.2.8
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
@@ -80,6 +80,43 @@ operation ownership drift.
 
 ## Recent Contract Notes
 
+### 2026-05-06: Callable Rate Limit Enforcement
+
+- Closed `FUNCTIONS-RATE-LIMIT-001`: every callable named in the Functions
+  audit now enforces its declared shared rate limit before expensive or
+  destructive work.
+- Added enforcement to `verifyRazorpayPayment`, `cancelRunSignUp`,
+  `joinRunWaitlist`, `blockUser`, `unblockUser`, and
+  `requestAccountDeletion`.
+- Added `updateUserProfile` to `RATE_LIMITS` at 60 requests/minute. This keeps
+  profile edit sheets responsive for field-by-field saves while preventing an
+  unbounded write loop.
+- Added focused Functions tests for the handler seams that can prove ordering:
+  payment verification stops before signature/Razorpay fetch, profile updates
+  stop before writes, safety block/unblock stop before writes/deletes, and
+  account deletion stops before storage/Auth/Firestore destructive work.
+
+### 2026-05-06: Functions Architecture And Operation Catalog Audit
+
+- Added `docs/backend_operation_catalog.md` as the human-readable catalog of
+  backend write initiators, Cloud Function ownership, direct Firestore writes,
+  trigger-owned projections, server-only collections, and notification starting
+  points.
+- `tool/firestore_contract.json` remains the machine-readable source for
+  collection operation ownership and rules-sensitive field groups.
+- Fixed contract drift: `users/{uid}.firstName`, `lastName`, and `displayName`
+  were present in Dart, generated Functions TypeScript, and Firestore rules but
+  missing from `tool/firestore_contract.json`.
+- Fixed account deletion anonymization: retained `users/{uid}` docs now clear
+  `firstName`, `lastName`, and `displayName` in addition to legacy `name`.
+- Functions build and unit tests passed, and the contract checker now passes.
+
+Follow-up debt:
+
+- `NOTIFICATIONS-QUEUE`: before adding new notifications, decide whether
+  in-app activity/timeline notifications need a server-owned Firestore
+  collection or whether specific events remain push-only.
+
 ### 2026-05-06: UserProfile.displayName
 
 - `users/{uid}.displayName` is now the editable public display name.
@@ -93,6 +130,66 @@ operation ownership drift.
   Freezed/json, generated `functions/src/shared/firestore.ts`, callable Zod
   validation, Firestore rules, rules fixture, onboarding tests, profile widget
   tests, and domain tests.
+
+### 2026-05-06: Relationship Documents And Match-Scoped Messages
+
+- Added `docs/firestore_relationship_documents_migration.md` as the active
+  tracker for relationship/action docs, match-scoped messages, migration
+  tooling, and deletion/anonymization payoff.
+- Added generated Dart/TypeScript models for `RunClubMembership`,
+  `RunParticipation`, and `SavedRun`.
+- `ChatMessage` now lives under
+  `matches/{matchId}/messages/{messageId}` instead of the legacy
+  `chats/{matchId}/messages/{messageId}` namespace.
+- Cloud Functions now write `runClubMemberships` for club create/join/leave and
+  `runParticipations` for signup, waitlist, cancellation, host attendance, and
+  participant self-check-in while preserving compatibility arrays during the
+  migration.
+- Dashboard, Run Clubs list/detail, and Run Map membership reads now use
+  `runClubMemberships`; profile/club membership arrays remain temporary
+  compatibility projections until write compatibility is retired.
+- `savedRuns/{uid_runId}` is now the owner-owned saved-run edge. Run detail
+  reads saved state from the edge document; the profile `savedRunIds` array
+  remains a temporary compatibility projection until array writes are retired.
+- Run detail reads the current viewer's booking, waitlist, attendance, and
+  review-gate state from `runParticipations/{runId_uid}`. The run participant
+  arrays remain temporary compatibility projections for counts/list surfaces
+  until dashboard, calendar, attendance, swipes, and roster reads migrate.
+- `watchSignedUpRunsProvider` and `watchAttendedRunsProvider` now read
+  `runParticipations` by user/status and then watch matching run documents by
+  ID. Dashboard, Calendar, Run Map, Activity, and Swipe Hub use those
+  edge-backed streams without changing their screen-level provider contracts.
+- Host attendance management now reads roster and checked-in state from
+  `runParticipations` through `AttendanceSheetViewModel`; `runs.signedUpUserIds`
+  and `runs.attendedUserIds` remain temporary compatibility projections for
+  non-migrated swipe/roster/count surfaces only.
+- Swipe candidate generation, swipe empty-state attendance gating, and run
+  recap attendee/checked-in state now read `runParticipations`. Run participant
+  arrays remain temporary compatibility projections for remaining roster/count
+  display surfaces only.
+- Run participation count projections are now explicit `runs/{runId}` fields:
+  `bookedCount`, `waitlistedCount`, and `checkedInCount`. Create/signup,
+  payment verification, waitlist, cancellation, host attendance, and self
+  check-in Functions maintain these fields while legacy participant arrays
+  remain transitional. `WhoIsRunning` and `HostRunManageScreen` use
+  `runParticipations` for exact rosters; list/stat surfaces use count
+  projections. Production UI grep for direct participant-array reads is clean
+  apart from generated `Run` serialization.
+- Firestore rules and emulator tests now cover relationship-doc read/write
+  ownership and match-scoped message creation.
+- Added `tool/firestore_relationship_migration.mjs` for dry-run/apply edge-doc
+  creation from legacy arrays and `tool/validate_firestore_data.mjs` validation
+  for new relationship paths.
+
+Follow-up debt:
+
+- `RELATIONSHIP-DOC-MIGRATION`: retire compatibility array writes after beta
+  migration/reset policy is finalized; generated serialization still preserves
+  legacy fields until then.
+- `DELETE-METHODOLOGY-QUEUE`: rewrite account/run/club deletion around
+  relationship-doc queries.
+- `MIGRATION-VALIDATION-001`: add migration apply count validation and seeded
+  fixture tests before running apply on shared beta data.
 
 ## Phases
 

@@ -129,7 +129,7 @@ export async function onMessageCreatedHandler(
 }
 
 export const onMessageCreated = onDocumentCreated(
-  "chats/{matchId}/messages/{messageId}",
+  "matches/{matchId}/messages/{messageId}",
   (event) => onMessageCreatedHandler(event)
 );
 

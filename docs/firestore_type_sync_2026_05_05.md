@@ -1,6 +1,6 @@
 ---
 doc_id: firestore_type_sync
-version: 2.0.1
+version: 2.0.2
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
@@ -20,10 +20,15 @@ and validation commands instead of assuming the generated contract is current.
 
 ## Latest Schema Sync Note
 
-On 2026-05-06, `UserProfile.displayName` was added to the Dart model and
-`functions/src/shared/firestore.ts` was regenerated from
-`tool/generate_firestore_types.dart`. This is the expected workflow for
-profile schema changes: do not hand-edit the generated TypeScript interface.
+On 2026-05-06, relationship/action models were added for
+`RunClubMembership`, `RunParticipation`, and `SavedRun`, and `ChatMessageDoc`
+was moved from `/chats/{matchId}/messages/{messageId}` to
+`/matches/{matchId}/messages/{messageId}`. The generator was rerun and
+`functions/src/shared/firestore.ts` was regenerated.
+
+Earlier on 2026-05-06, `UserProfile.displayName` was added to the Dart model
+and the same generation workflow was used. Do not hand-edit the generated
+TypeScript interface.
 
 ---
 
@@ -222,7 +227,7 @@ Mitigations:
 | `Payment` | `PaymentDoc` | `/payments/{paymentId}` |
 | `Swipe` | `SwipeDoc` | `/swipes/{userId}/outgoing/{targetId}` |
 | `Match` | `MatchDoc` | `/matches/{matchId}` |
-| `ChatMessage` | `ChatMessageDoc` | `/chats/{matchId}/messages/{messageId}` |
+| `ChatMessage` | `ChatMessageDoc` | `/matches/{matchId}/messages/{messageId}` |
 | `Review` | `ReviewDoc` | `/reviews/{reviewId}` |
 
 Models that intentionally do NOT have TS interfaces:

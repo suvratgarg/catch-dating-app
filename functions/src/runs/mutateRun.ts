@@ -129,6 +129,9 @@ export async function createRunHandler(
     tx.create(runRef, {
       ...buildCreateRunDoc(data, deps),
       runClubId: data.runClubId,
+      bookedCount: 0,
+      checkedInCount: 0,
+      waitlistedCount: 0,
       signedUpUserIds: [],
       attendedUserIds: [],
       waitlistUserIds: [],

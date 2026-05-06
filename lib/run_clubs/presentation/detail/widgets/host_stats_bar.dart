@@ -13,17 +13,11 @@ class HostStatsBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    final totalBooked = runs.fold(
-      0,
-      (sum, r) => sum + r.signedUpUserIds.length,
-    );
-    final totalWaitlist = runs.fold(
-      0,
-      (sum, r) => sum + r.waitlistUserIds.length,
-    );
+    final totalBooked = runs.fold(0, (sum, r) => sum + r.signedUpCount);
+    final totalWaitlist = runs.fold(0, (sum, r) => sum + r.waitlistCount);
     final revenueRupees = runs.fold(
       0,
-      (sum, r) => sum + r.signedUpUserIds.length * (r.priceInPaise ~/ 100),
+      (sum, r) => sum + r.signedUpCount * (r.priceInPaise ~/ 100),
     );
 
     return Container(
@@ -101,12 +95,7 @@ class HostStatChip extends StatelessWidget {
         color: t.surface,
         borderRadius: BorderRadius.circular(10),
       ),
-      child: StatColumn(
-        icon: icon,
-        value: value,
-        label: label,
-        center: true,
-      ),
+      child: StatColumn(icon: icon, value: value, label: label, center: true),
     );
   }
 }

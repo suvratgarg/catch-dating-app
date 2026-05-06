@@ -106,7 +106,7 @@ final class RunDetailViewModelProvider
 }
 
 String _$runDetailViewModelHash() =>
-    r'9bf012a62b0b2baa74a641876fb671c6da9f7832';
+    r'cf44b4a259bec918b16f513e7e113a7d3c6056a5';
 
 /// **Pattern D: View-model provider**
 ///

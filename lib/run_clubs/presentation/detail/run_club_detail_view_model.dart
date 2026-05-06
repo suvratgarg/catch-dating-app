@@ -1,8 +1,10 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -44,6 +46,10 @@ AsyncValue<RunClubDetailViewModel?> runClubDetailViewModel(
   final reviewsAsync = ref.watch(watchReviewsForClubProvider(clubId));
   final userProfileAsync = ref.watch(watchUserProfileProvider);
   final uidAsync = ref.watch(uidProvider);
+  final uid = uidAsync.asData?.value;
+  final membershipAsync = uid == null
+      ? const AsyncData<RunClubMembership?>(null)
+      : ref.watch(watchRunClubMembershipProvider(clubId, uid));
 
   return buildRunClubDetailViewModel(
     clubAsync: clubAsync,
@@ -51,6 +57,7 @@ AsyncValue<RunClubDetailViewModel?> runClubDetailViewModel(
     reviewsAsync: reviewsAsync,
     userProfileAsync: userProfileAsync,
     uidAsync: uidAsync,
+    membershipAsync: membershipAsync,
   );
 }
 
@@ -60,6 +67,7 @@ AsyncValue<RunClubDetailViewModel?> buildRunClubDetailViewModel({
   required AsyncValue<List<Review>> reviewsAsync,
   required AsyncValue<UserProfile?> userProfileAsync,
   required AsyncValue<String?> uidAsync,
+  required AsyncValue<RunClubMembership?> membershipAsync,
   DateTime? now,
 }) {
   final uid = uidAsync.asData?.value;
@@ -71,7 +79,9 @@ AsyncValue<RunClubDetailViewModel?> buildRunClubDetailViewModel({
   }
   // For authenticated users, also block on reviews + user profile.
   if (isAuthenticated) {
-    if (reviewsAsync.isLoading || userProfileAsync.isLoading) {
+    if (reviewsAsync.isLoading ||
+        userProfileAsync.isLoading ||
+        membershipAsync.isLoading) {
       return const AsyncLoading();
     }
   }
@@ -110,6 +120,12 @@ AsyncValue<RunClubDetailViewModel?> buildRunClubDetailViewModel({
         userProfileAsync.stackTrace ?? StackTrace.current,
       );
     }
+    if (membershipAsync.hasError) {
+      return AsyncError(
+        membershipAsync.error!,
+        membershipAsync.stackTrace ?? StackTrace.current,
+      );
+    }
   }
 
   final runClub = clubAsync.asData?.value;
@@ -124,12 +140,14 @@ AsyncValue<RunClubDetailViewModel?> buildRunClubDetailViewModel({
       ? (reviewsAsync.asData?.value ?? const [])
       : const <Review>[];
   final userProfile = isAuthenticated ? (userProfileAsync.asData?.value) : null;
+  final membership = membershipAsync.asData?.value;
+  final isActiveMember = membership?.status == RunClubMembershipStatus.active;
 
   return AsyncData(
     RunClubDetailViewModel(
       runClub: runClub,
       isHost: isAuthenticated && uid == runClub.hostUserId,
-      isMember: isAuthenticated && runClub.hasMember(uid),
+      isMember: isAuthenticated && isActiveMember,
       upcomingRuns: upcomingRuns,
       allRuns: runs,
       reviews: reviews,

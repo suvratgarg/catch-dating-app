@@ -2,11 +2,12 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,6 +19,18 @@ CityData _cityFromEnum(IndianCity c) => CityData(
   label: c.label,
   latitude: c.latitude,
   longitude: c.longitude,
+);
+
+RunClubMembership _membership({
+  required String clubId,
+  String uid = 'runner-1',
+}) => RunClubMembership(
+  id: runClubMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: RunClubMembershipRole.member,
+  status: RunClubMembershipStatus.active,
+  joinedAt: DateTime(2026, 1, 1),
 );
 
 void main() {
@@ -124,10 +137,7 @@ void main() {
     test(
       'runClubsListViewModelProvider partitions joined and discover clubs',
       () async {
-        final memberClub = buildRunClub(
-          id: 'member-club',
-          memberUserIds: const ['runner-1'],
-        );
+        final memberClub = buildRunClub(id: 'member-club');
         final followedClub = buildRunClub(
           id: 'followed-club',
           hostUserId: 'host-2',
@@ -141,13 +151,14 @@ void main() {
 
         final container = ProviderContainer(
           overrides: [
-            watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(
-                buildUser(
-                  uid: 'runner-1',
-                  joinedRunClubIds: const ['followed-club'],
-                ),
-              ),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            watchActiveRunClubMembershipsForUserProvider(
+              'runner-1',
+            ).overrideWith(
+              (ref) => Stream.value([
+                _membership(clubId: 'member-club'),
+                _membership(clubId: 'followed-club'),
+              ]),
             ),
             watchRunClubsByLocationProvider(IndianCity.mumbai).overrideWith(
               (ref) => Stream.value([memberClub, followedClub, discoverClub]),
@@ -211,11 +222,11 @@ void main() {
       },
     );
 
-    test('runClubsListViewModelProvider surfaces app user errors', () async {
+    test('runClubsListViewModelProvider surfaces auth uid errors', () async {
       final container = ProviderContainer(
         overrides: [
-          watchUserProfileProvider.overrideWith(
-            (ref) => Stream.error(StateError('user failed')),
+          uidProvider.overrideWith(
+            (ref) => Stream.error(StateError('uid failed')),
           ),
           filteredRunClubsProvider.overrideWithValue(
             const AsyncData(<RunClub>[]),
@@ -241,9 +252,7 @@ void main() {
       () async {
         final container = ProviderContainer(
           overrides: [
-            watchUserProfileProvider.overrideWith(
-              (ref) => Stream.value(buildUser(uid: 'runner-1')),
-            ),
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             filteredRunClubsProvider.overrideWithValue(
               AsyncError(StateError('filter failed'), StackTrace.empty),
             ),

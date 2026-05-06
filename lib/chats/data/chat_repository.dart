@@ -27,14 +27,14 @@ class ChatRepository {
     : _storage = storage ?? FirebaseStorage.instance,
       _picker = picker ?? ImagePicker();
 
-  static const _chatsCollectionPath = 'chats';
+  static const _matchesCollectionPath = 'matches';
 
   final FirebaseFirestore _db;
   final FirebaseStorage _storage;
   final ImagePicker _picker;
 
   CollectionReference<ChatMessage> _messagesRef(String matchId) => _db
-      .collection(_chatsCollectionPath)
+      .collection(_matchesCollectionPath)
       .doc(matchId)
       .collection('messages')
       .withDocumentIdConverter<ChatMessage>(
@@ -61,7 +61,7 @@ class ChatRepository {
     () async {
       final normalizedText = normalizeOutgoingChatText(text);
       await _db
-          .collection(_chatsCollectionPath)
+          .collection(_matchesCollectionPath)
           .doc(matchId)
           .collection('messages')
           .doc()
@@ -71,7 +71,7 @@ class ChatRepository {
             'sentAt': FieldValue.serverTimestamp(),
           });
     },
-    collection: _chatsCollectionPath,
+    collection: _matchesCollectionPath,
     action: 'send message',
   );
 
@@ -94,14 +94,14 @@ class ChatRepository {
   }) => withFirestoreErrorContext(
     () async {
       final messageId = _db
-          .collection(_chatsCollectionPath)
+          .collection(_matchesCollectionPath)
           .doc(matchId)
           .collection('messages')
           .doc()
           .id;
 
       final storagePath =
-          'chats/$matchId/images/${messageId}_'
+          'matches/$matchId/images/${messageId}_'
           '${DateTime.now().millisecondsSinceEpoch}';
       final bytes = await image.readAsBytes();
       final ref = _storage.ref(storagePath);
@@ -110,7 +110,7 @@ class ChatRepository {
       final downloadUrl = await ref.getDownloadURL();
 
       await _db
-          .collection(_chatsCollectionPath)
+          .collection(_matchesCollectionPath)
           .doc(matchId)
           .collection('messages')
           .doc(messageId)
@@ -121,7 +121,7 @@ class ChatRepository {
             'sentAt': FieldValue.serverTimestamp(),
           });
     },
-    collection: _chatsCollectionPath,
+    collection: _matchesCollectionPath,
     action: 'send image',
   );
 }

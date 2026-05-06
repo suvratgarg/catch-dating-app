@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 
 enum RunArrivalActionKind { selfCheckIn, takeAttendance }
 
@@ -17,7 +18,11 @@ RunArrivalAction? selectRunArrivalAction({
 }) {
   final candidates = <RunArrivalAction>[
     for (final run in signedUpRuns)
-      if (isSelfCheckInOpen(run: run, uid: uid, now: now))
+      if (isSelfCheckInOpenForParticipationStatus(
+        run: run,
+        status: RunParticipationStatus.signedUp,
+        now: now,
+      ))
         RunArrivalAction(kind: RunArrivalActionKind.selfCheckIn, run: run),
     for (final run in hostedRuns)
       if (isHostAttendanceOpen(run: run, now: now))
@@ -33,15 +38,29 @@ RunArrivalAction? selectRunArrivalAction({
   return candidates.firstOrNull;
 }
 
-bool isSelfCheckInOpen({
+bool isSelfCheckInOpenForParticipationStatus({
   required Run run,
-  required String uid,
+  required RunParticipationStatus? status,
+  required DateTime now,
+}) {
+  return _isSelfCheckInOpen(
+    run: run,
+    isSignedUp: status == RunParticipationStatus.signedUp,
+    hasAttended: status == RunParticipationStatus.attended,
+    now: now,
+  );
+}
+
+bool _isSelfCheckInOpen({
+  required Run run,
+  required bool isSignedUp,
+  required bool hasAttended,
   required DateTime now,
 }) {
   final startsAt = run.startTime.subtract(const Duration(minutes: 30));
   final endsAt = run.startTime.add(const Duration(minutes: 30));
-  return run.isSignedUp(uid) &&
-      !run.hasAttended(uid) &&
+  return isSignedUp &&
+      !hasAttended &&
       now.isAfter(startsAt) &&
       now.isBefore(endsAt);
 }

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -68,17 +69,33 @@ AsyncValue<RunMapViewModel> runMapViewModel(Ref ref) {
   }
 
   final signedUpAsync = ref.watch(watchSignedUpRunsProvider(user.uid));
+  final membershipsAsync = ref.watch(
+    watchActiveRunClubMembershipsForUserProvider(user.uid),
+  );
+  final followedClubIds =
+      membershipsAsync.asData?.value
+          .map((membership) => membership.clubId)
+          .toList(growable: false) ??
+      const <String>[];
   final recommendedAsync = ref.watch(
-    recommendedRunsProvider(user.joinedRunClubIds),
+    recommendedRunsProvider(RecommendedRunsQuery.fromClubIds(followedClubIds)),
   );
 
-  if (signedUpAsync.isLoading || recommendedAsync.isLoading) {
+  if (signedUpAsync.isLoading ||
+      membershipsAsync.isLoading ||
+      recommendedAsync.isLoading) {
     return const AsyncLoading();
   }
   if (signedUpAsync.hasError) {
     return AsyncError(
       signedUpAsync.error!,
       signedUpAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (membershipsAsync.hasError) {
+    return AsyncError(
+      membershipsAsync.error!,
+      membershipsAsync.stackTrace ?? StackTrace.current,
     );
   }
   if (recommendedAsync.hasError) {

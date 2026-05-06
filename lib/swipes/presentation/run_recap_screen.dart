@@ -13,10 +13,12 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
+import 'package:catch_dating_app/swipes/presentation/run_recap_view_model.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -36,8 +38,7 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final runAsync = ref.watch(watchRunProvider(widget.runId));
-    final uid = ref.watch(uidProvider).asData?.value;
+    final recapAsync = ref.watch(runRecapViewModelProvider(widget.runId));
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
@@ -49,24 +50,28 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
           onPressed: () => context.pop(),
         ),
       ),
-      body: runAsync.when(
+      body: recapAsync.when(
         loading: () => const CatchLoadingIndicator(),
         error: (error, _) => CatchErrorState.fromError(
           error,
           context: AppErrorContext.run,
-          onRetry: () => ref.invalidate(watchRunProvider(widget.runId)),
+          onRetry: () {
+            ref.invalidate(watchRunProvider(widget.runId));
+            ref.invalidate(watchRunParticipationsForRunProvider(widget.runId));
+            ref.invalidate(uidProvider);
+            ref.invalidate(runRecapViewModelProvider(widget.runId));
+          },
         ),
-        data: (run) {
-          if (run == null) {
+        data: (viewModel) {
+          if (viewModel == null) {
             return const CatchErrorState(
               title: 'Run not found',
               message: 'This run is no longer available.',
             );
           }
           final t = CatchTokens.of(context);
-          final attendeeIds = run.attendedUserIds
-              .where((attendeeId) => attendeeId != uid)
-              .toList();
+          final run = viewModel.run;
+          final attendeeIds = viewModel.attendeeIds;
 
           return ListView(
             padding: const EdgeInsets.fromLTRB(
@@ -76,7 +81,7 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
               CatchSpacing.s6,
             ),
             children: [
-              _RecapHero(run: run),
+              _RecapHero(run: run, checkedInCount: viewModel.checkedInCount),
               gapH24,
               Text(
                 'Who brought the vibe?',
@@ -137,9 +142,10 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
 }
 
 class _RecapHero extends StatelessWidget {
-  const _RecapHero({required this.run});
+  const _RecapHero({required this.run, required this.checkedInCount});
 
   final Run run;
+  final int checkedInCount;
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +177,7 @@ class _RecapHero extends StatelessWidget {
           ),
           gapH4,
           Text(
-            '${run.pace.label} pace · ${run.attendedUserIds.length} checked in',
+            '${run.pace.label} pace · $checkedInCount checked in',
             style: CatchTextStyles.bodyS(
               context,
               color: t.surface.withValues(alpha: 0.76),

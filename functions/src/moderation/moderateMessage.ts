@@ -7,7 +7,8 @@
  * logged but not replaced — they create a moderation flag for human
  * review while leaving the message intact.
  *
- * This is a Firestore onCreate trigger on `chats/{matchId}/messages/{id}`.
+ * This is a Firestore onCreate trigger on
+ * `matches/{matchId}/messages/{id}`.
  * It augments the existing `onMessageCreated` trigger (which handles FCM
  * pushes and unread counts) rather than replacing it.
  */
@@ -63,7 +64,7 @@ async function handleModerationResult(
   if (result.action === "block") {
     // Redact the message text in-place so other users never see it.
     await deps.firestore()
-      .collection("chats")
+      .collection("matches")
       .doc(matchId)
       .collection("messages")
       .doc(messageId)
@@ -77,7 +78,7 @@ async function handleModerationResult(
 
 export const moderateChatMessage = onDocumentCreated(
   {
-    document: "chats/{matchId}/messages/{messageId}",
+    document: "matches/{matchId}/messages/{messageId}",
     region: "asia-south1",
   },
   async (event) => {

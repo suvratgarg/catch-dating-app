@@ -186,6 +186,49 @@ test(
   }
 );
 
+test(
+  "verifyRazorpayPaymentHandler rate limits before signature or Razorpay fetch",
+  async () => {
+    const paymentDoc = createPaymentDocRecorder();
+
+    await assert.rejects(
+      verifyRazorpayPaymentHandler(
+        buildRequest({
+          auth: {uid: "runner-1"},
+          data: {
+            paymentId: "pay_123",
+            orderId: "order_123",
+            signature: "sig_123",
+          },
+        }),
+        {
+          firestore: () => createPaymentsFirestore(paymentDoc),
+          createClient: failOnClientUse,
+          serverTimestamp: () => "server-now",
+          signUpForRun: async () => undefined,
+          verifySignature: () => {
+            throw new Error("Signature should not be checked.");
+          },
+          checkRateLimit: async (_db, uid, action) => {
+            assert.equal(uid, "runner-1");
+            assert.equal(action, "verifyRazorpayPayment");
+            throw new HttpsError(
+              "resource-exhausted",
+              "Too many payment verification attempts."
+            );
+          },
+        }
+      ),
+      isHttpsError(
+        "resource-exhausted",
+        "Too many payment verification attempts."
+      )
+    );
+
+    assert.deepEqual(paymentDoc.setCalls, []);
+  }
+);
+
 function buildRequest({
   data,
   auth,

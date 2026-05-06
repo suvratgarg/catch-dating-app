@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:flutter/material.dart';
 
 class ProfileSectionCard extends StatelessWidget {

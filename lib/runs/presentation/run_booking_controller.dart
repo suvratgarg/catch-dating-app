@@ -67,8 +67,8 @@ class RunBookingController extends _$RunBookingController {
   }
 
   /// Cancels the user's sign-up for [run] via the [cancelRunSignUp] Cloud
-  /// Function, which atomically removes them from [signedUpUserIds] and
-  /// decrements their gender count.
+  /// Function, which atomically updates their run participation edge and
+  /// decrements aggregate booking projections.
   Future<void> cancelBooking({required Run run}) async {
     _requireSignedIn(action: 'cancel a booking');
     await ref

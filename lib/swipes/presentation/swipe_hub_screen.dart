@@ -224,10 +224,7 @@ class _CatchesIntroCard extends StatelessWidget {
                     value: _formatCountdown(remaining),
                   ),
                   gapW10,
-                  _PillStat(
-                    label: 'Roster',
-                    value: '${run.attendedUserIds.length}',
-                  ),
+                  _PillStat(label: 'Roster', value: '${run.attendedCount}'),
                 ],
               ),
               gapH18,

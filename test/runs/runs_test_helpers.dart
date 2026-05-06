@@ -8,10 +8,12 @@ import 'package:catch_dating_app/public_profile/data/public_profile_repository.d
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -31,6 +33,9 @@ Run buildRun({
   int capacityLimit = 20,
   String description = 'Easy paced seaside run.',
   int priceInPaise = 0,
+  int? bookedCount,
+  int? checkedInCount,
+  int? waitlistedCount,
   List<String> signedUpUserIds = const [],
   List<String> attendedUserIds = const [],
   List<String> waitlistUserIds = const [],
@@ -52,11 +57,43 @@ Run buildRun({
     capacityLimit: capacityLimit,
     description: description,
     priceInPaise: priceInPaise,
+    bookedCount: bookedCount,
+    checkedInCount: checkedInCount,
+    waitlistedCount: waitlistedCount,
     signedUpUserIds: signedUpUserIds,
     attendedUserIds: attendedUserIds,
     waitlistUserIds: waitlistUserIds,
     constraints: constraints,
     genderCounts: genderCounts,
+  );
+}
+
+RunParticipation buildRunParticipation({
+  required Run run,
+  required String uid,
+  RunParticipationStatus status = RunParticipationStatus.signedUp,
+  DateTime? createdAt,
+}) {
+  final timestamp = createdAt ?? DateTime(2026, 5, 6, 7);
+  return RunParticipation(
+    id: runParticipationId(runId: run.id, uid: uid),
+    runId: run.id,
+    runClubId: run.runClubId,
+    uid: uid,
+    status: status,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    signedUpAt:
+        status == RunParticipationStatus.signedUp ||
+            status == RunParticipationStatus.attended
+        ? timestamp
+        : null,
+    attendedAt: status == RunParticipationStatus.attended ? timestamp : null,
+    waitlistedAt: status == RunParticipationStatus.waitlisted
+        ? timestamp
+        : null,
+    cancelledAt: status == RunParticipationStatus.cancelled ? timestamp : null,
+    deletedAt: status == RunParticipationStatus.deleted ? timestamp : null,
   );
 }
 
@@ -305,6 +342,25 @@ class FakeRunRepository extends Fake implements RunRepository {
   }
 }
 
+class FakeRunParticipationRepository extends Fake
+    implements RunParticipationRepository {
+  final Map<String, List<RunParticipation>> runParticipations = {};
+  String? lastFetchedRunId;
+
+  @override
+  Future<List<RunParticipation>> fetchParticipationsForRun({
+    required String runId,
+  }) async {
+    lastFetchedRunId = runId;
+    return runParticipations[runId] ?? const [];
+  }
+
+  @override
+  Stream<List<RunParticipation>> watchParticipationsForRun({
+    required String runId,
+  }) => Stream.value(runParticipations[runId] ?? const []);
+}
+
 class FakePaymentRepository extends Fake implements PaymentRepository {
   FakePaymentRepository({this.supportsPaid = true});
 
@@ -392,7 +448,7 @@ class FakePublicProfileRepository extends Fake
   }
 }
 
-class FakeUserProfileRepository extends Fake implements UserProfileRepository {
+class FakeSavedRunRepository extends Fake implements SavedRunRepository {
   String? savedUid;
   String? savedRunId;
   String? unsavedUid;

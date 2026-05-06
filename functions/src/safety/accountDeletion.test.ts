@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import * as admin from "firebase-admin";
+import {HttpsError} from "firebase-functions/v2/https";
 import {
   requestAccountDeletionHandler,
   storagePathFromDownloadUrl,
@@ -60,6 +61,9 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.equal(data.deleted, true);
   assert.equal(data.deletedAt, now);
   assert.equal(data.name, "Deleted user");
+  assert.equal(data.firstName, "");
+  assert.equal(data.lastName, "");
+  assert.equal(data.displayName, "Deleted user");
   assert.equal(
     (data.dateOfBirth as FirebaseFirestore.Timestamp).toMillis(),
     0
@@ -97,6 +101,44 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   ]);
   assert.equal(harness.commits, 1);
 });
+
+test("requestAccountDeletionHandler rate limits before destructive work",
+  async () => {
+    const harness = createAccountDeletionHarness({
+      photoUrls: [
+        "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
+          "users%2Frunner-1%2Fphotos%2F0_123.jpg?alt=media&token=abc",
+      ],
+    }, {kind: "serverTimestamp"});
+
+    await assert.rejects(
+      requestAccountDeletionHandler(
+        {auth: {uid: "runner-1"}} as Parameters<
+          typeof requestAccountDeletionHandler
+        >[0],
+        {
+          ...harness.deps,
+          checkRateLimit: async (_db, uid, action) => {
+            assert.equal(uid, "runner-1");
+            assert.equal(action, "requestAccountDeletion");
+            throw new HttpsError(
+              "resource-exhausted",
+              "Too many account deletion requests."
+            );
+          },
+        }
+      ),
+      (error) => error instanceof HttpsError &&
+        error.code === "resource-exhausted"
+    );
+
+    assert.deepEqual(harness.setWrites, []);
+    assert.deepEqual(harness.deletedPublicDocs, []);
+    assert.deepEqual(harness.deletedAuthUsers, []);
+    assert.deepEqual(harness.deletedStorageFiles, []);
+    assert.equal(harness.commits, 0);
+  }
+);
 
 type FakeDocumentData = Record<string, unknown>;
 

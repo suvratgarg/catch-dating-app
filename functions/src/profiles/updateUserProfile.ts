@@ -3,6 +3,7 @@ import {onCall, CallableRequest, HttpsError} from
 import * as admin from "firebase-admin";
 import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {validateCallable} from "../shared/validation";
 
@@ -118,11 +119,17 @@ const UpdateUserProfileSchema = z.object({
 interface UpdateUserProfileDeps {
   firestore: () => FirebaseFirestore.Firestore;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 const defaultDeps: UpdateUserProfileDeps = {
   firestore: () => admin.firestore(),
   timestampFromMillis: (millis) => admin.firestore.Timestamp.fromMillis(millis),
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 type UserProfilePatch = z.infer<typeof UserProfilePatchSchema>;
@@ -139,6 +146,8 @@ export async function updateUserProfileHandler(
   const uid = requireAuth(request);
   const {fields} = validateCallable(request, UpdateUserProfileSchema);
   const db = deps.firestore();
+  await deps.checkRateLimit?.(db, uid, "updateUserProfile");
+
   const userRef = db.collection("users").doc(uid);
   const deletedUserRef = db.collection("deletedUsers").doc(uid);
   const updateFields = toFirestorePatch(fields, deps);

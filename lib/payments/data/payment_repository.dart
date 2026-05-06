@@ -57,7 +57,7 @@ class PaymentRepository {
   /// Initiates the full Razorpay payment + sign-up flow for a paid run.
   ///
   /// On success the Cloud Function [verifyRazorpayPayment] atomically verifies
-  /// the payment and adds [userId] to [runs/{runId}.signedUpUserIds].
+  /// the payment and writes the user's run participation edge.
   ///
   /// Returns [PaymentConfirmationData] with the payment details for the
   /// confirmation screen.

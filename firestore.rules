@@ -74,6 +74,14 @@ service cloud.firestore {
       return blockerUid + '__' + blockedUid;
     }
 
+    function runParticipationDocId(runId, uid) {
+      return runId + '_' + uid;
+    }
+
+    function savedRunDocId(uid, runId) {
+      return uid + '_' + runId;
+    }
+
     function hasBlockBetween(uidA, uidB) {
       return exists(/databases/$(database)/documents/blocks/$(blockDocId(uidA, uidB)))
         || exists(/databases/$(database)/documents/blocks/$(blockDocId(uidB, uidA)));
@@ -92,6 +100,34 @@ service cloud.firestore {
 
     function isDeletedUser(uid) {
       return exists(/databases/$(database)/documents/deletedUsers/$(uid));
+    }
+
+    function isRunHostForRun(runId) {
+      return exists(/databases/$(database)/documents/runs/$(runId))
+        && exists(/databases/$(database)/documents/runClubs/$(
+          get(/databases/$(database)/documents/runs/$(runId)).data.runClubId
+        ))
+        && get(/databases/$(database)/documents/runClubs/$(
+          get(/databases/$(database)/documents/runs/$(runId)).data.runClubId
+        )).data.hostUserId == request.auth.uid;
+    }
+
+    function hasAttendedRun(runId, uid) {
+      return (
+          exists(/databases/$(database)/documents/runParticipations/$(
+            runParticipationDocId(runId, uid)
+          ))
+          && get(/databases/$(database)/documents/runParticipations/$(
+            runParticipationDocId(runId, uid)
+          )).data.status == 'attended'
+        )
+        || (
+          exists(/databases/$(database)/documents/runs/$(runId))
+          && get(/databases/$(database)/documents/runs/$(runId))
+              .data.attendedUserIds is list
+          && uid in get(/databases/$(database)/documents/runs/$(runId))
+              .data.attendedUserIds
+        );
     }
 
     function hasValidRunClubShape(data) {
@@ -521,6 +557,15 @@ service cloud.firestore {
     }
 
     // ── Run clubs ─────────────────────────────────────────────────────────────
+    match /runClubMemberships/{membershipId} {
+      allow read: if isAuthed()
+        && (
+          resource.data.status == 'active'
+          || resource.data.uid == request.auth.uid
+        );
+      allow write: if false;
+    }
+
     match /runClubs/{clubId} {
       allow read: if true;
 
@@ -564,16 +609,35 @@ service cloud.firestore {
         && !isDeletedUser(targetId)
         && exists(/databases/$(database)/documents/publicProfiles/$(targetId))
         && exists(/databases/$(database)/documents/runs/$(request.resource.data.runId))
-        && get(/databases/$(database)/documents/runs/$(request.resource.data.runId))
-            .data.attendedUserIds is list
-        && userId in get(/databases/$(database)/documents/runs/$(request.resource.data.runId))
-            .data.attendedUserIds
-        && targetId in get(/databases/$(database)/documents/runs/$(request.resource.data.runId))
-            .data.attendedUserIds
+        && hasAttendedRun(request.resource.data.runId, userId)
+        && hasAttendedRun(request.resource.data.runId, targetId)
         && !hasBlockBetween(userId, targetId);
     }
 
     // ── Runs ──────────────────────────────────────────────────────────────────
+    match /runParticipations/{participationId} {
+      allow read: if isAuthed()
+        && (
+          resource.data.uid == request.auth.uid
+          || isRunHostForRun(resource.data.runId)
+        );
+      allow write: if false;
+    }
+
+    match /savedRuns/{savedRunId} {
+      allow read: if isAuthed() && resource.data.uid == request.auth.uid;
+      allow create: if isAuthed()
+        && request.resource.data.keys().hasOnly(['uid', 'runId', 'savedAt'])
+        && request.resource.data.keys().hasAll(['uid', 'runId', 'savedAt'])
+        && request.resource.data.uid == request.auth.uid
+        && request.resource.data.runId is string
+        && request.resource.data.savedAt is timestamp
+        && exists(/databases/$(database)/documents/runs/$(request.resource.data.runId))
+        && savedRunId == savedRunDocId(request.auth.uid, request.resource.data.runId);
+      allow delete: if isAuthed() && resource.data.uid == request.auth.uid;
+      allow update: if false;
+    }
+
     match /runs/{runId} {
       allow read: if true;
 
@@ -687,7 +751,7 @@ service cloud.firestore {
             .data.status == 'active';
     }
 
-    match /chats/{matchId}/messages/{messageId} {
+    match /matches/{matchId}/messages/{messageId} {
       allow read: if isAuthed()
         && isMatchParticipant(
           get(/databases/$(database)/documents/matches/$(matchId)).data,

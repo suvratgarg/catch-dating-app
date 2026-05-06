@@ -84,7 +84,7 @@ final class RunBookingControllerProvider
 }
 
 String _$runBookingControllerHash() =>
-    r'c56700678fd5506faf95e6a937c60185b0a9ffb5';
+    r'e1846fb8db1ce8dd108482970e0ad7f54eead5e4';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

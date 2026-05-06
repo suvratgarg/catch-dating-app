@@ -1,8 +1,10 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -23,13 +25,12 @@ abstract class RunClubsListViewModel with _$RunClubsListViewModel {
 
   factory RunClubsListViewModel.partition({
     required List<RunClub> clubs,
-    required String uid,
     required Set<String> joinedClubIds,
   }) {
     final joinedClubs = <RunClub>[];
 
     for (final club in clubs) {
-      if (club.hasMember(uid) || joinedClubIds.contains(club.id)) {
+      if (joinedClubIds.contains(club.id)) {
         joinedClubs.add(club);
       }
     }
@@ -126,21 +127,22 @@ AsyncValue<List<RunClub>> filteredRunClubs(Ref ref) {
 
 /// **Pattern D: View-model provider**
 ///
-/// Combines the user profile and filtered clubs streams into a
+/// Combines the signed-in user, membership edges, and filtered club streams into
+/// a
 /// [RunClubsListViewModel] that partitions clubs into joined and discover
 /// lists for the UI.
 @riverpod
 AsyncValue<RunClubsListViewModel> runClubsListViewModel(Ref ref) {
-  final userProfileAsync = ref.watch(watchUserProfileProvider);
+  final uidAsync = ref.watch(uidProvider);
   final filteredAsync = ref.watch(filteredRunClubsProvider);
 
-  if (userProfileAsync.isLoading || filteredAsync.isLoading) {
+  if (uidAsync.isLoading || filteredAsync.isLoading) {
     return const AsyncLoading();
   }
-  if (userProfileAsync.hasError) {
+  if (uidAsync.hasError) {
     return AsyncError(
-      userProfileAsync.error!,
-      userProfileAsync.stackTrace ?? StackTrace.current,
+      uidAsync.error!,
+      uidAsync.stackTrace ?? StackTrace.current,
     );
   }
   if (filteredAsync.hasError) {
@@ -150,17 +152,30 @@ AsyncValue<RunClubsListViewModel> runClubsListViewModel(Ref ref) {
     );
   }
 
-  final userProfile = userProfileAsync.asData?.value;
-  final uid = userProfile?.uid ?? '';
-  final joinedClubIds = userProfile?.joinedRunClubIds.toSet() ?? <String>{};
+  final uid = uidAsync.asData?.value;
+  final membershipsAsync = uid == null
+      ? const AsyncData<List<RunClubMembership>>([])
+      : ref.watch(watchActiveRunClubMembershipsForUserProvider(uid));
+
+  if (membershipsAsync.isLoading) {
+    return const AsyncLoading();
+  }
+  if (membershipsAsync.hasError) {
+    return AsyncError(
+      membershipsAsync.error!,
+      membershipsAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+
+  final joinedClubIds =
+      membershipsAsync.asData?.value
+          .map((membership) => membership.clubId)
+          .toSet() ??
+      <String>{};
   final clubs = filteredAsync.asData?.value ?? const <RunClub>[];
 
   return AsyncData(
-    RunClubsListViewModel.partition(
-      clubs: clubs,
-      uid: uid,
-      joinedClubIds: joinedClubIds,
-    ),
+    RunClubsListViewModel.partition(clubs: clubs, joinedClubIds: joinedClubIds),
   );
 }
 

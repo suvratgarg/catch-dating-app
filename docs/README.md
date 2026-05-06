@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 2.3.2
+version: 2.4.1
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
@@ -38,12 +38,15 @@ section unless the task requires a full historical audit.
 |---|---|---|
 | Widget cleanup process | `widget_cleanup_todo.md` | Short human-readable pointer for widget cleanup. Active state lives in `audit_registry/backlog.json`. |
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Catalog of Flutter widgets, primitive APIs, feature ownership notes, and catalog-update rules for material widget architecture changes. |
+| UI layout and spacing | `ui_layout_spacing.md` | Durable screen padding, tab body inset, sliver body gap, and card/photo spacing contracts. |
 | Sliver layout guidance | `sliver_layout_guide.md` | Sliver-native screen pattern, performance tradeoffs, migration rubric, and Catch code examples. |
 | Controller architecture | `controller_patterns.md` | Current controller/view-model patterns, UI/controller boundary rules, and realtime stream lifecycle ownership guidance. |
 | Error handling | `error-handling-audit.md` | Error-handling architecture snapshot, Error 101 guide, app error catalogue, naming conventions, branded app error surface guidance, and remediation history. Re-verify before acting on counts. |
 | Pre-launch readiness | `pre_launch_audit_2026_05_04.md` | Launch/security/UX audit snapshot and launch checklist context. |
 | Deployment | `deploy_runbook_2026_05_04.md` | Deployment order and operational prerequisites for May 2026 audit changes. |
 | Firestore and Functions data contracts | `firestore_functions_data_contract_tracker.md` | Firestore rules, Cloud Functions boundaries, schema drift, contract-test workflow, and rules emulator requirements. |
+| Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
+| Firestore relationship migration | `firestore_relationship_documents_migration.md` | Persistent tracker for relationship/action document migration, match-scoped messages, compatibility arrays, migration tooling, and deletion/anonymization payoff. |
 | Firestore type sync | `firestore_type_sync_2026_05_05.md` | Dart-to-TypeScript Firestore type-generation workflow and rationale. |
 | Historical architecture audit | `architecture-audit.md` | Historical state-management audit. Use `controller_patterns.md` for current controller guidance. |
 | Recursive audit registry | `audit_registry/` | Machine-readable file inventory, pass receipts, active rules, backlog, compact doc summaries, and doc versions for repeated cleanup loops. |

@@ -22,6 +22,9 @@ _Run _$RunFromJson(Map<String, dynamic> json) => _Run(
   capacityLimit: (json['capacityLimit'] as num).toInt(),
   description: json['description'] as String,
   priceInPaise: (json['priceInPaise'] as num).toInt(),
+  bookedCount: (json['bookedCount'] as num?)?.toInt(),
+  checkedInCount: (json['checkedInCount'] as num?)?.toInt(),
+  waitlistedCount: (json['waitlistedCount'] as num?)?.toInt(),
   signedUpUserIds:
       (json['signedUpUserIds'] as List<dynamic>?)
           ?.map((e) => e as String)
@@ -60,6 +63,9 @@ Map<String, dynamic> _$RunToJson(_Run instance) => <String, dynamic>{
   'capacityLimit': instance.capacityLimit,
   'description': instance.description,
   'priceInPaise': instance.priceInPaise,
+  'bookedCount': ?instance.bookedCount,
+  'checkedInCount': ?instance.checkedInCount,
+  'waitlistedCount': ?instance.waitlistedCount,
   'signedUpUserIds': instance.signedUpUserIds,
   'attendedUserIds': instance.attendedUserIds,
   'waitlistUserIds': instance.waitlistUserIds,

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
@@ -64,6 +65,15 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
     );
     final runAsync = ref.watch(watchRunProvider(widget.runId));
     final currentUserAsync = ref.watch(watchUserProfileProvider);
+    final currentUser = currentUserAsync.asData?.value;
+    final currentUserParticipation = currentUser == null
+        ? null
+        : ref
+              .watch(
+                watchRunParticipationProvider(widget.runId, currentUser.uid),
+              )
+              .asData
+              ?.value;
 
     return Scaffold(
       appBar: CatchTopBar(
@@ -89,7 +99,8 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
             ? SwipeEmptyState(
                 content: buildSwipeEmptyContent(
                   run: runAsync.asData?.value,
-                  currentUser: currentUserAsync.asData?.value,
+                  currentUser: currentUser,
+                  currentUserParticipation: currentUserParticipation,
                 ),
               )
             : Column(

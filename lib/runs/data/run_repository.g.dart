@@ -329,12 +329,12 @@ final class WatchSignedUpRunsFamily extends $Family
   String toString() => r'watchSignedUpRunsProvider';
 }
 
-/// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+/// Returns upcoming runs from clubs the user follows.
 
 @ProviderFor(recommendedRuns)
 final recommendedRunsProvider = RecommendedRunsFamily._();
 
-/// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+/// Returns upcoming runs from clubs the user follows.
 
 final class RecommendedRunsProvider
     extends
@@ -344,10 +344,10 @@ final class RecommendedRunsProvider
           FutureOr<List<Run>>
         >
     with $FutureModifier<List<Run>>, $FutureProvider<List<Run>> {
-  /// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+  /// Returns upcoming runs from clubs the user follows.
   RecommendedRunsProvider._({
     required RecommendedRunsFamily super.from,
-    required List<String> super.argument,
+    required RecommendedRunsQuery super.argument,
   }) : super(
          retry: null,
          name: r'recommendedRunsProvider',
@@ -373,7 +373,7 @@ final class RecommendedRunsProvider
 
   @override
   FutureOr<List<Run>> create(Ref ref) {
-    final argument = this.argument as List<String>;
+    final argument = this.argument as RecommendedRunsQuery;
     return recommendedRuns(ref, argument);
   }
 
@@ -388,12 +388,12 @@ final class RecommendedRunsProvider
   }
 }
 
-String _$recommendedRunsHash() => r'db8467b5b5593f56269b23fb605f8a515c936497';
+String _$recommendedRunsHash() => r'ff0a874683a1d1281cd4e6b576171b32b3f17914';
 
-/// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+/// Returns upcoming runs from clubs the user follows.
 
 final class RecommendedRunsFamily extends $Family
-    with $FunctionalFamilyOverride<FutureOr<List<Run>>, List<String>> {
+    with $FunctionalFamilyOverride<FutureOr<List<Run>>, RecommendedRunsQuery> {
   RecommendedRunsFamily._()
     : super(
         retry: null,
@@ -403,10 +403,10 @@ final class RecommendedRunsFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+  /// Returns upcoming runs from clubs the user follows.
 
-  RecommendedRunsProvider call(List<String> followedClubIds) =>
-      RecommendedRunsProvider._(argument: followedClubIds, from: this);
+  RecommendedRunsProvider call(RecommendedRunsQuery query) =>
+      RecommendedRunsProvider._(argument: query, from: this);
 
   @override
   String toString() => r'recommendedRunsProvider';

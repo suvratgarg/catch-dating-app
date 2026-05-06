@@ -3,8 +3,12 @@ import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
+import 'package:catch_dating_app/runs/domain/saved_run.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -21,6 +25,8 @@ abstract class RunDetailViewModel with _$RunDetailViewModel {
     required List<Review> reviews,
     required bool isAuthenticated,
     required bool isHost,
+    required bool isSaved,
+    required RunParticipation? participation,
   }) = _RunDetailViewModel;
 }
 
@@ -44,12 +50,20 @@ AsyncValue<RunDetailViewModel?> runDetailViewModel(Ref ref, String runId) {
   final runClubAsync = run == null
       ? const AsyncData<RunClub?>(null)
       : ref.watch(fetchRunClubProvider(run.runClubId));
+  final savedRunAsync = uid == null
+      ? const AsyncData<SavedRun?>(null)
+      : ref.watch(watchSavedRunProvider(uid, runId));
+  final participationAsync = uid == null
+      ? const AsyncData<RunParticipation?>(null)
+      : ref.watch(watchRunParticipationProvider(runId, uid));
 
   return buildRunDetailViewModel(
     runAsync: runAsync,
     userProfileAsync: ref.watch(watchUserProfileProvider),
     reviewsAsync: ref.watch(watchReviewsForRunProvider(runId)),
     runClubAsync: runClubAsync,
+    savedRunAsync: savedRunAsync,
+    participationAsync: participationAsync,
     currentUid: uid,
     isAuthenticated: isAuthenticated,
   );
@@ -60,6 +74,8 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
   required AsyncValue<UserProfile?> userProfileAsync,
   required AsyncValue<List<Review>> reviewsAsync,
   required AsyncValue<RunClub?> runClubAsync,
+  required AsyncValue<SavedRun?> savedRunAsync,
+  required AsyncValue<RunParticipation?> participationAsync,
   required String? currentUid,
   required bool isAuthenticated,
 }) {
@@ -67,7 +83,10 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
   if (runAsync.isLoading) return const AsyncLoading();
   // For authenticated users, also block on reviews + user profile.
   if (isAuthenticated) {
-    if (userProfileAsync.isLoading || reviewsAsync.isLoading) {
+    if (userProfileAsync.isLoading ||
+        reviewsAsync.isLoading ||
+        savedRunAsync.isLoading ||
+        participationAsync.isLoading) {
       return const AsyncLoading();
     }
   }
@@ -94,6 +113,18 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
         reviewsAsync.stackTrace ?? StackTrace.current,
       );
     }
+    if (savedRunAsync.hasError) {
+      return AsyncError(
+        savedRunAsync.error!,
+        savedRunAsync.stackTrace ?? StackTrace.current,
+      );
+    }
+    if (participationAsync.hasError) {
+      return AsyncError(
+        participationAsync.error!,
+        participationAsync.stackTrace ?? StackTrace.current,
+      );
+    }
   }
 
   final run = runAsync.asData?.value;
@@ -104,10 +135,14 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
       ? (reviewsAsync.asData?.value ?? const [])
       : const <Review>[];
   final runClub = runClubAsync.asData?.value;
+  final participation = isAuthenticated
+      ? participationAsync.asData?.value
+      : null;
   final isHost =
       isAuthenticated &&
       currentUid != null &&
       runClub?.hostUserId == currentUid;
+  final isSaved = isAuthenticated && savedRunAsync.asData?.value != null;
 
   return AsyncData(
     RunDetailViewModel(
@@ -116,6 +151,8 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
       reviews: reviews,
       isAuthenticated: isAuthenticated,
       isHost: isHost,
+      isSaved: isSaved,
+      participation: participation,
     ),
   );
 }

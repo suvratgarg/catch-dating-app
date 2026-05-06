@@ -2,6 +2,7 @@ import {onCall, CallableRequest} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
@@ -11,6 +12,11 @@ interface AccountDeletionDeps {
   firestore: () => FirebaseFirestore.Firestore;
   storageBucket: () => StorageBucket;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 const defaultDeps: AccountDeletionDeps = {
@@ -18,6 +24,7 @@ const defaultDeps: AccountDeletionDeps = {
   firestore: () => admin.firestore(),
   storageBucket: () => admin.storage().bucket(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 /**
@@ -32,6 +39,8 @@ export async function requestAccountDeletionHandler(
 ): Promise<{deleted: boolean}> {
   const uid = requireAuth(request);
   const db = deps.firestore();
+  await deps.checkRateLimit?.(db, uid, "requestAccountDeletion");
+
   const now = deps.serverTimestamp();
   const userSnap = await db.collection("users").doc(uid).get();
   const photoUrls = (userSnap.data()?.photoUrls ?? []) as string[];
@@ -50,6 +59,9 @@ export async function requestAccountDeletionHandler(
     deletedAt: now,
     email: "",
     name: "Deleted user",
+    firstName: "",
+    lastName: "",
+    displayName: "Deleted user",
     dateOfBirth: admin.firestore.Timestamp.fromMillis(0),
     bio: "",
     gender: "other",

@@ -41,6 +41,8 @@ class RunDetailScreen extends ConsumerWidget {
           reviews: vm.reviews,
           isAuthenticated: vm.isAuthenticated,
           isHost: vm.isHost,
+          isSaved: vm.isSaved,
+          participation: vm.participation,
         );
       },
     );

@@ -99,24 +99,6 @@ class UserProfileRepository {
         collection: _collectionPath,
         action: 'set profile complete',
       );
-
-  Future<void> saveRun({required String uid, required String runId}) =>
-      withFirestoreErrorContext(
-        () => _userRef(uid).update({
-          'savedRunIds': FieldValue.arrayUnion([runId]),
-        }),
-        collection: _collectionPath,
-        action: 'save run',
-      );
-
-  Future<void> unsaveRun({required String uid, required String runId}) =>
-      withFirestoreErrorContext(
-        () => _userRef(uid).update({
-          'savedRunIds': FieldValue.arrayRemove([runId]),
-        }),
-        collection: _collectionPath,
-        action: 'unsave run',
-      );
 }
 
 Map<String, Object?> _callableFields(Map<String, dynamic> fields) =>

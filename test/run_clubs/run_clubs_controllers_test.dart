@@ -6,6 +6,7 @@ import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
@@ -16,6 +17,19 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 
 import 'run_clubs_test_helpers.dart';
+
+RunClubMembership _membership({
+  String clubId = 'club-1',
+  String uid = 'runner-1',
+  RunClubMembershipStatus status = RunClubMembershipStatus.active,
+}) => RunClubMembership(
+  id: runClubMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: RunClubMembershipRole.member,
+  status: status,
+  joinedAt: DateTime(2026, 1, 1),
+);
 
 void main() {
   group('RunClub domain helpers', () {
@@ -117,16 +131,12 @@ void main() {
         startTime: now.subtract(const Duration(hours: 2)),
       );
       final result = buildRunClubDetailViewModel(
-        clubAsync: AsyncData(
-          buildRunClub(
-            hostUserId: 'host-1',
-            memberUserIds: const ['host-1', 'runner-1'],
-          ),
-        ),
+        clubAsync: AsyncData(buildRunClub(hostUserId: 'host-1')),
         runsAsync: AsyncData([futureRun, pastRun, soonerFutureRun]),
         reviewsAsync: AsyncData([buildReview()]),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
+        membershipAsync: AsyncData(_membership()),
         now: now,
       );
 
@@ -152,6 +162,7 @@ void main() {
         reviewsAsync: const AsyncData(<Review>[]),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
+        membershipAsync: const AsyncData(null),
       );
 
       expect(result.isLoading, isTrue);
@@ -164,6 +175,7 @@ void main() {
         reviewsAsync: const AsyncData(<Review>[]),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
+        membershipAsync: const AsyncData(null),
       );
 
       expect(result.value, isNull);
@@ -176,6 +188,7 @@ void main() {
         reviewsAsync: const AsyncData(<Review>[]),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
+        membershipAsync: const AsyncData(null),
       );
 
       expect(result.hasError, isTrue);
@@ -189,6 +202,7 @@ void main() {
         reviewsAsync: const AsyncData(<Review>[]),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
+        membershipAsync: const AsyncData(null),
       );
 
       expect(result.hasError, isTrue);
@@ -205,6 +219,7 @@ void main() {
         ),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: const AsyncData('runner-1'),
+        membershipAsync: const AsyncData(null),
       );
 
       expect(result.hasError, isTrue);
@@ -218,6 +233,7 @@ void main() {
         reviewsAsync: const AsyncData(<Review>[]),
         userProfileAsync: AsyncData(buildUser(uid: 'runner-1')),
         uidAsync: AsyncError(StateError('uid failed'), StackTrace.empty),
+        membershipAsync: const AsyncData(null),
       );
 
       expect(result.hasError, isTrue);
@@ -234,6 +250,7 @@ void main() {
           StackTrace.empty,
         ),
         uidAsync: const AsyncData('runner-1'),
+        membershipAsync: const AsyncData(null),
       );
 
       expect(result.hasError, isTrue);

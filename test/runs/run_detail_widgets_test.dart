@@ -6,12 +6,13 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_body.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -101,6 +102,8 @@ void main() {
                 reviews: const [],
                 isAuthenticated: true,
                 isHost: false,
+                isSaved: false,
+                participation: null,
               ),
             ),
           ),
@@ -124,6 +127,7 @@ void main() {
             runClubId: 'club1',
             isHost: false,
             userProfile: buildUser(),
+            participation: null,
           ),
         ),
         overrides: [
@@ -156,6 +160,7 @@ void main() {
             runClubId: 'club1',
             isHost: false,
             userProfile: buildUser(),
+            participation: null,
           ),
         ),
         overrides: [
@@ -193,6 +198,7 @@ void main() {
             runClubId: 'club1',
             isHost: false,
             userProfile: buildUser(),
+            participation: null,
           ),
         ),
         overrides: [
@@ -223,6 +229,9 @@ void main() {
             runClubId: 'club1',
             isHost: false,
             userProfile: buildUser(),
+            participation: _participation(
+              status: RunParticipationStatus.signedUp,
+            ),
           ),
         ),
         overrides: [
@@ -241,6 +250,35 @@ void main() {
     });
 
     testWidgets(
+      'does not use compatibility arrays for the current viewer state',
+      (tester) async {
+        await pumpRunsTestApp(
+          tester,
+          Scaffold(
+            bottomNavigationBar: RunDetailCta(
+              run: buildRun(signedUpUserIds: const ['runner-1']),
+              runClubId: 'club1',
+              isHost: false,
+              userProfile: buildUser(uid: 'runner-1'),
+              participation: null,
+            ),
+          ),
+          overrides: [
+            runClubsRepositoryProvider.overrideWithValue(
+              FakeRunClubsRepository(),
+            ),
+            paymentRepositoryProvider.overrideWithValue(
+              FakePaymentRepository(),
+            ),
+          ],
+        );
+
+        expect(find.text('Cancel booking'), findsNothing);
+        expect(find.text('Join run — 19 spots left'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
       'does not render host attendance as a run-detail bottom action',
       (tester) async {
         final startTime = DateTime(2026, 1, 1, 9);
@@ -254,6 +292,7 @@ void main() {
               isHost: true,
               now: startTime.subtract(const Duration(minutes: 5)),
               userProfile: buildUser(uid: 'host-1'),
+              participation: null,
             ),
           ),
           overrides: [
@@ -285,6 +324,9 @@ void main() {
             isHost: false,
             now: startTime.subtract(const Duration(minutes: 5)),
             userProfile: buildUser(uid: 'runner-1'),
+            participation: _participation(
+              status: RunParticipationStatus.signedUp,
+            ),
           ),
         ),
         overrides: [
@@ -333,12 +375,17 @@ void main() {
                     runClubId: 'club1',
                     isHost: false,
                     userProfile: buildUser(uid: 'runner-9'),
+                    participation: null,
                   ),
                   RunDetailCta(
                     run: buildRun(waitlistUserIds: const ['runner-9']),
                     runClubId: 'club1',
                     isHost: false,
                     userProfile: buildUser(uid: 'runner-9'),
+                    participation: _participation(
+                      uid: 'runner-9',
+                      status: RunParticipationStatus.waitlisted,
+                    ),
                   ),
                 ],
               ),
@@ -370,6 +417,9 @@ void main() {
                 runClubId: 'club1',
                 isHost: false,
                 userProfile: buildUser(),
+                participation: _participation(
+                  status: RunParticipationStatus.attended,
+                ),
               ),
               RunDetailCta(
                 run: buildRun(
@@ -379,6 +429,7 @@ void main() {
                 runClubId: 'club1',
                 isHost: false,
                 userProfile: buildUser(),
+                participation: null,
               ),
             ],
           ),
@@ -417,12 +468,14 @@ void main() {
                 runClubId: 'club1',
                 isHost: false,
                 userProfile: tooYoungUser,
+                participation: null,
               ),
               RunDetailCta(
                 run: buildRun(constraints: const RunConstraints(maxAge: 40)),
                 runClubId: 'club1',
                 isHost: false,
                 userProfile: olderUser,
+                participation: null,
               ),
               RunDetailCta(
                 run: buildRun(
@@ -432,6 +485,7 @@ void main() {
                 runClubId: 'club1',
                 isHost: false,
                 userProfile: buildUser(uid: 'runner-3'),
+                participation: null,
               ),
             ],
           ),
@@ -456,7 +510,6 @@ void main() {
     ) async {
       final user = buildUser(uid: 'runner-1');
       final run = buildRun(
-        attendedUserIds: const ['runner-1'],
         constraints: const RunConstraints(minAge: 21, maxAge: 35),
       );
 
@@ -469,6 +522,10 @@ void main() {
           isHost: false,
           reviews: const [],
           isAuthenticated: true,
+          isSaved: false,
+          participation: _participation(
+            status: RunParticipationStatus.attended,
+          ),
         ),
         overrides: [
           runClubsRepositoryProvider.overrideWithValue(
@@ -499,6 +556,8 @@ void main() {
           isHost: false,
           reviews: const [],
           isAuthenticated: false,
+          isSaved: false,
+          participation: null,
         ),
         signedInUid: null,
       );
@@ -530,6 +589,8 @@ void main() {
           isHost: false,
           reviews: const [],
           isAuthenticated: true,
+          isSaved: false,
+          participation: null,
         ),
         overrides: [
           runClubsRepositoryProvider.overrideWithValue(
@@ -559,6 +620,10 @@ void main() {
           isHost: false,
           reviews: const [],
           isAuthenticated: true,
+          isSaved: false,
+          participation: _participation(
+            status: RunParticipationStatus.signedUp,
+          ),
         ),
         overrides: [
           runClubsRepositoryProvider.overrideWithValue(
@@ -578,7 +643,7 @@ void main() {
     testWidgets('top action buttons are tappable and the back button pops', (
       tester,
     ) async {
-      final fakeUserProfileRepository = FakeUserProfileRepository();
+      final fakeSavedRunRepository = FakeSavedRunRepository();
       var sharedRunId = '';
 
       await tester.pumpWidget(
@@ -590,8 +655,8 @@ void main() {
             paymentRepositoryProvider.overrideWithValue(
               FakePaymentRepository(),
             ),
-            userProfileRepositoryProvider.overrideWithValue(
-              fakeUserProfileRepository,
+            savedRunRepositoryProvider.overrideWithValue(
+              fakeSavedRunRepository,
             ),
           ],
           child: MaterialApp(
@@ -607,6 +672,8 @@ void main() {
                 isHost: false,
                 reviews: const [],
                 isAuthenticated: true,
+                isSaved: false,
+                participation: null,
                 onShareRun: (_, run) async {
                   sharedRunId = run.id;
                 },
@@ -627,33 +694,33 @@ void main() {
       await _pumpUntilFound(tester, find.text('Home'));
 
       expect(sharedRunId, 'run-1');
-      expect(fakeUserProfileRepository.savedRunId, 'run-1');
+      expect(fakeSavedRunRepository.savedRunId, 'run-1');
       expect(find.text('Home'), findsOneWidget);
     });
 
     testWidgets('saved run button renders selected and unsaves', (
       tester,
     ) async {
-      final fakeUserProfileRepository = FakeUserProfileRepository();
+      final fakeSavedRunRepository = FakeSavedRunRepository();
 
       await pumpRunsTestApp(
         tester,
         RunDetailBody(
           run: buildRun(),
-          userProfile: buildUser(savedRunIds: const ['run-1']),
+          userProfile: buildUser(),
           runClubId: 'club-1',
           isHost: false,
           reviews: const [],
           isAuthenticated: true,
+          isSaved: true,
+          participation: null,
         ),
         overrides: [
           runClubsRepositoryProvider.overrideWithValue(
             FakeRunClubsRepository(),
           ),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
-          userProfileRepositoryProvider.overrideWithValue(
-            fakeUserProfileRepository,
-          ),
+          savedRunRepositoryProvider.overrideWithValue(fakeSavedRunRepository),
         ],
       );
 
@@ -662,8 +729,8 @@ void main() {
       await tester.tap(find.byTooltip('Unsave run'));
       await tester.pump();
 
-      expect(fakeUserProfileRepository.unsavedUid, 'runner-1');
-      expect(fakeUserProfileRepository.unsavedRunId, 'run-1');
+      expect(fakeSavedRunRepository.unsavedUid, 'runner-1');
+      expect(fakeSavedRunRepository.unsavedRunId, 'run-1');
       expect(find.text('Run removed.'), findsOneWidget);
     });
   });
@@ -694,4 +761,21 @@ Future<void> _scrollRunDetailUntilVisible(
     ),
   );
   await tester.pump();
+}
+
+RunParticipation _participation({
+  String runId = 'run-1',
+  String uid = 'runner-1',
+  RunParticipationStatus status = RunParticipationStatus.signedUp,
+}) {
+  final now = DateTime(2026, 1, 1);
+  return RunParticipation(
+    id: runParticipationId(runId: runId, uid: uid),
+    runId: runId,
+    runClubId: 'club-1',
+    uid: uid,
+    status: status,
+    createdAt: now,
+    updatedAt: now,
+  );
 }

@@ -15,21 +15,21 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.2.15",
+    "version": "2.3.9",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, stream lifecycle queue, and branded error UI queue."
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "2.4.2",
+    "version": "2.5.2",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs, including stream lifecycle, widget catalog rule routing, Firestore rules test workflow, and error catalogue scope."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "2.3.19",
+    "version": "2.4.10",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
@@ -50,15 +50,15 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "2.3.2",
+    "version": "2.4.1",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
   "deploy_runbook": {
     "path": "docs/deploy_runbook_2026_05_04.md",
-    "version": "2.0.0",
-    "updated": "2026-05-05",
+    "version": "2.0.1",
+    "updated": "2026-05-06",
     "status": "runbook",
     "read_policy": "Use for the May 2026 deployment sequence; re-verify environment and command outputs before acting."
   },
@@ -71,14 +71,28 @@
   },
   "firestore_contract_tracker": {
     "path": "docs/firestore_functions_data_contract_tracker.md",
-    "version": "2.0.2",
+    "version": "2.2.8",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, data-contract work, or Firestore rules test execution."
   },
+  "backend_operation_catalog": {
+    "path": "docs/backend_operation_catalog.md",
+    "version": "1.1.7",
+    "updated": "2026-05-06",
+    "status": "active",
+    "read_policy": "Read before changing repository writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for write paths, or notification fan-out."
+  },
+  "firestore_relationship_documents_migration": {
+    "path": "docs/firestore_relationship_documents_migration.md",
+    "version": "1.0.8",
+    "updated": "2026-05-06",
+    "status": "active",
+    "read_policy": "Read before changing relationship arrays, edge/action documents, match-scoped messages, relationship migration tooling, or deletion/anonymization cleanup."
+  },
   "firestore_type_sync": {
     "path": "docs/firestore_type_sync_2026_05_05.md",
-    "version": "2.0.1",
+    "version": "2.0.2",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Read before changing Dart domain models, Functions TypeScript interfaces, or Firestore type generation."
@@ -118,16 +132,23 @@
     "status": "active",
     "read_policy": "Read before changing sliver-native screens, NestedScrollView tabs, or scroll tests."
   },
+  "ui_layout_spacing": {
+    "path": "docs/ui_layout_spacing.md",
+    "version": "1.0.0",
+    "updated": "2026-05-06",
+    "status": "active",
+    "read_policy": "Read before adding or changing shared screen padding, tab body insets, sliver body gaps, or reusable card/photo spacing contracts."
+  },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.14",
+    "version": "2.5.20",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
   "widget_cleanup": {
     "path": "docs/widget_cleanup_todo.md",
-    "version": "2.3.18",
+    "version": "2.3.21",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use as a short human-readable pointer; use backlog.json for active machine-readable state including stream lifecycle and branded error UI queues."

@@ -178,7 +178,7 @@ Future<void> _seedMessage(
   ChatMessage message,
 ) {
   return firestore
-      .collection('chats')
+      .collection('matches')
       .doc(matchId)
       .collection('messages')
       .doc(message.id)

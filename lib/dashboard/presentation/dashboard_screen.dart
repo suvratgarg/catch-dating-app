@@ -9,6 +9,7 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -85,9 +86,23 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
 
         _lastVisibleUid = user.uid;
 
+        final membershipsAsync = ref.watch(
+          watchActiveRunClubMembershipsForUserProvider(user.uid),
+        );
         final signedUpRunsAsync = ref.watch(
           watchSignedUpRunsProvider(user.uid),
         );
+        if (membershipsAsync.isLoading || signedUpRunsAsync.isLoading) {
+          return const _DashboardLoadingScreen();
+        }
+        if (membershipsAsync.hasError) {
+          return _DashboardErrorScreen(
+            message: 'Unable to load your clubs.',
+            onRetry: () => ref.invalidate(
+              watchActiveRunClubMembershipsForUserProvider(user.uid),
+            ),
+          );
+        }
         return signedUpRunsAsync.when(
           loading: () => const _DashboardLoadingScreen(),
           error: (e, _) => _DashboardErrorScreen(
@@ -95,11 +110,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             onRetry: () => ref.invalidate(watchSignedUpRunsProvider(user.uid)),
           ),
           data: (signedUpRuns) {
+            final followedClubIds =
+                membershipsAsync.asData?.value
+                    .map((membership) => membership.clubId)
+                    .toList(growable: false) ??
+                const <String>[];
             final viewModel = ref.watch(
               dashboardFullViewModelProvider(
                 signedUpRuns: signedUpRuns,
                 uid: user.uid,
-                followedClubIds: user.joinedRunClubIds,
+                followedClubIds: followedClubIds,
               ),
             );
 

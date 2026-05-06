@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,6 +28,14 @@ class RunRepository {
         toJson: (run) => run.toJson(),
       );
 
+  CollectionReference<RunParticipation> get _participationsRef => _db
+      .collection('runParticipations')
+      .withDocumentIdConverter<RunParticipation>(
+        idField: 'id',
+        fromJson: RunParticipation.fromJson,
+        toJson: (participation) => participation.toJson(),
+      );
+
   DocumentReference<Run> _runRef(String id) => _runsRef.doc(id);
 
   // ── Read ──────────────────────────────────────────────────────────────────
@@ -45,18 +54,125 @@ class RunRepository {
       .snapshots()
       .map((snap) => snap.docs.map((d) => d.data()).toList());
 
-  Stream<List<Run>> watchAttendedRuns({required String uid}) => _runsRef
-      .where('attendedUserIds', arrayContains: uid)
-      .orderBy('startTime', descending: true)
-      .snapshots()
-      .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<Run>> watchAttendedRuns({required String uid}) =>
+      _watchRunsForParticipationStatuses(
+        uid: uid,
+        statuses: const {RunParticipationStatus.attended},
+        descending: true,
+      );
 
   /// Streams upcoming runs the user has signed up for (paid / reserved a spot).
-  Stream<List<Run>> watchSignedUpRuns({required String uid}) => _runsRef
-      .where('signedUpUserIds', arrayContains: uid)
-      .orderBy('startTime')
-      .snapshots()
-      .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<Run>> watchSignedUpRuns({required String uid}) =>
+      _watchRunsForParticipationStatuses(
+        uid: uid,
+        statuses: const {RunParticipationStatus.signedUp},
+      );
+
+  Stream<List<Run>> _watchRunsForParticipationStatuses({
+    required String uid,
+    required Set<RunParticipationStatus> statuses,
+    bool descending = false,
+  }) {
+    if (statuses.isEmpty) return Stream.value(const []);
+
+    StreamSubscription<QuerySnapshot<RunParticipation>>? participationSub;
+    var runSubs = <StreamSubscription<QuerySnapshot<Run>>>[];
+    var generation = 0;
+    var closed = false;
+
+    late final StreamController<List<Run>> controller;
+
+    void cancelRunSubscriptions() {
+      for (final sub in runSubs) {
+        unawaited(sub.cancel());
+      }
+      runSubs = [];
+    }
+
+    void emitSortedRuns({
+      required List<String> runIds,
+      required Map<int, List<Run>> runsByChunk,
+      required int chunkCount,
+    }) {
+      if (runsByChunk.length < chunkCount || controller.isClosed) return;
+      final byId = <String, Run>{};
+      for (final runs in runsByChunk.values) {
+        for (final run in runs) {
+          byId[run.id] = run;
+        }
+      }
+      final runs =
+          [
+            for (final id in runIds)
+              if (byId[id] != null) byId[id]!,
+          ]..sort(
+            (a, b) => descending
+                ? b.startTime.compareTo(a.startTime)
+                : a.startTime.compareTo(b.startTime),
+          );
+      controller.add(runs);
+    }
+
+    controller = StreamController<List<Run>>(
+      onListen: () {
+        Query<RunParticipation> query = _participationsRef.where(
+          'uid',
+          isEqualTo: uid,
+        );
+        final statusNames = statuses.map((status) => status.name).toList();
+        query = statusNames.length == 1
+            ? query.where('status', isEqualTo: statusNames.single)
+            : query.where('status', whereIn: statusNames);
+
+        participationSub = query.snapshots().listen((snap) {
+          generation += 1;
+          final localGeneration = generation;
+          cancelRunSubscriptions();
+
+          final runIds = snap.docs
+              .map((doc) => doc.data().runId)
+              .toSet()
+              .toList();
+          if (runIds.isEmpty) {
+            if (!controller.isClosed) controller.add(const []);
+            return;
+          }
+
+          final chunks = _chunks(runIds, 10).toList(growable: false);
+          final runsByChunk = <int, List<Run>>{};
+
+          for (var i = 0; i < chunks.length; i += 1) {
+            final chunk = chunks[i];
+            final sub = _runsRef
+                .where(FieldPath.documentId, whereIn: chunk)
+                .snapshots()
+                .listen((runSnap) {
+                  if (closed || localGeneration != generation) return;
+                  runsByChunk[i] = runSnap.docs
+                      .map((doc) => doc.data())
+                      .toList();
+                  emitSortedRuns(
+                    runIds: runIds,
+                    runsByChunk: runsByChunk,
+                    chunkCount: chunks.length,
+                  );
+                }, onError: controller.addError);
+            runSubs.add(sub);
+          }
+        }, onError: controller.addError);
+      },
+      onCancel: () async {
+        closed = true;
+        cancelRunSubscriptions();
+        await participationSub?.cancel();
+        if (!controller.isClosed) {
+          await controller.close();
+        }
+      },
+    );
+
+    return controller.stream;
+  }
 
   /// Generates a new unique Firestore document ID for a run without writing it.
   String generateId() => _runsRef.doc().id;
@@ -93,8 +209,8 @@ class RunRepository {
       );
 
   /// Cancels the current user's sign-up via the [cancelRunSignUp] Cloud
-  /// Function, which atomically removes them from [signedUpUserIds] and
-  /// decrements their gender count.
+  /// Function, which atomically updates their participation edge and aggregate
+  /// booking projections.
   Future<void> cancelSignUpViaFunction({required String runId}) =>
       withFirestoreErrorContext(
         () =>
@@ -159,6 +275,13 @@ class RunRepository {
   );
 }
 
+Iterable<List<T>> _chunks<T>(List<T> values, int size) sync* {
+  for (var start = 0; start < values.length; start += size) {
+    final end = start + size > values.length ? values.length : start + size;
+    yield values.sublist(start, end);
+  }
+}
+
 Map<String, Object?> _runCreatePayload(Run run) => {
   'runId': run.id,
   'runClubId': run.runClubId,
@@ -212,7 +335,31 @@ Stream<List<Run>> watchAttendedRuns(Ref ref, String uid) =>
 Stream<List<Run>> watchSignedUpRuns(Ref ref, String uid) =>
     ref.watch(runRepositoryProvider).watchSignedUpRuns(uid: uid);
 
-/// Returns upcoming runs from clubs the user follows (based on [followedClubIds]).
+class RecommendedRunsQuery {
+  RecommendedRunsQuery._(Iterable<String> followedClubIds)
+    : followedClubIds = List.unmodifiable(
+        (followedClubIds.toSet().toList()..sort()),
+      );
+
+  factory RecommendedRunsQuery.fromClubIds(Iterable<String> followedClubIds) =>
+      RecommendedRunsQuery._(followedClubIds);
+
+  static const _equality = ListEquality<String>();
+
+  final List<String> followedClubIds;
+
+  @override
+  bool operator ==(Object other) {
+    return other is RecommendedRunsQuery &&
+        _equality.equals(other.followedClubIds, followedClubIds);
+  }
+
+  @override
+  int get hashCode => _equality.hash(followedClubIds);
+}
+
+/// Returns upcoming runs from clubs the user follows.
 @riverpod
-Future<List<Run>> recommendedRuns(Ref ref, List<String> followedClubIds) =>
-    ref.watch(runRepositoryProvider).fetchUpcomingRunsForClubs(followedClubIds);
+Future<List<Run>> recommendedRuns(Ref ref, RecommendedRunsQuery query) => ref
+    .watch(runRepositoryProvider)
+    .fetchUpcomingRunsForClubs(query.followedClubIds);

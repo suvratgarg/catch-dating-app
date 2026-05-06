@@ -11,8 +11,10 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.da
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_check_in_location_service.dart';
@@ -26,10 +28,33 @@ import 'package:go_router/go_router.dart';
 import '../runs/runs_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
-DashboardRecommendationsQuery _recommendationsQueryForUser(UserProfile user) =>
-    DashboardRecommendationsQuery(
-      userId: user.uid,
-      followedClubIds: user.joinedRunClubIds,
+DashboardRecommendationsQuery _recommendationsQueryFor(
+  String uid,
+  List<String> followedClubIds,
+) => DashboardRecommendationsQuery(
+  userId: uid,
+  followedClubIds: followedClubIds,
+);
+
+RunClubMembership _membership({
+  required String clubId,
+  String uid = 'runner-1',
+}) => RunClubMembership(
+  id: runClubMembershipId(clubId: clubId, uid: uid),
+  clubId: clubId,
+  uid: uid,
+  role: RunClubMembershipRole.member,
+  status: RunClubMembershipStatus.active,
+  joinedAt: DateTime(2026, 1, 1),
+);
+
+dynamic _membershipsOverride(UserProfile user, List<String> clubIds) =>
+    watchActiveRunClubMembershipsForUserProvider(user.uid).overrideWith(
+      (ref) => Stream.value(
+        clubIds
+            .map((clubId) => _membership(clubId: clubId, uid: user.uid))
+            .toList(),
+      ),
     );
 
 void main() {
@@ -46,6 +71,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            _membershipsOverride(user, const []),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWith((ref) => signedUpRunsController.stream),
@@ -70,6 +96,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            _membershipsOverride(user, const []),
             watchSignedUpRunsProvider(user.uid).overrideWithValue(
               AsyncError<List<Run>>(Exception('boom'), StackTrace.empty),
             ),
@@ -81,8 +108,8 @@ void main() {
         ),
       );
 
-      await tester.pump();
-      await tester.pump();
+      await _pumpDashboardUi(tester);
+      await _pumpDashboardUi(tester);
 
       expect(find.text('Unable to load your booked runs.'), findsOneWidget);
       expect(find.text('Try again'), findsOneWidget);
@@ -98,6 +125,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            _membershipsOverride(user, const []),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
@@ -109,7 +137,7 @@ void main() {
         ),
       );
 
-      await tester.pump();
+      await _pumpDashboardUi(tester);
 
       expect(find.text("Let's find your first run"), findsOneWidget);
       expect(find.byType(DashboardFull), findsNothing);
@@ -136,8 +164,9 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
-              _recommendationsQueryForUser(user),
+              _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
+            _membershipsOverride(user, joinedClubIds),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             runCheckInLocationServiceProvider.overrideWithValue(
@@ -152,7 +181,7 @@ void main() {
         ),
       );
 
-      await tester.pump();
+      await _pumpDashboardUi(tester);
 
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
       expect(find.textContaining('NEXT RUN'), findsOneWidget);
@@ -165,6 +194,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            _membershipsOverride(user, const []),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
@@ -179,7 +209,7 @@ void main() {
         ),
       );
 
-      await tester.pump();
+      await _pumpDashboardUi(tester);
 
       expect(find.text('Dashboard'), findsOneWidget);
       expect(find.text('Activity'), findsOneWidget);
@@ -220,6 +250,7 @@ void main() {
             watchUserProfileProvider.overrideWith(
               (ref) => userController.stream,
             ),
+            _membershipsOverride(user, const []),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWith((ref) => signedUpRunsController.stream),
@@ -283,7 +314,7 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncLoading<List<Run>>()),
             dashboardRecommendedRunsProvider(
-              _recommendationsQueryForUser(user),
+              _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
@@ -296,6 +327,7 @@ void main() {
             theme: AppTheme.light,
             home: DashboardFull(
               user: user,
+              followedClubIds: joinedClubIds,
               signedUpRuns: [
                 buildRun(signedUpUserIds: const ['runner-1']),
               ],
@@ -322,7 +354,7 @@ void main() {
               AsyncError<List<Run>>(Exception('boom'), StackTrace.empty),
             ),
             dashboardRecommendedRunsProvider(
-              _recommendationsQueryForUser(user),
+              _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWith((ref) async => const []),
             ..._dashboardHostOverrides(user),
           ],
@@ -330,6 +362,7 @@ void main() {
             theme: AppTheme.light,
             home: DashboardFull(
               user: user,
+              followedClubIds: joinedClubIds,
               signedUpRuns: [
                 buildRun(signedUpUserIds: const ['runner-1']),
               ],
@@ -356,7 +389,7 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
-              _recommendationsQueryForUser(user),
+              _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(const AsyncLoading<List<Run>>()),
             ..._dashboardHostOverrides(user),
           ],
@@ -364,6 +397,7 @@ void main() {
             theme: AppTheme.light,
             home: DashboardFull(
               user: user,
+              followedClubIds: joinedClubIds,
               signedUpRuns: [
                 buildRun(signedUpUserIds: const ['runner-1']),
               ],
@@ -399,7 +433,7 @@ void main() {
                 user.uid,
               ).overrideWith((ref) => Stream.value(const [])),
               dashboardRecommendedRunsProvider(
-                _recommendationsQueryForUser(user),
+                _recommendationsQueryFor(user.uid, joinedClubIds),
               ).overrideWithValue(
                 AsyncError<List<Run>>(Exception('boom'), StackTrace.empty),
               ),
@@ -409,6 +443,7 @@ void main() {
               theme: AppTheme.light,
               home: DashboardFull(
                 user: user,
+                followedClubIds: joinedClubIds,
                 signedUpRuns: [
                   buildRun(signedUpUserIds: const ['runner-1']),
                 ],
@@ -458,13 +493,17 @@ void main() {
               user.uid,
             ).overrideWithValue(AsyncData<List<Run>>([swipeRun])),
             dashboardRecommendedRunsProvider(
-              _recommendationsQueryForUser(user),
+              _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(AsyncData<List<Run>>([recommendedRun])),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(user: user, signedUpRuns: [nextRun]),
+            home: DashboardFull(
+              user: user,
+              followedClubIds: joinedClubIds,
+              signedUpRuns: [nextRun],
+            ),
           ),
         ),
       );
@@ -510,7 +549,7 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
-              _recommendationsQueryForUser(user),
+              _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
@@ -521,7 +560,11 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(user: user, signedUpRuns: [nextRun]),
+            home: DashboardFull(
+              user: user,
+              followedClubIds: joinedClubIds,
+              signedUpRuns: [nextRun],
+            ),
           ),
         ),
       );
@@ -558,7 +601,7 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
-              _recommendationsQueryForUser(user),
+              _recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
@@ -569,7 +612,11 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(user: user, signedUpRuns: [run]),
+            home: DashboardFull(
+              user: user,
+              followedClubIds: const [],
+              signedUpRuns: [run],
+            ),
           ),
         ),
       );
@@ -609,7 +656,7 @@ void main() {
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
-              _recommendationsQueryForUser(user),
+              _recommendationsQueryFor(user.uid, const []),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             ..._dashboardHostOverrides(
               user,
@@ -619,7 +666,11 @@ void main() {
           ],
           child: MaterialApp(
             theme: AppTheme.light,
-            home: DashboardFull(user: user, signedUpRuns: const []),
+            home: DashboardFull(
+              user: user,
+              followedClubIds: const [],
+              signedUpRuns: const [],
+            ),
           ),
         ),
       );

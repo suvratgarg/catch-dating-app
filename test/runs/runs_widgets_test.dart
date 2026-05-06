@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/duration_stepper.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
@@ -337,6 +338,8 @@ void main() {
     testWidgets('who is running shows the empty upcoming state', (
       tester,
     ) async {
+      final fakeParticipationRepository = FakeRunParticipationRepository();
+
       await pumpRunsTestApp(
         tester,
         Scaffold(
@@ -345,6 +348,11 @@ void main() {
             userProfile: buildUser(),
           ),
         ),
+        overrides: [
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => fakeParticipationRepository,
+          ),
+        ],
       );
 
       expect(find.text("Who's running"), findsOneWidget);
@@ -368,19 +376,19 @@ void main() {
             (index) =>
                 buildPublicProfile(uid: 'runner-$index', name: 'Runner $index'),
           );
+        final fakeParticipationRepository = FakeRunParticipationRepository();
         final run = buildRun(
           startTime: DateTime.now().subtract(const Duration(hours: 2)),
           endTime: DateTime.now().subtract(const Duration(hours: 1)),
-          signedUpUserIds: const [
-            'runner-0',
-            'runner-1',
-            'runner-2',
-            'runner-3',
-            'runner-4',
-            'runner-5',
-            'runner-6',
-            'runner-7',
-          ],
+          signedUpUserIds: const ['stale-array-user'],
+        );
+        fakeParticipationRepository.runParticipations[run.id] = List.generate(
+          8,
+          (index) => buildRunParticipation(
+            run: run,
+            uid: 'runner-$index',
+            createdAt: DateTime(2026, 5, 6, 7, index),
+          ),
         );
 
         await pumpRunsTestApp(
@@ -391,6 +399,9 @@ void main() {
           overrides: [
             publicProfileRepositoryProvider.overrideWith(
               (ref) => fakePublicProfileRepository,
+            ),
+            runParticipationRepositoryProvider.overrideWith(
+              (ref) => fakeParticipationRepository,
             ),
           ],
         );

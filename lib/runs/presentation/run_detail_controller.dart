@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -21,7 +21,7 @@ class RunDetailController extends _$RunDetailController {
     required UserProfile userProfile,
     required bool isSaved,
   }) async {
-    final repository = ref.read(userProfileRepositoryProvider);
+    final repository = ref.read(savedRunRepositoryProvider);
     if (isSaved) {
       await repository.unsaveRun(uid: userProfile.uid, runId: run.id);
       return false;

@@ -66,7 +66,7 @@ export async function createRazorpayOrderHandler(
     );
   }
 
-  if (run.signedUpUserIds.length >= run.capacityLimit) {
+  if ((run.bookedCount ?? run.signedUpUserIds.length) >= run.capacityLimit) {
     throw new HttpsError(
       "failed-precondition",
       "This run is full. You can join the waitlist instead."

@@ -1,9 +1,13 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_participation_roster.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -32,11 +36,43 @@ class WhoIsRunning extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
-    final total = run.signedUpCount;
-    final hasActiveSwipeWindow = hasOpenSwipeWindow(run);
+    final rosterAsync = ref.watch(watchRunParticipationRosterProvider(run.id));
 
-    final previewIds = run.signedUpUserIds.take(7).toList();
+    return rosterAsync.when(
+      loading: () => _WhoIsRunningContent(
+        run: run,
+        roster: RunParticipationRoster.empty(),
+        fallbackTotal: run.signedUpCount,
+      ),
+      error: (e, _) => CatchInlineErrorState.fromError(
+        e,
+        context: AppErrorContext.run,
+        compact: true,
+        onRetry: () =>
+            ref.invalidate(watchRunParticipationRosterProvider(run.id)),
+      ),
+      data: (roster) => _WhoIsRunningContent(run: run, roster: roster),
+    );
+  }
+}
+
+class _WhoIsRunningContent extends ConsumerWidget {
+  const _WhoIsRunningContent({
+    required this.run,
+    required this.roster,
+    this.fallbackTotal,
+  });
+
+  final Run run;
+  final RunParticipationRoster roster;
+  final int? fallbackTotal;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final total = fallbackTotal ?? roster.bookedCount;
+    final hasActiveSwipeWindow = hasOpenSwipeWindow(run);
+    final previewIds = roster.bookedIds.take(7).toList();
     final profilesAsync = ref.watch(runnerProfilesProvider(previewIds));
     final profiles = profilesAsync.asData?.value ?? {};
 

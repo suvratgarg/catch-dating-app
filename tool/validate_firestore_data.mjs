@@ -138,7 +138,10 @@ async function loadCollections(firestore, maxDocs) {
     "users",
     "publicProfiles",
     "runClubs",
+    "runClubMemberships",
     "runs",
+    "runParticipations",
+    "savedRuns",
     "reviews",
     "matches",
     "onboarding_drafts",
@@ -201,7 +204,16 @@ function validateAll(collections, currentReport) {
   for (const doc of collections.runClubs) {
     validateRunClub(doc, users, currentReport);
   }
+  for (const doc of collections.runClubMemberships) {
+    validateRunClubMembership(doc, users, clubs, currentReport);
+  }
   for (const doc of collections.runs) validateRun(doc, clubs, currentReport);
+  for (const doc of collections.runParticipations) {
+    validateRunParticipation(doc, users, runs, currentReport);
+  }
+  for (const doc of collections.savedRuns) {
+    validateSavedRun(doc, users, runs, currentReport);
+  }
   for (const doc of collections.reviews) {
     validateReview(doc, users, clubs, runs, currentReport);
   }
@@ -291,6 +303,36 @@ function validateRunClub(doc, users, currentReport) {
   }
 }
 
+function validateRunClubMembership(doc, users, clubs, currentReport) {
+  const data = doc.data;
+  requireString(data, "clubId", doc, currentReport);
+  requireString(data, "uid", doc, currentReport);
+  requireString(data, "role", doc, currentReport);
+  requireString(data, "status", doc, currentReport);
+  requireTimestamp(data, "joinedAt", doc, currentReport);
+
+  if (!["host", "member"].includes(data.role)) {
+    issue(currentReport, "error", doc.path, "invalid-membership-role",
+      "role must be host or member.");
+  }
+  if (!["active", "left", "deleted"].includes(data.status)) {
+    issue(currentReport, "error", doc.path, "invalid-membership-status",
+      "status must be active, left, or deleted.");
+  }
+  if (data.clubId && data.uid && doc.id !== `${data.clubId}_${data.uid}`) {
+    issue(currentReport, "error", doc.path, "membership-id-mismatch",
+      "document id must be {clubId}_{uid}.");
+  }
+  if (data.clubId && !clubs.has(data.clubId)) {
+    issue(currentReport, "warning", doc.path, "missing-membership-club",
+      `clubId references missing runClubs/${data.clubId}.`);
+  }
+  if (data.uid && !users.has(data.uid)) {
+    issue(currentReport, "warning", doc.path, "missing-membership-user",
+      `uid references missing users/${data.uid}.`);
+  }
+}
+
 function validateRun(doc, clubs, currentReport) {
   const data = doc.data;
   requireString(data, "runClubId", doc, currentReport);
@@ -328,6 +370,58 @@ function validateRun(doc, clubs, currentReport) {
   if ((data.startingPointLat == null) !== (data.startingPointLng == null)) {
     issue(currentReport, "error", doc.path, "partial-coordinates",
       "startingPointLat and startingPointLng must be set together.");
+  }
+}
+
+function validateRunParticipation(doc, users, runs, currentReport) {
+  const data = doc.data;
+  requireString(data, "runId", doc, currentReport);
+  requireString(data, "runClubId", doc, currentReport);
+  requireString(data, "uid", doc, currentReport);
+  requireString(data, "status", doc, currentReport);
+  requireTimestamp(data, "createdAt", doc, currentReport);
+  requireTimestamp(data, "updatedAt", doc, currentReport);
+
+  if (!["signedUp", "waitlisted", "attended", "cancelled", "deleted"]
+    .includes(data.status)) {
+    issue(currentReport, "error", doc.path, "invalid-participation-status",
+      "status must be signedUp, waitlisted, attended, cancelled, or deleted.");
+  }
+  if (data.runId && data.uid && doc.id !== `${data.runId}_${data.uid}`) {
+    issue(currentReport, "error", doc.path, "participation-id-mismatch",
+      "document id must be {runId}_{uid}.");
+  }
+  const run = runs.get(data.runId);
+  if (!run) {
+    issue(currentReport, "warning", doc.path, "missing-participation-run",
+      `runId references missing runs/${data.runId}.`);
+  } else if (run.data.runClubId !== data.runClubId) {
+    issue(currentReport, "error", doc.path, "participation-club-mismatch",
+      "runClubId does not match the parent run.");
+  }
+  if (data.uid && !users.has(data.uid)) {
+    issue(currentReport, "warning", doc.path, "missing-participation-user",
+      `uid references missing users/${data.uid}.`);
+  }
+}
+
+function validateSavedRun(doc, users, runs, currentReport) {
+  const data = doc.data;
+  requireString(data, "uid", doc, currentReport);
+  requireString(data, "runId", doc, currentReport);
+  requireTimestamp(data, "savedAt", doc, currentReport);
+
+  if (data.uid && data.runId && doc.id !== `${data.uid}_${data.runId}`) {
+    issue(currentReport, "error", doc.path, "saved-run-id-mismatch",
+      "document id must be {uid}_{runId}.");
+  }
+  if (data.uid && !users.has(data.uid)) {
+    issue(currentReport, "warning", doc.path, "missing-saved-run-user",
+      `uid references missing users/${data.uid}.`);
+  }
+  if (data.runId && !runs.has(data.runId)) {
+    issue(currentReport, "warning", doc.path, "missing-saved-run",
+      `runId references missing runs/${data.runId}.`);
   }
 }
 
@@ -438,12 +532,17 @@ function validateMatch(doc, users, currentReport) {
 
 function validateMessage(doc, matches, currentReport) {
   const data = doc.data;
-  const pathMatch = /^chats\/([^/]+)\/messages\/([^/]+)$/.exec(doc.path);
+  const pathMatch = /^matches\/([^/]+)\/messages\/([^/]+)$/.exec(doc.path);
+  const legacyPathMatch = /^chats\/([^/]+)\/messages\/([^/]+)$/.exec(doc.path);
   requireString(data, "senderId", doc, currentReport);
   requireTimestamp(data, "sentAt", doc, currentReport);
   if (typeof data.text !== "string" && typeof data.imageUrl !== "string") {
     issue(currentReport, "error", doc.path, "message-empty-content",
       "message must contain text or imageUrl.");
+  }
+  if (legacyPathMatch) {
+    issue(currentReport, "warning", doc.path, "legacy-chat-message-path",
+      "message still lives under chats/{matchId}/messages; migrate it to matches/{matchId}/messages.");
   }
   if (!pathMatch) return;
   const match = matches.get(pathMatch[1]);

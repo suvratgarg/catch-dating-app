@@ -1,7 +1,7 @@
 ---
 doc_id: deploy_runbook
-version: 2.0.0
-updated: 2026-05-05
+version: 2.0.1
+updated: 2026-05-06
 owner: recursive_audit_loop
 status: runbook
 ---
@@ -138,7 +138,7 @@ emulator tests before deploying. A failure here blocks the deploy; do not use
 ./tool/firebase_with_env.sh prod deploy --only storage
 ```
 
-Verification: upload a chat image in the dev emulator and verify it appears in Storage at `chats/{matchId}/images/{fileName}`.
+Verification: upload a chat image in the dev emulator and verify it appears in Storage at `matches/{matchId}/images/{fileName}`.
 
 ---
 
@@ -283,7 +283,7 @@ git checkout HEAD -- storage.rules
 | Function | Type | Trigger |
 |----------|------|---------|
 | `moderatePhotoOnUpload` | Storage trigger | `onObjectFinalized` |
-| `moderateChatMessage` | Firestore trigger | `chats/{matchId}/messages/{id}` onCreate |
+| `moderateChatMessage` | Firestore trigger | `matches/{matchId}/messages/{id}` onCreate |
 | `selfCheckInAttendance` | Callable | Client-invoked |
 
 ### Modified functions
@@ -308,7 +308,7 @@ git checkout HEAD -- storage.rules
 - `isValidCity()` function (replaces hardcoded city lists in 2 places)
 
 ### New Storage rules
-- `chats/{matchId}/images/` path (read/write restricted to match participants)
+- `matches/{matchId}/images/` path (read/write restricted to match participants)
 
 ### New Firestore documents (manual creation required)
 - `config/cities` — city list for validation + picker

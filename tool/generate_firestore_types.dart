@@ -36,6 +36,12 @@ final _modelConfigs = <_ModelConfig>[
     idField: 'id',
   ),
   _ModelConfig(
+    dartPath: 'lib/run_clubs/domain/run_club_membership.dart',
+    tsName: 'RunClubMembershipDoc',
+    collectionPath: '/runClubMemberships/{membershipId}',
+    idField: 'id',
+  ),
+  _ModelConfig(
     dartPath: 'lib/runs/domain/run_constraints.dart',
     tsName: 'RunConstraints',
     collectionPath: null, // embedded in RunDoc, not a top-level collection
@@ -44,6 +50,18 @@ final _modelConfigs = <_ModelConfig>[
     dartPath: 'lib/runs/domain/run.dart',
     tsName: 'RunDoc',
     collectionPath: '/runs/{runId}',
+    idField: 'id',
+  ),
+  _ModelConfig(
+    dartPath: 'lib/runs/domain/run_participation.dart',
+    tsName: 'RunParticipationDoc',
+    collectionPath: '/runParticipations/{participationId}',
+    idField: 'id',
+  ),
+  _ModelConfig(
+    dartPath: 'lib/runs/domain/saved_run.dart',
+    tsName: 'SavedRunDoc',
+    collectionPath: '/savedRuns/{savedRunId}',
     idField: 'id',
   ),
   _ModelConfig(
@@ -66,7 +84,7 @@ final _modelConfigs = <_ModelConfig>[
   _ModelConfig(
     dartPath: 'lib/chats/domain/chat_message.dart',
     tsName: 'ChatMessageDoc',
-    collectionPath: '/chats/{matchId}/messages/{messageId}',
+    collectionPath: '/matches/{matchId}/messages/{messageId}',
     idField: 'id',
   ),
   _ModelConfig(

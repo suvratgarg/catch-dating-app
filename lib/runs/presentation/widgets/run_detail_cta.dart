@@ -8,6 +8,7 @@ import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_error_message.dart';
@@ -26,6 +27,7 @@ class RunDetailCta extends ConsumerWidget {
     required this.userProfile,
     required this.runClubId,
     required this.isHost,
+    required this.participation,
     this.now,
   });
 
@@ -33,6 +35,7 @@ class RunDetailCta extends ConsumerWidget {
   final UserProfile userProfile;
   final String runClubId;
   final bool isHost;
+  final RunParticipation? participation;
   final DateTime? now;
 
   @override
@@ -43,7 +46,12 @@ class RunDetailCta extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
-    final status = run.statusFor(userProfile);
+    final eligibility = _eligibilityForParticipation(
+      run: run,
+      userProfile: userProfile,
+      participation: participation,
+    );
+    final status = _statusForEligibility(eligibility);
     final supportsPaid = ref
         .watch(paymentRepositoryProvider)
         .supportsPaidBookings;
@@ -124,9 +132,9 @@ class RunDetailCta extends ConsumerWidget {
                   ),
           ),
           RunSignUpStatus.signedUp => (() {
-            if (isSelfCheckInOpen(
+            if (isSelfCheckInOpenForParticipationStatus(
               run: run,
-              uid: userProfile.uid,
+              status: participation?.status,
               now: referenceNow,
             )) {
               return const SizedBox.shrink();
@@ -180,7 +188,7 @@ class RunDetailCta extends ConsumerWidget {
             onPressed: null,
           ),
           RunSignUpStatus.ineligible => BottomCTA(
-            label: switch (run.eligibilityFor(userProfile)) {
+            label: switch (eligibility) {
               AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
               AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
               GenderCapacityReached() => 'Spots for your gender are full',
@@ -192,6 +200,52 @@ class RunDetailCta extends ConsumerWidget {
       ],
     );
   }
+}
+
+RunEligibility _eligibilityForParticipation({
+  required Run run,
+  required UserProfile userProfile,
+  required RunParticipation? participation,
+}) {
+  return switch (participation?.status) {
+    RunParticipationStatus.attended => const Attended(),
+    RunParticipationStatus.signedUp => const AlreadySignedUp(),
+    RunParticipationStatus.waitlisted => const OnWaitlist(),
+    RunParticipationStatus.cancelled ||
+    RunParticipationStatus.deleted ||
+    null => _eligibilityForFreshViewer(run: run, userProfile: userProfile),
+  };
+}
+
+RunEligibility _eligibilityForFreshViewer({
+  required Run run,
+  required UserProfile userProfile,
+}) {
+  if (!run.isUpcoming) return const RunPast();
+  if (userProfile.age < run.constraints.minAge) {
+    return AgeTooYoung(run.constraints.minAge);
+  }
+  if (userProfile.age > run.constraints.maxAge) {
+    return AgeTooOld(run.constraints.maxAge);
+  }
+  final cap = run.constraints.maxForGender(userProfile.gender);
+  if (cap != null && (run.genderCounts[userProfile.gender.name] ?? 0) >= cap) {
+    return const GenderCapacityReached();
+  }
+  if (run.isFull) return const RunFull();
+  return const Eligible();
+}
+
+RunSignUpStatus _statusForEligibility(RunEligibility eligibility) {
+  return switch (eligibility) {
+    Attended() => RunSignUpStatus.attended,
+    AlreadySignedUp() => RunSignUpStatus.signedUp,
+    RunPast() => RunSignUpStatus.past,
+    OnWaitlist() => RunSignUpStatus.waitlisted,
+    RunFull() => RunSignUpStatus.full,
+    Eligible() => RunSignUpStatus.eligible,
+    _ => RunSignUpStatus.ineligible,
+  };
 }
 
 class PriceLeading extends StatelessWidget {

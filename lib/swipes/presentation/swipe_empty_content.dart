@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -24,6 +25,7 @@ const defaultSwipeEmptyContent = SwipeEmptyContent(
 SwipeEmptyContent buildSwipeEmptyContent({
   required Run? run,
   required UserProfile? currentUser,
+  required RunParticipation? currentUserParticipation,
 }) {
   if (run == null) {
     return const SwipeEmptyContent(
@@ -41,7 +43,7 @@ SwipeEmptyContent buildSwipeEmptyContent({
     );
   }
 
-  if (!run.hasAttended(currentUser.uid)) {
+  if (currentUserParticipation?.status != RunParticipationStatus.attended) {
     return const SwipeEmptyContent(
       title: 'Catch unavailable',
       message: 'You can only swipe on runners from events you attended.',

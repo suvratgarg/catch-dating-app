@@ -7,6 +7,7 @@ import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
@@ -29,6 +30,8 @@ class RunDetailBody extends ConsumerWidget {
     required this.reviews,
     required this.isAuthenticated,
     required this.isHost,
+    required this.isSaved,
+    required this.participation,
     this.onShareRun,
     this.now,
   });
@@ -39,6 +42,8 @@ class RunDetailBody extends ConsumerWidget {
   final List<Review> reviews;
   final bool isAuthenticated;
   final bool isHost;
+  final bool isSaved;
+  final RunParticipation? participation;
   final RunShareHandler? onShareRun;
   final DateTime? now;
 
@@ -47,7 +52,6 @@ class RunDetailBody extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final run = this.run;
     final userProfile = this.userProfile;
-    final isSaved = userProfile?.savedRunIds.contains(run.id) ?? false;
     final saveMutation = ref.watch(RunDetailController.toggleSavedRunMutation);
     final share = ref.watch(externalShareControllerProvider);
 
@@ -111,6 +115,7 @@ class RunDetailBody extends ConsumerWidget {
                   reviews: reviews,
                   userProfile: userProfile,
                   isAuthenticated: isAuthenticated,
+                  participation: participation,
                 ),
                 const SizedBox(height: 16),
               ],
@@ -124,6 +129,7 @@ class RunDetailBody extends ConsumerWidget {
               userProfile: userProfile,
               runClubId: runClubId,
               isHost: isHost,
+              participation: participation,
               now: now,
             )
           : _GuestBookCta(runClubId: runClubId, runId: run.id),

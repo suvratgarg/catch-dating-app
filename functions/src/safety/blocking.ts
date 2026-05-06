@@ -6,6 +6,7 @@ import * as logger from "firebase-functions/logger";
 import {z} from "zod";
 import {BlockDoc, MatchDoc} from "../shared/firestore";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {validateCallable} from "../shared/validation";
 
@@ -25,11 +26,17 @@ const UnblockUserSchema = z.object({
 interface BlockingDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 const defaultDeps: BlockingDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 /**
@@ -142,6 +149,8 @@ export async function blockUserHandler(
   }
 
   const db = deps.firestore();
+  await deps.checkRateLimit?.(db, blockerUserId, "blockUser");
+
   await db
     .collection(BLOCKS_COLLECTION)
     .doc(blockDocId(blockerUserId, data.targetUserId))
@@ -181,7 +190,10 @@ export async function unblockUserHandler(
     throw new HttpsError("invalid-argument", "targetUserId is invalid.");
   }
 
-  await deps.firestore()
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, blockerUserId, "unblockUser");
+
+  await db
     .collection(BLOCKS_COLLECTION)
     .doc(blockDocId(blockerUserId, data.targetUserId))
     .delete();

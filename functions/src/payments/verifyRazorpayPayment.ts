@@ -15,6 +15,7 @@ import {
   verifyPaymentSignature,
 } from "./razorpay";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
+import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {validateCallable} from "../shared/validation";
 import {z} from "zod";
@@ -31,6 +32,11 @@ interface VerifyRazorpayPaymentDeps {
   serverTimestamp: () => unknown;
   signUpForRun: typeof signUpUserForRun;
   verifySignature: typeof verifyPaymentSignature;
+  checkRateLimit?: (
+    db: FirebaseFirestore.Firestore,
+    uid: string,
+    action: string
+  ) => Promise<void>;
 }
 
 const defaultDeps: VerifyRazorpayPaymentDeps = {
@@ -39,6 +45,7 @@ const defaultDeps: VerifyRazorpayPaymentDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   signUpForRun: signUpUserForRun,
   verifySignature: verifyPaymentSignature,
+  checkRateLimit: defaultCheckRateLimit,
 };
 
 /**
@@ -57,6 +64,9 @@ export async function verifyRazorpayPaymentHandler(
     VerifyPaymentSchema
   );
 
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, userId, "verifyRazorpayPayment");
+
   if (!deps.verifySignature({orderId, paymentId, signature})) {
     throw new HttpsError(
       "invalid-argument",
@@ -64,7 +74,6 @@ export async function verifyRazorpayPaymentHandler(
     );
   }
 
-  const db = deps.firestore();
   const razorpay = deps.createClient();
   const [order, payment] = await Promise.all([
     razorpay.orders.fetch(orderId),
@@ -80,7 +89,7 @@ export async function verifyRazorpayPaymentHandler(
   // race condition between order creation and payment), issue an immediate
   // refund so the user is never charged for a spot they didn't get.
   try {
-    await deps.signUpForRun(db, booking.runId, userId);
+    await deps.signUpForRun(db, booking.runId, userId, paymentId);
   } catch (signUpError) {
     let refundSucceeded = false;
     try {

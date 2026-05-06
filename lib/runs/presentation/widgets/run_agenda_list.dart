@@ -146,7 +146,7 @@ class RunAgendaRunCard extends StatelessWidget {
                 ),
                 gapH4,
                 Text(
-                  '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label} · ${run.signedUpUserIds.length}/${run.capacityLimit}',
+                  '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label} · ${run.signedUpCount}/${run.capacityLimit}',
                   style: CatchTextStyles.bodyS(context, color: t.ink2),
                 ),
               ],

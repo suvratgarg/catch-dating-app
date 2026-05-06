@@ -1,5 +1,5 @@
 {
-  "version": "2.4.2",
+  "version": "2.5.2",
   "updated": "2026-05-06",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -46,6 +46,18 @@
       ],
       "skip_when": [
         "Only process rules are needed; use rules.json instead"
+      ]
+    },
+    "docs/ui_layout_spacing.md": {
+      "purpose": "Durable UI spacing and layout contracts for screen gutters, tab body insets, sliver body gaps, and card/photo spacing.",
+      "read_when": [
+        "Changing shared screen padding or tab body insets",
+        "Adding layout constants intended to be reused across sibling widgets",
+        "Debugging inconsistent spacing between sliver/tab bodies"
+      ],
+      "skip_when": [
+        "The task is pure business logic or repository/controller work",
+        "A local component uses a one-off spacing value that is not becoming a reusable contract"
       ]
     },
     "docs/audit_registry/rules.json": {
@@ -122,6 +134,29 @@
       ],
       "skip_when": [
         "Pure Flutter presentation work"
+      ]
+    },
+    "docs/backend_operation_catalog.md": {
+      "purpose": "Human-readable backend write ownership catalog covering direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points.",
+      "read_when": [
+        "Changing a repository write or callable interface",
+        "Changing Firestore rules for a write path",
+        "Adding Cloud Functions or trigger-owned projections",
+        "Planning notifications or activity timeline fan-out"
+      ],
+      "skip_when": [
+        "No backend write ownership or notification behavior is touched"
+      ]
+    },
+    "docs/firestore_relationship_documents_migration.md": {
+      "purpose": "Persistent tracker for migrating relationship arrays to edge/action documents, moving chat messages under matches, and using relationship docs for deletion/anonymization cleanup.",
+      "read_when": [
+        "Changing run-club membership, run participation, saved-run, match-message, or relationship-array behavior",
+        "Writing or running relationship migration scripts",
+        "Planning account, run, club, review, match, or chat deletion/anonymization cleanup"
+      ],
+      "skip_when": [
+        "No Firestore relationship, migration, or deletion contract is touched"
       ]
     },
     "docs/firestore_type_sync_2026_05_05.md": {

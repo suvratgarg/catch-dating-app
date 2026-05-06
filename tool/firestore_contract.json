@@ -24,6 +24,9 @@
       "write": "owner initial create; profile edits via updateUserProfile; narrow runtime direct updates only",
       "allFields": [
         "name",
+        "firstName",
+        "lastName",
+        "displayName",
         "dateOfBirth",
         "gender",
         "phoneNumber",
@@ -66,6 +69,9 @@
       ],
       "clientWritableFields": [
         "name",
+        "firstName",
+        "lastName",
+        "displayName",
         "dateOfBirth",
         "gender",
         "phoneNumber",
@@ -119,6 +125,9 @@
           "owner": "authenticated owner",
           "allowedFields": [
             "name",
+            "firstName",
+            "lastName",
+            "displayName",
             "dateOfBirth",
             "gender",
             "phoneNumber",
@@ -166,6 +175,7 @@
           "function": "updateUserProfile",
           "allowedFields": [
             "name",
+            "displayName",
             "dateOfBirth",
             "gender",
             "phoneNumber",
@@ -216,7 +226,8 @@
       ],
       "migrationNotes": [
         "Rules currently tolerate legacy sexualOrientation even though it is not in the generated Dart/TypeScript contract.",
-        "Keep joinedRunClubIds backend-owned while run-club membership remains array-backed."
+        "firstName and lastName are private identity fields initialized during onboarding; displayName is the editable public name written by the updateUserProfile callable.",
+        "joinedRunClubIds is now a temporary compatibility projection; runClubMemberships is the target relationship collection."
       ]
     },
     {
@@ -366,6 +377,44 @@
       "migrationNotes": ["Direct deletes are denied until cleanup/refund/image deletion behavior exists."]
     },
     {
+      "id": "runClubMemberships",
+      "path": "runClubMemberships/{membershipId}",
+      "rulesMatch": "/runClubMemberships/{membershipId}",
+      "typescriptInterface": "RunClubMembershipDoc",
+      "dartModel": "lib/run_clubs/domain/run_club_membership.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "run-club membership callables",
+      "read": "active memberships visible to authenticated users; historical memberships visible to the member",
+      "write": "server only",
+      "allFields": [
+        "clubId",
+        "uid",
+        "role",
+        "status",
+        "joinedAt",
+        "leftAt",
+        "deletedAt"
+      ],
+      "callableOwnedFields": [
+        "clubId",
+        "uid",
+        "role",
+        "status",
+        "joinedAt",
+        "leftAt",
+        "deletedAt"
+      ],
+      "exportedFunctions": [
+        "createRunClub",
+        "joinRunClub",
+        "leaveRunClub",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Replaces users.joinedRunClubIds and runClubs.memberUserIds after compatibility arrays retire."
+      ]
+    },
+    {
       "id": "runs",
       "path": "runs/{runId}",
       "rulesMatch": "/runs/{runId}",
@@ -388,6 +437,9 @@
         "capacityLimit",
         "description",
         "priceInPaise",
+        "bookedCount",
+        "checkedInCount",
+        "waitlistedCount",
         "signedUpUserIds",
         "attendedUserIds",
         "waitlistUserIds",
@@ -410,6 +462,9 @@
         "description",
         "priceInPaise",
         "constraints",
+        "bookedCount",
+        "checkedInCount",
+        "waitlistedCount",
         "signedUpUserIds",
         "attendedUserIds",
         "waitlistUserIds",
@@ -444,6 +499,9 @@
             "capacityLimit",
             "description",
             "priceInPaise",
+            "bookedCount",
+            "checkedInCount",
+            "waitlistedCount",
             "signedUpUserIds",
             "attendedUserIds",
             "waitlistUserIds",
@@ -472,6 +530,9 @@
             "capacityLimit",
             "priceInPaise",
             "constraints",
+            "bookedCount",
+            "checkedInCount",
+            "waitlistedCount",
             "signedUpUserIds",
             "attendedUserIds",
             "waitlistUserIds",
@@ -498,6 +559,9 @@
             "signedUpUserIds",
             "attendedUserIds",
             "waitlistUserIds",
+            "bookedCount",
+            "checkedInCount",
+            "waitlistedCount",
             "genderCounts"
           ]
         }
@@ -509,6 +573,88 @@
         }
       ],
       "migrationNotes": ["Direct run deletes are denied until cleanup/refund behavior exists."]
+    },
+    {
+      "id": "runParticipations",
+      "path": "runParticipations/{participationId}",
+      "rulesMatch": "/runParticipations/{participationId}",
+      "typescriptInterface": "RunParticipationDoc",
+      "dartModel": "lib/runs/domain/run_participation.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
+      "read": "participant or run-club host",
+      "write": "server only",
+      "allFields": [
+        "runId",
+        "runClubId",
+        "uid",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "signedUpAt",
+        "waitlistedAt",
+        "attendedAt",
+        "cancelledAt",
+        "deletedAt",
+        "genderAtSignup",
+        "paymentId"
+      ],
+      "callableOwnedFields": [
+        "runId",
+        "runClubId",
+        "uid",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "signedUpAt",
+        "waitlistedAt",
+        "attendedAt",
+        "cancelledAt",
+        "deletedAt",
+        "genderAtSignup",
+        "paymentId"
+      ],
+      "exportedFunctions": [
+        "signUpForFreeRun",
+        "verifyRazorpayPayment",
+        "cancelRunSignUp",
+        "joinRunWaitlist",
+        "markRunAttendance",
+        "selfCheckInAttendance",
+        "requestAccountDeletion"
+      ],
+      "migrationNotes": [
+        "Replaces runs.signedUpUserIds, runs.waitlistUserIds, and runs.attendedUserIds after compatibility arrays retire."
+      ]
+    },
+    {
+      "id": "savedRuns",
+      "path": "savedRuns/{savedRunId}",
+      "rulesMatch": "/savedRuns/{savedRunId}",
+      "typescriptInterface": "SavedRunDoc",
+      "dartModel": "lib/runs/domain/saved_run.dart",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "authenticated owner",
+      "read": "owner only",
+      "write": "owner direct create/delete only",
+      "allFields": ["uid", "runId", "savedAt", "removedAt"],
+      "clientWritableFields": ["uid", "runId", "savedAt"],
+      "operations": [
+        {
+          "id": "owner_save_run",
+          "type": "directCreate",
+          "owner": "authenticated owner",
+          "allowedFields": ["uid", "runId", "savedAt"]
+        },
+        {
+          "id": "owner_unsave_run",
+          "type": "directDelete",
+          "owner": "authenticated owner"
+        }
+      ],
+      "migrationNotes": [
+        "Replaces users.savedRunIds after compatibility array projection retires. Current unsave is hard delete."
+      ]
     },
     {
       "id": "payments",
@@ -702,8 +848,8 @@
     },
     {
       "id": "chat_messages",
-      "path": "chats/{matchId}/messages/{messageId}",
-      "rulesMatch": "/chats/{matchId}/messages/{messageId}",
+      "path": "matches/{matchId}/messages/{messageId}",
+      "rulesMatch": "/matches/{matchId}/messages/{messageId}",
       "typescriptInterface": "ChatMessageDoc",
       "dartModel": "lib/chats/domain/chat_message.dart",
       "owner": "active match participant creates message; triggers own derived match preview/unread/moderation",

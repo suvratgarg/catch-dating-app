@@ -21,7 +21,7 @@
  *
  *   - `users/{uid}/photos/{fileName}` — profile photos
  *   - `runClubs/{clubId}/{fileName}` — club images
- *   - `chats/{matchId}/images/{messageId}` — chat images (future)
+ *   - `matches/{matchId}/images/{messageId}` — chat images (future)
  *
  * ## Costs
  *
@@ -115,7 +115,7 @@ export const moderatePhotoOnUpload = onObjectFinalized(
     const isProfilePhoto = filePath.startsWith("users/") &&
       filePath.includes("/photos/");
     const isClubImage = filePath.startsWith("runClubs/");
-    const isChatImage = filePath.startsWith("chats/");
+    const isChatImage = filePath.startsWith("matches/");
 
     if (!isProfilePhoto && !isClubImage && !isChatImage) return;
 

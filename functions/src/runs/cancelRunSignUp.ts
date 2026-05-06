@@ -14,6 +14,11 @@ import {
   razorpayKeyId,
   razorpayKeySecret,
 } from "../payments/razorpay";
+import {
+  runParticipationId,
+  runParticipationPatch,
+} from "../shared/relationshipDocuments";
+import {checkRateLimit} from "../shared/rateLimit";
 
 const CancelSchema = z.object({
   runId: z.string(),
@@ -22,7 +27,7 @@ const CancelSchema = z.object({
 /**
  * Atomically cancels a user's sign-up for a run.
  *
- * - Removes the user from signedUpUserIds and decrements their gender count.
+ * - Removes the user from signedUpUserIds and updates count projections.
  * - Promotes the first eligible waitlist user into the freed spot.
  * - Issues a full Razorpay refund if the booking was paid.
  * - Idempotent — calling it when the user is already not signed up is a no-op.
@@ -34,8 +39,13 @@ export const cancelRunSignUp = onCall(
     const {runId} = validateCallable(request, CancelSchema);
 
     const db = admin.firestore();
+    await checkRateLimit(db, userId, "cancelRunSignUp");
+
     const runRef = db.collection("runs").doc(runId);
     const userRef = db.collection("users").doc(userId);
+    const participationRef = db
+      .collection("runParticipations")
+      .doc(runParticipationId(runId, userId));
 
     // Look up a completed payment for this user + run before entering the
     // transaction so we can issue a refund afterwards.
@@ -49,9 +59,10 @@ export const cancelRunSignUp = onCall(
     const paymentDoc = paymentQuery.empty ? null : paymentQuery.docs[0];
 
     await db.runTransaction(async (tx) => {
-      const [runSnap, userSnap] = await Promise.all([
+      const [runSnap, userSnap, participationSnap] = await Promise.all([
         tx.get(runRef),
         tx.get(userRef),
+        tx.get(participationRef),
       ]);
 
       if (!runSnap.exists) {
@@ -80,13 +91,21 @@ export const cancelRunSignUp = onCall(
       const newGenderCounts = {...run.genderCounts};
       newGenderCounts[cancellerGender] =
         (newGenderCounts[cancellerGender] ?? 1) - 1;
+      let promotedParticipationRef:
+        FirebaseFirestore.DocumentReference | null = null;
+      let promotedParticipationPatch: Record<string, unknown> | null = null;
 
       // Promote the first waitlist user who passes gender-cap and block checks.
       for (let i = 0; i < newWaitlistIds.length; i++) {
         const waitlistUserId = newWaitlistIds[i];
-        const waitlistUserSnap = await tx.get(
-          db.collection("users").doc(waitlistUserId)
-        );
+        const waitlistParticipationRef = db
+          .collection("runParticipations")
+          .doc(runParticipationId(runId, waitlistUserId));
+        const [waitlistUserSnap, waitlistParticipationSnap] =
+          await Promise.all([
+            tx.get(db.collection("users").doc(waitlistUserId)),
+            tx.get(waitlistParticipationRef),
+          ]);
         if (!waitlistUserSnap.exists) continue;
 
         if (await hasBlockingRelationshipInTransaction(
@@ -113,14 +132,38 @@ export const cancelRunSignUp = onCall(
         newSignedUpIds = [...newSignedUpIds, waitlistUserId];
         newWaitlistIds = newWaitlistIds.filter((_, idx) => idx !== i);
         newGenderCounts[wGender] = (newGenderCounts[wGender] ?? 0) + 1;
+        promotedParticipationRef = waitlistParticipationRef;
+        promotedParticipationPatch = runParticipationPatch({
+          exists: waitlistParticipationSnap.exists,
+          runId,
+          runClubId: run.runClubId,
+          uid: waitlistUserId,
+          status: "signedUp",
+          genderAtSignup: wGender,
+        });
         break;
       }
 
       tx.update(runRef, {
         signedUpUserIds: newSignedUpIds,
         waitlistUserIds: newWaitlistIds,
+        bookedCount: newSignedUpIds.length,
+        waitlistedCount: newWaitlistIds.length,
         genderCounts: newGenderCounts,
       });
+      tx.set(participationRef, runParticipationPatch({
+        exists: participationSnap.exists,
+        runId,
+        runClubId: run.runClubId,
+        uid: userId,
+        status: "cancelled",
+        genderAtSignup: cancellerGender,
+      }), {merge: true});
+      if (promotedParticipationRef && promotedParticipationPatch) {
+        tx.set(promotedParticipationRef, promotedParticipationPatch, {
+          merge: true,
+        });
+      }
     });
 
     // Issue a refund outside the transaction if the run was paid.

@@ -23,12 +23,14 @@ class DashboardFull extends ConsumerWidget {
     super.key,
     required this.user,
     required this.signedUpRuns,
+    required this.followedClubIds,
   });
 
   static const scrollViewKey = ValueKey('dashboard-full-scroll-view');
 
   final UserProfile user;
   final List<Run> signedUpRuns;
+  final List<String> followedClubIds;
 
   static String greeting() {
     final h = DateTime.now().hour;
@@ -50,7 +52,7 @@ class DashboardFull extends ConsumerWidget {
       dashboardFullViewModelProvider(
         signedUpRuns: signedUpRuns,
         uid: user.uid,
-        followedClubIds: user.joinedRunClubIds,
+        followedClubIds: followedClubIds,
       ),
     );
 

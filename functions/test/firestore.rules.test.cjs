@@ -171,6 +171,47 @@ function review(overrides = {}) {
   };
 }
 
+function runClubMembership(overrides = {}) {
+  return {
+    clubId: "club-1",
+    uid: "runner-1",
+    role: "member",
+    status: "active",
+    joinedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    leftAt: null,
+    deletedAt: null,
+    ...overrides,
+  };
+}
+
+function runParticipation(overrides = {}) {
+  return {
+    runId: "run-1",
+    runClubId: "club-1",
+    uid: "runner-1",
+    status: "signedUp",
+    createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    signedUpAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    waitlistedAt: null,
+    attendedAt: null,
+    cancelledAt: null,
+    deletedAt: null,
+    genderAtSignup: "woman",
+    paymentId: null,
+    ...overrides,
+  };
+}
+
+function savedRun(overrides = {}) {
+  return {
+    uid: "runner-1",
+    runId: "run-1",
+    savedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    ...overrides,
+  };
+}
+
 function runReviewId(runId, reviewerUserId) {
   return `${runId}~${reviewerUserId}`;
 }
@@ -358,6 +399,107 @@ describe("firestore.rules", () => {
     });
   });
 
+  describe("relationship documents", () => {
+    it("allows active club membership reads but keeps writes callable-owned", async () => {
+      await seed(
+        ["runClubMemberships", "club-1_runner-1"],
+        runClubMembership(),
+      );
+      await seed(
+        ["runClubMemberships", "club-1_runner-2"],
+        runClubMembership({
+          uid: "runner-2",
+          status: "left",
+          leftAt: Timestamp.fromDate(new Date("2026-05-02T10:00:00.000Z")),
+        }),
+      );
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-3"), "runClubMemberships", "club-1_runner-1")),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-2"), "runClubMemberships", "club-1_runner-2")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-3"), "runClubMemberships", "club-1_runner-2")),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "runClubMemberships", "club-1_runner-1"),
+          runClubMembership(),
+        ),
+      );
+    });
+
+    it("allows participants and run hosts to read run participation edges", async () => {
+      await seed(["runClubs", "club-1"], runClub());
+      await seed(["runs", "run-1"], run());
+      await seed(
+        ["runParticipations", "run-1_runner-1"],
+        runParticipation(),
+      );
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1")),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("host-1"), "runParticipations", "run-1_runner-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-3"), "runParticipations", "run-1_runner-1")),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1"),
+          runParticipation(),
+        ),
+      );
+    });
+
+    it("lets users own saved-run edges with deterministic document ids", async () => {
+      await seed(["runs", "run-1"], run());
+
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-1"), "savedRuns", "runner-1_run-1"),
+          {
+            uid: "runner-1",
+            runId: "run-1",
+            savedAt: serverTimestamp(),
+          },
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "savedRuns", "runner-2_run-1"),
+          {
+            uid: "runner-2",
+            runId: "run-1",
+            savedAt: serverTimestamp(),
+          },
+        ),
+      );
+
+      await seed(["savedRuns", "runner-1_run-2"], savedRun({runId: "run-2"}));
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "savedRuns", "runner-1_run-2")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-2"), "savedRuns", "runner-1_run-2")),
+      );
+      await assertSucceeds(
+        deleteDoc(doc(authedDb("runner-1"), "savedRuns", "runner-1_run-2")),
+      );
+      await seed(["savedRuns", "runner-1_run-3"], savedRun({runId: "run-3"}));
+      await assertFails(
+        updateDoc(doc(authedDb("runner-1"), "savedRuns", "runner-1_run-3"), {
+          removedAt: serverTimestamp(),
+        }),
+      );
+    });
+  });
+
   describe("public config", () => {
     it("allows public reads of config/cities and denies other config docs", async () => {
       await seed(["config", "cities"], {
@@ -523,7 +665,13 @@ describe("firestore.rules", () => {
 
       await assertSucceeds(
         setDoc(
-          doc(authedDb("runner-1"), "chats", "match-1", "messages", "message-1"),
+          doc(
+            authedDb("runner-1"),
+            "matches",
+            "match-1",
+            "messages",
+            "message-1",
+          ),
           {
             senderId: "runner-1",
             text: "hello",
@@ -544,7 +692,13 @@ describe("firestore.rules", () => {
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-3"), "chats", "match-1", "messages", "message-1"),
+          doc(
+            authedDb("runner-3"),
+            "matches",
+            "match-1",
+            "messages",
+            "message-1",
+          ),
           {
             senderId: "runner-3",
             text: "hello",
@@ -554,7 +708,13 @@ describe("firestore.rules", () => {
       );
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "chats", "blocked-match", "messages", "message-1"),
+          doc(
+            authedDb("runner-1"),
+            "matches",
+            "blocked-match",
+            "messages",
+            "message-1",
+          ),
           {
             senderId: "runner-1",
             text: "hello",

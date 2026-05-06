@@ -51,7 +51,7 @@ final class RunDetailControllerProvider
 }
 
 String _$runDetailControllerHash() =>
-    r'd5b67bf887b6285325d6dfd9b60b8eeb0c3e0464';
+    r'63047bb5cfc6a7af82efd737a5ff188934beaff4';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

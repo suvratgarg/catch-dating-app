@@ -10,8 +10,9 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
+import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class AttendanceSheetScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final runAsync = ref.watch(watchRunProvider(runId));
+    final attendanceAsync = ref.watch(attendanceSheetViewModelProvider(runId));
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -42,21 +43,25 @@ class AttendanceSheetScreen extends ConsumerWidget {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: runAsync.when(
+      body: attendanceAsync.when(
         loading: () => const CatchLoadingIndicator(),
         error: (e, _) => CatchErrorState.fromError(
           e,
           context: AppErrorContext.run,
-          onRetry: () => ref.invalidate(watchRunProvider(runId)),
+          onRetry: () {
+            ref.invalidate(watchRunProvider(runId));
+            ref.invalidate(watchRunParticipationsForRunProvider(runId));
+            ref.invalidate(attendanceSheetViewModelProvider(runId));
+          },
         ),
-        data: (run) {
-          if (run == null) {
+        data: (viewModel) {
+          if (viewModel == null) {
             return const CatchErrorState(
               title: 'Run not found',
               message: 'This run is no longer available.',
             );
           }
-          return _AttendanceList(run: run);
+          return _AttendanceList(viewModel: viewModel);
         },
       ),
     );
@@ -64,17 +69,16 @@ class AttendanceSheetScreen extends ConsumerWidget {
 }
 
 class _AttendanceList extends ConsumerWidget {
-  const _AttendanceList({required this.run});
+  const _AttendanceList({required this.viewModel});
 
-  final Run run;
+  final AttendanceSheetViewModel viewModel;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final signedUpIds = run.signedUpUserIds;
-    final attendedIds = run.attendedUserIds;
+    final attendeeIds = viewModel.attendeeIds;
     final mutation = ref.watch(RunBookingController.markAttendanceMutation);
 
-    if (signedUpIds.isEmpty) {
+    if (viewModel.isEmpty) {
       return const Center(
         child: CatchEmptyState(
           icon: Icons.group_outlined,
@@ -86,20 +90,16 @@ class _AttendanceList extends ConsumerWidget {
       );
     }
 
-    final profilesAsync = ref.watch(runnerProfilesProvider(signedUpIds));
+    final profilesAsync = ref.watch(runnerProfilesProvider(attendeeIds));
     final profiles = profilesAsync.asData?.value ?? {};
-
-    final attendedCount = signedUpIds
-        .where((id) => attendedIds.contains(id))
-        .length;
 
     return Column(
       children: [
         if (mutation.hasError)
           ErrorBanner(message: mutationErrorMessage(mutation)),
         _AttendanceSummaryHeader(
-          checkedInCount: attendedCount,
-          totalCount: signedUpIds.length,
+          checkedInCount: viewModel.checkedInCount,
+          totalCount: viewModel.totalCount,
         ),
         Expanded(
           child: profilesAsync.isLoading
@@ -111,7 +111,7 @@ class _AttendanceList extends ConsumerWidget {
                     profilesAsync.error!,
                     context: AppErrorContext.run,
                     onRetry: () =>
-                        ref.invalidate(runnerProfilesProvider(signedUpIds)),
+                        ref.invalidate(runnerProfilesProvider(attendeeIds)),
                   ),
                 )
               : ListView.separated(
@@ -121,19 +121,19 @@ class _AttendanceList extends ConsumerWidget {
                     CatchSpacing.s5,
                     CatchSpacing.s6,
                   ),
-                  itemCount: signedUpIds.length,
+                  itemCount: attendeeIds.length,
                   separatorBuilder: (_, _) => const SizedBox(height: 8),
                   itemBuilder: (context, index) {
-                    final uid = signedUpIds[index];
+                    final uid = attendeeIds[index];
                     final profile = profiles[uid];
-                    final isAttended = attendedIds.contains(uid);
+                    final isAttended = viewModel.isAttended(uid);
 
                     return _AttendeeRow(
                       uid: uid,
                       name: profile?.$1 ?? 'Runner',
                       photoUrl: profile?.$2,
                       isAttended: isAttended,
-                      runId: run.id,
+                      runId: viewModel.run.id,
                     );
                   },
                 ),

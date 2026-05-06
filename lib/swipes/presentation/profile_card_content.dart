@@ -11,7 +11,6 @@ class ProfileCardContent {
     required this.attributes,
     required this.lifestyle,
     required this.bio,
-    required this.running,
   });
 
   factory ProfileCardContent.fromProfile(
@@ -72,26 +71,12 @@ class ProfileCardContent {
         (icon: Icons.child_friendly_outlined, text: profile.children!.label),
     ];
 
-    final running = <ProfileCardFact>[
-      if (profile.preferredDistances.isNotEmpty)
-        (
-          icon: Icons.straighten_outlined,
-          text: profile.preferredDistances.map((d) => d.label).join(', '),
-        ),
-      if (profile.runningReasons.isNotEmpty)
-        (
-          icon: Icons.directions_run_outlined,
-          text: profile.runningReasons.map((r) => r.label).join(', '),
-        ),
-    ];
-
     return ProfileCardContent(
       primaryPhotoUrl: photos.firstOrNull,
       additionalPhotoUrls: photos.skip(1).toList(growable: false),
       attributes: attributes,
       lifestyle: lifestyle,
       bio: profile.bio.trim(),
-      running: running,
     );
   }
 
@@ -100,10 +85,8 @@ class ProfileCardContent {
   final List<ProfileCardFact> attributes;
   final List<ProfileCardFact> lifestyle;
   final String bio;
-  final List<ProfileCardFact> running;
 
   bool get hasBio => bio.isNotEmpty;
-  bool get hasRunning => running.isNotEmpty;
 
   static String _formatDistance(double km) {
     if (km < 1.0) {

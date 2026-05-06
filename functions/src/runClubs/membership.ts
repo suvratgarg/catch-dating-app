@@ -7,6 +7,11 @@ import {requireAuth} from "../shared/auth";
 import {RunClubDoc, UserProfileDoc} from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallable} from "../shared/validation";
+import {
+  activeRunClubMembershipPatch,
+  leftRunClubMembershipPatch,
+  runClubMembershipId,
+} from "../shared/relationshipDocuments";
 
 const RunClubMembershipSchema = z.object({
   clubId: z.string().min(1),
@@ -50,6 +55,9 @@ export async function joinRunClubHandler(
     const clubRef = db.collection("runClubs").doc(clubId);
     const userRef = db.collection("users").doc(userId);
     const deletedUserRef = db.collection("deletedUsers").doc(userId);
+    const membershipRef = db
+      .collection("runClubMemberships")
+      .doc(runClubMembershipId(clubId, userId));
 
     const [clubSnap, userSnap, deletedUserSnap] = await Promise.all([
       tx.get(clubRef),
@@ -73,6 +81,11 @@ export async function joinRunClubHandler(
     tx.set(userRef, {
       joinedRunClubIds: deps.arrayUnion(clubId),
     }, {merge: true});
+    tx.set(membershipRef, activeRunClubMembershipPatch({
+      clubId,
+      uid: userId,
+      role: club.hostUserId === userId ? "host" : "member",
+    }), {merge: true});
   });
 
   return {joined: true};
@@ -98,6 +111,9 @@ export async function leaveRunClubHandler(
     const clubRef = db.collection("runClubs").doc(clubId);
     const userRef = db.collection("users").doc(userId);
     const deletedUserRef = db.collection("deletedUsers").doc(userId);
+    const membershipRef = db
+      .collection("runClubMemberships")
+      .doc(runClubMembershipId(clubId, userId));
 
     const [clubSnap, userSnap, deletedUserSnap] = await Promise.all([
       tx.get(clubRef),
@@ -128,6 +144,7 @@ export async function leaveRunClubHandler(
     tx.update(userRef, {
       joinedRunClubIds: deps.arrayRemove(clubId),
     });
+    tx.set(membershipRef, leftRunClubMembershipPatch(), {merge: true});
   });
 
   return {joined: false};

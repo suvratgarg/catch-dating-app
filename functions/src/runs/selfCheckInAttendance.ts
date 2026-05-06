@@ -31,6 +31,10 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {z} from "zod";
 import {RunDoc} from "../shared/firestore";
 import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  runParticipationId,
+  runParticipationPatch,
+} from "../shared/relationshipDocuments";
 
 const SelfCheckInSchema = z.object({
   runId: z.string(),
@@ -110,10 +114,21 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
   }
 
   const run = runSnap.data() as RunDoc;
+  const participationRef = db
+    .collection("runParticipations")
+    .doc(runParticipationId(runId, userId));
+  const participationSnap = await participationRef.get();
+  const existingParticipation = participationSnap.exists ?
+    participationSnap.data() as {status?: string} :
+    null;
 
   // ── 1. Must be signed up ────────────────────────────────────────────────
 
-  if (!run.signedUpUserIds.includes(userId)) {
+  if (
+    !run.signedUpUserIds.includes(userId) &&
+    existingParticipation?.status !== "signedUp" &&
+    existingParticipation?.status !== "attended"
+  ) {
     throw new HttpsError(
       "failed-precondition",
       "You must be signed up for this run to check in."
@@ -122,7 +137,10 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
 
   // ── 2. Idempotent — already checked in ───────────────────────────────────
 
-  if ((run.attendedUserIds ?? []).includes(userId)) {
+  if (
+    existingParticipation?.status === "attended" ||
+    (run.attendedUserIds ?? []).includes(userId)
+  ) {
     return {userId, attended: true};
   }
 
@@ -184,9 +202,19 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
 
   // ── 5. Mark attendance ──────────────────────────────────────────────────
 
-  await runRef.update({
+  const batch = db.batch();
+  batch.update(runRef, {
     attendedUserIds: admin.firestore.FieldValue.arrayUnion(userId),
+    checkedInCount: admin.firestore.FieldValue.increment(1),
   });
+  batch.set(participationRef, runParticipationPatch({
+    exists: participationSnap.exists,
+    runId,
+    runClubId: run.runClubId,
+    uid: userId,
+    status: "attended",
+  }), {merge: true});
+  await batch.commit();
 
   logger.info(
     `[attendance] Self-check-in: user ${userId} → run ${runId}`

@@ -87,7 +87,7 @@ void main() {
       final now = DateTime(2026, 4, 23, 8, 55);
       final run = buildRun(
         id: 'check-in-run',
-        signedUpUserIds: const ['runner-1'],
+        signedUpUserIds: const [],
         startTime: DateTime(2026, 4, 23, 9),
       );
 

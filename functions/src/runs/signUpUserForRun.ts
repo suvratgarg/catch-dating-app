@@ -4,6 +4,10 @@ import {UserProfileDoc, RunDoc} from "../shared/firestore";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {computeAge} from "../shared/dates";
 import {requireDoc} from "../shared/validation";
+import {
+  runParticipationId,
+  runParticipationPatch,
+} from "../shared/relationshipDocuments";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid runs)
@@ -13,7 +17,7 @@ import {requireDoc} from "../shared/validation";
  *   1. Read the run and the user's profile.
  *   2. Enforce eligibility constraints (age range, gender caps).
  *   3. Check overall capacity.
- *   4. Add the user to signedUpUserIds and increment genderCounts.
+ *   4. Add the user to signedUpUserIds and increment count projections.
  *   5. Remove the user from waitlistUserIds if present.
  *
  * Enforces blocks against signed-up and attended participants inside this
@@ -24,20 +28,26 @@ import {requireDoc} from "../shared/validation";
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
  * @param {string} runId Run to sign the user up for.
  * @param {string} userId User being signed up.
+ * @param {string=} paymentId Optional payment document linked to the signup.
  * @return {Promise<void>} Resolves when the transaction completes.
  */
 export async function signUpUserForRun(
   db: FirebaseFirestore.Firestore,
   runId: string,
-  userId: string
+  userId: string,
+  paymentId?: string
 ): Promise<void> {
   const runRef = db.collection("runs").doc(runId);
   const userRef = db.collection("users").doc(userId);
+  const participationRef = db
+    .collection("runParticipations")
+    .doc(runParticipationId(runId, userId));
 
   await db.runTransaction(async (tx) => {
-    const [runSnap, userSnap] = await Promise.all([
+    const [runSnap, userSnap, participationSnap] = await Promise.all([
       tx.get(runRef),
       tx.get(userRef),
+      tx.get(participationRef),
     ]);
 
     if (!runSnap.exists) {
@@ -49,9 +59,16 @@ export async function signUpUserForRun(
 
     const run = requireDoc<RunDoc>(runSnap, "RunDoc");
     const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
+    const existingParticipation = participationSnap.exists ?
+      participationSnap.data() as {status?: string} :
+      null;
 
     // Idempotent — user already signed up.
-    if (run.signedUpUserIds.includes(userId)) {
+    if (
+      run.signedUpUserIds.includes(userId) ||
+      existingParticipation?.status === "signedUp" ||
+      existingParticipation?.status === "attended"
+    ) {
       return;
     }
 
@@ -103,18 +120,36 @@ export async function signUpUserForRun(
     }
 
     // Overall capacity check.
-    if (run.signedUpUserIds.length >= run.capacityLimit) {
+    const currentBookedCount = run.bookedCount ?? run.signedUpUserIds.length;
+    if (currentBookedCount >= run.capacityLimit) {
       throw new HttpsError(
         "failed-precondition",
         "This run is now full."
       );
     }
 
-    // Atomic write.
-    tx.update(runRef, {
+    const wasWaitlisted =
+      (run.waitlistUserIds ?? []).includes(userId) ||
+      existingParticipation?.status === "waitlisted";
+    const runUpdate: Record<string, unknown> = {
       signedUpUserIds: admin.firestore.FieldValue.arrayUnion(userId),
       waitlistUserIds: admin.firestore.FieldValue.arrayRemove(userId),
+      bookedCount: admin.firestore.FieldValue.increment(1),
       [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
-    });
+    };
+    if (wasWaitlisted) {
+      runUpdate.waitlistedCount = admin.firestore.FieldValue.increment(-1);
+    }
+
+    tx.update(runRef, runUpdate);
+    tx.set(participationRef, runParticipationPatch({
+      exists: participationSnap.exists,
+      runId,
+      runClubId: run.runClubId,
+      uid: userId,
+      status: "signedUp",
+      genderAtSignup: gender,
+      paymentId,
+    }), {merge: true});
   });
 }

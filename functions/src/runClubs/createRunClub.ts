@@ -7,6 +7,10 @@ import {requireAuth} from "../shared/auth";
 import {UserProfileDoc} from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallable} from "../shared/validation";
+import {
+  activeRunClubMembershipPatch,
+  runClubMembershipId,
+} from "../shared/relationshipDocuments";
 
 const IndianCitySchema = z.enum([
   "mumbai",
@@ -69,6 +73,9 @@ export async function createRunClubHandler(
   const clubRef = data.clubId ?
     db.collection("runClubs").doc(data.clubId) :
     db.collection("runClubs").doc();
+  const membershipRef = db
+    .collection("runClubMemberships")
+    .doc(runClubMembershipId(clubRef.id, hostUserId));
   const userRef = db.collection("users").doc(hostUserId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
 
@@ -124,6 +131,11 @@ export async function createRunClubHandler(
     tx.update(userRef, {
       joinedRunClubIds: deps.arrayUnion(clubRef.id),
     });
+    tx.set(membershipRef, activeRunClubMembershipPatch({
+      clubId: clubRef.id,
+      uid: hostUserId,
+      role: "host",
+    }), {merge: true});
   });
 
   return {clubId: clubRef.id};

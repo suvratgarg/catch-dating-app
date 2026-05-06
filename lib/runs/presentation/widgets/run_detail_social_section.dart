@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -16,6 +17,7 @@ class RunDetailSocialSection extends StatelessWidget {
     required this.reviews,
     required this.userProfile,
     required this.isAuthenticated,
+    required this.participation,
   });
 
   final Run run;
@@ -23,6 +25,7 @@ class RunDetailSocialSection extends StatelessWidget {
   final List<Review> reviews;
   final UserProfile? userProfile;
   final bool isAuthenticated;
+  final RunParticipation? participation;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +50,8 @@ class RunDetailSocialSection extends StatelessWidget {
             reviews: reviews,
             currentUid: profile.uid,
             userProfile: profile,
-            hasAttended: run.hasAttended(profile.uid),
+            hasAttended:
+                participation?.status == RunParticipationStatus.attended,
           ),
       ],
     );

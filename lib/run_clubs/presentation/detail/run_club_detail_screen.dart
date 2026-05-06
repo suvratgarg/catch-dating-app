@@ -4,7 +4,9 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_detail_body.dart';
@@ -32,6 +34,12 @@ class RunClubDetailScreen extends ConsumerWidget {
         .watch(watchUserProfileProvider)
         .asData
         ?.value;
+    final currentMembership = currentUid == null
+        ? null
+        : ref
+              .watch(watchRunClubMembershipProvider(runClubId, currentUid))
+              .asData
+              ?.value;
 
     final joinMutation = ref.watch(RunClubMembershipController.joinMutation);
     final leaveMutation = ref.watch(RunClubMembershipController.leaveMutation);
@@ -74,7 +82,9 @@ class RunClubDetailScreen extends ConsumerWidget {
             userProfile: currentUserProfile,
             uid: currentUid,
             isHost: placeholderAuth && currentUid == initialRunClub!.hostUserId,
-            isMember: placeholderAuth && initialRunClub!.hasMember(currentUid),
+            isMember:
+                placeholderAuth &&
+                currentMembership?.status == RunClubMembershipStatus.active,
             isMutating: joinMutation.isPending || leaveMutation.isPending,
             isAuthenticated: placeholderAuth,
           ),

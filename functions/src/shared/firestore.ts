@@ -100,6 +100,17 @@ export type Religion =
   | "other"
   | "nonReligious";
 
+export type RunClubMembershipRole = "host" | "member";
+
+export type RunClubMembershipStatus = "active" | "left" | "deleted";
+
+export type RunParticipationStatus =
+  | "signedUp"
+  | "waitlisted"
+  | "attended"
+  | "cancelled"
+  | "deleted";
+
 export type RunReason =
   | "fitness"
   | "community"
@@ -240,6 +251,21 @@ export interface RunClubDoc {
 }
 
 /**
+ * /runClubMemberships/{membershipId}
+ * Dart: lib/run_clubs/domain/run_club_membership.dart — RunClubMembership
+ * Note: "id" is the document ID, not stored in the document data.
+ */
+export interface RunClubMembershipDoc {
+  clubId: string;
+  uid: string;
+  role: RunClubMembershipRole;
+  status: RunClubMembershipStatus;
+  joinedAt: FirebaseFirestore.Timestamp;
+  leftAt?: FirebaseFirestore.Timestamp | null;
+  deletedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
  * Dart: lib/runs/domain/run_constraints.dart — RunConstraints
  */
 export interface RunConstraints {
@@ -271,6 +297,9 @@ export interface RunDoc {
   description: string;
   /** in paise (INR subunit). 0 = free run */
   priceInPaise: number;
+  bookedCount?: number | null;
+  checkedInCount?: number | null;
+  waitlistedCount?: number | null;
   signedUpUserIds: string[];
   attendedUserIds: string[];
   waitlistUserIds: string[];
@@ -280,6 +309,39 @@ export interface RunDoc {
    * Denormalized counts maintained atomically by Cloud Functions.
    */
   genderCounts: Record<string, number>;
+}
+
+/**
+ * /runParticipations/{participationId}
+ * Dart: lib/runs/domain/run_participation.dart — RunParticipation
+ * Note: "id" is the document ID, not stored in the document data.
+ */
+export interface RunParticipationDoc {
+  runId: string;
+  runClubId: string;
+  uid: string;
+  status: RunParticipationStatus;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+  signedUpAt?: FirebaseFirestore.Timestamp | null;
+  waitlistedAt?: FirebaseFirestore.Timestamp | null;
+  attendedAt?: FirebaseFirestore.Timestamp | null;
+  cancelledAt?: FirebaseFirestore.Timestamp | null;
+  deletedAt?: FirebaseFirestore.Timestamp | null;
+  genderAtSignup?: Gender | null;
+  paymentId?: string | null;
+}
+
+/**
+ * /savedRuns/{savedRunId}
+ * Dart: lib/runs/domain/saved_run.dart — SavedRun
+ * Note: "id" is the document ID, not stored in the document data.
+ */
+export interface SavedRunDoc {
+  uid: string;
+  runId: string;
+  savedAt: FirebaseFirestore.Timestamp;
+  removedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -336,7 +398,7 @@ export interface MatchDoc {
 }
 
 /**
- * /chats/{matchId}/messages/{messageId}
+ * /matches/{matchId}/messages/{messageId}
  * Dart: lib/chats/domain/chat_message.dart — ChatMessage
  * Note: "id" is the document ID, not stored in the document data.
  */

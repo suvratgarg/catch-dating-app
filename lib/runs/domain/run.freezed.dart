@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Run {
 
-@JsonKey(includeToJson: false) String get id; String get runClubId;@TimestampConverter() DateTime get startTime;@TimestampConverter() DateTime get endTime; String get meetingPoint; double? get startingPointLat; double? get startingPointLng; String? get locationDetails; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise; List<String> get signedUpUserIds; List<String> get attendedUserIds; List<String> get waitlistUserIds; RunConstraints get constraints;// Denormalized gender counts maintained atomically by Cloud Functions.
+@JsonKey(includeToJson: false) String get id; String get runClubId;@TimestampConverter() DateTime get startTime;@TimestampConverter() DateTime get endTime; String get meetingPoint; double? get startingPointLat; double? get startingPointLng; String? get locationDetails; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise;@JsonKey(includeIfNull: false) int? get bookedCount;@JsonKey(includeIfNull: false) int? get checkedInCount;@JsonKey(includeIfNull: false) int? get waitlistedCount; List<String> get signedUpUserIds; List<String> get attendedUserIds; List<String> get waitlistUserIds; RunConstraints get constraints;// Denormalized gender counts maintained atomically by Cloud Functions.
 // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
  Map<String, int> get genderCounts;
 /// Create a copy of Run
@@ -30,16 +30,16 @@ $RunCopyWith<Run> get copyWith => _$RunCopyWithImpl<Run>(this as Run, _$identity
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Run&&(identical(other.id, id) || other.id == id)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&const DeepCollectionEquality().equals(other.signedUpUserIds, signedUpUserIds)&&const DeepCollectionEquality().equals(other.attendedUserIds, attendedUserIds)&&const DeepCollectionEquality().equals(other.waitlistUserIds, waitlistUserIds)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&const DeepCollectionEquality().equals(other.genderCounts, genderCounts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Run&&(identical(other.id, id) || other.id == id)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&const DeepCollectionEquality().equals(other.signedUpUserIds, signedUpUserIds)&&const DeepCollectionEquality().equals(other.attendedUserIds, attendedUserIds)&&const DeepCollectionEquality().equals(other.waitlistUserIds, waitlistUserIds)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&const DeepCollectionEquality().equals(other.genderCounts, genderCounts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,runClubId,startTime,endTime,meetingPoint,startingPointLat,startingPointLng,locationDetails,distanceKm,pace,capacityLimit,description,priceInPaise,const DeepCollectionEquality().hash(signedUpUserIds),const DeepCollectionEquality().hash(attendedUserIds),const DeepCollectionEquality().hash(waitlistUserIds),constraints,const DeepCollectionEquality().hash(genderCounts));
+int get hashCode => Object.hashAll([runtimeType,id,runClubId,startTime,endTime,meetingPoint,startingPointLat,startingPointLng,locationDetails,distanceKm,pace,capacityLimit,description,priceInPaise,bookedCount,checkedInCount,waitlistedCount,const DeepCollectionEquality().hash(signedUpUserIds),const DeepCollectionEquality().hash(attendedUserIds),const DeepCollectionEquality().hash(waitlistUserIds),constraints,const DeepCollectionEquality().hash(genderCounts)]);
 
 @override
 String toString() {
-  return 'Run(id: $id, runClubId: $runClubId, startTime: $startTime, endTime: $endTime, meetingPoint: $meetingPoint, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, signedUpUserIds: $signedUpUserIds, attendedUserIds: $attendedUserIds, waitlistUserIds: $waitlistUserIds, constraints: $constraints, genderCounts: $genderCounts)';
+  return 'Run(id: $id, runClubId: $runClubId, startTime: $startTime, endTime: $endTime, meetingPoint: $meetingPoint, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, signedUpUserIds: $signedUpUserIds, attendedUserIds: $attendedUserIds, waitlistUserIds: $waitlistUserIds, constraints: $constraints, genderCounts: $genderCounts)';
 }
 
 
@@ -50,7 +50,7 @@ abstract mixin class $RunCopyWith<$Res>  {
   factory $RunCopyWith(Run value, $Res Function(Run) _then) = _$RunCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String runClubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, List<String> signedUpUserIds, List<String> attendedUserIds, List<String> waitlistUserIds, RunConstraints constraints, Map<String, int> genderCounts
+@JsonKey(includeToJson: false) String id, String runClubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, List<String> signedUpUserIds, List<String> attendedUserIds, List<String> waitlistUserIds, RunConstraints constraints, Map<String, int> genderCounts
 });
 
 
@@ -67,7 +67,7 @@ class _$RunCopyWithImpl<$Res>
 
 /// Create a copy of Run
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? runClubId = null,Object? startTime = null,Object? endTime = null,Object? meetingPoint = null,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? signedUpUserIds = null,Object? attendedUserIds = null,Object? waitlistUserIds = null,Object? constraints = null,Object? genderCounts = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? runClubId = null,Object? startTime = null,Object? endTime = null,Object? meetingPoint = null,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? signedUpUserIds = null,Object? attendedUserIds = null,Object? waitlistUserIds = null,Object? constraints = null,Object? genderCounts = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,runClubId: null == runClubId ? _self.runClubId : runClubId // ignore: cast_nullable_to_non_nullable
@@ -82,7 +82,10 @@ as double,pace: null == pace ? _self.pace : pace // ignore: cast_nullable_to_non
 as PaceLevel,capacityLimit: null == capacityLimit ? _self.capacityLimit : capacityLimit // ignore: cast_nullable_to_non_nullable
 as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,priceInPaise: null == priceInPaise ? _self.priceInPaise : priceInPaise // ignore: cast_nullable_to_non_nullable
-as int,signedUpUserIds: null == signedUpUserIds ? _self.signedUpUserIds : signedUpUserIds // ignore: cast_nullable_to_non_nullable
+as int,bookedCount: freezed == bookedCount ? _self.bookedCount : bookedCount // ignore: cast_nullable_to_non_nullable
+as int?,checkedInCount: freezed == checkedInCount ? _self.checkedInCount : checkedInCount // ignore: cast_nullable_to_non_nullable
+as int?,waitlistedCount: freezed == waitlistedCount ? _self.waitlistedCount : waitlistedCount // ignore: cast_nullable_to_non_nullable
+as int?,signedUpUserIds: null == signedUpUserIds ? _self.signedUpUserIds : signedUpUserIds // ignore: cast_nullable_to_non_nullable
 as List<String>,attendedUserIds: null == attendedUserIds ? _self.attendedUserIds : attendedUserIds // ignore: cast_nullable_to_non_nullable
 as List<String>,waitlistUserIds: null == waitlistUserIds ? _self.waitlistUserIds : waitlistUserIds // ignore: cast_nullable_to_non_nullable
 as List<String>,constraints: null == constraints ? _self.constraints : constraints // ignore: cast_nullable_to_non_nullable
@@ -181,10 +184,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Run() when $default != null:
-return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
+return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
   return orElse();
 
 }
@@ -202,10 +205,10 @@ return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.mee
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)  $default,) {final _that = this;
 switch (_that) {
 case _Run():
-return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
+return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -222,10 +225,10 @@ return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.mee
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String runClubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  List<String> signedUpUserIds,  List<String> attendedUserIds,  List<String> waitlistUserIds,  RunConstraints constraints,  Map<String, int> genderCounts)?  $default,) {final _that = this;
 switch (_that) {
 case _Run() when $default != null:
-return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
+return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.signedUpUserIds,_that.attendedUserIds,_that.waitlistUserIds,_that.constraints,_that.genderCounts);case _:
   return null;
 
 }
@@ -237,7 +240,7 @@ return $default(_that.id,_that.runClubId,_that.startTime,_that.endTime,_that.mee
 @JsonSerializable()
 
 class _Run extends Run {
-  const _Run({@JsonKey(includeToJson: false) required this.id, required this.runClubId, @TimestampConverter() required this.startTime, @TimestampConverter() required this.endTime, required this.meetingPoint, this.startingPointLat, this.startingPointLng, this.locationDetails, required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, final  List<String> signedUpUserIds = const [], final  List<String> attendedUserIds = const [], final  List<String> waitlistUserIds = const [], this.constraints = const RunConstraints(), final  Map<String, int> genderCounts = const {}}): _signedUpUserIds = signedUpUserIds,_attendedUserIds = attendedUserIds,_waitlistUserIds = waitlistUserIds,_genderCounts = genderCounts,super._();
+  const _Run({@JsonKey(includeToJson: false) required this.id, required this.runClubId, @TimestampConverter() required this.startTime, @TimestampConverter() required this.endTime, required this.meetingPoint, this.startingPointLat, this.startingPointLng, this.locationDetails, required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, @JsonKey(includeIfNull: false) this.bookedCount, @JsonKey(includeIfNull: false) this.checkedInCount, @JsonKey(includeIfNull: false) this.waitlistedCount, final  List<String> signedUpUserIds = const [], final  List<String> attendedUserIds = const [], final  List<String> waitlistUserIds = const [], this.constraints = const RunConstraints(), final  Map<String, int> genderCounts = const {}}): _signedUpUserIds = signedUpUserIds,_attendedUserIds = attendedUserIds,_waitlistUserIds = waitlistUserIds,_genderCounts = genderCounts,super._();
   factory _Run.fromJson(Map<String, dynamic> json) => _$RunFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -253,6 +256,9 @@ class _Run extends Run {
 @override final  int capacityLimit;
 @override final  String description;
 @override final  int priceInPaise;
+@override@JsonKey(includeIfNull: false) final  int? bookedCount;
+@override@JsonKey(includeIfNull: false) final  int? checkedInCount;
+@override@JsonKey(includeIfNull: false) final  int? waitlistedCount;
  final  List<String> _signedUpUserIds;
 @override@JsonKey() List<String> get signedUpUserIds {
   if (_signedUpUserIds is EqualUnmodifiableListView) return _signedUpUserIds;
@@ -300,16 +306,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Run&&(identical(other.id, id) || other.id == id)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&const DeepCollectionEquality().equals(other._signedUpUserIds, _signedUpUserIds)&&const DeepCollectionEquality().equals(other._attendedUserIds, _attendedUserIds)&&const DeepCollectionEquality().equals(other._waitlistUserIds, _waitlistUserIds)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&const DeepCollectionEquality().equals(other._genderCounts, _genderCounts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Run&&(identical(other.id, id) || other.id == id)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&const DeepCollectionEquality().equals(other._signedUpUserIds, _signedUpUserIds)&&const DeepCollectionEquality().equals(other._attendedUserIds, _attendedUserIds)&&const DeepCollectionEquality().equals(other._waitlistUserIds, _waitlistUserIds)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&const DeepCollectionEquality().equals(other._genderCounts, _genderCounts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,runClubId,startTime,endTime,meetingPoint,startingPointLat,startingPointLng,locationDetails,distanceKm,pace,capacityLimit,description,priceInPaise,const DeepCollectionEquality().hash(_signedUpUserIds),const DeepCollectionEquality().hash(_attendedUserIds),const DeepCollectionEquality().hash(_waitlistUserIds),constraints,const DeepCollectionEquality().hash(_genderCounts));
+int get hashCode => Object.hashAll([runtimeType,id,runClubId,startTime,endTime,meetingPoint,startingPointLat,startingPointLng,locationDetails,distanceKm,pace,capacityLimit,description,priceInPaise,bookedCount,checkedInCount,waitlistedCount,const DeepCollectionEquality().hash(_signedUpUserIds),const DeepCollectionEquality().hash(_attendedUserIds),const DeepCollectionEquality().hash(_waitlistUserIds),constraints,const DeepCollectionEquality().hash(_genderCounts)]);
 
 @override
 String toString() {
-  return 'Run(id: $id, runClubId: $runClubId, startTime: $startTime, endTime: $endTime, meetingPoint: $meetingPoint, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, signedUpUserIds: $signedUpUserIds, attendedUserIds: $attendedUserIds, waitlistUserIds: $waitlistUserIds, constraints: $constraints, genderCounts: $genderCounts)';
+  return 'Run(id: $id, runClubId: $runClubId, startTime: $startTime, endTime: $endTime, meetingPoint: $meetingPoint, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, signedUpUserIds: $signedUpUserIds, attendedUserIds: $attendedUserIds, waitlistUserIds: $waitlistUserIds, constraints: $constraints, genderCounts: $genderCounts)';
 }
 
 
@@ -320,7 +326,7 @@ abstract mixin class _$RunCopyWith<$Res> implements $RunCopyWith<$Res> {
   factory _$RunCopyWith(_Run value, $Res Function(_Run) _then) = __$RunCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String runClubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise, List<String> signedUpUserIds, List<String> attendedUserIds, List<String> waitlistUserIds, RunConstraints constraints, Map<String, int> genderCounts
+@JsonKey(includeToJson: false) String id, String runClubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, List<String> signedUpUserIds, List<String> attendedUserIds, List<String> waitlistUserIds, RunConstraints constraints, Map<String, int> genderCounts
 });
 
 
@@ -337,7 +343,7 @@ class __$RunCopyWithImpl<$Res>
 
 /// Create a copy of Run
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? runClubId = null,Object? startTime = null,Object? endTime = null,Object? meetingPoint = null,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? signedUpUserIds = null,Object? attendedUserIds = null,Object? waitlistUserIds = null,Object? constraints = null,Object? genderCounts = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? runClubId = null,Object? startTime = null,Object? endTime = null,Object? meetingPoint = null,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? signedUpUserIds = null,Object? attendedUserIds = null,Object? waitlistUserIds = null,Object? constraints = null,Object? genderCounts = null,}) {
   return _then(_Run(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,runClubId: null == runClubId ? _self.runClubId : runClubId // ignore: cast_nullable_to_non_nullable
@@ -352,7 +358,10 @@ as double,pace: null == pace ? _self.pace : pace // ignore: cast_nullable_to_non
 as PaceLevel,capacityLimit: null == capacityLimit ? _self.capacityLimit : capacityLimit // ignore: cast_nullable_to_non_nullable
 as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,priceInPaise: null == priceInPaise ? _self.priceInPaise : priceInPaise // ignore: cast_nullable_to_non_nullable
-as int,signedUpUserIds: null == signedUpUserIds ? _self._signedUpUserIds : signedUpUserIds // ignore: cast_nullable_to_non_nullable
+as int,bookedCount: freezed == bookedCount ? _self.bookedCount : bookedCount // ignore: cast_nullable_to_non_nullable
+as int?,checkedInCount: freezed == checkedInCount ? _self.checkedInCount : checkedInCount // ignore: cast_nullable_to_non_nullable
+as int?,waitlistedCount: freezed == waitlistedCount ? _self.waitlistedCount : waitlistedCount // ignore: cast_nullable_to_non_nullable
+as int?,signedUpUserIds: null == signedUpUserIds ? _self._signedUpUserIds : signedUpUserIds // ignore: cast_nullable_to_non_nullable
 as List<String>,attendedUserIds: null == attendedUserIds ? _self._attendedUserIds : attendedUserIds // ignore: cast_nullable_to_non_nullable
 as List<String>,waitlistUserIds: null == waitlistUserIds ? _self._waitlistUserIds : waitlistUserIds // ignore: cast_nullable_to_non_nullable
 as List<String>,constraints: null == constraints ? _self.constraints : constraints // ignore: cast_nullable_to_non_nullable
