@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/detail_row.dart';
@@ -29,7 +30,11 @@ class PaymentHistoryScreen extends ConsumerWidget {
       appBar: const CatchTopBar(title: 'Payment history'),
       body: uidAsync.when(
         loading: () => const CatchLoadingIndicator(),
-        error: (e, _) => CatchErrorText(e),
+        error: (e, _) => CatchErrorState.fromError(
+          e,
+          context: AppErrorContext.payments,
+          onRetry: () => ref.invalidate(uidProvider),
+        ),
         data: (uid) {
           if (uid == null) {
             return const Center(
@@ -60,7 +65,11 @@ class _PaymentList extends ConsumerWidget {
 
     return paymentsAsync.when(
       loading: () => const CatchLoadingIndicator(),
-      error: (e, _) => CatchErrorText(e),
+      error: (e, _) => CatchErrorState.fromError(
+        e,
+        context: AppErrorContext.payments,
+        onRetry: () => ref.invalidate(watchPaymentsForUserProvider(userId)),
+      ),
       data: (payments) {
         if (payments.isEmpty) {
           return const Center(

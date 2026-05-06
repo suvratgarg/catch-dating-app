@@ -1,6 +1,7 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -44,9 +45,17 @@ class RunClubsList extends ConsumerWidget {
           child: CatchSkeletonList(count: 3),
         ),
       ),
-      AsyncError(:final error) => SliverFillRemaining(
-        hasScrollBody: false,
-        child: CatchErrorText(error),
+      AsyncError(:final error) => CatchSliverErrorState.fromError(
+        error,
+        context: AppErrorContext.club,
+        onRetry: () {
+          ref.invalidate(runClubsListViewModelProvider);
+          ref.invalidate(
+            watchRunClubsByLocationProvider(
+              IndianCity.fromName(city.name) ?? IndianCity.mumbai,
+            ),
+          );
+        },
       ),
       AsyncData(:final value) =>
         value.isEmpty

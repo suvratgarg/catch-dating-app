@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -84,8 +85,17 @@ class RunClubDetailScreen extends ConsumerWidget {
     return Scaffold(
       body: vmAsync.when(
         loading: () => const CatchLoadingIndicator(),
-        error: (error, _) => CatchErrorText(error),
-        data: (_) => const Center(child: Text('Run club not found.')),
+        error: (error, _) => CatchErrorState.fromError(
+          error,
+          context: AppErrorContext.club,
+          onRetry: () =>
+              ref.invalidate(runClubDetailViewModelProvider(runClubId)),
+        ),
+        data: (_) => const CatchErrorState(
+          title: 'Run club not found',
+          message: 'This run club is no longer available.',
+          icon: Icons.groups_outlined,
+        ),
       ),
     );
   }

@@ -61,7 +61,7 @@ class EmptyHeroCard extends StatelessWidget {
                 size: CatchButtonSize.lg,
                 fullWidth: true,
                 backgroundColor: Colors.white,
-                foregroundColor: t.ink,
+                foregroundColor: CatchTokens.sunsetLight.ink,
                 borderColor: Colors.transparent,
               ),
             ],

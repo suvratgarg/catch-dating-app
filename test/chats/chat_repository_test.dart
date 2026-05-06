@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/chats/data/chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -121,6 +123,53 @@ void main() {
       expect(messages, [message]);
     },
   );
+
+  test(
+    'watchChatMessagesProvider auto-disposes route listeners when unwatched',
+    () async {
+      final message = _buildMessage();
+      final cancelCompleter = Completer<void>();
+      final messagesController = StreamController<List<ChatMessage>>(
+        onCancel: () {
+          if (!cancelCompleter.isCompleted) cancelCompleter.complete();
+        },
+      );
+      addTearDown(() async {
+        if (!cancelCompleter.isCompleted) await messagesController.close();
+      });
+
+      final container = ProviderContainer(
+        overrides: [
+          chatRepositoryProvider.overrideWithValue(
+            _LifecycleChatRepository(messagesController.stream),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final provider = watchChatMessagesProvider('match-1');
+      final subscription = container.listen(provider, (_, _) {});
+
+      messagesController.add([message]);
+      await container.pump();
+      expect(subscription.read().value, [message]);
+
+      subscription.close();
+      await container.pump();
+
+      await expectLater(cancelCompleter.future, completes);
+    },
+  );
+}
+
+class _LifecycleChatRepository extends Fake implements ChatRepository {
+  _LifecycleChatRepository(this.messagesStream);
+
+  final Stream<List<ChatMessage>> messagesStream;
+
+  @override
+  Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
+      messagesStream;
 }
 
 Future<void> _seedMessage(

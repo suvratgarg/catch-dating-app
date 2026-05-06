@@ -12,6 +12,7 @@ import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_error_message.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
+import 'package:catch_dating_app/runs/presentation/run_joined_celebration_screen.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -84,11 +85,32 @@ class RunDetailCta extends ConsumerWidget {
                       final data = await tx
                           .get(runBookingControllerProvider.notifier)
                           .book(run: run, user: userProfile);
-                      if (data != null && context.mounted) {
+                      if (!context.mounted) return;
+                      if (data != null) {
                         unawaited(
                           GoRouter.of(context).pushNamed(
                             Routes.paymentConfirmationScreen.name,
                             extra: data,
+                          ),
+                        );
+                      } else {
+                        unawaited(
+                          Navigator.of(context).push(
+                            MaterialPageRoute<void>(
+                              fullscreenDialog: true,
+                              builder: (routeContext) =>
+                                  RunJoinedCelebrationScreen(
+                                    run: run,
+                                    onViewRun: () =>
+                                        Navigator.of(routeContext).pop(),
+                                    onBackHome: () {
+                                      Navigator.of(routeContext).pop();
+                                      GoRouter.of(
+                                        context,
+                                      ).goNamed(Routes.dashboardScreen.name);
+                                    },
+                                  ),
+                            ),
                           ),
                         );
                       }

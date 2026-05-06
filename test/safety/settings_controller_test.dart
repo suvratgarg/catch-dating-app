@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_controller.dart';
@@ -78,6 +80,47 @@ void main() {
       expect(safetyRepository.requestDeletionCallCount, 1);
     },
   );
+
+  test('watchBlockedUsersProvider auto-disposes settings listeners', () async {
+    final blockedUsers = [
+      BlockedUser(
+        uid: 'blocked-1',
+        source: 'settings',
+        createdAt: DateTime(2026, 5, 6),
+      ),
+    ];
+    final cancelCompleter = Completer<void>();
+    final blockedUsersController = StreamController<List<BlockedUser>>(
+      onCancel: () {
+        if (!cancelCompleter.isCompleted) cancelCompleter.complete();
+      },
+    );
+    addTearDown(() async {
+      if (!cancelCompleter.isCompleted) await blockedUsersController.close();
+    });
+    final safetyRepository = _FakeSafetyRepository(
+      blockedUsersStream: blockedUsersController.stream,
+    );
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        safetyRepositoryProvider.overrideWith((ref) => safetyRepository),
+      ],
+    );
+    addTearDown(container.dispose);
+    await _primeUidProvider(container);
+
+    final subscription = container.listen(watchBlockedUsersProvider, (_, _) {});
+
+    blockedUsersController.add(blockedUsers);
+    await container.pump();
+    expect(subscription.read().value, blockedUsers);
+
+    subscription.close();
+    await container.pump();
+
+    await expectLater(cancelCompleter.future, completes);
+  });
 }
 
 class _SettingsUserProfileRepository extends FakeUserProfileRepository {
@@ -95,8 +138,15 @@ class _SettingsUserProfileRepository extends FakeUserProfileRepository {
 }
 
 class _FakeSafetyRepository extends Fake implements SafetyRepository {
+  _FakeSafetyRepository({this.blockedUsersStream});
+
+  final Stream<List<BlockedUser>>? blockedUsersStream;
   int requestDeletionCallCount = 0;
   String? unblockedUserId;
+
+  @override
+  Stream<List<BlockedUser>> watchBlockedUsers({required String uid}) =>
+      blockedUsersStream ?? const Stream.empty();
 
   @override
   Future<void> requestAccountDeletion() async {

@@ -70,7 +70,7 @@ final class WatchRunClubProvider
   }) : super(
          retry: null,
          name: r'watchRunClubProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -107,7 +107,7 @@ final class WatchRunClubProvider
   }
 }
 
-String _$watchRunClubHash() => r'2aa424e09914fd87353bb1cc81736ca08216eac6';
+String _$watchRunClubHash() => r'35ef4fcd777bd25ea3019208ec95d7c8abe2cb76';
 
 final class WatchRunClubFamily extends $Family
     with $FunctionalFamilyOverride<Stream<RunClub?>, String> {
@@ -117,7 +117,7 @@ final class WatchRunClubFamily extends $Family
         name: r'watchRunClubProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   WatchRunClubProvider call(String id) =>
@@ -144,7 +144,7 @@ final class WatchRunClubsByLocationProvider
   }) : super(
          retry: null,
          name: r'watchRunClubsByLocationProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -184,7 +184,7 @@ final class WatchRunClubsByLocationProvider
 }
 
 String _$watchRunClubsByLocationHash() =>
-    r'4bfc4bde482a82210e8539390dc4f43ad1368bba';
+    r'4289743ce4e3be250c770f8c1ef60cc59463ff57';
 
 final class WatchRunClubsByLocationFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<RunClub>>, IndianCity> {
@@ -194,7 +194,7 @@ final class WatchRunClubsByLocationFamily extends $Family
         name: r'watchRunClubsByLocationProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   WatchRunClubsByLocationProvider call(IndianCity location) =>
@@ -222,7 +222,7 @@ final class WatchRunClubsByLocationSortedByRatingProvider
   }) : super(
          retry: null,
          name: r'watchRunClubsByLocationSortedByRatingProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -263,7 +263,7 @@ final class WatchRunClubsByLocationSortedByRatingProvider
 }
 
 String _$watchRunClubsByLocationSortedByRatingHash() =>
-    r'f52dd0e8f456608f0a05e583e80ca2e3b9142cee';
+    r'8d42ebd4f2b00408cc85d416b3628436bfc62819';
 
 final class WatchRunClubsByLocationSortedByRatingFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<RunClub>>, IndianCity> {
@@ -273,7 +273,7 @@ final class WatchRunClubsByLocationSortedByRatingFamily extends $Family
         name: r'watchRunClubsByLocationSortedByRatingProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   WatchRunClubsByLocationSortedByRatingProvider call(IndianCity location) =>
@@ -303,7 +303,7 @@ final class WatchRunClubsHostedByProvider
   }) : super(
          retry: null,
          name: r'watchRunClubsHostedByProvider',
-         isAutoDispose: false,
+         isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
@@ -342,7 +342,7 @@ final class WatchRunClubsHostedByProvider
 }
 
 String _$watchRunClubsHostedByHash() =>
-    r'4a5458bac99c3a3a0a65e48b07d0a15817e08622';
+    r'4f0a926f7e3c3ef1d34a592ee72ed0cda8e71220';
 
 final class WatchRunClubsHostedByFamily extends $Family
     with $FunctionalFamilyOverride<Stream<List<RunClub>>, String> {
@@ -352,7 +352,7 @@ final class WatchRunClubsHostedByFamily extends $Family
         name: r'watchRunClubsHostedByProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
-        isAutoDispose: false,
+        isAutoDispose: true,
       );
 
   WatchRunClubsHostedByProvider call(String uid) =>

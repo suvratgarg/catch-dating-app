@@ -266,7 +266,8 @@ service cloud.firestore {
     function hasValidUserShape(data) {
       return data.keys().hasOnly([
           // Core
-          'name', 'email', 'bio', 'instagramHandle', 'phoneNumber', 'dateOfBirth',
+          'name', 'firstName', 'lastName', 'displayName', 'email', 'bio',
+          'instagramHandle', 'phoneNumber', 'dateOfBirth',
           'gender', 'sexualOrientation', 'profileComplete',
           // Photos
           'photoUrls',
@@ -298,7 +299,7 @@ service cloud.firestore {
           'deletedAt'
         ])
         && data.keys().hasAll([
-          'name', 'email', 'bio', 'phoneNumber', 'dateOfBirth',
+          'name', 'displayName', 'email', 'bio', 'phoneNumber', 'dateOfBirth',
           'gender', 'profileComplete',
           'photoUrls', 'joinedRunClubIds', 'savedRunIds',
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
@@ -309,6 +310,11 @@ service cloud.firestore {
         ])
         // Core
         && data.name is string
+        && optionalString(data, 'firstName')
+        && optionalString(data, 'lastName')
+        && data.displayName is string
+        && data.displayName.size() <= 80
+        && data.displayName.matches('.*\\S.*')
         && data.email is string
         && data.bio is string
         && optionalString(data, 'instagramHandle')

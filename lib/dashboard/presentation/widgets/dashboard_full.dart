@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/catches_callout.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
@@ -72,39 +71,48 @@ class DashboardFull extends ConsumerWidget {
                 borderColor: t.primary,
               ),
             ).buildSlivers(context),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                CatchSpacing.s1,
-                CatchSpacing.s5,
-                CatchSpacing.s6,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  if (viewModel.arrivalAction != null) ...[
-                    RunArrivalActionCard(action: viewModel.arrivalAction!),
-                    gapH18,
-                  ],
-                  if (viewModel.nextRun != null) ...[
-                    NextRunHero(nextRun: viewModel.nextRun!),
-                    gapH18,
-                  ],
-                  ..._buildAttendedRunSection(
-                    attendedRunsSection: viewModel.attendedRunsSection,
-                    activeSwipeRun: viewModel.activeSwipeRun,
-                  ),
-                  gapH18,
-                  const QuickActions(),
-                  ..._buildRecommendedRunsSection(
-                    recommendationsSection: viewModel.recommendationsSection,
-                  ),
-                  gapH18,
-                  ActivitySection(uid: user.uid),
-                ]),
-              ),
-            ),
+            DashboardFullSliverBody(viewModel: viewModel),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class DashboardFullSliverBody extends StatelessWidget {
+  const DashboardFullSliverBody({super.key, required this.viewModel});
+
+  final DashboardFullViewModel viewModel;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s1,
+        CatchSpacing.s5,
+        CatchSpacing.s6,
+      ),
+      sliver: SliverList(
+        delegate: SliverChildListDelegate([
+          if (viewModel.arrivalAction != null) ...[
+            RunArrivalActionCard(action: viewModel.arrivalAction!),
+            gapH18,
+          ],
+          if (viewModel.nextRun != null) ...[
+            NextRunHero(nextRun: viewModel.nextRun!),
+            gapH18,
+          ],
+          ..._buildAttendedRunSection(
+            attendedRunsSection: viewModel.attendedRunsSection,
+            activeSwipeRun: viewModel.activeSwipeRun,
+          ),
+          gapH18,
+          const QuickActions(),
+          ..._buildRecommendedRunsSection(
+            recommendationsSection: viewModel.recommendationsSection,
+          ),
+        ]),
       ),
     );
   }

@@ -86,6 +86,9 @@ function run(overrides = {}) {
 function userProfile(overrides = {}) {
   return {
     name: "Runner One",
+    firstName: "Runner",
+    lastName: "One",
+    displayName: "Runner",
     email: "",
     bio: "",
     instagramHandle: null,
@@ -372,6 +375,15 @@ describe("firestore.rules", () => {
     it("allows owners to create the current UserProfile schema without legacy sexualOrientation", async () => {
       await assertSucceeds(
         setDoc(doc(authedDb("runner-1"), "users", "runner-1"), userProfile()),
+      );
+    });
+
+    it("requires a non-empty profile display name on create", async () => {
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({displayName: "   "}),
+        ),
       );
     });
 

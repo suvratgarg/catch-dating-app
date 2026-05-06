@@ -77,9 +77,12 @@ export const syncPublicProfile = onDocumentWritten(
 /**
  * Returns the public-safe display name for discovery surfaces.
  * @param {UserProfileDoc} user Private user profile document.
- * @return {string} First name only, with legacy fallback.
+ * @return {string} Editable public display name, with first-name fallback.
  */
 function publicDisplayName(user: UserProfileDoc): string {
+  const displayName = user.displayName?.trim();
+  if (displayName) return displayName;
+
   const firstName = user.firstName?.trim();
   if (firstName) return firstName;
 

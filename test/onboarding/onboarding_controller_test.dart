@@ -249,6 +249,7 @@ void main() {
       expect(userProfileRepository.lastSavedUser!.uid, 'runner-1');
       expect(userProfileRepository.lastSavedUser!.email, isEmpty);
       expect(userProfileRepository.lastSavedUser!.name, 'Asha Runner');
+      expect(userProfileRepository.lastSavedUser!.displayName, 'Asha');
       expect(userProfileRepository.lastSavedUser!.phoneNumber, '+919876543210');
       expect(userProfileRepository.lastSavedUser!.profileComplete, isFalse);
       expect(

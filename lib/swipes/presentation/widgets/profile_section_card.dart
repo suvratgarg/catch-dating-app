@@ -1,4 +1,7 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
@@ -16,25 +19,25 @@ class ProfileSectionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = ProfileCardPalette.of(context);
+
     return CatchSurface(
       margin: margin,
-      padding: const EdgeInsets.all(16),
-      backgroundColor: Colors.white.withAlpha(14),
-      borderColor: Colors.white.withAlpha(28),
-      radius: CatchRadius.md,
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      backgroundColor: palette.surface,
+      borderColor: palette.border,
+      radius: CatchRadius.lg,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
             title,
-            style: const TextStyle(
-              color: Colors.white38,
-              fontSize: 11,
-              fontWeight: FontWeight.w700,
-              letterSpacing: 1,
-            ),
+            style: CatchTextStyles.labelS(
+              context,
+              color: palette.textMuted,
+            ).copyWith(fontWeight: FontWeight.w800),
           ),
-          const SizedBox(height: 12),
+          gapH12,
           child,
         ],
       ),

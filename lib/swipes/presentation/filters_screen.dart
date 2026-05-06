@@ -1,10 +1,11 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
@@ -136,7 +137,11 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
         ),
         body: profileAsync.when(
           loading: () => const CatchLoadingIndicator(),
-          error: (error, _) => CatchErrorText(error),
+          error: (error, _) => CatchErrorState.fromError(
+            error,
+            context: AppErrorContext.profile,
+            onRetry: () => ref.invalidate(watchUserProfileProvider),
+          ),
           data: (user) {
             if (user == null) return const SizedBox.shrink();
             _syncFromProfile(user);

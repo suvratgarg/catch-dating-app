@@ -1,5 +1,5 @@
 {
-  "version": "2.4.0",
+  "version": "2.4.2",
   "updated": "2026-05-06",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -92,9 +92,10 @@
       ]
     },
     "docs/error-handling-audit.md": {
-      "purpose": "Error handling architecture snapshot, remediation map, and branded error surface guidance.",
+      "purpose": "Error handling architecture snapshot, Error 101 guide, app error catalogue, remediation map, and branded error surface guidance.",
       "read_when": [
-        "Changing exceptions, error mapping, logging, or user-facing error rendering",
+        "Changing exceptions, stable error codes, error mapping, logging, or user-facing error rendering",
+        "Deciding whether a repeated failure deserves a new AppException subclass",
         "Replacing raw AsyncValue error branches"
       ],
       "skip_when": [
@@ -112,11 +113,12 @@
       ]
     },
     "docs/firestore_functions_data_contract_tracker.md": {
-      "purpose": "Firestore rules, Cloud Functions boundaries, schema drift, and data-contract tracker.",
+      "purpose": "Firestore rules, Cloud Functions boundaries, schema drift, data-contract tracker, and Firestore rules emulator-test workflow.",
       "read_when": [
         "Changing Firestore rules",
         "Changing Functions mutation boundaries",
-        "Changing shared data contracts"
+        "Changing shared data contracts",
+        "Running or diagnosing Firestore rules tests"
       ],
       "skip_when": [
         "Pure Flutter presentation work"

@@ -1,6 +1,6 @@
 ---
 doc_id: sliver_layout
-version: 2.1.0
+version: 2.1.3
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
@@ -19,6 +19,29 @@ surfaces, sticky headers, or scroll-heavy widget tests. For other work, use the
 audit registry's `SLIVER-001` rule summary instead of loading this full guide.
 
 ## Rule Changelog
+
+### 2.1.3
+
+- Independently scrollable content inside a tabbed `NestedScrollView` needs an
+  explicit leading-overscroll bridge if dragging down at the child top should
+  expand the outer header. Profile Preview uses this for the internal
+  `ProfileCard` scroll so the `Profile` title can return without touching the
+  tab row.
+
+### 2.1.2
+
+- Sibling tab bodies under the same pinned tab row should share a named body
+  inset constant. If a tab body contains an independently scrollable child and
+  its top gap must remain visible when that child returns to offset zero, put
+  the gap inside the filled child rather than as outer sliver padding.
+
+### 2.1.1
+
+- Profile-specific `NestedScrollView` rule clarified: absorb the pinned
+  Edit/Preview tab-row sliver, not the whole Profile header group. The
+  collapsible title should remain a normal outer sliver so it scrolls away
+  naturally, while each tab body injects the absorbed pinned-row overlap before
+  rendering its content.
 
 ### 2.1.0
 
@@ -398,6 +421,30 @@ need to coordinate overlap and scroll behavior.
 The maintenance rule is stricter here: when using `NestedScrollView`, keep the
 `SliverOverlapAbsorber` and `SliverOverlapInjector` pair intact. Removing either
 side usually creates header/body overlap bugs.
+
+For Profile specifically, the absorber should wrap the pinned Edit/Preview tab
+row, not the whole header group. The scroll-away `Profile` title is a normal
+outer sliver. Each Edit/Preview tab `CustomScrollView` should start with the
+matching `SliverOverlapInjector`, then render its feature slivers. Widget tests
+should assert the absorber/injector pair and verify that initial tab content
+starts below the pinned tab row.
+
+Sibling tabs should also share one named body inset. In Profile, both Edit and
+Preview use `profileTabBodyPadding`: 20 px horizontal, 8 px top, and 32 px
+bottom. The Edit tab applies that inset as sliver/list padding because the tab
+body owns the vertical scroll. Preview applies the same inset inside
+`SliverFillRemaining` because the preview card owns its own internal scroll;
+placing that gap outside the filled child lets the outer sliver padding scroll
+away while the card has returned to its own top.
+
+When a tab contains an independently scrollable child, such as the shared
+`ProfileCard`, do not assume the child will hand gestures back to
+`NestedScrollView` at its leading edge. If the intended UX is one continuous
+gesture where dragging down from the child's top reveals the parent header,
+bridge the child's leading overscroll to the route-owned outer scroll
+controller and test that dragging on the child restores the header. Keep this
+bridge route-specific unless the shared card/surface always needs parent-header
+coordination.
 
 ## Should More Screens Become Sliver-Native?
 

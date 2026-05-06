@@ -1,10 +1,12 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
@@ -22,13 +24,21 @@ class SwipeHubScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (!isAppShellTabActive(context, appShellCatchesTabIndex)) {
+      return Scaffold(backgroundColor: CatchTokens.of(context).bg);
+    }
+
     final uidAsync = ref.watch(uidProvider);
 
     return Scaffold(
       backgroundColor: CatchTokens.of(context).bg,
       body: uidAsync.when(
         loading: () => const CatchSkeletonList(count: 3),
-        error: (e, _) => CatchErrorText(e),
+        error: (e, _) => CatchErrorState.fromError(
+          e,
+          context: AppErrorContext.auth,
+          onRetry: () => ref.invalidate(uidProvider),
+        ),
         data: (uid) {
           if (uid == null) return const SizedBox.shrink();
 
@@ -36,7 +46,11 @@ class SwipeHubScreen extends ConsumerWidget {
 
           return runsAsync.when(
             loading: () => const CatchSkeletonList(count: 3),
-            error: (e, _) => CatchErrorText(e),
+            error: (e, _) => CatchErrorState.fromError(
+              e,
+              context: AppErrorContext.run,
+              onRetry: () => ref.invalidate(watchAttendedRunsProvider(uid)),
+            ),
             data: (runs) {
               final activeRuns = runsWithOpenSwipeWindow(runs);
 

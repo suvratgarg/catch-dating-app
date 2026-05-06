@@ -1,22 +1,23 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/detail_row.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_controller.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
+import 'package:catch_dating_app/runs/presentation/run_joined_celebration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class PaymentConfirmationScreen extends ConsumerWidget {
   const PaymentConfirmationScreen({super.key, required this.data});
@@ -27,17 +28,26 @@ class PaymentConfirmationScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final runAsync = ref.watch(watchRunProvider(data.runId));
 
-    return Scaffold(
-      body: runAsync.when(
-        loading: () => const CatchLoadingIndicator(),
-        error: (e, _) => CatchErrorText(e),
-        data: (run) {
-          if (run == null) {
-            return const Center(child: Text('Run not found.'));
-          }
-          return _ConfirmationBody(data: data, run: run);
-        },
+    return runAsync.when(
+      loading: () => const Scaffold(body: CatchLoadingIndicator()),
+      error: (e, _) => Scaffold(
+        body: CatchErrorState.fromError(
+          e,
+          context: AppErrorContext.payments,
+          onRetry: () => ref.invalidate(watchRunProvider(data.runId)),
+        ),
       ),
+      data: (run) {
+        if (run == null) {
+          return const Scaffold(
+            body: CatchErrorState(
+              title: 'Run not found',
+              message: 'This run is no longer available.',
+            ),
+          );
+        }
+        return _ConfirmationBody(data: data, run: run);
+      },
     );
   }
 }
@@ -50,235 +60,24 @@ class _ConfirmationBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final clubAsync = ref.watch(watchRunClubProvider(run.runClubId));
     final clubName = clubAsync.asData?.value?.name;
 
-    return Column(
-      children: [
-        Expanded(
-          child: SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                _HeroSection(data: data, run: run),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s5,
-                    CatchSpacing.s5,
-                    CatchSpacing.s5,
-                    0,
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      _RunSummaryCard(data: data, run: run, clubName: clubName),
-                      gapH14,
-                      _QuickActions(run: run),
-                      gapH18,
-                      const _HeadsUp(),
-                      gapH14,
-                      _ReferralBanner(run: run),
-                      // Extra space so content clears the sticky CTA.
-                      SizedBox(height: 100 + bottomPadding),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-        _StickyBackToHome(bottomPadding: bottomPadding),
+    return RunJoinedCelebrationScreen(
+      run: run,
+      clubName: clubName,
+      paymentData: data,
+      supplementalChildren: [
+        _QuickActions(run: run),
+        const _HeadsUp(),
+        _ReferralBanner(run: run),
       ],
-    );
-  }
-}
-
-class _HeroSection extends StatelessWidget {
-  const _HeroSection({required this.data, required this.run});
-
-  final PaymentConfirmationData data;
-  final Run run;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final amount = RunFormatters.priceInPaise(data.amountInPaise);
-
-    return Container(
-      decoration: BoxDecoration(
-        gradient: t.heroGrad,
-        borderRadius: const BorderRadius.only(
-          bottomLeft: Radius.circular(CatchRadius.lg + 8),
-          bottomRight: Radius.circular(CatchRadius.lg + 8),
-        ),
+      backHomeKey: PaymentConfirmationKeys.backHome,
+      onViewRun: () => context.goNamed(
+        Routes.runDetailScreen.name,
+        pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
       ),
-      child: Stack(
-        children: [
-          // Dot pattern overlay
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.15,
-              child: CustomPaint(painter: _DotPatternPainter()),
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              CatchSpacing.s5,
-              MediaQuery.paddingOf(context).top + CatchSpacing.s6,
-              CatchSpacing.s5,
-              CatchSpacing.s8,
-            ),
-            child: Column(
-              children: [
-                // Checkmark circle
-                Container(
-                  width: 72,
-                  height: 72,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.22),
-                    shape: BoxShape.circle,
-                    border: Border.all(
-                      color: Colors.white.withValues(alpha: 0.4),
-                      width: 2,
-                    ),
-                  ),
-                  child: const Icon(
-                    Icons.check_rounded,
-                    color: Colors.white,
-                    size: 34,
-                  ),
-                ),
-                gapH16,
-                // "YOU'RE IN" label
-                Text(
-                  "You're in",
-                  style: CatchTextStyles.labelM(
-                    context,
-                    color: Colors.white.withValues(alpha: 0.92),
-                  ),
-                ),
-                gapH6,
-                // Run title
-                Text(
-                  run.title,
-                  style: CatchTextStyles.displayL(context, color: Colors.white),
-                  textAlign: TextAlign.center,
-                ),
-                gapH8,
-                // Payment ID
-                Text(
-                  'Booking confirmed · payment ID ${data.paymentId}',
-                  style: CatchTextStyles.bodyS(
-                    context,
-                    color: Colors.white.withValues(alpha: 0.92),
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                gapH6,
-                Text(
-                  amount,
-                  style: CatchTextStyles.titleM(
-                    context,
-                    color: Colors.white.withValues(alpha: 0.85),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _RunSummaryCard extends StatelessWidget {
-  const _RunSummaryCard({
-    required this.data,
-    required this.run,
-    required this.clubName,
-  });
-
-  final PaymentConfirmationData data;
-  final Run run;
-  final String? clubName;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final amount = RunFormatters.priceInPaise(data.amountInPaise);
-    // Refund deadline: 12 hours before run start
-    final refundDeadline = run.startTime.subtract(const Duration(hours: 12));
-
-    return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      radius: CatchRadius.md,
-      borderColor: t.line,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Club photo placeholder
-              Container(
-                width: 56,
-                height: 56,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(CatchRadius.sm + 4),
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFF8A5B), Color(0xFFFF3E6F)],
-                  ),
-                ),
-                child: const Icon(
-                  Icons.groups_rounded,
-                  color: Colors.white70,
-                  size: 24,
-                ),
-              ),
-              gapW12,
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (clubName != null) ...[
-                      Text(
-                        clubName!,
-                        style: CatchTextStyles.labelM(context, color: t.ink3),
-                      ),
-                      gapH2,
-                    ],
-                    Text(run.title, style: CatchTextStyles.titleM(context)),
-                    gapH2,
-                    Text(
-                      '${run.longDateLabel} · ${run.timeRangeLabel}',
-                      style: CatchTextStyles.bodyS(context),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-          gapH14,
-          Divider(color: t.line, height: 1),
-          gapH14,
-          DetailRow(label: 'Where', value: run.meetingPoint),
-          gapH10,
-          DetailRow(
-            label: 'Distance',
-            value:
-                '${run.distanceLabel} · ${run.pace.label.toLowerCase()} pace',
-          ),
-          gapH10,
-          DetailRow(label: 'Paid', value: '$amount · UPI'),
-          gapH10,
-          DetailRow(
-            label: 'Refund',
-            value:
-                'Full refund until ${RunFormatters.shortWeekday(refundDeadline)} ${RunFormatters.time(refundDeadline)}',
-          ),
-        ],
-      ),
+      onBackHome: () => context.goNamed(Routes.dashboardScreen.name),
     );
   }
 }
@@ -439,59 +238,4 @@ class _ReferralBanner extends ConsumerWidget {
       ),
     );
   }
-}
-
-class _StickyBackToHome extends StatelessWidget {
-  const _StickyBackToHome({required this.bottomPadding});
-
-  final double bottomPadding;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return Container(
-      color: t.surface,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Divider(color: t.line, height: 1, thickness: 1),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              CatchSpacing.s4,
-              CatchSpacing.s3,
-              CatchSpacing.s4,
-              CatchSpacing.s3 + bottomPadding,
-            ),
-            child: CatchButton(
-              key: PaymentConfirmationKeys.backHome,
-              label: 'Back to home',
-              onPressed: () =>
-                  Navigator.of(context).popUntil((route) => route.isFirst),
-              variant: CatchButtonVariant.secondary,
-              fullWidth: true,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Simple dot pattern painter for the hero section background texture.
-class _DotPatternPainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    const spacing = 40.0;
-    const dotRadius = 1.5;
-    final paint = Paint()..color = Colors.white;
-
-    for (double x = 0; x < size.width; x += spacing) {
-      for (double y = 0; y < size.height; y += spacing) {
-        canvas.drawCircle(Offset(x, y), dotRadius, paint);
-      }
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }

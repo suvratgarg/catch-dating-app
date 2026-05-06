@@ -1,6 +1,6 @@
 ---
 doc_id: controller_patterns
-version: 2.1.0
+version: 2.1.1
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
@@ -11,10 +11,18 @@ status: active
 ## Read Policy
 
 Read this before architecture, state-management, controller, or repository/UI
-boundary work. Stamp applied version `controller_patterns@2.1.0` in
+boundary work. Stamp applied version `controller_patterns@2.1.1` in
 `docs/audit_registry/files.jsonl` when a file is reviewed against these rules.
 
 ## Rule Changelog
+
+### 2.1.1
+
+- Clarified retained-tab stream ownership. A `StatefulShellRoute.indexedStack`
+  keeps branch widgets mounted, so tab-root streams must be explicitly gated
+  when inactive unless they serve shell-wide UI. Do not prewarm feature-owned
+  tab streams from `AppShell` without a measured UX reason and documented read
+  cost.
 
 ### 2.1.0
 
@@ -117,8 +125,13 @@ Use these lifecycle rules instead:
   or prewarmed. Document the reason at the call site or provider.
 - For bottom-tab branches retained by `StatefulShellRoute.indexedStack`, decide
   whether the stream should remain active while its tab is inactive. If it
-  should not, gate the screen/view model on `AppShellActiveTab` and invalidate
-  the specific stream provider when the tab becomes inactive.
+  should not, gate the screen/view model on `AppShellActiveTab` before watching
+  feature-owned providers. If the active screen already has data and should
+  force a fresh listener later, invalidate the specific stream provider when the
+  tab becomes inactive.
+- Avoid shell-level prewarming for feature-owned tab streams unless the user
+  experience benefit is explicit, the read cost is acceptable, and the provider
+  ownership is documented.
 - Keep small global streams alive when they support shell-wide behavior, such as
   auth state, current user profile, connectivity, or unread-count badges.
 - Add regression tests for lifecycle-sensitive streams. A good test opens the

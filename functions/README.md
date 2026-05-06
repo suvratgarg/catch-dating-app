@@ -194,12 +194,18 @@ Rules tests live at `test/firestore.rules.test.cjs` and use the
 `@firebase/rules-unit-testing` emulator. Add test cases for any new rule
 conditions, especially `diff()` checks and `hasOnly`/`hasAll` shape validation.
 
+Run the rules suite through the Firestore emulator wrapper unless you already
+have a Firestore emulator listening on `127.0.0.1:8080`. A direct
+`npm run test:rules` from this directory only works when that emulator is
+already running; `connect ECONNREFUSED 127.0.0.1:8080` means the emulator
+workflow is missing, not necessarily that the rules changed incorrectly.
+
 ## Commands
 
 ```bash
-npm run lint
-npm test
-npm run test:rules
+npm --prefix functions run lint
+npm --prefix functions test
+firebase emulators:exec --only firestore "npm --prefix functions run test:rules"
 ./tool/firebase_with_env.sh dev deploy --only functions
 ./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions

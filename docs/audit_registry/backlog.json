@@ -1,5 +1,5 @@
 {
-  "version": "2.2.1",
+  "version": "2.2.15",
   "updated": "2026-05-06",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, and stable debt ids. Do not reread archived markdown history unless a debt id points there.",
@@ -15,26 +15,28 @@
       "feature_tappable_candidates": 0,
       "legacy_spacing_canonical_candidates": 0,
       "fine_grained_spacing_compatibility": 19,
-      "presentation_plugin_imports": 0
+      "presentation_plugin_imports": 0,
+      "raw_error_surface_candidates": 0
     },
     "notes": [
       "The widget timing matches are the intentional centralized pumpFeatureUi helper plus two calendar test pumps queued for a later testability pass.",
       "Feature tappable scanner now skips built-in labeled buttons, tooltipped controls, and tappables already wrapped in Semantics or Tooltip.",
       "Legacy spacing scanner is split between canonical 4-point migration candidates and intentional fine-grained compatibility helpers.",
-      "Canonical spacing migration should be piecemeal and touch-driven."
+      "Canonical spacing migration should be piecemeal and touch-driven.",
+      "Raw error-surface candidates are clean after the hard CatchErrorText removal and direct primitive migration."
     ]
   },
   "pending": [
     {
       "id": "PROFILE-001",
       "title": "Fix profile tab and preview tab blank rendering",
-      "status": "needs_visual_confirmation",
+      "status": "needs_device_confirmation",
       "area": "user_profile",
       "priority": "high",
       "rules": [
         "SLIVER-001"
       ],
-      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen now uses one sliver-native CustomScrollView with a pinned Profile/Preview tab row instead of NestedScrollView + TabBarView. On 2026-05-06 the iPhone debug loop reproduced a profile edit-sheet lifecycle crash (`TextEditingController was used after being disposed`) during profile interaction. `profile_edit_sheet.dart` now owns text/int controllers inside the modal route, regression tests cover Done dismissal, and a post-hot-restart log window had no fresh controller/RenderBox/RenderFlex/provider errors. If the profile body is still visually blank, first register/export the printed App Check debug token or rerun with `FIREBASE_APP_CHECK_DEBUG_TOKEN`, then inspect provider data and preview constraints.",
+      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. The previous single-CustomScrollView registry text was stale. On 2026-05-06 the iPhone debug loop reproduced a profile edit-sheet lifecycle crash (`TextEditingController was used after being disposed`) during profile interaction. `profile_edit_sheet.dart` now owns text/int controllers inside the modal route, regression tests cover Done dismissal, and nullable single-choice sheets now have root-cause coverage for empty fields, visible immediate-save pending feedback, and failed-save pending-highlight cleanup. The Profile NestedScrollView overlap contract is now explicit: the scroll-away title remains a normal outer sliver, the pinned Edit/Preview row is wrapped in SliverOverlapAbsorber, each tab CustomScrollView starts with SliverOverlapInjector, and widget coverage verifies the body starts below the pinned tab row. Remaining Profile work is physical-device visual confirmation.",
       "paths": [
         "lib/user_profile/presentation/profile_screen.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
@@ -45,14 +47,14 @@
     {
       "id": "PROFILE-FIELD-PARITY-001",
       "title": "Align onboarding and edit-profile field coverage",
-      "status": "identified",
+      "status": "watch",
       "area": "onboarding,user_profile",
       "priority": "medium",
       "rules": [
         "CONTROLLER-BOUNDARY-001",
         "WIDGET-TEST-001"
       ],
-      "summary": "Shared profile validation now covers name, date of birth, phone, optional email, optional Instagram, height bounds, and open-ended age display/storage. Edit profile now exposes Instagram and keeps identity fields (name, date of birth, gender) readonly. Remaining field coverage is intentionally asymmetric: onboarding captures only low-friction signup fields (name, date of birth, phone, gender, interested-in genders, Instagram, photos, pace range, preferred distances, and running reasons), while edit profile additionally exposes email, height, bio, city, age range, occupation, company, education, religion, languages, relationship goal, drinking, smoking, workout, diet, and children. Do not expand onboarding with those optional fields unless product explicitly accepts the added signup friction.",
+      "summary": "Shared profile validation now covers name, required display name, date of birth, phone, optional email, optional Instagram, height bounds, and open-ended age display/storage. Onboarding initializes `displayName` from first name and explains that first name starts the public display name while last name stays private. Edit profile exposes `Display name` as the first editable About field and keeps identity fields (date of birth and gender) readonly. Public profile rendering prefers `displayName`, then first name, then legacy full-name first token, so last name is not shown publicly. Profile edit sheets now save before dismissing and show mutation loading/error feedback. All nullable single-choice edit fields have no-selected-chip coverage when empty; domain decode preserves omitted optional enum fields as null; `ChipField` has a direct empty single-select rendering test; immediate-save single-choice sheets show a visible saving state; and failed single-choice saves clear optimistic pending selection before showing inline error. Remaining field coverage is intentionally asymmetric: onboarding captures only low-friction signup fields (name, date of birth, phone, gender, interested-in genders, Instagram, photos, pace range, preferred distances, and running reasons), while edit profile additionally exposes email, height, bio, city, age range, occupation, company, education, religion, languages, relationship goal, drinking, smoking, workout, diet, and children. Do not expand onboarding with those optional fields unless product explicitly accepts the added signup friction.",
       "paths": [
         "lib/onboarding/presentation/onboarding_screen.dart",
         "lib/onboarding/presentation/onboarding_controller.dart",
@@ -64,22 +66,87 @@
         "lib/onboarding/presentation/pages/running_prefs_page.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
         "lib/user_profile/presentation/widgets/profile_edit_sheet.dart",
-        "lib/user_profile/domain/profile_validation.dart"
+        "lib/user_profile/domain/profile_validation.dart",
+        "lib/user_profile/domain/user_profile.dart",
+        "lib/public_profile/domain/public_profile.dart",
+        "functions/src/profiles/syncPublicProfile.ts",
+        "functions/src/profiles/updateUserProfile.ts",
+        "functions/src/shared/firestore.ts",
+        "firestore.rules",
+        "functions/test/firestore.rules.test.cjs",
+        "test/profile/profile_widgets_test.dart",
+        "test/profile/profile_validation_test.dart",
+        "test/onboarding/onboarding_controller_test.dart",
+        "test/core/catch_primitives_test.dart",
+        "test/user_profile/user_profile_domain_test.dart"
+      ]
+    },
+    {
+      "id": "PROFILE-CARD-POLISH-001",
+      "title": "Polish shared public-facing profile card",
+      "status": "active",
+      "area": "swipes,user_profile,public_profile",
+      "priority": "high",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "DESIGN-TOKENS-001",
+        "WIDGET-CATALOG-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "First polish pass completed on 2026-05-06. Swipes, Profile Preview, and Public Profile still share one `ProfileCard` rendering path. The card remains dark and immersive in both light and dark app themes through `ProfileCardPalette`, shows display name + age + optional city on the hero, moves relationship goal into detail chips, promotes the bio prompt ahead of running stats, and uses a branded missing-photo fallback. Visual review follow-up: retain `_RunningIdentityCard` as the single canonical `RUN PROFILE` section, remove redundant lower `RUNNING` pace/distance chips unless they contain non-duplicative running content, verify every profile section uses the dark palette on device, and inset/round additional photos with consistent margins/padding. Continue visual iteration here rather than forking Preview from Swipes.",
+      "paths": [
+        "lib/swipes/presentation/profile_card.dart",
+        "lib/swipes/presentation/profile_card_content.dart",
+        "lib/swipes/presentation/widgets/card_photo_section.dart",
+        "lib/swipes/presentation/widgets/name_overlay.dart",
+        "lib/swipes/presentation/widgets/profile_card_style.dart",
+        "lib/swipes/presentation/widgets/profile_info_chip.dart",
+        "lib/swipes/presentation/widgets/profile_running_section.dart",
+        "lib/swipes/presentation/widgets/profile_section_card.dart",
+        "lib/swipes/presentation/widgets/scrollable_profile.dart",
+        "lib/user_profile/presentation/widgets/preview_tab.dart",
+        "lib/public_profile/presentation/public_profile_screen.dart",
+        "test/swipes/profile_card_content_test.dart",
+        "test/swipes/profile_card_widget_test.dart",
+        "test/profile/profile_widgets_test.dart"
+      ]
+    },
+    {
+      "id": "CELEBRATION-SOUND-001",
+      "title": "Add optional sound to full-screen celebration moments",
+      "status": "identified",
+      "area": "core,runs,payments,matches",
+      "priority": "low",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Full-screen celebration moments now share `CatchCelebrationScreen` and `CelebrationEffectsController`, with haptics enabled by default for run creation, run signup/payment confirmation, participant self-check-in, and matches. Sound is intentionally deferred. When product is ready, add sound through `CelebrationEffectsController` only, choose app-owned audio assets/package, respect mute/silent/accessibility expectations, and keep widget tests deterministic through an injected fake effects controller.",
+      "paths": [
+        "lib/core/celebration/celebration_effects_controller.dart",
+        "lib/core/celebration/catch_celebration_screen.dart",
+        "lib/runs/presentation/create_run_success_screen.dart",
+        "lib/runs/presentation/run_joined_celebration_screen.dart",
+        "lib/runs/presentation/run_check_in_celebration_screen.dart",
+        "lib/matches/presentation/widgets/match_celebration_dialog.dart",
+        "test/core/catch_celebration_screen_test.dart"
       ]
     },
     {
       "id": "STREAM-LIFECYCLE-QUEUE",
       "title": "Audit retained tab and route streams for lifecycle ownership",
-      "status": "active",
+      "status": "watch",
       "area": "architecture",
       "priority": "high",
       "rules": [
         "STREAM-LIFECYCLE-001",
         "PROVIDER-SEAM-001"
       ],
-      "summary": "Dashboard booked-runs failed because a healthy realtime Firestore listener was wrapped in an idle Stream.timeout. The timeout class is fixed for run and run-club providers, and no remaining lib Stream.timeout usage targets Firestore listeners. Next pass should classify every screen-backed stream as global, route-owned autoDispose, prewarmed keepAlive, or retained-tab gated. Pay special attention to StateShellRoute.indexedStack branches: Clubs list/detail, Chats list/detail, Catches, Profile, and Home. Keep shell-level streams only when they drive shell-wide UI such as auth, current user, connectivity, or unread badges. Add fake-time lifecycle tests when a provider is intentionally kept or paused.",
+      "summary": "Known Firestore listener lifecycle issues are resolved and this queue is now watch-only. Dashboard booked-runs and run-club streams no longer use idle Stream.timeout, and no remaining lib `.timeout` usage targets Firestore snapshot listeners. Home pauses booked-runs while inactive, AppShell no longer prewarms the Clubs list stream, Clubs/Catches/Chats/Profile tab roots gate screen-owned providers while inactive, run-club stream families are autoDispose, and route-owned providers for run detail, chat messages, match detail, payment history, and blocked users have auto-dispose tests. Keep shell-level streams only when they drive shell-wide UI such as auth, current user, connectivity, FCM, or unread badges. Future realtime streams must be auto-dispose, retained-tab gated, or explicitly documented as global/prewarmed with read-cost rationale.",
       "paths": [
+        "lib/core/presentation/app_shell_active_tab.dart",
         "lib/core/presentation/app_shell.dart",
+        "lib/dashboard/presentation/dashboard_screen.dart",
         "lib/run_clubs/data/run_clubs_repository.dart",
         "lib/run_clubs/presentation/list/run_clubs_list_screen.dart",
         "lib/run_clubs/presentation/list/widgets/run_clubs_list.dart",
@@ -96,17 +163,19 @@
     {
       "id": "ERROR-UI-QUEUE",
       "title": "Create and migrate to branded app error surfaces",
-      "status": "active",
+      "status": "watch",
       "area": "core",
       "priority": "high",
       "rules": [
         "ERROR-UI-001",
+        "ERROR-CATALOG-001",
         "DESIGN-PRIMITIVES-001"
       ],
-      "summary": "We have a branded Flutter framework error fallback (`CatchFrameworkErrorView`) and inline primitives (`ErrorBanner`, `MutationErrorSnackbarListener`, `CatchEmptyState`), but no canonical app-facing full-screen/sliver/inline error surface. Many AsyncValue error branches still use bare `CatchErrorText`, `Center(Text(...))`, or local message cards. Build a branded error primitive family with retry support, then migrate dashboard, run clubs, chats, swipes, payments, settings, routing, run detail, run map, attendance, public profile, and profile surfaces in focused batches.",
+      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, and `appErrorMessage` / `appErrorTitle`. `CatchErrorText` has been deleted rather than retained as a compatibility layer. `docs/error-handling-audit.md` owns the app error catalogue, the rule for when to add sealed `AppException` subclasses, naming conventions, and an Error 101 guide. First-batch and hard-migration coverage includes Dashboard, Profile, Run Clubs list/detail, Chats list/thread messages, Catches hub, swipe queue load failures, payments, routing wrappers, run detail, run map, attendance, filters, and run recap. `tool/widget_cleanup_scan.sh` now reports zero raw app-facing error surface candidates. Keep this queue on watch for regressions, and handle likely future catalogue candidates as touched: image upload/storage, reusable validation, external action, and location failures.",
       "paths": [
         "lib/core/widgets/catch_framework_error_view.dart",
-        "lib/core/widgets/catch_error_text.dart",
+        "lib/core/widgets/catch_error_state.dart",
+        "lib/core/widgets/catch_error_snackbar.dart",
         "lib/core/widgets/async_value_widget.dart",
         "lib/core/widgets/catch_empty_state.dart",
         "lib/core/widgets/error_banner.dart",
@@ -147,13 +216,35 @@
     }
   ],
   "next_up": [
-    "PROFILE-FIELD-PARITY-001",
-    "STREAM-LIFECYCLE-QUEUE",
-    "ERROR-UI-QUEUE",
+    "PROFILE-CARD-POLISH-001",
     "PROFILE-001",
     "DOC-HYGIENE-QUEUE"
   ],
   "completed": [
+    {
+      "id": "CELEBRATION-MOMENTS-001",
+      "title": "Unify high-emotion success moments under full-screen celebrations",
+      "completed": "2026-05-06",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "CONTROLLER-BOUNDARY-001",
+        "WIDGET-CATALOG-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Added `CatchCelebrationScreen` and `CelebrationEffectsController`, migrated host run creation, free and paid user signup confirmation, participant self-check-in, and match creation to full-screen celebration surfaces, and kept host attendance out of the celebration flow. Added an injectable `RunCheckInLocationService` seam so self-check-in remains testable without platform location plugins."
+    },
+    {
+      "id": "HOME-TABS-001",
+      "title": "Split Home into Dashboard and Activity tabs",
+      "completed": "2026-05-06",
+      "rules": [
+        "SLIVER-001",
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-CATALOG-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "Home now follows the Profile-style tab architecture. `DashboardScreen` owns the route-local `TabController`, `NestedScrollView`, collapsible Home header, pinned `Dashboard`/`Activity` tab row, and native `TabBarView` paging. Existing dashboard widgets were extracted into dashboard sliver bodies, Activity moved out of Dashboard content, and the Activity tab renders a timeline-style feed with branded inline retry errors."
+    },
     {
       "id": "WIDGET-SEMANTICS-QUEUE",
       "title": "Audit remaining feature tappable candidates",

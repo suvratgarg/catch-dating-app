@@ -369,6 +369,43 @@ void main() {
       expect(value, run);
     });
 
+    test(
+      'watchRunProvider auto-disposes detail listeners when unwatched',
+      () async {
+        final run = buildRun(id: 'run-1');
+        final cancelCompleter = Completer<void>();
+        final runController = StreamController<Run?>(
+          onCancel: () {
+            if (!cancelCompleter.isCompleted) cancelCompleter.complete();
+          },
+        );
+        addTearDown(() async {
+          if (!cancelCompleter.isCompleted) await runController.close();
+        });
+
+        final container = ProviderContainer(
+          overrides: [
+            runRepositoryProvider.overrideWith(
+              (ref) => _LifecycleRunRepository(runStream: runController.stream),
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final provider = watchRunProvider(run.id);
+        final subscription = container.listen(provider, (_, _) {});
+
+        runController.add(run);
+        await container.pump();
+        expect(subscription.read().value, run);
+
+        subscription.close();
+        await container.pump();
+
+        await expectLater(cancelCompleter.future, completes);
+      },
+    );
+
     test('watchRunsForClubProvider delegates to the repository', () async {
       final run = buildRun(id: 'run-1', runClubId: 'club-1');
       await _seedRun(firestore, run);
@@ -467,6 +504,15 @@ class _IdleRunRepository extends Fake implements RunRepository {
   @override
   Stream<List<Run>> watchSignedUpRuns({required String uid}) =>
       signedUpRunsStream;
+}
+
+class _LifecycleRunRepository extends Fake implements RunRepository {
+  _LifecycleRunRepository({required this.runStream});
+
+  final Stream<Run?> runStream;
+
+  @override
+  Stream<Run?> watchRun(String id) => runStream;
 }
 
 const _pastLegacyStreamTimeout = Duration(seconds: 11);

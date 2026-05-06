@@ -140,19 +140,19 @@ RunClubsRepository runClubsRepository(Ref ref) => RunClubsRepository(
   ref.watch(firebaseFunctionsProvider),
 );
 
-@Riverpod(keepAlive: true)
+@riverpod
 Stream<RunClub?> watchRunClub(Ref ref, String id) {
   final repository = ref.watch(runClubsRepositoryProvider);
   return repository.watchRunClub(id);
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) {
   final repository = ref.watch(runClubsRepositoryProvider);
   return repository.watchRunClubsByLocation(location);
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
   Ref ref,
   IndianCity location,
@@ -161,7 +161,7 @@ Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
   return repository.watchRunClubsByLocationSortedByRating(location);
 }
 
-@Riverpod(keepAlive: true)
+@riverpod
 Stream<List<RunClub>> watchRunClubsHostedBy(Ref ref, String uid) {
   final repository = ref.watch(runClubsRepositoryProvider);
   return repository.watchRunClubsHostedBy(uid);

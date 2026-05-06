@@ -9,6 +9,7 @@ class DashboardSliverHeader extends CatchSliverHeader {
     required String eyebrow,
     required String title,
     required Widget avatar,
+    TabController? controller,
     super.titleHeight = defaultTitleHeight,
   }) : super(
          title: _DashboardHeaderContent(
@@ -16,9 +17,38 @@ class DashboardSliverHeader extends CatchSliverHeader {
            title: title,
            avatar: avatar,
          ),
+         bottomHeight: 48,
+         bottom: controller == null ? null : _DashboardTabBar(controller),
        );
 
   static const double defaultTitleHeight = 104;
+}
+
+class _DashboardTabBar extends StatelessWidget {
+  const _DashboardTabBar(this.controller);
+
+  final TabController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Material(
+      color: t.bg,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: t.line)),
+        ),
+        child: CatchTopBarTabBar(
+          controller: controller,
+          tabs: const [
+            Tab(text: 'Dashboard'),
+            Tab(text: 'Activity'),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
 class _DashboardHeaderContent extends StatelessWidget {

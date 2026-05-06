@@ -46,6 +46,9 @@ String? validateRequiredProfileName(String? value, {required String label}) {
   return null;
 }
 
+String? validateRequiredDisplayName(String? value) =>
+    validateRequiredProfileName(value, label: 'Display name');
+
 String? validateRequiredPhoneNumber(String? value) {
   if ((value ?? '').trim().isEmpty) return 'Phone is required';
   return null;

@@ -15,42 +15,42 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.2.1",
+    "version": "2.2.15",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, stream lifecycle queue, and branded error UI queue."
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "2.4.0",
+    "version": "2.4.2",
     "updated": "2026-05-06",
     "status": "active",
-    "read_policy": "Use for compact read/skip policies before opening long markdown docs, including stream lifecycle and widget catalog rule routing."
+    "read_policy": "Use for compact read/skip policies before opening long markdown docs, including stream lifecycle, widget catalog rule routing, Firestore rules test workflow, and error catalogue scope."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "2.3.0",
+    "version": "2.3.19",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
   "audit_rules": {
     "path": "docs/audit_registry/rules.json",
-    "version": "2.4.0",
+    "version": "2.4.4",
     "updated": "2026-05-06",
     "status": "active",
-    "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, and branded error UI requirements."
+    "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, and error catalogue maintenance."
   },
   "controller_patterns": {
     "path": "docs/controller_patterns.md",
-    "version": "2.1.0",
+    "version": "2.1.1",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Read for controller/view-model boundary rules and realtime stream lifecycle ownership before architecture or state-management cleanup."
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "2.3.0",
+    "version": "2.3.2",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
@@ -64,22 +64,22 @@
   },
   "error_handling_audit": {
     "path": "docs/error-handling-audit.md",
-    "version": "2.1.0",
+    "version": "2.3.1",
     "updated": "2026-05-06",
     "status": "snapshot",
-    "read_policy": "Use as an error-handling snapshot and current branded error surface guidance; re-verify counts before treating them as current."
+    "read_policy": "Use as the current error-handling snapshot, error 101 guide, app error catalogue, naming convention, and branded error surface guidance; re-verify counts before treating scanner totals as current."
   },
   "firestore_contract_tracker": {
     "path": "docs/firestore_functions_data_contract_tracker.md",
-    "version": "2.0.0",
-    "updated": "2026-05-05",
+    "version": "2.0.2",
+    "updated": "2026-05-06",
     "status": "active",
-    "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, or data-contract work."
+    "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, data-contract work, or Firestore rules test execution."
   },
   "firestore_type_sync": {
     "path": "docs/firestore_type_sync_2026_05_05.md",
-    "version": "2.0.0",
-    "updated": "2026-05-05",
+    "version": "2.0.1",
+    "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Read before changing Dart domain models, Functions TypeScript interfaces, or Firestore type generation."
   },
@@ -113,21 +113,21 @@
   },
   "sliver_layout": {
     "path": "docs/sliver_layout_guide.md",
-    "version": "2.1.0",
+    "version": "2.1.3",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Read before changing sliver-native screens, NestedScrollView tabs, or scroll tests."
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.4.7",
+    "version": "2.5.14",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
   "widget_cleanup": {
     "path": "docs/widget_cleanup_todo.md",
-    "version": "2.3.0",
+    "version": "2.3.18",
     "updated": "2026-05-06",
     "status": "active",
     "read_policy": "Use as a short human-readable pointer; use backlog.json for active machine-readable state including stream lifecycle and branded error UI queues."

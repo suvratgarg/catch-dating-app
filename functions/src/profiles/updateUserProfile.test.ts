@@ -115,6 +115,7 @@ test("updateUserProfileHandler validates and applies profile patches",
       request("runner-1", {
         fields: {
           name: "Runner Updated",
+          displayName: "Runner R.",
           dateOfBirth: 946684800000,
           gender: "woman",
           photoUrls: ["https://example.test/profile.jpg"],
@@ -127,6 +128,7 @@ test("updateUserProfileHandler validates and applies profile patches",
 
     assert.deepEqual(h.firestore.get("users/runner-1"), {
       name: "Runner Updated",
+      displayName: "Runner R.",
       profileComplete: false,
       dateOfBirth: {kind: "timestamp", millis: 946684800000},
       gender: "woman",
@@ -150,6 +152,13 @@ test("updateUserProfileHandler rejects invalid payloads", async () => {
   await assert.rejects(
     updateUserProfileHandler(
       request("runner-1", {fields: {unknownField: true}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {displayName: "   "}}),
       h.deps
     ),
     (error) => assertHttpsCode(error, "invalid-argument")

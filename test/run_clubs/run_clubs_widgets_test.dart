@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -849,6 +850,35 @@ void main() {
     });
 
     testWidgets(
+      'RunClubsListScreen does not subscribe to club streams while inactive',
+      (tester) async {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              watchRunClubsByLocationProvider(
+                IndianCity.mumbai,
+              ).overrideWith((ref) => throw StateError('watched clubs stream')),
+              runClubsListViewModelProvider.overrideWith(
+                (ref) => throw StateError('watched clubs view model'),
+              ),
+            ],
+            child: AppShellActiveTab(
+              index: appShellHomeTabIndex,
+              child: MaterialApp(
+                theme: AppTheme.light,
+                home: const RunClubsListScreen(),
+              ),
+            ),
+          ),
+        );
+        await tester.pump();
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Run clubs'), findsNothing);
+      },
+    );
+
+    testWidgets(
       'RunClubsListScreen hides search when the selected city is empty',
       (tester) async {
         await tester.pumpWidget(
@@ -1025,7 +1055,11 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Run club not found.'), findsOneWidget);
+      expect(find.text('Run club not found'), findsOneWidget);
+      expect(
+        find.text('This run club is no longer available.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('RunClubDetailScreen listens for join mutation errors', (

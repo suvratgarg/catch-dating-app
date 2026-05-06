@@ -3,8 +3,9 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart'; // ChatsListScreen
@@ -480,9 +481,16 @@ class CreateRunRouteScreen extends ConsumerWidget {
     final runClubAsync = ref.watch(fetchRunClubProvider(runClubId));
     return runClubAsync.when(
       loading: () => const _RouterLoadingScreen(),
-      error: (error, _) => Scaffold(body: CatchErrorText(error)),
+      error: (error, _) => CatchErrorScaffold.fromError(
+        error,
+        context: AppErrorContext.club,
+        onRetry: () => ref.invalidate(fetchRunClubProvider(runClubId)),
+      ),
       data: (runClub) => runClub == null
-          ? const Scaffold(body: Center(child: Text('Run club not found.')))
+          ? const CatchErrorScaffold(
+              title: 'Club not found',
+              message: 'This run club is no longer available.',
+            )
           : CreateRunScreen(runClub: runClub),
     );
   }
@@ -507,9 +515,16 @@ class EditRunClubRouteScreen extends ConsumerWidget {
     final runClubAsync = ref.watch(fetchRunClubProvider(runClubId));
     return runClubAsync.when(
       loading: () => const _RouterLoadingScreen(),
-      error: (error, _) => Scaffold(body: CatchErrorText(error)),
+      error: (error, _) => CatchErrorScaffold.fromError(
+        error,
+        context: AppErrorContext.club,
+        onRetry: () => ref.invalidate(fetchRunClubProvider(runClubId)),
+      ),
       data: (runClub) => runClub == null
-          ? const Scaffold(body: Center(child: Text('Run club not found.')))
+          ? const CatchErrorScaffold(
+              title: 'Club not found',
+              message: 'This run club is no longer available.',
+            )
           : CreateRunClubScreen(initialRunClub: runClub),
     );
   }

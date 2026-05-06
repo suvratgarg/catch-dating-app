@@ -71,6 +71,7 @@ const nonNegativeMillis = z.number().int().nonnegative();
 
 const UserProfilePatchSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
+  displayName: z.string().trim().min(1).max(80).optional(),
   email: z.string().trim().max(320).optional(),
   bio: z.string().max(2000).optional(),
   instagramHandle: optionalString.optional(),

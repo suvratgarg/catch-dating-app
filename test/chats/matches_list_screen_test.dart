@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -154,6 +155,33 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets(
+    'ChatsListScreen does not subscribe to chat streams while inactive',
+    (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => throw StateError('watched uid')),
+            chatsListViewModelProvider.overrideWith(
+              (ref) => throw StateError('watched chats view model'),
+            ),
+          ],
+          child: AppShellActiveTab(
+            index: appShellHomeTabIndex,
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: const ChatsListScreen(),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(tester.takeException(), isNull);
+      expect(find.text('Chats'), findsNothing);
+    },
+  );
 
   testWidgets('shows search-specific empty copy when a query has no matches', (
     tester,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
@@ -157,6 +159,52 @@ void main() {
 
     expect(container.read(totalUnreadCountProvider('runner-1')), 5);
   });
+
+  test(
+    'matchStreamProvider auto-disposes route listeners when unwatched',
+    () async {
+      final match = _buildMatch();
+      final cancelCompleter = Completer<void>();
+      final matchController = StreamController<Match?>(
+        onCancel: () {
+          if (!cancelCompleter.isCompleted) cancelCompleter.complete();
+        },
+      );
+      addTearDown(() async {
+        if (!cancelCompleter.isCompleted) await matchController.close();
+      });
+
+      final container = ProviderContainer(
+        overrides: [
+          matchRepositoryProvider.overrideWithValue(
+            _LifecycleMatchRepository(matchStream: matchController.stream),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final provider = matchStreamProvider(match.id);
+      final subscription = container.listen(provider, (_, _) {});
+
+      matchController.add(match);
+      await container.pump();
+      expect(subscription.read().value, match);
+
+      subscription.close();
+      await container.pump();
+
+      await expectLater(cancelCompleter.future, completes);
+    },
+  );
+}
+
+class _LifecycleMatchRepository extends Fake implements MatchRepository {
+  _LifecycleMatchRepository({this.matchStream});
+
+  final Stream<Match?>? matchStream;
+
+  @override
+  Stream<Match?> watchMatch({required String matchId}) => matchStream!;
 }
 
 Future<void> _seedMatch(FakeFirebaseFirestore firestore, Match match) {

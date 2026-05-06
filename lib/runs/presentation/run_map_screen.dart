@@ -1,7 +1,8 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -34,7 +35,11 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
       appBar: const CatchTopBar(title: 'Map view'),
       body: viewModelAsync.when(
         loading: () => const CatchLoadingIndicator(),
-        error: (error, _) => CatchErrorText(error),
+        error: (error, _) => CatchErrorState.fromError(
+          error,
+          context: AppErrorContext.run,
+          onRetry: () => ref.invalidate(runMapViewModelProvider),
+        ),
         data: (viewModel) {
           final runs = viewModel.runs;
           final selectedRun = viewModel.selectedRun(_selectedRunId);

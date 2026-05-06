@@ -8,6 +8,7 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_error_message.dart';
+import 'package:catch_dating_app/runs/presentation/run_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -95,12 +96,34 @@ class RunArrivalActionCard extends ConsumerWidget {
   void _handleTap(BuildContext context, WidgetRef ref) {
     switch (action.kind) {
       case RunArrivalActionKind.selfCheckIn:
-        RunBookingController.selfCheckInMutation.run(
-          ref,
-          (tx) async => tx
+        RunBookingController.selfCheckInMutation.run(ref, (tx) async {
+          await tx
               .get(runBookingControllerProvider.notifier)
-              .selfCheckIn(runId: action.run.id),
-        );
+              .selfCheckIn(runId: action.run.id);
+          if (!context.mounted) return;
+          await Navigator.of(context).push(
+            MaterialPageRoute<void>(
+              fullscreenDialog: true,
+              builder: (routeContext) => RunCheckInCelebrationScreen(
+                run: action.run,
+                onViewRun: () {
+                  Navigator.of(routeContext).pop();
+                  GoRouter.of(context).goNamed(
+                    Routes.runDetailScreen.name,
+                    pathParameters: {
+                      'runClubId': action.run.runClubId,
+                      'runId': action.run.id,
+                    },
+                  );
+                },
+                onBackHome: () {
+                  Navigator.of(routeContext).pop();
+                  GoRouter.of(context).goNamed(Routes.dashboardScreen.name);
+                },
+              ),
+            ),
+          );
+        });
       case RunArrivalActionKind.takeAttendance:
         GoRouter.of(context).pushNamed(
           Routes.attendanceSheet.name,

@@ -267,6 +267,8 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
                 currentUid: uid,
                 otherName: profile?.name ?? 'your match',
                 scrollController: _scrollController,
+                onRetry: () =>
+                    ref.invalidate(watchChatMessagesProvider(widget.matchId)),
               ),
             ),
             ChatInputBar(

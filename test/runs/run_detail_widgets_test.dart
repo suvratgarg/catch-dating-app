@@ -17,6 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../run_clubs/run_clubs_test_helpers.dart' show FakeRunClubsRepository;
+import '../test_pump_helpers.dart';
 import 'runs_test_helpers.dart';
 
 void main() {
@@ -76,7 +77,8 @@ void main() {
         ],
       );
 
-      expect(find.text('Run not found.'), findsOneWidget);
+      expect(find.text('Run not found'), findsOneWidget);
+      expect(find.text('This run is no longer available.'), findsOneWidget);
     });
 
     testWidgets('renders the loaded state', (tester) async {
@@ -516,7 +518,9 @@ void main() {
       expect(find.text('Write a review'), findsNothing);
     });
 
-    testWidgets('shows a snackbar after a successful booking', (tester) async {
+    testWidgets('shows a full-screen celebration after a successful booking', (
+      tester,
+    ) async {
       await pumpRunsTestApp(
         tester,
         RunDetailBody(
@@ -536,9 +540,11 @@ void main() {
       );
 
       await tester.tap(find.text('Join run — 20 spots left'));
-      await tester.pump();
+      await pumpFeatureUi(tester);
 
-      expect(find.text('Booking confirmed!'), findsOneWidget);
+      expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
+      expect(find.text("You're in."), findsOneWidget);
+      expect(find.text('View run'), findsOneWidget);
     });
 
     testWidgets('shows a snackbar after cancelling a booking', (tester) async {

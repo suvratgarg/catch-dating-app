@@ -1,3 +1,6 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:flutter/material.dart';
 
 class CardPhotoSection extends StatelessWidget {
@@ -23,26 +26,62 @@ class CardPhotoSection extends StatelessWidget {
             Image.network(
               url!,
               fit: BoxFit.cover,
-              errorBuilder: (_, _, _) =>
-                  const ColoredBox(color: Color(0xFF2A2A2A)),
+              errorBuilder: (_, _, _) => const _PhotoFallback(),
             )
           else
-            const ColoredBox(color: Color(0xFF2A2A2A)),
+            const _PhotoFallback(),
 
           if (overlayChild != null) ...[
-            const DecoratedBox(
+            DecoratedBox(
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  stops: [0.45, 1.0],
-                  colors: [Colors.transparent, Color(0xD8000000)],
+                  stops: const [0.0, 0.42, 1.0],
+                  colors: [
+                    Colors.black.withValues(alpha: 0.12),
+                    Colors.transparent,
+                    Colors.black.withValues(alpha: 0.86),
+                  ],
                 ),
               ),
             ),
             Positioned(left: 20, right: 20, bottom: 28, child: overlayChild!),
           ],
         ],
+      ),
+    );
+  }
+}
+
+class _PhotoFallback extends StatelessWidget {
+  const _PhotoFallback();
+
+  @override
+  Widget build(BuildContext context) {
+    final palette = ProfileCardPalette.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(gradient: palette.photoPlaceholder),
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.person_rounded,
+              color: palette.textMuted.withValues(alpha: 0.72),
+              size: 52,
+            ),
+            gapH8,
+            Text(
+              'Photo coming soon',
+              style: CatchTextStyles.labelL(
+                context,
+                color: palette.textSecondary,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

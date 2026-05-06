@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_info_chip.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_section_card.dart';
@@ -13,8 +14,8 @@ class ProfileRunningSection extends StatelessWidget {
     return ProfileSectionCard(
       title: 'RUNNING',
       child: Wrap(
-        spacing: 8,
-        runSpacing: 8,
+        spacing: CatchSpacing.s2,
+        runSpacing: CatchSpacing.s2,
         children: [
           for (final item in items)
             ProfileInfoChip(icon: item.icon, text: item.text),

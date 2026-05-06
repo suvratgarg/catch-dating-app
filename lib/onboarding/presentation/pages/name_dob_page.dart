@@ -116,6 +116,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.givenName],
+                    helperText:
+                        'Starts your public display name. You can edit it later or use an initial.',
                     validator: (v) =>
                         validateRequiredProfileName(v, label: 'First name'),
                   ),
@@ -128,6 +130,8 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.familyName],
+                    helperText:
+                        'Private. We never show this on your public profile.',
                     validator: (v) =>
                         validateRequiredProfileName(v, label: 'Last name'),
                   ),

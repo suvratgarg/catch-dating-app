@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 2.3.0
+version: 2.3.2
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
@@ -40,9 +40,10 @@ section unless the task requires a full historical audit.
 | Widget inventory and reusable widget guidance | `widget_catalog.md` | Catalog of Flutter widgets, primitive APIs, feature ownership notes, and catalog-update rules for material widget architecture changes. |
 | Sliver layout guidance | `sliver_layout_guide.md` | Sliver-native screen pattern, performance tradeoffs, migration rubric, and Catch code examples. |
 | Controller architecture | `controller_patterns.md` | Current controller/view-model patterns, UI/controller boundary rules, and realtime stream lifecycle ownership guidance. |
-| Error handling | `error-handling-audit.md` | Error-handling architecture snapshot, branded app error surface guidance, and remediation history. Re-verify before acting on counts. |
+| Error handling | `error-handling-audit.md` | Error-handling architecture snapshot, Error 101 guide, app error catalogue, naming conventions, branded app error surface guidance, and remediation history. Re-verify before acting on counts. |
 | Pre-launch readiness | `pre_launch_audit_2026_05_04.md` | Launch/security/UX audit snapshot and launch checklist context. |
 | Deployment | `deploy_runbook_2026_05_04.md` | Deployment order and operational prerequisites for May 2026 audit changes. |
+| Firestore and Functions data contracts | `firestore_functions_data_contract_tracker.md` | Firestore rules, Cloud Functions boundaries, schema drift, contract-test workflow, and rules emulator requirements. |
 | Firestore type sync | `firestore_type_sync_2026_05_05.md` | Dart-to-TypeScript Firestore type-generation workflow and rationale. |
 | Historical architecture audit | `architecture-audit.md` | Historical state-management audit. Use `controller_patterns.md` for current controller guidance. |
 | Recursive audit registry | `audit_registry/` | Machine-readable file inventory, pass receipts, active rules, backlog, compact doc summaries, and doc versions for repeated cleanup loops. |

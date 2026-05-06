@@ -11,6 +11,7 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   name: json['name'] as String,
   firstName: json['firstName'] as String? ?? '',
   lastName: json['lastName'] as String? ?? '',
+  displayName: json['displayName'] as String? ?? '',
   dateOfBirth: const TimestampConverter().fromJson(
     json['dateOfBirth'] as Timestamp,
   ),
@@ -87,6 +88,7 @@ Map<String, dynamic> _$UserProfileToJson(
   'name': instance.name,
   'firstName': instance.firstName,
   'lastName': instance.lastName,
+  'displayName': instance.displayName,
   'dateOfBirth': const TimestampConverter().toJson(instance.dateOfBirth),
   'gender': _$GenderEnumMap[instance.gender]!,
   'phoneNumber': instance.phoneNumber,

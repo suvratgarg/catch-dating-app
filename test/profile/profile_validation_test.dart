@@ -50,6 +50,8 @@ void main() {
         'Name is required',
       );
       expect(validateRequiredProfileName('Suvrat', label: 'Name'), isNull);
+      expect(validateRequiredDisplayName('   '), 'Display name is required');
+      expect(validateRequiredDisplayName('S.'), isNull);
       expect(validateRequiredPhoneNumber(''), 'Phone is required');
       expect(validateOptionalEmail('not-an-email'), 'Enter a valid email');
       expect(validateOptionalEmail('runner@example.com'), isNull);

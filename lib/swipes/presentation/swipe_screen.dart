@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -77,7 +78,13 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
       ),
       body: queueAsync.when(
         loading: () => const CatchLoadingIndicator(),
-        error: (e, _) => CatchErrorText(e),
+        error: (e, _) => CatchErrorState.fromError(
+          e,
+          context: AppErrorContext.profile,
+          onRetry: () => ref.invalidate(
+            swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds),
+          ),
+        ),
         data: (profiles) => profiles.isEmpty
             ? SwipeEmptyState(
                 content: buildSwipeEmptyContent(

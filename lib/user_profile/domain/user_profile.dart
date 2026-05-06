@@ -181,6 +181,7 @@ abstract class UserProfile with _$UserProfile {
     required String name,
     @Default('') String firstName,
     @Default('') String lastName,
+    @Default('') String displayName,
     @TimestampConverter() required DateTime dateOfBirth,
     required Gender gender,
     required String phoneNumber,
@@ -252,6 +253,8 @@ abstract class UserProfile with _$UserProfile {
   }
 
   String get publicDisplayName {
+    final display = displayName.trim();
+    if (display.isNotEmpty) return display;
     final first = firstName.trim();
     if (first.isNotEmpty) return first;
     final legacyName = name.trim();

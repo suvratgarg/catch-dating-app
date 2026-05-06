@@ -53,6 +53,26 @@
         "Code generation is enforced by CI or a repository-local dev daemon"
       ]
     },
+    "FIRESTORE-RULES-TEST-001": {
+      "title": "Run Firestore rules tests under the Firestore emulator",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "audit_rules",
+        "version": "2.4.4"
+      },
+      "applies_to": [
+        "firestore.rules",
+        "functions/test/firestore.rules.test.cjs",
+        "functions/package.json",
+        "firebase.json",
+        "docs/**"
+      ],
+      "instruction": "Do not run the Firestore rules suite as a standalone Node/npm test unless a Firestore emulator is already running on 127.0.0.1:8080. From the repo root, prefer `firebase emulators:exec --only firestore \"npm --prefix functions run test:rules\"`. Treat `connect ECONNREFUSED 127.0.0.1:8080` as an emulator-workflow failure first, not proof that the rules or tests are broken.",
+      "sunset_when": [
+        "A wrapper script or CI-only command makes the emulator requirement impossible to bypass",
+        "Functions README and data-contract tracker stay in sync for three rules passes"
+      ]
+    },
     "DESIGN-PRIMITIVES-001": {
       "title": "Prefer shared design primitives over repeated local shells",
       "status": "active",
@@ -177,10 +197,29 @@
         "lib/core/widgets/**",
         "test/**/*.dart"
       ],
-      "instruction": "Do not add new raw Center(Text(...)) or bare CatchErrorText full-screen errors. Route app-facing data-load failures through a branded full-screen/sliver/inline error primitive with mapped user copy and optional retry. Keep CatchFrameworkErrorView for Flutter framework crashes only.",
+      "instruction": "Do not add new raw Center(Text(...)) full-screen errors or reintroduce CatchErrorText-style compatibility wrappers. Route app-facing data-load failures through CatchErrorState, CatchErrorScaffold, CatchSliverErrorState, or CatchInlineErrorState with appErrorMessage/appErrorTitle mapped copy and optional retry. Keep CatchFrameworkErrorView for Flutter framework crashes only, ErrorBanner for inline mutation/form failures, and showCatchErrorSnackBar for transient action failures.",
       "sunset_when": [
         "A canonical app error primitive covers full-screen, sliver, and inline contexts",
         "Existing AsyncValue error branches have migrated away from raw centered text except where explicitly justified"
+      ]
+    },
+    "ERROR-CATALOG-001": {
+      "title": "Keep the app error catalogue current",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "error_handling_audit",
+        "version": "2.3.0"
+      },
+      "applies_to": [
+        "lib/exceptions/**",
+        "lib/core/*error*",
+        "lib/core/widgets/catch_error*",
+        "lib/**/presentation/**",
+        "docs/error-handling-audit.md"
+      ],
+      "instruction": "When adding, renaming, or removing an AppException subclass, stable error code, error mapper, AppErrorContext, branded error primitive, or repeated app-facing failure category, update the catalogue, naming convention, and decision-tree sections in docs/error-handling-audit.md in the same pass. Add typed exceptions only for stable product/domain errors that need branching, analytics, retry policy, or tests; use mapped copy for one-off message changes.",
+      "sunset_when": [
+        "A generated or CI-backed error catalogue check validates subclass/code/doc parity"
       ]
     },
     "FLOW-MUTATION-001": {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/location_service.dart';
@@ -32,9 +34,7 @@ class MyApp extends ConsumerWidget {
         GlobalCupertinoLocalizations.delegate,
         CountryLocalizations.getDelegate(enableLocalization: false),
       ],
-      supportedLocales: const [
-        Locale('en'),
-      ],
+      supportedLocales: const [Locale('en')],
       theme: AppTheme.light,
       darkTheme: AppTheme.dark,
       routerConfig: goRouter,
@@ -72,14 +72,7 @@ class MyApp extends ConsumerWidget {
       return _ForceUpdateCheckErrorScreen(
         error: forceUpdate.error,
         onRetry: () {
-          ref
-              .read(firebaseRemoteConfigProvider)
-              .fetchAndActivate()
-              .whenComplete(() {
-            ref.invalidate(appVersionConfigProvider);
-            ref.invalidate(appPackageInfoProvider);
-            ref.invalidate(forceUpdateRequiredProvider);
-          });
+          unawaited(_refreshForceUpdateGate(ref, invalidatePackageInfo: true));
         },
       );
     }
@@ -91,10 +84,7 @@ class MyApp extends ConsumerWidget {
 /// Re-fetches Remote Config when the app is foregrounded so the force-update
 /// gate stays fresh during long-running app sessions.
 class _ForceUpdateLifecycleWrapper extends StatefulWidget {
-  const _ForceUpdateLifecycleWrapper({
-    required this.ref,
-    required this.child,
-  });
+  const _ForceUpdateLifecycleWrapper({required this.ref, required this.child});
 
   final WidgetRef ref;
   final Widget child;
@@ -122,20 +112,38 @@ class _ForceUpdateLifecycleWrapperState
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
-      widget.ref
-          .read(firebaseRemoteConfigProvider)
-          .fetchAndActivate()
-          .then((_) {
-        if (mounted) {
-          widget.ref.invalidate(appVersionConfigProvider);
-          widget.ref.invalidate(forceUpdateRequiredProvider);
-        }
-      });
+      unawaited(
+        _refreshForceUpdateGate(
+          widget.ref,
+          invalidatePackageInfo: false,
+          shouldInvalidate: () => mounted,
+        ),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) => widget.child;
+}
+
+Future<void> _refreshForceUpdateGate(
+  WidgetRef ref, {
+  required bool invalidatePackageInfo,
+  bool Function()? shouldInvalidate,
+}) async {
+  try {
+    await ref.read(firebaseRemoteConfigProvider).fetchAndActivate();
+  } catch (error) {
+    debugPrint('Remote Config refresh failed: $error');
+  }
+
+  if (shouldInvalidate?.call() == false) return;
+
+  ref.invalidate(appVersionConfigProvider);
+  if (invalidatePackageInfo) {
+    ref.invalidate(appPackageInfoProvider);
+  }
+  ref.invalidate(forceUpdateRequiredProvider);
 }
 
 class _ForceUpdateCheckLoadingScreen extends StatelessWidget {

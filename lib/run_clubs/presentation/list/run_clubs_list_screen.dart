@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
@@ -13,6 +14,10 @@ class RunClubsListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    if (!isAppShellTabActive(context, appShellClubsTabIndex)) {
+      return Scaffold(backgroundColor: t.bg);
+    }
+
     final city = ref.watch(selectedRunClubCityProvider);
     final query = ref.watch(runClubSearchQueryProvider).trim();
     final sourceClubCount =

@@ -3,10 +3,10 @@ import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_check_in_location_service.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'run_booking_controller.g.dart';
@@ -113,17 +113,11 @@ class RunBookingController extends _$RunBookingController {
   Future<void> selfCheckIn({required String runId}) async {
     _requireSignedIn(action: 'check in to a run');
 
-    // Obtain current position. On failure (permission denied, GPS off,
-    // location services disabled), let the error propagate into the
-    // mutation error state so the UI can display it.
-    final position = await Geolocator.getCurrentPosition(
-      locationSettings: const LocationSettings(
-        accuracy: LocationAccuracy.high,
-        // 15-second timeout — if GPS can't get a fix, fail fast so the
-        // user isn't staring at a spinner.
-        timeLimit: Duration(seconds: 15),
-      ),
-    );
+    // On failure (permission denied, GPS off, location services disabled), let
+    // the error propagate into the mutation error state so the UI can display it.
+    final position = await ref
+        .read(runCheckInLocationServiceProvider)
+        .getCurrentLocation();
 
     await ref
         .read(runRepositoryProvider)

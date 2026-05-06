@@ -1,0 +1,20 @@
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  testWidgets('Find a run CTA stays legible in dark mode', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.dark,
+        home: const Scaffold(body: EmptyHeroCard()),
+      ),
+    );
+
+    final label = tester.widget<Text>(find.text('Find a run near me'));
+
+    expect(label.style?.color, CatchTokens.sunsetLight.ink);
+  });
+}

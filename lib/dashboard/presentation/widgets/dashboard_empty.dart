@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
@@ -56,74 +55,67 @@ class DashboardEmpty extends StatelessWidget {
                 name: firstName,
               ),
             ).buildSlivers(context),
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(
-                CatchSpacing.s5,
-                CatchSpacing.s1,
-                CatchSpacing.s5,
-                CatchSpacing.s6,
-              ),
-              sliver: SliverList(
-                delegate: SliverChildListDelegate([
-                  const EmptyHeroCard(),
-                  gapH20,
-                  Text(
-                    'How Catch works',
-                    style: CatchTextStyles.titleL(context),
-                  ),
-                  gapH10,
-                  ...List.generate(_steps.length, (i) {
-                    final s = _steps[i];
-                    return Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: Sizes.p14,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                s.$1,
-                                style: CatchTextStyles.mono(
-                                  context,
-                                  color: t.primary,
-                                ),
-                              ),
-                              gapW14,
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      s.$2,
-                                      style: CatchTextStyles.titleM(context),
-                                    ),
-                                    gapH3,
-                                    Text(
-                                      s.$3,
-                                      style: CatchTextStyles.bodyS(context),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        if (i < _steps.length - 1)
-                          Divider(color: t.line, height: 1),
-                      ],
-                    );
-                  }),
-                  if (user != null) ...[
-                    gapH20,
-                    ActivitySection(uid: user!.uid, showEmptyState: false),
-                  ],
-                ]),
-              ),
-            ),
+            const DashboardEmptySliverBody(),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class DashboardEmptySliverBody extends StatelessWidget {
+  const DashboardEmptySliverBody({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s1,
+        CatchSpacing.s5,
+        CatchSpacing.s6,
+      ),
+      sliver: SliverList(
+        delegate: SliverChildListDelegate([
+          const EmptyHeroCard(),
+          gapH20,
+          Text('How Catch works', style: CatchTextStyles.titleL(context)),
+          gapH10,
+          ...List.generate(DashboardEmpty._steps.length, (i) {
+            final s = DashboardEmpty._steps[i];
+            return Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: Sizes.p14),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        s.$1,
+                        style: CatchTextStyles.mono(context, color: t.primary),
+                      ),
+                      gapW14,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(s.$2, style: CatchTextStyles.titleM(context)),
+                            gapH3,
+                            Text(s.$3, style: CatchTextStyles.bodyS(context)),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (i < DashboardEmpty._steps.length - 1)
+                  Divider(color: t.line, height: 1),
+              ],
+            );
+          }),
+        ]),
       ),
     );
   }

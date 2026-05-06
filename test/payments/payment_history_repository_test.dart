@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -112,6 +115,41 @@ void main() {
       },
     );
 
+    test('watchPaymentsForUserProvider auto-disposes when unwatched', () async {
+      final payment = buildPayment(id: 'payment-1', createdAt: DateTime(2025));
+      final cancelCompleter = Completer<void>();
+      final paymentsController = StreamController<List<Payment>>(
+        onCancel: () {
+          if (!cancelCompleter.isCompleted) cancelCompleter.complete();
+        },
+      );
+      addTearDown(() async {
+        if (!cancelCompleter.isCompleted) await paymentsController.close();
+      });
+
+      final container = ProviderContainer(
+        overrides: [
+          paymentHistoryRepositoryProvider.overrideWith(
+            (ref) =>
+                _LifecyclePaymentHistoryRepository(paymentsController.stream),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final provider = watchPaymentsForUserProvider('runner-1');
+      final subscription = container.listen(provider, (_, _) {});
+
+      paymentsController.add([payment]);
+      await container.pump();
+      expect(subscription.read().value, [payment]);
+
+      subscription.close();
+      await container.pump();
+
+      await expectLater(cancelCompleter.future, completes);
+    });
+
     test(
       'selectLatestSuccessfulPayment filters failed sign-ups and sorts newest first',
       () {
@@ -129,6 +167,16 @@ void main() {
       },
     );
   });
+}
+
+class _LifecyclePaymentHistoryRepository extends Fake
+    implements PaymentHistoryRepository {
+  _LifecyclePaymentHistoryRepository(this.paymentsStream);
+
+  final Stream<List<Payment>> paymentsStream;
+
+  @override
+  Stream<List<Payment>> watchPaymentsForUser(String userId) => paymentsStream;
 }
 
 Future<void> _seedPayment(FakeFirebaseFirestore firestore, Payment payment) {

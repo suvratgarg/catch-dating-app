@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:latlong2/latlong.dart';
@@ -24,8 +23,11 @@ class ProfileCardContent {
     final company = _trimToNull(profile.company);
 
     final attributes = <ProfileCardFact>[
-      if (profile.city != null)
-        (icon: Icons.location_on_outlined, text: profile.city!.label),
+      if (profile.relationshipGoal != null)
+        (
+          icon: Icons.favorite_border_rounded,
+          text: profile.relationshipGoal!.label,
+        ),
       if (currentUserLocation != null &&
           profile.latitude != null &&
           profile.longitude != null)
@@ -71,11 +73,6 @@ class ProfileCardContent {
     ];
 
     final running = <ProfileCardFact>[
-      (
-        icon: Icons.speed_outlined,
-        text:
-            '${formatPace(profile.paceMinSecsPerKm)}-${formatPace(profile.paceMaxSecsPerKm)} /km',
-      ),
       if (profile.preferredDistances.isNotEmpty)
         (
           icon: Icons.straighten_outlined,

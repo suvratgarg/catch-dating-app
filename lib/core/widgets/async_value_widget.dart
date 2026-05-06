@@ -1,4 +1,5 @@
-import 'package:catch_dating_app/core/firestore_error_message.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,6 +21,8 @@ class AsyncValueWidget<T> extends StatelessWidget {
     required this.data,
     this.loading,
     this.error,
+    this.errorContext = AppErrorContext.generic,
+    this.onRetry,
   });
 
   final AsyncValue<T> value;
@@ -30,15 +33,21 @@ class AsyncValueWidget<T> extends StatelessWidget {
 
   /// Optional custom error widget. Defaults to [ErrorMessageWidget].
   final Widget Function(Object error, StackTrace? stackTrace)? error;
+  final AppErrorContext errorContext;
+  final VoidCallback? onRetry;
 
   @override
   Widget build(BuildContext context) {
     return value.when(
       data: data,
       loading: loading ?? (() => const CatchLoadingIndicator()),
-      error: error ??
-          ((e, _) =>
-              Center(child: ErrorMessageWidget(firestoreErrorMessage(e)))),
+      error:
+          error ??
+          ((e, _) => CatchErrorState.fromError(
+            e,
+            context: errorContext,
+            onRetry: onRetry,
+          )),
     );
   }
 }
@@ -51,12 +60,18 @@ class AsyncValueSliverWidget<T> extends StatelessWidget {
     required this.data,
     this.loading,
     this.error,
+    this.errorContext = AppErrorContext.generic,
+    this.onRetry,
+    this.fillErrorRemaining = true,
   });
 
   final AsyncValue<T> value;
   final Widget Function(T) data;
   final Widget Function()? loading;
   final Widget Function(Object error, StackTrace? stackTrace)? error;
+  final AppErrorContext errorContext;
+  final VoidCallback? onRetry;
+  final bool fillErrorRemaining;
 
   @override
   Widget build(BuildContext context) {
@@ -65,15 +80,22 @@ class AsyncValueSliverWidget<T> extends StatelessWidget {
       loading: () => SliverToBoxAdapter(
         child: loading?.call() ?? const CatchLoadingIndicator(),
       ),
-      error: (e, st) => SliverToBoxAdapter(
-        child: error?.call(e, st) ??
-            Center(child: ErrorMessageWidget(firestoreErrorMessage(e))),
-      ),
+      error: (e, st) {
+        final custom = error?.call(e, st);
+        if (custom != null) return SliverToBoxAdapter(child: custom);
+        return CatchSliverErrorState.fromError(
+          e,
+          context: errorContext,
+          onRetry: onRetry,
+          fillRemaining: fillErrorRemaining,
+        );
+      },
     );
   }
 }
 
 /// Simple error display widget used by [AsyncValueWidget].
+@Deprecated('Use CatchErrorState instead.')
 class ErrorMessageWidget extends StatelessWidget {
   const ErrorMessageWidget(this.errorMessage, {super.key});
 

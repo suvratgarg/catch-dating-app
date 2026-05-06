@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/firestore_error_message.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -5,8 +6,10 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,6 +29,41 @@ Future<void> _saveField({
 
 String _enumName(Object value) => value is Enum ? value.name : value.toString();
 
+mixin _ProfileEditSaveState<T extends StatefulWidget> on State<T> {
+  bool _isSaving = false;
+  Object? _saveError;
+
+  bool get isSaving => _isSaving;
+
+  Future<void> saveAndPop(WidgetRef ref, Map<String, dynamic> fields) async {
+    if (_isSaving) return;
+    setState(() {
+      _isSaving = true;
+      _saveError = null;
+    });
+
+    try {
+      await _saveField(ref: ref, fields: fields);
+      if (mounted) Navigator.of(context).pop();
+    } catch (error) {
+      if (!mounted) return;
+      setState(() {
+        _isSaving = false;
+        _saveError = error;
+      });
+    }
+  }
+
+  Widget? buildSaveError() {
+    final error = _saveError;
+    if (error == null) return null;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      child: ErrorBanner(message: firestoreErrorMessage(error)),
+    );
+  }
+}
+
 // ── Text fields ────────────────────────────────────────────────────────────────
 
 Future<void> showTextEditSheet({
@@ -39,54 +77,61 @@ Future<void> showTextEditSheet({
   Iterable<String>? autofillHints,
   FormFieldValidator<String>? validator,
   Object? Function(String value)? toFieldValue,
+  Object? currentFieldValue,
 }) async {
-  final newValue = await showModalBottomSheet<String>(
+  await showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     useSafeArea: true,
     builder: (ctx) => _TextEditSheet(
+      ref: ref,
       title: title,
       currentValue: currentValue,
+      currentFieldValue: currentFieldValue ?? currentValue,
+      fieldName: fieldName,
       maxLines: fieldName == 'bio' ? 4 : 1,
       keyboardType: keyboardType,
       textCapitalization: textCapitalization,
       autofillHints: autofillHints,
       validator: validator,
+      toFieldValue: toFieldValue,
     ),
   );
-
-  if (newValue != null && newValue != currentValue) {
-    await _saveField(
-      ref: ref,
-      fields: {fieldName: toFieldValue?.call(newValue) ?? newValue},
-    );
-  }
 }
 
 class _TextEditSheet extends StatefulWidget {
   const _TextEditSheet({
+    required this.ref,
     required this.title,
     required this.currentValue,
+    required this.currentFieldValue,
+    required this.fieldName,
     required this.maxLines,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.autofillHints,
     this.validator,
+    this.toFieldValue,
   });
 
+  final WidgetRef ref;
   final String title;
   final String currentValue;
+  final Object? currentFieldValue;
+  final String fieldName;
   final int maxLines;
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
   final Iterable<String>? autofillHints;
   final FormFieldValidator<String>? validator;
+  final Object? Function(String value)? toFieldValue;
 
   @override
   State<_TextEditSheet> createState() => _TextEditSheetState();
 }
 
-class _TextEditSheetState extends State<_TextEditSheet> {
+class _TextEditSheetState extends State<_TextEditSheet>
+    with _ProfileEditSaveState<_TextEditSheet> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _controller;
 
@@ -102,9 +147,22 @@ class _TextEditSheetState extends State<_TextEditSheet> {
     super.dispose();
   }
 
-  void _submit() {
+  Future<void> _submit() async {
+    if (isSaving) return;
     if (_formKey.currentState!.validate()) {
-      Navigator.of(context).pop(_controller.text.trim());
+      final rawValue = _controller.text.trim();
+      final fieldValue = widget.toFieldValue != null
+          ? widget.toFieldValue!(rawValue)
+          : rawValue;
+      final isUnchanged =
+          fieldValue == widget.currentFieldValue ||
+          (fieldValue == null && widget.currentValue.trim().isEmpty) ||
+          (fieldValue == '' && widget.currentFieldValue == null);
+      if (isUnchanged) {
+        Navigator.of(context).pop();
+        return;
+      }
+      await saveAndPop(widget.ref, {widget.fieldName: fieldValue});
     }
   }
 
@@ -114,18 +172,32 @@ class _TextEditSheetState extends State<_TextEditSheet> {
       key: _formKey,
       child: CatchBottomSheetScaffold(
         keyboardSafe: true,
-        action: CatchButton(label: 'Done', onPressed: _submit, fullWidth: true),
-        child: CatchTextField(
-          label: widget.title,
-          controller: _controller,
-          autofocus: true,
-          maxLines: widget.maxLines,
-          keyboardType: widget.keyboardType,
-          textCapitalization: widget.textCapitalization,
-          textInputAction: TextInputAction.done,
-          autofillHints: widget.autofillHints,
-          validator: widget.validator,
-          onSubmitted: (_) => _submit(),
+        action: CatchButton(
+          label: 'Done',
+          onPressed: isSaving ? null : () => _submit(),
+          isLoading: isSaving,
+          fullWidth: true,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ?buildSaveError(),
+            CatchTextField(
+              label: widget.title,
+              controller: _controller,
+              enabled: !isSaving,
+              autofocus: true,
+              maxLines: widget.maxLines,
+              keyboardType: widget.keyboardType,
+              textCapitalization: widget.textCapitalization,
+              textInputAction: TextInputAction.done,
+              autofillHints: widget.autofillHints,
+              validator: widget.validator,
+              onSubmitted: (_) {
+                _submit();
+              },
+            ),
+          ],
         ),
       ),
     );
@@ -140,27 +212,34 @@ Future<void> showHeightEditSheet({
   required int? currentValue,
 }) async {
   final initialValue = normalizeHeightCm(currentValue);
-  final result = await showModalBottomSheet<int>(
+  await showModalBottomSheet<void>(
     context: context,
     useSafeArea: true,
-    builder: (ctx) => _HeightEditSheet(initialValue: initialValue),
+    builder: (ctx) => _HeightEditSheet(
+      ref: ref,
+      initialValue: initialValue,
+      currentValue: currentValue,
+    ),
   );
-
-  if (result != null && result != currentValue) {
-    await _saveField(ref: ref, fields: {'height': result});
-  }
 }
 
 class _HeightEditSheet extends StatefulWidget {
-  const _HeightEditSheet({required this.initialValue});
+  const _HeightEditSheet({
+    required this.ref,
+    required this.initialValue,
+    required this.currentValue,
+  });
 
   @override
   State<_HeightEditSheet> createState() => _HeightEditSheetState();
 
+  final WidgetRef ref;
   final int initialValue;
+  final int? currentValue;
 }
 
-class _HeightEditSheetState extends State<_HeightEditSheet> {
+class _HeightEditSheetState extends State<_HeightEditSheet>
+    with _ProfileEditSaveState<_HeightEditSheet> {
   late int _heightCm;
 
   @override
@@ -169,11 +248,22 @@ class _HeightEditSheetState extends State<_HeightEditSheet> {
     _heightCm = widget.initialValue;
   }
 
-  VoidCallback? get _decrease =>
-      _heightCm > minimumHeightCm ? () => setState(() => _heightCm--) : null;
+  VoidCallback? get _decrease => !isSaving && _heightCm > minimumHeightCm
+      ? () => setState(() => _heightCm--)
+      : null;
 
-  VoidCallback? get _increase =>
-      _heightCm < maximumHeightCm ? () => setState(() => _heightCm++) : null;
+  VoidCallback? get _increase => !isSaving && _heightCm < maximumHeightCm
+      ? () => setState(() => _heightCm++)
+      : null;
+
+  Future<void> _submit() async {
+    if (isSaving) return;
+    if (_heightCm == widget.currentValue) {
+      Navigator.of(context).pop();
+      return;
+    }
+    await saveAndPop(widget.ref, {'height': _heightCm});
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -184,39 +274,46 @@ class _HeightEditSheetState extends State<_HeightEditSheet> {
       subtitle: '$minimumHeightCm-$maximumHeightCm cm',
       action: CatchButton(
         label: 'Done',
-        onPressed: () => Navigator.of(context).pop(_heightCm),
+        onPressed: isSaving ? null : () => _submit(),
+        isLoading: isSaving,
         fullWidth: true,
       ),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          color: t.raised,
-          borderRadius: BorderRadius.circular(CatchRadius.md),
-          border: Border.all(color: t.line),
-        ),
-        child: Row(
-          children: [
-            IconButton(
-              tooltip: 'Decrease height',
-              icon: Icon(Icons.remove_rounded, color: t.ink),
-              onPressed: _decrease,
-              visualDensity: VisualDensity.compact,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ?buildSaveError(),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: t.raised,
+              borderRadius: BorderRadius.circular(CatchRadius.md),
+              border: Border.all(color: t.line),
             ),
-            Expanded(
-              child: Center(
-                child: Text(
-                  '$_heightCm cm',
-                  style: CatchTextStyles.mono(context),
+            child: Row(
+              children: [
+                IconButton(
+                  tooltip: 'Decrease height',
+                  icon: Icon(Icons.remove_rounded, color: t.ink),
+                  onPressed: _decrease,
+                  visualDensity: VisualDensity.compact,
                 ),
-              ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      '$_heightCm cm',
+                      style: CatchTextStyles.mono(context),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Increase height',
+                  icon: Icon(Icons.add_rounded, color: t.ink),
+                  onPressed: _increase,
+                  visualDensity: VisualDensity.compact,
+                ),
+              ],
             ),
-            IconButton(
-              tooltip: 'Increase height',
-              icon: Icon(Icons.add_rounded, color: t.ink),
-              onPressed: _increase,
-              visualDensity: VisualDensity.compact,
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -229,42 +326,128 @@ Future<void> showSingleEnumSheet<T extends Labelled>({
   required WidgetRef ref,
   required String title,
   required List<T> values,
-  required T currentValue,
+  required T? currentValue,
   required String fieldName,
 }) async {
-  final result = await showModalBottomSheet<T>(
+  await showModalBottomSheet<void>(
     context: context,
     useSafeArea: true,
-    builder: (ctx) {
-      // Track the selection locally so user sees immediate feedback.
-      T selected = currentValue;
-      return StatefulBuilder(
-        builder: (ctx, setSheetState) {
-          return CatchBottomSheetScaffold(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s4,
-              CatchSpacing.s3,
-              CatchSpacing.s4,
-              CatchSpacing.s8,
-            ),
-            child: ChipField<T>(
-              label: title,
-              values: values,
-              selected: {selected},
-              multiSelect: false,
-              onChanged: (next) {
-                setSheetState(() => selected = next.first);
-                Navigator.of(ctx).pop(next.first);
-              },
-            ),
-          );
-        },
-      );
-    },
+    builder: (ctx) => _SingleEnumEditSheet<T>(
+      ref: ref,
+      title: title,
+      values: values,
+      currentValue: currentValue,
+      fieldName: fieldName,
+    ),
   );
+}
 
-  if (result != null && result != currentValue) {
-    await _saveField(ref: ref, fields: {fieldName: _enumName(result)});
+class _SingleEnumEditSheet<T extends Labelled> extends StatefulWidget {
+  const _SingleEnumEditSheet({
+    required this.ref,
+    required this.title,
+    required this.values,
+    required this.currentValue,
+    required this.fieldName,
+  });
+
+  final WidgetRef ref;
+  final String title;
+  final List<T> values;
+  final T? currentValue;
+  final String fieldName;
+
+  @override
+  State<_SingleEnumEditSheet<T>> createState() =>
+      _SingleEnumEditSheetState<T>();
+}
+
+class _SingleEnumEditSheetState<T extends Labelled>
+    extends State<_SingleEnumEditSheet<T>>
+    with _ProfileEditSaveState<_SingleEnumEditSheet<T>> {
+  T? _pendingSelection;
+
+  @override
+  void didUpdateWidget(covariant _SingleEnumEditSheet<T> oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.fieldName != widget.fieldName ||
+        oldWidget.currentValue != widget.currentValue) {
+      _pendingSelection = null;
+    }
+  }
+
+  Future<void> _select(Set<T> next) async {
+    if (isSaving) return;
+    final selected = next.isEmpty ? null : next.first;
+    if (selected == null) return;
+    if (selected == widget.currentValue) {
+      Navigator.of(context).pop();
+      return;
+    }
+    setState(() => _pendingSelection = selected);
+    await saveAndPop(widget.ref, {widget.fieldName: _enumName(selected)});
+    if (mounted && !isSaving) {
+      setState(() => _pendingSelection = null);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selected = isSaving
+        ? _pendingSelection ?? widget.currentValue
+        : widget.currentValue;
+    return CatchBottomSheetScaffold(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+        CatchSpacing.s4,
+        CatchSpacing.s8,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ?buildSaveError(),
+          ChipField<T>(
+            key: ValueKey(
+              'single-enum-${widget.fieldName}-${selected?.label ?? 'empty'}',
+            ),
+            label: widget.title,
+            values: widget.values,
+            selected: selected == null ? <T>{} : {selected},
+            multiSelect: false,
+            enabled: !isSaving,
+            onChanged: (next) => _select(next),
+          ),
+          if (isSaving) ...[
+            gapH16,
+            _SavingInlineStatus(message: 'Saving ${widget.title}...'),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _SavingInlineStatus extends StatelessWidget {
+  const _SavingInlineStatus({required this.message});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox(
+          width: 18,
+          height: 18,
+          child: CatchLoadingIndicator(strokeWidth: 2, color: t.primary),
+        ),
+        const SizedBox(width: CatchSpacing.s2),
+        Text(message, style: CatchTextStyles.bodyS(context, color: t.ink2)),
+      ],
+    );
   }
 }
 
@@ -278,42 +461,84 @@ Future<void> showMultiEnumSheet<T extends Labelled>({
   required List<T> currentValues,
   required String fieldName,
 }) async {
-  final result = await showModalBottomSheet<List<T>>(
+  await showModalBottomSheet<void>(
     context: context,
     useSafeArea: true,
-    builder: (ctx) {
-      Set<T> selected = currentValues.toSet();
-      return StatefulBuilder(
-        builder: (ctx, setSheetState) {
-          return CatchBottomSheetScaffold(
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s4,
-              CatchSpacing.s3,
-              CatchSpacing.s4,
-              CatchSpacing.s8,
-            ),
-            action: CatchButton(
-              label: 'Done',
-              onPressed: () => Navigator.of(ctx).pop(selected.toList()),
-              fullWidth: true,
-            ),
-            child: ChipField<T>(
-              label: title,
-              values: values,
-              selected: selected,
-              multiSelect: true,
-              onChanged: (next) => setSheetState(() => selected = next),
-            ),
-          );
-        },
-      );
-    },
-  );
-
-  if (result != null) {
-    await _saveField(
+    builder: (ctx) => _MultiEnumEditSheet<T>(
       ref: ref,
-      fields: {fieldName: result.map(_enumName).toList()},
+      title: title,
+      values: values,
+      currentValues: currentValues,
+      fieldName: fieldName,
+    ),
+  );
+}
+
+class _MultiEnumEditSheet<T extends Labelled> extends StatefulWidget {
+  const _MultiEnumEditSheet({
+    required this.ref,
+    required this.title,
+    required this.values,
+    required this.currentValues,
+    required this.fieldName,
+  });
+
+  final WidgetRef ref;
+  final String title;
+  final List<T> values;
+  final List<T> currentValues;
+  final String fieldName;
+
+  @override
+  State<_MultiEnumEditSheet<T>> createState() => _MultiEnumEditSheetState<T>();
+}
+
+class _MultiEnumEditSheetState<T extends Labelled>
+    extends State<_MultiEnumEditSheet<T>>
+    with _ProfileEditSaveState<_MultiEnumEditSheet<T>> {
+  late Set<T> _selected = widget.currentValues.toSet();
+
+  Future<void> _submit() async {
+    if (isSaving) return;
+    if (_selected.length == widget.currentValues.length &&
+        _selected.containsAll(widget.currentValues)) {
+      Navigator.of(context).pop();
+      return;
+    }
+    await saveAndPop(widget.ref, {
+      widget.fieldName: _selected.map(_enumName).toList(),
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomSheetScaffold(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+        CatchSpacing.s4,
+        CatchSpacing.s8,
+      ),
+      action: CatchButton(
+        label: 'Done',
+        onPressed: isSaving ? null : () => _submit(),
+        isLoading: isSaving,
+        fullWidth: true,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ?buildSaveError(),
+          ChipField<T>(
+            label: widget.title,
+            values: widget.values,
+            selected: _selected,
+            multiSelect: true,
+            enabled: !isSaving,
+            onChanged: (next) => setState(() => _selected = next),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -336,51 +561,130 @@ Future<void> _showRangeEditSheet({
   required String minFieldName,
   required String maxFieldName,
 }) async {
-  RangeValues range = RangeValues(currentMin.toDouble(), currentMax.toDouble());
-
-  final confirmed = await showModalBottomSheet<bool>(
+  await showModalBottomSheet<void>(
     context: context,
     useSafeArea: true,
-    builder: (ctx) {
-      return StatefulBuilder(
-        builder: (ctx, setSheetState) {
-          return CatchBottomSheetScaffold(
-            title: title,
-            subtitle: displayText(range),
-            padding: const EdgeInsets.fromLTRB(
-              CatchSpacing.s4,
-              CatchSpacing.s3,
-              CatchSpacing.s4,
-              CatchSpacing.s8,
-            ),
-            action: CatchButton(
-              label: 'Done',
-              onPressed: () => Navigator.of(ctx).pop(true),
-              fullWidth: true,
-            ),
-            child: RangeSlider(
-              min: sliderMin,
-              max: sliderMax,
-              divisions: divisions,
-              values: range,
-              labels: RangeLabels(labelText(range.start), labelText(range.end)),
-              onChanged: (values) => setSheetState(() => range = values),
-            ),
-          );
-        },
-      );
-    },
+    builder: (ctx) => _RangeEditSheet(
+      ref: ref,
+      title: title,
+      currentMin: currentMin,
+      currentMax: currentMax,
+      sliderMin: sliderMin,
+      sliderMax: sliderMax,
+      divisions: divisions,
+      displayText: displayText,
+      labelText: labelText,
+      saveEndValue: saveEndValue,
+      savedCurrentMax: savedCurrentMax,
+      minFieldName: minFieldName,
+      maxFieldName: maxFieldName,
+    ),
+  );
+}
+
+class _RangeEditSheet extends StatefulWidget {
+  const _RangeEditSheet({
+    required this.ref,
+    required this.title,
+    required this.currentMin,
+    required this.currentMax,
+    required this.sliderMin,
+    required this.sliderMax,
+    required this.divisions,
+    required this.displayText,
+    required this.labelText,
+    required this.saveEndValue,
+    required this.savedCurrentMax,
+    required this.minFieldName,
+    required this.maxFieldName,
+  });
+
+  final WidgetRef ref;
+  final String title;
+  final int currentMin;
+  final int currentMax;
+  final double sliderMin;
+  final double sliderMax;
+  final int divisions;
+  final String Function(RangeValues) displayText;
+  final String Function(double) labelText;
+  final int Function(int)? saveEndValue;
+  final int? savedCurrentMax;
+  final String minFieldName;
+  final String maxFieldName;
+
+  @override
+  State<_RangeEditSheet> createState() => _RangeEditSheetState();
+}
+
+class _RangeEditSheetState extends State<_RangeEditSheet>
+    with _ProfileEditSaveState<_RangeEditSheet> {
+  late RangeValues _range = RangeValues(
+    widget.currentMin.toDouble(),
+    widget.currentMax.toDouble(),
   );
 
-  if (confirmed == true) {
-    final newMin = range.start.round();
-    final newMax = saveEndValue?.call(range.end.round()) ?? range.end.round();
-    if (newMin != currentMin || newMax != (savedCurrentMax ?? currentMax)) {
-      await _saveField(
-        ref: ref,
-        fields: {minFieldName: newMin, maxFieldName: newMax},
-      );
+  Future<void> _submit() async {
+    if (isSaving) return;
+    final newMin = _range.start.round();
+    final newMax =
+        widget.saveEndValue?.call(_range.end.round()) ?? _range.end.round();
+    if (newMin == widget.currentMin &&
+        newMax == (widget.savedCurrentMax ?? widget.currentMax)) {
+      Navigator.of(context).pop();
+      return;
     }
+    await saveAndPop(widget.ref, {
+      widget.minFieldName: newMin,
+      widget.maxFieldName: newMax,
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchBottomSheetScaffold(
+      title: widget.title,
+      subtitle: widget.displayText(_range),
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s4,
+        CatchSpacing.s3,
+        CatchSpacing.s4,
+        CatchSpacing.s8,
+      ),
+      action: CatchButton(
+        label: 'Done',
+        onPressed: isSaving ? null : () => _submit(),
+        isLoading: isSaving,
+        fullWidth: true,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          ?buildSaveError(),
+          SliderTheme(
+            data: SliderTheme.of(context).copyWith(
+              activeTickMarkColor: Colors.transparent,
+              inactiveTickMarkColor: Colors.transparent,
+              disabledActiveTickMarkColor: Colors.transparent,
+              disabledInactiveTickMarkColor: Colors.transparent,
+            ),
+            child: RangeSlider(
+              min: widget.sliderMin,
+              max: widget.sliderMax,
+              divisions: widget.divisions,
+              values: _range,
+              labels: RangeLabels(
+                widget.labelText(_range.start),
+                widget.labelText(_range.end),
+              ),
+              onChanged: isSaving
+                  ? null
+                  : (values) => setState(() => _range = values),
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

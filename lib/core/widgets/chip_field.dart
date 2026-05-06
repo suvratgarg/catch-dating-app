@@ -19,6 +19,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
     required this.selected,
     required this.multiSelect,
     required this.onChanged,
+    this.enabled = true,
     this.isOptional = false,
     this.validator,
     this.chipKeyBuilder,
@@ -32,6 +33,7 @@ class ChipField<T extends Labelled> extends StatelessWidget {
 
   final bool multiSelect;
   final void Function(Set<T> next) onChanged;
+  final bool enabled;
   final bool isOptional;
   final FormFieldValidator<Set<T>>? validator;
   final Key? Function(T value)? chipKeyBuilder;
@@ -61,6 +63,10 @@ class ChipField<T extends Labelled> extends StatelessWidget {
                 key: chipKeyBuilder?.call(v),
                 label: v.label,
                 active: isSelected,
+                icon: multiSelect && isSelected
+                    ? const Icon(Icons.check_rounded)
+                    : null,
+                enabled: enabled,
                 onTap: () {
                   final next = Set<T>.from(selected);
                   if (!multiSelect) {

@@ -1,3 +1,7 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:flutter/material.dart';
 
 class ProfileInfoChip extends StatelessWidget {
@@ -8,25 +12,26 @@ class ProfileInfoChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final palette = ProfileCardPalette.of(context);
+
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: Colors.white.withAlpha(18),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: Colors.white.withAlpha(40)),
+        color: palette.chipFill,
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+        border: Border.all(color: palette.chipBorder),
       ),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: Colors.white70, size: 15),
-            const SizedBox(width: 6),
+            Icon(icon, color: palette.textSecondary, size: 15),
+            gapW6,
             Text(
               text,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 13,
-                fontWeight: FontWeight.w500,
+              style: CatchTextStyles.labelL(
+                context,
+                color: palette.textPrimary,
               ),
             ),
           ],

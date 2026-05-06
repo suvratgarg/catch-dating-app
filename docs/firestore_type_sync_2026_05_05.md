@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_type_sync
-version: 2.0.0
-updated: 2026-05-05
+version: 2.0.1
+updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -17,6 +17,13 @@ and validation commands instead of assuming the generated contract is current.
 **Date:** 2026-05-05
 **Context:** Eliminating manual Dart ↔ TypeScript type drift that caused production errors when model fields or enum values fell out of sync.
 **Status:** Implemented and enforced in CI.
+
+## Latest Schema Sync Note
+
+On 2026-05-06, `UserProfile.displayName` was added to the Dart model and
+`functions/src/shared/firestore.ts` was regenerated from
+`tool/generate_firestore_types.dart`. This is the expected workflow for
+profile schema changes: do not hand-edit the generated TypeScript interface.
 
 ---
 

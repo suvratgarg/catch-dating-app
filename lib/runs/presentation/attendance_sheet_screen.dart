@@ -1,8 +1,9 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -43,10 +44,17 @@ class AttendanceSheetScreen extends ConsumerWidget {
       ),
       body: runAsync.when(
         loading: () => const CatchLoadingIndicator(),
-        error: (e, _) => CatchErrorText(e),
+        error: (e, _) => CatchErrorState.fromError(
+          e,
+          context: AppErrorContext.run,
+          onRetry: () => ref.invalidate(watchRunProvider(runId)),
+        ),
         data: (run) {
           if (run == null) {
-            return const Center(child: Text('Run not found.'));
+            return const CatchErrorState(
+              title: 'Run not found',
+              message: 'This run is no longer available.',
+            );
           }
           return _AttendanceList(run: run);
         },
@@ -97,7 +105,15 @@ class _AttendanceList extends ConsumerWidget {
           child: profilesAsync.isLoading
               ? const CatchLoadingIndicator()
               : profilesAsync.hasError
-              ? CatchErrorText(profilesAsync.error!)
+              ? Padding(
+                  padding: const EdgeInsets.all(CatchSpacing.s5),
+                  child: CatchInlineErrorState.fromError(
+                    profilesAsync.error!,
+                    context: AppErrorContext.run,
+                    onRetry: () =>
+                        ref.invalidate(runnerProfilesProvider(signedUpIds)),
+                  ),
+                )
               : ListView.separated(
                   padding: const EdgeInsets.fromLTRB(
                     CatchSpacing.s5,

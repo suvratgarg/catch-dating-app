@@ -1,17 +1,21 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
+import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_check_in_location_service.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -81,6 +85,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('Unable to load your booked runs.'), findsOneWidget);
+      expect(find.text('Try again'), findsOneWidget);
       expect(find.text("Let's find your first run"), findsNothing);
     });
 
@@ -133,6 +138,11 @@ void main() {
             dashboardRecommendedRunsProvider(
               _recommendationsQueryForUser(user),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
+            runRepositoryProvider.overrideWithValue(FakeRunRepository()),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+            runCheckInLocationServiceProvider.overrideWithValue(
+              const _FakeRunCheckInLocationService(),
+            ),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -144,8 +154,41 @@ void main() {
 
       await tester.pump();
 
-      expect(find.byType(DashboardFull), findsOneWidget);
+      expect(find.byType(DashboardFullSliverBody), findsOneWidget);
       expect(find.textContaining('NEXT RUN'), findsOneWidget);
+    });
+
+    testWidgets('uses native Dashboard and Activity tabs', (tester) async {
+      final user = buildUser(uid: 'runner-1');
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchSignedUpRunsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            watchMatchesForUserProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Match>>([])),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const DashboardScreen(),
+          ),
+        ),
+      );
+
+      await tester.pump();
+
+      expect(find.text('Dashboard'), findsOneWidget);
+      expect(find.text('Activity'), findsOneWidget);
+      expect(find.text("Let's find your first run"), findsOneWidget);
+
+      await tester.tap(find.text('Activity'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('No new activity'), findsOneWidget);
     });
 
     testWidgets('pauses dashboard streams while the Home tab is inactive', (
@@ -242,6 +285,11 @@ void main() {
             dashboardRecommendedRunsProvider(
               _recommendationsQueryForUser(user),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
+            runRepositoryProvider.overrideWithValue(FakeRunRepository()),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+            runCheckInLocationServiceProvider.overrideWithValue(
+              const _FakeRunCheckInLocationService(),
+            ),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -369,7 +417,12 @@ void main() {
           ),
         );
 
-        await tester.pump();
+        await _pumpDashboardUi(tester);
+        await tester.drag(
+          find.byKey(DashboardFull.scrollViewKey),
+          const Offset(0, -500),
+        );
+        await _pumpDashboardUi(tester);
 
         expect(find.text('Unable to load recommended runs.'), findsOneWidget);
       },
@@ -459,6 +512,11 @@ void main() {
             dashboardRecommendedRunsProvider(
               _recommendationsQueryForUser(user),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
+            runRepositoryProvider.overrideWithValue(FakeRunRepository()),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+            runCheckInLocationServiceProvider.overrideWithValue(
+              const _FakeRunCheckInLocationService(),
+            ),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -502,6 +560,11 @@ void main() {
             dashboardRecommendedRunsProvider(
               _recommendationsQueryForUser(user),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
+            runRepositoryProvider.overrideWithValue(FakeRunRepository()),
+            uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
+            runCheckInLocationServiceProvider.overrideWithValue(
+              const _FakeRunCheckInLocationService(),
+            ),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -519,6 +582,12 @@ void main() {
         tester.getTopLeft(find.text('CHECK-IN OPEN')).dy,
         lessThan(tester.getTopLeft(find.textContaining('NEXT RUN')).dy),
       );
+
+      await tester.tap(find.text('Check in'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('CHECKED IN'), findsOneWidget);
+      expect(find.text('Checked in.'), findsOneWidget);
     });
 
     testWidgets('shows host attendance as the first dashboard content card', (
@@ -648,6 +717,15 @@ void main() {
       expect(find.text('Calendar screen'), findsOneWidget);
     });
   });
+}
+
+class _FakeRunCheckInLocationService implements RunCheckInLocationService {
+  const _FakeRunCheckInLocationService();
+
+  @override
+  Future<RunCheckInLocation> getCurrentLocation() async {
+    return const RunCheckInLocation(latitude: 19.07, longitude: 72.87);
+  }
 }
 
 Future<void> _pumpDashboardUi(WidgetTester tester) async {

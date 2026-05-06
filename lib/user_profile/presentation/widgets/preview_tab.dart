@@ -3,13 +3,23 @@ import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
 import 'package:flutter/material.dart';
 
 class PreviewTab extends StatelessWidget {
-  const PreviewTab({super.key, required this.profile, this.scrollController});
+  const PreviewTab({
+    super.key,
+    required this.profile,
+    this.scrollController,
+    this.onLeadingOverscroll,
+  });
 
   final PublicProfile profile;
   final ScrollController? scrollController;
+  final ValueChanged<double>? onLeadingOverscroll;
 
   @override
   Widget build(BuildContext context) {
-    return ProfileCard(profile: profile, scrollController: scrollController);
+    return ProfileCard(
+      profile: profile,
+      scrollController: scrollController,
+      onLeadingOverscroll: onLeadingOverscroll,
+    );
   }
 }

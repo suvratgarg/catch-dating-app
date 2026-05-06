@@ -1,6 +1,6 @@
 ---
 doc_id: error_handling_audit
-version: 2.1.0
+version: 2.3.1
 updated: 2026-05-06
 owner: recursive_audit_loop
 status: snapshot
@@ -19,42 +19,92 @@ Use this as an error-handling snapshot and remediation map. Re-run focused
 searches/tests before treating counts as current. Stamp files reviewed against
 this doc in the audit registry rather than copying findings into new trackers.
 
-## Current Guidance Addendum
+## Current State of Truth
 
-### 2026-05-06: Branded Error Surface Gap
+### 2026-05-06: Error Catalogue Decision
 
-The app now has a branded Flutter framework-crash fallback,
-`CatchFrameworkErrorView`, used for widget build/layout failures from
-`ErrorWidget.builder`. That is not the same thing as a canonical app data-load
-error surface.
+Yes, the app should invest in a curated sealed error catalogue, but not in a
+new sealed class for every possible vendor code, screen copy variant, or
+one-off edge case.
 
-Current app-facing primitives are fragmented:
+The app already has a sealed `AppException` root in
+`lib/exceptions/app_exception.dart`. That is the correct foundation. Going
+forward, add a new `AppException` subclass only when the error is a stable
+product/domain concept that code, analytics, tests, or retry behavior need to
+distinguish. Do not add subclasses merely to change copy on one screen; that
+belongs in `appErrorTitle`, `appErrorMessage`, feature-specific message
+mappers, or UI context.
 
-- `CatchFrameworkErrorView` handles framework errors and must stay minimal and
-  robust because the normal widget tree may already be failing.
-- `ErrorBanner` handles inline mutation or form errors.
-- `MutationErrorSnackbarListener` handles transient mutation failures.
-- `CatchErrorText` and `AsyncValueWidget` still render mostly raw centered text.
-- Several screens use `CatchEmptyState` as an error state, but the icon, copy,
-  retry affordance, and sliver/full-screen layout contracts are not centralized.
+Use this rule:
 
-Going forward, screen-level and sliver-level data-load failures should migrate
-to one branded app error primitive rather than local `Center(Text(...))` or
-`CatchErrorText` branches. The intended primitive should support:
+- **Typed exception:** the app needs branching, analytics, retry rules,
+  auditing, or tests around the error.
+- **Mapped message/code:** the app only needs better user-facing copy for an
+  existing error family.
+- **Logged unexpected error:** the error is a bug or unknown failure path and
+  should not become a product contract until it repeats or requires UX.
 
-- full-screen scaffold usage for tab/root screens;
-- sliver usage inside `CustomScrollView` / `SliverFillRemaining`;
-- inline/card usage inside an existing section;
-- mapped user-facing copy via `firestoreErrorMessage`, `authErrorMessage`, or a
-  feature-specific message mapper;
-- optional retry action via `ref.invalidate(provider)` or controller refresh;
-- no debug stack trace in normal app UI.
+The error catalogue lives in this document. Any pass that adds, renames, or
+removes an `AppException`, error code, error mapper, app error context, or
+error primitive must update this document and stamp `ERROR-CATALOG-001`.
 
-Until that primitive exists, new code should prefer `CatchEmptyState` for
-branded visual layout and avoid introducing new raw centered error text.
+### 2026-05-06: Branded Error Surface Foundation
 
-**Date:** 2026-05-03
-**Scope:** Complete mapping of exception types, error propagation paths, user-facing error rendering, logging/telemetry, and gap analysis.
+The first `ERROR-UI-QUEUE` implementation pass created the canonical app-facing
+error primitives:
+
+- `CatchErrorState` for branded error content.
+- `CatchErrorScaffold` for root-tab/full-screen load failures.
+- `CatchSliverErrorState` for sliver-native load failures.
+- `CatchInlineErrorState` for compact section-level failures.
+- `showCatchErrorSnackBar` for transient action failures.
+- `appErrorMessage` / `appErrorTitle` as UI-facing message/title facades over
+  existing Firestore and auth mappers.
+
+`CatchFrameworkErrorView` remains separate for Flutter framework/build errors
+because `ErrorWidget.builder` runs while the widget tree may already be
+unstable. `ErrorBanner` remains the inline mutation/form error primitive.
+`CatchErrorText` was removed after the hard migration; do not reintroduce
+compatibility wrappers for app-facing load failures unless there is a specific
+measured need.
+
+Migrated in the first branded batch: Dashboard root errors, Profile root
+errors, Run Clubs list/detail errors, Chats list/thread errors, Catches hub
+errors, and the swipe queue error branch. The scanner reports the remaining raw
+error-surface candidates so later passes can migrate payments, routing
+wrappers, run detail, run map, attendance, filters, and recap screens.
+
+### Error 101 for Catch
+
+In Dart, exceptions are unchecked: methods do not declare what they throw, and
+any non-null object can technically be thrown. Production code should throw
+typed `Exception`/`Error` objects rather than strings or ad hoc objects. For
+this app, that means repositories and controllers should throw typed
+`AppException`s for expected product failures and let truly unexpected bugs flow
+to `ErrorLogger`.
+
+Separate these concerns:
+
+- **Origin:** Firebase, platform plugins, validation code, repositories,
+  controllers, widgets, or Flutter itself.
+- **Classification:** expected product failure, network/offline condition,
+  permission/auth problem, missing data, validation failure, user-cancelled
+  action, or unexpected bug.
+- **Transport:** `Future`, Firestore `Stream`, Riverpod `AsyncValue`, Riverpod
+  `Mutation`, Flutter framework callback, or platform-dispatcher callback.
+- **Presentation:** full-screen, sliver, inline section, form/banner, snackbar,
+  or framework-crash fallback.
+- **Telemetry:** `AsyncErrorLogger`, `ErrorLogger`, Crashlytics, analytics, and
+  local debug logs.
+
+The core habit is: classify low-level errors once near the boundary, propagate
+typed errors through providers/controllers, render them with a branded surface,
+and log unexpected failures without leaking stack traces or vendor messages to
+normal users.
+
+**Date:** 2026-05-06
+**Scope:** Current error catalogue, propagation rules, UI primitives, naming
+conventions, and progressive remediation plan.
 
 ---
 
@@ -63,19 +113,23 @@ branded visual layout and avoid introducing new raw centered error text.
 1. [Executive Summary](#executive-summary)
 2. [The Error Pipeline](#the-error-pipeline)
 3. [Exception Hierarchy](#exception-hierarchy)
-4. [Repository Layer Error Handling](#repository-layer-error-handling)
-5. [Controller Layer Error Handling](#controller-layer-error-handling)
-6. [UI Layer Error Rendering](#ui-layer-error-rendering)
-7. [Logging & Telemetry](#logging--telemetry)
-8. [Silent Error Swallowing](#silent-error-swallowing)
-9. [Gap Analysis](#gap-analysis)
-10. [Remediation Progress](#remediation-progress)
+4. [Error Catalogue](#error-catalogue)
+5. [Naming Conventions](#naming-conventions)
+6. [Repository Layer Error Handling](#repository-layer-error-handling)
+7. [Controller Layer Error Handling](#controller-layer-error-handling)
+8. [UI Layer Error Rendering](#ui-layer-error-rendering)
+9. [Logging & Telemetry](#logging--telemetry)
+10. [Silent Error Swallowing](#silent-error-swallowing)
+11. [Gap Analysis](#gap-analysis)
+12. [Remediation Progress](#remediation-progress)
+13. [References](#references)
 
 ---
 
 ## Executive Summary
 
-The app's error handling grew organically without a deliberate strategy. Key findings:
+The app's error handling grew organically without a deliberate strategy. Original
+findings from the first audit were:
 
 - **11 of 16 repositories** originally had zero error handling — raw `FirebaseException` propagated unchecked to the UI. Now down to ~3 after the 2026-05-03 remediation pass.
 - **`AppException` subclasses were invisible in production** — `logAppException` only called `debugPrint` (no-op in release). No Crashlytics or Analytics events for business-impacting errors like payment failures.
@@ -85,7 +139,10 @@ The app's error handling grew organically without a deliberate strategy. Key fin
 - **Web platform had zero error reporting** — `Crashlytics` returned `null` on web with no fallback.
 - **No structured logging** — no timestamps, log levels, or contextual metadata across any error path.
 
-The 2026-05-03 remediation pass addressed the highest-impact gaps: exception hierarchy expansion, repository write wrapping, UI consolidation, dead code removal, and provider codegen consistency.
+The 2026-05-03 remediation pass addressed the highest-impact gaps: exception
+hierarchy expansion, repository write wrapping, UI consolidation, dead code
+removal, and provider codegen consistency. The 2026-05-06 pass added the
+branded app-facing error primitives and formalized this catalogue.
 
 ---
 
@@ -96,32 +153,37 @@ The error lifecycle across layers:
 ```
 Layer 1: Origin
   Repository throws FirebaseException / FirebaseFunctionsException
-  Domain validation throws ArgumentError / StateError
+  Platform plugins throw plugin exceptions
+  Domain validation currently throws ArgumentError / StateError
+  Framework build/layout failures throw through FlutterError
 
 Layer 2: Capture (Repository)
   withFirestoreErrorContext catches FirebaseException
   Maps to typed AppException (PermissionException, NetworkException, etc.)
   Re-throws as AppException
+  Feature repositories may normalize non-Firestore failures, e.g. payments
 
 Layer 3: Propagation (Controller / Provider)
   AppException propagates through Riverpod AsyncValue or Mutation state
-  Unexpected exceptions logged via ErrorLogger before rethrow ← GAP (not yet done)
+  Unexpected exceptions propagate to AsyncErrorLogger / global handlers
 
 Layer 4: Display (UI)
-  AsyncValue.when(error: ...) → firestoreErrorMessage(e) → Text widget
-  Mutation.hasError → ErrorBanner(message: mutationErrorMessage(mutation))
-  Transient actions → listenForMutationErrorSnackbar → SnackBar
+  AsyncValueWidget / AsyncValueSliverWidget → CatchErrorState family
+  Mutation.hasError → ErrorBanner for inline/form failures
+  Transient actions → showCatchErrorSnackBar
+  Framework crash → CatchFrameworkErrorView
 
 Layer 5: Telemetry
-  AsyncErrorLogger (ProviderObserver) → ErrorLogger → Crashlytics (unexpected errors)
-  AppException → debugPrint only ← GAP (not yet to Crashlytics or Analytics)
+  AsyncErrorLogger (ProviderObserver) → ErrorLogger
+  AppException → warning log; FirestoreWriteException may fire analytics
+  Unexpected errors → ErrorLogger error/fatal path and Crashlytics when enabled
 ```
 
 ---
 
 ## Exception Hierarchy
 
-### Current state (after 2026-05-03 remediation)
+### Current state (after 2026-05-06 remediation)
 
 ```
 AppException (sealed)
@@ -137,7 +199,7 @@ AppException (sealed)
 └── DocumentNotFoundException         // Doc doesn't exist
 ```
 
-**File:** `lib/exceptions/app_exception.dart` (71 lines)
+**File:** `lib/exceptions/app_exception.dart`
 
 ### What each exception carries
 
@@ -167,9 +229,69 @@ The same mapping exists for `FirebaseFunctionsException` in `_mapFunctionsExcept
 
 ### What's missing from the hierarchy
 
-- No `ValidationException` for domain validation errors (currently `StateError`/`ArgumentError` raw)
-- No `StorageException` for Firebase Storage upload failures
-- No `TimeoutException` subclass — currently folded into `NetworkException('timeout')`
+- No `ValidationException` for reusable domain/product validation errors.
+  Local `ArgumentError` / `StateError` is still acceptable for developer
+  misuse, constructor invariants, and private helper preconditions.
+- No `StorageException` / `ImageUploadException` for Firebase Storage upload
+  failures. This is a good candidate because image upload failures are
+  user-facing and need consistent retry/copy.
+- No `ExternalActionException` for URL launches, share sheets, store launches,
+  and other plugin side effects. Add this only when a touched flow needs
+  user-facing retry/analytics beyond a simple snackbar.
+- No dedicated `TimeoutException` subclass. Current policy is to keep timeout
+  under `NetworkException('timeout')` unless a timeout has product behavior
+  that differs from other connectivity failures.
+
+---
+
+## Error Catalogue
+
+This catalogue is the durable source of truth for expected app-level failures.
+When adding a row, update the subclass, mapper, UI copy, and tests in the same
+pass.
+
+| Exception | Code | Meaning | Origin | User Surface |
+|-----------|------|---------|--------|--------------|
+| `SignInRequiredException` | `sign-in-required` | User must be signed in before an action can proceed. | Auth/session guard, Firebase unauthenticated codes | Inline banner, snackbar, or auth context title |
+| `NetworkException` | `connection-failed`, `timeout`, `too-many-requests` | Connectivity, deadline, or rate-limit failure. | Firestore / Functions mapping | Branded retry surface, stale/offline banner when cached data exists |
+| `PermissionException` | `permission-denied` | User is not allowed to perform the action. | Firestore / Functions security failure | Branded error surface or inline mutation error |
+| `PaymentCancelledException` | `payment-cancelled` | User cancelled checkout. | Razorpay callback | Usually non-fatal snackbar or inline payment state |
+| `PaymentFailedException` | `payment-failed` | Razorpay returned a failed payment. | Razorpay callback | Payment screen inline error / snackbar |
+| `PaymentVerificationFailedException` | `payment-verification-failed` | Backend could not verify payment signature/status. | Payment verification function | Payment screen error with support-oriented copy |
+| `PaidBookingUnsupportedException` | `paid-booking-unsupported` | Paid bookings are unavailable on this platform. | Payment repository platform guard | Payment or booking action error |
+| `RunBookingFailedException` | `run-booking-failed` | Booking Cloud Function rejected or failed the run signup. | Run booking/payment flow | Run detail/dashboard action error |
+| `FirestoreWriteException` | Firebase code or `unexpected` | Generic data write failure after context wrapping. | `withFirestoreErrorContext` | Error mapper plus analytics/logging |
+| `DocumentNotFoundException` | `not-found` | Expected document no longer exists. | Firestore not-found mapping or missing document guard | Not-found state, not a generic crash |
+
+### Candidate Catalogue Additions
+
+| Candidate | Add When | Avoid When |
+|-----------|----------|------------|
+| `ValidationException` | The same user-correctable validation failure crosses controller/repository/widget boundaries or needs shared copy/tests. | The error is a private precondition or developer misuse; keep `ArgumentError` / `StateError`. |
+| `ImageUploadException` or `StorageException` | Upload failures need retry, analytics, or consistent profile/run-club copy. | A local picker cancellation or non-persistent image choice can be handled as a simple no-op. |
+| `ExternalActionException` | URL/share/store/plugin side effects need consistent error UI and test seams. | The action has no retry path and a simple `showCatchErrorSnackBar` is enough. |
+| `LocationException` | Location failures become user-facing and require explicit retry/permission copy. | Location is optional and failure should silently fall back to manual city selection after logging. |
+
+---
+
+## Naming Conventions
+
+- Exception class names end in `Exception`, not `Error` or `Failure`.
+- Use the product/domain noun first: `RunBookingFailedException`,
+  `PaymentVerificationFailedException`, `DocumentNotFoundException`.
+- Stable machine codes are lowercase kebab-case: `run-booking-failed`,
+  `payment-verification-failed`, `connection-failed`.
+- The exception `message` should be useful but should not be the only source of
+  screen-specific copy. UI-facing titles and context-aware phrasing belong in
+  `appErrorTitle` / `appErrorMessage` or feature message mappers.
+- Do not expose stack traces, raw Firebase server messages, or plugin object
+  dumps in normal app UI. Debug details can appear in debug-mode logs or
+  developer-only appended diagnostics.
+- Use `AppErrorContext` names that match user-facing feature domains:
+  `dashboard`, `profile`, `run`, `club`, `chat`, `payments`, `auth`, or
+  `generic`. Add contexts only when title/copy materially improves.
+- If a subclass is added, add at least one mapper/rendering test that proves the
+  user-facing copy and title remain stable.
 
 ---
 
@@ -252,21 +374,18 @@ if (joinMutation.hasError)
   ErrorBanner(message: mutationErrorMessage(joinMutation)),
 ```
 
-**Pattern 2: Controllers catch and convert specific errors**
+**Pattern 2: Controllers use auth/session guards that throw `AppException`**
 
-`RunBookingController._requireSignedIn` catches `StateError` from `requireSignedInUid` and converts to `SignInRequiredException`:
+`requireSignedInUid` now throws `SignInRequiredException` directly, so feature
+controllers do not need to catch a raw `StateError` just to normalize auth
+failures:
 
 ```dart
-String _requireSignedIn({required String action}) {
-  try {
-    return requireSignedInUid(ref, action: action);
-  } on StateError {
-    throw SignInRequiredException(action);
-  }
-}
+final uid = requireSignedInUid(ref, action: 'join a run');
 ```
 
-This conversion dance exists because `requireSignedInUid` throws `StateError` instead of `SignInRequiredException`. **Fix pending — Phase 1.4.**
+This is the preferred pattern for expected auth failures: throw a typed app
+exception at the guard boundary and let Riverpod/mutation UI handle display.
 
 **Pattern 3: OnboardingController uses Completer for async callbacks**
 
@@ -284,8 +403,12 @@ signInWithCredential(credential).catchError((e, st) {
 
 ### Gaps
 
-- **No unexpected error logging**: If a controller method throws something other than an `AppException`, it propagates to the mutation but is never logged with context (which controller, which method, which user).
-- **`requireSignedInUid` throws `StateError`**: Should throw `SignInRequiredException` directly to avoid the conversion dance.
+- **Controller context in logs is still thin**: unexpected mutation errors are
+  visible through provider/global logging, but feature/method context is not
+  always explicit. Add context when a touched controller has ambiguous failures.
+- **Validation errors are not yet catalogued**: repeated user-correctable
+  validation failures still use `ArgumentError` / `StateError`. Promote only
+  repeated product validation errors to `ValidationException`.
 
 ---
 
@@ -305,39 +428,51 @@ signInWithCredential(credential).catchError((e, st) {
 | Raw `e.toString()` in `.when()` | 1 | `run_detail_screen.dart:23` |
 | `showSnackbarOnError` extension | 0 | Dead code, zero call sites |
 
-### After remediation (2026-05-03)
+### Current state (2026-05-06)
 
 | Pattern | Count | Status |
 |---------|-------|--------|
-| `ErrorBanner` (unified) | 9 | Single canonical error banner with `onRetry` |
-| Direct `SnackBar` with hardcoded strings | ~16 | ✅ Standardized (all now log errors before showing SnackBar) |
-| `listenForMutationErrorSnackbar` | 3 | ✅ Standardized (replaced with `MutationErrorSnackbarListener` widget) |
-| `Text(firestoreErrorMessage(e))` in `.when()` | ~14 | Consistent — this is the correct pattern for async data errors |
-| Raw `e.toString()` | 0 | ✅ Fixed |
-| `showSnackbarOnError` extension | 0 | ✅ Deleted |
+| `CatchErrorState` family | New canonical path | Full-screen, sliver, and inline app-facing load failures |
+| `AsyncValueWidget` / `AsyncValueSliverWidget` | Migrated default | Branded errors by default through `appErrorTitle` / `appErrorMessage` |
+| `ErrorBanner` | Canonical mutation/form inline path | Save-before-pop forms, sheets, and persistent page actions |
+| `showCatchErrorSnackBar` | Canonical transient action path | Snackbars map through `appErrorMessage` |
+| `CatchFrameworkErrorView` | Framework crash fallback | Keep separate and minimal for `ErrorWidget.builder` |
+| `CatchErrorText` | Removed | Do not reintroduce as a compatibility layer |
+| Raw `Center(Text(...))` error branches | Scanner-tracked candidates | Migrate in `ERROR-UI-QUEUE` batches |
 
 ### Decision tree for error display
 
 | Context | Method | Widget |
 |---------|--------|--------|
-| Full-screen data load (first screen load) | `.when(error: ...)` | `Text(firestoreErrorMessage(e))` or `AsyncValueWidget` |
-| Inline mutation error (within existing content) | Mutation state check | `ErrorBanner` |
-| Transient action (bottom sheet, nav action) | Mutation listener | SnackBar (via `listenForMutationErrorSnackbar`) |
+| Full-screen/root-tab data load | `AsyncValue` error or route guard failure | `CatchErrorScaffold` |
+| Sliver-native screen load | `AsyncValue` error inside `CustomScrollView` | `CatchSliverErrorState` |
+| Section/card failure | Section-level provider or stale refresh failure | `CatchInlineErrorState` |
+| Inline mutation/form failure | Mutation state check | `ErrorBanner` |
+| Transient action failure | Mutation listener or caught action error | `showCatchErrorSnackBar` |
 | Form field validation | FormField validator | Inline `errorText` |
+| Framework/build/layout crash | `ErrorWidget.builder` | `CatchFrameworkErrorView` |
+| True empty state | successful data load with no items | `CatchEmptyState` |
 
 ### Error message translation pipeline
 
 ```
 Raw error (any type)
-  → firestoreErrorMessage(error)      // Maps FirebaseException/AppException/StateError → String
-    → Displayed to user via ErrorBanner / SnackBar / Text widget
+  → appErrorTitle(error, context: ...)
+  → appErrorMessage(error, context: ...)
+    → CatchErrorState / ErrorBanner / showCatchErrorSnackBar
 
 Auth-specific:
   → authErrorMessage(error)            // Maps FirebaseAuthException codes → String
-  → generalErrorMessage(error)         // Fallback for non-auth errors
+  → appErrorMessage(..., context: auth)
+
+Firestore/data-specific:
+  → firestoreErrorMessage(error)       // Maps FirebaseException/AppException/StateError → String
 ```
 
-**File:** `lib/core/firestore_error_message.dart` handles the central translation. In debug mode, it appends `[DEBUG Firestore <code>]` for developer diagnosis.
+`lib/core/app_error_message.dart` is the UI facade. It delegates to
+`firestoreErrorMessage` and `authErrorMessage`, while adding context-specific
+titles. In debug mode, `firestoreErrorMessage` can append Firestore diagnostic
+details for developer diagnosis.
 
 ---
 
@@ -349,7 +484,8 @@ Auth-specific:
 Error thrown
   │
   ├─→ AsyncErrorLogger (ProviderObserver, watches ALL Riverpod providers)
-  │     ├─ AppException? → debugPrint('[APP_EXCEPTION]') ONLY ← GAP
+  │     ├─ AppException? → ErrorLogger.logAppException(level: warn)
+  │     ├─ FirestoreWriteException? → optional firestore_write_failed analytics
   │     └─ Other? → ErrorLogger.logError() → Crashlytics (release + production)
   │
   ├─→ FlutterError.onError (main.dart)
@@ -366,23 +502,26 @@ Error thrown
 | Destination | What | When |
 |-------------|------|------|
 | **Crashlytics** | Unexpected errors (non-AppException) | `kReleaseMode && isProduction && !useFirebaseEmulators && !kIsWeb` |
-| **Analytics** | `firestore_write_failed` event | Defined but **never called** ← GAP |
-| **Console (debugPrint)** | All errors + AppExceptions | Debug mode only (no-op in release) |
-| **Web** | Nothing | Crashlytics returns `null` for `kIsWeb` ← GAP |
+| **Analytics** | `firestore_write_failed` event | Via `AsyncErrorLogger` when a `FirestoreWriteException` includes collection/action context |
+| **Console (debugPrint)** | Structured local logs, AppExceptions, unexpected errors | Debug/local visibility path |
+| **Web** | Console fallback | `ConsoleCrashReporter` fallback when Crashlytics is unavailable |
 
 ### Key gaps
 
-1. **AppExceptions invisible in production**: `logAppException` only calls `debugPrint`. Payment failures, permission-denied errors, sign-in-required — all silent in Crashlytics and Analytics.
+1. **Controller/mutation context is uneven**: provider-level logging sees the
+   error, but not every controller failure includes feature/action metadata.
 
-2. **`logFirestoreWriteFailed` defined but never called**: The analytics event exists (`AnalyticsEvents.firestoreWriteFailed`) but zero call sites invoke `appAnalytics.logFirestoreWriteFailed()`. Firestore write failures are completely invisible in dashboards.
+2. **Expected AppExceptions are warning-level by default**: this is intentional
+   to avoid polluting crash dashboards with user-correctable states, but
+   product-significant expected failures should still emit analytics where
+   useful.
 
-3. **Web has zero error reporting**: `ErrorLogger._defaultCrashReporter` returns `null` for `kIsWeb`. No fallback.
+3. **Error catalogue coverage is incomplete**: image uploads, reusable
+   validation failures, external action failures, and optional location failures
+   are still handled by local logic rather than typed app-level exceptions.
 
-4. **No Crashlytics user identifier**: `ErrorLogger` doesn't set a user ID. Firebase Crashlytics auto-attaches the Firebase Auth UID, but this is not explicitly configured.
-
-5. **No structured logging format**: No timestamps, log levels, module names, or session IDs in any log output.
-
-6. **FCM initialization bypasses ErrorLogger**: `AppShell._initFcm()` calls `FlutterError.reportError()` directly instead of going through `ErrorLogger`.
+4. **Some raw UI branches remain**: scanner candidates remain in payments,
+   routing wrappers, run detail, run map, attendance, filters, and run recap.
 
 ---
 
@@ -471,27 +610,58 @@ These locations catch and discard errors without any logging. They represent inv
 | Exception types | `lib/exceptions/app_exception.dart` |
 | Error wrapping utility | `lib/core/firestore_error_util.dart` |
 | User-facing error messages | `lib/core/firestore_error_message.dart` |
+| UI-facing title/message facade | `lib/core/app_error_message.dart` |
 | Auth error messages | `lib/auth/presentation/auth_error_message.dart` |
 | Central error logger | `lib/exceptions/error_logger.dart` |
 | Provider error observer | `lib/exceptions/error_logger.dart:150` (AsyncErrorLogger) |
 | Analytics error events | `lib/analytics/app_analytics.dart:112` (logFirestoreWriteFailed) |
+| Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
+| Branded error snackbar | `lib/core/widgets/catch_error_snackbar.dart` |
 | Error banner widget | `lib/core/widgets/error_banner.dart` |
 | Mutation error display | `lib/core/widgets/mutation_error_util.dart` |
-| Mutation snackbar listener | `lib/run_clubs/presentation/shared/run_clubs_mutation_feedback.dart` |
+| Mutation snackbar listener | `lib/core/widgets/mutation_error_snackbar_listener.dart` |
 | Global error handlers | `lib/main.dart:142-168` |
 
 ### Error handling decision flowchart
 
 ```
 Throwing an error:
-  In domain/validation → throw ArgumentError/StateError
+  In shared product failure → throw an AppException subclass
+  In private validation/preconditions → throw ArgumentError/StateError
   In repository → throw through withFirestoreErrorContext (auto-maps to AppException)
-  In controller → throw AppException or let repository errors propagate
+  In controller → throw AppException or let repository errors propagate through Mutation/AsyncValue
   In widget → never throw; show error state
 
 Catching an error:
   In repository → use withFirestoreErrorContext (automatic)
-  In controller → catch unexpected errors, log, rethrow; let AppException pass
-  In UI → AsyncValue.when(error: ...) or Mutation.hasError check
+  In controller → catch only when adding domain context; otherwise let AppException pass
+  In UI → AsyncValueWidget/AsyncValueSliverWidget or Mutation.hasError check
   Globally → AsyncErrorLogger (ProviderObserver) catches everything
 ```
+
+### Progressive implementation plan
+
+| Phase | Work | Proof |
+|-------|------|-------|
+| 1 | Keep migrating `ERROR-UI-QUEUE` raw candidates to `CatchErrorState` family. | Scanner raw error candidate count decreases or each retained candidate is justified. |
+| 2 | Add typed catalogue entries only for repeated stable product failures: likely image upload/storage, reusable validation, external action, and location. | New subclass, mapper copy, tests, and catalogue row in this doc. |
+| 3 | Add scanner coverage for direct raw app-facing error branches and direct string snackbars in presentation code. | `tool/widget_cleanup_scan.sh` catches new violations. |
+| 4 | Add feature-level analytics for expected but product-significant failures. | ErrorLogger/analytics tests prove events fire without treating expected errors as crashes. |
+| 5 | Consider generated error catalogue checks if manual drift becomes expensive. | CI or registry validates subclass/code/doc catalogue parity. |
+
+---
+
+## References
+
+- Dart language error handling:
+  https://dart.dev/language/error-handling
+- Flutter app error handling:
+  https://docs.flutter.dev/testing/errors
+- Flutter `ErrorWidget.builder` contract:
+  https://api.flutter.dev/flutter/widgets/ErrorWidget/builder.html
+- Riverpod `AsyncValue`:
+  https://pub.dev/documentation/riverpod/latest/riverpod/AsyncValue-class.html
+- Riverpod mutations:
+  https://riverpod.dev/docs/concepts2/mutations
+- Firestore offline persistence:
+  https://firebase.google.com/docs/firestore/manage-data/enable-offline

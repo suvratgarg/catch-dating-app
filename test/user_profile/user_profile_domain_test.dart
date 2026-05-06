@@ -1,4 +1,6 @@
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -46,8 +48,14 @@ void main() {
     expect(user.toJson().containsKey('uid'), isFalse);
   });
 
-  test('public display name never includes last name', () {
-    final structured = buildUser(
+  test('public display name uses editable display name without last name', () {
+    final structured = buildUser(dateOfBirth: DateTime(1995, 6, 15)).copyWith(
+      name: 'Suvrat Garg',
+      firstName: 'Suvrat',
+      lastName: 'Garg',
+      displayName: 'S.',
+    );
+    final firstNameFallback = buildUser(
       dateOfBirth: DateTime(1995, 6, 15),
     ).copyWith(name: 'Suvrat Garg', firstName: 'Suvrat', lastName: 'Garg');
     final legacy = buildUser(
@@ -55,7 +63,31 @@ void main() {
     ).copyWith(name: 'Asha Runner');
 
     expect(structured.accountDisplayName, 'Suvrat Garg');
-    expect(structured.publicDisplayName, 'Suvrat');
+    expect(structured.publicDisplayName, 'S.');
+    expect(publicProfileFromUserProfile(structured).name, 'S.');
+    expect(firstNameFallback.publicDisplayName, 'Suvrat');
     expect(legacy.publicDisplayName, 'Asha');
+  });
+
+  test('fromJson keeps omitted optional enum fields null', () {
+    final user = UserProfile.fromJson({
+      'uid': 'user-1',
+      'name': 'Runner',
+      'dateOfBirth': Timestamp.fromDate(DateTime(1995, 6, 15)),
+      'gender': Gender.man.name,
+      'phoneNumber': '+910000000000',
+      'profileComplete': true,
+    });
+
+    expect(user.education, isNull);
+    expect(user.religion, isNull);
+    expect(user.relationshipGoal, isNull);
+    expect(user.drinking, isNull);
+    expect(user.smoking, isNull);
+    expect(user.workout, isNull);
+    expect(user.diet, isNull);
+    expect(user.children, isNull);
+    expect(user.city, isNull);
+    expect(user.displayName, isEmpty);
   });
 }

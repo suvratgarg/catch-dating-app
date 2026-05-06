@@ -65,6 +65,7 @@ UserProfile buildUser({
   String name = 'Runner',
   String? firstName,
   String? lastName,
+  String displayName = '',
   String email = 'runner@example.com',
   Gender gender = Gender.man,
   DateTime? dateOfBirth,
@@ -81,6 +82,7 @@ UserProfile buildUser({
     firstName: firstName ?? nameParts.first,
     lastName:
         lastName ?? (nameParts.length > 1 ? nameParts.skip(1).join(' ') : ''),
+    displayName: displayName,
     dateOfBirth: dateOfBirth ?? DateTime(1995, 6, 15),
     bio: 'Here for the run.',
     gender: gender,

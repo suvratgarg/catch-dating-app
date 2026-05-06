@@ -1,9 +1,17 @@
-import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,8 +22,22 @@ class DashboardScreen extends ConsumerStatefulWidget {
   ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
 }
 
-class _DashboardScreenState extends ConsumerState<DashboardScreen> {
+class _DashboardScreenState extends ConsumerState<DashboardScreen>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
   String? _lastVisibleUid;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 2, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   void didChangeDependencies() {
@@ -26,8 +48,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
   }
 
   bool get _isHomeTabActive {
-    final activeTabIndex = AppShellActiveTab.maybeIndexOf(context);
-    return activeTabIndex == null || activeTabIndex == 0;
+    return isAppShellTabActive(context, appShellHomeTabIndex);
   }
 
   void _invalidateBookedRunsSubscription() {
@@ -47,13 +68,19 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
 
     return userAsync.when(
       loading: () => const _DashboardLoadingScreen(),
-      error: (e, _) => const _DashboardMessageScreen(
+      error: (e, _) => _DashboardErrorScreen(
         message: 'Unable to load your dashboard.',
+        onRetry: () => ref.invalidate(watchUserProfileProvider),
       ),
       data: (user) {
         if (user == null) {
           _lastVisibleUid = null;
-          return DashboardEmpty(user: null);
+          return _DashboardTabbedScreen(
+            controller: _tabController,
+            header: _DashboardHeaderModel.empty(null),
+            dashboardSliver: const DashboardEmptySliverBody(),
+            activitySliver: const _SignedOutActivitySliverBody(),
+          );
         }
 
         _lastVisibleUid = user.uid;
@@ -63,14 +90,178 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen> {
         );
         return signedUpRunsAsync.when(
           loading: () => const _DashboardLoadingScreen(),
-          error: (e, _) => const _DashboardMessageScreen(
+          error: (e, _) => _DashboardErrorScreen(
             message: 'Unable to load your booked runs.',
+            onRetry: () => ref.invalidate(watchSignedUpRunsProvider(user.uid)),
           ),
-          data: (signedUpRuns) => signedUpRuns.isEmpty
-              ? DashboardEmpty(user: user)
-              : DashboardFull(user: user, signedUpRuns: signedUpRuns),
+          data: (signedUpRuns) {
+            final viewModel = ref.watch(
+              dashboardFullViewModelProvider(
+                signedUpRuns: signedUpRuns,
+                uid: user.uid,
+                followedClubIds: user.joinedRunClubIds,
+              ),
+            );
+
+            final showEmptyDashboard =
+                signedUpRuns.isEmpty && viewModel.arrivalAction == null;
+
+            return _DashboardTabbedScreen(
+              controller: _tabController,
+              header: showEmptyDashboard
+                  ? _DashboardHeaderModel.empty(user)
+                  : _DashboardHeaderModel.full(context, user),
+              dashboardSliver: showEmptyDashboard
+                  ? const DashboardEmptySliverBody()
+                  : DashboardFullSliverBody(viewModel: viewModel),
+              activitySliver: ActivitySliverBody(uid: user.uid),
+            );
+          },
         );
       },
+    );
+  }
+}
+
+class _DashboardTabbedScreen extends StatelessWidget {
+  const _DashboardTabbedScreen({
+    required this.controller,
+    required this.header,
+    required this.dashboardSliver,
+    required this.activitySliver,
+  });
+
+  final TabController controller;
+  final _DashboardHeaderModel header;
+  final Widget dashboardSliver;
+  final Widget activitySliver;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: SafeArea(
+        bottom: false,
+        child: Semantics(
+          label: 'Home tabs',
+          hint: 'Swipe left or right to switch between Dashboard and Activity.',
+          child: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              final headerSlivers = DashboardSliverHeader(
+                eyebrow: header.eyebrow,
+                title: header.title,
+                avatar: header.avatar,
+                controller: controller,
+              ).buildSlivers(context);
+              final collapsibleSlivers = headerSlivers.take(
+                headerSlivers.length - 1,
+              );
+              final pinnedSliver = headerSlivers.last;
+
+              return [
+                ...collapsibleSlivers,
+                SliverOverlapAbsorber(
+                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                    context,
+                  ),
+                  sliver: pinnedSliver,
+                ),
+              ];
+            },
+            body: TabBarView(
+              controller: controller,
+              children: [
+                _DashboardTabScrollView(
+                  scrollKey: const PageStorageKey('home-dashboard-tab-scroll'),
+                  sliver: dashboardSliver,
+                ),
+                _DashboardTabScrollView(
+                  scrollKey: const PageStorageKey('home-activity-tab-scroll'),
+                  sliver: activitySliver,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DashboardTabScrollView extends StatelessWidget {
+  const _DashboardTabScrollView({
+    required this.scrollKey,
+    required this.sliver,
+  });
+
+  final PageStorageKey<String> scrollKey;
+  final Widget sliver;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      key: scrollKey,
+      slivers: [
+        SliverOverlapInjector(
+          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+        ),
+        sliver,
+      ],
+    );
+  }
+}
+
+class _DashboardHeaderModel {
+  const _DashboardHeaderModel({
+    required this.eyebrow,
+    required this.title,
+    required this.avatar,
+  });
+
+  final String eyebrow;
+  final String title;
+  final Widget avatar;
+
+  factory _DashboardHeaderModel.empty(UserProfile? user) {
+    final firstName = user?.name.split(' ').first ?? '';
+    return _DashboardHeaderModel(
+      eyebrow: 'WELCOME TO CATCH',
+      title: "Let's find your first run",
+      avatar: DashedAvatar(
+        size: 42,
+        imageUrl: user?.photoUrls.firstOrNull,
+        name: firstName,
+      ),
+    );
+  }
+
+  factory _DashboardHeaderModel.full(BuildContext context, UserProfile user) {
+    final firstName = user.name.split(' ').first;
+    final t = CatchTokens.of(context);
+    return _DashboardHeaderModel(
+      eyebrow: DashboardFull.dayCity(user.city?.label).toUpperCase(),
+      title: '${DashboardFull.greeting()}, $firstName',
+      avatar: PersonAvatar(
+        size: 42,
+        name: user.name,
+        imageUrl: user.photoUrls.firstOrNull,
+        borderWidth: 2,
+        borderColor: t.primary,
+      ),
+    );
+  }
+}
+
+class _SignedOutActivitySliverBody extends StatelessWidget {
+  const _SignedOutActivitySliverBody();
+
+  @override
+  Widget build(BuildContext context) {
+    return const SliverFillRemaining(
+      hasScrollBody: false,
+      child: Center(child: ActivitySignedOutState()),
     );
   }
 }
@@ -84,15 +275,18 @@ class _DashboardLoadingScreen extends StatelessWidget {
   }
 }
 
-class _DashboardMessageScreen extends StatelessWidget {
-  const _DashboardMessageScreen({required this.message});
+class _DashboardErrorScreen extends StatelessWidget {
+  const _DashboardErrorScreen({required this.message, required this.onRetry});
 
   final String message;
+  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: Text(message, textAlign: TextAlign.center)),
+    return CatchErrorScaffold(
+      title: 'Dashboard unavailable',
+      message: message,
+      onRetry: onRetry,
     );
   }
 }

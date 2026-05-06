@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -51,8 +52,10 @@ class ChatsList extends ConsumerWidget {
           child: CatchSkeletonList(count: 4),
         ),
       ),
-      AsyncError(:final error) => SliverFillRemaining(
-        child: CatchErrorText(error),
+      AsyncError(:final error) => CatchSliverErrorState.fromError(
+        error,
+        context: AppErrorContext.chat,
+        onRetry: () => ref.invalidate(chatsListViewModelProvider),
       ),
       AsyncData(:final value) =>
         value.isEmpty || uid == null

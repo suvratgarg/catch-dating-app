@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
@@ -13,6 +14,10 @@ class ChatsListScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    if (!isAppShellTabActive(context, appShellChatsTabIndex)) {
+      return Scaffold(backgroundColor: t.bg);
+    }
+
     final viewModelAsync = ref.watch(chatsListViewModelProvider);
     final vm = viewModelAsync.asData?.value;
     final count =

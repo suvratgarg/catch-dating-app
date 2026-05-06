@@ -1,11 +1,12 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/responsive/responsive_builder.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -50,10 +51,17 @@ class _RunRecapScreenState extends ConsumerState<RunRecapScreen> {
       ),
       body: runAsync.when(
         loading: () => const CatchLoadingIndicator(),
-        error: (error, _) => CatchErrorText(error),
+        error: (error, _) => CatchErrorState.fromError(
+          error,
+          context: AppErrorContext.run,
+          onRetry: () => ref.invalidate(watchRunProvider(widget.runId)),
+        ),
         data: (run) {
           if (run == null) {
-            return const Center(child: Text('Run not found'));
+            return const CatchErrorState(
+              title: 'Run not found',
+              message: 'This run is no longer available.',
+            );
           }
           final t = CatchTokens.of(context);
           final attendeeIds = run.attendedUserIds

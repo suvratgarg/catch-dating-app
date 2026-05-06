@@ -1,6 +1,8 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_error_text.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -21,25 +23,43 @@ class ProfileScreen extends ConsumerStatefulWidget {
 class _ProfileScreenState extends ConsumerState<ProfileScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  late final ScrollController _outerScrollController;
   late final ScrollController _previewScrollController;
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: 2, vsync: this);
+    _outerScrollController = ScrollController();
     _previewScrollController = ScrollController();
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    _outerScrollController.dispose();
     _previewScrollController.dispose();
     super.dispose();
+  }
+
+  void _handlePreviewLeadingOverscroll(double overscroll) {
+    if (!_outerScrollController.hasClients || overscroll >= 0) return;
+
+    final position = _outerScrollController.position;
+    final nextOffset = (_outerScrollController.offset + overscroll).clamp(
+      position.minScrollExtent,
+      position.maxScrollExtent,
+    );
+    _outerScrollController.jumpTo(nextOffset);
   }
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    if (!isAppShellTabActive(context, appShellProfileTabIndex)) {
+      return Scaffold(backgroundColor: t.bg);
+    }
+
     final userProfileAsync = ref.watch(watchUserProfileProvider);
     final uploadState = ref.watch(photoUploadControllerProvider);
 
@@ -59,13 +79,33 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           label: 'Profile tabs',
           hint: 'Swipe left or right to switch between Edit and Preview.',
           child: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) =>
-                ProfileSliverHeader(
-                  controller: _tabController,
-                ).buildSlivers(context),
+            controller: _outerScrollController,
+            headerSliverBuilder: (context, innerBoxIsScrolled) {
+              final headerSlivers = ProfileSliverHeader(
+                controller: _tabController,
+              ).buildSlivers(context);
+              final collapsibleSlivers = headerSlivers.take(
+                headerSlivers.length - 1,
+              );
+              final pinnedSliver = headerSlivers.last;
+
+              return [
+                ...collapsibleSlivers,
+                SliverOverlapAbsorber(
+                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
+                    context,
+                  ),
+                  sliver: pinnedSliver,
+                ),
+              ];
+            },
             body: userProfileAsync.when<Widget>(
               loading: () => const Center(child: CatchLoadingIndicator()),
-              error: (e, _) => Center(child: CatchErrorText(e)),
+              error: (e, _) => CatchErrorState.fromError(
+                e,
+                context: AppErrorContext.profile,
+                onRetry: () => ref.invalidate(watchUserProfileProvider),
+              ),
               data: (user) {
                 if (user == null) {
                   return const _ProfileUnavailableBody();
@@ -74,8 +114,10 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                 return TabBarView(
                   controller: _tabController,
                   children: [
-                    CustomScrollView(
-                      key: const PageStorageKey('profile-edit-tab-scroll'),
+                    _ProfileTabScrollView(
+                      scrollKey: const PageStorageKey(
+                        'profile-edit-tab-scroll',
+                      ),
                       slivers: [
                         ProfileTabSliverBody(
                           user: user,
@@ -83,12 +125,15 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         ),
                       ],
                     ),
-                    CustomScrollView(
-                      key: const PageStorageKey('profile-preview-tab-scroll'),
+                    _ProfileTabScrollView(
+                      scrollKey: const PageStorageKey(
+                        'profile-preview-tab-scroll',
+                      ),
                       slivers: [
                         _PreviewTabSliverBody(
                           profile: publicProfileFromUserProfile(user),
                           scrollController: _previewScrollController,
+                          onLeadingOverscroll: _handlePreviewLeadingOverscroll,
                         ),
                       ],
                     ),
@@ -99,6 +144,26 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
           ),
         ),
       ),
+    );
+  }
+}
+
+class _ProfileTabScrollView extends StatelessWidget {
+  const _ProfileTabScrollView({required this.scrollKey, required this.slivers});
+
+  final PageStorageKey<String> scrollKey;
+  final List<Widget> slivers;
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      key: scrollKey,
+      slivers: [
+        SliverOverlapInjector(
+          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
+        ),
+        ...slivers,
+      ],
     );
   }
 }
@@ -124,22 +189,23 @@ class _PreviewTabSliverBody extends StatelessWidget {
   const _PreviewTabSliverBody({
     required this.profile,
     required this.scrollController,
+    required this.onLeadingOverscroll,
   });
 
   final PublicProfile profile;
   final ScrollController scrollController;
+  final ValueChanged<double> onLeadingOverscroll;
 
   @override
   Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s4,
-        CatchSpacing.s2,
-        CatchSpacing.s4,
-        CatchSpacing.s6,
-      ),
-      sliver: SliverFillRemaining(
-        child: PreviewTab(profile: profile, scrollController: scrollController),
+    return SliverFillRemaining(
+      child: Padding(
+        padding: profileTabBodyPadding,
+        child: PreviewTab(
+          profile: profile,
+          scrollController: scrollController,
+          onLeadingOverscroll: onLeadingOverscroll,
+        ),
       ),
     );
   }

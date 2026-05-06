@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -25,9 +25,8 @@ class MutationErrorSnackbarListener extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.listen(mutation, (previous, current) {
       if (previous?.isPending == true && current.hasError) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text(mutationErrorMessage(current))));
+        final error = current is MutationError ? current.error : current;
+        showCatchErrorSnackBar(context, error);
       }
     });
     return child;

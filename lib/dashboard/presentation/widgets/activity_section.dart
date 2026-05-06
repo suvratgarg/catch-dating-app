@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
@@ -15,6 +16,43 @@ import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
+class ActivitySliverBody extends StatelessWidget {
+  const ActivitySliverBody({super.key, required this.uid});
+
+  final String uid;
+
+  @override
+  Widget build(BuildContext context) {
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(
+        CatchSpacing.s5,
+        CatchSpacing.s2,
+        CatchSpacing.s5,
+        CatchSpacing.s6,
+      ),
+      sliver: SliverToBoxAdapter(child: ActivitySection(uid: uid)),
+    );
+  }
+}
+
+class ActivitySignedOutState extends StatelessWidget {
+  const ActivitySignedOutState({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(CatchSpacing.s5),
+      child: CatchEmptyState(
+        icon: Icons.notifications_none_rounded,
+        title: 'No activity yet',
+        message: 'Sign in and book a run to start seeing updates here.',
+        surface: false,
+        iconStyle: CatchEmptyStateIconStyle.plain,
+      ),
+    );
+  }
+}
 
 class ActivitySection extends ConsumerWidget {
   const ActivitySection({
@@ -78,18 +116,14 @@ class ActivitySection extends ConsumerWidget {
             ),
           ),
         ] else if (error != null) ...[
-          CatchSurface(
-            padding: const EdgeInsets.all(CatchSpacing.s4),
-            borderColor: t.line,
-            child: Row(
-              children: [
-                Icon(Icons.error_outline_rounded, color: t.primary, size: 18),
-                gapW10,
-                const Expanded(
-                  child: _ActivityStateLabel('Could not load activity'),
-                ),
-              ],
-            ),
+          CatchInlineErrorState(
+            title: 'Activity unavailable',
+            message: 'Could not load activity.',
+            compact: true,
+            onRetry: () {
+              ref.invalidate(watchMatchesForUserProvider(uid));
+              ref.invalidate(watchSignedUpRunsProvider(uid));
+            },
           ),
         ] else if (items.isEmpty) ...[
           if (showEmptyState)
@@ -109,9 +143,13 @@ class ActivitySection extends ConsumerWidget {
           for (final group in _groupItems(items)) ...[
             SectionHeader(title: group.label),
             gapH8,
-            for (final item in group.items) ...[
-              _ActivityTile(item: item),
-              if (item != group.items.last) Divider(color: t.line),
+            for (final entry in group.items.indexed) ...[
+              _ActivityTile(
+                item: entry.$2,
+                isFirst: entry.$1 == 0,
+                isLast: entry.$1 == group.items.length - 1,
+              ),
+              if (entry.$2 != group.items.last) Divider(color: t.line),
             ],
             gapH18,
           ],
@@ -141,9 +179,15 @@ class ActivitySection extends ConsumerWidget {
 }
 
 class _ActivityTile extends StatelessWidget {
-  const _ActivityTile({required this.item});
+  const _ActivityTile({
+    required this.item,
+    required this.isFirst,
+    required this.isLast,
+  });
 
   final _ActivityItem item;
+  final bool isFirst;
+  final bool isLast;
 
   @override
   Widget build(BuildContext context) {
@@ -165,18 +209,11 @@ class _ActivityTile extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  width: 46,
-                  height: 46,
-                  decoration: BoxDecoration(
-                    color: item.isPrimary ? t.primary : t.primarySoft,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    item.icon,
-                    color: item.isPrimary ? t.primaryInk : t.primary,
-                    size: 21,
-                  ),
+                _ActivityTimelineMarker(
+                  icon: item.icon,
+                  isPrimary: item.isPrimary,
+                  isFirst: isFirst,
+                  isLast: isLast,
                 ),
                 gapW12,
                 Expanded(
@@ -209,6 +246,53 @@ class _ActivityTile extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _ActivityTimelineMarker extends StatelessWidget {
+  const _ActivityTimelineMarker({
+    required this.icon,
+    required this.isPrimary,
+    required this.isFirst,
+    required this.isLast,
+  });
+
+  final IconData icon;
+  final bool isPrimary;
+  final bool isFirst;
+  final bool isLast;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return SizedBox(
+      width: 46,
+      height: 56,
+      child: Stack(
+        alignment: Alignment.topCenter,
+        children: [
+          Positioned(
+            top: isFirst ? 23 : 0,
+            bottom: isLast ? 33 : 0,
+            child: Container(width: 2, color: t.line),
+          ),
+          Container(
+            width: 46,
+            height: 46,
+            decoration: BoxDecoration(
+              color: isPrimary ? t.primary : t.primarySoft,
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              color: isPrimary ? t.primaryInk : t.primary,
+              size: 21,
+            ),
+          ),
+        ],
       ),
     );
   }

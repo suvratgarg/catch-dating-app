@@ -119,3 +119,7 @@ scan "Fine-grained spacing compatibility helpers" \
 scan "Plugin/platform side effects inside presentation code" \
   "import 'package:(url_launcher|connectivity_plus|firebase_messaging|image_picker|share_plus)" \
   lib/main.dart lib/core/presentation lib/*/presentation
+
+scan "Raw app-facing error surface migration candidates" \
+  "CatchErrorText|Center\\(child: Text\\('[^']*(Unable|not found|failed|error|Error)|Scaffold\\(body: Center\\(child: Text\\('[^']*(Unable|not found|failed|error|Error)" \
+  lib/*/presentation lib/core/widgets lib/routing

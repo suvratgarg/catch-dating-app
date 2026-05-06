@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_contract_tracker
-version: 2.0.0
-updated: 2026-05-05
+version: 2.0.2
+updated: 2026-05-06
 owner: recursive_audit_loop
 status: active
 ---
@@ -41,6 +41,18 @@ If the conversation context closes, restart from this file, `PROJECT_CONTEXT.md`
   triggers.
 - Keep Dart models, generated Functions TypeScript interfaces, Firestore rules,
   rules tests, callable validation, and docs aligned in the same pass.
+- Run Firestore rules tests under the Firestore emulator. From the repo root,
+  use:
+
+  ```bash
+  firebase emulators:exec --only firestore "npm --prefix functions run test:rules"
+  ```
+
+  The standalone `npm run test:rules` / `node --test
+  test/firestore.rules.test.cjs` command expects a Firestore emulator already
+  listening on `127.0.0.1:8080`. If it fails with `connect ECONNREFUSED
+  127.0.0.1:8080`, treat that as an emulator-workflow failure first, not a
+  rules regression.
 - After every implementation slice, update this tracker with:
   - what changed,
   - what was verified,
@@ -65,6 +77,22 @@ The app has multiple contracts for the same Firestore documents:
 and CI checks that generated output is committed. It does not protect
 Firestore rules drift, callable validation drift, live data migrations, or
 operation ownership drift.
+
+## Recent Contract Notes
+
+### 2026-05-06: UserProfile.displayName
+
+- `users/{uid}.displayName` is now the editable public display name.
+- Onboarding initializes it from first name; edit profile can change it later.
+- It is required for new profile creation and must contain non-whitespace text.
+- `syncPublicProfile` writes public profile `name` from `displayName`, then
+  falls back to first name, then legacy full-name first token.
+- `lastName` remains private identity data and must not be used for public
+  profile rendering.
+- Contract pass checklist for this field: Dart `UserProfile`, generated
+  Freezed/json, generated `functions/src/shared/firestore.ts`, callable Zod
+  validation, Firestore rules, rules fixture, onboarding tests, profile widget
+  tests, and domain tests.
 
 ## Phases
 

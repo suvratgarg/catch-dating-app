@@ -38,7 +38,7 @@ class ProfileTab extends ConsumerWidget {
       builder: (context, children) => ListView(
         key: scrollViewKey,
         physics: physics,
-        padding: _profileTabPadding,
+        padding: profileTabBodyPadding,
         children: children,
       ),
     );
@@ -61,7 +61,7 @@ class ProfileTabSliverBody extends ConsumerWidget {
       user: user,
       uploadState: uploadState,
       builder: (context, children) => SliverPadding(
-        padding: _profileTabPadding,
+        padding: profileTabBodyPadding,
         sliver: SliverList.list(children: children),
       ),
     );
@@ -71,7 +71,7 @@ class ProfileTabSliverBody extends ConsumerWidget {
 typedef _ProfileTabContentBuilder =
     Widget Function(BuildContext context, List<Widget> children);
 
-const _profileTabPadding = EdgeInsets.fromLTRB(
+const profileTabBodyPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s5,
   CatchSpacing.s2,
   CatchSpacing.s5,
@@ -92,10 +92,21 @@ class _ProfileTabContent extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final basics = [
-      ProfileInfoEntry(
+      _textEntry(
+        context: context,
+        ref: ref,
         icon: Icons.person_outlined,
-        label: 'Name',
-        value: user.accountDisplayName,
+        label: 'Display name',
+        value: user.publicDisplayName,
+        currentValue: user.publicDisplayName,
+        currentFieldValue: user.displayName.trim().isEmpty
+            ? null
+            : user.displayName.trim(),
+        fieldName: 'displayName',
+        textCapitalization: TextCapitalization.words,
+        autofillHints: const [AutofillHints.nickname],
+        validator: validateRequiredDisplayName,
+        toFieldValue: (value) => value.trim(),
       ),
       ProfileInfoEntry(
         icon: Icons.cake_outlined,
@@ -142,6 +153,7 @@ class _ProfileTabContent extends ConsumerWidget {
             ? '@${user.instagramHandle}'
             : 'Instagram',
         currentValue: user.instagramHandle ?? '',
+        currentFieldValue: user.instagramHandle,
         fieldName: 'instagramHandle',
         isAddAffordance: user.instagramHandle?.isNotEmpty != true,
         keyboardType: TextInputType.text,
@@ -192,7 +204,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'Education',
         values: EducationLevel.values,
         value: user.education,
-        fallback: EducationLevel.values.first,
         fieldName: 'education',
       ),
       _singleEnumEntry<Religion>(
@@ -202,7 +213,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'Religion',
         values: Religion.values,
         value: user.religion,
-        fallback: Religion.values.first,
         fieldName: 'religion',
       ),
       _multiEnumEntry<Language>(
@@ -224,7 +234,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'Looking for',
         values: RelationshipGoal.values,
         value: user.relationshipGoal,
-        fallback: RelationshipGoal.values.first,
         fieldName: 'relationshipGoal',
       ),
     ];
@@ -236,7 +245,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'Drinking',
         values: DrinkingHabit.values,
         value: user.drinking,
-        fallback: DrinkingHabit.values.first,
         fieldName: 'drinking',
       ),
       _singleEnumEntry<SmokingHabit>(
@@ -246,7 +254,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'Smoking',
         values: SmokingHabit.values,
         value: user.smoking,
-        fallback: SmokingHabit.values.first,
         fieldName: 'smoking',
       ),
       _singleEnumEntry<WorkoutFrequency>(
@@ -256,7 +263,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'Workout',
         values: WorkoutFrequency.values,
         value: user.workout,
-        fallback: WorkoutFrequency.values.first,
         fieldName: 'workout',
       ),
       _singleEnumEntry<DietaryPreference>(
@@ -266,7 +272,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'Diet',
         values: DietaryPreference.values,
         value: user.diet,
-        fallback: DietaryPreference.values.first,
         fieldName: 'diet',
       ),
       _singleEnumEntry<ChildrenStatus>(
@@ -276,7 +281,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'Children',
         values: ChildrenStatus.values,
         value: user.children,
-        fallback: ChildrenStatus.values.first,
         fieldName: 'children',
       ),
     ];
@@ -315,7 +319,6 @@ class _ProfileTabContent extends ConsumerWidget {
         label: 'City',
         values: IndianCity.values,
         value: user.city,
-        fallback: IndianCity.values.first,
         fieldName: 'city',
       ),
     ];
@@ -417,6 +420,7 @@ class _ProfileTabContent extends ConsumerWidget {
     required String fieldName,
     String? title,
     String? currentValue,
+    Object? currentFieldValue,
     bool isAddAffordance = false,
     TextInputType? keyboardType,
     TextCapitalization textCapitalization = TextCapitalization.sentences,
@@ -433,6 +437,7 @@ class _ProfileTabContent extends ConsumerWidget {
         ref: ref,
         title: title ?? label,
         currentValue: currentValue ?? value,
+        currentFieldValue: currentFieldValue ?? currentValue ?? value,
         fieldName: fieldName,
         keyboardType: keyboardType,
         textCapitalization: textCapitalization,
@@ -451,7 +456,6 @@ class _ProfileTabContent extends ConsumerWidget {
     required String label,
     required List<T> values,
     required T? value,
-    required T fallback,
     required String fieldName,
     String? title,
     String? placeholder,
@@ -465,7 +469,7 @@ class _ProfileTabContent extends ConsumerWidget {
         ref: ref,
         title: title ?? label,
         values: values,
-        currentValue: value ?? fallback,
+        currentValue: value,
         fieldName: fieldName,
       ),
       isAddAffordance: value == null,

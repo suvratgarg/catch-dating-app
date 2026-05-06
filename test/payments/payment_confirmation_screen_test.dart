@@ -21,7 +21,9 @@ void main() {
       runId: 'run-1',
     );
 
-    testWidgets('renders hero section with payment details', (tester) async {
+    testWidgets('renders joined celebration with payment details', (
+      tester,
+    ) async {
       final run = buildRun(
         id: 'run-1',
         runClubId: 'club-1',
@@ -36,16 +38,15 @@ void main() {
         club: club,
       );
 
-      expect(find.text("You're in"), findsOneWidget);
-      expect(
-        find.text('Booking confirmed · payment ID pay_ABC123'),
-        findsOneWidget,
-      );
-      expect(find.text(run.title), findsAtLeastNWidgets(1));
+      expect(find.text("You're in."), findsOneWidget);
+      expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
+      expect(find.text('Payment ID'), findsOneWidget);
+      expect(find.text('pay_ABC123'), findsOneWidget);
+      expect(find.textContaining(run.title), findsAtLeastNWidgets(1));
       expect(find.text('₹299'), findsOneWidget);
     });
 
-    testWidgets('renders run summary card with details', (tester) async {
+    testWidgets('renders run details inside the celebration', (tester) async {
       final run = buildRun(
         id: 'run-1',
         runClubId: 'club-1',
@@ -61,10 +62,12 @@ void main() {
         club: club,
       );
 
-      expect(find.text('Bandra Breakers'), findsOneWidget);
+      expect(find.textContaining('Bandra Breakers'), findsOneWidget);
+      expect(find.text('Where'), findsOneWidget);
       expect(find.text('Carter Road Promenade'), findsOneWidget);
-      expect(find.text('₹299 · UPI'), findsOneWidget);
-      expect(find.textContaining('Full refund'), findsOneWidget);
+      expect(find.text('When'), findsOneWidget);
+      expect(find.text('Run'), findsOneWidget);
+      expect(find.text('Paid'), findsOneWidget);
     });
 
     testWidgets('renders quick actions, heads up, and referral', (
@@ -143,7 +146,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Run not found.'), findsOneWidget);
+      expect(find.text('Run not found'), findsOneWidget);
+      expect(find.text('This run is no longer available.'), findsOneWidget);
     });
   });
 }

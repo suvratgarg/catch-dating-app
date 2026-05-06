@@ -225,6 +225,7 @@ class OnboardingController extends _$OnboardingController {
             name: draft.fullName,
             firstName: draft.firstName.trim(),
             lastName: draft.lastName.trim(),
+            displayName: draft.firstName.trim(),
             dateOfBirth: draft.dateOfBirth!,
             gender: draft.gender!,
             phoneNumber: verifiedPhoneNumber,

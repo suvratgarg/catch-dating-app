@@ -1,14 +1,18 @@
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
@@ -155,6 +159,67 @@ void main() {
     expect(selected, {IndianCity.indore});
   });
 
+  testWidgets(
+    'ChipField single select keeps chips inactive when selected is empty',
+    (tester) async {
+      await tester.pumpWidget(
+        _wrap(
+          ChipField<IndianCity>(
+            label: 'City',
+            values: IndianCity.values,
+            selected: const {},
+            multiSelect: false,
+            onChanged: (_) {},
+          ),
+        ),
+      );
+
+      final firstChip = tester.widget<CatchChip>(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is CatchChip &&
+              widget.label == IndianCity.values.first.label,
+        ),
+      );
+      expect(firstChip.active, isFalse);
+    },
+  );
+
+  testWidgets('ChipField multi select marks selected chips with a check', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        ChipField<IndianCity>(
+          label: 'Cities',
+          values: IndianCity.values.take(2).toList(),
+          selected: {IndianCity.mumbai},
+          multiSelect: true,
+          onChanged: (_) {},
+        ),
+      ),
+    );
+
+    final selectedChip = tester.widget<CatchChip>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchChip && widget.label == IndianCity.mumbai.label,
+      ),
+    );
+    final unselectedChip = tester.widget<CatchChip>(
+      find.byWidgetPredicate(
+        (widget) =>
+            widget is CatchChip && widget.label == IndianCity.delhi.label,
+      ),
+    );
+
+    expect(selectedChip.active, isTrue);
+    expect(selectedChip.icon, isA<Icon>());
+    expect(unselectedChip.active, isFalse);
+    expect(unselectedChip.icon, isNull);
+    expect(find.byIcon(Icons.check_rounded), findsOneWidget);
+  });
+
   testWidgets('CatchBadge renders status tones and uppercase option', (
     tester,
   ) async {
@@ -241,6 +306,92 @@ void main() {
     await tester.tap(find.text('Developer details'));
     await pumpFeatureUi(tester);
     expect(find.textContaining('Bad state: boom'), findsOneWidget);
+  });
+
+  testWidgets('CatchErrorState renders retry UI without debug details', (
+    tester,
+  ) async {
+    var retryCount = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchErrorState.fromError(
+          StateError('Could not load profile'),
+          onRetry: () => retryCount++,
+        ),
+      ),
+    );
+
+    expect(find.text('Something went wrong'), findsOneWidget);
+    expect(find.text('Could not load profile'), findsOneWidget);
+    expect(find.text('Try again'), findsOneWidget);
+    expect(find.textContaining('StackTrace'), findsNothing);
+
+    await tester.tap(find.text('Try again'));
+    await tester.pump();
+
+    expect(retryCount, 1);
+  });
+
+  testWidgets('CatchSliverErrorState fills a sliver viewport', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: const Scaffold(
+          body: CustomScrollView(
+            slivers: [
+              CatchSliverErrorState(
+                title: 'Messages unavailable',
+                message: 'Unable to load messages.',
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Messages unavailable'), findsOneWidget);
+    expect(find.text('Unable to load messages.'), findsOneWidget);
+  });
+
+  testWidgets('AsyncValueWidget uses branded default error state', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        AsyncValueWidget<int>(
+          value: AsyncError<int>(StateError('load failed'), StackTrace.empty),
+          data: (value) => Text('$value'),
+        ),
+      ),
+    );
+
+    expect(find.byType(CatchErrorState), findsOneWidget);
+    expect(find.text('load failed'), findsOneWidget);
+  });
+
+  testWidgets('showCatchErrorSnackBar maps errors to user copy', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: Builder(
+            builder: (context) => TextButton(
+              onPressed: () =>
+                  showCatchErrorSnackBar(context, StateError('snack failed')),
+              child: const Text('Show error'),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text('Show error'));
+    await tester.pump();
+
+    expect(find.text('snack failed'), findsOneWidget);
   });
 
   testWidgets(
