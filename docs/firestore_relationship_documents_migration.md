@@ -1,6 +1,6 @@
 ---
 doc_id: firestore_relationship_documents_migration
-version: 1.0.11
+version: 1.0.13
 updated: 2026-05-07
 owner: recursive_audit_loop
 status: active
@@ -261,6 +261,22 @@ Fields remain:
   `tool/validate_firestore_data.mjs` instead of reconstructing from arrays.
 - [x] Add a beta-reset fallback note that requires explicit human approval
   before deleting beta accounts or clearing production-like data.
+
+### Beta Data Release Strategy
+
+This release does not preserve retired compatibility arrays. The deploy path is
+therefore:
+
+1. Deploy Functions first so callable-owned relationship writes exist.
+2. Deploy Firestore indexes and rules after Functions.
+3. Validate existing data with `node --check tool/validate_firestore_data.mjs`
+   before deploy and run live environment smoke tests after deploy.
+4. For beta accounts with stale array-era data, prefer a reset/re-sign-up path
+   over reintroducing compatibility writes. Any destructive beta reset still
+   requires explicit human approval before data is deleted.
+5. Legacy chat message copy support remains available for the old
+   `chats/{matchId}/messages` namespace, but new writes use
+   `matches/{matchId}/messages`.
 
 ### Phase 7: Delete/Anonymize Cleanup
 
@@ -525,3 +541,5 @@ Record every pass here with commands, result, and remaining gaps.
 | 2026-05-06 | Swipe candidate and recap participation read migration | `dart run build_runner build --delete-conflicting-outputs`; `flutter test test/swipes/swipe_candidate_repository_test.dart test/swipes/swipe_candidate_repository_preferences_test.dart test/swipes/swipe_empty_content_test.dart test/swipes/swipe_queue_notifier_test.dart test/swipes/run_recap_screen_test.dart test/runs/attendance_sheet_screen_test.dart`; `flutter analyze --no-fatal-infos lib/runs/data/run_participation_repository.dart lib/swipes/data/swipe_candidate_repository.dart lib/swipes/presentation/swipe_empty_content.dart lib/swipes/presentation/swipe_screen.dart lib/swipes/presentation/run_recap_screen.dart lib/swipes/presentation/run_recap_view_model.dart lib/swipes/presentation/run_recap_view_model.g.dart test/runs/runs_test_helpers.dart test/swipes/swipe_candidate_repository_test.dart test/swipes/swipe_candidate_repository_preferences_test.dart test/swipes/swipe_empty_content_test.dart test/swipes/run_recap_screen_test.dart`; `rg -n "run\\.hasAttended|run\\.attendedUserIds" lib/swipes/data/swipe_candidate_repository.dart lib/swipes/presentation/swipe_empty_content.dart lib/swipes/presentation/swipe_screen.dart lib/swipes/presentation/run_recap_screen.dart lib/swipes/presentation/run_recap_view_model.dart` | Passed. Swipe candidate generation now fetches attended participants from `runParticipations`, `SwipeScreen` passes the viewer's participation edge into empty-state copy, and `RunRecapViewModel` derives the vibe roster plus checked-in count from participation statuses. Superseded by later rows for roster/count and final array retirement. |
 | 2026-05-06 | Run participation roster/count projection migration | `dart run build_runner build --delete-conflicting-outputs`; `dart tool/generate_firestore_types.dart`; `node tool/check_firestore_contract.mjs`; `npm --prefix functions run lint`; `npm --prefix functions run build`; `npm --prefix functions test`; focused Flutter tests for who-is-running, host roster, host stats, swipes, attendance, and dashboard; `flutter analyze --no-fatal-infos ...`; `rg -n "\\.signedUpUserIds|\\.attendedUserIds|\\.waitlistUserIds" lib -g'*.dart'` | Passed for touched behavior. `Run` now exposes `bookedCount`, `waitlistedCount`, and `checkedInCount` projections; Functions maintain them on create/signup/waitlist/cancel/attendance/self-check-in; `WhoIsRunning` and `HostRunManageScreen` read exact edge rosters. Superseded by the 2026-05-07 retirement pass for generated model/tool/test cleanup. |
 | 2026-05-07 | Relationship compatibility array retirement | `dart run build_runner build --delete-conflicting-outputs`; `dart tool/generate_firestore_types.dart`; `node tool/check_firestore_contract.mjs`; `node --check tool/validate_firestore_data.mjs`; `node --check tool/firestore_relationship_migration.mjs`; `npm --prefix functions run lint`; `npm --prefix functions run build`; `npm --prefix functions test`; `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`; focused Flutter analyze/tests; `rg -n "signedUpUserIds|waitlistUserIds|attendedUserIds|memberUserIds|joinedRunClubIds|savedRunIds" lib functions/src functions/test test tool firestore.rules firestore.indexes.json` | Passed. Production source, Functions, Firestore rules/indexes, generated contract tooling, migration/validation tooling, and active tests no longer contain or preserve the retired relationship array fields. |
+| 2026-05-07 | Pre-deploy relationship-doc verification | `dart run build_runner build --delete-conflicting-outputs`; `dart tool/generate_firestore_types.dart`; `node tool/check_firestore_contract.mjs`; `node --check tool/validate_firestore_data.mjs`; `node --check tool/firestore_relationship_migration.mjs`; `npm --prefix functions run lint`; `npm --prefix functions run build`; `npm --prefix functions test`; `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`; `flutter analyze --no-fatal-infos`; `flutter test -j 1`; focused calendar, match-celebration, run-draft, run-club, profile, and run tests. | Passed. Fixed time-coupled calendar/run-draft fixtures and a scroll-target miss in the match celebration test before deploy. Beta data strategy is reset or validated edge docs, not compatibility-array preservation. |
+| 2026-05-07 | Firebase deploy | `./tool/firebase_with_env.sh dev deploy --only functions`; `./tool/firebase_with_env.sh dev deploy --only firestore:indexes`; `./tool/firebase_with_env.sh dev deploy --only firestore:rules`; same sequence for `staging` and `prod`. | Passed. Functions, Firestore indexes, and Firestore rules deployed to `catchdates-dev`, `catchdates-staging`, and `catch-dating-app-64e51`. Storage rules were not deployed because `storage.rules` was unchanged. Post-deploy callable invoker sync was not run because it grants public Cloud Run invoker IAM and needs explicit human approval. |

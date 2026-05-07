@@ -86,10 +86,21 @@ void main() {
     });
 
     testWidgets('renders agenda stats and booked run details', (tester) async {
+      final now = DateTime.now();
+      final firstRunStart = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).add(const Duration(days: 1, hours: 7, minutes: 15));
+      final secondRunStart = DateTime(
+        now.year,
+        now.month,
+        now.day,
+      ).add(const Duration(days: 2, hours: 18, minutes: 30));
       final runs = [
         buildRun(
           id: 'run-late',
-          startTime: DateTime(2026, 5, 8, 18, 30),
+          startTime: secondRunStart,
           meetingPoint: 'Juhu Beach Gate',
           distanceKm: 8,
           pace: PaceLevel.moderate,
@@ -98,7 +109,7 @@ void main() {
         ),
         buildRun(
           id: 'run-early',
-          startTime: DateTime(2026, 5, 7, 7, 15),
+          startTime: firstRunStart,
           meetingPoint: 'Carter Road Promenade',
           distanceKm: 5,
           pace: PaceLevel.easy,
@@ -116,7 +127,7 @@ void main() {
         ],
       );
 
-      expect(find.text('May 2026'), findsOneWidget);
+      expect(find.text(_monthYearLabel(firstRunStart)), findsOneWidget);
       expect(find.text('Booked'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
       expect(find.text('Distance'), findsOneWidget);
@@ -124,17 +135,14 @@ void main() {
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('07:15'), findsAtLeastNWidgets(1));
 
-      await _scrollCalendarDown(tester);
-
-      expect(
-        find.text(
-          DateUtils.isSameDay(runs.last.startTime, DateTime.now())
-              ? 'TODAY'
-              : 'THU · 7 MAY',
-        ),
-        findsOneWidget,
+      await tester.scrollUntilVisible(
+        find.text('Carter Road Promenade'),
+        180,
+        scrollable: find.byType(Scrollable),
       );
-      expect(find.text('FRI · 8 MAY'), findsOneWidget);
+      await tester.pump();
+
+      expect(find.text(_agendaDayLabel(firstRunStart, now)), findsOneWidget);
       expect(find.text('Carter Road Promenade'), findsOneWidget);
       expect(find.text('Juhu Beach Gate'), findsOneWidget);
       expect(find.text('5km · Easy · 1/20'), findsOneWidget);
@@ -448,6 +456,26 @@ String _monthYearLabel(DateTime date) {
     'December',
   ];
   return '${months[date.month - 1]} ${date.year}';
+}
+
+String _agendaDayLabel(DateTime date, DateTime now) {
+  const weekdays = ['MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT', 'SUN'];
+  const months = [
+    'JAN',
+    'FEB',
+    'MAR',
+    'APR',
+    'MAY',
+    'JUN',
+    'JUL',
+    'AUG',
+    'SEP',
+    'OCT',
+    'NOV',
+    'DEC',
+  ];
+  if (DateUtils.isSameDay(date, now)) return 'TODAY';
+  return '${weekdays[date.weekday - 1]} · ${date.day} ${months[date.month - 1]}';
 }
 
 String _routerPath(GoRouter router) =>

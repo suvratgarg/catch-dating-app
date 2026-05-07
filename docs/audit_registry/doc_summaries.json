@@ -149,10 +149,11 @@
       ]
     },
     "docs/firestore_relationship_documents_migration.md": {
-      "purpose": "Persistent tracker for retired relationship arrays, edge/action documents, match-scoped messages, Firestore rules simplification after relationship migration, and relationship-doc deletion/anonymization cleanup.",
+      "purpose": "Persistent tracker for retired relationship arrays, edge/action documents, match-scoped messages, beta reset strategy, Firestore rules simplification after relationship migration, and relationship-doc deletion/anonymization cleanup.",
       "read_when": [
         "Changing run-club membership, run participation, saved-run, match-message, or relationship-array behavior",
         "Planning Firestore rules simplification after relationship-doc migration",
+        "Planning beta data reset or edge-doc validation before deploy",
         "Writing or running relationship validation or legacy chat migration scripts",
         "Planning account, run, club, review, match, or chat deletion/anonymization cleanup"
       ],

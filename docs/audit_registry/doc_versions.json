@@ -85,10 +85,10 @@
   },
   "firestore_relationship_documents_migration": {
     "path": "docs/firestore_relationship_documents_migration.md",
-    "version": "1.0.11",
+    "version": "1.0.13",
     "updated": "2026-05-07",
     "status": "active",
-    "read_policy": "Read before changing relationship arrays, edge/action documents, match-scoped messages, relationship migration tooling, or deletion/anonymization cleanup."
+    "read_policy": "Read before changing relationship arrays, edge/action documents, match-scoped messages, relationship migration tooling, beta reset strategy, or deletion/anonymization cleanup."
   },
   "firestore_type_sync": {
     "path": "docs/firestore_type_sync_2026_05_05.md",

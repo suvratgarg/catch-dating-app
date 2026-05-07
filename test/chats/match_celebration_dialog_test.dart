@@ -50,6 +50,7 @@ void main() {
 
     await tester.tap(find.text('Send a message'));
     await tester.pump();
+    await tester.ensureVisible(find.text('Keep swiping'));
     await tester.tap(find.text('Keep swiping'));
     await tester.pump();
 

@@ -22,7 +22,7 @@ void main() {
       return RunDraft(
         id: id,
         runClubId: runClubId,
-        savedAt: savedAt ?? DateTime(2026, 5, 1),
+        savedAt: savedAt ?? DateTime.now(),
         distance: distance,
         meetingPoint: meetingPoint,
       );
@@ -100,14 +100,15 @@ void main() {
       });
 
       test('sorted by savedAt descending (newest first)', () async {
+        final now = DateTime.now();
         final old = buildDraft(
           id: 'old',
-          savedAt: DateTime(2026, 5, 1),
+          savedAt: now.subtract(const Duration(days: 2)),
           distance: '5',
         );
         final newer = buildDraft(
           id: 'new',
-          savedAt: DateTime(2026, 5, 3),
+          savedAt: now.subtract(const Duration(days: 1)),
           distance: '10',
         );
         await repo.saveDraft(userId: 'user-1', draft: old);
@@ -123,12 +124,13 @@ void main() {
       });
 
       test('evicts oldest when exceeding max 5 drafts', () async {
+        final now = DateTime.now();
         for (var i = 0; i < 7; i++) {
           await repo.saveDraft(
             userId: 'user-1',
             draft: buildDraft(
               id: 'draft-$i',
-              savedAt: DateTime(2026, 5, i + 1),
+              savedAt: now.subtract(Duration(days: 6 - i)),
               distance: '$i',
             ),
           );
