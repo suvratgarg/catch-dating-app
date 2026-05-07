@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.1.7
-updated: 2026-05-06
+version: 1.1.13
+updated: 2026-05-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -47,7 +47,7 @@ machine-readable ownership contract and this document as the human map.
 | P0 | Account deletion anonymized `name` but did not clear retained `firstName`, `lastName`, or `displayName` on `users/{uid}`. | Fixed in this pass. |
 | P1 | `RATE_LIMITS` declared several callable limits that were not applied at the handlers: `verifyRazorpayPayment`, `cancelRunSignUp`, `joinRunWaitlist`, `blockUser`, `unblockUser`, and `requestAccountDeletion`. `updateUserProfile` also had no configured limit. | Fixed. All listed handlers now call `checkRateLimit`; `updateUserProfile` is 60/minute to allow brisk field-by-field editing without leaving profile writes unbounded. |
 | P2 | The machine-readable contract records operations by collection, but not the Dart initiator method for every operation. | This doc fills the human map; a later tooling pass can validate Dart initiators automatically. |
-| P2 | Notifications are currently only sent for chat messages. Future notification work should start from this catalog so fan-out writes and push side effects remain backend-owned. | Add `NOTIFICATIONS-QUEUE`. |
+| P2 | Notification fan-out now has a durable backend-owned in-app timeline for match, message, new club run, run signup, waitlist-promotion, upcoming run reminder, run schedule/location updates, and run cancellation events. | Implemented; keep adding new categories through the same Functions-owned interface. |
 
 ## Cloud Functions Inventory
 
@@ -55,29 +55,38 @@ machine-readable ownership contract and this document as the human map.
 |---|---|---|---|---|
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with Zod; owns complex profile edits after initial create; rate-limited at 60/minute. |
 | `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete | Sole owner of public profile projection. Uses `displayName`, then first name, then legacy fallback. |
-| `createRunClub` | Callable | `RunClubsRepository.createRunClub` | `runClubs/{clubId}`, `runClubMemberships/{clubId_uid}`, compatibility `users/{uid}.joinedRunClubIds` | Server derives host identity from authenticated user. |
-| `joinRunClub` | Callable | `RunClubsRepository.joinClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.member*`, compatibility `users/{uid}.joinedRunClubIds` | Multi-doc membership mutation; edge document is the target source of truth. |
-| `leaveRunClub` | Callable | `RunClubsRepository.leaveClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.member*`, compatibility `users/{uid}.joinedRunClubIds` | Rejects host leaving their own club. |
-| `createRun` | Callable | `RunRepository.createRun` | `runs/{runId}` | Host authority is verified server-side from the run club; initializes run participation count projections to zero. |
-| `updateRun` | Callable | `RunRepository.updateRunDetails` | `runs/{runId}` | Host-editable schedule/descriptive fields only. |
-| `signUpForFreeRun` | Callable | `PaymentRepository.bookFreeRun` | `runParticipations/{runId_uid}`, `runs/{runId}.bookedCount`, compatibility `runs/{runId}.signedUpUserIds`, `genderCounts`, `waitlistUserIds` | Delegates core booking to `signUpUserForRun`; decrements `waitlistedCount` when promoting from waitlist. |
-| `createRazorpayOrder` | Callable | `PaymentRepository.processPayment` | Razorpay order only | Uses trusted run price and server-side secrets. |
-| `verifyRazorpayPayment` | Callable | Razorpay success callback in `PaymentRepository` | `payments/{paymentId}`, `runParticipations/{runId_uid}`, compatibility `runs/{runId}` booking fields, run count projections | Rate-limited before signature validation or Razorpay fetch; verifies signature and books paid run. |
-| `cancelRunSignUp` | Callable | `RunRepository.cancelSignUpViaFunction` | `runParticipations/{runId_uid}`, `runs/{runId}.bookedCount`, `runs/{runId}.waitlistedCount`, compatibility arrays, `payments/{paymentId}` refund status | Rate-limited before payment lookup; may promote a waitlisted runner and refund paid bookings; writes exact count projections after promotion math. |
-| `joinRunWaitlist` | Callable | `RunRepository.joinWaitlistViaFunction` | `runParticipations/{runId_uid}`, `runs/{runId}.waitlistedCount`, compatibility `runs/{runId}.waitlistUserIds` | Rate-limited before transaction work; server checks block boundary without exposing block state in rules. |
-| `markRunAttendance` | Callable | `RunRepository.markAttendance` | `runParticipations/{runId_uid}`, `runs/{runId}.checkedInCount`, compatibility `runs/{runId}.attendedUserIds` | Host-only attendance toggle. |
-| `selfCheckInAttendance` | Callable | `RunRepository.selfCheckInAttendance` | `runParticipations/{runId_uid}`, `runs/{runId}.checkedInCount`, compatibility `runs/{runId}.attendedUserIds` | Participant self-check only; verifies sign-up, time window, and location where available. |
+| `createRunClub` | Callable | `RunClubsRepository.createRunClub` | `runClubs/{clubId}`, `runClubMemberships/{clubId_uid}` | Server derives host identity from authenticated user; the membership edge is the source of truth and `memberCount` is the only parent aggregate. |
+| `updateRunClub` | Callable | `RunClubsRepository.updateRunClub` | `runClubs/{clubId}` descriptive fields | Host-only profile edit seam. Direct client updates to `runClubs/{clubId}` are denied so Zod owns field validation and aggregate/projection fields stay backend-owned. |
+| `joinRunClub` | Callable | `RunClubsRepository.joinClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.memberCount` | Multi-doc membership mutation; does not mirror membership into user or club arrays. |
+| `leaveRunClub` | Callable | `RunClubsRepository.leaveClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.memberCount` | Rejects host leaving their own club; does not mirror membership into user or club arrays. |
+| `archiveRunClub` | Callable | Backend-ready; host UI queued | `runClubs/{clubId}.status/archived/archivedAt/archiveReason` | Host-only archive seam for clubs with history. Prevent browse/search usage once client filters are added; hard delete is reserved for unused clubs. |
+| `deleteRunClub` | Callable | Backend-ready; host/admin UI queued | `runClubs/{clubId}` delete, host `runClubMemberships/{clubId_uid}` delete | Host-only hard delete for never-used clubs. Rejects clubs with runs, payments, reviews, or non-host members. |
+| `createRun` | Callable | `RunRepository.createRun` | `runs/{runId}`, `notifications/{uid}/items/{notificationId}`, FCM to active club members with run-reminder pushes enabled | Host authority is verified server-side from the run club; initializes run lifecycle as `active` plus participation count projections to zero; new-run notification fan-out is best-effort after the run document commits. |
+| `updateRun` | Callable | `RunRepository.updateRunDetails` | `runs/{runId}`, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants for schedule/location changes | Host-editable schedule/descriptive fields only. Descriptive-only edits do not notify participants; schedule/location changes produce deterministic `runUpdated_${runId}` items. Cancelled runs cannot be edited. |
+| `cancelRun` | Callable | Backend-ready; host UI and cancellation policy are queued | `runs/{runId}.status/cancelledAt/cancellationReason`, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants | Host-only cancellation seam. Marks the canonical run as cancelled and fans out deterministic `runCancelled_${runId}` activity. Refund/payment policy and host UI are intentionally not exposed yet. |
+| `deleteRun` | Callable | Backend-ready; host/admin UI queued | `runs/{runId}` delete | Host-only hard delete for unused runs. Rejects runs with participations, payments, or reviews; use `cancelRun` for runs with history. |
+| `signUpForFreeRun` | Callable | `PaymentRepository.bookFreeRun` | `runParticipations/{runId_uid}`, `runs/{runId}.bookedCount`, `runs/{runId}.waitlistedCount`, `runs/{runId}.genderCounts`, `notifications/{uid}/items/{notificationId}` | Delegates core booking to `signUpUserForRun`; writes an in-app booking confirmation or waitlist-promotion activity item. |
+| `createRazorpayOrder` | Callable | `PaymentRepository.processPayment` | Razorpay order only | Uses trusted run price and server-side secrets; rejects cancelled runs before creating an order. |
+| `verifyRazorpayPayment` | Callable | Razorpay success callback in `PaymentRepository` | `payments/{paymentId}`, `runParticipations/{runId_uid}`, run count/gender projections, `notifications/{uid}/items/{notificationId}` | Rate-limited before signature validation or Razorpay fetch; verifies signature, books paid run, and writes an in-app booking confirmation. |
+| `cancelRunSignUp` | Callable | `RunRepository.cancelSignUpViaFunction` | `runParticipations/{runId_uid}`, `runs/{runId}.bookedCount`, `runs/{runId}.waitlistedCount`, `runs/{runId}.genderCounts`, `payments/{paymentId}` refund status, `notifications/{uid}/items/{notificationId}`, FCM to promoted waitlisted user | Rate-limited before payment lookup; may promote a waitlisted runner and refund paid bookings; writes exact count projections after promotion math. |
+| `joinRunWaitlist` | Callable | `RunRepository.joinWaitlistViaFunction` | `runParticipations/{runId_uid}`, `runs/{runId}.waitlistedCount` | Rate-limited before transaction work; server checks block boundary without exposing block state in rules. |
+| `leaveRunWaitlist` | Callable | `RunRepository.leaveWaitlist` | `runParticipations/{runId_uid}`, `runs/{runId}.waitlistedCount` | Rate-limited before transaction work; marks the caller's waitlist edge cancelled. |
+| `markRunAttendance` | Callable | `RunRepository.markAttendance` | `runParticipations/{runId_uid}`, `runs/{runId}.checkedInCount` | Host-only attendance toggle. |
+| `selfCheckInAttendance` | Callable | `RunRepository.selfCheckInAttendance` | `runParticipations/{runId_uid}`, `runs/{runId}.checkedInCount` | Participant self-check only; verifies sign-up, time window, and location where available. |
 | `onSwipeCreated` | Firestore trigger on `swipes/{uid}/outgoing/{targetId}` create | Backend | `matches/{matchId}` | Deterministic match ID; creates a match only for reciprocal likes. |
-| `onMatchCreated` | Firestore trigger on `matches/{matchId}` create | Backend | Notifications via FCM | Sends match notification. |
-| `onMessageCreated` | Firestore trigger on `matches/{matchId}/messages/{messageId}` create | Backend | `matches/{matchId}`, `functionEventReceipts/{receiptId}`, notifications | Idempotency receipt prevents duplicate unread increments. |
+| `onMatchCreated` | Firestore trigger on `matches/{matchId}` create | Backend | `notifications/{uid}/items/{notificationId}`, FCM | Writes deterministic match activity notifications for both participants and sends push notifications when tokens exist. |
+| `onMessageCreated` | Firestore trigger on `matches/{matchId}/messages/{messageId}` create | Backend | `matches/{matchId}`, `functionEventReceipts/{receiptId}`, `notifications/{uid}/items/{notificationId}`, FCM | Idempotency receipt prevents duplicate unread increments; deterministic notification ID prevents duplicate activity rows. |
 | `moderateChatMessage` | Firestore trigger on match-scoped message create | Backend | `matches/{matchId}/messages/{messageId}`, `moderationFlags/{id}` | Deterministic moderation flag for blocked/flagged text. |
 | `moderatePhotoOnUpload` | Storage trigger | Backend | `moderationFlags/{id}`, `users/{uid}.photoUrls`, Storage delete | Deletes unsafe uploaded profile photos and removes URL from private profile. |
+| `createRunReview` | Callable | `ReviewsRepository.addReview` | `reviews/{runId~uid}` | Attended-run review create. Server verifies the `runParticipations/{runId_uid}` edge, derives public reviewer name, and writes the deterministic review doc. |
+| `updateRunReview` | Callable | `ReviewsRepository.updateReview` | `reviews/{reviewId}.rating/comment/updatedAt` | Author-only review edit. |
+| `deleteRunReview` | Callable | `ReviewsRepository.deleteReview` | `reviews/{reviewId}` delete | Author-only review delete. `syncRunClubReviewStats` recomputes aggregate rating/count after deletion. |
 | `syncRunClubReviewStats` | Firestore trigger on `reviews/{reviewId}` write | Backend | `runClubs/{clubId}.rating`, `reviewCount` | Recomputes aggregate state, so duplicate trigger delivery is safe. |
 | `blockUser` | Callable | `SafetyRepository.blockUser` | `blocks/{blocker}__{target}`, `matches/{matchId}` status | Rate-limited before writes; backend-owned safety edge and match closure. |
 | `unblockUser` | Callable | `SafetyRepository.unblockUser` | `blocks/{blocker}__{target}` delete | Rate-limited before delete; removes directed block edge. |
 | `onBlockCreated` | Firestore trigger on `blocks/{blockId}` create | Backend | `matches/{matchId}` status | Secondary safety guard to close matches after block edge writes. |
 | `reportUser` | Callable | `SafetyRepository.reportUser` | `reports/{autoId}` | Bounded report payload. |
-| `requestAccountDeletion` | Callable | `SafetyRepository.requestAccountDeletion` | `deletedUsers/{uid}`, `users/{uid}`, `publicProfiles/{uid}`, Storage deletes, Auth delete | Rate-limited before destructive work; backend-only account deletion/anonymization. |
+| `requestAccountDeletion` | Callable | `SafetyRepository.requestAccountDeletion` | `deletedUsers/{uid}`, `users/{uid}`, `publicProfiles/{uid}`, Storage deletes, Auth delete, relationship cleanup across memberships, participations, saved runs, swipes, matches, reviews, payments, notifications, blocks, and reports | Rate-limited before destructive work; backend-only account deletion/anonymization. Uses relationship-doc queries instead of scanning parent arrays. |
 | `joinWaitlist` | HTTP function | Marketing site/waitlist form | `launchWaitlist/{emailHash}` | Public endpoint with CORS and IP rate limiting. |
 
 ## Direct Client Firestore Writes
@@ -85,12 +94,9 @@ machine-readable ownership contract and this document as the human map.
 | Dart initiator | Collection/path | Operation | Rule owner | Keep direct? |
 |---|---|---|---|---|
 | `UserProfileRepository.setUserProfile` | `users/{uid}` | Initial profile create after onboarding identity step. | Owner create plus full shape validation. | Yes. This is initial owner-owned profile creation. |
-| `SavedRunRepository.watchSavedRun` / `saveRun` / `unsaveRun` | `savedRuns/{uid_runId}` plus compatibility `users/{uid}.savedRunIds` writes | Render, save, or unsave one run for the current user. | Owner direct edge read/create/delete plus temporary projection update. | Yes during migration. Run detail already reads from `savedRuns`; retire the profile array writes after migration/reset policy is finalized. |
+| `SavedRunRepository.watchSavedRun` / `saveRun` / `unsaveRun` | `savedRuns/{uid_runId}` | Render, save, or unsave one run for the current user. | Owner direct edge read/create/delete with deterministic ids. | Yes. No user-profile projection is maintained. |
 | `FcmService._saveToken` | `users/{uid}.fcmToken` | Store current push token. | Owner direct update of only `fcmToken`. | Yes. Runtime token update. |
 | `OnboardingDraftRepository.saveDraft/deleteDraft` | `onboarding_drafts/{uid}` | Private draft set/delete. | Owner-only, intentionally extensible. | Yes. Private volatile draft state. |
-| `RunClubsRepository.updateRunClub` | `runClubs/{clubId}` | Host edits descriptive club fields. | Host update allowlist freezes membership/rating fields. | Yes for now. Move to callable only if host edits become multi-doc or side-effectful. |
-| `RunRepository.leaveWaitlist` | `runs/{runId}.waitlistUserIds` | Remove current user from waitlist. | Waitlisted user can remove self only. | Yes for now. Still watch because waitlist join is callable-owned. |
-| `ReviewsRepository.add/update/deleteReview` | `reviews/{runId~uid}` | Run attendee creates/edits/deletes own review. | Deterministic ID, attended-run check, author ownership. | Yes. Aggregate stats are trigger-owned. |
 | `SwipeRepository.recordSwipe` | `swipes/{uid}/outgoing/{targetId}` | Create own outgoing swipe. | Path/data identity, attended-run, block, and payload rules. | Yes. Match creation remains trigger-owned. |
 | `ChatRepository.sendMessage` | `matches/{matchId}/messages/{id}` | Create text message. | Match participant create only. | Yes. Match preview/unread/moderation are trigger-owned. |
 | `ChatRepository.sendImageMessage` | Storage `matches/{matchId}/images/*`, then `matches/{matchId}/messages/{id}` | Upload chat image and create image message. | Storage rules plus message create rules. | Yes, but future media moderation should be audited separately. |
@@ -101,15 +107,19 @@ machine-readable ownership contract and this document as the human map.
 | Path/field | Owner | Client rule |
 |---|---|---|
 | `publicProfiles/{uid}` | `syncPublicProfile` trigger | Read-only to clients. |
-| `users/{uid}.joinedRunClubIds` | Run-club membership callables | Direct client writes denied. |
 | `runClubMemberships/{clubId_uid}` | Run-club membership callables | Direct client writes denied. |
+| `runClubs/{clubId}` writes | Run-club create/update/archive/delete callables plus review-stat trigger | Direct client writes denied. |
 | `users/{uid}.deleted`, `deletedAt` | Account deletion callable | Direct client writes denied. |
-| `runClubs/{clubId}.memberUserIds`, `memberCount` | Run-club membership callables | Direct client writes denied. |
+| `runClubs/{clubId}.memberCount` | Run-club membership callables | Direct client writes denied. |
 | `runClubs/{clubId}.rating`, `reviewCount` | `syncRunClubReviewStats` trigger | Direct client writes denied. |
-| `runs/{runId}.signedUpUserIds`, `attendedUserIds`, `genderCounts` | Booking, attendance, payment callables | Direct client writes denied. |
+| `runClubs/{clubId}.status`, `archived`, `archivedAt`, `archiveReason` | `archiveRunClub` callable | Direct client writes denied. |
+| `runs/{runId}.bookedCount`, `waitlistedCount`, `checkedInCount`, `genderCounts` | Booking, waitlist, attendance, payment callables | Direct client writes denied. |
+| `runs/{runId}.status`, `cancelledAt`, `cancellationReason` | `createRun` / `cancelRun` / `deleteRun` callables | Direct client writes denied. |
 | `runParticipations/{runId_uid}` | Booking, waitlist, attendance, cancellation, account deletion callables. Run detail reads current-viewer CTA/review state from this edge; shared signed-up/attended run streams query it by user/status; host attendance management, swipe candidate generation, and run recap derive roster/check-in state from run participation statuses. | Direct client writes denied. |
 | `payments/{paymentId}` | Payment verification/cancel callables | Direct client writes denied. |
+| `reviews/{reviewId}` writes | Review mutation callables plus review-stat trigger | Direct client writes denied. |
 | `matches/{matchId}` create/status/preview/unread increments | Matching/message/block triggers | Direct client creation denied; only participant unread reset allowed. |
+| `notifications/{uid}/items/{notificationId}` | Match/message triggers, create-run fan-out, host run update/cancellation, and booking/cancellation callables now; remaining run producers should use the same backend-owned helper. | Owner can read own items and update only `readAt`; client create/delete/content edits are denied. |
 | `blocks/{blockId}` | Safety callables | Direct client writes denied. |
 | `reports/{reportId}` | Safety callable | Direct client writes denied. |
 | `moderationFlags/{id}` | Moderation triggers | Direct client writes denied. |
@@ -117,21 +127,26 @@ machine-readable ownership contract and this document as the human map.
 | `rateLimits/{key}` | Rate-limit helper | Direct client writes denied. |
 | `functionEventReceipts/{id}` | Idempotent triggers | Direct client writes denied. |
 
-## Notification Starting Point
+## Notification Timeline
 
-Current notification fan-out exists for chat-message and match events through
-Functions. The next notification pass should keep notification creation
-backend-owned and add a small notification operation table here before
-implementation. Candidate moments:
+Durable in-app activity lives under
+`notifications/{uid}/items/{notificationId}`. Notification content and routing
+metadata are backend-owned; clients can read their own timeline and mark items
+read by updating only `readAt`.
 
-- New chat message.
-- New match.
-- Upcoming run reminder.
-- Run signup / waitlist promotion.
-- Run cancellation or schedule change.
-- Club membership or hosted-run updates.
+| Moment | Current owner | Durable item | Push | Status |
+|---|---|---|---|---|
+| New match | `onMatchCreated` | Yes, deterministic `match_${matchId}` item for each participant. | Yes when `prefsNewCatches != false` and token exists. | Implemented. |
+| New chat message | `onMessageCreated` | Yes, deterministic `message_${matchId}_${messageId}` item for the recipient. | Yes when `prefsMessages != false` and token exists. | Implemented. |
+| Upcoming run reminder | `sendRunReminders` scheduled Function every 15 minutes. | Yes, deterministic `runReminder_${runId}` item for signed-up participants in the reminder window. | Yes when `prefsRunReminders != false` and token exists. | Implemented. |
+| Run signup | `signUpUserForRun` via `signUpForFreeRun` and `verifyRazorpayPayment` | Yes, deterministic `runSignup_${runId}` item for the booked user. | No; this is normally caused by the user's active booking action. | Implemented. |
+| Waitlist promotion | `signUpUserForRun` when a waitlisted user books, and `cancelRunSignUp` when a cancellation promotes the first eligible waitlisted user. | Yes, deterministic `waitlistPromotion_${runId}` item for the promoted user. | Yes when promotion happens from another user's cancellation, `prefsRunStatusUpdates != false`, and token exists. | Implemented. |
+| Run schedule/location change | `updateRun` callable best-effort fan-out after the run update commits. | Yes, deterministic `runUpdated_${runId}` item for signed-up and waitlisted participants. | Yes when `prefsRunStatusUpdates != false` and token exists. | Implemented. |
+| Run cancellation | `cancelRun` callable best-effort fan-out after the run status update commits. | Yes, deterministic `runCancelled_${runId}` item for signed-up and waitlisted participants. | Yes when `prefsRunStatusUpdates != false` and token exists. | Backend implemented; host UI/policy queued. |
+| New run posted by followed club | `createRun` callable best-effort fan-out after the run commits | Yes, deterministic `clubUpdate_${runId}` item for active club members, excluding the host. | Two-tier: activity for active members; push only when membership `pushNotificationsEnabled == true`, `prefsClubUpdates != false`, and token exists. | Implemented. |
 
-Before adding notifications, decide whether the durable in-app timeline lives
-in a Firestore collection such as `notifications/{uid}/items/{id}` or whether
-some events remain push-only. If a timeline collection is added, client writes
-should be denied and all fan-out should happen through Functions.
+When adding a new producer, write the timeline item through
+`functions/src/shared/notifications.ts`, keep IDs deterministic where the
+source event has a stable ID, add Functions tests for duplicate delivery, add a
+rules test if the client read/update contract changes, and extend
+`tool/firestore_contract.json`.

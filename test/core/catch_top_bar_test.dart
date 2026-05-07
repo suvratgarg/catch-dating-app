@@ -23,6 +23,10 @@ void main() {
     expect(find.text('Settings'), findsOneWidget);
     expect(tester.getSize(find.byType(CatchTopBar)).height, 56);
     expect(find.byType(IconBtn), findsNothing);
+    expect(
+      _topBarMaterial(tester).color,
+      AppTheme.light.scaffoldBackgroundColor,
+    );
   });
 
   testWidgets('CatchTopBar wires leading and action controls', (tester) async {
@@ -122,9 +126,13 @@ void main() {
                 CatchTopBarMenuAction<String>(
                   tooltip: 'More profile actions',
                   onSelected: (value) => selected = value,
-                  itemBuilder: (context) => const [
-                    PopupMenuItem(value: 'edit', child: Text('Edit profile')),
-                    PopupMenuItem(value: 'signOut', child: Text('Sign out')),
+                  items: const [
+                    CatchActionMenuItem(value: 'edit', label: 'Edit profile'),
+                    CatchActionMenuItem(
+                      value: 'signOut',
+                      label: 'Sign out',
+                      isDestructive: true,
+                    ),
                   ],
                 ),
               ],
@@ -217,5 +225,16 @@ Widget _wrap(PreferredSizeWidget appBar) {
   return MaterialApp(
     theme: AppTheme.light,
     home: Scaffold(appBar: appBar, body: const SizedBox.shrink()),
+  );
+}
+
+Material _topBarMaterial(WidgetTester tester) {
+  return tester.widget<Material>(
+    find
+        .descendant(
+          of: find.byType(CatchTopBar),
+          matching: find.byType(Material),
+        )
+        .first,
   );
 }

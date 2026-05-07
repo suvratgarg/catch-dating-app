@@ -284,33 +284,6 @@ class _ProfileTabContent extends ConsumerWidget {
         fieldName: 'children',
       ),
     ];
-    final discovery = [
-      _multiEnumEntry<Gender>(
-        context: context,
-        ref: ref,
-        icon: Icons.people_outline,
-        label: 'Interested in',
-        values: Gender.values,
-        selected: user.interestedInGenders,
-        fieldName: 'interestedInGenders',
-        placeholder: 'Everyone',
-        isAddAffordanceWhenEmpty: false,
-      ),
-      ProfileInfoEntry(
-        icon: Icons.cake_outlined,
-        label: 'Age range',
-        value: formatPreferredMatchAgeRange(
-          minAgePreference: user.minAgePreference,
-          maxAgePreference: user.maxAgePreference,
-        ),
-        onTap: () => showAgeRangeSheet(
-          context: context,
-          ref: ref,
-          currentMin: user.minAgePreference,
-          currentMax: user.maxAgePreference,
-        ),
-      ),
-    ];
     final location = [
       _singleEnumEntry<IndianCity>(
         context: context,
@@ -395,9 +368,6 @@ class _ProfileTabContent extends ConsumerWidget {
       gapH20,
       SectionHeader(title: 'Background'),
       ProfileInfoSection(entries: background, grouped: true),
-      gapH20,
-      SectionHeader(title: 'Discovery'),
-      ProfileInfoSection(entries: discovery, grouped: true),
       gapH20,
       SectionHeader(title: 'Intentions'),
       ProfileInfoSection(entries: intentions, grouped: true),

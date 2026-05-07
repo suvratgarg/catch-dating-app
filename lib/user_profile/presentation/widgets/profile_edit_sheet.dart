@@ -7,6 +7,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
+import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
@@ -248,14 +250,6 @@ class _HeightEditSheetState extends State<_HeightEditSheet>
     _heightCm = widget.initialValue;
   }
 
-  VoidCallback? get _decrease => !isSaving && _heightCm > minimumHeightCm
-      ? () => setState(() => _heightCm--)
-      : null;
-
-  VoidCallback? get _increase => !isSaving && _heightCm < maximumHeightCm
-      ? () => setState(() => _heightCm++)
-      : null;
-
   Future<void> _submit() async {
     if (isSaving) return;
     if (_heightCm == widget.currentValue) {
@@ -267,8 +261,6 @@ class _HeightEditSheetState extends State<_HeightEditSheet>
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return CatchBottomSheetScaffold(
       title: 'Height',
       subtitle: '$minimumHeightCm-$maximumHeightCm cm',
@@ -282,36 +274,15 @@ class _HeightEditSheetState extends State<_HeightEditSheet>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ?buildSaveError(),
-          DecoratedBox(
-            decoration: BoxDecoration(
-              color: t.raised,
-              borderRadius: BorderRadius.circular(CatchRadius.md),
-              border: Border.all(color: t.line),
-            ),
-            child: Row(
-              children: [
-                IconButton(
-                  tooltip: 'Decrease height',
-                  icon: Icon(Icons.remove_rounded, color: t.ink),
-                  onPressed: _decrease,
-                  visualDensity: VisualDensity.compact,
-                ),
-                Expanded(
-                  child: Center(
-                    child: Text(
-                      '$_heightCm cm',
-                      style: CatchTextStyles.mono(context),
-                    ),
-                  ),
-                ),
-                IconButton(
-                  tooltip: 'Increase height',
-                  icon: Icon(Icons.add_rounded, color: t.ink),
-                  onPressed: _increase,
-                  visualDensity: VisualDensity.compact,
-                ),
-              ],
-            ),
+          CatchNumberStepper(
+            value: _heightCm,
+            min: minimumHeightCm,
+            max: maximumHeightCm,
+            enabled: !isSaving,
+            decreaseTooltip: 'Decrease height',
+            increaseTooltip: 'Increase height',
+            formatValue: (value) => '${value.round()} cm',
+            onChanged: (value) => setState(() => _heightCm = value.round()),
           ),
         ],
       ),
@@ -661,65 +632,23 @@ class _RangeEditSheetState extends State<_RangeEditSheet>
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ?buildSaveError(),
-          SliderTheme(
-            data: SliderTheme.of(context).copyWith(
-              activeTickMarkColor: Colors.transparent,
-              inactiveTickMarkColor: Colors.transparent,
-              disabledActiveTickMarkColor: Colors.transparent,
-              disabledInactiveTickMarkColor: Colors.transparent,
+          CatchRangeSlider(
+            min: widget.sliderMin,
+            max: widget.sliderMax,
+            divisions: widget.divisions,
+            values: _range,
+            labels: RangeLabels(
+              widget.labelText(_range.start),
+              widget.labelText(_range.end),
             ),
-            child: RangeSlider(
-              min: widget.sliderMin,
-              max: widget.sliderMax,
-              divisions: widget.divisions,
-              values: _range,
-              labels: RangeLabels(
-                widget.labelText(_range.start),
-                widget.labelText(_range.end),
-              ),
-              onChanged: isSaving
-                  ? null
-                  : (values) => setState(() => _range = values),
-            ),
+            onChanged: isSaving
+                ? null
+                : (values) => setState(() => _range = values),
           ),
         ],
       ),
     );
   }
-}
-
-// ── Age range ──────────────────────────────────────────────────────────────────
-
-Future<void> showAgeRangeSheet({
-  required BuildContext context,
-  required WidgetRef ref,
-  required int currentMin,
-  required int currentMax,
-}) {
-  final normalizedRange = normalizeAgePreferenceRange(
-    minAgePreference: currentMin,
-    maxAgePreference: currentMax,
-  );
-
-  return _showRangeEditSheet(
-    context: context,
-    ref: ref,
-    title: 'Age range',
-    currentMin: normalizedRange.minAge,
-    currentMax: normalizedRange.maxAge
-        .clamp(minimumProfileAge, preferredMatchAgeOpenEndedDisplayAge)
-        .toInt(),
-    sliderMin: minimumProfileAge.toDouble(),
-    sliderMax: preferredMatchAgeOpenEndedDisplayAge.toDouble(),
-    divisions: preferredMatchAgeOpenEndedDisplayAge - minimumProfileAge,
-    displayText: (r) =>
-        '${r.start.round()} – ${formatPreferredMatchAge(r.end.round())}',
-    labelText: (v) => formatPreferredMatchAge(v.round()),
-    saveEndValue: preferredMatchAgeStorageValue,
-    savedCurrentMax: normalizedRange.maxAge,
-    minFieldName: 'minAgePreference',
-    maxFieldName: 'maxAgePreference',
-  );
 }
 
 // ── Date of birth ──────────────────────────────────────────────────────────────

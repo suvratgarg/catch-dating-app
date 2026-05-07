@@ -9,9 +9,9 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -133,8 +133,10 @@ class _OtpPageState extends ConsumerState<OtpPage> {
             style: CatchTextStyles.bodyM(context, color: t.ink2),
           ),
           const SizedBox(height: 40),
-          _OtpDigitField(
+          CatchOtpCodeField(
+            inputKey: AuthFormKeys.otpField,
             controller: _otpController,
+            length: AuthInput.otpCodeLength,
             autofocus: shouldAutofocus,
             onSubmitted: _submit,
             onChanged: _handleCodeChanged,
@@ -198,112 +200,5 @@ class _OtpPageState extends ConsumerState<OtpPage> {
     }
 
     return 'Resend OTP';
-  }
-}
-
-class _OtpDigitField extends StatelessWidget {
-  const _OtpDigitField({
-    required this.controller,
-    required this.autofocus,
-    required this.onChanged,
-    required this.onSubmitted,
-  });
-
-  final TextEditingController controller;
-  final bool autofocus;
-  final ValueChanged<String> onChanged;
-  final ValueChanged<String> onSubmitted;
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = CatchTokens.of(context);
-    final code = controller.text;
-    final textStyle = Theme.of(context).textTheme.headlineSmall?.copyWith(
-      color: tokens.ink,
-      fontWeight: FontWeight.w700,
-    );
-
-    return Semantics(
-      label: 'One-time code',
-      textField: true,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Row(
-            children: [
-              for (var i = 0; i < 6; i++) ...[
-                Expanded(
-                  child: _OtpDigitBox(
-                    key: ValueKey('otp_digit_$i'),
-                    digit: i < code.length ? code[i] : '',
-                    isActive: code.length == i,
-                    textStyle: textStyle,
-                  ),
-                ),
-                if (i < 5) const SizedBox(width: 8),
-              ],
-            ],
-          ),
-          Positioned.fill(
-            child: Opacity(
-              opacity: 0.01,
-              child: TextField(
-                key: AuthFormKeys.otpField,
-                controller: controller,
-                autofocus: autofocus,
-                keyboardType: TextInputType.number,
-                textInputAction: TextInputAction.done,
-                autofillHints: const [AutofillHints.oneTimeCode],
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                  LengthLimitingTextInputFormatter(AuthInput.otpCodeLength),
-                ],
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  contentPadding: EdgeInsets.zero,
-                ),
-                style: const TextStyle(color: Colors.transparent),
-                enableInteractiveSelection: false,
-                showCursor: false,
-                onSubmitted: onSubmitted,
-                onChanged: onChanged,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _OtpDigitBox extends StatelessWidget {
-  const _OtpDigitBox({
-    super.key,
-    required this.digit,
-    required this.isActive,
-    required this.textStyle,
-  });
-
-  final String digit;
-  final bool isActive;
-  final TextStyle? textStyle;
-
-  @override
-  Widget build(BuildContext context) {
-    final tokens = CatchTokens.of(context);
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 160),
-      height: 64,
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: tokens.raised,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: isActive ? tokens.primary : tokens.line2,
-          width: isActive ? 1.5 : 1,
-        ),
-      ),
-      child: Text(digit, style: textStyle),
-    );
   }
 }

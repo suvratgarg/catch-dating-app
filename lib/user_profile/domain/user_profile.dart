@@ -200,9 +200,8 @@ abstract class UserProfile with _$UserProfile {
     double? latitude,
     double? longitude,
 
-    // Matching preferences
-    @Default([]) List<String> joinedRunClubIds,
-    @Default([]) List<String> savedRunIds,
+    // Matching preferences. Profile creation/update validators require at least
+    // one value before a profile can be saved.
     @Default([]) List<Gender> interestedInGenders,
     @Default(18) int minAgePreference,
     @Default(maximumPreferredMatchAge) int maxAgePreference,
@@ -233,7 +232,10 @@ abstract class UserProfile with _$UserProfile {
 
     // Notification / discovery preferences
     @Default(true) bool prefsNewCatches,
+    @Default(true) bool prefsMessages,
     @Default(true) bool prefsRunReminders,
+    @Default(true) bool prefsRunStatusUpdates,
+    @Default(true) bool prefsClubUpdates,
     @Default(false) bool prefsWeeklyDigest,
     @Default(true) bool prefsShowOnMap,
   }) = _UserProfile;

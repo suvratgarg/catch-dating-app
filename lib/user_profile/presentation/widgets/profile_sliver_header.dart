@@ -106,7 +106,9 @@ class _OverflowMenu extends ConsumerWidget {
     return CatchTopBarMenuAction<String>(
       tooltip: 'More profile actions',
       onSelected: (value) {
-        if (value == 'payments') {
+        if (value == 'reviews') {
+          context.pushNamed(Routes.reviewsHistoryScreen.name);
+        } else if (value == 'payments') {
           context.pushNamed(Routes.paymentHistoryScreen.name);
         } else if (value == 'signOut') {
           if (signOutMutation.isPending) return;
@@ -117,9 +119,23 @@ class _OverflowMenu extends ConsumerWidget {
           );
         }
       },
-      itemBuilder: (context) => const [
-        PopupMenuItem(value: 'payments', child: Text('Payment history')),
-        PopupMenuItem(value: 'signOut', child: Text('Sign out')),
+      items: const [
+        CatchActionMenuItem(
+          value: 'reviews',
+          label: 'Review history',
+          icon: Icons.rate_review_outlined,
+        ),
+        CatchActionMenuItem(
+          value: 'payments',
+          label: 'Payment history',
+          icon: Icons.receipt_long_outlined,
+        ),
+        CatchActionMenuItem(
+          value: 'signOut',
+          label: 'Sign out',
+          icon: Icons.logout_rounded,
+          isDestructive: true,
+        ),
       ],
     );
   }

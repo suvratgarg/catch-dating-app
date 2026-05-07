@@ -22,7 +22,6 @@ if (args.emulatorHost) {
 
 admin.initializeApp({projectId: args.project});
 const db = admin.firestore();
-const now = admin.firestore.FieldValue.serverTimestamp();
 
 const plan = await buildMigrationPlan(db);
 
@@ -78,8 +77,10 @@ function requireValue(argv, index, flag) {
 function printHelp() {
   console.log(`Usage: node tool/firestore_relationship_migration.mjs [options]
 
-Builds Firestore relationship/action documents from legacy arrays and copies
-legacy chats/{matchId}/messages into matches/{matchId}/messages.
+Copies legacy chats/{matchId}/messages into matches/{matchId}/messages.
+Relationship/action documents are now created by callables and direct edge
+repositories only; this tool no longer reconstructs edge documents from legacy
+parent-document arrays.
 
 Options:
   --apply                 Write the planned docs. Default is dry-run.
@@ -92,110 +93,9 @@ Options:
 }
 
 async function buildMigrationPlan(firestore) {
-  const [usersSnap, clubsSnap, runsSnap, chatsSnap] = await Promise.all([
-    firestore.collection("users").get(),
-    firestore.collection("runClubs").get(),
-    firestore.collection("runs").get(),
-    firestore.collection("chats").get(),
-  ]);
-
-  const memberships = new Map();
-  const participations = new Map();
-  const savedRuns = new Map();
+  const chatsSnap = await firestore.collection("chats").get();
   const messageCopies = [];
   const warnings = [];
-
-  for (const clubDoc of clubsSnap.docs) {
-    const club = clubDoc.data();
-    const clubId = clubDoc.id;
-    for (const uid of stringArray(club.memberUserIds)) {
-      const id = runClubMembershipId(clubId, uid);
-      memberships.set(id, {
-        path: `runClubMemberships/${id}`,
-        data: {
-          clubId,
-          uid,
-          role: uid === club.hostUserId ? "host" : "member",
-          status: "active",
-          joinedAt: now,
-        },
-      });
-    }
-    if (club.hostUserId && !memberships.has(runClubMembershipId(clubId, club.hostUserId))) {
-      const id = runClubMembershipId(clubId, club.hostUserId);
-      memberships.set(id, {
-        path: `runClubMemberships/${id}`,
-        data: {
-          clubId,
-          uid: club.hostUserId,
-          role: "host",
-          status: "active",
-          joinedAt: now,
-        },
-      });
-      warnings.push(`Added missing host membership for runClubs/${clubId}.`);
-    }
-  }
-
-  for (const userDoc of usersSnap.docs) {
-    const user = userDoc.data();
-    const uid = userDoc.id;
-    for (const clubId of stringArray(user.joinedRunClubIds)) {
-      const id = runClubMembershipId(clubId, uid);
-      if (!memberships.has(id)) {
-        memberships.set(id, {
-          path: `runClubMemberships/${id}`,
-          data: {
-            clubId,
-            uid,
-            role: "member",
-            status: "active",
-            joinedAt: now,
-          },
-        });
-      }
-    }
-    for (const runId of stringArray(user.savedRunIds)) {
-      const id = savedRunId(uid, runId);
-      savedRuns.set(id, {
-        path: `savedRuns/${id}`,
-        data: {uid, runId, savedAt: now},
-      });
-    }
-  }
-
-  for (const runDoc of runsSnap.docs) {
-    const run = runDoc.data();
-    const runId = runDoc.id;
-    const runClubId = typeof run.runClubId === "string" ? run.runClubId : "";
-    for (const uid of stringArray(run.waitlistUserIds)) {
-      setParticipation(participations, {
-        runId,
-        runClubId,
-        uid,
-        status: "waitlisted",
-        waitlistedAt: now,
-      });
-    }
-    for (const uid of stringArray(run.signedUpUserIds)) {
-      setParticipation(participations, {
-        runId,
-        runClubId,
-        uid,
-        status: "signedUp",
-        signedUpAt: now,
-      });
-    }
-    for (const uid of stringArray(run.attendedUserIds)) {
-      setParticipation(participations, {
-        runId,
-        runClubId,
-        uid,
-        status: "attended",
-        attendedAt: now,
-      });
-    }
-  }
 
   for (const chatDoc of chatsSnap.docs) {
     const matchId = chatDoc.id;
@@ -210,66 +110,21 @@ async function buildMigrationPlan(firestore) {
   }
 
   return {
-    memberships: [...memberships.values()],
-    participations: [...participations.values()],
-    savedRuns: [...savedRuns.values()],
     messageCopies,
     summary: {
       project: args.project,
       emulatorHost: args.emulatorHost,
       apply: args.apply,
-      runClubMemberships: memberships.size,
-      runParticipations: participations.size,
-      savedRuns: savedRuns.size,
       messageCopies: messageCopies.length,
       warnings,
     },
   };
 }
 
-function setParticipation(target, fields) {
-  const id = runParticipationId(fields.runId, fields.uid);
-  target.set(id, {
-    path: `runParticipations/${id}`,
-    data: {
-      runId: fields.runId,
-      runClubId: fields.runClubId,
-      uid: fields.uid,
-      status: fields.status,
-      createdAt: now,
-      updatedAt: now,
-      ...(fields.signedUpAt ? {signedUpAt: fields.signedUpAt} : {}),
-      ...(fields.waitlistedAt ? {waitlistedAt: fields.waitlistedAt} : {}),
-      ...(fields.attendedAt ? {attendedAt: fields.attendedAt} : {}),
-    },
-  });
-}
-
-function stringArray(value) {
-  return Array.isArray(value) ?
-    value.filter((item) => typeof item === "string" && item.length > 0) :
-    [];
-}
-
-function runClubMembershipId(clubId, uid) {
-  return `${clubId}_${uid}`;
-}
-
-function runParticipationId(runId, uid) {
-  return `${runId}_${uid}`;
-}
-
-function savedRunId(uid, runId) {
-  return `${uid}_${runId}`;
-}
-
 function printSummary(summary) {
   console.log("Firestore relationship migration plan");
   console.log(`Project: ${summary.project}`);
   if (summary.emulatorHost) console.log(`Emulator: ${summary.emulatorHost}`);
-  console.log(`runClubMemberships: ${summary.runClubMemberships}`);
-  console.log(`runParticipations: ${summary.runParticipations}`);
-  console.log(`savedRuns: ${summary.savedRuns}`);
   console.log(`messageCopies: ${summary.messageCopies}`);
   if (summary.warnings.length) {
     console.log("\nWarnings:");
@@ -278,12 +133,7 @@ function printSummary(summary) {
 }
 
 async function applyPlan(firestore, plan) {
-  const writes = [
-    ...plan.memberships,
-    ...plan.participations,
-    ...plan.savedRuns,
-    ...plan.messageCopies,
-  ];
+  const writes = plan.messageCopies;
 
   for (let i = 0; i < writes.length; i += 450) {
     const batch = firestore.batch();

@@ -5,6 +5,17 @@ export type RunClubMembershipStatus = "active" | "left" | "deleted";
 export type RunParticipationStatus =
   "signedUp" | "waitlisted" | "attended" | "cancelled" | "deleted";
 
+export interface RunParticipationSnapshot {
+  ref: FirebaseFirestore.DocumentReference;
+  data: {
+    runId: string;
+    runClubId: string;
+    uid: string;
+    status: RunParticipationStatus;
+    genderAtSignup?: string;
+  };
+}
+
 /**
  * Builds the deterministic run-club membership document id.
  * @param {string} clubId Run club id.
@@ -36,6 +47,73 @@ export function savedRunId(uid: string, runId: string): string {
 }
 
 /**
+ * Reads run participation edges by status inside a transaction.
+ * @param {FirebaseFirestore.Transaction} tx Transaction.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} runId Run id.
+ * @param {RunParticipationStatus[]} statuses Statuses to include.
+ * @return {Promise<RunParticipationSnapshot[]>} Matching edge docs.
+ */
+export async function runParticipationsByStatusInTransaction(
+  tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore,
+  runId: string,
+  statuses: RunParticipationStatus[]
+): Promise<RunParticipationSnapshot[]> {
+  if (statuses.length === 0) return [];
+  const query = db
+    .collection("runParticipations")
+    .where("runId", "==", runId)
+    .where("status", "in", statuses);
+  const snap = await tx.get(query);
+  return snap.docs.map((doc) => ({
+    ref: doc.ref,
+    data: doc.data() as RunParticipationSnapshot["data"],
+  }));
+}
+
+/**
+ * Reads waitlisted participation edges in promotion order.
+ * @param {FirebaseFirestore.Transaction} tx Transaction.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {string} runId Run id.
+ * @return {Promise<RunParticipationSnapshot[]>} Waitlist edges.
+ */
+export async function waitlistedRunParticipationsInTransaction(
+  tx: FirebaseFirestore.Transaction,
+  db: FirebaseFirestore.Firestore,
+  runId: string
+): Promise<RunParticipationSnapshot[]> {
+  const query = db
+    .collection("runParticipations")
+    .where("runId", "==", runId)
+    .where("status", "==", "waitlisted")
+    .orderBy("waitlistedAt", "asc");
+  const snap = await tx.get(query);
+  return snap.docs.map((doc) => ({
+    ref: doc.ref,
+    data: doc.data() as RunParticipationSnapshot["data"],
+  }));
+}
+
+/**
+ * Returns active peer ids for block checks.
+ * @param {RunParticipationSnapshot[]} participations Participation edges.
+ * @param {string=} exceptUid Optional user id to exclude.
+ * @return {string[]} Unique participant user ids.
+ */
+export function participantUids(
+  participations: RunParticipationSnapshot[],
+  exceptUid?: string
+): string[] {
+  return [...new Set(
+    participations
+      .map((participation) => participation.data.uid)
+      .filter((uid) => uid && uid !== exceptUid)
+  )];
+}
+
+/**
  * Creates the patch used when a membership is active.
  * @param {object} params Membership fields.
  * @param {string} params.clubId Run club id.
@@ -53,6 +131,7 @@ export function activeRunClubMembershipPatch(params: {
     uid: params.uid,
     role: params.role,
     status: "active" as const,
+    pushNotificationsEnabled: false,
     joinedAt: admin.firestore.FieldValue.serverTimestamp(),
     leftAt: admin.firestore.FieldValue.delete(),
     deletedAt: admin.firestore.FieldValue.delete(),

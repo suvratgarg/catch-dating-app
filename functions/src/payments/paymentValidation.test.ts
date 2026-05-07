@@ -20,9 +20,9 @@ function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
     capacityLimit: 20,
     description: "Easy paced seaside run.",
     priceInPaise: 25000,
-    signedUpUserIds: [],
-    attendedUserIds: [],
-    waitlistUserIds: [],
+    status: "active",
+    cancelledAt: null,
+    cancellationReason: null,
     constraints: {
       minAge: 0,
       maxAge: 99,
@@ -61,6 +61,19 @@ test("buildOrderCreatePayload rejects free runs", () => {
         receiptToken: 123,
       }),
     isHttpsError("invalid-argument", "Run price must be a positive integer.")
+  );
+});
+
+test("buildOrderCreatePayload rejects cancelled runs", () => {
+  assert.throws(
+    () =>
+      buildOrderCreatePayload({
+        runId: "run-1",
+        run: buildRunDoc({status: "cancelled"}),
+        userId: "runner-1",
+        receiptToken: 123,
+      }),
+    isHttpsError("failed-precondition", "This run has been cancelled.")
   );
 });
 

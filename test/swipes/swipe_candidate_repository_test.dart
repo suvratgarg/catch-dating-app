@@ -44,7 +44,6 @@ void main() {
         id: 'run-closed',
         startTime: endedAt.subtract(const Duration(hours: 1)),
         endTime: endedAt,
-        attendedUserIds: const [],
       );
 
       final results = await repository.fetchCandidates(
@@ -65,7 +64,7 @@ void main() {
           id: 'run-not-attended',
           startTime: endedAt.subtract(const Duration(hours: 1)),
           endTime: endedAt,
-          attendedUserIds: const ['runner-1'],
+          checkedInCount: 1,
         );
         runRepository.fetchedRun = run;
         runParticipationRepository.runParticipations[run.id] = [
@@ -101,7 +100,6 @@ void main() {
           id: 'run-open',
           startTime: endedAt.subtract(const Duration(hours: 1)),
           endTime: endedAt,
-          attendedUserIds: const [],
         );
         runRepository.fetchedRun = run;
         runParticipationRepository.runParticipations[run.id] = [

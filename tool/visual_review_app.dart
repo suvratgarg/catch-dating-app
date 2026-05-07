@@ -31,7 +31,7 @@ void main() {
     id: 'run-live',
     startTime: DateTime.now().subtract(const Duration(hours: 2)),
     endTime: DateTime.now().subtract(const Duration(hours: 1)),
-    attendedUserIds: const ['runner-1', 'runner-2', 'runner-3', 'runner-4'],
+    checkedInCount: 4,
     startingPointLat: 19.0676,
     startingPointLng: 72.8221,
   );
@@ -40,7 +40,7 @@ void main() {
     startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
     distanceKm: 10,
     pace: PaceLevel.moderate,
-    signedUpUserIds: const ['runner-1', 'runner-2'],
+    bookedCount: 2,
     startingPointLat: 19.0760,
     startingPointLng: 72.8777,
   );
@@ -75,7 +75,7 @@ void main() {
           'runner-1',
         ).overrideWithValue(AsyncData([upcomingRun])),
         recommendedRunsProvider(
-          user.joinedRunClubIds,
+          RecommendedRunsQuery.fromClubIds(const ['club-1']),
         ).overrideWithValue(AsyncData([upcomingRun])),
         watchMatchesForUserProvider(
           'runner-1',
@@ -103,8 +103,8 @@ class VisualReviewApp extends StatelessWidget {
       startTime: DateTime(2026, 5, 10, 6),
       distanceKm: 7.5,
       capacityLimit: 4,
-      signedUpUserIds: const ['runner-1', 'runner-2', 'runner-3', 'runner-4'],
-      waitlistUserIds: const ['runner-5', 'runner-6'],
+      bookedCount: 4,
+      waitlistedCount: 2,
       priceInPaise: 24900,
     );
     final user = _visualReviewUser();
@@ -206,12 +206,6 @@ final class _VisualReviewUserProfileRepository
   Future<void> setProfileComplete({required String uid}) async {}
 
   @override
-  Future<void> saveRun({required String uid, required String runId}) async {}
-
-  @override
-  Future<void> unsaveRun({required String uid, required String runId}) async {}
-
-  @override
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
@@ -307,9 +301,9 @@ Run _run({
   PaceLevel pace = PaceLevel.easy,
   int capacityLimit = 20,
   int priceInPaise = 0,
-  List<String> signedUpUserIds = const [],
-  List<String> attendedUserIds = const [],
-  List<String> waitlistUserIds = const [],
+  int bookedCount = 0,
+  int checkedInCount = 0,
+  int waitlistedCount = 0,
   double? startingPointLat,
   double? startingPointLng,
 }) {
@@ -326,9 +320,9 @@ Run _run({
     capacityLimit: capacityLimit,
     description: 'Social pacing with a coffee stop.',
     priceInPaise: priceInPaise,
-    signedUpUserIds: signedUpUserIds,
-    attendedUserIds: attendedUserIds,
-    waitlistUserIds: waitlistUserIds,
+    bookedCount: bookedCount,
+    checkedInCount: checkedInCount,
+    waitlistedCount: waitlistedCount,
     constraints: const RunConstraints(minAge: 21, maxAge: 35),
   );
 }
@@ -343,7 +337,6 @@ RunClub _club() {
     hostUserId: 'host-1',
     hostName: 'Priya',
     createdAt: DateTime(2025, 1, 1),
-    memberUserIds: const ['host-1', 'runner-1', 'runner-2'],
     memberCount: 420,
   );
 }

@@ -5,9 +5,16 @@ import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {computeAge} from "../shared/dates";
 import {requireDoc} from "../shared/validation";
 import {
+  participantUids,
   runParticipationId,
   runParticipationPatch,
+  runParticipationsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
+import {
+  activityNotificationId,
+  runActivityNotificationCopy,
+  setActivityNotificationInTransaction,
+} from "../shared/notifications";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid runs)
@@ -17,12 +24,12 @@ import {
  *   1. Read the run and the user's profile.
  *   2. Enforce eligibility constraints (age range, gender caps).
  *   3. Check overall capacity.
- *   4. Add the user to signedUpUserIds and increment count projections.
- *   5. Remove the user from waitlistUserIds if present.
+ *   4. Write the user's runParticipation edge.
+ *   5. Update aggregate count projections on the run.
  *
- * Enforces blocks against signed-up and attended participants inside this
- * transaction. The error remains generic so callers cannot infer who blocked
- * whom.
+ * Enforces blocks against signed-up and attended participation edges inside
+ * this transaction. The error remains generic so callers cannot infer
+ * who blocked whom.
  *
  * Idempotent — calling it twice for the same user/run is safe.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
@@ -44,10 +51,19 @@ export async function signUpUserForRun(
     .doc(runParticipationId(runId, userId));
 
   await db.runTransaction(async (tx) => {
-    const [runSnap, userSnap, participationSnap] = await Promise.all([
+    const [
+      runSnap,
+      userSnap,
+      participationSnap,
+      activeParticipations,
+    ] = await Promise.all([
       tx.get(runRef),
       tx.get(userRef),
       tx.get(participationRef),
+      runParticipationsByStatusInTransaction(tx, db, runId, [
+        "signedUp",
+        "attended",
+      ]),
     ]);
 
     if (!runSnap.exists) {
@@ -58,6 +74,12 @@ export async function signUpUserForRun(
     }
 
     const run = requireDoc<RunDoc>(runSnap, "RunDoc");
+    if (run.status === "cancelled") {
+      throw new HttpsError(
+        "failed-precondition",
+        "This run has been cancelled."
+      );
+    }
     const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {status?: string} :
@@ -65,17 +87,19 @@ export async function signUpUserForRun(
 
     // Idempotent — user already signed up.
     if (
-      run.signedUpUserIds.includes(userId) ||
       existingParticipation?.status === "signedUp" ||
       existingParticipation?.status === "attended"
     ) {
       return;
     }
 
-    await assertNoBlockingRelationshipInTransaction(tx, db, userId, [
-      ...run.signedUpUserIds,
-      ...(run.attendedUserIds ?? []),
-    ]);
+    const activeParticipantIds = participantUids(activeParticipations);
+    await assertNoBlockingRelationshipInTransaction(
+      tx,
+      db,
+      userId,
+      activeParticipantIds
+    );
 
     const constraints = run.constraints ?? {minAge: 0, maxAge: 99};
 
@@ -120,7 +144,10 @@ export async function signUpUserForRun(
     }
 
     // Overall capacity check.
-    const currentBookedCount = run.bookedCount ?? run.signedUpUserIds.length;
+    const signedUpCount = activeParticipations
+      .filter((participation) => participation.data.status === "signedUp")
+      .length;
+    const currentBookedCount = run.bookedCount ?? signedUpCount;
     if (currentBookedCount >= run.capacityLimit) {
       throw new HttpsError(
         "failed-precondition",
@@ -128,12 +155,13 @@ export async function signUpUserForRun(
       );
     }
 
-    const wasWaitlisted =
-      (run.waitlistUserIds ?? []).includes(userId) ||
-      existingParticipation?.status === "waitlisted";
+    const wasWaitlisted = existingParticipation?.status === "waitlisted";
+    const notificationType = wasWaitlisted ?
+      "waitlistPromotion" :
+      "runSignup";
+    const notificationCopy =
+      runActivityNotificationCopy(notificationType, run);
     const runUpdate: Record<string, unknown> = {
-      signedUpUserIds: admin.firestore.FieldValue.arrayUnion(userId),
-      waitlistUserIds: admin.firestore.FieldValue.arrayRemove(userId),
       bookedCount: admin.firestore.FieldValue.increment(1),
       [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
     };
@@ -151,5 +179,15 @@ export async function signUpUserForRun(
       genderAtSignup: gender,
       paymentId,
     }), {merge: true});
+    setActivityNotificationInTransaction(tx, db, {
+      id: activityNotificationId(notificationType, runId),
+      uid: userId,
+      type: notificationType,
+      title: notificationCopy.title,
+      body: notificationCopy.body,
+      createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      runId,
+      runClubId: run.runClubId,
+    });
   });
 }

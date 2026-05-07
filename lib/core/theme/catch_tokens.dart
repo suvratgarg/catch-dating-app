@@ -145,7 +145,7 @@ class CatchTokens extends ThemeExtension<CatchTokens> {
     line: Color.fromRGBO(251, 243, 233, 0.10),
     line2: Color.fromRGBO(251, 243, 233, 0.18),
     primary: Color(0xFFFF6A3F),
-    primaryInk: Color(0xFF120D09),
+    primaryInk: Color(0xFFFFFFFF),
     primarySoft: Color(0xFF3A1E10),
     accent: Color(0xFF45D6B3),
     accentInk: Color(0xFF120D09),

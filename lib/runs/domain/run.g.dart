@@ -25,21 +25,13 @@ _Run _$RunFromJson(Map<String, dynamic> json) => _Run(
   bookedCount: (json['bookedCount'] as num?)?.toInt(),
   checkedInCount: (json['checkedInCount'] as num?)?.toInt(),
   waitlistedCount: (json['waitlistedCount'] as num?)?.toInt(),
-  signedUpUserIds:
-      (json['signedUpUserIds'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  attendedUserIds:
-      (json['attendedUserIds'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  waitlistUserIds:
-      (json['waitlistUserIds'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
+  status:
+      $enumDecodeNullable(_$RunLifecycleStatusEnumMap, json['status']) ??
+      RunLifecycleStatus.active,
+  cancelledAt: const NullableTimestampConverter().fromJson(
+    json['cancelledAt'] as Timestamp?,
+  ),
+  cancellationReason: json['cancellationReason'] as String?,
   constraints: json['constraints'] == null
       ? const RunConstraints()
       : RunConstraints.fromJson(json['constraints'] as Map<String, dynamic>),
@@ -66,9 +58,11 @@ Map<String, dynamic> _$RunToJson(_Run instance) => <String, dynamic>{
   'bookedCount': ?instance.bookedCount,
   'checkedInCount': ?instance.checkedInCount,
   'waitlistedCount': ?instance.waitlistedCount,
-  'signedUpUserIds': instance.signedUpUserIds,
-  'attendedUserIds': instance.attendedUserIds,
-  'waitlistUserIds': instance.waitlistUserIds,
+  'status': _$RunLifecycleStatusEnumMap[instance.status]!,
+  'cancelledAt': const NullableTimestampConverter().toJson(
+    instance.cancelledAt,
+  ),
+  'cancellationReason': instance.cancellationReason,
   'constraints': instance.constraints.toJson(),
   'genderCounts': instance.genderCounts,
 };
@@ -78,4 +72,9 @@ const _$PaceLevelEnumMap = {
   PaceLevel.moderate: 'moderate',
   PaceLevel.fast: 'fast',
   PaceLevel.competitive: 'competitive',
+};
+
+const _$RunLifecycleStatusEnumMap = {
+  RunLifecycleStatus.active: 'active',
+  RunLifecycleStatus.cancelled: 'cancelled',
 };

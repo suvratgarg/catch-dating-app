@@ -7,12 +7,14 @@ import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {validateCallable} from "../shared/validation";
 import {
+  participantUids,
   runParticipationId,
   runParticipationPatch,
+  runParticipationsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
 import {checkRateLimit} from "../shared/rateLimit";
 
-const JoinRunWaitlistSchema = z.object({
+const RunWaitlistSchema = z.object({
   runId: z.string(),
 });
 
@@ -24,10 +26,88 @@ export const joinRunWaitlist = onCall(appCheckCallableOptions, async (
   request
 ) => {
   const userId = requireAuth(request);
-  const {runId} = validateCallable(request, JoinRunWaitlistSchema);
+  const {runId} = validateCallable(request, RunWaitlistSchema);
 
   const db = admin.firestore();
   await checkRateLimit(db, userId, "joinRunWaitlist");
+
+  const runRef = db.collection("runs").doc(runId);
+  const participationRef = db
+    .collection("runParticipations")
+    .doc(runParticipationId(runId, userId));
+
+  await db.runTransaction(async (tx) => {
+    const [runSnap, participationSnap, activeParticipations] =
+      await Promise.all([
+        tx.get(runRef),
+        tx.get(participationRef),
+        runParticipationsByStatusInTransaction(tx, db, runId, [
+          "signedUp",
+          "attended",
+        ]),
+      ]);
+    if (!runSnap.exists) {
+      throw new HttpsError("not-found", "Run not found.");
+    }
+
+    const run = runSnap.data() as RunDoc;
+    if (run.status === "cancelled") {
+      throw new HttpsError(
+        "failed-precondition",
+        "This run has been cancelled."
+      );
+    }
+    const existingParticipation = participationSnap.exists ?
+      participationSnap.data() as {status?: string} :
+      null;
+    if (
+      existingParticipation?.status === "signedUp" ||
+      existingParticipation?.status === "attended"
+    ) {
+      throw new HttpsError(
+        "already-exists",
+        "You are already booked for this run."
+      );
+    }
+
+    if (existingParticipation?.status === "waitlisted") {
+      return;
+    }
+
+    await assertNoBlockingRelationshipInTransaction(
+      tx,
+      db,
+      userId,
+      participantUids(activeParticipations)
+    );
+
+    tx.update(runRef, {
+      waitlistedCount: admin.firestore.FieldValue.increment(1),
+    });
+    tx.set(participationRef, runParticipationPatch({
+      exists: participationSnap.exists,
+      runId,
+      runClubId: run.runClubId,
+      uid: userId,
+      status: "waitlisted",
+    }), {merge: true});
+  });
+
+  return {waitlisted: true};
+});
+
+/**
+ * Removes the caller from a run waitlist through the same callable boundary as
+ * joining, so clients never update the canonical run document directly.
+ */
+export const leaveRunWaitlist = onCall(appCheckCallableOptions, async (
+  request
+) => {
+  const userId = requireAuth(request);
+  const {runId} = validateCallable(request, RunWaitlistSchema);
+
+  const db = admin.firestore();
+  await checkRateLimit(db, userId, "leaveRunWaitlist");
 
   const runRef = db.collection("runs").doc(runId);
   const participationRef = db
@@ -47,37 +127,25 @@ export const joinRunWaitlist = onCall(appCheckCallableOptions, async (
     const existingParticipation = participationSnap.exists ?
       participationSnap.data() as {status?: string} :
       null;
-    if (run.signedUpUserIds.includes(userId)) {
-      throw new HttpsError(
-        "already-exists",
-        "You are already booked for this run."
-      );
-    }
+    const isWaitlisted = existingParticipation?.status === "waitlisted";
 
-    if (
-      run.waitlistUserIds?.includes(userId) ||
-      existingParticipation?.status === "waitlisted"
-    ) {
+    if (!isWaitlisted) {
       return;
     }
 
-    await assertNoBlockingRelationshipInTransaction(tx, db, userId, [
-      ...run.signedUpUserIds,
-      ...(run.attendedUserIds ?? []),
-    ]);
-
+    const currentWaitlistedCount =
+      run.waitlistedCount ?? 1;
     tx.update(runRef, {
-      waitlistUserIds: admin.firestore.FieldValue.arrayUnion(userId),
-      waitlistedCount: admin.firestore.FieldValue.increment(1),
+      waitlistedCount: Math.max(0, currentWaitlistedCount - 1),
     });
     tx.set(participationRef, runParticipationPatch({
       exists: participationSnap.exists,
       runId,
       runClubId: run.runClubId,
       uid: userId,
-      status: "waitlisted",
+      status: "cancelled",
     }), {merge: true});
   });
 
-  return {waitlisted: true};
+  return {waitlisted: false};
 });

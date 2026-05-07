@@ -56,7 +56,7 @@ final class FiltersControllerProvider
   }
 }
 
-String _$filtersControllerHash() => r'3d1d2656cd4e89946f8279638a1289c97393a7a9';
+String _$filtersControllerHash() => r'29bdbf8d9fe9896652e583ed1c4764c9ab8945b1';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

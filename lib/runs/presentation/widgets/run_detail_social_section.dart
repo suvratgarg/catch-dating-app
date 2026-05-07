@@ -44,7 +44,7 @@ class RunDetailSocialSection extends StatelessWidget {
         Divider(color: t.line, height: 1),
         const SizedBox(height: 24),
         if (canShowMemberContext)
-          ReviewsSection(
+          RunReviewsSection(
             runClubId: runClubId,
             runId: run.id,
             reviews: reviews,

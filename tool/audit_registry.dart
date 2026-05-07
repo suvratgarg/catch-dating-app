@@ -13,8 +13,11 @@ const trackedPaths = [
   'lib',
   'test',
   'functions/src',
+  'functions/test',
   'tool',
   'docs',
+  'firestore.rules',
+  'firestore.indexes.json',
   'PROJECT_CONTEXT.md',
   'README.md',
 ];
@@ -355,6 +358,9 @@ List<String> _trackedFiles() {
 String _areaFor(String path) {
   final parts = path.split('/');
   if (path == 'README.md' || path == 'PROJECT_CONTEXT.md') return 'repo';
+  if (path == 'firestore.rules' || path == 'firestore.indexes.json') {
+    return 'firebase';
+  }
   if (parts.first == 'docs') return 'docs';
   if (parts.first == 'tool') return 'tooling';
   if (parts.first == 'functions') {
@@ -367,6 +373,9 @@ String _areaFor(String path) {
 
 String _kindFor(String path) {
   final name = path.split('/').last;
+  if (path == 'firestore.rules' || path == 'firestore.indexes.json') {
+    return 'firebase_contract';
+  }
   if (path.startsWith('docs/') || name.endsWith('.md')) return 'doc';
   if (path.startsWith('tool/')) return 'tool';
   if (path.startsWith('test/')) return 'test';

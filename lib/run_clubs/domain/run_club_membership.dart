@@ -17,6 +17,7 @@ abstract class RunClubMembership with _$RunClubMembership {
     required String uid,
     required RunClubMembershipRole role,
     required RunClubMembershipStatus status,
+    @Default(false) bool pushNotificationsEnabled,
     @TimestampConverter() required DateTime joinedAt,
     @NullableTimestampConverter() DateTime? leftAt,
     @NullableTimestampConverter() DateTime? deletedAt,

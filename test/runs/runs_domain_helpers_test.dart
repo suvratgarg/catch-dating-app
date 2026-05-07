@@ -59,7 +59,7 @@ void main() {
         capacityLimit: 2,
         description: 'A run',
         priceInPaise: 0,
-        signedUpUserIds: const ['runner-1', 'runner-2', 'runner-3'],
+        bookedCount: 3,
         constraints: const RunConstraints(minAge: 21),
       );
 

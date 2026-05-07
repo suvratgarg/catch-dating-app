@@ -22,11 +22,6 @@ _RunClub _$RunClubFromJson(Map<String, dynamic> json) => _RunClub(
   tags:
       (json['tags'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
-  memberUserIds:
-      (json['memberUserIds'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
   memberCount: (json['memberCount'] as num?)?.toInt() ?? 0,
   rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
   reviewCount: (json['reviewCount'] as num?)?.toInt() ?? 0,
@@ -38,6 +33,15 @@ _RunClub _$RunClubFromJson(Map<String, dynamic> json) => _RunClub(
   instagramHandle: json['instagramHandle'] as String?,
   phoneNumber: json['phoneNumber'] as String?,
   email: json['email'] as String?,
+  status:
+      $enumDecodeNullable(_$RunClubLifecycleStatusEnumMap, json['status']) ??
+      RunClubLifecycleStatus.active,
+  archived: json['archived'] as bool? ?? false,
+  archivedAt: _$JsonConverterFromJson<Timestamp, DateTime>(
+    json['archivedAt'],
+    const TimestampConverter().fromJson,
+  ),
+  archiveReason: json['archiveReason'] as String?,
 );
 
 Map<String, dynamic> _$RunClubToJson(_RunClub instance) => <String, dynamic>{
@@ -51,7 +55,6 @@ Map<String, dynamic> _$RunClubToJson(_RunClub instance) => <String, dynamic>{
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
   'imageUrl': instance.imageUrl,
   'tags': instance.tags,
-  'memberUserIds': instance.memberUserIds,
   'memberCount': instance.memberCount,
   'rating': instance.rating,
   'reviewCount': instance.reviewCount,
@@ -63,6 +66,13 @@ Map<String, dynamic> _$RunClubToJson(_RunClub instance) => <String, dynamic>{
   'instagramHandle': instance.instagramHandle,
   'phoneNumber': instance.phoneNumber,
   'email': instance.email,
+  'status': _$RunClubLifecycleStatusEnumMap[instance.status]!,
+  'archived': instance.archived,
+  'archivedAt': _$JsonConverterToJson<Timestamp, DateTime>(
+    instance.archivedAt,
+    const TimestampConverter().toJson,
+  ),
+  'archiveReason': instance.archiveReason,
 };
 
 const _$IndianCityEnumMap = {
@@ -81,6 +91,11 @@ Value? _$JsonConverterFromJson<Json, Value>(
   Object? json,
   Value? Function(Json json) fromJson,
 ) => json == null ? null : fromJson(json as Json);
+
+const _$RunClubLifecycleStatusEnumMap = {
+  RunClubLifecycleStatus.active: 'active',
+  RunClubLifecycleStatus.archived: 'archived',
+};
 
 Json? _$JsonConverterToJson<Json, Value>(
   Value? value,

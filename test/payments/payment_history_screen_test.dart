@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
@@ -42,6 +44,7 @@ void main() {
         runs: {'run-1': buildRun(id: 'run-1')},
       );
 
+      expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.bg);
       expect(find.text('Booking failed'), findsOneWidget);
       expect(
         find.text('No spot was reserved. Refund may still be pending.'),
@@ -170,6 +173,17 @@ void main() {
       expect(find.text('Pending'), findsOneWidget);
     });
   });
+}
+
+Material _topBarMaterial(WidgetTester tester) {
+  return tester.widget<Material>(
+    find
+        .descendant(
+          of: find.byType(CatchTopBar),
+          matching: find.byType(Material),
+        )
+        .first,
+  );
 }
 
 Future<void> _pumpPaymentSheet(WidgetTester tester) async {

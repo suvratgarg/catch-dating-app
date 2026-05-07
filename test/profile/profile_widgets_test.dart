@@ -5,11 +5,11 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/scrollable_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
@@ -507,43 +507,14 @@ void main() {
     expect(find.byType(CatchTextField), findsNothing);
   });
 
-  testWidgets('Age range sheet opens via RangeSlider and can be dismissed', (
-    tester,
-  ) async {
+  testWidgets('ProfileTab omits private discovery filters', (tester) async {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpProfileTab(tester, user);
 
-    // Scroll to and tap the age range row.
-    await _dragProfileTabUntilVisible(tester, find.textContaining('18 – 60+'));
-    await tester.tap(find.textContaining('18 – 60+'));
-    await _pumpProfileSheet(tester);
-
-    // Bottom sheet is open with RangeSlider and Done button.
-    expect(find.byType(RangeSlider), findsOneWidget);
-    expect(
-      tester
-          .widget<SliderTheme>(
-            find.ancestor(
-              of: find.byType(RangeSlider),
-              matching: find.byType(SliderTheme),
-            ),
-          )
-          .data
-          .inactiveTickMarkColor,
-      Colors.transparent,
-    );
-    expect(
-      tester.widget<RangeSlider>(find.byType(RangeSlider)).divisions,
-      preferredMatchAgeOpenEndedDisplayAge - minimumProfileAge,
-    );
-    expect(find.text('Done'), findsOneWidget);
-
-    // Dismiss with Done button.
-    await tester.tap(find.text('Done'));
-    await _pumpProfileSheet(tester);
-
-    // Sheet closed, no exceptions.
-    expect(tester.takeException(), isNull);
+    expect(find.text('Discovery'), findsNothing);
+    expect(find.text('Interested in'), findsNothing);
+    expect(find.text('Age range'), findsNothing);
+    expect(find.textContaining('18 – 60+'), findsNothing);
   });
 
   testWidgets(
@@ -557,8 +528,21 @@ void main() {
       await tester.tap(find.text('Pace range'));
       await _pumpProfileSheet(tester);
 
-      // Bottom sheet is open with RangeSlider and Done button.
+      // Bottom sheet is open with the shared range slider and Done button.
+      expect(find.byType(CatchRangeSlider), findsOneWidget);
       expect(find.byType(RangeSlider), findsOneWidget);
+      expect(
+        tester
+            .widget<SliderTheme>(
+              find.ancestor(
+                of: find.byType(RangeSlider),
+                matching: find.byType(SliderTheme),
+              ),
+            )
+            .data
+            .inactiveTickMarkColor,
+        Colors.transparent,
+      );
       expect(find.text('Done'), findsOneWidget);
 
       // Dismiss with Done button.
@@ -882,27 +866,25 @@ void main() {
     expect(_catchChip(Language.english.label), findsNothing);
   });
 
-  testWidgets('range edit saves normalized values before closing', (
-    tester,
-  ) async {
+  testWidgets('pace range edit saves values before closing', (tester) async {
     final repository = FakeProfileEditUserProfileRepository();
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    await _dragProfileTabUntilVisible(tester, find.textContaining('18 – 60+'));
-    await tester.tap(find.textContaining('18 – 60+'));
+    await _dragProfileTabUntilVisible(tester, find.text('Pace range'));
+    await tester.tap(find.text('Pace range'));
     await _pumpProfileSheet(tester);
 
     tester.widget<RangeSlider>(find.byType(RangeSlider)).onChanged!(
-      const RangeValues(20, 60),
+      const RangeValues(310, 370),
     );
     await tester.pump();
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {
-      'minAgePreference': 20,
-      'maxAgePreference': 99,
+      'paceMinSecsPerKm': 310,
+      'paceMaxSecsPerKm': 370,
     });
     expect(find.byType(RangeSlider), findsNothing);
   });

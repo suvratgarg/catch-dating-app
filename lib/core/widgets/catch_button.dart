@@ -2,7 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
-enum CatchButtonVariant { primary, secondary, ghost, danger }
+enum CatchButtonVariant { primary, secondary, ghost, danger, light }
 
 enum CatchButtonSize { sm, md, lg }
 
@@ -20,6 +20,7 @@ class CatchButton extends StatefulWidget {
     this.icon,
     this.isLoading = false,
     this.fullWidth = false,
+    this.isInteractive = true,
     this.semanticsLabel,
     this.backgroundColor,
     this.foregroundColor,
@@ -33,6 +34,7 @@ class CatchButton extends StatefulWidget {
   final Widget? icon;
   final bool isLoading;
   final bool fullWidth;
+  final bool isInteractive;
   final String? semanticsLabel;
   final Color? backgroundColor;
   final Color? foregroundColor;
@@ -46,7 +48,8 @@ class _CatchButtonState extends State<CatchButton> {
   bool _hovered = false;
   bool _pressed = false;
 
-  bool get _enabled => widget.onPressed != null && !widget.isLoading;
+  bool get _enabled =>
+      widget.isInteractive && widget.onPressed != null && !widget.isLoading;
 
   @override
   Widget build(BuildContext context) {
@@ -58,78 +61,82 @@ class _CatchButtonState extends State<CatchButton> {
       border: widget.borderColor,
     );
 
+    final buttonContent = Stack(
+      alignment: Alignment.center,
+      children: [
+        if (_enabled && (_hovered || _pressed))
+          Positioned.fill(
+            child: ColoredBox(
+              color: Colors.black.withValues(alpha: _pressed ? 0.08 : 0.04),
+            ),
+          ),
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: spec.padding),
+          child: AnimatedSwitcher(
+            duration: CatchMotion.fast,
+            switchInCurve: CatchMotion.standardCurve,
+            switchOutCurve: CatchMotion.standardCurve,
+            child: widget.isLoading
+                ? _LoadingDots(color: palette.foreground)
+                : _ButtonLabel(
+                    label: widget.label,
+                    color: palette.foreground,
+                    icon: widget.icon,
+                    gap: spec.gap,
+                    fullWidth: widget.fullWidth,
+                    textStyle: spec.textStyle(context),
+                  ),
+          ),
+        ),
+      ],
+    );
+
+    final decoratedButton = ConstrainedBox(
+      constraints: BoxConstraints(minHeight: spec.height),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: palette.background,
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          border: Border.all(
+            color: palette.border,
+            width: widget.variant == CatchButtonVariant.secondary ? 1.5 : 1,
+          ),
+        ),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          child: widget.isInteractive
+              ? Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: _enabled ? widget.onPressed : null,
+                    onHover: (hovered) => setState(() => _hovered = hovered),
+                    onHighlightChanged: (pressed) =>
+                        setState(() => _pressed = pressed),
+                    splashColor: palette.foreground.withValues(alpha: 0.08),
+                    highlightColor: Colors.transparent,
+                    child: buttonContent,
+                  ),
+                )
+              : buttonContent,
+        ),
+      ),
+    );
+
     final child = AnimatedScale(
       scale: _enabled && _pressed ? 0.97 : 1,
       duration: CatchMotion.fast,
       curve: CatchMotion.standardCurve,
       child: AnimatedOpacity(
-        opacity: _enabled ? 1 : 0.4,
+        opacity: widget.isInteractive && !_enabled ? 0.4 : 1,
         duration: CatchMotion.fast,
         curve: CatchMotion.standardCurve,
-        child: ConstrainedBox(
-          constraints: BoxConstraints(minHeight: spec.height),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: palette.background,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-              border: Border.all(
-                color: palette.border,
-                width: widget.variant == CatchButtonVariant.secondary ? 1.5 : 1,
-              ),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: _enabled ? widget.onPressed : null,
-                  onHover: (hovered) => setState(() => _hovered = hovered),
-                  onHighlightChanged: (pressed) =>
-                      setState(() => _pressed = pressed),
-                  splashColor: palette.foreground.withValues(alpha: 0.08),
-                  highlightColor: Colors.transparent,
-                  child: Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      if (_hovered || _pressed)
-                        Positioned.fill(
-                          child: ColoredBox(
-                            color: Colors.black.withValues(
-                              alpha: _pressed ? 0.08 : 0.04,
-                            ),
-                          ),
-                        ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: spec.padding),
-                        child: AnimatedSwitcher(
-                          duration: CatchMotion.fast,
-                          switchInCurve: CatchMotion.standardCurve,
-                          switchOutCurve: CatchMotion.standardCurve,
-                          child: widget.isLoading
-                              ? _LoadingDots(color: palette.foreground)
-                              : _ButtonLabel(
-                                  label: widget.label,
-                                  color: palette.foreground,
-                                  icon: widget.icon,
-                                  gap: spec.gap,
-                                  fullWidth: widget.fullWidth,
-                                  textStyle: spec.textStyle(context),
-                                ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
+        child: decoratedButton,
       ),
     );
 
     return Semantics(
-      button: true,
-      enabled: _enabled,
+      button: widget.isInteractive,
+      enabled: widget.isInteractive ? _enabled : null,
       label: widget.semanticsLabel ?? widget.label,
       child: widget.fullWidth
           ? SizedBox(width: double.infinity, child: child)
@@ -306,6 +313,11 @@ class _ButtonPalette {
       CatchButtonVariant.danger => _ButtonPalette(
         background: t.danger,
         foreground: Colors.white,
+        border: Colors.transparent,
+      ),
+      CatchButtonVariant.light => _ButtonPalette(
+        background: Colors.white,
+        foreground: CatchTokens.sunsetLight.ink,
         border: Colors.transparent,
       ),
     };

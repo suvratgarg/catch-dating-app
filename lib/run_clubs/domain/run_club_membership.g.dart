@@ -6,23 +6,23 @@ part of 'run_club_membership.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_RunClubMembership _$RunClubMembershipFromJson(Map<String, dynamic> json) =>
-    _RunClubMembership(
-      id: json['id'] as String,
-      clubId: json['clubId'] as String,
-      uid: json['uid'] as String,
-      role: $enumDecode(_$RunClubMembershipRoleEnumMap, json['role']),
-      status: $enumDecode(_$RunClubMembershipStatusEnumMap, json['status']),
-      joinedAt: const TimestampConverter().fromJson(
-        json['joinedAt'] as Timestamp,
-      ),
-      leftAt: const NullableTimestampConverter().fromJson(
-        json['leftAt'] as Timestamp?,
-      ),
-      deletedAt: const NullableTimestampConverter().fromJson(
-        json['deletedAt'] as Timestamp?,
-      ),
-    );
+_RunClubMembership _$RunClubMembershipFromJson(
+  Map<String, dynamic> json,
+) => _RunClubMembership(
+  id: json['id'] as String,
+  clubId: json['clubId'] as String,
+  uid: json['uid'] as String,
+  role: $enumDecode(_$RunClubMembershipRoleEnumMap, json['role']),
+  status: $enumDecode(_$RunClubMembershipStatusEnumMap, json['status']),
+  pushNotificationsEnabled: json['pushNotificationsEnabled'] as bool? ?? false,
+  joinedAt: const TimestampConverter().fromJson(json['joinedAt'] as Timestamp),
+  leftAt: const NullableTimestampConverter().fromJson(
+    json['leftAt'] as Timestamp?,
+  ),
+  deletedAt: const NullableTimestampConverter().fromJson(
+    json['deletedAt'] as Timestamp?,
+  ),
+);
 
 Map<String, dynamic> _$RunClubMembershipToJson(
   _RunClubMembership instance,
@@ -31,6 +31,7 @@ Map<String, dynamic> _$RunClubMembershipToJson(
   'uid': instance.uid,
   'role': _$RunClubMembershipRoleEnumMap[instance.role]!,
   'status': _$RunClubMembershipStatusEnumMap[instance.status]!,
+  'pushNotificationsEnabled': instance.pushNotificationsEnabled,
   'joinedAt': const TimestampConverter().toJson(instance.joinedAt),
   'leftAt': const NullableTimestampConverter().toJson(instance.leftAt),
   'deletedAt': const NullableTimestampConverter().toJson(instance.deletedAt),

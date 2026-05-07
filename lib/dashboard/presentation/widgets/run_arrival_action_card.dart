@@ -101,7 +101,7 @@ class RunArrivalActionCard extends ConsumerWidget {
               .get(runBookingControllerProvider.notifier)
               .selfCheckIn(runId: action.run.id);
           if (!context.mounted) return;
-          await Navigator.of(context).push(
+          await Navigator.of(context, rootNavigator: true).push(
             MaterialPageRoute<void>(
               fullscreenDialog: true,
               builder: (routeContext) => RunCheckInCelebrationScreen(

@@ -24,8 +24,7 @@ RunClub buildRunClub({
   DateTime? createdAt,
   String? imageUrl,
   List<String> tags = const ['social'],
-  List<String> memberUserIds = const ['host-1'],
-  int? memberCount,
+  int memberCount = 1,
   double rating = 0,
   int reviewCount = 0,
   DateTime? nextRunAt,
@@ -46,8 +45,7 @@ RunClub buildRunClub({
     createdAt: createdAt ?? DateTime(2025, 1, 1),
     imageUrl: imageUrl,
     tags: tags,
-    memberUserIds: memberUserIds,
-    memberCount: memberCount ?? memberUserIds.length,
+    memberCount: memberCount,
     rating: rating,
     reviewCount: reviewCount,
     nextRunAt: nextRunAt,
@@ -62,7 +60,6 @@ UserProfile buildUser({
   required String uid,
   String name = 'Runner',
   String email = 'runner@example.com',
-  List<String> joinedRunClubIds = const [],
   List<String> photoUrls = const [],
 }) {
   return UserProfile(
@@ -74,7 +71,6 @@ UserProfile buildUser({
     gender: Gender.man,
     phoneNumber: '+10000000000',
     profileComplete: true,
-    joinedRunClubIds: joinedRunClubIds,
     interestedInGenders: const [Gender.woman],
     photoUrls: photoUrls,
   );
@@ -89,8 +85,6 @@ Run buildRun({
   int? bookedCount,
   int? checkedInCount,
   int? waitlistedCount,
-  List<String> signedUpUserIds = const [],
-  List<String> waitlistUserIds = const [],
 }) {
   final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
   return Run(
@@ -107,8 +101,6 @@ Run buildRun({
     bookedCount: bookedCount,
     checkedInCount: checkedInCount,
     waitlistedCount: waitlistedCount,
-    signedUpUserIds: signedUpUserIds,
-    waitlistUserIds: waitlistUserIds,
     constraints: const RunConstraints(),
   );
 }
@@ -149,6 +141,8 @@ class FakeRunClubsRepository implements RunClubsRepository {
   String generatedId = 'generated-club-id';
   String? joinedClubId;
   String? leftClubId;
+  String? notificationsClubId;
+  bool? notificationsEnabled;
   Object? createError;
   Object? joinError;
   Object? leaveError;
@@ -209,6 +203,15 @@ class FakeRunClubsRepository implements RunClubsRepository {
       throw leaveError!;
     }
     leftClubId = clubId;
+  }
+
+  @override
+  Future<void> setClubPushNotifications({
+    required String clubId,
+    required bool enabled,
+  }) async {
+    notificationsClubId = clubId;
+    notificationsEnabled = enabled;
   }
 
   @override

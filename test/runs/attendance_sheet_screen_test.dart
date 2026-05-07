@@ -12,7 +12,7 @@ void main() {
   testWidgets('shows an empty state when no runners have signed up', (
     tester,
   ) async {
-    final run = buildRun(signedUpUserIds: const ['stale-array-runner']);
+    final run = buildRun(bookedCount: 1);
 
     await pumpRunsTestApp(
       tester,
@@ -33,11 +33,7 @@ void main() {
   testWidgets('renders attendee profiles and toggles attendance', (
     tester,
   ) async {
-    final run = buildRun(
-      id: 'attendance-run',
-      signedUpUserIds: const [],
-      attendedUserIds: const [],
-    );
+    final run = buildRun(id: 'attendance-run');
     final fakeRunRepository = FakeRunRepository();
     final fakePublicProfileRepository = FakePublicProfileRepository()
       ..profiles = [

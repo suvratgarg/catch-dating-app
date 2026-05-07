@@ -231,32 +231,36 @@ void main() {
       },
     );
 
-    test('updateRunClub patches only the given fields', () async {
-      final club = buildRunClub(id: 'club-1');
-      await _seedRunClub(firestore, club);
-
+    test('updateRunClub delegates field patches to the callable', () async {
       await repository.updateRunClub(
         clubId: 'club-1',
         fields: {'name': 'New Name', 'area': 'New Area'},
       );
 
-      final updatedClub = await repository.fetchRunClub('club-1');
-      expect(updatedClub?.name, 'New Name');
-      expect(updatedClub?.area, 'New Area');
-      expect(updatedClub?.description, club.description);
+      final callable = functions.httpsCallable('updateRunClub')
+          as TestHttpsCallable;
+      expect(callable.calls, [
+        {
+          'clubId': 'club-1',
+          'fields': {'name': 'New Name', 'area': 'New Area'},
+        },
+      ]);
     });
 
-    test('updateRunClub patches specific fields via update', () async {
-      await _seedRunClub(firestore, buildRunClub(id: 'club-1'));
-
+    test('updateRunClub delegates nullable media fields to the callable', () async {
       await repository.updateRunClub(
         clubId: 'club-1',
         fields: {'imageUrl': 'https://example.com/updated.jpg'},
       );
 
-      final updatedClub = await repository.fetchRunClub('club-1');
-      expect(updatedClub?.imageUrl, 'https://example.com/updated.jpg');
-      expect(updatedClub?.name, 'Stride Social');
+      final callable = functions.httpsCallable('updateRunClub')
+          as TestHttpsCallable;
+      expect(callable.calls, [
+        {
+          'clubId': 'club-1',
+          'fields': {'imageUrl': 'https://example.com/updated.jpg'},
+        },
+      ]);
     });
 
     test('joinClub delegates membership to the callable', () async {

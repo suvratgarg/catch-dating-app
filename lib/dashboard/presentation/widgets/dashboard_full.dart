@@ -10,6 +10,7 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver
 import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/review_prompt_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/run_arrival_action_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -73,7 +74,7 @@ class DashboardFull extends ConsumerWidget {
                 borderColor: t.primary,
               ),
             ).buildSlivers(context),
-            DashboardFullSliverBody(viewModel: viewModel),
+            DashboardFullSliverBody(viewModel: viewModel, user: user),
           ],
         ),
       ),
@@ -82,9 +83,14 @@ class DashboardFull extends ConsumerWidget {
 }
 
 class DashboardFullSliverBody extends StatelessWidget {
-  const DashboardFullSliverBody({super.key, required this.viewModel});
+  const DashboardFullSliverBody({
+    super.key,
+    required this.viewModel,
+    required this.user,
+  });
 
   final DashboardFullViewModel viewModel;
+  final UserProfile user;
 
   @override
   Widget build(BuildContext context) {
@@ -108,6 +114,8 @@ class DashboardFullSliverBody extends StatelessWidget {
           ..._buildAttendedRunSection(
             attendedRunsSection: viewModel.attendedRunsSection,
             activeSwipeRun: viewModel.activeSwipeRun,
+            pendingReviewRun: viewModel.pendingReviewRun,
+            user: user,
           ),
           gapH18,
           const QuickActions(),
@@ -122,6 +130,8 @@ class DashboardFullSliverBody extends StatelessWidget {
   List<Widget> _buildAttendedRunSection({
     required DashboardSectionModel<List<Run>> attendedRunsSection,
     required Run? activeSwipeRun,
+    required Run? pendingReviewRun,
+    required UserProfile user,
   }) {
     if (attendedRunsSection.isLoading) {
       return const [
@@ -145,6 +155,10 @@ class DashboardFullSliverBody extends StatelessWidget {
         gapH14,
       ],
       StrideCard(attendedRuns: attendedRuns),
+      if (pendingReviewRun != null) ...[
+        gapH14,
+        ReviewPromptCard(run: pendingReviewRun, reviewer: user),
+      ],
     ];
   }
 

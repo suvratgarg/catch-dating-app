@@ -35,7 +35,10 @@ class SettingsScreen extends ConsumerStatefulWidget {
 class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _showOnMap = true;
   bool _newCatches = true;
+  bool _messages = true;
   bool _runReminders = true;
+  bool _runStatusUpdates = true;
+  bool _clubUpdates = true;
   bool _weeklyDigest = false;
   String? _seededUid;
 
@@ -107,7 +110,10 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _seededUid = userProfile.uid;
       _showOnMap = userProfile.prefsShowOnMap;
       _newCatches = userProfile.prefsNewCatches;
+      _messages = userProfile.prefsMessages;
       _runReminders = userProfile.prefsRunReminders;
+      _runStatusUpdates = userProfile.prefsRunStatusUpdates;
+      _clubUpdates = userProfile.prefsClubUpdates;
       _weeklyDigest = userProfile.prefsWeeklyDigest;
     }
 
@@ -184,7 +190,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   title: 'Notifications',
                   children: [
                     SettingsRow(
-                      label: 'New catches',
+                      label: 'Matches and catches',
                       icon: Icons.favorite_outline,
                       trailing: Switch.adaptive(
                         key: SettingsKeys.newCatchesSwitch,
@@ -196,6 +202,22 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 value: value,
                                 apply: () => _newCatches = value,
                                 rollback: () => _newCatches = !value,
+                              ),
+                      ),
+                    ),
+                    SettingsRow(
+                      label: 'Messages',
+                      icon: Icons.chat_bubble_outline_rounded,
+                      trailing: Switch.adaptive(
+                        key: SettingsKeys.messagesSwitch,
+                        value: _messages,
+                        onChanged: savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.messages,
+                                value: value,
+                                apply: () => _messages = value,
+                                rollback: () => _messages = !value,
                               ),
                       ),
                     ),
@@ -212,6 +234,38 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                                 value: value,
                                 apply: () => _runReminders = value,
                                 rollback: () => _runReminders = !value,
+                              ),
+                      ),
+                    ),
+                    SettingsRow(
+                      label: 'Run changes and cancellations',
+                      icon: Icons.event_repeat_outlined,
+                      trailing: Switch.adaptive(
+                        key: SettingsKeys.runStatusUpdatesSwitch,
+                        value: _runStatusUpdates,
+                        onChanged: savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.runStatusUpdates,
+                                value: value,
+                                apply: () => _runStatusUpdates = value,
+                                rollback: () => _runStatusUpdates = !value,
+                              ),
+                      ),
+                    ),
+                    SettingsRow(
+                      label: 'Club announcements',
+                      icon: Icons.notifications_active_outlined,
+                      trailing: Switch.adaptive(
+                        key: SettingsKeys.clubUpdatesSwitch,
+                        value: _clubUpdates,
+                        onChanged: savingPreference
+                            ? null
+                            : (value) => _savePref(
+                                preference: SettingsPreference.clubUpdates,
+                                value: value,
+                                apply: () => _clubUpdates = value,
+                                rollback: () => _clubUpdates = !value,
                               ),
                       ),
                     ),

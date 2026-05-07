@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -7,11 +6,13 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -26,9 +27,7 @@ class FiltersScreen extends ConsumerStatefulWidget {
 
 class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   RangeValues? _ageRange;
-  RangeValues? _paceRange;
   Set<Gender>? _interestedIn;
-  Set<PreferredDistance>? _distances;
   bool _didResetMutation = false;
 
   @override
@@ -40,25 +39,12 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
   }
 
   void _syncFromProfile(UserProfile user) {
-    _ageRange ??= _rangeValues(
-      user.minAgePreference,
-      user.maxAgePreference,
-      min: 18,
-      max: 99,
-    );
-    _paceRange ??= _rangeValues(
-      user.paceMinSecsPerKm,
-      user.paceMaxSecsPerKm,
-      min: 240,
-      max: 540,
-    );
+    _ageRange ??= _ageRangeValues(user);
     _interestedIn ??= user.interestedInGenders.toSet();
-    _distances ??= user.preferredDistances.toSet();
   }
 
   Future<void> _save(UserProfile user) async {
     final ageRange = _ageRange!;
-    final paceRange = _paceRange!;
     try {
       await FiltersController.saveFiltersMutation.run(ref, (tx) async {
         await tx
@@ -66,13 +52,10 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             .saveFilters(
               uid: user.uid,
               minAgePreference: ageRange.start.round(),
-              maxAgePreference: ageRange.end.round(),
-              paceMinSecsPerKm: paceRange.start.round(),
-              paceMaxSecsPerKm: paceRange.end.round(),
+              maxAgePreference: preferredMatchAgeStorageValue(
+                ageRange.end.round(),
+              ),
               interestedInGenders: (_interestedIn ?? {})
-                  .map((e) => e.name)
-                  .toList(),
-              preferredDistances: (_distances ?? {})
                   .map((e) => e.name)
                   .toList(),
             );
@@ -84,20 +67,8 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
 
   void _reset(UserProfile user) {
     setState(() {
-      _ageRange = _rangeValues(
-        user.minAgePreference,
-        user.maxAgePreference,
-        min: 18,
-        max: 99,
-      );
-      _paceRange = _rangeValues(
-        user.paceMinSecsPerKm,
-        user.paceMaxSecsPerKm,
-        min: 240,
-        max: 540,
-      );
+      _ageRange = _ageRangeValues(user);
       _interestedIn = user.interestedInGenders.toSet();
-      _distances = user.preferredDistances.toSet();
     });
   }
 
@@ -147,9 +118,7 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
             _syncFromProfile(user);
 
             final ageRange = _ageRange!;
-            final paceRange = _paceRange!;
             final interestedIn = _interestedIn!;
-            final distances = _distances!;
 
             return Column(
               children: [
@@ -163,48 +132,26 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                     ),
                     children: [
                       _FilterSection(
-                        title: 'Pace range',
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            _FilterValue(
-                              value:
-                                  '${formatPace(paceRange.start)} - ${formatPace(paceRange.end)} /km',
-                            ),
-                            RangeSlider(
-                              key: SwipeKeys.paceRangeSlider,
-                              min: 240,
-                              max: 540,
-                              divisions: 20,
-                              values: paceRange,
-                              labels: RangeLabels(
-                                formatPace(paceRange.start),
-                                formatPace(paceRange.end),
-                              ),
-                              onChanged: (values) =>
-                                  setState(() => _paceRange = values),
-                            ),
-                          ],
-                        ),
-                      ),
-                      _FilterSection(
                         title: 'Age',
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             _FilterValue(
                               value:
-                                  '${ageRange.start.round()} - ${ageRange.end.round()}',
+                                  '${ageRange.start.round()} - ${formatPreferredMatchAge(ageRange.end.round())}',
                             ),
-                            RangeSlider(
+                            CatchRangeSlider(
                               key: SwipeKeys.ageRangeSlider,
-                              min: 18,
-                              max: 99,
-                              divisions: 81,
+                              min: minimumProfileAge.toDouble(),
+                              max: preferredMatchAgeOpenEndedDisplayAge
+                                  .toDouble(),
+                              divisions:
+                                  preferredMatchAgeOpenEndedDisplayAge -
+                                  minimumProfileAge,
                               values: ageRange,
                               labels: RangeLabels(
                                 '${ageRange.start.round()}',
-                                '${ageRange.end.round()}',
+                                formatPreferredMatchAge(ageRange.end.round()),
                               ),
                               onChanged: (values) =>
                                   setState(() => _ageRange = values),
@@ -227,28 +174,6 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                                   interestedIn.contains(gender)
                                       ? interestedIn.remove(gender)
                                       : interestedIn.add(gender);
-                                }),
-                              ),
-                          ],
-                        ),
-                      ),
-                      _FilterSection(
-                        title: 'Run type',
-                        child: Wrap(
-                          spacing: 8,
-                          runSpacing: 8,
-                          children: [
-                            for (final distance in PreferredDistance.values)
-                              CatchChip(
-                                key: SwipeKeys.distanceFilterChip(
-                                  distance.name,
-                                ),
-                                label: distance.label,
-                                active: distances.contains(distance),
-                                onTap: () => setState(() {
-                                  distances.contains(distance)
-                                      ? distances.remove(distance)
-                                      : distances.add(distance);
                                 }),
                               ),
                           ],
@@ -284,17 +209,16 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
     );
   }
 
-  static RangeValues _rangeValues(
-    int start,
-    int end, {
-    required int min,
-    required int max,
-  }) {
-    final normalizedStart = start <= end ? start : end;
-    final normalizedEnd = start <= end ? end : start;
+  static RangeValues _ageRangeValues(UserProfile user) {
+    final range = normalizeAgePreferenceRange(
+      minAgePreference: user.minAgePreference,
+      maxAgePreference: user.maxAgePreference,
+    );
     return RangeValues(
-      normalizedStart.clamp(min, max).toDouble(),
-      normalizedEnd.clamp(min, max).toDouble(),
+      range.minAge.toDouble(),
+      range.maxAge
+          .clamp(minimumProfileAge, preferredMatchAgeOpenEndedDisplayAge)
+          .toDouble(),
     );
   }
 }

@@ -17,6 +17,7 @@ import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {validateCallable, requireDoc} from "../shared/validation";
+import {runParticipationId} from "../shared/relationshipDocuments";
 import {z} from "zod";
 
 const CreateOrderSchema = z.object({
@@ -49,34 +50,53 @@ export async function createRazorpayOrderHandler(
   const {runId} = validateCallable(request, CreateOrderSchema);
 
   const db = deps.firestore();
-  const runSnap = await db.collection("runs").doc(runId).get();
+  const [runSnap, participationSnap, activeParticipationsSnap] =
+    await Promise.all([
+      db.collection("runs").doc(runId).get(),
+      db.collection("runParticipations")
+        .doc(runParticipationId(runId, uid))
+        .get(),
+      db.collection("runParticipations")
+        .where("runId", "==", runId)
+        .where("status", "in", ["signedUp", "attended"])
+        .get(),
+    ]);
 
   if (!runSnap.exists) {
     throw new HttpsError("not-found", "Run not found.");
   }
 
   const run = requireDoc<RunDoc>(runSnap, "RunDoc");
+  const participation = participationSnap.exists ?
+    participationSnap.data() as {status?: string} :
+    null;
+  const activeParticipantIds = activeParticipationsSnap.docs
+    .map((doc) => doc.data().uid)
+    .filter((participantUid) => typeof participantUid === "string");
 
   // Pre-flight capacity check; the real atomic check happens in
   // signUpUserForRun.
-  if (run.signedUpUserIds.includes(uid)) {
+  if (
+    participation?.status === "signedUp" ||
+    participation?.status === "attended"
+  ) {
     throw new HttpsError(
       "already-exists",
       "You are already booked for this run."
     );
   }
 
-  if ((run.bookedCount ?? run.signedUpUserIds.length) >= run.capacityLimit) {
+  const signedUpCount = activeParticipationsSnap.docs
+    .filter((doc) => doc.data().status === "signedUp")
+    .length;
+  if ((run.bookedCount ?? signedUpCount) >= run.capacityLimit) {
     throw new HttpsError(
       "failed-precondition",
       "This run is full. You can join the waitlist instead."
     );
   }
 
-  if (await hasBlockingRelationship(db, uid, [
-    ...run.signedUpUserIds,
-    ...(run.attendedUserIds ?? []),
-  ])) {
+  if (await hasBlockingRelationship(db, uid, activeParticipantIds)) {
     throw new HttpsError(
       "failed-precondition",
       "This run is unavailable."

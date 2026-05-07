@@ -1,9 +1,10 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/duration_stepper.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/picker_tile.dart';
@@ -11,7 +12,6 @@ import 'package:catch_dating_app/runs/presentation/widgets/requirements_row.dart
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_photo_header.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_stats_grid.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/step_progress_bar.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_where_card.dart';
@@ -55,11 +55,13 @@ void main() {
                 startingPoint: const LatLng(19.076, 72.8777),
                 onTap: () {},
               ),
-              DurationStepper(
-                minutes: 75,
+              CatchNumberStepper(
+                value: 75,
                 onDecrease: () => decreased = true,
                 onIncrease: () => increased = true,
-                formatDuration: (minutes) => '$minutes min',
+                decreaseTooltip: 'Decrease duration',
+                increaseTooltip: 'Increase duration',
+                formatValue: (minutes) => '${minutes.round()} min',
               ),
             ],
           ),
@@ -94,7 +96,7 @@ void main() {
           meetingPoint: 'Bandra Fort',
           locationDetails: 'Meet by the parking lot',
           distanceKm: 5.5,
-          signedUpUserIds: const ['a', 'b', 'c'],
+          bookedCount: 3,
           constraints: const RunConstraints(
             minAge: 21,
             maxAge: 35,
@@ -207,7 +209,7 @@ void main() {
         startTime: DateTime(now.year, now.month, now.day, 8),
         endTime: DateTime(now.year, now.month, now.day, 9),
         distanceKm: 7,
-        signedUpUserIds: const ['runner-1', 'runner-2'],
+        bookedCount: 2,
       );
       String? selectedRunId;
       var footerTapped = false;
@@ -217,7 +219,7 @@ void main() {
         Scaffold(
           body: ListView(
             children: [
-              const StepProgressBar(currentStep: 1, totalSteps: 4),
+              const CatchStepProgress(currentStep: 1, totalSteps: 4),
               StepperFooter(
                 isLastStep: false,
                 isLoading: false,
@@ -344,7 +346,7 @@ void main() {
         tester,
         Scaffold(
           body: WhoIsRunning(
-            run: buildRun(signedUpUserIds: const []),
+            run: buildRun(bookedCount: 0),
             userProfile: buildUser(),
           ),
         ),
@@ -380,7 +382,7 @@ void main() {
         final run = buildRun(
           startTime: DateTime.now().subtract(const Duration(hours: 2)),
           endTime: DateTime.now().subtract(const Duration(hours: 1)),
-          signedUpUserIds: const ['stale-array-user'],
+          bookedCount: 1,
         );
         fakeParticipationRepository.runParticipations[run.id] = List.generate(
           8,

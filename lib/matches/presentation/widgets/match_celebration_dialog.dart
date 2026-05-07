@@ -17,7 +17,7 @@ void showMatchCelebration(
 ) {
   final otherUid = match.otherId(currentUid);
 
-  Navigator.of(context).push(
+  Navigator.of(context, rootNavigator: true).push(
     MaterialPageRoute<void>(
       fullscreenDialog: true,
       builder: (routeContext) => MatchCelebrationDialog(

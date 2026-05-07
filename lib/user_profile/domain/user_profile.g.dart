@@ -27,16 +27,6 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   city: $enumDecodeNullable(_$IndianCityEnumMap, json['city']),
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
-  joinedRunClubIds:
-      (json['joinedRunClubIds'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
-  savedRunIds:
-      (json['savedRunIds'] as List<dynamic>?)
-          ?.map((e) => e as String)
-          .toList() ??
-      const [],
   interestedInGenders:
       (json['interestedInGenders'] as List<dynamic>?)
           ?.map((e) => $enumDecode(_$GenderEnumMap, e))
@@ -77,7 +67,10 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
           .toList() ??
       const [],
   prefsNewCatches: json['prefsNewCatches'] as bool? ?? true,
+  prefsMessages: json['prefsMessages'] as bool? ?? true,
   prefsRunReminders: json['prefsRunReminders'] as bool? ?? true,
+  prefsRunStatusUpdates: json['prefsRunStatusUpdates'] as bool? ?? true,
+  prefsClubUpdates: json['prefsClubUpdates'] as bool? ?? true,
   prefsWeeklyDigest: json['prefsWeeklyDigest'] as bool? ?? false,
   prefsShowOnMap: json['prefsShowOnMap'] as bool? ?? true,
 );
@@ -100,8 +93,6 @@ Map<String, dynamic> _$UserProfileToJson(
   'city': _$IndianCityEnumMap[instance.city],
   'latitude': instance.latitude,
   'longitude': instance.longitude,
-  'joinedRunClubIds': instance.joinedRunClubIds,
-  'savedRunIds': instance.savedRunIds,
   'interestedInGenders': instance.interestedInGenders
       .map((e) => _$GenderEnumMap[e]!)
       .toList(),
@@ -128,7 +119,10 @@ Map<String, dynamic> _$UserProfileToJson(
       .map((e) => _$RunReasonEnumMap[e]!)
       .toList(),
   'prefsNewCatches': instance.prefsNewCatches,
+  'prefsMessages': instance.prefsMessages,
   'prefsRunReminders': instance.prefsRunReminders,
+  'prefsRunStatusUpdates': instance.prefsRunStatusUpdates,
+  'prefsClubUpdates': instance.prefsClubUpdates,
   'prefsWeeklyDigest': instance.prefsWeeklyDigest,
   'prefsShowOnMap': instance.prefsShowOnMap,
 };

@@ -229,9 +229,8 @@ class RunRepository {
 
   Future<void> leaveWaitlist({required String runId, required String userId}) =>
       withFirestoreErrorContext(
-        () => _runRef(runId).update({
-          'waitlistUserIds': FieldValue.arrayRemove([userId]),
-        }),
+        () =>
+            _functions.httpsCallable('leaveRunWaitlist').call({'runId': runId}),
         collection: _collectionPath,
         action: 'leave waitlist',
       );

@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
@@ -30,6 +32,7 @@ void main() {
     expect(find.text('No blocked accounts'), findsOneWidget);
     expect(find.byKey(SettingsKeys.showOnMapSwitch), findsOneWidget);
     expect(find.byKey(SettingsKeys.weeklyDigestSwitch), findsOneWidget);
+    expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.bg);
   });
 
   testWidgets('preference switches write through SettingsController', (
@@ -119,7 +122,10 @@ void main() {
     addTearDown(container.dispose);
 
     await _pumpSettings(tester, container);
-    await tester.ensureVisible(find.byKey(SettingsKeys.deleteAccountRow));
+    await tester.scrollUntilVisible(
+      find.byKey(SettingsKeys.deleteAccountRow),
+      300,
+    );
     await tester.pump();
     await tester.tap(find.byKey(SettingsKeys.deleteAccountRow));
     await pumpFeatureUi(tester);
@@ -131,6 +137,17 @@ void main() {
 
     expect(safetyRepository.requestDeletionCallCount, 1);
   });
+}
+
+Material _topBarMaterial(WidgetTester tester) {
+  return tester.widget<Material>(
+    find
+        .descendant(
+          of: find.byType(CatchTopBar),
+          matching: find.byType(Material),
+        )
+        .first,
+  );
 }
 
 ProviderContainer _settingsContainer({

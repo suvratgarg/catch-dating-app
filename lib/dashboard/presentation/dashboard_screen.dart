@@ -133,7 +133,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
                   : _DashboardHeaderModel.full(context, user),
               dashboardSliver: showEmptyDashboard
                   ? const DashboardEmptySliverBody()
-                  : DashboardFullSliverBody(viewModel: viewModel),
+                  : DashboardFullSliverBody(viewModel: viewModel, user: user),
               activitySliver: ActivitySliverBody(uid: user.uid),
             );
           },

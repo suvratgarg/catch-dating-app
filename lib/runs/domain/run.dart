@@ -23,6 +23,8 @@ enum PaceLevel implements Labelled {
   final String label;
 }
 
+enum RunLifecycleStatus { active, cancelled }
+
 /// The current booking status of a specific run from one user's perspective.
 enum RunSignUpStatus {
   /// Run is upcoming, not full, and the user hasn't signed up.
@@ -68,9 +70,9 @@ abstract class Run with _$Run {
     @JsonKey(includeIfNull: false) int? bookedCount,
     @JsonKey(includeIfNull: false) int? checkedInCount,
     @JsonKey(includeIfNull: false) int? waitlistedCount,
-    @Default([]) List<String> signedUpUserIds,
-    @Default([]) List<String> attendedUserIds,
-    @Default([]) List<String> waitlistUserIds,
+    @Default(RunLifecycleStatus.active) RunLifecycleStatus status,
+    @NullableTimestampConverter() DateTime? cancelledAt,
+    String? cancellationReason,
     @Default(RunConstraints()) RunConstraints constraints,
     // Denormalized gender counts maintained atomically by Cloud Functions.
     // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
@@ -80,25 +82,23 @@ abstract class Run with _$Run {
   factory Run.fromJson(Map<String, dynamic> json) => _$RunFromJson(json);
 
   double get distanceMiles => distanceKm * 0.621371;
-  int get signedUpCount => bookedCount ?? signedUpUserIds.length;
-  int get attendedCount => checkedInCount ?? attendedUserIds.length;
-  int get waitlistCount => waitlistedCount ?? waitlistUserIds.length;
+  int get signedUpCount => bookedCount ?? 0;
+  int get attendedCount => checkedInCount ?? 0;
+  int get waitlistCount => waitlistedCount ?? 0;
   int get spotsRemaining => math.max(0, capacityLimit - signedUpCount);
   bool get isFull => signedUpCount >= capacityLimit;
   bool get isFree => priceInPaise == 0;
-  bool get isUpcoming => startTime.isAfter(DateTime.now());
+  bool get isCancelled => status == RunLifecycleStatus.cancelled;
+  bool get isUpcoming => !isCancelled && startTime.isAfter(DateTime.now());
   bool get hasRequirements => constraints.hasRequirements;
 
-  bool isSignedUp(String uid) => signedUpUserIds.contains(uid);
-  bool hasAttended(String uid) => attendedUserIds.contains(uid);
-  bool isOnWaitlist(String uid) => waitlistUserIds.contains(uid);
-
-  /// Returns the detailed eligibility of [user] for this run.
+  /// Returns fresh-viewer eligibility of [user] for this run.
+  ///
+  /// User-specific roster state lives in `runParticipations`, so callers that
+  /// know the viewer's participation edge should prefer a view-model seam that
+  /// combines the run and participation before rendering action state.
   RunEligibility eligibilityFor(UserProfile user) {
-    if (hasAttended(user.uid)) return const Attended();
-    if (isSignedUp(user.uid)) return const AlreadySignedUp();
     if (!isUpcoming) return const RunPast();
-    if (isOnWaitlist(user.uid)) return const OnWaitlist();
     if (user.age < constraints.minAge) return AgeTooYoung(constraints.minAge);
     if (user.age > constraints.maxAge) return AgeTooOld(constraints.maxAge);
     final cap = constraints.maxForGender(user.gender);

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical Catch single-select dropdown field for labelled enum-like values.
@@ -36,23 +37,6 @@ class CatchDropdownField<T extends Labelled> extends StatefulWidget {
 class _CatchDropdownFieldState<T extends Labelled>
     extends State<CatchDropdownField<T>> {
   final _fieldKey = GlobalKey<FormFieldState<T>>();
-  late final FocusNode _focusNode;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode = FocusNode()..addListener(_handleFocusChanged);
-  }
-
-  @override
-  void dispose() {
-    _focusNode
-      ..removeListener(_handleFocusChanged)
-      ..dispose();
-    super.dispose();
-  }
-
-  void _handleFocusChanged() => setState(() {});
 
   @override
   void didUpdateWidget(covariant CatchDropdownField<T> oldWidget) {
@@ -79,7 +63,6 @@ class _CatchDropdownFieldState<T extends Labelled>
         final t = CatchTokens.of(context);
         final value = _normalizedValue(field.value);
         final hasError = field.hasError;
-        final borderColor = _borderColor(t, hasError);
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -90,83 +73,22 @@ class _CatchDropdownFieldState<T extends Labelled>
               hasError: hasError,
             ),
             const SizedBox(height: CatchSpacing.s2),
-            AnimatedContainer(
-              duration: CatchMotion.fast,
-              curve: CatchMotion.standardCurve,
-              decoration: BoxDecoration(
-                color: widget.enabled ? t.surface : t.raised,
-                borderRadius: BorderRadius.circular(CatchRadius.sm),
-                border: Border.all(color: borderColor, width: 1.5),
-                boxShadow: _focusNode.hasFocus && !hasError
-                    ? [
-                        BoxShadow(
-                          color: t.primarySoft,
-                          blurRadius: 0,
-                          spreadRadius: 3,
-                        ),
-                      ]
-                    : CatchElevation.none,
-              ),
-              child: DropdownButtonHideUnderline(
-                child: DropdownButton<T>(
-                  value: value,
-                  focusNode: _focusNode,
-                  isExpanded: true,
-                  borderRadius: BorderRadius.circular(CatchRadius.md),
-                  dropdownColor: t.surface,
-                  icon: Padding(
-                    padding: const EdgeInsets.only(right: CatchSpacing.s3),
-                    child: Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      color: widget.enabled ? t.ink2 : t.ink3,
-                      size: CatchIcon.md,
-                    ),
-                  ),
-                  hint: Text(
-                    widget.hintText ?? 'Select ${widget.label.toLowerCase()}',
-                    overflow: TextOverflow.ellipsis,
-                    style: CatchTextStyles.bodyL(context, color: t.ink3),
-                  ),
-                  style: CatchTextStyles.bodyL(
-                    context,
-                    color: widget.enabled ? t.ink : t.ink3,
-                  ),
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  items: widget.values
-                      .map(
-                        (item) => DropdownMenuItem<T>(
-                          value: item,
-                          child: Row(
-                            children: [
-                              if (widget.prefixIcon != null) ...[
-                                IconTheme(
-                                  data: IconThemeData(
-                                    color: t.ink3,
-                                    size: CatchIcon.md,
-                                  ),
-                                  child: widget.prefixIcon!,
-                                ),
-                                const SizedBox(width: CatchSpacing.s2),
-                              ],
-                              Expanded(
-                                child: Text(
-                                  item.label,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      )
-                      .toList(),
-                  onChanged: widget.enabled
-                      ? (next) {
-                          field.didChange(next);
-                          widget.onChanged?.call(next);
-                        }
-                      : null,
-                ),
-              ),
+            CatchSelectMenu<T>(
+              values: widget.values,
+              value: value,
+              itemLabel: (item) => item.label,
+              hintText:
+                  widget.hintText ?? 'Select ${widget.label.toLowerCase()}',
+              prefixIcon: widget.prefixIcon,
+              enabled: widget.enabled,
+              hasError: hasError,
+              semanticLabel: widget.label,
+              onChanged: widget.enabled
+                  ? (next) {
+                      field.didChange(next);
+                      widget.onChanged?.call(next);
+                    }
+                  : null,
             ),
             if (hasError) ...[
               const SizedBox(height: CatchSpacing.s1),
@@ -184,12 +106,5 @@ class _CatchDropdownFieldState<T extends Labelled>
   T? _normalizedValue(T? value) {
     if (value == null) return null;
     return widget.values.contains(value) ? value : null;
-  }
-
-  Color _borderColor(CatchTokens t, bool hasError) {
-    if (hasError) return t.danger;
-    if (!widget.enabled) return t.line;
-    if (_focusNode.hasFocus) return t.primary;
-    return t.line2;
   }
 }

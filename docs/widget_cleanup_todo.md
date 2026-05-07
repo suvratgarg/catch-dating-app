@@ -1,7 +1,7 @@
 ---
 doc_id: widget_cleanup
-version: 2.3.21
-updated: 2026-05-06
+version: 2.3.26
+updated: 2026-05-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -31,8 +31,72 @@ For future passes:
 
 ## Rule Changelog
 
+### 2.3.26
+
+- Expanded `tool/widget_cleanup_scan.sh` from screenshot-specific checks into a
+  primitive-bypass scanner. It now reports raw Material/Cupertino buttons, raw
+  text inputs, literal `SizedBox` spacing, feature-local decorated
+  `Container`/`DecoratedBox` surface shells, and app-facing `Text` calls that
+  do not have nearby `CatchTextStyles`.
+- Text-only actions now route through `CatchTextButton`; pill CTAs remain on
+  `CatchButton`. Do not replace inline dialog/banner/top-bar text actions with
+  pill CTAs just to satisfy a scanner.
+- The OTP entry field now routes through `CatchOtpCodeField`, a field-specific
+  primitive that owns the hidden platform `TextField`, visible token-styled
+  digit boxes, SMS autofill, digit-only input, and length limiting.
+- The broad scans are triage queues, not automatic lint failures. Clear raw
+  buttons and raw text inputs aggressively; migrate `SizedBox`, decorated
+  surfaces, and unstyled `Text` in focused feature batches so visual intent is
+  preserved.
+
+### 2.3.24
+
+- Added the numeric stepper cleanup loop. Feature-local paired +/- controls
+  should use `CatchNumberStepper`, which owns the shared raised surface,
+  compact add/remove buttons, centered mono value, optional min/max/step
+  clamping, and feature-specific formatting.
+- Migrated the Create Run duration control and Edit Profile height editor to the
+  shared primitive. Run distance and capacity remain text fields for now by
+  product decision.
+- `tool/widget_cleanup_scan.sh` now flags raw paired add/remove `IconButton`
+  steppers outside `CatchNumberStepper`. Future numeric-control screenshots
+  should expand this scanner before adding another feature-local control.
+
+### 2.3.23
+
+- Added the slider primitive cleanup loop. All feature range sliders should use
+  `CatchRangeSlider`, which centralizes tickless slider styling and prevents
+  dashed tracks from reappearing when individual screens add `divisions`.
+- `tool/widget_cleanup_scan.sh` now flags raw `RangeSlider` or `SliderTheme`
+  usage outside `lib/core/widgets/catch_range_slider.dart`.
+- Filters are now treated as the home for private discovery preferences. Keep
+  age and interested-in filters there; do not mirror those fields in Edit
+  Profile unless the public profile card starts rendering them.
+- The dark primary CTA foreground is a token/default concern, not a screen
+  override concern. If a future button screenshot is wrong, first verify
+  whether the screen uses `CatchButton`; if yes, fix the primitive/token and add
+  primitive tests rather than patching the one screen.
+
+### 2.3.22
+
+- Added the white-pill CTA cleanup loop. Solid white CTA fills should use
+  `CatchButtonVariant.light`, which pairs a fixed white fill with
+  `CatchTokens.sunsetLight.ink` instead of ambient dark-mode text tokens.
+- `CatchButton` now supports non-interactive display mode for button-looking
+  labels inside tappable parent cards. Do not use `onPressed: null` alone for
+  decorative CTAs because disabled opacity is intentionally dimmed; do not use
+  empty callbacks because that creates misleading nested tap semantics.
+- `tool/widget_cleanup_scan.sh` now scans for fixed-white pill CTA candidates.
+  When a future screenshot exposes a one-off primitive bypass, fix the surface
+  and expand the scanner in the same pass so the bug class does not recur.
+
 ### 2.3.21
 
+- Completed the core notification producer pass: scheduled run reminders now
+  exist, Settings has granular notification categories, and run-club push
+  notifications use the two-tier membership-plus-bell model. Remaining
+  notification work should focus on product policy and surface-specific UI
+  polish rather than missing core fan-out.
 - Added `docs/backend_operation_catalog.md` as the human-readable map of
   direct client writes, callable-owned mutations, trigger-owned projections,
   server-only collections, and notification starting points.
@@ -260,17 +324,18 @@ For future passes:
 ## Current Status
 
 Use `dart tool/audit_registry.dart backlog` for the current machine-readable
-status. Snapshot as of 2026-05-06:
+status. Snapshot as of 2026-05-07:
 
 | Debt | Status | Next action |
 |---|---|---|
 | `PROFILE-CARD-POLISH-001` | needs_device_confirmation | Shared Swipes/Profile Preview/Public Profile card now uses one canonical dark `RUN PROFILE` section and inset/rounded non-hero photos. Device visual review is deferred by user request. |
-| `PROFILE-001` | active | Sliver/rendering is not complete: Profile Preview still does not continuously restore the outer header from the preview-card top gesture on device. Defer implementation until after doc hygiene / stream lifecycle / error UI queue pass. |
+| `PROFILE-001` | watch | Sliver/rendering is not complete: Profile Preview still does not continuously restore the outer header from the preview-card top gesture on device. Defer implementation until after doc hygiene / stream lifecycle / error UI queue pass. |
 | `CELEBRATION-SOUND-001` | identified | Haptics are live for full-screen celebration moments. Add optional sound later through `CelebrationEffectsController`, with mute/silent-mode/accessibility respect and tests using an injected fake effects controller. |
+| `NOTIFICATIONS-QUEUE` | watch | Core backend fan-out is complete: match/message, club-run, signup, waitlist, reminder, schedule/location update, and cancellation producers write durable activity and preference-gated push. Remaining notification work is settings/permission UX, device QA, and run-cancellation product policy, not a missing producer queue. |
+| `RUN-CANCELLATION-UI-POLICY-001` | identified | Backend cancellation notification support exists, but host cancellation UI must wait for product decisions around cancellation windows, refunds, confirmation copy, participant copy, and how cancelled runs render across detail/calendar/activity. |
 | `STREAM-LIFECYCLE-QUEUE` | watch | Known Firestore listener lifecycle issues are resolved. Keep the rule active as a guardrail: new realtime streams should be auto-dispose, retained-tab gated, or explicitly documented as shell/global. |
 | `ERROR-UI-QUEUE` | watch | Branded error primitives are in place, `CatchErrorText` is deleted, and the raw error-surface scanner is clean. Keep watching for regressions and add typed catalogue entries only when repeated product/domain failures need branching, analytics, retry policy, or tests. |
 | `PROFILE-FIELD-PARITY-001` | watch | Shared validators and profile edit mutation UX are aligned. Nullable single-choice sheets now have root-cause coverage across all optional fields and visible immediate-save pending feedback. Keep onboarding intentionally low-friction unless product accepts the signup cost of adding more optional fields. |
-| `PROFILE-001` | needs_device_confirmation | Profile currently uses `NestedScrollView` with native `TabBarView` paging. The stale single-`CustomScrollView` registry text has been corrected. Automated coverage now validates the `NestedScrollView` absorber/injector contract and body placement under the pinned tab row; remaining work is physical-device visual confirmation. |
 | `SPACING-001` | completed | Canonical 4-point `Sizes.p*` presentation/widget candidates are fully migrated to `CatchSpacing.s*`; fine-grained compatibility helpers stay watch-only. |
 | `DOC-HYGIENE-QUEUE` | active | Keep docs index, doc versions, doc summaries, and registry state synchronized. |
 

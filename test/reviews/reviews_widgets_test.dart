@@ -1,8 +1,12 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
+import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
+import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -82,6 +86,50 @@ void main() {
 
     expect(repository.deletedReviewId, 'review-1');
   });
+
+  testWidgets('review history lists own reviews and opens edit sheet', (
+    tester,
+  ) async {
+    final user = buildUser(uid: 'runner-1', name: 'Asha');
+    final run = buildRun(id: 'run-1', runClubId: 'club-1');
+    final review = buildReview(
+      id: 'run-1~runner-1',
+      runClubId: 'club-1',
+      runId: run.id,
+      reviewerUserId: user.uid,
+      reviewerName: user.name,
+      comment: 'Great route.',
+    );
+    final repository = _FakeReviewsRepository(reviewsByUser: [review]);
+    final container = ProviderContainer(
+      overrides: [
+        uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+        watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+        reviewsRepositoryProvider.overrideWith((ref) => repository),
+        watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    await tester.pumpWidget(
+      UncontrolledProviderScope(
+        container: container,
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ReviewsHistoryScreen(),
+        ),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Review history'), findsOneWidget);
+    expect(find.text('Great route.'), findsOneWidget);
+
+    await tester.tap(find.byKey(ReviewKeys.editReviewButton(review.id)));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Edit review'), findsOneWidget);
+  });
 }
 
 ProviderContainer _reviewsContainer(_FakeReviewsRepository repository) {
@@ -104,7 +152,7 @@ Future<void> _pumpReviewsSection(
         home: Scaffold(
           body: Padding(
             padding: const EdgeInsets.all(16),
-            child: ReviewsSection(
+            child: RunReviewsSection(
               runClubId: 'club-1',
               runId: 'run-1',
               reviews: reviews,
@@ -121,8 +169,15 @@ Future<void> _pumpReviewsSection(
 }
 
 class _FakeReviewsRepository extends Fake implements ReviewsRepository {
+  _FakeReviewsRepository({this.reviewsByUser = const []});
+
+  final List<Review> reviewsByUser;
   Review? addedReview;
   String? deletedReviewId;
+
+  @override
+  Stream<List<Review>> watchReviewsByUser(String reviewerUserId) =>
+      Stream.value(reviewsByUser);
 
   @override
   Future<void> addReview(Review review) async {

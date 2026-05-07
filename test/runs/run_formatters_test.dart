@@ -44,7 +44,7 @@ void main() {
         startTime: DateTime(2025, 4, 23, 6, 30),
         endTime: DateTime(2025, 4, 23, 7, 45),
         distanceKm: 5.5,
-        signedUpUserIds: const ['runner-1', 'runner-2'],
+        bookedCount: 2,
       );
 
       expect(run.shortDateLabel, 'Wed, 23 Apr');

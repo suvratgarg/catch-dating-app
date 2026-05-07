@@ -5,7 +5,6 @@ import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_view_model.dart';
@@ -32,41 +31,6 @@ RunClubMembership _membership({
 );
 
 void main() {
-  group('RunClub domain helpers', () {
-    test('addMember adds a new member and normalizes memberCount', () {
-      final club = buildRunClub(
-        memberUserIds: const ['host-1'],
-        memberCount: 99,
-      );
-
-      final updatedClub = club.addMember('runner-1');
-
-      expect(updatedClub.memberUserIds, ['host-1', 'runner-1']);
-      expect(updatedClub.memberCount, 2);
-    });
-
-    test('addMember is idempotent for existing members', () {
-      final club = buildRunClub(memberUserIds: const ['host-1', 'runner-1']);
-
-      final updatedClub = club.addMember('runner-1');
-
-      expect(updatedClub.memberUserIds, club.memberUserIds);
-      expect(updatedClub.memberCount, club.memberCount);
-    });
-
-    test('removeMember removes a member and never goes negative', () {
-      final club = buildRunClub(
-        memberUserIds: const ['host-1', 'runner-1'],
-        memberCount: 99,
-      );
-
-      final updatedClub = club.removeMember('runner-1');
-
-      expect(updatedClub.memberUserIds, ['host-1']);
-      expect(updatedClub.memberCount, 1);
-    });
-  });
-
   group('RunClubMembershipController', () {
     test('join requires sign-in and forwards the club id', () async {
       final fakeRepository = FakeRunClubsRepository();
@@ -419,7 +383,6 @@ void main() {
         description: 'Old description',
         area: 'Bandra',
         imageUrl: 'https://example.com/old.jpg',
-        memberUserIds: const ['host-1', 'runner-1'],
         memberCount: 2,
         rating: 4.5,
         reviewCount: 8,

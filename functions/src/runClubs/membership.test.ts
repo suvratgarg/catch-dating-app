@@ -2,7 +2,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
-import {joinRunClubHandler, leaveRunClubHandler} from "./membership";
+import {
+  joinRunClubHandler,
+  leaveRunClubHandler,
+  setRunClubNotificationPreferenceHandler,
+} from "./membership";
 
 type FakeData = Record<string, unknown>;
 type SentinelKind = "arrayUnion" | "arrayRemove";
@@ -133,12 +137,6 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
-      arrayUnion: (value: string) =>
-        ({kind: "arrayUnion", value}) as unknown as
-          FirebaseFirestore.FieldValue,
-      arrayRemove: (value: string) =>
-        ({kind: "arrayRemove", value}) as unknown as
-          FirebaseFirestore.FieldValue,
       checkRateLimit: async (
         _db: FirebaseFirestore.Firestore,
         uid: string,
@@ -164,7 +162,6 @@ function request(
 function user(overrides: FakeData = {}): FakeData {
   return {
     profileComplete: true,
-    joinedRunClubIds: [],
     ...overrides,
   };
 }
@@ -172,7 +169,6 @@ function user(overrides: FakeData = {}): FakeData {
 function club(overrides: FakeData = {}): FakeData {
   return {
     hostUserId: "host-1",
-    memberUserIds: ["host-1"],
     memberCount: 1,
     ...overrides,
   };
@@ -182,7 +178,7 @@ function assertHttpsCode(error: unknown, code: string): boolean {
   return error instanceof HttpsError && error.code === code;
 }
 
-test("joinRunClubHandler joins the club and mirrors the user projection",
+test("joinRunClubHandler joins the club through a membership edge",
   async () => {
     const h = harness({
       "runClubs/club-1": club(),
@@ -194,26 +190,80 @@ test("joinRunClubHandler joins the club and mirrors the user projection",
       h.deps
     );
 
-    assert.deepEqual(h.firestore.get("runClubs/club-1")?.memberUserIds, [
-      "host-1",
-      "runner-1",
-    ]);
     assert.deepEqual(h.rateLimitCalls, ["runner-1:joinRunClub"]);
     assert.equal(h.firestore.get("runClubs/club-1")?.memberCount, 2);
-    assert.deepEqual(h.firestore.get("users/runner-1")?.joinedRunClubIds, [
-      "club-1",
-    ]);
+    assert.equal(
+      h.firestore.get("runClubMemberships/club-1_runner-1")
+        ?.pushNotificationsEnabled,
+      false
+    );
   }
 );
 
-test("joinRunClubHandler is idempotent and repairs stale memberCount",
+test("setRunClubNotificationPreferenceHandler updates active membership bell",
+  async () => {
+    const h = harness({
+      "runClubMemberships/club-1_runner-1": {
+        clubId: "club-1",
+        uid: "runner-1",
+        role: "member",
+        status: "active",
+        pushNotificationsEnabled: false,
+      },
+    });
+
+    const result = await setRunClubNotificationPreferenceHandler(
+      request("runner-1", {clubId: "club-1", enabled: true}),
+      h.deps
+    );
+
+    assert.deepEqual(result, {enabled: true});
+    assert.deepEqual(h.rateLimitCalls, [
+      "runner-1:setRunClubNotificationPreference",
+    ]);
+    assert.equal(
+      h.firestore.get("runClubMemberships/club-1_runner-1")
+        ?.pushNotificationsEnabled,
+      true
+    );
+  }
+);
+
+test("setRunClubNotificationPreferenceHandler rejects inactive membership",
+  async () => {
+    const h = harness({
+      "runClubMemberships/club-1_runner-1": {
+        clubId: "club-1",
+        uid: "runner-1",
+        role: "member",
+        status: "left",
+        pushNotificationsEnabled: false,
+      },
+    });
+
+    await assert.rejects(
+      () => setRunClubNotificationPreferenceHandler(
+        request("runner-1", {clubId: "club-1", enabled: true}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  }
+);
+
+test("joinRunClubHandler is idempotent for an active membership",
   async () => {
     const h = harness({
       "runClubs/club-1": club({
-        memberUserIds: ["host-1", "runner-1"],
-        memberCount: 99,
+        memberCount: 2,
       }),
       "users/runner-1": user(),
+      "runClubMemberships/club-1_runner-1": {
+        clubId: "club-1",
+        uid: "runner-1",
+        role: "member",
+        status: "active",
+      },
     });
 
     await joinRunClubHandler(
@@ -221,25 +271,23 @@ test("joinRunClubHandler is idempotent and repairs stale memberCount",
       h.deps
     );
 
-    assert.deepEqual(h.firestore.get("runClubs/club-1")?.memberUserIds, [
-      "host-1",
-      "runner-1",
-    ]);
     assert.equal(h.firestore.get("runClubs/club-1")?.memberCount, 2);
-    assert.deepEqual(h.firestore.get("users/runner-1")?.joinedRunClubIds, [
-      "club-1",
-    ]);
   }
 );
 
-test("leaveRunClubHandler leaves the club and mirrors the user projection",
+test("leaveRunClubHandler leaves the club through a membership edge",
   async () => {
     const h = harness({
       "runClubs/club-1": club({
-        memberUserIds: ["host-1", "runner-1"],
         memberCount: 2,
       }),
-      "users/runner-1": user({joinedRunClubIds: ["club-1", "club-2"]}),
+      "users/runner-1": user(),
+      "runClubMemberships/club-1_runner-1": {
+        clubId: "club-1",
+        uid: "runner-1",
+        role: "member",
+        status: "active",
+      },
     });
 
     await leaveRunClubHandler(
@@ -247,22 +295,26 @@ test("leaveRunClubHandler leaves the club and mirrors the user projection",
       h.deps
     );
 
-    assert.deepEqual(h.firestore.get("runClubs/club-1")?.memberUserIds, [
-      "host-1",
-    ]);
     assert.deepEqual(h.rateLimitCalls, ["runner-1:leaveRunClub"]);
     assert.equal(h.firestore.get("runClubs/club-1")?.memberCount, 1);
-    assert.deepEqual(h.firestore.get("users/runner-1")?.joinedRunClubIds, [
-      "club-2",
-    ]);
+    assert.equal(
+      h.firestore.get("runClubMemberships/club-1_runner-1")?.status,
+      "left"
+    );
   }
 );
 
-test("leaveRunClubHandler is idempotent and repairs stale user projection",
+test("leaveRunClubHandler is idempotent when membership is already inactive",
   async () => {
     const h = harness({
       "runClubs/club-1": club(),
-      "users/runner-1": user({joinedRunClubIds: ["club-1", "club-2"]}),
+      "users/runner-1": user(),
+      "runClubMemberships/club-1_runner-1": {
+        clubId: "club-1",
+        uid: "runner-1",
+        role: "member",
+        status: "left",
+      },
     });
 
     await leaveRunClubHandler(
@@ -270,13 +322,7 @@ test("leaveRunClubHandler is idempotent and repairs stale user projection",
       h.deps
     );
 
-    assert.deepEqual(h.firestore.get("runClubs/club-1")?.memberUserIds, [
-      "host-1",
-    ]);
     assert.equal(h.firestore.get("runClubs/club-1")?.memberCount, 1);
-    assert.deepEqual(h.firestore.get("users/runner-1")?.joinedRunClubIds, [
-      "club-2",
-    ]);
   }
 );
 
@@ -284,7 +330,7 @@ test("leaveRunClubHandler rejects host leave attempts",
   async () => {
     const h = harness({
       "runClubs/club-1": club(),
-      "users/host-1": user({joinedRunClubIds: ["club-1"]}),
+      "users/host-1": user(),
     });
 
     await assert.rejects(
@@ -292,12 +338,7 @@ test("leaveRunClubHandler rejects host leave attempts",
       (error) => assertHttpsCode(error, "failed-precondition")
     );
 
-    assert.deepEqual(h.firestore.get("runClubs/club-1")?.memberUserIds, [
-      "host-1",
-    ]);
-    assert.deepEqual(h.firestore.get("users/host-1")?.joinedRunClubIds, [
-      "club-1",
-    ]);
+    assert.equal(h.firestore.get("runClubs/club-1")?.memberCount, 1);
   }
 );
 

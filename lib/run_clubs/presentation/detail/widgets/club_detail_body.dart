@@ -32,6 +32,8 @@ class ClubDetailBody extends StatelessWidget {
     required this.isHost,
     required this.isMember,
     required this.isMutating,
+    required this.clubPushNotificationsEnabled,
+    required this.isClubPushMutating,
     required this.isAuthenticated,
   });
 
@@ -43,6 +45,8 @@ class ClubDetailBody extends StatelessWidget {
   final bool isHost;
   final bool isMember;
   final bool isMutating;
+  final bool clubPushNotificationsEnabled;
+  final bool isClubPushMutating;
   final bool isAuthenticated;
 
   @override
@@ -88,21 +92,14 @@ class ClubDetailBody extends StatelessWidget {
                   clubId: runClub.id,
                   isMember: isMember,
                   isMutating: isMutating,
+                  pushNotificationsEnabled: clubPushNotificationsEnabled,
+                  isPushMutating: isClubPushMutating,
                 ),
               if (showMembershipControls) const SizedBox(height: 24),
               if (!isAuthenticated) ...[
                 _GuestPrompt(runClub: runClub),
                 const SizedBox(height: 24),
               ],
-              if (isAuthenticated)
-                ReviewsSection(
-                  runClubId: runClub.id,
-                  reviews: reviews,
-                  currentUid: uid,
-                  userProfile: userProfile,
-                  isHost: isHost,
-                  isMember: isMember,
-                ),
               const SizedBox(height: 24),
             ],
           ),
@@ -114,6 +111,22 @@ class ClubDetailBody extends StatelessWidget {
             pathParameters: {'runClubId': runClub.id, 'runId': run.id},
           ),
         ),
+        if (isAuthenticated)
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              0,
+              CatchSpacing.s5,
+              CatchSpacing.s6,
+            ),
+            sliver: SliverToBoxAdapter(
+              child: RunClubReviewsSection(
+                reviews: reviews,
+                currentUid: uid,
+                maxVisibleReviews: 3,
+              ),
+            ),
+          ),
       ],
     );
   }

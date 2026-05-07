@@ -23,6 +23,16 @@
 
 // ── Shared enum types ────────────────────────────────────────────────────
 
+export type ActivityNotificationType =
+  | "message"
+  | "match"
+  | "runReminder"
+  | "runSignup"
+  | "waitlistPromotion"
+  | "runCancelled"
+  | "runUpdated"
+  | "clubUpdate";
+
 export type ChildrenStatus =
   | "dontHave"
   | "haveWantMore"
@@ -100,9 +110,13 @@ export type Religion =
   | "other"
   | "nonReligious";
 
+export type RunClubLifecycleStatus = "active" | "archived";
+
 export type RunClubMembershipRole = "host" | "member";
 
 export type RunClubMembershipStatus = "active" | "left" | "deleted";
+
+export type RunLifecycleStatus = "active" | "cancelled";
 
 export type RunParticipationStatus =
   | "signedUp"
@@ -151,8 +165,6 @@ export interface UserProfileDoc {
   city?: IndianCity | null;
   latitude?: number | null;
   longitude?: number | null;
-  joinedRunClubIds: string[];
-  savedRunIds: string[];
   interestedInGenders: Gender[];
   minAgePreference: number;
   maxAgePreference: number;
@@ -173,7 +185,10 @@ export interface UserProfileDoc {
   preferredDistances: PreferredDistance[];
   runningReasons: RunReason[];
   prefsNewCatches: boolean;
+  prefsMessages: boolean;
   prefsRunReminders: boolean;
+  prefsRunStatusUpdates: boolean;
+  prefsClubUpdates: boolean;
   prefsWeeklyDigest: boolean;
   prefsShowOnMap: boolean;
   /** Runtime — written by FcmService, not part of the profile form */
@@ -234,7 +249,6 @@ export interface RunClubDoc {
   /** nullable in Firestore */
   imageUrl?: string | null;
   tags: string[];
-  memberUserIds: string[];
   memberCount: number;
   rating: number;
   reviewCount: number;
@@ -248,6 +262,10 @@ export interface RunClubDoc {
   phoneNumber?: string | null;
   /** nullable in Firestore */
   email?: string | null;
+  status: RunClubLifecycleStatus;
+  archived: boolean;
+  archivedAt?: FirebaseFirestore.Timestamp | null;
+  archiveReason?: string | null;
 }
 
 /**
@@ -260,6 +278,7 @@ export interface RunClubMembershipDoc {
   uid: string;
   role: RunClubMembershipRole;
   status: RunClubMembershipStatus;
+  pushNotificationsEnabled: boolean;
   joinedAt: FirebaseFirestore.Timestamp;
   leftAt?: FirebaseFirestore.Timestamp | null;
   deletedAt?: FirebaseFirestore.Timestamp | null;
@@ -300,9 +319,9 @@ export interface RunDoc {
   bookedCount?: number | null;
   checkedInCount?: number | null;
   waitlistedCount?: number | null;
-  signedUpUserIds: string[];
-  attendedUserIds: string[];
-  waitlistUserIds: string[];
+  status: RunLifecycleStatus;
+  cancelledAt?: FirebaseFirestore.Timestamp | null;
+  cancellationReason?: string | null;
   constraints: RunConstraints;
   /**
    * Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
@@ -410,16 +429,36 @@ export interface ChatMessageDoc {
 }
 
 /**
+ * /notifications/{uid}/items/{notificationId}
+ * Dart: lib/notifications/domain/activity_notification.dart —
+ * ActivityNotification
+ * Note: "id" is the document ID, not stored in the document data.
+ */
+export interface ActivityNotificationDoc {
+  uid: string;
+  type: ActivityNotificationType;
+  title: string;
+  body: string;
+  createdAt: FirebaseFirestore.Timestamp;
+  readAt?: FirebaseFirestore.Timestamp | null;
+  matchId?: string | null;
+  runId?: string | null;
+  runClubId?: string | null;
+  actorUid?: string | null;
+  actorName?: string | null;
+}
+
+/**
  * /reviews/{reviewId}
  * Dart: lib/reviews/domain/review.dart — Review
  * Note: "id" is the document ID, not stored in the document data.
- * The current client writes one deterministic review document per (runId,
- * reviewerUserId) pair.
+ * Written by review Cloud Functions using one deterministic document per
+ * (runId, reviewerUserId) pair.
  */
 export interface ReviewDoc {
   runClubId: string;
   /**
-   * Required for new client-created reviews; nullable only for legacy review
+   * Required for new callable-created reviews; nullable only for legacy review
    * documents until migration.
    */
   runId?: string | null;

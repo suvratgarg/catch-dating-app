@@ -51,10 +51,23 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
                 default:
               }
             },
-            itemBuilder: (context) => const [
-              PopupMenuItem(value: 'profile', child: Text('View profile')),
-              PopupMenuItem(value: 'report', child: Text('Report')),
-              PopupMenuItem(value: 'block', child: Text('Block')),
+            items: const [
+              CatchActionMenuItem(
+                value: 'profile',
+                label: 'View profile',
+                icon: Icons.person_outline_rounded,
+              ),
+              CatchActionMenuItem(
+                value: 'report',
+                label: 'Report',
+                icon: Icons.flag_outlined,
+              ),
+              CatchActionMenuItem(
+                value: 'block',
+                label: 'Block',
+                icon: Icons.block_rounded,
+                isDestructive: true,
+              ),
             ],
           ),
       ],

@@ -76,11 +76,13 @@ class _GenderInterestPageState extends ConsumerState<GenderInterestPage> {
             gapH24,
             ChipField<Gender>(
               label: 'Show me',
-              isOptional: true,
               values: Gender.values,
               selected: _interestedIn,
               multiSelect: true,
               chipKeyBuilder: OnboardingFormKeys.interestedInChip,
+              validator: (_) => _interestedIn.isEmpty
+                  ? 'Please select who you want to see'
+                  : null,
               onChanged: (next) {
                 OnboardingController.saveProfileMutation.reset(ref);
                 setState(() => _interestedIn = next);

@@ -11,9 +11,7 @@ void main() {
   Run buildRun({
     DateTime? startTime,
     int capacityLimit = 20,
-    List<String> signedUpUserIds = const [],
-    List<String> attendedUserIds = const [],
-    List<String> waitlistUserIds = const [],
+    int? bookedCount,
     RunConstraints constraints = const RunConstraints(),
     Map<String, int> genderCounts = const {},
   }) {
@@ -29,9 +27,7 @@ void main() {
       capacityLimit: capacityLimit,
       description: '',
       priceInPaise: 0,
-      signedUpUserIds: signedUpUserIds,
-      attendedUserIds: attendedUserIds,
-      waitlistUserIds: waitlistUserIds,
+      bookedCount: bookedCount,
       constraints: constraints,
       genderCounts: genderCounts,
     );
@@ -53,25 +49,6 @@ void main() {
     );
   }
 
-  // ── #11: Attended ──────────────────────────────────────────────────────────
-
-  test('#11 eligibilityFor returns Attended when uid in attendedUserIds', () {
-    final user = buildUser();
-    final run = buildRun(attendedUserIds: [user.uid]);
-    expect(run.eligibilityFor(user), isA<Attended>());
-  });
-
-  // ── #12: AlreadySignedUp ──────────────────────────────────────────────────
-
-  test(
-    '#12 eligibilityFor returns AlreadySignedUp when signed up, not attended',
-    () {
-      final user = buildUser();
-      final run = buildRun(signedUpUserIds: [user.uid]);
-      expect(run.eligibilityFor(user), isA<AlreadySignedUp>());
-    },
-  );
-
   // ── #13: RunPast ──────────────────────────────────────────────────────────
 
   test(
@@ -82,17 +59,6 @@ void main() {
         startTime: DateTime.now().subtract(const Duration(hours: 2)),
       );
       expect(run.eligibilityFor(user), isA<RunPast>());
-    },
-  );
-
-  // ── #14: OnWaitlist ───────────────────────────────────────────────────────
-
-  test(
-    '#14 eligibilityFor returns OnWaitlist when on waitlist (future, not full)',
-    () {
-      final user = buildUser();
-      final run = buildRun(waitlistUserIds: [user.uid]);
-      expect(run.eligibilityFor(user), isA<OnWaitlist>());
     },
   );
 
@@ -153,7 +119,7 @@ void main() {
       final user = buildUser();
       final run = buildRun(
         capacityLimit: 2,
-        signedUpUserIds: ['other-1', 'other-2'],
+        bookedCount: 2,
       );
       expect(run.eligibilityFor(user), isA<RunFull>());
     },
@@ -173,18 +139,6 @@ void main() {
   // ── #20: statusFor maps every eligibility to RunSignUpStatus ─────────────
 
   group('#20 statusFor', () {
-    test('Attended → RunSignUpStatus.attended', () {
-      final user = buildUser();
-      final run = buildRun(attendedUserIds: [user.uid]);
-      expect(run.statusFor(user), RunSignUpStatus.attended);
-    });
-
-    test('AlreadySignedUp → RunSignUpStatus.signedUp', () {
-      final user = buildUser();
-      final run = buildRun(signedUpUserIds: [user.uid]);
-      expect(run.statusFor(user), RunSignUpStatus.signedUp);
-    });
-
     test('RunPast → RunSignUpStatus.past', () {
       final user = buildUser();
       final run = buildRun(
@@ -193,15 +147,9 @@ void main() {
       expect(run.statusFor(user), RunSignUpStatus.past);
     });
 
-    test('OnWaitlist → RunSignUpStatus.waitlisted', () {
-      final user = buildUser();
-      final run = buildRun(waitlistUserIds: [user.uid]);
-      expect(run.statusFor(user), RunSignUpStatus.waitlisted);
-    });
-
     test('RunFull → RunSignUpStatus.full', () {
       final user = buildUser();
-      final run = buildRun(capacityLimit: 1, signedUpUserIds: ['other-1']);
+      final run = buildRun(capacityLimit: 1, bookedCount: 1);
       expect(run.statusFor(user), RunSignUpStatus.full);
     });
 

@@ -141,12 +141,10 @@ void main() {
         final followedClub = buildRunClub(
           id: 'followed-club',
           hostUserId: 'host-2',
-          memberUserIds: const ['host-2'],
         );
         final discoverClub = buildRunClub(
           id: 'discover-club',
           hostUserId: 'host-3',
-          memberUserIds: const ['host-3'],
         );
 
         final container = ProviderContainer(

@@ -15,6 +15,17 @@ enum OnboardingStep {
 extension OnboardingStepX on OnboardingStep {
   bool get showsProgress => this != OnboardingStep.welcome;
 
+  String get appBarTitle {
+    return switch (this) {
+      OnboardingStep.welcome => 'Welcome',
+      OnboardingStep.nameDob => 'Your name',
+      OnboardingStep.genderInterest => 'Gender',
+      OnboardingStep.instagram => 'Instagram',
+      OnboardingStep.photos => 'Photos',
+      OnboardingStep.runningPrefs => 'Running style',
+    };
+  }
+
   OnboardingStep get minimumBackStep {
     if (index >= OnboardingStep.nameDob.index) {
       return OnboardingStep.nameDob;

@@ -1,11 +1,15 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 
+export 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
+
 /// Canonical Catch top-bar primitive.
 ///
-/// Mirrors the design handoff's `TopBar`: surface fill, 16 px horizontal
+/// Mirrors the design handoff's `TopBar`: page background fill, 16 px horizontal
 /// padding, 40 px circular icon controls, left-aligned display title, and
 /// optional right-side action slots.
 class CatchTopBar extends StatelessWidget implements PreferredSizeWidget {
@@ -66,7 +70,7 @@ class CatchTopBar extends StatelessWidget implements PreferredSizeWidget {
               ));
 
     return Material(
-      color: backgroundColor ?? t.surface,
+      color: backgroundColor ?? t.bg,
       surfaceTintColor: Colors.transparent,
       child: SafeArea(
         bottom: false,
@@ -158,32 +162,27 @@ class CatchTopBarTabBar extends StatelessWidget implements PreferredSizeWidget {
 class CatchTopBarMenuAction<T> extends StatelessWidget {
   const CatchTopBarMenuAction({
     super.key,
-    required this.itemBuilder,
+    required this.items,
     required this.tooltip,
     this.onSelected,
     this.enabled = true,
     this.icon = Icons.more_horiz_rounded,
   });
 
-  final PopupMenuItemBuilder<T> itemBuilder;
-  final PopupMenuItemSelected<T>? onSelected;
+  final List<CatchActionMenuItem<T>> items;
+  final ValueChanged<T>? onSelected;
   final String tooltip;
   final bool enabled;
   final IconData icon;
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return PopupMenuButton<T>(
-      enabled: enabled,
+    return CatchActionMenu<T>(
+      items: items,
       tooltip: tooltip,
       onSelected: onSelected,
-      itemBuilder: itemBuilder,
-      position: PopupMenuPosition.under,
-      child: IconBtn(
-        child: Icon(icon, size: CatchIcon.md, color: t.ink),
-      ),
+      enabled: enabled,
+      icon: icon,
     );
   }
 }
@@ -237,16 +236,10 @@ class CatchTopBarTextAction extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return TextButton(
+    return CatchTextButton(
+      label: label,
       onPressed: onPressed,
-      style: TextButton.styleFrom(
-        foregroundColor: foregroundColor ?? t.primary,
-        disabledForegroundColor: foregroundColor ?? t.ink3,
-        minimumSize: const Size(40, 40),
-        padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
-        textStyle: CatchTextStyles.labelL(context),
-      ),
-      child: Text(label),
+      foregroundColor: foregroundColor ?? t.primary,
     );
   }
 }

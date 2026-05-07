@@ -264,6 +264,7 @@
 				144635B0962FED90A0299BB7 /* [CP] Embed Pods Frameworks */,
 				079ED8C745E71A322E6E9706 /* [CP] Copy Pods Resources */,
 				D40A89ECF777698BDB0E0D34 /* Copy Firebase Environment Config */,
+				F1C0D3A0F1C0D3A0F1C0D3A0 /* [firebase_crashlytics] Crashlytics Upload Symbols */,
 			);
 			buildRules = (
 			);
@@ -465,6 +466,32 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "set -euo pipefail\n\nFIREBASE_ENV=\"${FIREBASE_ENV:-prod}\"\nSOURCE=\"${SRCROOT}/../firebase/${FIREBASE_ENV}/ios/GoogleService-Info.plist\"\nDEST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info.plist\"\n\nif [[ ! -f \"$SOURCE\" ]]; then\n  echo \"Missing Firebase config: $SOURCE\"\n  exit 1\nfi\n\ncp \"$SOURCE\" \"$DEST\"\necho \"Copied Firebase config for $FIREBASE_ENV to $DEST\"\n";
+		};
+		F1C0D3A0F1C0D3A0F1C0D3A0 /* [firebase_crashlytics] Crashlytics Upload Symbols */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/App.framework.dSYM",
+				"${DWARF_DSYM_FOLDER_PATH}/App.framework.dSYM/Contents/Resources/DWARF/App",
+				"${DWARF_DSYM_FOLDER_PATH}/App.framework.dSYM/Contents/Info.plist",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+			);
+			name = "[firebase_crashlytics] Crashlytics Upload Symbols";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "set -euo pipefail\n\ncase \"$CONFIGURATION\" in\n  Debug*)\n    echo \"Skipping Crashlytics dSYM upload for $CONFIGURATION\"\n    exit 0\n    ;;\nesac\n\nFIREBASE_PLIST=\"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/GoogleService-Info.plist\"\nif [[ ! -f \"$FIREBASE_PLIST\" ]]; then\n  echo \"Missing built Firebase config: $FIREBASE_PLIST\"\n  exit 1\nfi\n\nFIREBASE_APP_ID=$(/usr/libexec/PlistBuddy -c \"Print GOOGLE_APP_ID\" \"$FIREBASE_PLIST\")\nif [[ -z \"$FIREBASE_APP_ID\" ]]; then\n  echo \"Missing GOOGLE_APP_ID in $FIREBASE_PLIST\"\n  exit 1\nfi\n\ndsym_paths=(\n  \"${DWARF_DSYM_FOLDER_PATH}/App.framework.dSYM\"\n  \"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}\"\n)\n\nuploaded=0\nfor dsym_path in \"${dsym_paths[@]}\"; do\n  if [[ ! -d \"$dsym_path\" ]]; then\n    continue\n  fi\n\n  if [[ $uploaded -eq 0 ]]; then\n    \"${PODS_ROOT}/FirebaseCrashlytics/upload-symbols\" --build-phase --validate -ai \"$FIREBASE_APP_ID\" -- \"$dsym_path\"\n  fi\n  \"${PODS_ROOT}/FirebaseCrashlytics/upload-symbols\" --build-phase -ai \"$FIREBASE_APP_ID\" -- \"$dsym_path\"\n  uploaded=1\ndone\n\nif [[ $uploaded -eq 0 ]]; then\n  echo \"No dSYM bundle found under ${DWARF_DSYM_FOLDER_PATH}\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -8,7 +9,12 @@ import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
+import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
+import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
+import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:flutter/material.dart';
@@ -97,6 +103,12 @@ void main() {
               onPressed: null,
               variant: CatchButtonVariant.danger,
             ),
+            CatchButton(
+              label: 'Light',
+              onPressed: null,
+              variant: CatchButtonVariant.light,
+              isInteractive: false,
+            ),
           ],
         ),
       ),
@@ -106,6 +118,183 @@ void main() {
     expect(find.text('Secondary'), findsOneWidget);
     expect(find.text('Ghost'), findsOneWidget);
     expect(find.text('Danger'), findsOneWidget);
+    expect(find.text('Light'), findsOneWidget);
+  });
+
+  testWidgets('CatchStepProgress renders count and full-width segments', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 320,
+          child: CatchStepProgress(
+            label: 'Profile setup',
+            currentStep: 1,
+            totalSteps: 5,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('Profile setup'), findsOneWidget);
+    expect(find.text('2/5'), findsOneWidget);
+  });
+
+  testWidgets('CatchButton light variant stays legible in dark mode', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const CatchButton(
+          label: 'Light action',
+          onPressed: null,
+          variant: CatchButtonVariant.light,
+          isInteractive: false,
+        ),
+        theme: AppTheme.dark,
+      ),
+    );
+
+    final label = tester.widget<Text>(find.text('Light action'));
+
+    expect(label.style?.color, CatchTokens.sunsetLight.ink);
+  });
+
+  testWidgets('CatchButton primary variant uses white text in dark mode', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(
+        CatchButton(label: 'Primary action', onPressed: () => taps++),
+        theme: AppTheme.dark,
+      ),
+    );
+
+    await tester.tap(find.text('Primary action'));
+    await tester.pump();
+
+    final label = tester.widget<Text>(find.text('Primary action'));
+
+    expect(taps, 1);
+    expect(label.style?.color, Colors.white);
+  });
+
+  testWidgets('CatchTextButton applies token color and tap semantics', (
+    tester,
+  ) async {
+    var taps = 0;
+
+    await tester.pumpWidget(
+      _wrap(CatchTextButton(label: 'Retry', onPressed: () => taps++)),
+    );
+
+    await tester.tap(find.text('Retry'));
+    await tester.pump();
+
+    final label = tester.widget<Text>(find.text('Retry'));
+    expect(taps, 1);
+    expect(label.style?.color, CatchTokens.sunsetLight.primary);
+  });
+
+  testWidgets(
+    'CatchOtpCodeField renders visible digits over one hidden input',
+    (tester) async {
+      final controller = TextEditingController();
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => CatchOtpCodeField(
+              inputKey: const ValueKey('otp-input'),
+              controller: controller,
+              length: 6,
+              autofocus: true,
+              onChanged: (_) => setState(() {}),
+              onSubmitted: (_) {},
+            ),
+          ),
+        ),
+      );
+
+      await tester.enterText(
+        find.byKey(const ValueKey('otp-input')),
+        '1234567',
+      );
+      await tester.pump();
+
+      expect(controller.text, '123456');
+      expect(find.text('1'), findsOneWidget);
+      expect(find.text('6'), findsOneWidget);
+      expect(find.text('7'), findsNothing);
+    },
+  );
+
+  testWidgets('CatchRangeSlider hides tick marks while preserving divisions', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchRangeSlider(
+          values: const RangeValues(18, 60),
+          min: 18,
+          max: 60,
+          divisions: 42,
+          onChanged: (_) {},
+        ),
+      ),
+    );
+
+    final theme = tester.widget<SliderTheme>(
+      find.ancestor(
+        of: find.byType(RangeSlider),
+        matching: find.byType(SliderTheme),
+      ),
+    );
+    final slider = tester.widget<RangeSlider>(find.byType(RangeSlider));
+
+    expect(theme.data.inactiveTickMarkColor, Colors.transparent);
+    expect(slider.divisions, 42);
+  });
+
+  testWidgets('CatchNumberStepper formats and clamps numeric changes', (
+    tester,
+  ) async {
+    num value = 170;
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => CatchNumberStepper(
+            value: value,
+            min: 169,
+            max: 171,
+            decreaseTooltip: 'Decrease height',
+            increaseTooltip: 'Increase height',
+            formatValue: (next) => '${next.round()} cm',
+            onChanged: (next) => setState(() => value = next),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('170 cm'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Increase height'));
+    await tester.pump();
+    expect(find.text('171 cm'), findsOneWidget);
+
+    final disabledIncrease = tester.widget<IconButton>(
+      find.widgetWithIcon(IconButton, Icons.add_rounded),
+    );
+    expect(disabledIncrease.onPressed, isNull);
+
+    await tester.tap(find.byTooltip('Decrease height'));
+    await tester.pump();
+    expect(find.text('170 cm'), findsOneWidget);
   });
 
   testWidgets('CatchChip supports active, tap, and removable states', (
@@ -465,6 +654,35 @@ void main() {
     },
   );
 
+  testWidgets(
+    'CatchTextField keeps non-actionable read-only fields out of focus',
+    (tester) async {
+      final controller = TextEditingController(text: '+91 9876543210');
+      addTearDown(controller.dispose);
+
+      await tester.pumpWidget(
+        _wrap(
+          CatchTextField(
+            label: 'Mobile number',
+            controller: controller,
+            readOnly: true,
+            helperText: 'Verified via OTP',
+          ),
+        ),
+      );
+
+      await tester.tap(find.byType(TextField));
+      await tester.pump();
+
+      final editableText = tester.widget<EditableText>(
+        find.byType(EditableText),
+      );
+
+      expect(editableText.readOnly, isTrue);
+      expect(editableText.focusNode.hasFocus, isFalse);
+    },
+  );
+
   testWidgets('CatchTextField renders optional field marker', (tester) async {
     await tester.pumpWidget(
       _wrap(
@@ -512,7 +730,7 @@ void main() {
     await tester.pump();
     expect(find.text('Please select a city'), findsOneWidget);
 
-    await tester.tap(find.byIcon(Icons.keyboard_arrow_down_rounded));
+    await tester.tap(find.byIcon(Icons.expand_more_rounded));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Mumbai').hitTestable());
     await pumpFeatureUi(tester);
@@ -522,9 +740,9 @@ void main() {
   });
 }
 
-Widget _wrap(Widget child) {
+Widget _wrap(Widget child, {ThemeData? theme}) {
   return MaterialApp(
-    theme: AppTheme.light,
+    theme: theme ?? AppTheme.light,
     home: Scaffold(body: Center(child: child)),
   );
 }

@@ -88,6 +88,12 @@ final _modelConfigs = <_ModelConfig>[
     idField: 'id',
   ),
   _ModelConfig(
+    dartPath: 'lib/notifications/domain/activity_notification.dart',
+    tsName: 'ActivityNotificationDoc',
+    collectionPath: '/notifications/{uid}/items/{notificationId}',
+    idField: 'id',
+  ),
+  _ModelConfig(
     dartPath: 'lib/reviews/domain/review.dart',
     tsName: 'ReviewDoc',
     collectionPath: '/reviews/{reviewId}',
@@ -581,7 +587,7 @@ void _writeInterfaces(
     if (config.collectionPath != null) {
       buf.writeln(' * ${config.collectionPath}');
     }
-    buf.writeln(' * Dart: ${config.dartPath} — ${config.dartName}');
+    _writeJsDocText(buf, 'Dart: ${config.dartPath} — ${config.dartName}');
     if (config.idField != null) {
       buf.writeln(
         ' * Note: "${config.idField}" is the document ID, not stored'

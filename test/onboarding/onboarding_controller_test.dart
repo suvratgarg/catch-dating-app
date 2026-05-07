@@ -258,6 +258,49 @@ void main() {
       );
     });
 
+    test('rejects saving a profile without interested-in genders', () async {
+      final repository = FakeAuthRepository()
+        ..currentUserValue = TestUser(
+          uid: 'runner-1',
+          phoneNumber: '+919876543210',
+        );
+      final userProfileRepository = FakeOnboardingUserProfileRepository();
+      final draftRepository = FakeOnboardingDraftRepository();
+      final container = createOnboardingTestContainer(
+        overrides: [
+          authRepositoryProvider.overrideWithValue(repository),
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+          onboardingDraftRepositoryProvider.overrideWithValue(draftRepository),
+        ],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+      await primeOnboardingAsyncProviders(container);
+
+      final notifier = container.read(onboardingControllerProvider.notifier);
+      await notifier.initStep();
+      notifier
+        ..setNameDob(
+          firstName: 'Asha',
+          lastName: 'Runner',
+          dateOfBirth: DateTime(1997, 4, 15),
+          phoneNumber: '9876543210',
+          countryCode: '+91',
+        )
+        ..setGenderInterest(
+          gender: Gender.woman,
+          interestedInGenders: const [],
+        );
+
+      await expectLater(notifier.saveProfile(), throwsA(isA<StateError>()));
+
+      expect(userProfileRepository.lastSavedUser, isNull);
+    });
+
     test(
       'stays on gender preferences when profile persistence fails',
       () async {

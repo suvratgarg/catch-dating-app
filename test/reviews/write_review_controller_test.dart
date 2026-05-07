@@ -39,7 +39,7 @@ void main() {
         .read(writeReviewControllerProvider.notifier)
         .submit(
           runClubId: existing.runClubId,
-          runId: existing.runId,
+          runId: existing.runId!,
           reviewerUserId: existing.reviewerUserId,
           reviewerName: existing.reviewerName,
           rating: 5,

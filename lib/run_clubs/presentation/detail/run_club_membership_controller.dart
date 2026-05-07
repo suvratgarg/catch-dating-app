@@ -14,6 +14,7 @@ part 'run_club_membership_controller.g.dart';
 class RunClubMembershipController extends _$RunClubMembershipController {
   static final joinMutation = Mutation<void>();
   static final leaveMutation = Mutation<void>();
+  static final pushNotificationsMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -26,5 +27,15 @@ class RunClubMembershipController extends _$RunClubMembershipController {
   Future<void> leave(String clubId) async {
     requireSignedInUid(ref, action: 'leave a club');
     await ref.read(runClubsRepositoryProvider).leaveClub(clubId);
+  }
+
+  Future<void> setPushNotifications({
+    required String clubId,
+    required bool enabled,
+  }) async {
+    requireSignedInUid(ref, action: 'update club notifications');
+    await ref
+        .read(runClubsRepositoryProvider)
+        .setClubPushNotifications(clubId: clubId, enabled: enabled);
   }
 }

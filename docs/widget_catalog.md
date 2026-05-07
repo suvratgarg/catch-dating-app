@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.20
-updated: 2026-05-06
+version: 2.5.28
+updated: 2026-05-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,103 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.28
+
+- Reviews are now explicitly split by write contract. Run-club detail uses a
+  read-only `RunClubReviewsSection` below the upcoming runs schedule and shows
+  only the latest three reviews. Run detail uses `RunReviewsSection`, the only
+  page-level review section that can open `WriteReviewSheet` for attended
+  runners.
+- Dashboard now derives a post-run review prompt from attended runs and the
+  current user's existing reviews, then opens the existing run-scoped review
+  sheet. The review prompt is a normal dashboard card, not a second mutation
+  path.
+- Added `ReviewsHistoryScreen` under `/you/reviews`, reachable from the Profile
+  overflow menu, so users can see and edit their previous run reviews.
+
+### 2.5.27
+
+- Added `CatchTextButton` as the canonical primitive for inline, dialog,
+  banner, and top-bar text-only actions. Raw feature `TextButton` usages were
+  migrated to this primitive; `CatchButton` remains the pill CTA primitive.
+- Added `CatchOtpCodeField` as the canonical one-time-code input primitive.
+  `OtpPage` now delegates its visible digit boxes and hidden platform input to
+  that core primitive instead of owning a screen-local raw `TextField`.
+- `tool/widget_cleanup_scan.sh` now scans broad primitive-bypass classes:
+  raw Material/Cupertino buttons, raw text inputs, literal `SizedBox` spacing,
+  decorated feature-local surface shells, and app-facing unstyled `Text`
+  candidates. Treat the broad `SizedBox`/surface/text queues as triage lists
+  for focused feature batches.
+
+### 2.5.26
+
+- Numeric +/- controls now route through `CatchNumberStepper`. The former
+  run-local `DurationStepper` was removed, Create Run duration now uses the core
+  primitive directly, and Edit Profile height uses the same primitive for its
+  bounded centimeter picker. Distance and capacity fields remain unchanged.
+- `tool/widget_cleanup_scan.sh` now flags raw paired add/remove `IconButton`
+  steppers outside the core primitive so future one-off numeric controls are
+  caught before screenshots expose the drift.
+
+### 2.5.25
+
+- Range sliders now route through the shared `CatchRangeSlider` primitive,
+  which hides tick marks centrally while preserving discrete divisions. The
+  widget cleanup scanner flags raw `RangeSlider`/`SliderTheme` usage outside
+  the primitive.
+- Swipe Filters now expose only age and interested-in preferences. Pace range
+  and run type are no longer client-editable filters, and the filter save
+  controller persists only discovery age plus interested-in genders.
+- Edit Profile no longer exposes private discovery preferences (`Interested in`
+  and `Age range`). It remains focused on fields that render on the public
+  profile/preview surfaces.
+- Dark-theme primary CTA foreground is now white via `CatchTokens.primaryInk`,
+  so screens using `CatchButton` defaults do not need per-screen foreground
+  overrides.
+
+### 2.5.25
+
+- Settings notification toggles are now category-specific: matches/catches,
+  messages, run reminders, run changes/cancellations, club announcements, and
+  weekly digest. Club announcements are global; the per-club bell is stored on
+  the membership edge.
+- Run club detail now has a two-tier notification affordance: joining a club
+  enrolls the user in durable Activity updates, while the bell next to the
+  membership action opts into push notifications for non-critical club updates.
+- Upcoming run reminders now have a backend scheduled producer. `ActivitySection`
+  suppresses local derived reminder rows when a durable backend `runReminder`
+  item already exists for the run.
+
+### 2.5.24
+
+- Activity timeline now also receives backend-owned `runUpdated` and
+  `runCancelled` items. `updateRun` creates schedule/location change
+  notifications for signed-up and waitlisted participants; `cancelRun` creates
+  cancellation notifications. Run cancellation host UI and policy remain queued
+  before exposing the action end to end.
+
+### 2.5.23
+
+- Activity timeline now also receives backend-owned `clubUpdate` items when a
+  followed club posts a new run. These rows route to run detail through
+  `runId`/`runClubId`, matching run signup and waitlist-promotion rows.
+
+### 2.5.22
+
+- Activity timeline now receives backend-owned run booking notifications as
+  durable items too. `runSignup` and `waitlistPromotion` rows route to run
+  detail through their `runId`/`runClubId` metadata, while upcoming run
+  reminders remain local derived rows until the reminder producer exists.
+
+### 2.5.21
+
+- Home Activity now has a durable notification seam. `ActivitySection` reads
+  `watchActivityNotificationsProvider(uid)` from
+  `notifications/{uid}/items`, renders match/message activity from backend-owned
+  timeline items, keeps upcoming run reminders as local derived items for now,
+  and uses `ActivityController.markAllRead` to mark notification docs read
+  before resetting message unread counters.
 
 ### 2.5.20
 
@@ -540,7 +637,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `CatchTextField` | `lib/core/widgets/catch_text_field.dart:12` | Canonical text input. Wraps `FormField<String>` + `TextField` in a token-driven shell with label, helper/error copy, prefix/suffix icons, clear button, stable single-line control heights, initial-value syncing, and theming via `CatchTextFieldSize`, `CatchTextFieldShape`, and `CatchTextFieldTone` enums. |
-| `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, and `danger` variants; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; and an optional leading icon. |
+| `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, `danger`, and `light` variants; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; optional leading icons; and `isInteractive: false` for button-looking labels inside an already tappable parent. Use `light` for solid-white pill CTAs so foreground/background colors stay paired across light and dark themes. |
 | `CatchDropdownField<T>` | `lib/core/widgets/catch_dropdown_field.dart:8` | Token-driven single-select dropdown for `Labelled` enum-like values. Wraps `FormField<T>` + `DropdownButton<T>` with focus-ring styling and label decoration. |
 
 ### StatelessWidget
@@ -548,12 +645,16 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `CatchSurface` | `lib/core/widgets/catch_surface.dart:9` | Canonical surface/card primitive. Supports `surface`, `raised`, `primarySoft`, and `transparent` tones; `none`, `raised`, and `overlay` elevations; optional border, gradient background, corner radius, and tap handling via `InkWell`. |
+| `CatchTextButton` | `lib/core/widgets/catch_text_button.dart:6` | Canonical text-only action primitive for inline actions, dialog actions, retry links, and top-bar text actions. Uses Catch tokens and text styles while preserving Material `TextButton` semantics. Use `CatchButton` for pill CTAs. |
+| `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:10` | Canonical OTP input primitive. Renders visible token-styled digit boxes over one hidden platform `TextField` so SMS autofill, paste, keyboard input, tests, digit-only filtering, and length limiting stay centralized. |
+| `CatchNumberStepper` | `lib/core/widgets/catch_number_stepper.dart:6` | Canonical numeric +/- stepper. Renders the shared raised surface, compact add/remove buttons, centered mono value, optional min/max/step clamping, and feature-specific value formatting. Used by Create Run duration and Edit Profile height. |
+| `CatchRangeSlider` | `lib/core/widgets/catch_range_slider.dart:7` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. |
 | `CatchTopBar` | `lib/core/widgets/catch_top_bar.dart:11` | Canonical top-bar. Renders a surface-fill bar with an optional back button (auto-detected from `Navigator.canPop`), title, leading widget, and action slots. Also supports a `bottom` `PreferredSizeWidget` (e.g., `TabBar`). Implements `PreferredSizeWidget` for use as an `AppBar`. |
 | `CatchTopBarTabBar` | `lib/core/widgets/catch_top_bar.dart:132` | Catch-styled `TabBar` for use inside `CatchTopBar.bottom` or sticky sliver headers. Uses `primary` indicator color and `labelL` text styles, implements `PreferredSizeWidget`, and accepts an optional explicit `TabController` for sliver-native tab rows that are not inside a `DefaultTabController`. |
 | `CatchSliverHeader` | `lib/core/widgets/catch_top_bar.dart:290` | Shared sliver header primitive. Builds a scroll-away title and optional pinned bottom row; the title translates upward as it collapses so sticky search/filter/tab rows do not visually cover it. Used by Run Clubs, Chats, and Profile. |
 | `CatchTopBarMenuAction<T>` | `lib/core/widgets/catch_top_bar.dart:156` | Overflow menu action for `CatchTopBar`. Renders a `PopupMenuButton<T>` wrapped in an `IconBtn`. |
 | `CatchTopBarIconAction` | `lib/core/widgets/catch_top_bar.dart:189` | Icon-only action button for `CatchTopBar` actions. Renders a tooltip-wrapped `IconBtn`. |
-| `CatchTopBarTextAction` | `lib/core/widgets/catch_top_bar.dart:222` | Text action button for `CatchTopBar` (e.g., "Save", "Done"). Renders a `TextButton` in primary color. |
+| `CatchTopBarTextAction` | `lib/core/widgets/catch_top_bar.dart:222` | Text action button for `CatchTopBar` (e.g., "Save", "Done"). Delegates to `CatchTextButton` so top-bar text actions share the same token-driven text-action primitive as dialogs and inline retry links. |
 | `CatchSegmentedControl<T>` | `lib/core/widgets/catch_segmented_control.dart:44` | Pill-style segmented control. Active segment gets dark background with light text; inactive segments are transparent. Used for Day/Agenda calendar switching and Grid/List view toggling. |
 | `CatchSkeleton` | `lib/core/widgets/catch_skeleton.dart:20` | Shimmer-based loading placeholder. Named constructors: `.card()`, `.text()`, `.textBlock()`, `.circle()`, `.custom()`. Uses the `shimmer` package with Catch-themed colors. |
 | `CatchSkeletonList` | `lib/core/widgets/catch_skeleton.dart:127` | Convenience widget rendering a vertical column of `count` skeleton cards with configurable spacing. |
@@ -576,7 +677,7 @@ Generated 2026-05-06.
 | `IconBtn` | `lib/core/widgets/icon_btn.dart:22` | Circular 40x40 icon button used as the base for `CatchTopBar*Action` widgets. Renders `Material` + `InkWell` with a center-aligned child. |
 | `BottomCTA` | `lib/core/widgets/bottom_cta.dart:38` | Sticky bottom action footer. Renders a full-width `CatchButton` in a surface-colored bar separated from content by a hairline divider, with optional leading content and bottom safe-area padding. |
 | `CatchBottomSheetScaffold` | `lib/core/widgets/catch_bottom_sheet.dart:7` | Shared bottom-sheet shell with grabber, optional title/subtitle, keyboard-safe padding, content, and an optional action slot. |
-| `CatchCelebrationScreen` | `lib/core/celebration/catch_celebration_screen.dart:37` | Shared full-screen celebration surface for high-emotion completion moments. Feature screens provide moment kind, copy, details, optional supplemental children, and primary/secondary actions; the primitive dispatches celebration effects once after first frame. |
+| `CatchCelebrationScreen` | `lib/core/celebration/catch_celebration_screen.dart:37` | Shared full-screen celebration surface for high-emotion completion moments. Feature screens provide moment kind, copy, details, optional supplemental children, and primary/secondary actions; the primitive dispatches celebration effects once after first frame. Solid-white primary actions use `CatchButtonVariant.light` instead of per-screen white/foreground overrides. |
 | `CelebrationEffectsController` | `lib/core/celebration/celebration_effects_controller.dart:10` | Central haptic/sound boundary for celebration moments. Currently dispatches haptics by `CelebrationMomentKind`; future sound work should be added here instead of directly in feature widgets. |
 | `CatchEmptyState` | `lib/core/widgets/catch_empty_state.dart:9` | Shared empty-state primitive with icon, title, message, optional action, and surface/plain presentation modes. |
 | `ChipField<T>` | `lib/core/widgets/chip_field.dart:14` | Multi/single-select chip selector wrapping `FormField<Set<T>>`. Uses `CatchChip` children inside a `Wrap`, lets callers attach semantic chip keys, keeps the parent-owned `selected` set, supports disabled state for pending mutation sheets, and shows a leading check icon on selected chips only in multi-select mode. |
@@ -616,9 +717,10 @@ Generated 2026-05-06.
 |---|---|---|
 | `DashboardScreen` | `lib/dashboard/presentation/dashboard_screen.dart:18` | Home tab. Watches the user's profile, active run-club memberships, and signed-up runs only while Home is active. Owns the Home `TabController`, `NestedScrollView`, collapsible greeting/empty header, pinned `Dashboard`/`Activity` tab row, and native `TabBarView` paging. Invalidates the booked-runs stream when the shell moves away from Home, then reopens it when the user returns. |
 | `DashboardFull` | `lib/dashboard/presentation/widgets/dashboard_full.dart:21` | Standalone full-dashboard wrapper used by focused tests/non-tab embedding. Takes explicit `followedClubIds` from the membership-edge seam and renders the full dashboard header plus `DashboardFullSliverBody`. |
-| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:85` | Sliver body for the Dashboard tab: first-priority run-arrival action card, next-run hero, attended-run section (`StrideCard` + `CatchesCallout`), `QuickActions`, and recommended runs. Activity is intentionally not rendered here. |
+| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:85` | Sliver body for the Dashboard tab: first-priority run-arrival action card, next-run hero, attended-run section (`StrideCard` + `CatchesCallout`), post-run review prompt for the latest attended unreviewed run, `QuickActions`, and recommended runs. Activity is intentionally not rendered here. |
+| `ReviewPromptCard` | `lib/dashboard/presentation/widgets/review_prompt_card.dart:11` | Dashboard card shown after a completed attended run that the user has not reviewed. Opens the shared run-scoped `WriteReviewSheet`; it does not own review persistence. |
 | `ActivitySliverBody` | `lib/dashboard/presentation/widgets/activity_section.dart:19` | Sliver adapter for the Home Activity tab. Applies the tab body inset and renders `ActivitySection` as the tab-owned notifications/update timeline. |
-| `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:53` | Timeline-style activity feed for unread messages, catches, and upcoming run reminders. Uses a branded inline error state with retry and delegates "Mark all read" to `ActivityController`. |
+| `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:53` | Timeline-style activity feed for backend-owned match, message, club-update, run-signup, waitlist-promotion, run-update, run-cancellation, and run-reminder notification items plus local derived reminders only until the backend reminder exists. Uses a branded inline error state with retry and delegates "Mark all read" to `ActivityController`. |
 | `CatchesCallout` | `lib/dashboard/presentation/widgets/catches_callout.dart:11` | Dashboard card promoting the active catch window — shows the run name, remaining time, roster count, and a "Start catching" CTA. |
 | `NextRunHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:11` | Hero card showing the user's next upcoming run with location, time, price, projected confirmed-runner count, and a "View run" CTA. Uses deterministic avatar seeds instead of participant arrays. |
 | `Recommendations` | `lib/dashboard/presentation/widgets/recommendations.dart:7` | Horizontal rail of `RecommendCard` widgets for recommended runs. |
@@ -628,7 +730,7 @@ Generated 2026-05-06.
 | `QuickActions` | `lib/dashboard/presentation/widgets/quick_actions.dart:8` | Row of quick-action buttons (e.g., "Find a Run", "Join a Club"). |
 | `DashboardEmpty` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:10` | Standalone empty-dashboard wrapper used by focused tests/non-tab embedding. Renders the empty dashboard header plus `DashboardEmptySliverBody`. |
 | `DashboardEmptySliverBody` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:116` | Sliver body for the empty Dashboard tab. Keeps the existing "book your first run" education flow without embedding activity updates. |
-| `EmptyHeroCard` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:10` | Hero card variant shown on the empty dashboard prompting the user to book their first run. |
+| `EmptyHeroCard` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:10` | Hero card variant shown on the empty dashboard prompting the user to book their first run. Its solid-white CTA uses `CatchButtonVariant.light` so the pill stays legible in dark mode. |
 | `DashedAvatar` | `lib/dashboard/presentation/widgets/dashed_avatar.dart:7` | Dashed-border circular avatar placeholder used in empty-state layouts. |
 | `RunArrivalActionCard` | `lib/dashboard/presentation/widgets/run_arrival_action_card.dart:17` | First-priority Home card for active run-arrival tasks. Shows participant self check-in or host attendance actions and routes mutations/navigation through `RunBookingController` / router seams. Participant self-check-in opens `RunCheckInCelebrationScreen`; host attendance intentionally does not. |
 | `StaticMapDark` | `lib/dashboard/presentation/widgets/static_map_dark.dart:3` | Static map image widget with dark mode support. |
@@ -659,7 +761,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `SwipeScreen` | `lib/swipes/presentation/swipe_screen.dart:20` | Main swipe screen. Manages a `CardSwiperController`, watches the swipe queue provider, and renders swipeable profile cards with pass/like action buttons. Empty-state attendance copy uses the viewer's `RunParticipation` edge instead of compatibility arrays. Handles swipe direction logic (right = like, left = pass). |
-| `FiltersScreen` | `lib/swipes/presentation/filters_screen.dart:19` | Swipe filters screen. Owns local draft slider/chip state, saves through `FiltersController.saveFiltersMutation`, exposes semantic filter keys, and pops on successful save. |
+| `FiltersScreen` | `lib/swipes/presentation/filters_screen.dart:19` | Swipe filters screen. Owns local age and interested-in draft state, uses `CatchRangeSlider` for the 18-60+ age range, saves through `FiltersController.saveFiltersMutation`, and pops on successful save. Pace range and run type are intentionally not exposed as filters. |
 | `RunRecapScreen` | `lib/swipes/presentation/run_recap_screen.dart:27` | Post-run recap screen showing run details and a checked-in attendee vibe grid. Watches `RunRecapViewModel`, uses keyed vibe tiles, `CatchSurface` for the recap hero, and `CatchEmptyState` for an empty attendee roster. |
 
 ### ConsumerWidget
@@ -678,7 +780,7 @@ Generated 2026-05-06.
 |---|---|---|
 | `_CatchesHubContent` | `lib/swipes/presentation/swipe_hub_screen.dart:56` | Content body for the catches hub — header, intro card for the featured run, and list of active catch windows. |
 | `_CatchesHeader` | `lib/swipes/presentation/swipe_hub_screen.dart:116` | Header row for the catches hub: "CATCHES" section header + "After the run" title + heart icon. |
-| `_CatchesIntroCard` | `lib/swipes/presentation/swipe_hub_screen.dart:151` | Gradient hero card promoting the 24-hour catch window with countdown timer, roster count, and "Start catching" CTA. |
+| `_CatchesIntroCard` | `lib/swipes/presentation/swipe_hub_screen.dart:151` | Gradient hero card promoting the 24-hour catch window with countdown timer, roster count, and "Start catching" CTA. The parent `CatchSurface` owns tap handling; the solid-white CTA is a non-interactive `CatchButtonVariant.light` display label so accessibility and color pairing stay correct. |
 | `_PillStat` | `lib/swipes/presentation/swipe_hub_screen.dart:255` | Semi-transparent stat pill inside the catches intro card — label + value. |
 | `_CatchesEmptyState` | `lib/swipes/presentation/swipe_hub_screen.dart:296` | Empty state when no active catch windows exist. Prompts the user to book a run. |
 | `CardPhotoSection` | `lib/swipes/presentation/widgets/card_photo_section.dart:3` | Photo section inside the shared `ProfileCard`. The hero photo may be edge-to-edge with the dark gradient and name overlay; additional photos should be inset with consistent card margins, rounded corners, and spacing. Shows a branded "Photo coming soon" fallback when the user has no usable image. |
@@ -783,7 +885,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:16` | Profile tab destination. Gates screen-owned streams while the retained tab branch is inactive, owns the route-level top safe area, uses `NestedScrollView` for a scroll-away Profile title header plus pinned `Edit`/`Preview` tab row, and native `TabBarView` paging for smooth horizontal tab swipes. The scroll-away title remains a normal outer sliver; the pinned tab row is wrapped in `SliverOverlapAbsorber`; each tab body starts with `SliverOverlapInjector`. Owns the `TabController` locally because tab selection is route UI state. |
-| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone profile tab content. Wraps the shared profile sections in a `ListView` for isolated/non-sliver usage. Uses `profileTabBodyPadding` for the shared Profile tab inset. `Display name` is the first editable About field and is the only public-facing profile name; onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Optional/profile-detail fields, including Instagram, remain editable. Optional single-choice edit sheets open unselected when the underlying field is empty. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone profile tab content. Wraps the shared profile sections in a `ListView` for isolated/non-sliver usage. Uses `profileTabBodyPadding` for the shared Profile tab inset. `Display name` is the first editable About field and is the only public-facing profile name; onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Optional/profile-detail fields, including Instagram, remain editable. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
 | `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:48` | Sliver-native profile tab body. Reuses the same profile sections as `ProfileTab` but contributes a padded `SliverList` for parent `CustomScrollView` usage. Uses the same `profileTabBodyPadding` as Preview. |
 | `_OverflowMenu` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:109` | Overflow menu in the scroll-away profile title header (payments, sign out). |
 
@@ -806,10 +908,10 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `_TextEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:101` | Modal text editor for profile fields. Accepts field-specific keyboard, capitalization, autofill, shared validators from `profile_validation.dart`, optional value normalization, and save-before-pop mutation feedback. Keeps the sheet open with inline error feedback on failed saves. |
-| `_HeightEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:225` | Bounded height editor using minus/plus controls instead of free-text input. Saves only values between the shared profile height minimum and maximum, locks controls while saving, and closes only after persistence succeeds. |
+| `_HeightEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:225` | Bounded height editor using `CatchNumberStepper` instead of free-text input. Saves only values between the shared profile height minimum and maximum, locks controls while saving, and closes only after persistence succeeds. |
 | `_SingleEnumEditSheet<T>` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:345` | Optional single-choice profile editor. Preserves an empty visual selection when the field is null, saves the tapped chip through `ProfileEditController`, shows inline pending feedback while saving, clears optimistic pending highlight on failed saves, and closes only after the mutation succeeds. |
 | `_MultiEnumEditSheet<T>` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:460` | Multi-choice profile editor. Owns local selected-chip state, disables chips while saving, and persists through the profile edit mutation before dismissing. |
-| `_RangeEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:568` | Range editor for age and pace preferences. Owns temporary slider state, normalizes open-ended age storage, disables the slider while saving, keeps discrete divisions for valid steps, hides slider tick marks for a continuous track, and closes only after the mutation succeeds. |
+| `_RangeEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:568` | Range editor currently used for editable profile pace. Owns temporary slider state, disables the slider while saving, routes through `CatchRangeSlider` for tickless styling, and closes only after the mutation succeeds. |
 
 ---
 
@@ -822,13 +924,13 @@ Generated 2026-05-06.
 | `OnboardingScreen` | `lib/onboarding/presentation/onboarding_screen.dart:16` | Multi-step onboarding flow shell. Manages step navigation via `PageController`, renders the step progress bar, and delegates to individual step pages. |
 | `NameDobPage` | `lib/onboarding/presentation/pages/name_dob_page.dart:11` | Name and date-of-birth entry page — text field + date picker. |
 | `GenderInterestPage` | `lib/onboarding/presentation/pages/gender_interest_page.dart:12` | Gender identity and interest selection page using `ChipField` with semantic chip keys for self-identification vs interested-in selections. |
-| `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:15` | Running preferences page — pace, distance, days, goals, and experience level. |
+| `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:15` | Running preferences page — pace, distance, days, goals, and experience level. Uses `CatchRangeSlider` for the comfortable pace range. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:10` | Landing/welcome page shown at the start of onboarding — app logo, tagline, and "Get started" button. |
+| `WelcomePage` | `lib/onboarding/presentation/pages/welcome_page.dart:10` | Landing/welcome page shown at the start of onboarding — app logo, tagline, and phone CTA. The solid-white CTA uses `CatchButtonVariant.light` instead of screen-local white/foreground overrides. |
 | `PhotosPage` | `lib/onboarding/presentation/pages/photos_page.dart:13` | Photo upload page — renders `PhotoGrid` for the user to add/remove profile photos. |
 
 ### StatelessWidget
@@ -914,7 +1016,7 @@ Generated 2026-05-06.
 | `_TitleRow` | `lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart:22` | "Clubs" title row in the clubs sliver header. |
 | `_AddButton` | `lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart:50` | "+" button next to the title to create a new club. |
 | `ClubHeroAppBar` | `lib/run_clubs/presentation/detail/widgets/club_hero_app_bar.dart:15` | Hero-style app bar for the club detail screen — large cover image, club name, location, and back button. |
-| `ClubDetailBody` | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart:21` | Scrollable club detail body — about section, stats, upcoming runs list, reviews section, and host action panel. |
+| `ClubDetailBody` | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart:21` | Scrollable club detail body — about section, stats, host/member controls, upcoming runs list, then read-only club review aggregate. Club detail never exposes review creation because reviews are associated with specific runs. |
 | `ClubScheduleSection` | `lib/run_clubs/presentation/detail/widgets/club_schedule_section.dart:7` | Sliver-native agenda section for a club's upcoming runs. Reuses `RunAgendaSliverList`, shows empty state when no upcoming runs exist, and routes selected runs to detail. |
 | `_HostActionPanel` | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart:119` | Action panel shown when the current user is the club host — create run, edit club, etc. |
 | `_ClubContactSection` | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart:177` | Contact info section — Instagram, website, WhatsApp, email rows. |
@@ -984,7 +1086,7 @@ Generated 2026-05-06.
 | `RunAgendaList` | `lib/runs/presentation/widgets/run_agenda_list.dart:9` | Box-facing agenda list for runs grouped by day. Sorts by start time by default, with `preserveInputOrder` for callers that precompute semantic order. |
 | `RunAgendaSliverList` | `lib/runs/presentation/widgets/run_agenda_list.dart:41` | Sliver-facing agenda list for runs grouped by day. Sorts by start time by default, with `preserveInputOrder` for sliver-native screens such as Calendar that need upcoming-first ordering. |
 | `RunAgendaRunCard` | `lib/runs/presentation/widgets/run_agenda_list.dart:101` | Tappable agenda card for a run — time, meeting point, distance/pace/projected spots metadata, and optional badge. |
-| `WhenStep` | `lib/runs/presentation/widgets/when_step.dart:7` | "When" form step in create run — date + time pickers. |
+| `WhenStep` | `lib/runs/presentation/widgets/when_step.dart:7` | "When" form step in create run — date + time pickers plus duration selection through `CatchNumberStepper`. |
 | `WhereStep` | `lib/runs/presentation/widgets/where_step.dart:8` | "Where" form step — location picker, address display, and map preview. |
 | `RunDetailsStep` | `lib/runs/presentation/widgets/run_details_step.dart:9` | "Details" form step — distance, pace, price, capacity, and vibe tags. |
 | `EligibilityStep` | `lib/runs/presentation/widgets/eligibility_step.dart:9` | "Eligibility" form step — gender, age, and experience requirements. |
@@ -996,12 +1098,11 @@ Generated 2026-05-06.
 | `RunStatDivider` | `lib/runs/presentation/widgets/run_stats_grid.dart:81` | Vertical divider between stat cells. |
 | `RunDetailHeroAppBar` | `lib/runs/presentation/widgets/run_detail_hero_app_bar.dart:7` | Sliver hero app bar for run detail. Owns the photo/map hero, back/share controls, and saved-run icon state. |
 | `RunDetailOverviewSection` | `lib/runs/presentation/widgets/run_detail_overview_section.dart:10` | Static run facts section for the loaded run detail body: title, pace/date, stats, when/where, description, and requirements. |
-| `RunDetailSocialSection` | `lib/runs/presentation/widgets/run_detail_social_section.dart:10` | Social context section for the loaded run detail body: roster, guest lock prompt, divider, and reviews for signed-in users. Review eligibility uses the current viewer's `RunParticipation` attendance status. |
+| `RunDetailSocialSection` | `lib/runs/presentation/widgets/run_detail_social_section.dart:10` | Social context section for the loaded run detail body: roster, guest lock prompt, divider, and run-scoped reviews for signed-in users. Review eligibility uses the current viewer's `RunParticipation` attendance status. |
 | `RunMapSheet` | `lib/runs/presentation/widgets/run_map_sheet.dart:12` | Overlay sheet for map runs. Uses `CatchSurface`, renders horizontal run chips, and routes the highlighted run to detail. |
 | `RunPhotoHeader` | `lib/runs/presentation/widgets/run_photo_header.dart:6` | Photo/map header for the run detail screen. |
 | `MapPinTile` | `lib/runs/presentation/widgets/map_pin_tile.dart:7` | Route map + pin display tile. |
 | `PickerTile` | `lib/runs/presentation/widgets/picker_tile.dart:6` | Tappable tile that opens a picker (date, time, etc.) — shows label + selected value. |
-| `DurationStepper` | `lib/runs/presentation/widgets/duration_stepper.dart:6` | +/- stepper for selecting duration. |
 | `RequirementsRow` | `lib/runs/presentation/widgets/requirements_row.dart:7` | Read-only row showing eligibility requirements. |
 | `FieldLabel` | `lib/runs/presentation/widgets/field_label.dart:4` | Styled label for form fields in the create-run flow. |
 | `_DraftCard` | `lib/runs/presentation/widgets/draft_picker_sheet.dart:161` | `CatchSurface` draft card in the draft picker sheet — shows run summary, relative save time, and delete state. |
@@ -1103,14 +1204,17 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_WriteReviewSheet` | `lib/reviews/presentation/write_review_sheet.dart:39` | Bottom sheet for writing, editing, or deleting a run review. Uses `CatchBottomSheetScaffold`, semantic star/action keys, inline mutation errors, and `WriteReviewController` submit/delete mutations. |
+| `_WriteReviewSheet` | `lib/reviews/presentation/write_review_sheet.dart:39` | Bottom sheet for writing, editing, or deleting a run review. Requires a concrete `runId`, uses `CatchBottomSheetScaffold`, semantic star/action keys, inline mutation errors, and `WriteReviewController` submit/delete mutations. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ReviewsSection` | `lib/reviews/presentation/reviews_section.dart:22` | Section header, rating summary, empty state, preview list, see-all sheet, and write/edit review CTA for run-scoped reviews. |
-| `ReviewCard` | `lib/reviews/presentation/reviews_section.dart:177` | Single tokenized review surface with reviewer avatar/name, star rating, optional comment, and edit action for the current user's own review. |
+| `RunClubReviewsSection` | `lib/reviews/presentation/reviews_section.dart:19` | Read-only club review aggregate. Shows the latest three reviews and never opens the write/edit sheet. |
+| `RunReviewsSection` | `lib/reviews/presentation/reviews_section.dart:44` | Run-scoped reviews with write/edit CTA for attended runners. This is the only page-level review section that should open `WriteReviewSheet`. |
+| `ReviewsPreviewSection` | `lib/reviews/presentation/reviews_section.dart:120` | Shared read-only preview list: header, aggregate rating, empty state, top-N review cards, and optional see-all sheet. Callers supply edit callbacks only when the parent surface is run-scoped. |
+| `ReviewsHistoryScreen` | `lib/reviews/presentation/reviews_history_screen.dart:19` | Profile-owned review history screen. Lists the current user's reviews newest-first and opens the shared edit review sheet for run-backed reviews. |
+| `ReviewCard` | `lib/reviews/presentation/reviews_section.dart:226` | Single tokenized review surface with reviewer avatar/name, star rating, optional comment, and optional edit action for the current user's own review. |
 | `StarRating` | `lib/reviews/presentation/star_rating.dart:5` | Read-only token-colored 5-star display. Clamps rating values into the valid visual range. |
 | `StarRatingPicker` | `lib/reviews/presentation/star_rating.dart:31` | Semantic/tappable 5-star picker. Supports caller-provided keys for stable widget tests and exposes tooltip/semantics labels per rating. |
 | `ReviewKeys` | `lib/reviews/presentation/review_keys.dart:3` | Stable semantic keys for review write/edit/delete/submit actions, comment field, see-all button, and rating stars. |

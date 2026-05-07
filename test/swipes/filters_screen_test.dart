@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
@@ -19,6 +21,8 @@ void main() {
     final repository = _FakeFiltersUserProfileRepository();
     final user = buildUser(uid: 'runner-1').copyWith(
       interestedInGenders: const [Gender.woman],
+      minAgePreference: 18,
+      maxAgePreference: 99,
       preferredDistances: const [],
     );
 
@@ -55,22 +59,33 @@ void main() {
 
     await tester.tap(find.text('Open filters'));
     await pumpFeatureUi(tester);
+    expect(find.text('Pace range'), findsNothing);
+    expect(find.text('Run type'), findsNothing);
+    expect(find.text('18 - 60+'), findsOneWidget);
+    expect(find.byKey(SwipeKeys.ageRangeSlider), findsOneWidget);
+    expect(find.byType(CatchRangeSlider), findsOneWidget);
+
     await tester.tap(find.byKey(SwipeKeys.genderFilterChip(Gender.man.name)));
-    await tester.tap(
-      find.byKey(SwipeKeys.distanceFilterChip(PreferredDistance.fiveK.name)),
+    tester
+        .widget<CatchRangeSlider>(find.byKey(SwipeKeys.ageRangeSlider))
+        .onChanged!(const RangeValues(20, 60));
+    await tester.pump();
+    expect(find.text('20 - 60+'), findsOneWidget);
+
+    final applyButton = tester.widget<CatchButton>(
+      find.byKey(SwipeKeys.applyFiltersButton),
     );
+    expect(applyButton.variant, CatchButtonVariant.primary);
+
     await tester.tap(find.byKey(SwipeKeys.applyFiltersButton));
     await pumpFeatureUi(tester);
 
     expect(find.text('Open filters'), findsOneWidget);
     expect(repository.updatedUid, 'runner-1');
     expect(repository.updatedFields, {
-      'minAgePreference': 18,
+      'minAgePreference': 20,
       'maxAgePreference': 99,
-      'paceMinSecsPerKm': 300,
-      'paceMaxSecsPerKm': 420,
       'interestedInGenders': ['woman', 'man'],
-      'preferredDistances': ['fiveK'],
     });
   });
 }

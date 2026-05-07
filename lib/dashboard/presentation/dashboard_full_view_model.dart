@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
+import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -40,6 +42,7 @@ class DashboardFullViewModel {
     required this.nextRun,
     required this.arrivalAction,
     required this.activeSwipeRun,
+    required this.pendingReviewRun,
     required this.attendedRunsSection,
     required this.recommendationsSection,
   });
@@ -47,6 +50,7 @@ class DashboardFullViewModel {
   final Run? nextRun;
   final RunArrivalAction? arrivalAction;
   final Run? activeSwipeRun;
+  final Run? pendingReviewRun;
   final DashboardSectionModel<List<Run>> attendedRunsSection;
   final DashboardSectionModel<List<Run>> recommendationsSection;
 }
@@ -57,6 +61,9 @@ DashboardFullViewModel buildDashboardFullViewModel({
   List<Run> hostedRuns = const [],
   required AsyncValue<List<Run>> attendedRunsAsync,
   required AsyncValue<List<Run>> recommendedRunsAsync,
+  AsyncValue<List<Review>> reviewsByUserAsync = const AsyncData<List<Review>>(
+    [],
+  ),
   DateTime? now,
 }) {
   final effectiveNow = now ?? DateTime.now();
@@ -95,6 +102,18 @@ DashboardFullViewModel buildDashboardFullViewModel({
           attendedRunsSection.data!,
           now: effectiveNow,
         );
+  final reviewedRunIds =
+      reviewsByUserAsync.asData?.value
+          .map((review) => review.runId)
+          .whereType<String>()
+          .toSet() ??
+      const <String>{};
+  final pendingReviewRun = attendedRunsSection.data == null
+      ? null
+      : _latestUnreviewedAttendedRun(
+          attendedRunsSection.data!,
+          reviewedRunIds: reviewedRunIds,
+        );
   final arrivalAction = uid == null
       ? null
       : selectRunArrivalAction(
@@ -108,9 +127,20 @@ DashboardFullViewModel buildDashboardFullViewModel({
     nextRun: nextRun,
     arrivalAction: arrivalAction,
     activeSwipeRun: activeSwipeRun,
+    pendingReviewRun: pendingReviewRun,
     attendedRunsSection: attendedRunsSection,
     recommendationsSection: recommendationsSection,
   );
+}
+
+Run? _latestUnreviewedAttendedRun(
+  List<Run> attendedRuns, {
+  required Set<String> reviewedRunIds,
+}) {
+  final unreviewedRuns =
+      attendedRuns.where((run) => !reviewedRunIds.contains(run.id)).toList()
+        ..sort((a, b) => b.endTime.compareTo(a.endTime));
+  return unreviewedRuns.firstOrNull;
 }
 
 /// Combines signed-up runs, attended runs, and recommended runs into a single
@@ -139,6 +169,7 @@ DashboardFullViewModel dashboardFullViewModel(
     uid: uid,
     hostedRuns: hostedRuns,
     attendedRunsAsync: ref.watch(watchAttendedRunsProvider(uid)),
+    reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
     recommendedRunsAsync: ref.watch(
       dashboardRecommendedRunsProvider(
         DashboardRecommendationsQuery(

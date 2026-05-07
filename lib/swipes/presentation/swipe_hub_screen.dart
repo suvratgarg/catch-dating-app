@@ -228,17 +228,12 @@ class _CatchesIntroCard extends StatelessWidget {
                 ],
               ),
               gapH18,
-              Container(
-                height: 50,
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  'Start catching',
-                  style: CatchTextStyles.titleM(context, color: t.ink),
-                ),
+              const CatchButton(
+                label: 'Start catching',
+                onPressed: null,
+                variant: CatchButtonVariant.light,
+                fullWidth: true,
+                isInteractive: false,
               ),
             ],
           ),

@@ -1,10 +1,10 @@
 {
-  "version": "2.3.9",
-  "updated": "2026-05-06",
+  "version": "2.3.21",
+  "updated": "2026-05-07",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, and stable debt ids. Do not reread archived markdown history unless a debt id points there.",
   "scanner_snapshot": {
-    "updated": "2026-05-06",
+    "updated": "2026-05-07",
     "command": "bash tool/widget_cleanup_scan.sh",
     "counts": {
       "centralized_widget_timing": 3,
@@ -12,7 +12,15 @@
       "positional_widget_finders": 0,
       "presentation_repository_reaches": 0,
       "catch_tokens_prop_drilling": 0,
+      "raw_material_button_candidates": 0,
+      "raw_text_input_candidates": 0,
+      "fixed_white_pill_cta_candidates": 0,
+      "raw_range_slider_candidates": 0,
+      "raw_number_stepper_candidates": 0,
       "feature_tappable_candidates": 0,
+      "literal_sized_box_spacing_candidates": 178,
+      "raw_decorated_surface_candidates": 61,
+      "unstyled_text_candidates": 13,
       "legacy_spacing_canonical_candidates": 0,
       "fine_grained_spacing_compatibility": 19,
       "presentation_plugin_imports": 0,
@@ -21,6 +29,13 @@
     "notes": [
       "The widget timing matches are the intentional centralized pumpFeatureUi helper plus two calendar test pumps queued for a later testability pass.",
       "Feature tappable scanner now skips built-in labeled buttons, tooltipped controls, and tappables already wrapped in Semantics or Tooltip.",
+      "Fixed-white pill CTA scanner reports zero candidates after moving white CTA fills to CatchButtonVariant.light.",
+      "Raw range slider scanner reports zero candidates after moving age/pace sliders to CatchRangeSlider.",
+      "Raw number stepper scanner reports zero candidates after moving Create Run duration and Edit Profile height to CatchNumberStepper.",
+      "Raw Material/Cupertino button scanner reports zero candidates after moving text-only actions to CatchTextButton.",
+      "Raw text input scanner reports zero candidates after moving OTP entry to CatchOtpCodeField.",
+      "Review surface refactor kept raw button/input scans clean and reduced literal SizedBox spacing candidates to 178.",
+      "Literal SizedBox spacing, decorated surface, and unstyled Text scans are intentionally broad triage queues for focused feature batches, not automatic lint failures.",
       "Legacy spacing scanner is split between canonical 4-point migration candidates and intentional fine-grained compatibility helpers.",
       "Canonical spacing migration should be piecemeal and touch-driven.",
       "Raw error-surface candidates are clean after the hard CatchErrorText removal and direct primitive migration.",
@@ -32,7 +47,7 @@
     {
       "id": "PROFILE-001",
       "title": "Fix profile tab and preview tab blank rendering",
-      "status": "active",
+      "status": "watch",
       "area": "user_profile",
       "priority": "high",
       "rules": [
@@ -161,28 +176,79 @@
     },
     {
       "id": "NOTIFICATIONS-QUEUE",
-      "title": "Design backend-owned notification fan-out",
-      "status": "identified",
+      "title": "Complete backend-owned notification fan-out",
+      "status": "watch",
       "area": "functions,core,dashboard",
       "priority": "medium",
       "rules": [
         "CONTROLLER-BOUNDARY-001",
-        "PROVIDER-SEAM-001"
+        "PROVIDER-SEAM-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
       ],
-      "summary": "Before adding more notifications, decide whether durable in-app activity/timeline events live in a server-owned Firestore collection or whether specific moments remain push-only. Candidate moments: new message, match, upcoming run reminder, signup/waitlist promotion, run cancellation/schedule change, and club/hosted-run updates. Client writes to any notification timeline should be denied; fan-out should happen in Functions.",
+      "summary": "Core producer work is complete and this queue is now watch-only. Durable in-app activity lives in backend-owned `notifications/{uid}/items/{notificationId}` docs. Match, message, new-club-run, run signup, waitlist-promotion, upcoming run reminder, run schedule/location update, and run cancellation producers are implemented through Functions/callables. Activity reads `watchActivityNotificationsProvider(uid)`, users can only read own timeline plus mark items read, and push delivery is gated by granular user preferences. Club updates use a two-tier model: active membership receives Activity updates, while per-club `runClubMemberships/{clubId_uid}.pushNotificationsEnabled` plus `prefsClubUpdates` gates FCM pushes. Remaining notification work is product/UI policy backfill owned by `RUN-CANCELLATION-UI-POLICY-001`, settings/permission UX refinement, and device QA, not a missing core fan-out gap.",
       "paths": [
         "docs/backend_operation_catalog.md",
+        "docs/firestore_functions_data_contract_tracker.md",
+        "tool/firestore_contract.json",
+        "tool/generate_firestore_types.dart",
+        "firestore.rules",
+        "functions/test/firestore.rules.test.cjs",
         "functions/src/shared/notifications.ts",
+        "functions/src/runs/mutateRun.ts",
+        "functions/src/runs/mutateRun.test.ts",
+        "functions/src/runs/sendRunReminders.ts",
+        "functions/src/runs/sendRunReminders.test.ts",
+        "functions/src/runs/joinRunWaitlist.ts",
+        "functions/src/runs/markRunAttendance.ts",
+        "functions/src/runs/selfCheckInAttendance.ts",
+        "functions/src/runs/signUpUserForRun.ts",
+        "functions/src/runs/signUpUserForRun.test.ts",
+        "functions/src/runs/cancelRunSignUp.ts",
         "functions/src/matching/onMessageCreated.ts",
+        "functions/src/matching/onMessageCreated.test.ts",
         "functions/src/matching/onMatchCreated.ts",
+        "functions/src/matching/onMatchCreated.test.ts",
+        "functions/src/runClubs/membership.ts",
+        "functions/src/runClubs/membership.test.ts",
+        "lib/notifications/domain/activity_notification.dart",
+        "lib/notifications/data/activity_notification_repository.dart",
         "lib/dashboard/presentation/widgets/activity_section.dart",
-        "lib/dashboard/presentation/activity_controller.dart"
+        "lib/dashboard/presentation/activity_controller.dart",
+        "lib/safety/presentation/settings_screen.dart",
+        "lib/safety/presentation/settings_controller.dart",
+        "lib/run_clubs/domain/run_club_membership.dart",
+        "lib/run_clubs/presentation/detail/widgets/membership_button.dart",
+        "test/notifications/activity_notification_repository_test.dart",
+        "test/dashboard/dashboard_screen_test.dart"
+      ]
+    },
+    {
+      "id": "RUN-CANCELLATION-UI-POLICY-001",
+      "title": "Define run cancellation policy and host UI",
+      "status": "identified",
+      "area": "runs,payments,notifications",
+      "priority": "high",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "ERROR-UI-001",
+        "FIRESTORE-RULES-TEST-001"
+      ],
+      "summary": "`cancelRun` now exists as a host-only backend callable: it writes `runs/{runId}.status/cancelledAt/cancellationReason` and sends durable/push cancellation notifications to signed-up and waitlisted participants. Do not expose it in the app until product defines cancellation windows, refund behavior, participant copy, host confirmation/error UI, and how cancelled runs appear on list/detail/calendar/activity surfaces.",
+      "paths": [
+        "functions/src/runs/mutateRun.ts",
+        "functions/src/payments/paymentValidation.ts",
+        "lib/runs/presentation/run_detail_screen.dart",
+        "lib/runs/presentation/widgets/run_detail_body.dart",
+        "lib/calendar/presentation/calendar_screen.dart",
+        "lib/dashboard/presentation/widgets/activity_section.dart",
+        "docs/backend_operation_catalog.md"
       ]
     },
     {
       "id": "RELATIONSHIP-DOC-MIGRATION",
-      "title": "Move relationship reads off compatibility arrays",
-      "status": "active",
+      "title": "Retire relationship arrays in favor of edge documents",
+      "status": "watch",
       "area": "firestore,runs,run_clubs,user_profile,chats",
       "priority": "high",
       "rules": [
@@ -191,7 +257,7 @@
         "CONTROLLER-BOUNDARY-001",
         "CODEGEN-001"
       ],
-      "summary": "Relationship/action documents now exist for run-club memberships, run participations, saved runs, and match-scoped messages. Run detail saved-state reads now use `savedRuns/{uid_runId}`. Dashboard recommendations, Run Clubs list/detail membership state, and Run Map recommendations now read `runClubMemberships` rather than `users.joinedRunClubIds` or `runClubs.memberUserIds`; `RecommendedRunsQuery` gives recommendation providers stable value-equality keys. Run detail now reads the current viewer's booking/waitlist/attendance/review-gate state from `runParticipations/{runId_uid}` instead of compatibility participant arrays. Shared `watchSignedUpRunsProvider` and `watchAttendedRunsProvider` now query `runParticipations` by user/status and then watch matching run documents, so Dashboard, Calendar, Run Map, Activity, and Swipe Hub consume edge-backed run streams through the existing provider seam. Host attendance management derives roster/check-in state from `runParticipations` through `AttendanceSheetViewModel`. Swipe candidate generation, swipe empty-state attendance gating, and run recap attendee/checked-in state now use `runParticipations`. Run participation count projections are explicit `Run` fields (`bookedCount`, `waitlistedCount`, `checkedInCount`) maintained by Functions, while exact roster surfaces (`WhoIsRunning`, `HostRunManageScreen`) use `RunParticipationRoster` from edge docs. Production UI no longer directly reads `runs.signedUpUserIds`/`waitlistUserIds`/`attendedUserIds`; compatibility arrays remain only in generated serialization, backend write compatibility, migration tooling, and tests until beta migration/reset policy is finalized.",
+      "summary": "Relationship/action documents are now the source of truth for run-club memberships, run participations, saved runs, and match-scoped messages. The retired relationship arrays have been removed from Dart models, generated Functions types, Cloud Functions writes, Firestore rules/indexes, active validation/migration tooling, and active tests. Canonical parent docs retain only aggregate projections such as `memberCount`, `bookedCount`, `waitlistedCount`, `checkedInCount`, and `genderCounts`. Keep this item on watch for regressions: do not re-add relationship arrays to models, Functions, rules, active tooling, or tests.",
       "paths": [
         "docs/firestore_relationship_documents_migration.md",
         "lib/run_clubs/data/run_club_membership_repository.dart",
@@ -204,6 +270,31 @@
         "lib/runs/presentation/attendance_sheet_screen.dart",
         "lib/swipes/data/swipe_repository.dart",
         "lib/reviews/data/reviews_repository.dart"
+      ]
+    },
+    {
+      "id": "FIRESTORE-RULES-SIMPLIFICATION-001",
+      "title": "Simplify Firestore rules after relationship-doc migration",
+      "status": "active",
+      "area": "firestore,functions,rules",
+      "priority": "high",
+      "rules": [
+        "FIRESTORE-RULES-TEST-001",
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001"
+      ],
+      "summary": "Rules were simplified alongside relationship-array retirement: direct run and run-club writes are denied, saved-run/profile projections are gone, swipe eligibility uses `runParticipations`, review create/update/delete moved behind callables, and retired array fields are no longer valid schema. Remaining simplification work is narrower: confirm all public surfaces use `publicProfiles`, keep `users/{uid}` owner-readable only, decide whether active `runClubMemberships` should stay publicly readable for member-list product needs, and consider whether chat message create/reset unread should remain the final direct product writes.",
+      "paths": [
+        "firestore.rules",
+        "functions/test/firestore.rules.test.cjs",
+        "docs/firestore_relationship_documents_migration.md",
+        "docs/backend_operation_catalog.md",
+        "tool/firestore_contract.json",
+        "lib/runs/data/run_repository.dart",
+        "lib/runs/data/saved_run_repository.dart",
+        "lib/run_clubs/data/run_clubs_repository.dart",
+        "lib/reviews/data/reviews_repository.dart",
+        "lib/swipes/data/swipe_repository.dart"
       ]
     },
     {
@@ -323,10 +414,10 @@
     }
   ],
   "next_up": [
-    "NOTIFICATIONS-QUEUE",
-    "DOC-HYGIENE-QUEUE",
-    "STREAM-LIFECYCLE-QUEUE",
-    "ERROR-UI-QUEUE",
+    "RELATIONSHIP-DOC-MIGRATION",
+    "FIRESTORE-RULES-SIMPLIFICATION-001",
+    "DELETE-METHODOLOGY-QUEUE",
+    "MIGRATION-VALIDATION-001",
     "PROFILE-001"
   ],
   "completed": [

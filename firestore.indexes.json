@@ -4,24 +4,41 @@
       "collectionGroup": "runs",
       "queryScope": "COLLECTION",
       "fields": [
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "startTime", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "runs",
+      "queryScope": "COLLECTION",
+      "fields": [
         {"fieldPath": "runClubId", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
       ]
     },
     {
-      "collectionGroup": "runs",
+      "collectionGroup": "runParticipations",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "attendedUserIds", "arrayConfig": "CONTAINS"},
-        {"fieldPath": "startTime", "mode": "DESCENDING"}
+        {"fieldPath": "uid", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
       ]
     },
     {
-      "collectionGroup": "runs",
+      "collectionGroup": "runParticipations",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "signedUpUserIds", "arrayConfig": "CONTAINS"},
-        {"fieldPath": "startTime", "mode": "ASCENDING"}
+        {"fieldPath": "runId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"}
+      ]
+    },
+    {
+      "collectionGroup": "runParticipations",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {"fieldPath": "runId", "mode": "ASCENDING"},
+        {"fieldPath": "status", "mode": "ASCENDING"},
+        {"fieldPath": "waitlistedAt", "mode": "ASCENDING"}
       ]
     },
     {

@@ -329,14 +329,12 @@ void main() {
       ]);
     });
 
-    test('leaveWaitlist removes the user from the waitlist', () async {
-      final run = buildRun(id: 'run-1', waitlistUserIds: const ['runner-1']);
-      await _seedRun(firestore, run);
-
+    test('leaveWaitlist calls the matching Cloud Function', () async {
       await repository.leaveWaitlist(runId: 'run-1', userId: 'runner-1');
 
-      final updated = await repository.fetchRun('run-1');
-      expect(updated?.waitlistUserIds, isEmpty);
+      expect(functions.callables['leaveRunWaitlist']!.calls, [
+        {'runId': 'run-1'},
+      ]);
     });
 
     test('cancelSignUpViaFunction calls the matching Cloud Function', () async {
@@ -493,7 +491,7 @@ void main() {
     testWidgets(
       'watchSignedUpRunsProvider keeps realtime streams alive while idle',
       (tester) async {
-        final run = buildRun(id: 'run-1', signedUpUserIds: const ['runner-1']);
+        final run = buildRun(id: 'run-1', bookedCount: 1);
         final signedUpRunsController = StreamController<List<Run>>();
         addTearDown(signedUpRunsController.close);
 

@@ -22,7 +22,7 @@ class WriteReviewController extends _$WriteReviewController {
 
   Future<void> submit({
     required String runClubId,
-    String? runId,
+    required String runId,
     required String reviewerUserId,
     required String reviewerName,
     required int rating,

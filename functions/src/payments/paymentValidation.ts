@@ -61,6 +61,13 @@ export function buildOrderCreatePayload({
   userId: string;
   receiptToken: string | number;
 }) {
+  if (run.status === "cancelled") {
+    throw new HttpsError(
+      "failed-precondition",
+      "This run has been cancelled."
+    );
+  }
+
   const amountInPaise = parsePositiveAmount(run.priceInPaise, "Run price");
 
   return {

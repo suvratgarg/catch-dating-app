@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
@@ -95,7 +96,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
               ),
             ],
           ),
-          RangeSlider(
+          CatchRangeSlider(
             values: _paceRange,
             min: 240, // 4:00/km
             max: 540, // 9:00/km

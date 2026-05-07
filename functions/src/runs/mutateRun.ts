@@ -1,12 +1,20 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {RunClubDoc, RunDoc, RunConstraints} from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallable} from "../shared/validation";
+import {
+  allowsPushPreference,
+  activityNotificationId,
+  runActivityNotificationCopy,
+  sendFcmNotification,
+  setActivityNotification,
+} from "../shared/notifications";
 
 const PaceSchema = z.enum(["easy", "moderate", "fast", "competitive"]);
 const nullableString = z.string().trim().max(1000).nullable().optional();
@@ -61,9 +69,20 @@ const UpdateRunSchema = z.object({
   fields: RunHostUpdateFieldsSchema,
 }).strict();
 
+const CancelRunSchema = z.object({
+  runId: z.string().trim().min(1),
+  reason: z.string().trim().max(500).nullable().optional(),
+}).strict();
+
+const DeleteRunSchema = z.object({
+  runId: z.string().trim().min(1),
+}).strict();
+
 interface RunMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
   timestampFromMillis: (millis: number) => FirebaseFirestore.Timestamp;
+  serverTimestamp?: () => FirebaseFirestore.FieldValue;
+  sendNotification?: typeof sendFcmNotification;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -83,10 +102,24 @@ type ParsedCreateRunData =
     constraints?: ParsedRunConstraints;
   };
 
+type NotificationUserDoc = {
+  fcmToken?: string;
+  prefsRunReminders?: boolean;
+  prefsRunStatusUpdates?: boolean;
+  prefsClubUpdates?: boolean;
+};
+
+type ClubMembershipNotificationDoc = {
+  uid?: string;
+  pushNotificationsEnabled?: boolean;
+};
+
 const defaultDeps: RunMutationDeps = {
   firestore: () => admin.firestore(),
   timestampFromMillis: (millis) =>
     admin.firestore.Timestamp.fromMillis(millis),
+  serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
 };
 
@@ -114,6 +147,9 @@ export async function createRunHandler(
   const clubRef = db.collection("runClubs").doc(data.runClubId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
 
+  let createdRun: RunDoc | null = null;
+  let clubName = "Your run club";
+
   await db.runTransaction(async (tx) => {
     const [runSnap, clubSnap, deletedUserSnap] = await Promise.all([
       tx.get(runRef),
@@ -125,19 +161,35 @@ export async function createRunHandler(
       throw new HttpsError("already-exists", "Run already exists.");
     }
     assertCanMutateRunClub(clubSnap, deletedUserSnap, hostUserId);
-
-    tx.create(runRef, {
+    const club = requireDoc<RunClubDoc>(clubSnap, "RunClubDoc");
+    clubName = club.name;
+    const run = {
       ...buildCreateRunDoc(data, deps),
       runClubId: data.runClubId,
       bookedCount: 0,
       checkedInCount: 0,
       waitlistedCount: 0,
-      signedUpUserIds: [],
-      attendedUserIds: [],
-      waitlistUserIds: [],
+      status: "active" as const,
+      cancelledAt: null,
+      cancellationReason: null,
       genderCounts: {},
-    });
+    };
+
+    tx.create(runRef, run);
+    createdRun = run;
   });
+
+  if (createdRun) {
+    await notifyClubMembersForNewRun({
+      db,
+      deps,
+      runId: runRef.id,
+      runClubId: data.runClubId,
+      hostUserId,
+      clubName,
+      run: createdRun,
+    });
+  }
 
   return {runId: runRef.id};
 }
@@ -159,6 +211,73 @@ export async function updateRunHandler(
 
   const runRef = db.collection("runs").doc(data.runId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
+  let updatedRun: RunDoc | null = null;
+  let shouldNotifyParticipants = false;
+
+  await db.runTransaction(async (tx) => {
+    const [runSnap, deletedUserSnap] = await Promise.all([
+      tx.get(runRef),
+      tx.get(deletedUserRef),
+    ]);
+
+    if (!runSnap.exists) {
+      throw new HttpsError("not-found", "Run not found.");
+    }
+
+    const run = requireDoc<RunDoc>(runSnap, "RunDoc");
+    if (run.status === "cancelled") {
+      throw new HttpsError(
+        "failed-precondition",
+        "Cancelled runs cannot be edited."
+      );
+    }
+    const clubRef = db.collection("runClubs").doc(run.runClubId);
+    const clubSnap = await tx.get(clubRef);
+    assertCanMutateRunClub(clubSnap, deletedUserSnap, hostUserId);
+    assertValidMergedRunUpdate(run, data.fields);
+
+    const patch = buildUpdateRunPatch(data.fields, deps);
+    tx.update(runRef, patch);
+    updatedRun = {...run, ...patch};
+    shouldNotifyParticipants = hasScheduleOrLocationChange(data.fields);
+  });
+
+  if (updatedRun && shouldNotifyParticipants) {
+    await notifyRunParticipants({
+      db,
+      deps,
+      runId: data.runId,
+      run: updatedRun,
+      type: "runUpdated",
+    });
+  }
+
+  return {updated: true};
+}
+
+/**
+ * Cancels a run and notifies signed-up/waitlisted participants.
+ *
+ * This callable intentionally does not implement refund policy or expose a
+ * host UI contract yet. It creates the backend state and notification path so
+ * the product policy can be backfilled without client-owned multi-doc writes.
+ * @param {CallableRequest<unknown>} request Callable request.
+ * @param {RunMutationDeps} deps Injectable dependencies for tests.
+ * @return {Promise<{cancelled: boolean}>} Whether the run is cancelled.
+ */
+export async function cancelRunHandler(
+  request: CallableRequest<unknown>,
+  deps: RunMutationDeps = defaultDeps
+): Promise<{cancelled: boolean}> {
+  const hostUserId = requireAuth(request);
+  const data = validateCallable(request, CancelRunSchema);
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, hostUserId, "cancelRun");
+
+  const runRef = db.collection("runs").doc(data.runId);
+  const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
+  let cancelledRun: RunDoc | null = null;
+  let shouldNotifyParticipants = false;
 
   await db.runTransaction(async (tx) => {
     const [runSnap, deletedUserSnap] = await Promise.all([
@@ -174,25 +293,119 @@ export async function updateRunHandler(
     const clubRef = db.collection("runClubs").doc(run.runClubId);
     const clubSnap = await tx.get(clubRef);
     assertCanMutateRunClub(clubSnap, deletedUserSnap, hostUserId);
-    assertValidMergedRunUpdate(run, data.fields);
 
-    tx.update(runRef, buildUpdateRunPatch(data.fields, deps));
+    if (run.status === "cancelled") {
+      cancelledRun = run;
+      return;
+    }
+
+    const cancelledAt = deps.serverTimestamp?.() ??
+      admin.firestore.FieldValue.serverTimestamp();
+    tx.update(runRef, {
+      status: "cancelled",
+      cancelledAt,
+      cancellationReason: data.reason ?? null,
+    });
+    cancelledRun = {
+      ...run,
+      status: "cancelled",
+      cancelledAt: run.cancelledAt,
+      cancellationReason: data.reason ?? null,
+    };
+    shouldNotifyParticipants = true;
   });
 
-  return {updated: true};
+  if (cancelledRun && shouldNotifyParticipants) {
+    await notifyRunParticipants({
+      db,
+      deps,
+      runId: data.runId,
+      run: cancelledRun,
+      type: "runCancelled",
+    });
+  }
+
+  return {cancelled: true};
+}
+
+/**
+ * Hard-deletes an unused run.
+ *
+ * Runs with any user activity are cancelled, not deleted, so payments,
+ * notifications, reviews, and attendance history keep a stable audit trail.
+ * @param {CallableRequest<unknown>} request Callable request.
+ * @param {RunMutationDeps} deps Injectable dependencies for tests.
+ * @return {Promise<{deleted: boolean}>} Whether the run was deleted.
+ */
+export async function deleteRunHandler(
+  request: CallableRequest<unknown>,
+  deps: RunMutationDeps = defaultDeps
+): Promise<{deleted: boolean}> {
+  const hostUserId = requireAuth(request);
+  const data = validateCallable(request, DeleteRunSchema);
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(db, hostUserId, "deleteRun");
+
+  const runRef = db.collection("runs").doc(data.runId);
+  const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
+
+  await db.runTransaction(async (tx) => {
+    const runSnap = await tx.get(runRef);
+    if (!runSnap.exists) {
+      throw new HttpsError("not-found", "Run not found.");
+    }
+
+    const run = requireDoc<RunDoc>(runSnap, "RunDoc");
+    const clubRef = db.collection("runClubs").doc(run.runClubId);
+    const [
+      clubSnap,
+      deletedUserSnap,
+      participationSnap,
+      paymentSnap,
+      reviewSnap,
+    ] = await Promise.all([
+      tx.get(clubRef),
+      tx.get(deletedUserRef),
+      tx.get(db.collection("runParticipations")
+        .where("runId", "==", data.runId)
+        .limit(1)),
+      tx.get(db.collection("payments")
+        .where("runId", "==", data.runId)
+        .limit(1)),
+      tx.get(db.collection("reviews")
+        .where("runId", "==", data.runId)
+        .limit(1)),
+    ]);
+
+    assertCanMutateRunClub(clubSnap, deletedUserSnap, hostUserId);
+    if (
+      !participationSnap.empty ||
+      !paymentSnap.empty ||
+      !reviewSnap.empty
+    ) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Runs with participants, payments, or reviews must be cancelled."
+      );
+    }
+
+    tx.delete(runRef);
+  });
+
+  return {deleted: true};
 }
 
 /**
  * Builds the immutable initial run document controlled by the create callable.
  * @param {ParsedCreateRunData} data Validated callable data.
  * @param {RunMutationDeps} deps Injectable dependencies.
- * @return {object} Run fields except ownership/booking arrays.
+ * @return {object} Run fields except ownership/booking aggregates.
  */
 function buildCreateRunDoc(
   data: ParsedCreateRunData,
   deps: RunMutationDeps
-): Omit<RunDoc, "runClubId" | "signedUpUserIds" |
-  "attendedUserIds" | "waitlistUserIds" | "genderCounts"> {
+): Omit<RunDoc, "runClubId" | "genderCounts" |
+  "status" | "cancelledAt" | "cancellationReason"> {
   return {
     startTime: deps.timestampFromMillis(data.startTimeMillis),
     endTime: deps.timestampFromMillis(data.endTimeMillis),
@@ -242,6 +455,22 @@ function buildUpdateRunPatch(
   if (fields.pace !== undefined) patch.pace = fields.pace;
   if (fields.description !== undefined) patch.description = fields.description;
   return patch;
+}
+
+/**
+ * Returns true when an update changes when/where participants show up.
+ * @param {object} fields Host update fields.
+ * @return {boolean} Whether participants should be notified.
+ */
+function hasScheduleOrLocationChange(
+  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+): boolean {
+  return fields.startTimeMillis !== undefined ||
+    fields.endTimeMillis !== undefined ||
+    fields.meetingPoint !== undefined ||
+    fields.startingPointLat !== undefined ||
+    fields.startingPointLng !== undefined ||
+    fields.locationDetails !== undefined;
 }
 
 /**
@@ -349,6 +578,197 @@ function assertValidCoordinatePair(
   }
 }
 
+/**
+ * Fans out a new-run activity item to active club members.
+ *
+ * Notification delivery is intentionally best-effort: run creation should not
+ * be reported as failed after the run document has already been committed.
+ * @param {object} params Fan-out parameters.
+ * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
+ * @param {RunMutationDeps} params.deps Injectable dependencies.
+ * @param {string} params.runId Created run id.
+ * @param {string} params.runClubId Club id.
+ * @param {string} params.hostUserId Host user id to exclude.
+ * @param {string} params.clubName Club display name.
+ * @param {RunDoc} params.run Created run document.
+ */
+async function notifyClubMembersForNewRun(params: {
+  db: FirebaseFirestore.Firestore;
+  deps: RunMutationDeps;
+  runId: string;
+  runClubId: string;
+  hostUserId: string;
+  clubName: string;
+  run: RunDoc;
+}) {
+  try {
+    const members = await params.db
+      .collection("runClubMemberships")
+      .where("clubId", "==", params.runClubId)
+      .where("status", "==", "active")
+      .get();
+    const memberEntries = members.docs
+      .map((doc) => doc.data() as ClubMembershipNotificationDoc)
+      .filter((membership): membership is
+        Required<Pick<ClubMembershipNotificationDoc, "uid">> &
+        ClubMembershipNotificationDoc =>
+        typeof membership.uid === "string" &&
+        membership.uid !== params.hostUserId
+      );
+    if (memberEntries.length === 0) return;
+
+    const userSnaps = await Promise.all(
+      memberEntries.map((membership) =>
+        params.db.collection("users").doc(membership.uid).get()
+      )
+    );
+    const copy = newClubRunNotificationCopy(params.clubName, params.run);
+
+    await Promise.all(userSnaps.map(async (snap, index) => {
+      const membership = memberEntries[index];
+      const uid = membership.uid;
+      const user = snap.data() as NotificationUserDoc | undefined;
+      if (!user) return;
+      await setActivityNotification(params.db, {
+        id: activityNotificationId("clubUpdate", params.runId),
+        uid,
+        type: "clubUpdate",
+        title: copy.title,
+        body: copy.body,
+        createdAt: params.deps.serverTimestamp?.() ??
+          admin.firestore.FieldValue.serverTimestamp(),
+        runId: params.runId,
+        runClubId: params.runClubId,
+      });
+      if (
+        membership.pushNotificationsEnabled === true &&
+        user.fcmToken &&
+        allowsPushPreference(user, "clubUpdates")
+      ) {
+        await params.deps.sendNotification?.({
+          token: user.fcmToken,
+          title: copy.title,
+          body: copy.body,
+          type: "clubUpdate",
+          runId: params.runId,
+          runClubId: params.runClubId,
+        });
+      }
+    }));
+  } catch (error) {
+    logger.error("Failed to fan out new-run notifications", {
+      runId: params.runId,
+      runClubId: params.runClubId,
+      error,
+    });
+  }
+}
+
+/**
+ * Fans out run update/cancellation activity to booked and waitlisted users.
+ *
+ * Delivery is best-effort after the canonical run write commits. A notification
+ * failure should not roll back a host's already-committed schedule update or
+ * cancellation.
+ * @param {object} params Fan-out parameters.
+ * @param {FirebaseFirestore.Firestore} params.db Firestore instance.
+ * @param {RunMutationDeps} params.deps Injectable dependencies.
+ * @param {string} params.runId Run id.
+ * @param {RunDoc} params.run Run document used for copy.
+ * @param {"runUpdated"|"runCancelled"} params.type Notification type.
+ */
+async function notifyRunParticipants(params: {
+  db: FirebaseFirestore.Firestore;
+  deps: RunMutationDeps;
+  runId: string;
+  run: RunDoc;
+  type: "runUpdated" | "runCancelled";
+}) {
+  try {
+    const [signedUp, waitlisted] = await Promise.all([
+      params.db
+        .collection("runParticipations")
+        .where("runId", "==", params.runId)
+        .where("status", "==", "signedUp")
+        .get(),
+      params.db
+        .collection("runParticipations")
+        .where("runId", "==", params.runId)
+        .where("status", "==", "waitlisted")
+        .get(),
+    ]);
+    const uids = Array.from(new Set([...signedUp.docs, ...waitlisted.docs]
+      .map((doc) => doc.data().uid)
+      .filter((uid): uid is string => typeof uid === "string")));
+    if (uids.length === 0) return;
+
+    const copy = runActivityNotificationCopy(params.type, params.run);
+    const userSnaps = await Promise.all(
+      uids.map((uid) => params.db.collection("users").doc(uid).get())
+    );
+
+    await Promise.all(userSnaps.map(async (snap, index) => {
+      const uid = uids[index];
+      const user = snap.data() as NotificationUserDoc | undefined;
+      if (!user) return;
+      await setActivityNotification(params.db, {
+        id: activityNotificationId(params.type, params.runId),
+        uid,
+        type: params.type,
+        title: copy.title,
+        body: copy.body,
+        createdAt: params.deps.serverTimestamp?.() ??
+          admin.firestore.FieldValue.serverTimestamp(),
+        runId: params.runId,
+        runClubId: params.run.runClubId,
+      });
+      if (user.fcmToken && allowsPushPreference(user, "runStatusUpdates")) {
+        await params.deps.sendNotification?.({
+          token: user.fcmToken,
+          title: copy.title,
+          body: copy.body,
+          type: params.type,
+          runId: params.runId,
+          runClubId: params.run.runClubId,
+        });
+      }
+    }));
+  } catch (error) {
+    logger.error("Failed to fan out run participant notifications", {
+      runId: params.runId,
+      type: params.type,
+      error,
+    });
+  }
+}
+
+/**
+ * Builds user-facing copy for a newly hosted club run.
+ * @param {string} clubName Club display name.
+ * @param {RunDoc} run Created run.
+ * @return {{title: string, body: string}} Notification copy.
+ */
+function newClubRunNotificationCopy(
+  clubName: string,
+  run: RunDoc
+): {title: string; body: string} {
+  return {
+    title: `${clubName} posted a run`,
+    body: `${formatDistance(run.distanceKm)} from ${run.meetingPoint}.`,
+  };
+}
+
+/**
+ * Formats a distance without noisy trailing decimals.
+ * @param {number} distanceKm Distance in kilometres.
+ * @return {string} Human-readable distance.
+ */
+function formatDistance(distanceKm: number): string {
+  return Number.isInteger(distanceKm) ?
+    `${distanceKm} km` :
+    `${distanceKm.toFixed(1)} km`;
+}
+
 export const createRun = onCall(
   appCheckCallableOptions,
   (request) => createRunHandler(request)
@@ -356,4 +776,12 @@ export const createRun = onCall(
 export const updateRun = onCall(
   appCheckCallableOptions,
   (request) => updateRunHandler(request)
+);
+export const cancelRun = onCall(
+  appCheckCallableOptions,
+  (request) => cancelRunHandler(request)
+);
+export const deleteRun = onCall(
+  appCheckCallableOptions,
+  (request) => deleteRunHandler(request)
 );

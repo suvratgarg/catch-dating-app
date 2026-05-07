@@ -15,19 +15,37 @@ import {
   razorpayKeySecret,
 } from "../payments/razorpay";
 import {
+  participantUids,
   runParticipationId,
   runParticipationPatch,
+  runParticipationsByStatusInTransaction,
+  waitlistedRunParticipationsInTransaction,
 } from "../shared/relationshipDocuments";
 import {checkRateLimit} from "../shared/rateLimit";
+import {
+  allowsPushPreference,
+  activityNotificationId,
+  runActivityNotificationCopy,
+  sendFcmNotification,
+  setActivityNotificationInTransaction,
+} from "../shared/notifications";
 
 const CancelSchema = z.object({
   runId: z.string(),
 });
 
+interface PromotionPush {
+  token: string;
+  title: string;
+  body: string;
+  runId: string;
+  runClubId: string;
+}
+
 /**
  * Atomically cancels a user's sign-up for a run.
  *
- * - Removes the user from signedUpUserIds and updates count projections.
+ * - Marks the user's runParticipation edge cancelled.
  * - Promotes the first eligible waitlist user into the freed spot.
  * - Issues a full Razorpay refund if the booking was paid.
  * - Idempotent — calling it when the user is already not signed up is a no-op.
@@ -57,12 +75,24 @@ export const cancelRunSignUp = onCall(
       .limit(1)
       .get();
     const paymentDoc = paymentQuery.empty ? null : paymentQuery.docs[0];
+    const promotionPushes: PromotionPush[] = [];
 
     await db.runTransaction(async (tx) => {
-      const [runSnap, userSnap, participationSnap] = await Promise.all([
+      const [
+        runSnap,
+        userSnap,
+        participationSnap,
+        activeParticipations,
+        waitlistedParticipations,
+      ] = await Promise.all([
         tx.get(runRef),
         tx.get(userRef),
         tx.get(participationRef),
+        runParticipationsByStatusInTransaction(tx, db, runId, [
+          "signedUp",
+          "attended",
+        ]),
+        waitlistedRunParticipationsInTransaction(tx, db, runId),
       ]);
 
       if (!runSnap.exists) {
@@ -74,45 +104,47 @@ export const cancelRunSignUp = onCall(
 
       const run = requireDoc<RunDoc>(runSnap, "RunDoc");
       const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
+      const participation = participationSnap.exists ?
+        participationSnap.data() as {status?: string} :
+        null;
 
       // Idempotent — already not signed up.
-      if (!run.signedUpUserIds.includes(userId)) {
+      if (participation?.status !== "signedUp") {
         return;
       }
 
       const cancellerGender = user.gender;
 
-      // Compute the new signedUpUserIds array in-memory so we can atomically
-      // remove the canceller and optionally add a promoted waitlist user in a
-      // single tx.update call (Firestore doesn't allow arrayRemove + arrayUnion
-      // on the same field path in one update).
-      let newSignedUpIds = run.signedUpUserIds.filter((id) => id !== userId);
-      let newWaitlistIds = [...(run.waitlistUserIds ?? [])];
+      const currentSignedUpCount = run.bookedCount ??
+        activeParticipations.filter((edge) =>
+          edge.data.status === "signedUp").length;
+      const currentWaitlistedCount = run.waitlistedCount ??
+        waitlistedParticipations.length;
+      let nextBookedCount = Math.max(0, currentSignedUpCount - 1);
+      let nextWaitlistedCount = currentWaitlistedCount;
       const newGenderCounts = {...run.genderCounts};
       newGenderCounts[cancellerGender] =
-        (newGenderCounts[cancellerGender] ?? 1) - 1;
+        Math.max(0, (newGenderCounts[cancellerGender] ?? 1) - 1);
       let promotedParticipationRef:
         FirebaseFirestore.DocumentReference | null = null;
       let promotedParticipationPatch: Record<string, unknown> | null = null;
+      let promotedNotification:
+        {uid: string; token?: string; title: string; body: string} | null =
+        null;
 
       // Promote the first waitlist user who passes gender-cap and block checks.
-      for (let i = 0; i < newWaitlistIds.length; i++) {
-        const waitlistUserId = newWaitlistIds[i];
-        const waitlistParticipationRef = db
-          .collection("runParticipations")
-          .doc(runParticipationId(runId, waitlistUserId));
-        const [waitlistUserSnap, waitlistParticipationSnap] =
-          await Promise.all([
-            tx.get(db.collection("users").doc(waitlistUserId)),
-            tx.get(waitlistParticipationRef),
-          ]);
+      const activePeerIds = participantUids(activeParticipations, userId);
+      for (const waitlistedParticipation of waitlistedParticipations) {
+        const waitlistUserId = waitlistedParticipation.data.uid;
+        const waitlistUserSnap =
+          await tx.get(db.collection("users").doc(waitlistUserId));
         if (!waitlistUserSnap.exists) continue;
 
         if (await hasBlockingRelationshipInTransaction(
           tx,
           db,
           waitlistUserId,
-          [...newSignedUpIds, ...(run.attendedUserIds ?? [])]
+          activePeerIds
         )) {
           continue;
         }
@@ -121,7 +153,7 @@ export const cancelRunSignUp = onCall(
           waitlistUserSnap, "UserProfileDoc (waitlist)"
         );
         const wGender = waitlistUser.gender;
-        const currentCount = run.genderCounts[wGender] ?? 0;
+        const currentCount = newGenderCounts[wGender] ?? 0;
 
         if (wGender === "man" && run.constraints.maxMen != null &&
             currentCount >= run.constraints.maxMen) continue;
@@ -129,26 +161,36 @@ export const cancelRunSignUp = onCall(
             currentCount >= run.constraints.maxWomen) continue;
 
         // Promote this user.
-        newSignedUpIds = [...newSignedUpIds, waitlistUserId];
-        newWaitlistIds = newWaitlistIds.filter((_, idx) => idx !== i);
+        nextBookedCount += 1;
+        nextWaitlistedCount = Math.max(0, nextWaitlistedCount - 1);
         newGenderCounts[wGender] = (newGenderCounts[wGender] ?? 0) + 1;
-        promotedParticipationRef = waitlistParticipationRef;
+        promotedParticipationRef = waitlistedParticipation.ref;
         promotedParticipationPatch = runParticipationPatch({
-          exists: waitlistParticipationSnap.exists,
+          exists: true,
           runId,
           runClubId: run.runClubId,
           uid: waitlistUserId,
           status: "signedUp",
           genderAtSignup: wGender,
         });
+        const notificationCopy = runActivityNotificationCopy(
+          "waitlistPromotion",
+          run
+        );
+        promotedNotification = {
+          uid: waitlistUserId,
+          token: allowsPushPreference(waitlistUser, "runStatusUpdates") ?
+            waitlistUser.fcmToken :
+            undefined,
+          title: notificationCopy.title,
+          body: notificationCopy.body,
+        };
         break;
       }
 
       tx.update(runRef, {
-        signedUpUserIds: newSignedUpIds,
-        waitlistUserIds: newWaitlistIds,
-        bookedCount: newSignedUpIds.length,
-        waitlistedCount: newWaitlistIds.length,
+        bookedCount: nextBookedCount,
+        waitlistedCount: nextWaitlistedCount,
         genderCounts: newGenderCounts,
       });
       tx.set(participationRef, runParticipationPatch({
@@ -164,7 +206,39 @@ export const cancelRunSignUp = onCall(
           merge: true,
         });
       }
+      if (promotedNotification) {
+        setActivityNotificationInTransaction(tx, db, {
+          id: activityNotificationId("waitlistPromotion", runId),
+          uid: promotedNotification.uid,
+          type: "waitlistPromotion",
+          title: promotedNotification.title,
+          body: promotedNotification.body,
+          createdAt: admin.firestore.FieldValue.serverTimestamp(),
+          runId,
+          runClubId: run.runClubId,
+        });
+        if (promotedNotification.token) {
+          promotionPushes.push({
+            token: promotedNotification.token,
+            title: promotedNotification.title,
+            body: promotedNotification.body,
+            runId,
+            runClubId: run.runClubId,
+          });
+        }
+      }
     });
+
+    for (const promotionPush of promotionPushes) {
+      await sendFcmNotification({
+        token: promotionPush.token,
+        title: promotionPush.title,
+        body: promotionPush.body,
+        type: "waitlistPromotion",
+        runId: promotionPush.runId,
+        runClubId: promotionPush.runClubId,
+      });
+    }
 
     // Issue a refund outside the transaction if the run was paid.
     if (paymentDoc) {

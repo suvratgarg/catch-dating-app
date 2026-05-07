@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -48,13 +49,13 @@ void main() {
       final now = DateTime(2026, 4, 23, 20);
       final older = buildRun(
         id: 'older',
-        attendedUserIds: const ['runner-1'],
+        checkedInCount: 1,
         startTime: now.subtract(const Duration(hours: 8)),
         endTime: now.subtract(const Duration(hours: 6)),
       );
       final latest = buildRun(
         id: 'latest',
-        attendedUserIds: const ['runner-1'],
+        checkedInCount: 1,
         startTime: now.subtract(const Duration(hours: 4)),
         endTime: now.subtract(const Duration(hours: 2)),
       );
@@ -67,6 +68,32 @@ void main() {
       );
 
       expect(viewModel.activeSwipeRun?.id, latest.id);
+    });
+
+    test('selects the latest attended run that has not been reviewed', () {
+      final now = DateTime(2026, 4, 23, 20);
+      final reviewedRun = buildRun(
+        id: 'reviewed-run',
+        startTime: now.subtract(const Duration(hours: 8)),
+        endTime: now.subtract(const Duration(hours: 7)),
+      );
+      final pendingRun = buildRun(
+        id: 'pending-run',
+        startTime: now.subtract(const Duration(hours: 4)),
+        endTime: now.subtract(const Duration(hours: 3)),
+      );
+
+      final viewModel = buildDashboardFullViewModel(
+        signedUpRuns: const [],
+        attendedRunsAsync: AsyncData<List<Run>>([reviewedRun, pendingRun]),
+        reviewsByUserAsync: AsyncData<List<Review>>([
+          buildReview(id: 'reviewed-run~runner-1', runId: reviewedRun.id),
+        ]),
+        recommendedRunsAsync: const AsyncData<List<Run>>([]),
+        now: now,
+      );
+
+      expect(viewModel.pendingReviewRun?.id, 'pending-run');
     });
 
     test('surfaces recommendation loading state', () {
@@ -87,7 +114,7 @@ void main() {
       final now = DateTime(2026, 4, 23, 8, 55);
       final run = buildRun(
         id: 'check-in-run',
-        signedUpUserIds: const [],
+        bookedCount: 1,
         startTime: DateTime(2026, 4, 23, 9),
       );
 

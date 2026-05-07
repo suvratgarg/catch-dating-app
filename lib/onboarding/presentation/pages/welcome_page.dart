@@ -58,11 +58,9 @@ class WelcomePage extends ConsumerWidget {
                     CatchButton(
                       label: 'Continue with phone',
                       onPressed: () => context.go('/auth'),
+                      variant: CatchButtonVariant.light,
                       size: CatchButtonSize.lg,
                       fullWidth: true,
-                      backgroundColor: Colors.white,
-                      foregroundColor: t.primary,
-                      borderColor: Colors.transparent,
                     ),
                   ],
                 ),

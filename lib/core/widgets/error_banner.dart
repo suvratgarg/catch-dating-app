@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:flutter/material.dart';
 
 /// A styled inline error banner for displaying mutation or async errors.
@@ -31,9 +32,7 @@ class ErrorBanner extends StatelessWidget {
         decoration: BoxDecoration(
           color: colorScheme.errorContainer.withAlpha(120),
           borderRadius: BorderRadius.circular(CatchRadius.md),
-          border: Border.all(
-            color: colorScheme.error.withAlpha(60),
-          ),
+          border: Border.all(color: colorScheme.error.withAlpha(60)),
         ),
         child: Row(
           children: [
@@ -51,15 +50,12 @@ class ErrorBanner extends StatelessWidget {
             ),
             if (onRetry != null) ...[
               const SizedBox(width: 8),
-              TextButton(
+              CatchTextButton(
+                label: 'Try again',
                 onPressed: onRetry,
-                child: Text(
-                  'Try again',
-                  style: CatchTextStyles.bodyS(
-                    context,
-                    color: colorScheme.error,
-                  ).copyWith(fontWeight: FontWeight.w600),
-                ),
+                foregroundColor: colorScheme.error,
+                minimumSize: const Size(0, 32),
+                padding: EdgeInsets.zero,
               ),
             ],
           ],

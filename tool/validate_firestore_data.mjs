@@ -16,13 +16,7 @@ const WARN_DOC_BYTES = 768 * 1024;
 const ERROR_DOC_BYTES = 950 * 1024;
 
 const ARRAY_LIMITS = {
-  "users.joinedRunClubIds": 1000,
-  "users.savedRunIds": 1000,
   "users.photoUrls": 12,
-  "runClubs.memberUserIds": 5000,
-  "runs.signedUpUserIds": 2000,
-  "runs.attendedUserIds": 2000,
-  "runs.waitlistUserIds": 2000,
   "matches.participantIds": 20,
 };
 
@@ -194,13 +188,14 @@ function validateAll(collections, currentReport) {
   const publicProfiles = byId(collections.publicProfiles);
   const clubs = byId(collections.runClubs);
   const runs = byId(collections.runs);
+  const runParticipations = byId(collections.runParticipations);
   const matches = byId(collections.matches);
 
   for (const docs of Object.values(collections)) {
     for (const doc of docs) validateDocumentSize(doc, currentReport);
   }
 
-  for (const doc of collections.users) validateUser(doc, clubs, currentReport);
+  for (const doc of collections.users) validateUser(doc, currentReport);
   for (const doc of collections.runClubs) {
     validateRunClub(doc, users, currentReport);
   }
@@ -218,7 +213,8 @@ function validateAll(collections, currentReport) {
     validateReview(doc, users, clubs, runs, currentReport);
   }
   for (const doc of collections.swipes) {
-    validateSwipe(doc, users, publicProfiles, runs, currentReport);
+    validateSwipe(doc, users, publicProfiles, runs, runParticipations,
+      currentReport);
   }
   for (const doc of collections.matches) validateMatch(doc, users, currentReport);
   for (const doc of collections.messages) {
@@ -248,7 +244,7 @@ function validateDocumentSize(doc, currentReport) {
   }
 }
 
-function validateUser(doc, clubs, currentReport) {
+function validateUser(doc, currentReport) {
   const data = doc.data;
   requireString(data, "name", doc, currentReport);
   requireTimestamp(data, "dateOfBirth", doc, currentReport);
@@ -256,19 +252,8 @@ function validateUser(doc, clubs, currentReport) {
   requireString(data, "phoneNumber", doc, currentReport);
   requireBool(data, "profileComplete", doc, currentReport);
   requireStringArray(data, "photoUrls", doc, currentReport);
-  requireStringArray(data, "joinedRunClubIds", doc, currentReport);
-  requireStringArray(data, "savedRunIds", doc, currentReport);
   requireStringArray(data, "interestedInGenders", doc, currentReport);
-  checkArrayLimit("users.joinedRunClubIds", data.joinedRunClubIds, doc, currentReport);
-  checkArrayLimit("users.savedRunIds", data.savedRunIds, doc, currentReport);
   checkArrayLimit("users.photoUrls", data.photoUrls, doc, currentReport);
-
-  for (const clubId of data.joinedRunClubIds ?? []) {
-    if (!clubs.has(clubId)) {
-      issue(currentReport, "error", doc.path, "missing-joined-club",
-        `joinedRunClubIds references missing runClubs/${clubId}.`);
-    }
-  }
 }
 
 function validateRunClub(doc, users, currentReport) {
@@ -281,25 +266,17 @@ function validateRunClub(doc, users, currentReport) {
   requireString(data, "hostName", doc, currentReport);
   requireTimestamp(data, "createdAt", doc, currentReport);
   requireStringArray(data, "tags", doc, currentReport);
-  requireStringArray(data, "memberUserIds", doc, currentReport);
   requireInteger(data, "memberCount", doc, currentReport);
   requireNumber(data, "rating", doc, currentReport);
   requireInteger(data, "reviewCount", doc, currentReport);
-  checkArrayLimit("runClubs.memberUserIds", data.memberUserIds, doc, currentReport);
 
-  if (Array.isArray(data.memberUserIds) &&
-      data.memberCount !== data.memberUserIds.length) {
-    issue(currentReport, "error", doc.path, "member-count-mismatch",
-      "memberCount does not match memberUserIds.length.");
+  if (Number.isInteger(data.memberCount) && data.memberCount < 0) {
+    issue(currentReport, "error", doc.path, "negative-member-count",
+      "memberCount cannot be negative.");
   }
   if (data.hostUserId && !users.has(data.hostUserId)) {
     issue(currentReport, "warning", doc.path, "missing-host-user",
       `hostUserId references missing users/${data.hostUserId}.`);
-  }
-  if (Array.isArray(data.memberUserIds) &&
-      !data.memberUserIds.includes(data.hostUserId)) {
-    issue(currentReport, "error", doc.path, "host-not-member",
-      "hostUserId is not present in memberUserIds.");
   }
 }
 
@@ -344,14 +321,11 @@ function validateRun(doc, clubs, currentReport) {
   requireInteger(data, "capacityLimit", doc, currentReport);
   requireString(data, "description", doc, currentReport);
   requireInteger(data, "priceInPaise", doc, currentReport);
-  requireStringArray(data, "signedUpUserIds", doc, currentReport);
-  requireStringArray(data, "attendedUserIds", doc, currentReport);
-  requireStringArray(data, "waitlistUserIds", doc, currentReport);
+  requireInteger(data, "bookedCount", doc, currentReport);
+  requireInteger(data, "checkedInCount", doc, currentReport);
+  requireInteger(data, "waitlistedCount", doc, currentReport);
   requireObject(data, "constraints", doc, currentReport);
   requireObject(data, "genderCounts", doc, currentReport);
-  checkArrayLimit("runs.signedUpUserIds", data.signedUpUserIds, doc, currentReport);
-  checkArrayLimit("runs.attendedUserIds", data.attendedUserIds, doc, currentReport);
-  checkArrayLimit("runs.waitlistUserIds", data.waitlistUserIds, doc, currentReport);
 
   if (data.runClubId && !clubs.has(data.runClubId)) {
     issue(currentReport, "error", doc.path, "missing-run-club",
@@ -362,10 +336,16 @@ function validateRun(doc, clubs, currentReport) {
     issue(currentReport, "error", doc.path, "invalid-run-time",
       "endTime must be after startTime.");
   }
-  if (Array.isArray(data.signedUpUserIds) &&
-      data.signedUpUserIds.length > data.capacityLimit) {
+  if (Number.isInteger(data.bookedCount) &&
+      data.bookedCount > data.capacityLimit) {
     issue(currentReport, "error", doc.path, "over-capacity",
-      "signedUpUserIds.length exceeds capacityLimit.");
+      "bookedCount exceeds capacityLimit.");
+  }
+  for (const field of ["bookedCount", "checkedInCount", "waitlistedCount"]) {
+    if (Number.isInteger(data[field]) && data[field] < 0) {
+      issue(currentReport, "error", doc.path, "negative-run-count",
+        `${field} cannot be negative.`);
+    }
   }
   if ((data.startingPointLat == null) !== (data.startingPointLng == null)) {
     issue(currentReport, "error", doc.path, "partial-coordinates",
@@ -467,7 +447,8 @@ function validateReview(doc, users, clubs, runs, currentReport) {
   }
 }
 
-function validateSwipe(doc, users, publicProfiles, runs, currentReport) {
+function validateSwipe(doc, users, publicProfiles, runs, runParticipations,
+  currentReport) {
   const data = doc.data;
   const pathMatch = /^swipes\/([^/]+)\/outgoing\/([^/]+)$/.exec(doc.path);
   requireString(data, "swiperId", doc, currentReport);
@@ -497,12 +478,17 @@ function validateSwipe(doc, users, publicProfiles, runs, currentReport) {
   if (!run) {
     issue(currentReport, "error", doc.path, "missing-swipe-run",
       `runId references missing runs/${data.runId}.`);
-  } else if (Array.isArray(run.data.attendedUserIds) &&
-      (!run.data.attendedUserIds.includes(data.swiperId) ||
-       !run.data.attendedUserIds.includes(data.targetId))) {
+  } else if (!hasAttendedRun(runParticipations, data.runId, data.swiperId) ||
+      !hasAttendedRun(runParticipations, data.runId, data.targetId)) {
     issue(currentReport, "error", doc.path, "swipe-run-attendance-mismatch",
-      "swiperId and targetId must both be in run.attendedUserIds.");
+      "swiperId and targetId must both have attended runParticipations for the swipe run.");
   }
+}
+
+function hasAttendedRun(runParticipations, runId, uid) {
+  if (!runId || !uid) return false;
+  const participation = runParticipations.get(`${runId}_${uid}`);
+  return participation?.data?.status === "attended";
 }
 
 function validateMatch(doc, users, currentReport) {

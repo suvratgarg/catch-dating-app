@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/step_progress_bar.dart';
 import 'package:flutter/material.dart';
 
 class CreateRunStepHeader extends StatelessWidget {
@@ -59,14 +59,10 @@ class CreateRunStepHeader extends StatelessWidget {
                   ],
                 ),
               ),
-              Text(
-                '${currentStep + 1}/$totalSteps',
-                style: CatchTextStyles.labelL(context, color: t.ink2),
-              ),
             ],
           ),
           const SizedBox(height: 12),
-          StepProgressBar(currentStep: currentStep, totalSteps: totalSteps),
+          CatchStepProgress(currentStep: currentStep, totalSteps: totalSteps),
         ],
       ),
     );

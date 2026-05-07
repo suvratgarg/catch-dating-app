@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/duration_stepper.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/picker_tile.dart';
 import 'package:flutter/material.dart';
@@ -102,11 +102,13 @@ class WhenStep extends StatelessWidget {
           const SizedBox(height: 20),
           const FieldLabel('Duration'),
           const SizedBox(height: 8),
-          DurationStepper(
-            minutes: durationMinutes,
+          CatchNumberStepper(
+            value: durationMinutes,
             onDecrease: onDecreaseDuration,
             onIncrease: onIncreaseDuration,
-            formatDuration: formatDuration,
+            decreaseTooltip: 'Decrease duration',
+            increaseTooltip: 'Increase duration',
+            formatValue: (value) => formatDuration(value.round()),
           ),
         ],
       ),

@@ -13,9 +13,7 @@ void main() {
     int? bookedCount,
     int? checkedInCount,
     int? waitlistedCount,
-    List<String> signedUpUserIds = const [],
-    List<String> attendedUserIds = const [],
-    List<String> waitlistUserIds = const [],
+    RunLifecycleStatus status = RunLifecycleStatus.active,
   }) {
     final start = startTime ?? DateTime.now().add(const Duration(hours: 1));
     return Run(
@@ -32,9 +30,7 @@ void main() {
       bookedCount: bookedCount,
       checkedInCount: checkedInCount,
       waitlistedCount: waitlistedCount,
-      signedUpUserIds: signedUpUserIds,
-      attendedUserIds: attendedUserIds,
-      waitlistUserIds: waitlistUserIds,
+      status: status,
     );
   }
 
@@ -86,31 +82,40 @@ void main() {
       );
       expect(run.isUpcoming, isFalse);
     });
+
+    test('false when the run has been cancelled', () {
+      final run = buildRun(
+        status: RunLifecycleStatus.cancelled,
+        startTime: DateTime.now().add(const Duration(hours: 1)),
+      );
+
+      expect(run.isCancelled, isTrue);
+      expect(run.isUpcoming, isFalse);
+    });
   });
 
   // ── #5-6: isFull ──────────────────────────────────────────────────────────
 
   group('Run.isFull', () {
     test('#5 false when signedUpCount < capacityLimit', () {
-      final run = buildRun(capacityLimit: 5, signedUpUserIds: ['a', 'b']);
+      final run = buildRun(capacityLimit: 5, bookedCount: 2);
       expect(run.isFull, isFalse);
     });
 
     test('#6 true when signedUpCount == capacityLimit', () {
-      final run = buildRun(capacityLimit: 2, signedUpUserIds: ['a', 'b']);
+      final run = buildRun(capacityLimit: 2, bookedCount: 2);
       expect(run.isFull, isTrue);
     });
 
     test('true when signedUpCount exceeds capacityLimit', () {
-      final run = buildRun(capacityLimit: 2, signedUpUserIds: ['a', 'b', 'c']);
+      final run = buildRun(capacityLimit: 2, bookedCount: 3);
       expect(run.isFull, isTrue);
     });
 
-    test('uses projected bookedCount before legacy arrays', () {
+    test('uses projected bookedCount for roster capacity', () {
       final run = buildRun(
         capacityLimit: 5,
         bookedCount: 4,
-        signedUpUserIds: ['stale-array-user'],
       );
 
       expect(run.signedUpCount, 4);
@@ -122,8 +127,6 @@ void main() {
       final run = buildRun(
         checkedInCount: 3,
         waitlistedCount: 2,
-        attendedUserIds: ['stale-attended'],
-        waitlistUserIds: ['stale-waitlist'],
       );
 
       expect(run.attendedCount, 3);
@@ -147,48 +150,6 @@ void main() {
     test('converts kilometres to miles', () {
       final run = buildRun();
       expect(run.distanceMiles, closeTo(3.106855, 0.000001));
-    });
-  });
-
-  // ── #8: isSignedUp ────────────────────────────────────────────────────────
-
-  group('Run.isSignedUp', () {
-    test('#8 true for uid in signedUpUserIds', () {
-      final run = buildRun(signedUpUserIds: ['user-1', 'user-2']);
-      expect(run.isSignedUp('user-1'), isTrue);
-    });
-
-    test('false for uid not in signedUpUserIds', () {
-      final run = buildRun(signedUpUserIds: ['user-2']);
-      expect(run.isSignedUp('user-1'), isFalse);
-    });
-  });
-
-  // ── #9: hasAttended ───────────────────────────────────────────────────────
-
-  group('Run.hasAttended', () {
-    test('#9 true for uid in attendedUserIds', () {
-      final run = buildRun(attendedUserIds: ['user-1']);
-      expect(run.hasAttended('user-1'), isTrue);
-    });
-
-    test('false for uid not in attendedUserIds', () {
-      final run = buildRun(attendedUserIds: ['user-2']);
-      expect(run.hasAttended('user-1'), isFalse);
-    });
-  });
-
-  // ── #10: isOnWaitlist ─────────────────────────────────────────────────────
-
-  group('Run.isOnWaitlist', () {
-    test('#10 true for uid in waitlistUserIds', () {
-      final run = buildRun(waitlistUserIds: ['user-1']);
-      expect(run.isOnWaitlist('user-1'), isTrue);
-    });
-
-    test('false for uid not in waitlistUserIds', () {
-      final run = buildRun(waitlistUserIds: ['user-2']);
-      expect(run.isOnWaitlist('user-1'), isFalse);
     });
   });
 }

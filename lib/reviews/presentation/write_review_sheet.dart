@@ -20,7 +20,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 Future<void> showWriteReviewSheet({
   required BuildContext context,
   required String runClubId,
-  String? runId,
+  required String runId,
   required UserProfile reviewer,
   Review? existingReview,
 }) {
@@ -40,13 +40,13 @@ Future<void> showWriteReviewSheet({
 class _WriteReviewSheet extends ConsumerStatefulWidget {
   const _WriteReviewSheet({
     required this.runClubId,
-    this.runId,
+    required this.runId,
     required this.reviewer,
     this.existingReview,
   });
 
   final String runClubId;
-  final String? runId;
+  final String runId;
   final UserProfile reviewer;
   final Review? existingReview;
 

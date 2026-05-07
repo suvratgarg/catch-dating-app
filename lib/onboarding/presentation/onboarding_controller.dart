@@ -297,6 +297,10 @@ class OnboardingController extends _$OnboardingController {
       );
     }
 
+    if (draft.interestedInGenders.isEmpty) {
+      throw StateError('Please choose who you want to see before continuing.');
+    }
+
     if (validateRequiredPhoneNumber(draft.phoneNumber) != null) {
       throw StateError('Please add a valid phone number before continuing.');
     }

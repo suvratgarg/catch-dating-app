@@ -107,17 +107,16 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
             const OnboardingStepHeader(title: 'What\'s your name?'),
             const SizedBox(height: 32),
             Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   child: CatchTextField(
-                    label: 'First name',
+                    label: 'First name (displayed)',
                     controller: _firstNameController,
                     autofocus: shouldAutofocus,
                     textCapitalization: TextCapitalization.words,
                     textInputAction: TextInputAction.next,
                     autofillHints: const [AutofillHints.givenName],
-                    helperText:
-                        'Starts your public display name. You can edit it later or use an initial.',
                     validator: (v) =>
                         validateRequiredProfileName(v, label: 'First name'),
                   ),
@@ -158,8 +157,9 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
               autofillHints: const [AutofillHints.telephoneNumberNational],
               prefixIcon: const Icon(Icons.phone_outlined),
               prefixText: '${data.countryCode} ',
+              suffixIcon: const Icon(Icons.verified_rounded),
               helperText: 'Verified via OTP',
-              helperTone: CatchTextFieldSupportTone.brand,
+              helperTone: CatchTextFieldSupportTone.success,
               validator: validateRequiredPhoneNumber,
             ),
             const SizedBox(height: 40),

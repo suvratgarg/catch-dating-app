@@ -64,11 +64,16 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   verifyRazorpayPayment: {maxRequests: 10, windowMs: 60 * 1000},
   createRun: {maxRequests: 10, windowMs: 60 * 1000},
   updateRun: {maxRequests: 30, windowMs: 60 * 1000},
+  cancelRun: {maxRequests: 10, windowMs: 60 * 1000},
+  deleteRun: {maxRequests: 10, windowMs: 60 * 1000},
   signUpForFreeRun: {maxRequests: 10, windowMs: 60 * 1000},
   cancelRunSignUp: {maxRequests: 10, windowMs: 60 * 1000},
   joinRunWaitlist: {maxRequests: 10, windowMs: 60 * 1000},
+  leaveRunWaitlist: {maxRequests: 10, windowMs: 60 * 1000},
   joinRunClub: {maxRequests: 30, windowMs: 60 * 1000},
   leaveRunClub: {maxRequests: 30, windowMs: 60 * 1000},
+  archiveRunClub: {maxRequests: 10, windowMs: 60 * 1000},
+  deleteRunClub: {maxRequests: 10, windowMs: 60 * 1000},
   // 30/min (host toggling attendance for a group)
   markRunAttendance: {maxRequests: 30, windowMs: 60 * 1000},
   // 5/min

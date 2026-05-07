@@ -7,6 +7,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:flutter/material.dart';
@@ -77,13 +78,14 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
         title: const Text('Delete draft?'),
         content: Text('This will permanently delete "${draft.summary}".'),
         actions: [
-          TextButton(
+          CatchTextButton(
+            label: 'Cancel',
             onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('Cancel'),
           ),
-          TextButton(
+          CatchTextButton(
+            label: 'Delete',
+            tone: CatchTextButtonTone.danger,
             onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Delete'),
           ),
         ],
       ),

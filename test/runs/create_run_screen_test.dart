@@ -128,7 +128,9 @@ void main() {
         expect(fakeRunRepository.createdRun!.constraints.maxMen, 9);
         expect(fakeRunRepository.createdRun!.constraints.maxWomen, 9);
 
-        await tester.tap(find.text('Manage run'));
+        final manageRunButton = find.text('Manage run');
+        await tester.ensureVisible(manageRunButton);
+        await tester.tap(manageRunButton);
         await _pumpTestAnimation(tester);
 
         expect(find.text('HOST MANAGE'), findsOneWidget);
@@ -262,8 +264,8 @@ void main() {
       final participationRepository = FakeRunParticipationRepository();
       final run = buildRun(
         priceInPaise: 10000,
-        signedUpUserIds: const ['stale-booking'],
-        waitlistUserIds: const ['stale-waitlist'],
+        bookedCount: 1,
+        waitlistedCount: 1,
       );
       participationRepository.runParticipations[run.id] = [
         buildRunParticipation(run: run, uid: 'runner-2'),

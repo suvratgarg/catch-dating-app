@@ -2,13 +2,15 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_error_snackbar.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -67,21 +69,23 @@ class ActivitySection extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final matchesAsync = ref.watch(watchMatchesForUserProvider(uid));
+    final notificationsAsync = ref.watch(
+      watchActivityNotificationsProvider(uid),
+    );
     final runsAsync = ref.watch(watchSignedUpRunsProvider(uid));
 
-    final isLoading = matchesAsync.isLoading || runsAsync.isLoading;
-    final error = matchesAsync.error ?? runsAsync.error;
-    final matches = matchesAsync.asData?.value ?? const <Match>[];
+    final isLoading = notificationsAsync.isLoading || runsAsync.isLoading;
+    final error = notificationsAsync.error ?? runsAsync.error;
+    final notifications =
+        notificationsAsync.asData?.value ?? const <ActivityNotification>[];
     final runs = runsAsync.asData?.value ?? const <Run>[];
     final items = _ActivityItem.fromData(
-      uid: uid,
-      matches: matches,
+      notifications: notifications,
       runs: runs,
     );
 
-    final hasUnread = matches.any(
-      (match) => (match.unreadCounts[uid] ?? 0) > 0,
+    final hasUnread = notifications.any(
+      (notification) => notification.isUnread,
     );
 
     return Column(
@@ -90,9 +94,9 @@ class ActivitySection extends ConsumerWidget {
         if (hasUnread && items.isNotEmpty) ...[
           Align(
             alignment: Alignment.centerRight,
-            child: TextButton(
-              onPressed: () => _markAllRead(ref, matches, context),
-              child: const Text('Mark all read'),
+            child: CatchTextButton(
+              label: 'Mark all read',
+              onPressed: () => _markAllRead(ref, notifications, context),
             ),
           ),
           gapH8,
@@ -121,7 +125,7 @@ class ActivitySection extends ConsumerWidget {
             message: 'Could not load activity.',
             compact: true,
             onRetry: () {
-              ref.invalidate(watchMatchesForUserProvider(uid));
+              ref.invalidate(watchActivityNotificationsProvider(uid));
               ref.invalidate(watchSignedUpRunsProvider(uid));
             },
           ),
@@ -160,19 +164,17 @@ class ActivitySection extends ConsumerWidget {
 
   Future<void> _markAllRead(
     WidgetRef ref,
-    List<Match> matches,
+    List<ActivityNotification> notifications,
     BuildContext context,
   ) async {
     try {
       await ref
           .read(activityControllerProvider.notifier)
-          .markAllRead(matches: matches, uid: uid);
+          .markAllRead(notifications: notifications, uid: uid);
     } catch (error, stack) {
       debugPrint('[ERROR] ActivitySection markAllRead: $error\n$stack');
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to mark messages as read.')),
-        );
+        showCatchErrorSnackBar(context, error);
       }
     }
   }
@@ -337,36 +339,33 @@ class _ActivityItem {
   final bool isPrimary;
 
   static List<_ActivityItem> fromData({
-    required String uid,
-    required List<Match> matches,
+    required List<ActivityNotification> notifications,
     required List<Run> runs,
   }) {
     final now = DateTime.now();
     final items = <_ActivityItem>[];
 
-    for (final match in matches) {
-      final unread = match.unreadCounts[uid] ?? 0;
-      final activityAt = match.lastMessageAt ?? match.createdAt;
-      items.add(
-        _ActivityItem(
-          title: unread > 0
-              ? '$unread unread ${unread == 1 ? 'message' : 'messages'}'
-              : "It's a catch",
-          subtitle: match.lastMessagePreview?.isNotEmpty == true
-              ? match.lastMessagePreview!
-              : 'You matched after a shared run.',
-          createdAt: activityAt,
-          icon: unread > 0
-              ? Icons.chat_bubble_outline_rounded
-              : Icons.favorite_rounded,
-          route: Routes.chatScreen.path.replaceFirst(':matchId', match.id),
-          timeLabel: _relativeTime(activityAt, now),
-          isPrimary: unread > 0,
-        ),
-      );
+    for (final notification in notifications) {
+      items.add(_ActivityItem.fromNotification(notification, now));
     }
 
-    for (final run in runs.where((run) => run.startTime.isAfter(now)).take(3)) {
+    final durableReminderRunIds = notifications
+        .where(
+          (notification) =>
+              notification.type == ActivityNotificationType.runReminder,
+        )
+        .map((notification) => notification.runId)
+        .whereType<String>()
+        .toSet();
+
+    for (final run
+        in runs
+            .where(
+              (run) =>
+                  run.startTime.isAfter(now) &&
+                  !durableReminderRunIds.contains(run.id),
+            )
+            .take(3)) {
       final reminderAt = run.startTime.subtract(const Duration(minutes: 15));
       items.add(
         _ActivityItem(
@@ -385,6 +384,53 @@ class _ActivityItem {
 
     items.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return items;
+  }
+
+  factory _ActivityItem.fromNotification(
+    ActivityNotification notification,
+    DateTime now,
+  ) {
+    return _ActivityItem(
+      title: notification.title,
+      subtitle: notification.body,
+      createdAt: notification.createdAt,
+      icon: _notificationIcon(notification.type),
+      route: _notificationRoute(notification),
+      timeLabel: _relativeTime(notification.createdAt, now),
+      isPrimary: notification.isUnread,
+    );
+  }
+
+  static IconData _notificationIcon(ActivityNotificationType type) {
+    return switch (type) {
+      ActivityNotificationType.message => Icons.chat_bubble_outline_rounded,
+      ActivityNotificationType.match => Icons.favorite_rounded,
+      ActivityNotificationType.runReminder ||
+      ActivityNotificationType.runSignup ||
+      ActivityNotificationType.waitlistPromotion ||
+      ActivityNotificationType.runCancelled ||
+      ActivityNotificationType.runUpdated => Icons.directions_run_rounded,
+      ActivityNotificationType.clubUpdate => Icons.groups_rounded,
+    };
+  }
+
+  static String? _notificationRoute(ActivityNotification notification) {
+    if (notification.matchId case final matchId?) {
+      return Routes.chatScreen.path.replaceFirst(':matchId', matchId);
+    }
+    if (notification.runId case final runId?
+        when notification.runClubId != null) {
+      return Routes.runDetailScreen.path
+          .replaceFirst(':runClubId', notification.runClubId!)
+          .replaceFirst(':runId', runId);
+    }
+    if (notification.runClubId case final runClubId?) {
+      return Routes.runClubDetailScreen.path.replaceFirst(
+        ':runClubId',
+        runClubId,
+      );
+    }
+    return null;
   }
 
   static String _runReminderTitle(DateTime startTime, DateTime now) {

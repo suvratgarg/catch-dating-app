@@ -36,9 +36,6 @@ Run buildRun({
   int? bookedCount,
   int? checkedInCount,
   int? waitlistedCount,
-  List<String> signedUpUserIds = const [],
-  List<String> attendedUserIds = const [],
-  List<String> waitlistUserIds = const [],
   RunConstraints constraints = const RunConstraints(),
   Map<String, int> genderCounts = const {},
 }) {
@@ -60,9 +57,6 @@ Run buildRun({
     bookedCount: bookedCount,
     checkedInCount: checkedInCount,
     waitlistedCount: waitlistedCount,
-    signedUpUserIds: signedUpUserIds,
-    attendedUserIds: attendedUserIds,
-    waitlistUserIds: waitlistUserIds,
     constraints: constraints,
     genderCounts: genderCounts,
   );
@@ -107,8 +101,6 @@ UserProfile buildUser({
   Gender gender = Gender.man,
   DateTime? dateOfBirth,
   String phoneNumber = '+910000000000',
-  List<String> joinedRunClubIds = const [],
-  List<String> savedRunIds = const [],
   List<String> photoUrls = const [],
 }) {
   final nameParts = name.trim().split(RegExp(r'\s+'));
@@ -125,8 +117,6 @@ UserProfile buildUser({
     gender: gender,
     phoneNumber: phoneNumber,
     profileComplete: true,
-    joinedRunClubIds: joinedRunClubIds,
-    savedRunIds: savedRunIds,
     interestedInGenders: const [Gender.woman],
     photoUrls: photoUrls,
   );
@@ -173,7 +163,6 @@ RunClub buildRunClub({
     hostUserId: hostUserId,
     hostName: hostName,
     createdAt: createdAt ?? DateTime(2025, 1, 1),
-    memberUserIds: const ['host-1'],
     memberCount: 1,
   );
 }

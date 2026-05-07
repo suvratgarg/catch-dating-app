@@ -45,32 +45,18 @@ class SavedRunRepository {
 
   Future<void> saveRun({required String uid, required String runId}) =>
       withFirestoreErrorContext(
-        () {
-          final batch = _db.batch();
-          batch.set(_rawSavedRunRef(uid: uid, runId: runId), {
-            'uid': uid,
-            'runId': runId,
-            'savedAt': FieldValue.serverTimestamp(),
-          });
-          batch.update(_db.collection('users').doc(uid), {
-            'savedRunIds': FieldValue.arrayUnion([runId]),
-          });
-          return batch.commit();
-        },
+        () => _rawSavedRunRef(uid: uid, runId: runId).set({
+          'uid': uid,
+          'runId': runId,
+          'savedAt': FieldValue.serverTimestamp(),
+        }),
         collection: _collectionPath,
         action: 'save run',
       );
 
   Future<void> unsaveRun({required String uid, required String runId}) =>
       withFirestoreErrorContext(
-        () {
-          final batch = _db.batch();
-          batch.delete(_rawSavedRunRef(uid: uid, runId: runId));
-          batch.update(_db.collection('users').doc(uid), {
-            'savedRunIds': FieldValue.arrayRemove([runId]),
-          });
-          return batch.commit();
-        },
+        () => _rawSavedRunRef(uid: uid, runId: runId).delete(),
         collection: _collectionPath,
         action: 'unsave run',
       );

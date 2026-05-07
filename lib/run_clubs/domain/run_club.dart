@@ -6,6 +6,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'run_club.freezed.dart';
 part 'run_club.g.dart';
 
+enum RunClubLifecycleStatus { active, archived }
+
 @freezed
 abstract class RunClub with _$RunClub {
   const factory RunClub({
@@ -20,7 +22,6 @@ abstract class RunClub with _$RunClub {
     @TimestampConverter() required DateTime createdAt,
     String? imageUrl,
     @Default([]) List<String> tags,
-    @Default([]) List<String> memberUserIds,
     @Default(0) int memberCount,
     @Default(0.0) double rating,
     @Default(0) int reviewCount,
@@ -29,38 +30,12 @@ abstract class RunClub with _$RunClub {
     String? instagramHandle,
     String? phoneNumber,
     String? email,
+    @Default(RunClubLifecycleStatus.active) RunClubLifecycleStatus status,
+    @Default(false) bool archived,
+    @TimestampConverter() DateTime? archivedAt,
+    String? archiveReason,
   }) = _RunClub;
 
   factory RunClub.fromJson(Map<String, dynamic> json) =>
       _$RunClubFromJson(json);
-}
-
-extension RunClubX on RunClub {
-  bool hasMember(String userId) => memberUserIds.contains(userId);
-
-  RunClub addMember(String userId) {
-    if (hasMember(userId)) {
-      return this;
-    }
-
-    final updatedMemberUserIds = [...memberUserIds, userId];
-    return copyWith(
-      memberUserIds: updatedMemberUserIds,
-      memberCount: updatedMemberUserIds.length,
-    );
-  }
-
-  RunClub removeMember(String userId) {
-    if (!hasMember(userId)) {
-      return this;
-    }
-
-    final updatedMemberUserIds = memberUserIds
-        .where((memberUserId) => memberUserId != userId)
-        .toList(growable: false);
-    return copyWith(
-      memberUserIds: updatedMemberUserIds,
-      memberCount: updatedMemberUserIds.length,
-    );
-  }
 }

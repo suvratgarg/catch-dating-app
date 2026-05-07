@@ -9,7 +9,7 @@
  * ## Validation gates (all must pass)
  *
  *   1. Caller must be authenticated.
- *   2. Caller must be in the run's `signedUpUserIds`.
+ *   2. Caller must have a signed-up runParticipation edge.
  *   3. Check-in window: 30 minutes before start to 30 minutes after start.
  *      Outside this window, only the host can mark attendance.
  *   4. GPS proximity: caller's lat/lng must be within 200 m of the run's
@@ -19,7 +19,7 @@
  * ## Idempotent
  *
  * Calling twice returns `{attended: true}` with no error — the user is
- * already in `attendedUserIds`.
+ * already attended.
  */
 
 import {onCall, HttpsError} from "firebase-functions/v2/https";
@@ -114,6 +114,12 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
   }
 
   const run = runSnap.data() as RunDoc;
+  if (run.status === "cancelled") {
+    throw new HttpsError(
+      "failed-precondition",
+      "This run has been cancelled."
+    );
+  }
   const participationRef = db
     .collection("runParticipations")
     .doc(runParticipationId(runId, userId));
@@ -125,7 +131,6 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
   // ── 1. Must be signed up ────────────────────────────────────────────────
 
   if (
-    !run.signedUpUserIds.includes(userId) &&
     existingParticipation?.status !== "signedUp" &&
     existingParticipation?.status !== "attended"
   ) {
@@ -137,10 +142,7 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
 
   // ── 2. Idempotent — already checked in ───────────────────────────────────
 
-  if (
-    existingParticipation?.status === "attended" ||
-    (run.attendedUserIds ?? []).includes(userId)
-  ) {
+  if (existingParticipation?.status === "attended") {
     return {userId, attended: true};
   }
 
@@ -204,7 +206,6 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
 
   const batch = db.batch();
   batch.update(runRef, {
-    attendedUserIds: admin.firestore.FieldValue.arrayUnion(userId),
     checkedInCount: admin.firestore.FieldValue.increment(1),
   });
   batch.set(participationRef, runParticipationPatch({

@@ -43,13 +43,19 @@ class RunClubDetailScreen extends ConsumerWidget {
 
     final joinMutation = ref.watch(RunClubMembershipController.joinMutation);
     final leaveMutation = ref.watch(RunClubMembershipController.leaveMutation);
+    final pushMutation = ref.watch(
+      RunClubMembershipController.pushNotificationsMutation,
+    );
     final vm = vmAsync.asData?.value;
 
     Widget wrapMutationListeners(Widget child) => MutationErrorSnackbarListener(
       mutation: RunClubMembershipController.joinMutation,
       child: MutationErrorSnackbarListener(
         mutation: RunClubMembershipController.leaveMutation,
-        child: child,
+        child: MutationErrorSnackbarListener(
+          mutation: RunClubMembershipController.pushNotificationsMutation,
+          child: child,
+        ),
       ),
     );
 
@@ -65,6 +71,9 @@ class RunClubDetailScreen extends ConsumerWidget {
             isHost: vm.isHost,
             isMember: vm.isMember,
             isMutating: joinMutation.isPending || leaveMutation.isPending,
+            clubPushNotificationsEnabled:
+                currentMembership?.pushNotificationsEnabled ?? false,
+            isClubPushMutating: pushMutation.isPending,
             isAuthenticated: vm.isAuthenticated,
           ),
         ),
@@ -86,6 +95,9 @@ class RunClubDetailScreen extends ConsumerWidget {
                 placeholderAuth &&
                 currentMembership?.status == RunClubMembershipStatus.active,
             isMutating: joinMutation.isPending || leaveMutation.isPending,
+            clubPushNotificationsEnabled:
+                currentMembership?.pushNotificationsEnabled ?? false,
+            isClubPushMutating: pushMutation.isPending,
             isAuthenticated: placeholderAuth,
           ),
         ),
@@ -119,6 +131,8 @@ class RunClubDetailScreen extends ConsumerWidget {
     required bool isHost,
     required bool isMember,
     required bool isMutating,
+    required bool clubPushNotificationsEnabled,
+    required bool isClubPushMutating,
     required bool isAuthenticated,
   }) {
     return ClubDetailBody(
@@ -130,6 +144,8 @@ class RunClubDetailScreen extends ConsumerWidget {
       isHost: isHost,
       isMember: isMember,
       isMutating: isMutating,
+      clubPushNotificationsEnabled: clubPushNotificationsEnabled,
+      isClubPushMutating: isClubPushMutating,
       isAuthenticated: isAuthenticated,
     );
   }

@@ -58,11 +58,9 @@ class EmptyHeroCard extends StatelessWidget {
               CatchButton(
                 label: 'Find a run near me',
                 onPressed: () => context.go(Routes.runClubsListScreen.path),
+                variant: CatchButtonVariant.light,
                 size: CatchButtonSize.lg,
                 fullWidth: true,
-                backgroundColor: Colors.white,
-                foregroundColor: CatchTokens.sunsetLight.ink,
-                borderColor: Colors.transparent,
               ),
             ],
           ),

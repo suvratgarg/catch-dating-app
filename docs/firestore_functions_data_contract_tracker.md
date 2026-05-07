@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_contract_tracker
-version: 2.2.8
-updated: 2026-05-06
+version: 2.2.15
+updated: 2026-05-07
 owner: recursive_audit_loop
 status: active
 ---
@@ -73,12 +73,138 @@ The app has multiple contracts for the same Firestore documents:
 - Live Firestore documents in dev/staging/prod.
 - Client repository mutation methods.
 
+## 2026-05-07 Relationship Rules And Deletion Slice
+
+- Added callable-owned `leaveRunWaitlist` and removed the last direct client
+  run update path. Direct `runs/{runId}` updates are now denied.
+- Removed saved-run profile projection writes. `SavedRunRepository` writes only
+  `savedRuns/{uid_runId}` and rules deny direct private-profile projection
+  changes.
+- Swipes and reviews now use `runParticipations/{runId_uid}` attendance edges
+  for eligibility instead of run roster projections. Private `users/{uid}`
+  reads are owner-only; app-facing discovery should use `publicProfiles`.
+- `requestAccountDeletion` now performs query-driven cleanup across
+  memberships, participations, saved runs, swipes, matches, reviews, payments,
+  notifications, blocks, and reports before anonymizing the private profile and
+  deleting Auth.
+- Added backend lifecycle surfaces:
+  - `deleteRun` hard-deletes only unused hosted runs with no participations,
+    payments, or reviews.
+  - `archiveRunClub` marks clubs archived.
+  - `deleteRunClub` hard-deletes only never-used clubs with no runs, payments,
+    reviews, or non-host members.
+- Added `RunClubLifecycleStatus`, `archived`, `archivedAt`, and
+  `archiveReason` to the Dart/Functions schema contract.
+- Relationship participant/member/saved-run arrays have been retired from
+  generated models, Functions write paths, Firestore rules, active tooling, and
+  active tests. Relationship state now lives only in edge documents plus
+  callable-owned aggregate counts on canonical parent documents.
+
 `tool/generate_firestore_types.dart` already protects Dart-to-TypeScript drift,
 and CI checks that generated output is committed. It does not protect
 Firestore rules drift, callable validation drift, live data migrations, or
 operation ownership drift.
 
 ## Recent Contract Notes
+
+### 2026-05-07: Relationship Array Retirement
+
+- Removed run-club membership arrays, run participation arrays, and saved-run
+  arrays from Dart domain models, generated Functions types, Cloud Functions
+  writes, Firestore rules, active validation tooling, and active tests.
+- Booking, waitlist, cancellation, attendance, and self-check-in Functions now
+  read roster state from `runParticipations` and maintain only
+  `bookedCount`, `waitlistedCount`, `checkedInCount`, and `genderCounts` on
+  `runs/{runId}`.
+- Run-club create/join/leave Functions now read membership state from
+  `runClubMemberships` and maintain only `memberCount` on
+  `runClubs/{clubId}`.
+- `users/{uid}` no longer carries run-club membership or saved-run projections.
+
+### 2026-05-07: Notification Preferences, Club Bell, And Run Reminders
+
+- Added granular user notification preferences to `users/{uid}`:
+  `prefsMessages`, `prefsRunStatusUpdates`, and `prefsClubUpdates`, while
+  retaining `prefsNewCatches`, `prefsRunReminders`, and `prefsWeeklyDigest`.
+- Added `runClubMemberships/{clubId_uid}.pushNotificationsEnabled` as the
+  per-club bell opt-in. Active membership still means club updates appear in
+  Activity; the bell gates FCM push for non-critical club updates.
+- Added `setRunClubNotificationPreference` callable so the client does not
+  write membership-edge notification flags directly.
+- Added scheduled `sendRunReminders`, which creates deterministic
+  `runReminder_${runId}` durable items and pushes roughly 15 minutes before a
+  signed-up run starts. Existing durable reminder docs suppress duplicate local
+  derived rows in the Activity tab.
+- Updated push policy: matches use `prefsNewCatches`, messages use
+  `prefsMessages`, reminders use `prefsRunReminders`, schedule/cancellation and
+  waitlist promotion use `prefsRunStatusUpdates`, and club updates require both
+  `prefsClubUpdates` and the per-club bell.
+
+### 2026-05-07: Run Schedule-Change And Cancellation Notifications
+
+- Added canonical run lifecycle fields to `Run`: `status`, `cancelledAt`, and
+  `cancellationReason`. Existing reads default missing `status` to `active` in
+  Dart for legacy/beta data tolerance.
+- `createRun` initializes lifecycle fields as active. `cancelRun` is now a
+  host-only callable that marks the run cancelled and fans out deterministic
+  `runCancelled_${runId}` durable activity items plus push notifications to
+  signed-up and waitlisted participants.
+- `updateRun` now fans out deterministic `runUpdated_${runId}` activity items
+  and push notifications only when schedule/location fields change. Copy-only
+  edits stay quiet.
+- Cancelled runs are blocked from new free signups, paid order creation,
+  waitlist joins, host attendance toggles, and self-check-in.
+- Remaining product debt: define cancellation/refund policy, add host-facing
+  cancellation UI, and decide how cancelled runs should render on list/detail
+  surfaces.
+
+### 2026-05-07: Club Hosted-Run Notifications
+
+- Extended `NOTIFICATIONS-QUEUE` to new runs posted by followed clubs.
+- `createRun` now performs best-effort fan-out after the run document commits:
+  active `runClubMemberships` members receive deterministic
+  `clubUpdate_${runId}` activity items, while the host is excluded.
+- Push is now sent only to active members with an FCM token, global
+  `prefsClubUpdates != false`, and per-membership
+  `pushNotificationsEnabled == true`; the durable in-app item is written
+  regardless of push preference.
+- Remaining notification producers from this note were completed in the
+  notification preferences/reminder pass above.
+
+### 2026-05-07: Run Signup And Waitlist Promotion Notifications
+
+- Extended the durable activity timeline to run booking state changes.
+- `signUpUserForRun` now writes a deterministic `runSignup_${runId}` activity
+  item for normal booking confirmations and a `waitlistPromotion_${runId}` item
+  when the user was waitlisted before the successful signup.
+- `cancelRunSignUp` now writes a `waitlistPromotion_${runId}` activity item
+  for the waitlisted user it promotes, and sends a push notification to that
+  user when an FCM token is available.
+- Self-initiated booking confirmations remain in-app only to avoid a redundant
+  push for the action the user just performed.
+- Remaining notification producers from this note were completed in later
+  2026-05-07 notification slices.
+
+### 2026-05-07: Durable Activity Notifications
+
+- Started `NOTIFICATIONS-QUEUE` with a backend-owned durable activity timeline
+  at `notifications/{uid}/items/{notificationId}`.
+- Added generated Dart and Functions contracts for `ActivityNotification`.
+- `onMatchCreated` now writes deterministic match activity items for both
+  participants and sends push notifications through the shared notification
+  helper.
+- `onMessageCreated` now writes deterministic recipient activity items in the
+  same transaction that updates unread counts and event receipts.
+- The Home Activity tab now reads `watchActivityNotificationsProvider(uid)`
+  for durable match/message activity and keeps deriving upcoming run reminders
+  locally until run producers are implemented.
+- Firestore rules allow users to read only their own notification timeline and
+  update only `readAt`; client-created notification items and content edits are
+  denied.
+- Remaining notification producers after this foundation pass were upcoming run
+  reminders, signup/waitlist promotion, run cancellation/schedule changes, and
+  club/hosted-run updates. Signup/waitlist promotion was implemented in the
+  following slice above.
 
 ### 2026-05-06: Callable Rate Limit Enforcement
 
@@ -113,9 +239,9 @@ operation ownership drift.
 
 Follow-up debt:
 
-- `NOTIFICATIONS-QUEUE`: before adding new notifications, decide whether
-  in-app activity/timeline notifications need a server-owned Firestore
-  collection or whether specific events remain push-only.
+- `NOTIFICATIONS-QUEUE`: durable activity timeline exists for match/message
+  events; add the remaining run and club producers through the same
+  backend-owned helper.
 
 ### 2026-05-06: UserProfile.displayName
 
@@ -143,49 +269,46 @@ Follow-up debt:
   `chats/{matchId}/messages/{messageId}` namespace.
 - Cloud Functions now write `runClubMemberships` for club create/join/leave and
   `runParticipations` for signup, waitlist, cancellation, host attendance, and
-  participant self-check-in while preserving compatibility arrays during the
-  migration.
+  participant self-check-in.
 - Dashboard, Run Clubs list/detail, and Run Map membership reads now use
-  `runClubMemberships`; profile/club membership arrays remain temporary
-  compatibility projections until write compatibility is retired.
+  `runClubMemberships`.
 - `savedRuns/{uid_runId}` is now the owner-owned saved-run edge. Run detail
-  reads saved state from the edge document; the profile `savedRunIds` array
-  remains a temporary compatibility projection until array writes are retired.
+  reads saved state from the edge document; save/unsave do not mirror to the
+  private user profile.
 - Run detail reads the current viewer's booking, waitlist, attendance, and
   review-gate state from `runParticipations/{runId_uid}`. The run participant
-  arrays remain temporary compatibility projections for counts/list surfaces
-  until dashboard, calendar, attendance, swipes, and roster reads migrate.
+  aggregate fields are count projections only.
 - `watchSignedUpRunsProvider` and `watchAttendedRunsProvider` now read
   `runParticipations` by user/status and then watch matching run documents by
   ID. Dashboard, Calendar, Run Map, Activity, and Swipe Hub use those
   edge-backed streams without changing their screen-level provider contracts.
 - Host attendance management now reads roster and checked-in state from
-  `runParticipations` through `AttendanceSheetViewModel`; `runs.signedUpUserIds`
-  and `runs.attendedUserIds` remain temporary compatibility projections for
-  non-migrated swipe/roster/count surfaces only.
+  `runParticipations` through `AttendanceSheetViewModel`.
 - Swipe candidate generation, swipe empty-state attendance gating, and run
-  recap attendee/checked-in state now read `runParticipations`. Run participant
-  arrays remain temporary compatibility projections for remaining roster/count
-  display surfaces only.
+  recap attendee/checked-in state now read `runParticipations`.
+- Swipe and review Firestore rules now use `runParticipations` for attendance
+  eligibility. `users/{uid}` private reads are owner-only; app-facing discovery
+  must use `publicProfiles/{uid}`.
 - Run participation count projections are now explicit `runs/{runId}` fields:
   `bookedCount`, `waitlistedCount`, and `checkedInCount`. Create/signup,
   payment verification, waitlist, cancellation, host attendance, and self
-  check-in Functions maintain these fields while legacy participant arrays
-  remain transitional. `WhoIsRunning` and `HostRunManageScreen` use
+  check-in Functions maintain these fields. `WhoIsRunning` and
+  `HostRunManageScreen` use
   `runParticipations` for exact rosters; list/stat surfaces use count
   projections. Production UI grep for direct participant-array reads is clean
   apart from generated `Run` serialization.
 - Firestore rules and emulator tests now cover relationship-doc read/write
   ownership and match-scoped message creation.
-- Added `tool/firestore_relationship_migration.mjs` for dry-run/apply edge-doc
-  creation from legacy arrays and `tool/validate_firestore_data.mjs` validation
-  for new relationship paths.
+- `tool/firestore_relationship_migration.mjs` now only copies legacy
+  `chats/{matchId}/messages` into `matches/{matchId}/messages`; it no longer
+  reconstructs edge docs from retired arrays.
+- `tool/validate_firestore_data.mjs` validates relationship edges and parent
+  aggregates instead of parent relationship arrays.
 
 Follow-up debt:
 
-- `RELATIONSHIP-DOC-MIGRATION`: retire compatibility array writes after beta
-  migration/reset policy is finalized; generated serialization still preserves
-  legacy fields until then.
+- `RELATIONSHIP-DOC-MIGRATION`: keep on watch for regressions; do not re-add
+  relationship arrays to models, Functions, rules, active tooling, or tests.
 - `DELETE-METHODOLOGY-QUEUE`: rewrite account/run/club deletion around
   relationship-doc queries.
 - `MIGRATION-VALIDATION-001`: add migration apply count validation and seeded
@@ -213,17 +336,17 @@ Follow-up debt:
 - [x] Use shared auth and validation helpers.
 - [x] Use shared callable rate limiting for create/join/leave club operations.
 - [x] Make both callables idempotent.
-- [x] Update `runClubs/{clubId}.memberUserIds`.
+- [x] Create/update `runClubMemberships/{clubId_uid}`.
 - [x] Update `runClubs/{clubId}.memberCount`.
-- [x] Update `users/{uid}.joinedRunClubIds`.
+- [x] Retire profile and club membership arrays.
 - [x] Reject deleted users and missing/incomplete profiles.
 - [x] Add Function unit tests for success, idempotency, missing docs, and
   invalid input.
 - [x] Update Flutter repository/client methods to call Functions.
 - [x] Update Flutter tests.
-- [x] Tighten Firestore rules so `runClubs` creation and membership arrays are
-  server-owned.
-- [x] Fully tighten `users/{uid}.joinedRunClubIds` direct updates.
+- [x] Tighten Firestore rules so `runClubs` creation and membership state are
+  callable-owned.
+- [x] Fully retire direct profile membership projection updates.
 - [x] Update rules tests for denied direct membership writes and allowed
   callable-admin effects via seeded data.
 - [x] Verify:
@@ -242,6 +365,8 @@ Follow-up debt:
 - [x] Decide whether `leaveWaitlist` should move to a callable.
 - [x] Decide whether `createRun`, and host edits should remain client-direct
   or move to callables.
+- [x] Move run-club profile edits and review mutations to callables so rules
+  no longer duplicate those validation contracts.
 - [x] Document final mutation ownership in this file and `PROJECT_CONTEXT.md`.
 - [x] Verify focused analyze/tests after each migrated mutation.
 
@@ -268,11 +393,6 @@ Client-owned and acceptable for now:
 - `lib/swipes/data/swipe_repository.dart`
   - create own outgoing swipe.
   - Rationale: owner-only create; match creation remains trigger-owned.
-- `lib/reviews/data/reviews_repository.dart`
-  - create/update/delete own review.
-  - Rationale: run-scoped review content is client-owned through deterministic
-    `(runId, reviewerUserId)` document IDs; aggregate rating stats remain
-    trigger-owned.
 - `lib/core/fcm_service.dart`
   - update own `fcmToken`.
   - Rationale: runtime token only; rules allow only this field.
@@ -280,8 +400,14 @@ Client-owned and acceptable for now:
 Callable-owned after Phase 1:
 
 - `lib/run_clubs/data/run_clubs_repository.dart`
-  - `createRunClub`, `joinClub`, `leaveClub`.
-  - Rationale: each updates multiple documents or server-derived fields.
+  - `createRunClub`, `updateRunClub`, `joinClub`, `leaveClub`.
+  - Rationale: each writes server-derived fields, aggregate projections, or
+    host-authorized profile data that should be Zod-validated server-side.
+- `lib/reviews/data/reviews_repository.dart`
+  - `createRunReview`, `updateRunReview`, `deleteRunReview`.
+  - Rationale: review mutations derive public reviewer name, verify attended
+    run participation, enforce ownership, and leave aggregate stats to the
+    recompute trigger.
 
 Resolved mutation boundaries:
 
@@ -293,9 +419,9 @@ Resolved mutation boundaries:
   - `createRun`, host run details update, `leaveWaitlist`.
   - Decision: `createRun` and host run details updates moved to callables in
     Phase 9 so host authority, run/club consistency, and server-owned booking
-    state are enforced on the backend. `leaveWaitlist` remains direct for now
-    as a narrow self-removal from a single array. Joining the waitlist remains
-    callable-owned.
+    state are enforced on the backend. `leaveWaitlist` is now callable-owned
+    as well, so clients no longer update `runs/{runId}` directly for waitlist
+    state.
 
 Removed or denied:
 
@@ -347,8 +473,8 @@ Notes:
   updates now validate field ownership instead of the entire document. This
   avoids Firestore's rules expression ceiling and prevents server-owned retained
   fields such as `deleted`/`deletedAt` from breaking unrelated profile edits.
-- `runClubs/{clubId}` host edits validate only host-editable profile fields;
-  creation and membership remain callable-owned.
+- `runClubs/{clubId}` direct writes are denied; create/update/archive/delete
+  and membership remain callable-owned.
 - `onboarding_drafts/{uid}` is intentionally forward-compatible because it is
   private owner-only draft state and changes quickly with onboarding.
 
@@ -436,7 +562,9 @@ focused tests after each slice, then a final `./tool/check_data_contract.sh`.
   still lets hosts directly change `waitlistUserIds`, `runClubId`,
   `capacityLimit`, `priceInPaise`, and `constraints` after creation. That
   weakens the callable-owned booking/waitlist contract and makes direct
-  waitlist self-removal less meaningful.
+  waitlist self-removal less meaningful. Follow-up complete: waitlist
+  self-removal is now callable-owned too, and direct `runs/{runId}` updates are
+  denied.
 - [x] P1: Validate `swipes/{userId}/outgoing/{targetId}` create payloads. Rules
   currently check owner, deleted-target state, and block state, but not
   `direction`, `runId`, path/data identity, allowed fields, or extra fields. The
@@ -603,8 +731,8 @@ Append newest entries at the top.
   checks, rate limiting, server-owned booking arrays, and transport-safe epoch
   millis for timestamps. `RunRepository.createRun` now calls `createRun`, and
   `updateRunDetails` calls `updateRun`. Firestore rules now deny direct run
-  creates and direct host detail edits while preserving narrow waitlist
-  self-removal. Verification passed:
+  creates and direct host detail edits. A later relationship-doc slice moved
+  waitlist self-removal behind `leaveRunWaitlist` as well. Verification passed:
   `npm --prefix functions run build`;
   `npm --prefix functions run lint`;
   `node --test functions/lib/runs/mutateRun.test.js`;
@@ -662,7 +790,8 @@ Append newest entries at the top.
   owner profile edits now go through the `updateUserProfile` callable with Zod
   validation and Admin SDK writes. Firestore rules now keep initial profile
   create full-shape validated while limiting direct user updates to cheap
-  runtime fields (`savedRunIds`, `fcmToken`). Flutter `UserProfileRepository`
+  runtime fields. Later relationship-doc cleanup reduced this to `fcmToken`
+  only. Flutter `UserProfileRepository`
   now delegates profile patches/photo updates/profile completion to the callable
   and normalizes timestamp values for callable transport. Verification passed:
   `npm --prefix functions run build`;
@@ -674,8 +803,8 @@ Append newest entries at the top.
 - 2026-05-05: Phase 8 swipe contract hardening completed. Direct swipe creates
   now require exact payload keys, path/data identity, valid `like`/`pass`
   direction, timestamp `createdAt`, a non-deleted target with a public profile,
-  an existing run, both users in `attendedUserIds`, and no block edge between
-  them. Verification passed:
+  an existing run, both users with attended `runParticipations`, and no block
+  edge between them. Verification passed:
   `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
 - 2026-05-05: Phase 8 run host update hardening completed. Host direct edits are
   now limited to schedule/descriptive fields; booking-sensitive fields
@@ -720,8 +849,9 @@ Append newest entries at the top.
 - 2026-05-05: Phase 2 direct mutation audit completed for current high-risk
   surfaces. Removed legacy `RunRepository.signUpForRun`, denied direct
   `runClubs`/`runs` deletes in rules, removed `RunClubsRepository.deleteRunClub`,
-  and documented why `createRun`, `updateRunClub`, and `leaveWaitlist` can stay
-  direct for now. Verification passed:
+  and documented the then-current direct-write boundaries. `createRun` and
+  `leaveWaitlist` have since moved to callables; `updateRunClub` remains the
+  intentional direct host-owned edit seam. Verification passed:
   `flutter analyze lib/runs/data/run_repository.dart test/runs/run_repository_test.dart lib/run_clubs/data/run_clubs_repository.dart test/run_clubs/run_clubs_repository_test.dart test/run_clubs/run_clubs_test_helpers.dart`;
   `flutter test test/runs/run_repository_test.dart test/run_clubs/run_clubs_repository_test.dart`;
   `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
@@ -767,10 +897,9 @@ Append newest entries at the top.
 
 ## Open Questions And Decisions
 
-- Decision: keep relationship arrays for this pass; revisit edge documents
-  before larger clubs/runs or high-contention write patterns.
-- Decision: keep `updateRunClub` and `leaveWaitlist` direct for now. `createRun`
-  and host run details updates are callable-owned as of Phase 9; booking,
-  waitlist joins, and membership joins remain callable-owned.
+- Decision: relationship arrays are retired; edge documents own many-to-many
+  state.
+- Decision: `updateRunClub` is callable-owned. Direct run-club writes are
+  denied in Firestore rules.
 - Decision: checked-in App Check debug tokens are removed; use local
   `FIREBASE_APP_CHECK_DEBUG_TOKEN` environment variables instead.

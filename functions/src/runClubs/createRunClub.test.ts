@@ -134,9 +134,6 @@ function harness(initialDocs: Record<string, FakeData | undefined>) {
         firestore as unknown as FirebaseFirestore.Firestore,
       serverTimestamp: () =>
         ({kind: "serverTimestamp"}) as unknown as FirebaseFirestore.FieldValue,
-      arrayUnion: (value: string) =>
-        ({kind: "arrayUnion", value}) as unknown as
-          FirebaseFirestore.FieldValue,
       checkRateLimit: async (
         _db: FirebaseFirestore.Firestore,
         uid: string,
@@ -164,7 +161,6 @@ function profile(overrides: FakeData = {}): FakeData {
     profileComplete: true,
     name: "Asha Runner",
     photoUrls: ["https://example.com/avatar.jpg"],
-    joinedRunClubIds: [],
     ...overrides,
   };
 }
@@ -188,7 +184,7 @@ function assertHttpsCode(error: unknown, code: string): boolean {
   return error instanceof HttpsError && error.code === code;
 }
 
-test("createRunClubHandler creates a club and mirrors host membership",
+test("createRunClubHandler creates a club and host membership edge",
   async () => {
     const h = harness({"users/host-1": profile()});
 
@@ -210,7 +206,6 @@ test("createRunClubHandler creates a club and mirrors host membership",
       createdAt: {kind: "serverTimestamp"},
       imageUrl: "https://example.com/cover.jpg",
       tags: [],
-      memberUserIds: ["host-1"],
       memberCount: 1,
       rating: 0,
       reviewCount: 0,
@@ -220,9 +215,6 @@ test("createRunClubHandler creates a club and mirrors host membership",
       phoneNumber: "+91 99999 99999",
       email: "hello@example.com",
     });
-    assert.deepEqual(h.firestore.get("users/host-1")?.joinedRunClubIds, [
-      "club-1",
-    ]);
     assert.deepEqual(
       {
         clubId: h.firestore.get("runClubMemberships/club-1_host-1")?.clubId,
@@ -254,9 +246,6 @@ test("createRunClubHandler can generate the club id server-side", async () => {
     null
   );
   assert.equal(h.firestore.get("runClubs/generated-club-id")?.imageUrl, null);
-  assert.deepEqual(h.firestore.get("users/host-1")?.joinedRunClubIds, [
-    "generated-club-id",
-  ]);
   assert.equal(
     h.firestore.get("runClubMemberships/generated-club-id_host-1")?.status,
     "active"

@@ -88,6 +88,66 @@ void main() {
 
     expect(effects.playedKinds, isEmpty);
   });
+
+  testWidgets('keeps long celebration content scrollable on short screens', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1;
+    tester.view.physicalSize = const Size(390, 520);
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          celebrationEffectsControllerProvider.overrideWithValue(
+            _FakeCelebrationEffectsController(),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: CatchCelebrationScreen(
+            kind: CelebrationMomentKind.runJoined,
+            eyebrow: 'Booking confirmed',
+            title: "You're in.",
+            message: 'Your spot is confirmed for a longer run name.',
+            details: const [
+              CelebrationDetail(label: 'When', value: 'Thursday evening'),
+              CelebrationDetail(label: 'Where', value: 'Carter Road'),
+              CelebrationDetail(label: 'Run', value: '8km · Easy'),
+              CelebrationDetail(label: 'Paid', value: '₹299'),
+            ],
+            note: 'Arrive by the meeting time.',
+            supplementalChildren: const [
+              SizedBox(height: 120, child: Text('Calendar and directions')),
+              SizedBox(height: 120, child: Text('Invite a friend')),
+            ],
+            primaryAction: CelebrationAction(
+              label: 'View run',
+              onPressed: () {},
+            ),
+            secondaryAction: CelebrationAction(
+              label: 'Back to home',
+              onPressed: () {},
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    expect(tester.takeException(), isNull);
+    expect(find.byType(SingleChildScrollView), findsOneWidget);
+
+    await tester.scrollUntilVisible(
+      find.text('Back to home'),
+      220,
+      scrollable: find.byType(Scrollable),
+    );
+
+    expect(find.text('Back to home').hitTestable(), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 class _FakeCelebrationEffectsController extends CelebrationEffectsController {

@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -14,26 +15,47 @@ import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
-/// Renders a reviews list with a header summary and a write/edit button.
+/// Read-only club review aggregate.
 ///
-/// Club pages use this as a read-only aggregate. Run pages pass both
-/// [runClubId] and [runId], and attended users can write or edit their
-/// run-scoped review.
-class ReviewsSection extends StatelessWidget {
-  const ReviewsSection({
+/// Reviews are run-scoped, so club pages must never expose review creation.
+class RunClubReviewsSection extends StatelessWidget {
+  const RunClubReviewsSection({
+    super.key,
+    required this.reviews,
+    required this.currentUid,
+    this.maxVisibleReviews = 3,
+  });
+
+  final List<Review> reviews;
+  final String? currentUid;
+  final int maxVisibleReviews;
+
+  @override
+  Widget build(BuildContext context) {
+    return ReviewsPreviewSection(
+      reviews: reviews,
+      currentUid: currentUid,
+      maxVisibleReviews: maxVisibleReviews,
+      showAllAction: false,
+    );
+  }
+}
+
+/// Run-scoped reviews with write/edit CTA for attended runners.
+class RunReviewsSection extends StatelessWidget {
+  const RunReviewsSection({
     super.key,
     required this.runClubId,
-    this.runId,
+    required this.runId,
     required this.reviews,
     required this.currentUid,
     required this.userProfile,
     this.isHost = false,
-    this.isMember = false,
     this.hasAttended = false,
   });
 
   final String runClubId;
-  final String? runId;
+  final String runId;
   final List<Review> reviews;
   final String? currentUid;
   final UserProfile? userProfile;
@@ -41,14 +63,74 @@ class ReviewsSection extends StatelessWidget {
   /// True when the current user is the host — hides the write-review CTA.
   final bool isHost;
 
-  /// True when the current user is a club member. Club pages currently show
-  /// review aggregates only; writes remain run-scoped.
-  final bool isMember;
-
   /// True when the current user attended the run — gates run-level reviews.
   final bool hasAttended;
 
-  static const _previewCount = 5;
+  @override
+  Widget build(BuildContext context) {
+    final canWriteRunReview = userProfile != null && !isHost && hasAttended;
+    final existingReview = canWriteRunReview && currentUid != null
+        ? reviews.where((r) => r.reviewerUserId == currentUid).firstOrNull
+        : null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ReviewsPreviewSection(
+          reviews: reviews,
+          currentUid: currentUid,
+          maxVisibleReviews: 3,
+          showAllAction: reviews.length > 3,
+          onEditReview: canWriteRunReview
+              ? (review) => showWriteReviewSheet(
+                  context: context,
+                  runClubId: runClubId,
+                  runId: runId,
+                  reviewer: userProfile!,
+                  existingReview: review,
+                )
+              : null,
+        ),
+
+        // Review writes are run-scoped so one user can review each run once.
+        if (canWriteRunReview) ...[
+          gapH12,
+          CatchButton(
+            key: ReviewKeys.writeReviewButton,
+            label: existingReview != null
+                ? 'Edit your review'
+                : 'Write a review',
+            onPressed: () => showWriteReviewSheet(
+              context: context,
+              runClubId: runClubId,
+              runId: runId,
+              reviewer: userProfile!,
+              existingReview: existingReview,
+            ),
+            variant: CatchButtonVariant.secondary,
+            fullWidth: true,
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class ReviewsPreviewSection extends StatelessWidget {
+  const ReviewsPreviewSection({
+    super.key,
+    required this.reviews,
+    required this.currentUid,
+    this.maxVisibleReviews = 3,
+    this.showAllAction = false,
+    this.onEditReview,
+  });
+
+  final List<Review> reviews;
+  final String? currentUid;
+  final int maxVisibleReviews;
+  final bool showAllAction;
+  final ValueChanged<Review>? onEditReview;
 
   void _showAllReviews(BuildContext context) {
     showModalBottomSheet<void>(
@@ -62,10 +144,17 @@ class ReviewsSection extends StatelessWidget {
           child: ListView.separated(
             itemCount: reviews.length,
             separatorBuilder: (_, _) => gapH12,
-            itemBuilder: (_, index) => ReviewCard(
-              review: reviews[index],
-              isOwn: reviews[index].reviewerUserId == currentUid,
-            ),
+            itemBuilder: (_, index) {
+              final review = reviews[index];
+              final isOwn = review.reviewerUserId == currentUid;
+              return ReviewCard(
+                review: review,
+                isOwn: isOwn,
+                onEdit: isOwn && onEditReview != null
+                    ? () => onEditReview!(review)
+                    : null,
+              );
+            },
           ),
         ),
       ),
@@ -75,17 +164,12 @@ class ReviewsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-
-    final canWriteRunReview =
-        userProfile != null && !isHost && runId != null && hasAttended;
-    final existingReview = canWriteRunReview && currentUid != null
-        ? reviews.where((r) => r.reviewerUserId == currentUid).firstOrNull
-        : null;
-
     final avgRating = reviews.isEmpty
         ? null
         : reviews.map((r) => r.rating).reduce((a, b) => a + b) / reviews.length;
-    final previewReviews = reviews.take(_previewCount).toList(growable: false);
+    final previewReviews = reviews
+        .take(maxVisibleReviews)
+        .toList(growable: false);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,48 +210,21 @@ class ReviewsSection extends StatelessWidget {
               review: previewReviews[i],
               isOwn: previewReviews[i].reviewerUserId == currentUid,
               onEdit:
-                  canWriteRunReview &&
+                  onEditReview != null &&
                       previewReviews[i].reviewerUserId == currentUid
-                  ? () => showWriteReviewSheet(
-                      context: context,
-                      runClubId: runClubId,
-                      runId: runId,
-                      reviewer: userProfile!,
-                      existingReview: previewReviews[i],
-                    )
+                  ? () => onEditReview!(previewReviews[i])
                   : null,
             ),
             if (i < previewReviews.length - 1) gapH12,
           ],
-          if (reviews.length > _previewCount) ...[
+          if (showAllAction && reviews.length > maxVisibleReviews) ...[
             gapH4,
-            TextButton(
+            CatchTextButton(
               key: ReviewKeys.seeAllReviewsButton,
+              label: 'See all ${reviews.length} reviews',
               onPressed: () => _showAllReviews(context),
-              child: Text('See all ${reviews.length} reviews'),
             ),
           ],
-        ],
-
-        // ── CTA ─────────────────────────────────────────────────────────────
-        // Review writes are run-scoped so one user can review each run once.
-        if (canWriteRunReview) ...[
-          const SizedBox(height: 12),
-          CatchButton(
-            key: ReviewKeys.writeReviewButton,
-            label: existingReview != null
-                ? 'Edit your review'
-                : 'Write a review',
-            onPressed: () => showWriteReviewSheet(
-              context: context,
-              runClubId: runClubId,
-              runId: runId,
-              reviewer: userProfile!,
-              existingReview: existingReview,
-            ),
-            variant: CatchButtonVariant.secondary,
-            fullWidth: true,
-          ),
         ],
       ],
     );

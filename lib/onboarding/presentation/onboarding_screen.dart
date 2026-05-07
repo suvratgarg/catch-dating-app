@@ -1,6 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
+import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
@@ -65,7 +68,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   .read(onboardingControllerProvider.notifier)
                                   .goToStep(previousStep),
                       ),
-                      const SizedBox(height: 8),
+                      const SizedBox(height: 16),
                     ],
                     Expanded(child: currentStep),
                   ],
@@ -96,62 +99,51 @@ class _OnboardingTopBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final progressStep = step.index - 1;
+    final progressTotal = OnboardingStep.values.length - 1;
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 12, 20, 8),
-      child: Row(
+      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          SizedBox.square(
-            dimension: 44,
-            child: onBack == null
-                ? const SizedBox.shrink()
-                : IconButton(
-                    tooltip: 'Back',
-                    onPressed: onBack,
-                    style: IconButton.styleFrom(
-                      backgroundColor: t.surface,
-                      foregroundColor: t.ink,
-                    ),
-                    icon: const Icon(
-                      Icons.arrow_back_ios_new_rounded,
-                      size: 18,
-                    ),
-                  ),
+          Row(
+            children: [
+              SizedBox.square(
+                dimension: 40,
+                child: onBack == null
+                    ? const SizedBox.shrink()
+                    : IconBtn(
+                        onTap: onBack,
+                        child: Tooltip(
+                          message: 'Back',
+                          child: Icon(
+                            Icons.arrow_back_ios_new_rounded,
+                            size: 18,
+                            color: t.ink,
+                          ),
+                        ),
+                      ),
+              ),
+              Expanded(
+                child: Text(
+                  step.appBarTitle,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.center,
+                  style: CatchTextStyles.titleM(context, color: t.ink),
+                ),
+              ),
+              const SizedBox.square(dimension: 40),
+            ],
           ),
-          const SizedBox(width: 8),
-          Expanded(child: _ProgressBar(step: step)),
+          const SizedBox(height: 16),
+          CatchStepProgress(
+            currentStep: progressStep,
+            totalSteps: progressTotal,
+          ),
         ],
       ),
-    );
-  }
-}
-
-class _ProgressBar extends StatelessWidget {
-  const _ProgressBar({required this.step});
-
-  final OnboardingStep step;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final total = OnboardingStep.values.length;
-
-    return Row(
-      children: [
-        for (int i = 1; i < total; i++) ...[
-          Expanded(
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              height: 3,
-              decoration: BoxDecoration(
-                color: i <= step.index ? t.primary : t.line,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-          if (i < total - 1) const SizedBox(width: 4),
-        ],
-      ],
     );
   }
 }

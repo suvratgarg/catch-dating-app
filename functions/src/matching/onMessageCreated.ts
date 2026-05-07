@@ -7,7 +7,12 @@ import {
   MatchDoc,
   PublicProfileDoc,
 } from "../shared/firestore";
-import {sendFcmNotification} from "../shared/notifications";
+import {
+  allowsPushPreference,
+  activityNotificationId,
+  sendFcmNotification,
+  setActivityNotificationInTransaction,
+} from "../shared/notifications";
 
 interface MessageCreatedEvent {
   id?: string;
@@ -56,11 +61,17 @@ export async function onMessageCreatedHandler(
 
   let recipientId: string | null = null;
   let shouldNotify = false;
+  let notificationTitle = "New message";
+  let notificationBody = buildMessageBody(message);
 
   await db.runTransaction(async (tx) => {
-    const [receiptSnap, matchDoc] = await Promise.all([
+    const senderProfileRef = db.collection("publicProfiles").doc(
+      message.senderId
+    );
+    const [receiptSnap, matchDoc, senderProfileDoc] = await Promise.all([
       tx.get(receiptRef),
       tx.get(matchRef),
+      tx.get(senderProfileRef),
     ]);
 
     if (receiptSnap.exists || !matchDoc.exists) {
@@ -74,6 +85,11 @@ export async function onMessageCreatedHandler(
     }
     recipientId =
       match.user1Id === message.senderId ? match.user2Id : match.user1Id;
+    const senderName =
+      (senderProfileDoc.data() as PublicProfileDoc | undefined)?.name ??
+      "New message";
+    notificationTitle = senderName;
+    notificationBody = buildMessageBody(message);
 
     // Keep match-list metadata server-owned. The client writes only the
     // message. The receipt makes this increment idempotent across retries.
@@ -92,6 +108,19 @@ export async function onMessageCreatedHandler(
       createdAt: deps.serverTimestamp(),
     });
 
+    setActivityNotificationInTransaction(tx, db, {
+      id: activityNotificationId("message", `${matchId}_${messageId}`),
+      uid: recipientId,
+      type: "message",
+      title: notificationTitle,
+      body: notificationBody,
+      createdAt: message.sentAt,
+      matchId,
+      runId: match.runId,
+      actorUid: message.senderId,
+      actorName: senderName,
+    });
+
     shouldNotify = true;
   });
 
@@ -99,30 +128,18 @@ export async function onMessageCreatedHandler(
     return;
   }
 
-  // Fetch sender name and recipient FCM token concurrently.
-  const [senderProfileDoc, recipientUserDoc] = await Promise.all([
-    db.collection("publicProfiles").doc(message.senderId).get(),
-    db.collection("users").doc(recipientId).get(),
-  ]);
-
-  const fcmToken =
-    (recipientUserDoc.data() as UserProfileDoc | undefined)?.fcmToken;
+  const recipientUserDoc = await db.collection("users").doc(recipientId).get();
+  const recipientUser = recipientUserDoc.data() as UserProfileDoc | undefined;
+  const fcmToken = recipientUser?.fcmToken;
   if (!fcmToken) return;
-
-  const senderName =
-    (senderProfileDoc.data() as PublicProfileDoc | undefined)?.name ??
-    "New message";
-  const body =
-    message.text.length > 100 ?
-      message.text.slice(0, 100) + "…" :
-      message.text;
+  if (!allowsPushPreference(recipientUser, "messages")) return;
 
   logger.info("Sending message notification", {matchId, recipientId});
 
   await deps.sendNotification({
     token: fcmToken,
-    title: senderName,
-    body,
+    title: notificationTitle,
+    body: notificationBody,
     type: "message",
     matchId,
   });
@@ -146,4 +163,16 @@ function buildMessagePreview(message: ChatMessageDoc): string {
 
   const text = message.text.trim();
   return text.length > 80 ? text.slice(0, 80) + "…" : text;
+}
+
+/**
+ * Builds the user-facing body for message push and activity notifications.
+ * @param {ChatMessageDoc} message Chat message document data.
+ * @return {string} Notification body text.
+ */
+function buildMessageBody(message: ChatMessageDoc): string {
+  if (message.imageUrl) return "Sent a photo";
+
+  const text = message.text.trim();
+  return text.length > 100 ? text.slice(0, 100) + "…" : text;
 }

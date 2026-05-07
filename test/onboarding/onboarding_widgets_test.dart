@@ -56,6 +56,8 @@ void main() {
             .goToStep(OnboardingStep.genderInterest);
         await pumpOnboardingUi(tester);
 
+        expect(find.text('Gender'), findsOneWidget);
+        expect(find.text('2/5'), findsOneWidget);
         await tester.tap(find.byTooltip('Back'));
         await pumpOnboardingUi(tester);
 
@@ -63,6 +65,8 @@ void main() {
           container.read(onboardingControllerProvider).step,
           OnboardingStep.nameDob,
         );
+        expect(find.text('Your name'), findsOneWidget);
+        expect(find.text('1/5'), findsOneWidget);
       },
     );
   });
@@ -81,7 +85,9 @@ void main() {
       await tester.tap(find.widgetWithText(CatchButton, 'Continue'));
       await pumpOnboardingUi(tester);
 
-      expect(find.text('Required'), findsWidgets);
+      expect(find.text('First name is required'), findsOneWidget);
+      expect(find.text('Last name is required'), findsOneWidget);
+      expect(find.text('Please select your date of birth'), findsOneWidget);
     });
 
     testWidgets('completed profile fields advance to the next step', (
@@ -169,6 +175,7 @@ void main() {
       await pumpOnboardingUi(tester);
 
       expect(find.text('Please select your gender'), findsOneWidget);
+      expect(find.text('Please select who you want to see'), findsOneWidget);
     });
 
     testWidgets('restores saved selections from the onboarding draft', (

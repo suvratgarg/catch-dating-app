@@ -8,7 +8,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../auth/auth_test_helpers.dart';
-import '../runs/runs_test_helpers.dart';
 
 Future<void> _primeUidProvider(ProviderContainer container) async {
   final uidSubscription = container.listen(
@@ -123,7 +122,8 @@ void main() {
   });
 }
 
-class _SettingsUserProfileRepository extends FakeUserProfileRepository {
+class _SettingsUserProfileRepository extends Fake
+    implements UserProfileRepository {
   String? updatedUid;
   Map<String, dynamic>? updatedFields;
 

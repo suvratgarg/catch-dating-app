@@ -10,22 +10,22 @@ part of 'activity_controller.dart';
 // ignore_for_file: type=lint, type=warning
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Performs batch operations on matches. [markAllReadMutation] tracks the
-/// async lifecycle so the UI can show a loading indicator.
+/// Performs batch operations for the Activity timeline. [markAllReadMutation]
+/// tracks the async lifecycle so the UI can show a loading indicator.
 
 @ProviderFor(ActivityController)
 final activityControllerProvider = ActivityControllerProvider._();
 
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Performs batch operations on matches. [markAllReadMutation] tracks the
-/// async lifecycle so the UI can show a loading indicator.
+/// Performs batch operations for the Activity timeline. [markAllReadMutation]
+/// tracks the async lifecycle so the UI can show a loading indicator.
 final class ActivityControllerProvider
     extends $NotifierProvider<ActivityController, void> {
   /// **Pattern A: Action controller + static Mutations**
   ///
-  /// Performs batch operations on matches. [markAllReadMutation] tracks the
-  /// async lifecycle so the UI can show a loading indicator.
+  /// Performs batch operations for the Activity timeline. [markAllReadMutation]
+  /// tracks the async lifecycle so the UI can show a loading indicator.
   ActivityControllerProvider._()
     : super(
         from: null,
@@ -54,12 +54,12 @@ final class ActivityControllerProvider
 }
 
 String _$activityControllerHash() =>
-    r'07356c2bab2ed4832b9554189c231d066b874e5b';
+    r'd382c00a43cc179cf2408d5bd3dede04e6b3e578';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Performs batch operations on matches. [markAllReadMutation] tracks the
-/// async lifecycle so the UI can show a loading indicator.
+/// Performs batch operations for the Activity timeline. [markAllReadMutation]
+/// tracks the async lifecycle so the UI can show a loading indicator.
 
 abstract class _$ActivityController extends $Notifier<void> {
   void build();

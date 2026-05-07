@@ -5,9 +5,11 @@ import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -62,6 +64,10 @@ void main() {
             watchRunClubsByLocationProvider(
               IndianCity.mumbai,
             ).overrideWith((ref) => Stream.value([club])),
+            uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+            watchActiveRunClubMembershipsForUserProvider(
+              user.uid,
+            ).overrideWith((ref) => Stream.value(const <RunClubMembership>[])),
           ],
           child: MaterialApp.router(
             theme: AppTheme.light,
@@ -113,11 +119,14 @@ void main() {
     );
 
     testWidgets(
-      'detail screen refreshes membership UI when the club stream updates',
+      'detail screen refreshes membership UI when the membership stream updates',
       (tester) async {
         final club = _buildClub();
         final controller = StreamController<RunClub?>.broadcast();
+        final membershipController =
+            StreamController<RunClubMembership?>.broadcast();
         addTearDown(controller.close);
+        addTearDown(membershipController.close);
 
         await tester.pumpWidget(
           ProviderScope(
@@ -135,6 +144,10 @@ void main() {
               watchUserProfileProvider.overrideWith(
                 (ref) => Stream.value(_buildUser(uid: 'runner-2')),
               ),
+              watchRunClubMembershipProvider(
+                club.id,
+                'runner-2',
+              ).overrideWith((ref) => membershipController.stream),
             ],
             child: MaterialApp(
               theme: AppTheme.light,
@@ -148,14 +161,13 @@ void main() {
         // Pump once so the provider subscribes to controller.stream, then emit initial value.
         await tester.pump();
         controller.add(club);
+        membershipController.add(null);
         await _pumpRunClubFlow(tester);
 
         expect(find.text('Join club'), findsOneWidget);
         expect(find.text('Leave club'), findsNothing);
 
-        controller.add(
-          club.copyWith(memberUserIds: [...club.memberUserIds, 'runner-2']),
-        );
+        membershipController.add(_membership(clubId: club.id, uid: 'runner-2'));
         await _pumpRunClubFlow(tester);
 
         expect(find.text('Join club'), findsNothing);
@@ -169,11 +181,7 @@ Future<void> _pumpRunClubFlow(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
-RunClub _buildClub({
-  String id = 'club-1',
-  String hostUserId = 'host-1',
-  List<String> memberUserIds = const ['host-1'],
-}) {
+RunClub _buildClub({String id = 'club-1', String hostUserId = 'host-1'}) {
   return RunClub(
     id: id,
     name: 'Stride Social',
@@ -183,14 +191,10 @@ RunClub _buildClub({
     hostUserId: hostUserId,
     hostName: 'Host',
     createdAt: DateTime(2025, 1, 1),
-    memberUserIds: memberUserIds,
   );
 }
 
-UserProfile _buildUser({
-  required String uid,
-  List<String> joinedRunClubIds = const [],
-}) {
+UserProfile _buildUser({required String uid}) {
   return UserProfile(
     uid: uid,
     email: '$uid@example.com',
@@ -200,7 +204,16 @@ UserProfile _buildUser({
     gender: Gender.man,
     phoneNumber: '+10000000000',
     profileComplete: true,
-    joinedRunClubIds: joinedRunClubIds,
     interestedInGenders: const [Gender.woman],
   );
 }
+
+RunClubMembership _membership({required String clubId, required String uid}) =>
+    RunClubMembership(
+      id: runClubMembershipId(clubId: clubId, uid: uid),
+      clubId: clubId,
+      uid: uid,
+      role: RunClubMembershipRole.member,
+      status: RunClubMembershipStatus.active,
+      joinedAt: DateTime(2026),
+    );

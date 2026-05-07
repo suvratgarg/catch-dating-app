@@ -20,7 +20,6 @@ void main() {
         id: 'run-open',
         startTime: DateTime.now().subtract(const Duration(hours: 4)),
         endTime: DateTime.now().subtract(const Duration(hours: 3)),
-        attendedUserIds: const [],
       );
       final runRepository = FakeRunRepository()..fetchedRun = run;
       final runParticipationRepository = FakeRunParticipationRepository()

@@ -93,7 +93,7 @@ void main() {
           meetingPoint: 'Juhu Beach Gate',
           distanceKm: 8,
           pace: PaceLevel.moderate,
-          signedUpUserIds: const ['runner-1', 'runner-2'],
+          bookedCount: 2,
           capacityLimit: 12,
         ),
         buildRun(
@@ -102,7 +102,7 @@ void main() {
           meetingPoint: 'Carter Road Promenade',
           distanceKm: 5,
           pace: PaceLevel.easy,
-          signedUpUserIds: const ['runner-1'],
+          bookedCount: 1,
           capacityLimit: 20,
         ),
       ];
@@ -291,7 +291,7 @@ void main() {
           meetingPoint: 'Carter Road Promenade',
           distanceKm: 5,
           pace: PaceLevel.easy,
-          signedUpUserIds: const ['runner-1'],
+          bookedCount: 1,
         );
         final user = buildUser(uid: 'runner-1');
         final runClub = buildRunClub(id: 'club-1');

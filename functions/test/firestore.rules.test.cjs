@@ -8,8 +8,6 @@ const {
 } = require("@firebase/rules-unit-testing");
 const {
   Timestamp,
-  arrayRemove,
-  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -50,7 +48,6 @@ function runClub(overrides = {}) {
     createdAt: Timestamp.fromDate(new Date("2026-04-28T10:00:00.000Z")),
     imageUrl: null,
     tags: [],
-    memberUserIds: ["host-1"],
     memberCount: 1,
     rating: 0,
     reviewCount: 0,
@@ -74,11 +71,21 @@ function run(overrides = {}) {
     capacityLimit: 20,
     description: "Easy seaside run.",
     priceInPaise: 0,
-    signedUpUserIds: [],
-    attendedUserIds: [],
-    waitlistUserIds: [],
     constraints: {},
     genderCounts: {},
+    ...overrides,
+  };
+}
+
+function runParticipation(overrides = {}) {
+  return {
+    runId: "run-1",
+    runClubId: "club-1",
+    uid: "runner-1",
+    status: "attended",
+    createdAt: Timestamp.fromDate(new Date("2026-05-02T01:30:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+    attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
     ...overrides,
   };
 }
@@ -100,8 +107,6 @@ function userProfile(overrides = {}) {
     city: "mumbai",
     latitude: null,
     longitude: null,
-    joinedRunClubIds: [],
-    savedRunIds: [],
     interestedInGenders: ["man"],
     minAgePreference: 24,
     maxAgePreference: 34,
@@ -122,7 +127,10 @@ function userProfile(overrides = {}) {
     preferredDistances: [],
     runningReasons: [],
     prefsNewCatches: true,
+    prefsMessages: true,
     prefsRunReminders: true,
+    prefsRunStatusUpdates: true,
+    prefsClubUpdates: true,
     prefsWeeklyDigest: false,
     prefsShowOnMap: true,
     ...overrides,
@@ -212,6 +220,23 @@ function savedRun(overrides = {}) {
   };
 }
 
+function activityNotification(overrides = {}) {
+  return {
+    uid: "runner-1",
+    type: "match",
+    title: "It's a catch",
+    body: "You and Runner Two matched. Say hi!",
+    createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    readAt: null,
+    matchId: "match-1",
+    runId: "run-1",
+    runClubId: null,
+    actorUid: "runner-2",
+    actorName: "Runner Two",
+    ...overrides,
+  };
+}
+
 function runReviewId(runId, reviewerUserId) {
   return `${runId}~${reviewerUserId}`;
 }
@@ -249,10 +274,10 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("allows hosts to update club profile fields only", async () => {
+    it("denies direct host profile edits because updates are callable-owned", async () => {
       await seed(["runClubs", "club-1"], runClub());
 
-      await assertSucceeds(
+      await assertFails(
         updateDoc(doc(authedDb("host-1"), "runClubs", "club-1"), {
           description: "Updated city loops.",
           tags: ["easy"],
@@ -269,7 +294,6 @@ describe("firestore.rules", () => {
         hostUserId: "host-1",
         createdAt: Timestamp.fromDate(new Date("2026-04-28T10:00:00.000Z")),
         imageUrl: null,
-        memberUserIds: ["host-1"],
         rating: 0,
         reviewCount: 0,
       };
@@ -286,7 +310,6 @@ describe("firestore.rules", () => {
         setDoc(
           doc(authedDb("runner-1"), "runClubs", "club-1"),
           runClub({
-            memberUserIds: ["host-1", "runner-1"],
             memberCount: 2,
           }),
         ),
@@ -301,22 +324,20 @@ describe("firestore.rules", () => {
           doc(authedDb("runner-1"), "runClubs", "club-1"),
           runClub({
             hostName: "Mallory",
-            memberUserIds: ["host-1", "runner-1"],
             memberCount: 2,
           }),
         ),
       );
     });
 
-    it("rejects member updates with stale memberCount", async () => {
+    it("denies direct member count repairs", async () => {
       await seed(["runClubs", "club-1"], runClub());
 
       await assertFails(
         setDoc(
           doc(authedDb("runner-1"), "runClubs", "club-1"),
           runClub({
-            memberUserIds: ["host-1", "runner-1"],
-            memberCount: 1,
+            memberCount: 2,
           }),
         ),
       );
@@ -326,7 +347,6 @@ describe("firestore.rules", () => {
       await seed(
         ["runClubs", "club-1"],
         runClub({
-          memberUserIds: ["host-1", "runner-1", "runner-2"],
           memberCount: 3,
         }),
       );
@@ -335,18 +355,16 @@ describe("firestore.rules", () => {
         setDoc(
           doc(authedDb("runner-1"), "runClubs", "club-1"),
           runClub({
-            memberUserIds: ["host-1", "runner-2"],
             memberCount: 2,
           }),
         ),
       );
     });
 
-    it("rejects members removing another club member", async () => {
+    it("rejects members changing aggregate membership count", async () => {
       await seed(
         ["runClubs", "club-1"],
         runClub({
-          memberUserIds: ["host-1", "runner-1", "runner-2"],
           memberCount: 3,
         }),
       );
@@ -355,36 +373,32 @@ describe("firestore.rules", () => {
         setDoc(
           doc(authedDb("runner-1"), "runClubs", "club-1"),
           runClub({
-            memberUserIds: ["host-1", "runner-1"],
             memberCount: 2,
           }),
         ),
       );
     });
 
-    it("denies joining via updateDoc with FieldValue operations", async () => {
+    it("denies joining via direct aggregate updates", async () => {
       await seed(["runClubs", "club-1"], runClub());
 
       await assertFails(
         updateDoc(doc(authedDb("runner-1"), "runClubs", "club-1"), {
-          memberUserIds: arrayUnion("runner-1"),
           memberCount: increment(1),
         }),
       );
     });
 
-    it("denies leaving via updateDoc with FieldValue operations", async () => {
+    it("denies leaving via direct aggregate updates", async () => {
       await seed(
         ["runClubs", "club-1"],
         runClub({
-          memberUserIds: ["host-1", "runner-1", "runner-2"],
           memberCount: 3,
         }),
       );
 
       await assertFails(
         updateDoc(doc(authedDb("runner-1"), "runClubs", "club-1"), {
-          memberUserIds: arrayRemove("runner-1"),
           memberCount: increment(-1),
         }),
       );
@@ -529,6 +543,15 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("requires at least one interested-in gender on create", async () => {
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({interestedInGenders: []}),
+        ),
+      );
+    });
+
     it("denies direct profile edits but allows runtime FCM token updates", async () => {
       await seed(["users", "runner-1"], userProfile());
 
@@ -566,23 +589,6 @@ describe("firestore.rules", () => {
       await assertFails(updateDoc(userRef, {photoUrls: ["https://example.test/a.jpg"]}));
       await assertFails(updateDoc(userRef, {prefsWeeklyDigest: true}));
       await assertFails(updateDoc(userRef, {dateOfBirth: "1998-01-01"}));
-    });
-
-    it("denies direct joined club projection changes", async () => {
-      await seed(["users", "runner-1"], userProfile({
-        joinedRunClubIds: ["club-1"],
-      }));
-
-      await assertFails(
-        updateDoc(doc(authedDb("runner-1"), "users", "runner-1"), {
-          joinedRunClubIds: arrayUnion("club-2"),
-        }),
-      );
-      await assertFails(
-        updateDoc(doc(authedDb("runner-1"), "users", "runner-1"), {
-          joinedRunClubIds: ["club-9", "club-10", "club-11"],
-        }),
-      );
     });
 
     it("denies client writes to account-deletion lifecycle fields", async () => {
@@ -740,12 +746,88 @@ describe("firestore.rules", () => {
     });
   });
 
+  describe("activity notifications", () => {
+    it("allows users to read only their own notification timeline", async () => {
+      await seed(
+        ["notifications", "runner-1", "items", "notification-1"],
+        activityNotification(),
+      );
+
+      await assertSucceeds(
+        getDocs(collection(authedDb("runner-1"), "notifications", "runner-1", "items")),
+      );
+      await assertFails(
+        getDocs(collection(authedDb("runner-2"), "notifications", "runner-1", "items")),
+      );
+    });
+
+    it("allows users to mark notifications read but not edit content", async () => {
+      await seed(
+        ["notifications", "runner-1", "items", "notification-1"],
+        activityNotification(),
+      );
+      const notificationRef = doc(
+        authedDb("runner-1"),
+        "notifications",
+        "runner-1",
+        "items",
+        "notification-1",
+      );
+
+      await assertSucceeds(updateDoc(notificationRef, {readAt: serverTimestamp()}));
+      await assertFails(updateDoc(notificationRef, {title: "Updated"}));
+      await assertFails(
+        updateDoc(
+          doc(
+            authedDb("runner-2"),
+            "notifications",
+            "runner-1",
+            "items",
+            "notification-1",
+          ),
+          {readAt: serverTimestamp()},
+        ),
+      );
+    });
+
+    it("denies client-created notification timeline items", async () => {
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "notifications",
+            "runner-1",
+            "items",
+            "notification-1",
+          ),
+          activityNotification(),
+        ),
+      );
+    });
+  });
+
   describe("swipes", () => {
     it("allows attended users to create valid outgoing swipes", async () => {
       await seed(["publicProfiles", "runner-2"], {name: "Runner Two"});
-      await seed(["runs", "run-1"], run({
-        attendedUserIds: ["runner-1", "runner-2"],
-      }));
+      await seed(["runs", "run-1"], run());
+      await seed(
+        ["runParticipations", "run-1_runner-1"],
+        runParticipation({
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await seed(
+        ["runParticipations", "run-1_runner-2"],
+        runParticipation({
+          uid: "runner-2",
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1")),
+      );
 
       await assertSucceeds(
         setDoc(
@@ -757,9 +839,25 @@ describe("firestore.rules", () => {
 
     it("denies malformed swipe payloads", async () => {
       await seed(["publicProfiles", "runner-2"], {name: "Runner Two"});
-      await seed(["runs", "run-1"], run({
-        attendedUserIds: ["runner-1", "runner-2"],
-      }));
+      await seed(["runs", "run-1"], run());
+      await seed(
+        ["runParticipations", "run-1_runner-1"],
+        runParticipation({
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1")),
+      );
+      await seed(
+        ["runParticipations", "run-1_runner-2"],
+        runParticipation({
+          uid: "runner-2",
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
 
       const swipeRef = doc(
         authedDb("runner-1"),
@@ -780,12 +878,31 @@ describe("firestore.rules", () => {
       await seed(["publicProfiles", "runner-1"], {name: "Runner One"});
       await seed(["publicProfiles", "runner-2"], {name: "Runner Two"});
       await seed(["publicProfiles", "runner-3"], {name: "Runner Three"});
-      await seed(["runs", "run-1"], run({
-        attendedUserIds: ["runner-1", "runner-2"],
-      }));
-      await seed(["runs", "run-2"], run({
-        attendedUserIds: ["runner-1"],
-      }));
+      await seed(["runs", "run-1"], run());
+      await seed(["runs", "run-2"], run());
+      await seed(
+        ["runParticipations", "run-1_runner-1"],
+        runParticipation({
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await seed(
+        ["runParticipations", "run-1_runner-2"],
+        runParticipation({
+          uid: "runner-2",
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await seed(
+        ["runParticipations", "run-2_runner-1"],
+        runParticipation({
+          runId: "run-2",
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
 
       await assertFails(
         setDoc(
@@ -820,87 +937,23 @@ describe("firestore.rules", () => {
   });
 
   describe("reviews", () => {
-    it("allows attended users to create deterministic run reviews", async () => {
-      await seed(["runClubs", "club-1"], runClub());
-      await seed(["users", "runner-1"], userProfile());
-      await seed(["runs", "run-1"], run({
-        attendedUserIds: ["runner-1"],
-      }));
-
-      await assertSucceeds(
-        setDoc(
-          doc(
-            authedDb("runner-1"),
-            "reviews",
-            runReviewId("run-1", "runner-1"),
-          ),
-          review(),
-        ),
-      );
-    });
-
-    it("denies malformed or non-attendee run review creates", async () => {
-      await seed(["runClubs", "club-1"], runClub());
-      await seed(["users", "runner-1"], userProfile());
-      await seed(["users", "runner-2"], userProfile({
-        name: "Runner Two",
-      }));
-      await seed(["runs", "run-1"], run({
-        attendedUserIds: ["runner-1"],
-      }));
-
-      await assertFails(
-        setDoc(
-          doc(authedDb("runner-1"), "reviews", "random-review"),
-          review(),
-        ),
-      );
-      await assertFails(
-        setDoc(
-          doc(
-            authedDb("runner-1"),
-            "reviews",
-            runReviewId("run-1", "runner-1"),
-          ),
-          review({runId: null}),
-        ),
-      );
-      await assertFails(
-        setDoc(
-          doc(
-            authedDb("runner-1"),
-            "reviews",
-            runReviewId("run-1", "runner-1"),
-          ),
-          review({reviewerName: "Not Runner One"}),
-        ),
-      );
-      await assertFails(
-        setDoc(
-          doc(
-            authedDb("runner-2"),
-            "reviews",
-            runReviewId("run-1", "runner-2"),
-          ),
-          review({
-            reviewerUserId: "runner-2",
-            reviewerName: "Runner Two",
-          }),
-        ),
-      );
-    });
-
-    it("allows authors to update or delete only their own review content", async () => {
+    it("allows authenticated users to read reviews", async () => {
       await seed(
         ["reviews", runReviewId("run-1", "runner-1")],
         review(),
       );
+
+      await assertSucceeds(getDoc(doc(
+        authedDb("runner-1"),
+        "reviews",
+        runReviewId("run-1", "runner-1"),
+      )));
+    });
+
+    it("denies direct review writes because reviews are callable-owned", async () => {
       await seed(
-        ["reviews", runReviewId("run-1", "runner-2")],
-        review({
-          reviewerUserId: "runner-2",
-          reviewerName: "Runner Two",
-        }),
+        ["reviews", runReviewId("run-1", "runner-1")],
+        review(),
       );
 
       const ownReviewRef = doc(
@@ -909,29 +962,18 @@ describe("firestore.rules", () => {
         runReviewId("run-1", "runner-1"),
       );
 
-      await assertSucceeds(
-        updateDoc(ownReviewRef, {
-          rating: 4,
-          comment: "Updated review.",
-          updatedAt: serverTimestamp(),
-        }),
-      );
-      await assertFails(updateDoc(ownReviewRef, {runId: "run-2"}));
       await assertFails(
-        updateDoc(
-          doc(
-            authedDb("runner-1"),
-            "reviews",
-            runReviewId("run-1", "runner-2"),
-          ),
-          {
-            rating: 1,
-            comment: "Tampered review.",
-            updatedAt: serverTimestamp(),
-          },
+        setDoc(
+          doc(authedDb("runner-1"), "reviews", "run-2~runner-1"),
+          review({runId: "run-2"}),
         ),
       );
-      await assertSucceeds(deleteDoc(ownReviewRef));
+      await assertFails(updateDoc(ownReviewRef, {
+        rating: 4,
+        comment: "Updated review.",
+        updatedAt: serverTimestamp(),
+      }));
+      await assertFails(deleteDoc(ownReviewRef));
     });
   });
 
@@ -965,44 +1007,27 @@ describe("firestore.rules", () => {
 
     it("denies hosts changing booking-sensitive or ownership run fields", async () => {
       await seed(["runClubs", "club-1"], runClub());
-      await seed(["runs", "run-1"], run({
-        waitlistUserIds: ["runner-1"],
-      }));
+      await seed(["runs", "run-1"], run());
 
       const runRef = doc(authedDb("host-1"), "runs", "run-1");
 
-      await assertFails(updateDoc(runRef, {waitlistUserIds: ["runner-2"]}));
       await assertFails(updateDoc(runRef, {runClubId: "club-2"}));
       await assertFails(updateDoc(runRef, {capacityLimit: 50}));
       await assertFails(updateDoc(runRef, {priceInPaise: 10000}));
       await assertFails(updateDoc(runRef, {constraints: {gender: "woman"}}));
-      await assertFails(updateDoc(runRef, {signedUpUserIds: ["runner-1"]}));
-      await assertFails(updateDoc(runRef, {attendedUserIds: ["runner-1"]}));
+      await assertFails(updateDoc(runRef, {bookedCount: 1}));
+      await assertFails(updateDoc(runRef, {waitlistedCount: 1}));
+      await assertFails(updateDoc(runRef, {checkedInCount: 1}));
       await assertFails(updateDoc(runRef, {genderCounts: {woman: 1}}));
     });
 
-    it("allows waitlisted users to remove themselves", async () => {
-      await seed(["runs", "run-1"], run({
-        waitlistUserIds: ["runner-1", "runner-2"],
-      }));
-
-      await assertSucceeds(
-        setDoc(
-          doc(authedDb("runner-1"), "runs", "run-1"),
-          run({waitlistUserIds: ["runner-2"]}),
-        ),
-      );
-    });
-
-    it("rejects waitlisted users removing another waitlisted user", async () => {
-      await seed(["runs", "run-1"], run({
-        waitlistUserIds: ["runner-1", "runner-2"],
-      }));
+    it("denies direct run aggregate rewrites because roster actions are callable-owned", async () => {
+      await seed(["runs", "run-1"], run());
 
       await assertFails(
         setDoc(
           doc(authedDb("runner-1"), "runs", "run-1"),
-          run({waitlistUserIds: ["runner-1"]}),
+          run({bookedCount: 1, waitlistedCount: 1}),
         ),
       );
     });
@@ -1018,6 +1043,17 @@ describe("firestore.rules", () => {
   });
 
   describe("safety privacy rules", () => {
+    it("keeps private profiles owner-only while public profiles remain readable", async () => {
+      await seed(["users", "target-1"], userProfile({name: "Target"}));
+      await seed(["publicProfiles", "target-1"], {name: "Target"});
+
+      await assertSucceeds(getDoc(doc(authedDb("target-1"), "users", "target-1")));
+      await assertFails(getDoc(doc(authedDb("viewer-1"), "users", "target-1")));
+      await assertSucceeds(
+        getDoc(doc(authedDb("viewer-1"), "publicProfiles", "target-1")),
+      );
+    });
+
     it("denies profile reads after either user blocks the other", async () => {
       await seed(["users", "target-1"], {name: "Target"});
       await seed(["publicProfiles", "target-1"], {name: "Target"});

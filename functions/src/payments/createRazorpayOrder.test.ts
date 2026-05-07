@@ -17,9 +17,9 @@ function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
     capacityLimit: 20,
     description: "Easy paced seaside run.",
     priceInPaise: 25000,
-    signedUpUserIds: [],
-    attendedUserIds: [],
-    waitlistUserIds: [],
+    status: "active",
+    cancelledAt: null,
+    cancellationReason: null,
     constraints: {
       minAge: 0,
       maxAge: 99,
@@ -81,7 +81,9 @@ test(
         }),
         {
           firestore: () =>
-            createRunFirestore(buildRunDoc({signedUpUserIds: ["runner-1"]})),
+            createRunFirestore(buildRunDoc(), [
+              {uid: "runner-1", status: "signedUp"},
+            ]),
           createClient: failOnClientUse,
           now: () => 0,
         }
@@ -100,7 +102,7 @@ test(
             createRunFirestore(
               buildRunDoc({
                 capacityLimit: 1,
-                signedUpUserIds: ["other-runner"],
+                bookedCount: 1,
               })
             ),
           createClient: failOnClientUse,
@@ -132,16 +134,47 @@ function buildRequest({
   };
 }
 
-function createRunFirestore(run: RunDoc | null): FirebaseFirestore.Firestore {
+function createRunFirestore(
+  run: RunDoc | null,
+  participations: Array<{uid: string; status: string}> = []
+): FirebaseFirestore.Firestore {
   return {
-    collection: () => ({
-      doc: () => ({
-        get: async () => ({
-          exists: run !== null,
-          data: () => run,
-        }),
-      }),
-    }),
+    collection: (collectionName: string) => {
+      if (collectionName === "runs") {
+        return {
+          doc: () => ({
+            get: async () => ({
+              exists: run !== null,
+              data: () => run,
+            }),
+          }),
+        };
+      }
+      if (collectionName === "runParticipations") {
+        return {
+          doc: (id: string) => ({
+            get: async () => {
+              const participation = participations.find((candidate) =>
+                id.endsWith(`_${candidate.uid}`));
+              return {
+                exists: participation !== undefined,
+                data: () => participation,
+              };
+            },
+          }),
+          where: () => ({
+            where: () => ({
+              get: async () => ({
+                docs: participations.map((participation) => ({
+                  data: () => participation,
+                })),
+              }),
+            }),
+          }),
+        };
+      }
+      throw new Error(`Unexpected collection ${collectionName}`);
+    },
   } as unknown as FirebaseFirestore.Firestore;
 }
 

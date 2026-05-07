@@ -8,8 +8,8 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendation
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -57,6 +57,13 @@ dynamic _membershipsOverride(UserProfile user, List<String> clubIds) =>
       ),
     );
 
+dynamic _activityNotificationsOverride(
+  UserProfile user, [
+  List<ActivityNotification> notifications = const [],
+]) => watchActivityNotificationsProvider(
+  user.uid,
+).overrideWithValue(AsyncData<List<ActivityNotification>>(notifications));
+
 void main() {
   group('DashboardScreen', () {
     testWidgets('shows a loading state while booked runs are loading', (
@@ -72,6 +79,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             _membershipsOverride(user, const []),
+            _activityNotificationsOverride(user),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWith((ref) => signedUpRunsController.stream),
@@ -97,6 +105,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             _membershipsOverride(user, const []),
+            _activityNotificationsOverride(user),
             watchSignedUpRunsProvider(user.uid).overrideWithValue(
               AsyncError<List<Run>>(Exception('boom'), StackTrace.empty),
             ),
@@ -126,6 +135,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             _membershipsOverride(user, const []),
+            _activityNotificationsOverride(user),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
@@ -147,9 +157,9 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1', joinedRunClubIds: joinedClubIds);
+      final user = buildUser(uid: 'runner-1');
       final nextRun = buildRun(
-        signedUpUserIds: const ['runner-1'],
+        bookedCount: 1,
         startTime: DateTime.now().add(const Duration(hours: 3)),
       );
 
@@ -167,6 +177,7 @@ void main() {
               _recommendationsQueryFor(user.uid, joinedClubIds),
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             _membershipsOverride(user, joinedClubIds),
+            _activityNotificationsOverride(user),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             runCheckInLocationServiceProvider.overrideWithValue(
@@ -195,12 +206,10 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             _membershipsOverride(user, const []),
+            _activityNotificationsOverride(user),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
-            watchMatchesForUserProvider(
-              user.uid,
-            ).overrideWithValue(const AsyncData<List<Match>>([])),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -251,6 +260,7 @@ void main() {
               (ref) => userController.stream,
             ),
             _membershipsOverride(user, const []),
+            _activityNotificationsOverride(user),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWith((ref) => signedUpRunsController.stream),
@@ -305,7 +315,7 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1', joinedRunClubIds: joinedClubIds);
+      final user = buildUser(uid: 'runner-1');
 
       await tester.pumpWidget(
         ProviderScope(
@@ -328,9 +338,7 @@ void main() {
             home: DashboardFull(
               user: user,
               followedClubIds: joinedClubIds,
-              signedUpRuns: [
-                buildRun(signedUpUserIds: const ['runner-1']),
-              ],
+              signedUpRuns: [buildRun(bookedCount: 1)],
             ),
           ),
         ),
@@ -345,7 +353,7 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1', joinedRunClubIds: joinedClubIds);
+      final user = buildUser(uid: 'runner-1');
 
       await tester.pumpWidget(
         ProviderScope(
@@ -363,9 +371,7 @@ void main() {
             home: DashboardFull(
               user: user,
               followedClubIds: joinedClubIds,
-              signedUpRuns: [
-                buildRun(signedUpUserIds: const ['runner-1']),
-              ],
+              signedUpRuns: [buildRun(bookedCount: 1)],
             ),
           ),
         ),
@@ -380,7 +386,7 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1', joinedRunClubIds: joinedClubIds);
+      final user = buildUser(uid: 'runner-1');
 
       await tester.pumpWidget(
         ProviderScope(
@@ -398,9 +404,7 @@ void main() {
             home: DashboardFull(
               user: user,
               followedClubIds: joinedClubIds,
-              signedUpRuns: [
-                buildRun(signedUpUserIds: const ['runner-1']),
-              ],
+              signedUpRuns: [buildRun(bookedCount: 1)],
             ),
           ),
         ),
@@ -421,10 +425,7 @@ void main() {
       'surfaces recommendation errors instead of hiding the section',
       (tester) async {
         final joinedClubIds = ['club-1'];
-        final user = buildUser(
-          uid: 'runner-1',
-          joinedRunClubIds: joinedClubIds,
-        );
+        final user = buildUser(uid: 'runner-1');
 
         await tester.pumpWidget(
           ProviderScope(
@@ -444,9 +445,7 @@ void main() {
               home: DashboardFull(
                 user: user,
                 followedClubIds: joinedClubIds,
-                signedUpRuns: [
-                  buildRun(signedUpUserIds: const ['runner-1']),
-                ],
+                signedUpRuns: [buildRun(bookedCount: 1)],
               ),
             ),
           ),
@@ -468,15 +467,15 @@ void main() {
     ) async {
       final now = DateTime.now();
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1', joinedRunClubIds: joinedClubIds);
+      final user = buildUser(uid: 'runner-1');
       final nextRun = buildRun(
         id: 'next-run',
-        signedUpUserIds: const ['runner-1'],
+        bookedCount: 1,
         startTime: now.add(const Duration(hours: 3)),
       );
       final swipeRun = buildRun(
         id: 'swipe-run',
-        attendedUserIds: const ['runner-1'],
+        checkedInCount: 1,
         startTime: now.subtract(const Duration(hours: 4)),
         endTime: now.subtract(const Duration(hours: 2)),
       );
@@ -531,14 +530,10 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final joinedClubIds = ['club-1'];
-      final user = buildUser(
-        uid: 'runner-1',
-        name: 'Suvrat Garg',
-        joinedRunClubIds: joinedClubIds,
-      );
+      final user = buildUser(uid: 'runner-1', name: 'Suvrat Garg');
       final nextRun = buildRun(
         id: 'next-run',
-        signedUpUserIds: const ['runner-1'],
+        bookedCount: 1,
         startTime: DateTime.now().add(const Duration(hours: 3)),
       );
 
@@ -590,7 +585,7 @@ void main() {
       final user = buildUser(uid: 'runner-1');
       final run = buildRun(
         id: 'check-in-run',
-        signedUpUserIds: const ['runner-1'],
+        bookedCount: 1,
         startTime: now.add(const Duration(minutes: 5)),
       );
 

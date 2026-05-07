@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RunClubMembership {
 
-@JsonKey(includeToJson: false) String get id; String get clubId; String get uid; RunClubMembershipRole get role; RunClubMembershipStatus get status;@TimestampConverter() DateTime get joinedAt;@NullableTimestampConverter() DateTime? get leftAt;@NullableTimestampConverter() DateTime? get deletedAt;
+@JsonKey(includeToJson: false) String get id; String get clubId; String get uid; RunClubMembershipRole get role; RunClubMembershipStatus get status; bool get pushNotificationsEnabled;@TimestampConverter() DateTime get joinedAt;@NullableTimestampConverter() DateTime? get leftAt;@NullableTimestampConverter() DateTime? get deletedAt;
 /// Create a copy of RunClubMembership
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $RunClubMembershipCopyWith<RunClubMembership> get copyWith => _$RunClubMembershi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunClubMembership&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.leftAt, leftAt) || other.leftAt == leftAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunClubMembership&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.pushNotificationsEnabled, pushNotificationsEnabled) || other.pushNotificationsEnabled == pushNotificationsEnabled)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.leftAt, leftAt) || other.leftAt == leftAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,clubId,uid,role,status,joinedAt,leftAt,deletedAt);
+int get hashCode => Object.hash(runtimeType,id,clubId,uid,role,status,pushNotificationsEnabled,joinedAt,leftAt,deletedAt);
 
 @override
 String toString() {
-  return 'RunClubMembership(id: $id, clubId: $clubId, uid: $uid, role: $role, status: $status, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
+  return 'RunClubMembership(id: $id, clubId: $clubId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $RunClubMembershipCopyWith<$Res>  {
   factory $RunClubMembershipCopyWith(RunClubMembership value, $Res Function(RunClubMembership) _then) = _$RunClubMembershipCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String clubId, String uid, RunClubMembershipRole role, RunClubMembershipStatus status,@TimestampConverter() DateTime joinedAt,@NullableTimestampConverter() DateTime? leftAt,@NullableTimestampConverter() DateTime? deletedAt
+@JsonKey(includeToJson: false) String id, String clubId, String uid, RunClubMembershipRole role, RunClubMembershipStatus status, bool pushNotificationsEnabled,@TimestampConverter() DateTime joinedAt,@NullableTimestampConverter() DateTime? leftAt,@NullableTimestampConverter() DateTime? deletedAt
 });
 
 
@@ -65,14 +65,15 @@ class _$RunClubMembershipCopyWithImpl<$Res>
 
 /// Create a copy of RunClubMembership
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clubId = null,Object? uid = null,Object? role = null,Object? status = null,Object? joinedAt = null,Object? leftAt = freezed,Object? deletedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clubId = null,Object? uid = null,Object? role = null,Object? status = null,Object? pushNotificationsEnabled = null,Object? joinedAt = null,Object? leftAt = freezed,Object? deletedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as RunClubMembershipRole,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as RunClubMembershipStatus,joinedAt: null == joinedAt ? _self.joinedAt : joinedAt // ignore: cast_nullable_to_non_nullable
+as RunClubMembershipStatus,pushNotificationsEnabled: null == pushNotificationsEnabled ? _self.pushNotificationsEnabled : pushNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+as bool,joinedAt: null == joinedAt ? _self.joinedAt : joinedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,leftAt: freezed == leftAt ? _self.leftAt : leftAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,deletedAt: freezed == deletedAt ? _self.deletedAt : deletedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,
@@ -160,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  RunClubMembershipRole role,  RunClubMembershipStatus status, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  RunClubMembershipRole role,  RunClubMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RunClubMembership() when $default != null:
-return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
+return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
   return orElse();
 
 }
@@ -181,10 +182,10 @@ return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.jo
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  RunClubMembershipRole role,  RunClubMembershipStatus status, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  RunClubMembershipRole role,  RunClubMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)  $default,) {final _that = this;
 switch (_that) {
 case _RunClubMembership():
-return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
+return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +202,10 @@ return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.jo
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  RunClubMembershipRole role,  RunClubMembershipStatus status, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String clubId,  String uid,  RunClubMembershipRole role,  RunClubMembershipStatus status,  bool pushNotificationsEnabled, @TimestampConverter()  DateTime joinedAt, @NullableTimestampConverter()  DateTime? leftAt, @NullableTimestampConverter()  DateTime? deletedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _RunClubMembership() when $default != null:
-return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
+return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.pushNotificationsEnabled,_that.joinedAt,_that.leftAt,_that.deletedAt);case _:
   return null;
 
 }
@@ -216,7 +217,7 @@ return $default(_that.id,_that.clubId,_that.uid,_that.role,_that.status,_that.jo
 @JsonSerializable()
 
 class _RunClubMembership implements RunClubMembership {
-  const _RunClubMembership({@JsonKey(includeToJson: false) required this.id, required this.clubId, required this.uid, required this.role, required this.status, @TimestampConverter() required this.joinedAt, @NullableTimestampConverter() this.leftAt, @NullableTimestampConverter() this.deletedAt});
+  const _RunClubMembership({@JsonKey(includeToJson: false) required this.id, required this.clubId, required this.uid, required this.role, required this.status, this.pushNotificationsEnabled = false, @TimestampConverter() required this.joinedAt, @NullableTimestampConverter() this.leftAt, @NullableTimestampConverter() this.deletedAt});
   factory _RunClubMembership.fromJson(Map<String, dynamic> json) => _$RunClubMembershipFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -224,6 +225,7 @@ class _RunClubMembership implements RunClubMembership {
 @override final  String uid;
 @override final  RunClubMembershipRole role;
 @override final  RunClubMembershipStatus status;
+@override@JsonKey() final  bool pushNotificationsEnabled;
 @override@TimestampConverter() final  DateTime joinedAt;
 @override@NullableTimestampConverter() final  DateTime? leftAt;
 @override@NullableTimestampConverter() final  DateTime? deletedAt;
@@ -241,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunClubMembership&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.leftAt, leftAt) || other.leftAt == leftAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunClubMembership&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.role, role) || other.role == role)&&(identical(other.status, status) || other.status == status)&&(identical(other.pushNotificationsEnabled, pushNotificationsEnabled) || other.pushNotificationsEnabled == pushNotificationsEnabled)&&(identical(other.joinedAt, joinedAt) || other.joinedAt == joinedAt)&&(identical(other.leftAt, leftAt) || other.leftAt == leftAt)&&(identical(other.deletedAt, deletedAt) || other.deletedAt == deletedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,clubId,uid,role,status,joinedAt,leftAt,deletedAt);
+int get hashCode => Object.hash(runtimeType,id,clubId,uid,role,status,pushNotificationsEnabled,joinedAt,leftAt,deletedAt);
 
 @override
 String toString() {
-  return 'RunClubMembership(id: $id, clubId: $clubId, uid: $uid, role: $role, status: $status, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
+  return 'RunClubMembership(id: $id, clubId: $clubId, uid: $uid, role: $role, status: $status, pushNotificationsEnabled: $pushNotificationsEnabled, joinedAt: $joinedAt, leftAt: $leftAt, deletedAt: $deletedAt)';
 }
 
 
@@ -261,7 +263,7 @@ abstract mixin class _$RunClubMembershipCopyWith<$Res> implements $RunClubMember
   factory _$RunClubMembershipCopyWith(_RunClubMembership value, $Res Function(_RunClubMembership) _then) = __$RunClubMembershipCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String clubId, String uid, RunClubMembershipRole role, RunClubMembershipStatus status,@TimestampConverter() DateTime joinedAt,@NullableTimestampConverter() DateTime? leftAt,@NullableTimestampConverter() DateTime? deletedAt
+@JsonKey(includeToJson: false) String id, String clubId, String uid, RunClubMembershipRole role, RunClubMembershipStatus status, bool pushNotificationsEnabled,@TimestampConverter() DateTime joinedAt,@NullableTimestampConverter() DateTime? leftAt,@NullableTimestampConverter() DateTime? deletedAt
 });
 
 
@@ -278,14 +280,15 @@ class __$RunClubMembershipCopyWithImpl<$Res>
 
 /// Create a copy of RunClubMembership
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clubId = null,Object? uid = null,Object? role = null,Object? status = null,Object? joinedAt = null,Object? leftAt = freezed,Object? deletedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clubId = null,Object? uid = null,Object? role = null,Object? status = null,Object? pushNotificationsEnabled = null,Object? joinedAt = null,Object? leftAt = freezed,Object? deletedAt = freezed,}) {
   return _then(_RunClubMembership(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as RunClubMembershipRole,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as RunClubMembershipStatus,joinedAt: null == joinedAt ? _self.joinedAt : joinedAt // ignore: cast_nullable_to_non_nullable
+as RunClubMembershipStatus,pushNotificationsEnabled: null == pushNotificationsEnabled ? _self.pushNotificationsEnabled : pushNotificationsEnabled // ignore: cast_nullable_to_non_nullable
+as bool,joinedAt: null == joinedAt ? _self.joinedAt : joinedAt // ignore: cast_nullable_to_non_nullable
 as DateTime,leftAt: freezed == leftAt ? _self.leftAt : leftAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,deletedAt: freezed == deletedAt ? _self.deletedAt : deletedAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,

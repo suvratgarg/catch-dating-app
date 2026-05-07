@@ -15,6 +15,7 @@ import 'package:catch_dating_app/payments/presentation/payment_confirmation_scre
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_screen.dart';
+import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_screen.dart';
@@ -67,6 +68,7 @@ enum Routes {
   chatScreen('/chats/:matchId'),
   // Profile branch (index 4)
   profileScreen('/you'),
+  reviewsHistoryScreen('/you/reviews'),
   publicProfileScreen('/profiles/:uid'),
   settingsScreen('/settings'),
   paymentHistoryScreen('/payment-history'),
@@ -338,6 +340,13 @@ GoRouter goRouter(Ref ref) {
                 path: Routes.profileScreen.path,
                 name: Routes.profileScreen.name,
                 builder: (context, state) => const ProfileScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'reviews',
+                    name: Routes.reviewsHistoryScreen.name,
+                    builder: (context, state) => const ReviewsHistoryScreen(),
+                  ),
+                ],
               ),
             ],
           ),

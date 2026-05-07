@@ -3,17 +3,19 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'reviews_repository.g.dart';
 
 class ReviewsRepository {
-  const ReviewsRepository(this._db);
+  const ReviewsRepository(this._db, this._functions);
 
   static const _collectionPath = 'reviews';
   static const _reviewIdSeparator = '~';
 
   final FirebaseFirestore _db;
+  final FirebaseFunctions _functions;
 
   CollectionReference<Review> get _reviewsRef => _db
       .collection(_collectionPath)
@@ -64,29 +66,32 @@ class ReviewsRepository {
       );
     }
 
-    final ref = _reviewRefForRunUser(
-      runId: runId,
-      reviewerUserId: review.reviewerUserId,
-    );
     return withFirestoreErrorContext(
-      () => ref.set(review.copyWith(id: ref.id)),
+      () => _functions.httpsCallable('createRunReview').call({
+        'runClubId': review.runClubId,
+        'runId': runId,
+        'rating': review.rating,
+        'comment': review.comment,
+      }),
       collection: _collectionPath,
       action: 'add review',
     );
   }
 
   Future<void> updateReview(Review review) => withFirestoreErrorContext(
-    () => _reviewsRef.doc(review.id).update({
+    () => _functions.httpsCallable('updateRunReview').call({
+      'reviewId': review.id,
       'rating': review.rating,
       'comment': review.comment,
-      'updatedAt': FieldValue.serverTimestamp(),
     }),
     collection: _collectionPath,
     action: 'update review',
   );
 
   Future<void> deleteReview(String reviewId) => withFirestoreErrorContext(
-    () => _reviewsRef.doc(reviewId).delete(),
+    () => _functions.httpsCallable('deleteRunReview').call({
+      'reviewId': reviewId,
+    }),
     collection: _collectionPath,
     action: 'delete review',
   );
@@ -127,8 +132,10 @@ class ReviewsRepository {
 // ── Providers ─────────────────────────────────────────────────────────────────
 
 @riverpod
-ReviewsRepository reviewsRepository(Ref ref) =>
-    ReviewsRepository(ref.watch(firebaseFirestoreProvider));
+ReviewsRepository reviewsRepository(Ref ref) => ReviewsRepository(
+  ref.watch(firebaseFirestoreProvider),
+  ref.watch(firebaseFunctionsProvider),
+);
 
 @riverpod
 Stream<List<Review>> watchReviewsForClub(Ref ref, String runClubId) =>

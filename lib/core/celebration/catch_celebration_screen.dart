@@ -5,10 +5,12 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+const _celebrationInk = Color(0xFF24110A);
+const _celebrationCream = Color(0xFFFFF7ED);
 
 class CelebrationDetail {
   const CelebrationDetail({
@@ -92,51 +94,65 @@ class _CatchCelebrationScreenState
 
   @override
   Widget build(BuildContext context) {
-    const successInk = Color(0xFF1A1410);
     final t = CatchTokens.of(context);
     final details = widget.details;
     final secondaryAction = widget.secondaryAction;
 
     return Scaffold(
+      extendBody: true,
       body: DecoratedBox(
         decoration: BoxDecoration(gradient: t.heroGrad),
         child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(CatchSpacing.s5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: widget.onClose == null
-                      ? const SizedBox(height: 40)
-                      : IconBtn(
-                          background: successInk.withValues(alpha: 0.16),
-                          onTap: widget.onClose,
-                          child: const Icon(
-                            Icons.close_rounded,
-                            color: successInk,
-                          ),
-                        ),
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const ClampingScrollPhysics(),
+                padding: const EdgeInsets.fromLTRB(
+                  CatchSpacing.s5,
+                  CatchSpacing.s4,
+                  CatchSpacing.s5,
+                  CatchSpacing.s5,
                 ),
-                Expanded(
-                  child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight:
+                        constraints.maxHeight -
+                        (CatchSpacing.s4 + CatchSpacing.s5),
+                  ),
+                  child: IntrinsicHeight(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        gapH32,
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: widget.onClose == null
+                              ? const SizedBox(height: 44)
+                              : IconBtn(
+                                  background: _celebrationCream.withValues(
+                                    alpha: 0.22,
+                                  ),
+                                  onTap: widget.onClose,
+                                  child: const Icon(
+                                    Icons.close_rounded,
+                                    color: _celebrationInk,
+                                  ),
+                                ),
+                        ),
+                        const SizedBox(height: 36),
                         Align(
                           alignment: Alignment.centerLeft,
                           child: widget.visual ?? _CelebrationIcon(widget.icon),
                         ),
-                        gapH20,
+                        gapH24,
                         if (widget.eyebrow != null) ...[
                           Text(
                             widget.eyebrow!.toUpperCase(),
                             style:
                                 CatchTextStyles.labelM(
                                   context,
-                                  color: Colors.white.withValues(alpha: 0.86),
+                                  color: _celebrationCream.withValues(
+                                    alpha: 0.9,
+                                  ),
                                 ).copyWith(
                                   fontWeight: FontWeight.w800,
                                   letterSpacing: 1.1,
@@ -148,85 +164,65 @@ class _CatchCelebrationScreenState
                           widget.title,
                           style: CatchTextStyles.displayXL(
                             context,
-                            color: Colors.white,
+                            color: _celebrationCream,
                           ),
                         ),
-                        gapH10,
+                        gapH14,
                         Text(
                           widget.message,
                           style: CatchTextStyles.bodyL(
                             context,
-                            color: Colors.white,
+                            color: _celebrationCream.withValues(alpha: 0.92),
                           ),
                         ),
                         if (details.isNotEmpty) ...[
-                          const SizedBox(height: 22),
+                          const SizedBox(height: 28),
                           _CelebrationDetailsCard(details: details),
                         ],
                         if (widget.note != null) ...[
-                          gapH14,
-                          CatchSurface(
-                            padding: const EdgeInsets.all(CatchSpacing.s4),
-                            backgroundColor: successInk.withValues(alpha: 0.14),
-                            borderColor: successInk.withValues(alpha: 0.18),
-                            radius: CatchRadius.lg,
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.bolt_rounded,
-                                  color: successInk,
-                                  size: 18,
-                                ),
-                                gapW10,
-                                Expanded(
-                                  child: Text(
-                                    widget.note!,
-                                    style: CatchTextStyles.bodyS(
-                                      context,
-                                      color: successInk,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                          gapH16,
+                          _CelebrationNote(note: widget.note!),
+                        ],
+                        for (final child in widget.supplementalChildren) ...[
+                          gapH16,
+                          child,
+                        ],
+                        const Spacer(),
+                        gapH32,
+                        CatchButton(
+                          key: widget.primaryAction.key,
+                          label: widget.primaryAction.label,
+                          onPressed: widget.primaryAction.onPressed,
+                          icon: widget.primaryAction.icon,
+                          variant: CatchButtonVariant.light,
+                          fullWidth: true,
+                          backgroundColor: _celebrationCream,
+                          foregroundColor: _celebrationInk,
+                        ),
+                        if (secondaryAction != null) ...[
+                          gapH12,
+                          CatchButton(
+                            key: secondaryAction.key,
+                            label: secondaryAction.label,
+                            onPressed: secondaryAction.onPressed,
+                            icon: secondaryAction.icon,
+                            variant: secondaryAction.variant,
+                            fullWidth: true,
+                            backgroundColor: _celebrationCream.withValues(
+                              alpha: 0.58,
+                            ),
+                            foregroundColor: _celebrationInk,
+                            borderColor: _celebrationInk.withValues(
+                              alpha: 0.16,
                             ),
                           ),
                         ],
-                        for (final child in widget.supplementalChildren) ...[
-                          gapH14,
-                          child,
-                        ],
-                        const SizedBox(height: 28),
                       ],
                     ),
                   ),
                 ),
-                CatchButton(
-                  key: widget.primaryAction.key,
-                  label: widget.primaryAction.label,
-                  onPressed: widget.primaryAction.onPressed,
-                  icon: widget.primaryAction.icon,
-                  variant: widget.primaryAction.variant,
-                  fullWidth: true,
-                  backgroundColor: Colors.white,
-                  foregroundColor: successInk,
-                  borderColor: Colors.transparent,
-                ),
-                if (secondaryAction != null) ...[
-                  gapH10,
-                  CatchButton(
-                    key: secondaryAction.key,
-                    label: secondaryAction.label,
-                    onPressed: secondaryAction.onPressed,
-                    icon: secondaryAction.icon,
-                    variant: secondaryAction.variant,
-                    fullWidth: true,
-                    backgroundColor: Colors.white.withValues(alpha: 0.72),
-                    foregroundColor: successInk,
-                    borderColor: successInk.withValues(alpha: 0.20),
-                  ),
-                ],
-              ],
-            ),
+              );
+            },
           ),
         ),
       ),
@@ -241,17 +237,15 @@ class _CelebrationIcon extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const successInk = Color(0xFF1A1410);
-
     return Container(
-      width: 78,
-      height: 78,
+      width: 86,
+      height: 86,
       decoration: BoxDecoration(
-        color: successInk.withValues(alpha: 0.12),
+        color: _celebrationCream.withValues(alpha: 0.22),
         shape: BoxShape.circle,
-        border: Border.all(color: successInk.withValues(alpha: 0.18)),
+        border: Border.all(color: _celebrationCream.withValues(alpha: 0.28)),
       ),
-      child: Icon(icon, color: successInk, size: 38),
+      child: Icon(icon, color: _celebrationInk, size: 40),
     );
   }
 }
@@ -263,24 +257,26 @@ class _CelebrationDetailsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const successInk = Color(0xFF1A1410);
-
-    return CatchSurface(
-      padding: const EdgeInsets.all(CatchSpacing.s4),
-      backgroundColor: successInk.withValues(alpha: 0.14),
-      borderColor: successInk.withValues(alpha: 0.18),
-      radius: CatchRadius.lg,
-      child: Column(
-        children: [
-          for (final entry in details.indexed) ...[
-            _CelebrationDetailRow(detail: entry.$2),
-            if (entry.$1 != details.length - 1)
-              Divider(
-                color: successInk.withValues(alpha: 0.14),
-                height: CatchSpacing.s4,
-              ),
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _celebrationCream.withValues(alpha: 0.28),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+        border: Border.all(color: _celebrationCream.withValues(alpha: 0.34)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: Column(
+          children: [
+            for (final entry in details.indexed) ...[
+              _CelebrationDetailRow(detail: entry.$2),
+              if (entry.$1 != details.length - 1)
+                Divider(
+                  color: _celebrationInk.withValues(alpha: 0.12),
+                  height: CatchSpacing.s4,
+                ),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
@@ -293,13 +289,15 @@ class _CelebrationDetailRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const successInk = Color(0xFF1A1410);
     final icon = detail.icon;
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (icon != null) ...[Icon(icon, size: 18, color: successInk), gapW10],
+        if (icon != null) ...[
+          Icon(icon, size: 18, color: _celebrationInk),
+          gapW10,
+        ],
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -308,18 +306,50 @@ class _CelebrationDetailRow extends StatelessWidget {
                 detail.label,
                 style: CatchTextStyles.labelS(
                   context,
-                  color: successInk.withValues(alpha: 0.68),
+                  color: _celebrationInk.withValues(alpha: 0.68),
                 ),
               ),
               gapH3,
               Text(
                 detail.value,
-                style: CatchTextStyles.bodyM(context, color: successInk),
+                style: CatchTextStyles.bodyM(context, color: _celebrationInk),
               ),
             ],
           ),
         ),
       ],
+    );
+  }
+}
+
+class _CelebrationNote extends StatelessWidget {
+  const _CelebrationNote({required this.note});
+
+  final String note;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _celebrationCream.withValues(alpha: 0.20),
+        borderRadius: BorderRadius.circular(CatchRadius.lg),
+        border: Border.all(color: _celebrationCream.withValues(alpha: 0.28)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: Row(
+          children: [
+            const Icon(Icons.bolt_rounded, color: _celebrationInk, size: 18),
+            gapW10,
+            Expanded(
+              child: Text(
+                note,
+                style: CatchTextStyles.bodyS(context, color: _celebrationInk),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

@@ -54,7 +54,7 @@ final class ReviewsRepositoryProvider
   }
 }
 
-String _$reviewsRepositoryHash() => r'93a61efc28bcb8b4a4d88a1d1676dcf4c687d81c';
+String _$reviewsRepositoryHash() => r'52bee368d4158266dbf1c124ad53707143c1958b';
 
 @ProviderFor(watchReviewsForClub)
 final watchReviewsForClubProvider = WatchReviewsForClubFamily._();

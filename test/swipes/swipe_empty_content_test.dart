@@ -17,7 +17,7 @@ void main() {
     });
 
     test('explains that swiping opens after the run ends', () {
-      final run = buildRun(attendedUserIds: const []);
+      final run = buildRun();
       final content = buildSwipeEmptyContent(
         run: run,
         currentUser: buildUser(uid: 'runner-1'),
@@ -40,7 +40,7 @@ void main() {
       final run = buildRun(
         startTime: endedAt.subtract(const Duration(hours: 1)),
         endTime: endedAt,
-        attendedUserIds: const ['runner-1'],
+        checkedInCount: 1,
       );
       final content = buildSwipeEmptyContent(
         run: run,
@@ -64,7 +64,6 @@ void main() {
       final run = buildRun(
         startTime: endedAt.subtract(const Duration(hours: 1)),
         endTime: endedAt,
-        attendedUserIds: const [],
       );
       final content = buildSwipeEmptyContent(
         run: run,
@@ -86,7 +85,6 @@ void main() {
         final run = buildRun(
           startTime: endedAt.subtract(const Duration(hours: 1)),
           endTime: endedAt,
-          attendedUserIds: const [],
         );
         final content = buildSwipeEmptyContent(
           run: run,

@@ -20,10 +20,7 @@ class FiltersController extends _$FiltersController {
     required String uid,
     required int minAgePreference,
     required int maxAgePreference,
-    required int paceMinSecsPerKm,
-    required int paceMaxSecsPerKm,
     required List<String> interestedInGenders,
-    required List<String> preferredDistances,
   }) async {
     await ref
         .read(userProfileRepositoryProvider)
@@ -32,10 +29,7 @@ class FiltersController extends _$FiltersController {
           fields: {
             'minAgePreference': minAgePreference,
             'maxAgePreference': maxAgePreference,
-            'paceMinSecsPerKm': paceMinSecsPerKm,
-            'paceMaxSecsPerKm': paceMaxSecsPerKm,
             'interestedInGenders': interestedInGenders,
-            'preferredDistances': preferredDistances,
           },
         );
   }

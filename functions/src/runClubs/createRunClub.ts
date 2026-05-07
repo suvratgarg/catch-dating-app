@@ -41,7 +41,6 @@ const CreateRunClubSchema = z.object({
 interface CreateRunClubDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
-  arrayUnion: (value: string) => FirebaseFirestore.FieldValue;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -52,12 +51,11 @@ interface CreateRunClubDeps {
 const defaultDeps: CreateRunClubDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
-  arrayUnion: (value) => admin.firestore.FieldValue.arrayUnion(value),
   checkRateLimit: defaultCheckRateLimit,
 };
 
 /**
- * Creates a run club and mirrors host membership onto the user's profile.
+ * Creates a run club and host membership edge.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {CreateRunClubDeps} deps Injectable dependencies for tests.
  * @return {Promise<{clubId: string}>} Created club id.
@@ -118,7 +116,6 @@ export async function createRunClubHandler(
       createdAt: deps.serverTimestamp(),
       imageUrl: data.imageUrl ?? null,
       tags: [],
-      memberUserIds: [hostUserId],
       memberCount: 1,
       rating: 0,
       reviewCount: 0,
@@ -127,9 +124,6 @@ export async function createRunClubHandler(
       instagramHandle: data.instagramHandle ?? null,
       phoneNumber: data.phoneNumber ?? null,
       email: data.email ?? null,
-    });
-    tx.update(userRef, {
-      joinedRunClubIds: deps.arrayUnion(clubRef.id),
     });
     tx.set(membershipRef, activeRunClubMembershipPatch({
       clubId: clubRef.id,

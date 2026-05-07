@@ -103,7 +103,7 @@ class RunDetailCta extends ConsumerWidget {
                         );
                       } else {
                         unawaited(
-                          Navigator.of(context).push(
+                          Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute<void>(
                               fullscreenDialog: true,
                               builder: (routeContext) =>

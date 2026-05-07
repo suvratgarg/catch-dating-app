@@ -123,7 +123,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: RunDetailCta(
-            run: buildRun(signedUpUserIds: const ['a', 'b']),
+            run: buildRun(bookedCount: 2),
             runClubId: 'club1',
             isHost: false,
             userProfile: buildUser(),
@@ -225,7 +225,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: RunDetailCta(
-            run: buildRun(signedUpUserIds: const ['runner-1']),
+            run: buildRun(bookedCount: 1),
             runClubId: 'club1',
             isHost: false,
             userProfile: buildUser(),
@@ -249,34 +249,31 @@ void main() {
       expect(fakeRunRepository.cancelledRunId, 'run-1');
     });
 
-    testWidgets(
-      'does not use compatibility arrays for the current viewer state',
-      (tester) async {
-        await pumpRunsTestApp(
-          tester,
-          Scaffold(
-            bottomNavigationBar: RunDetailCta(
-              run: buildRun(signedUpUserIds: const ['runner-1']),
-              runClubId: 'club1',
-              isHost: false,
-              userProfile: buildUser(uid: 'runner-1'),
-              participation: null,
-            ),
+    testWidgets('does not use aggregate counts for the current viewer state', (
+      tester,
+    ) async {
+      await pumpRunsTestApp(
+        tester,
+        Scaffold(
+          bottomNavigationBar: RunDetailCta(
+            run: buildRun(bookedCount: 1),
+            runClubId: 'club1',
+            isHost: false,
+            userProfile: buildUser(uid: 'runner-1'),
+            participation: null,
           ),
-          overrides: [
-            runClubsRepositoryProvider.overrideWithValue(
-              FakeRunClubsRepository(),
-            ),
-            paymentRepositoryProvider.overrideWithValue(
-              FakePaymentRepository(),
-            ),
-          ],
-        );
+        ),
+        overrides: [
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
 
-        expect(find.text('Cancel booking'), findsNothing);
-        expect(find.text('Join run — 19 spots left'), findsOneWidget);
-      },
-    );
+      expect(find.text('Cancel booking'), findsNothing);
+      expect(find.text('Join run — 19 spots left'), findsOneWidget);
+    });
 
     testWidgets(
       'does not render host attendance as a run-detail bottom action',
@@ -316,10 +313,7 @@ void main() {
         tester,
         Scaffold(
           bottomNavigationBar: RunDetailCta(
-            run: buildRun(
-              startTime: startTime,
-              signedUpUserIds: const ['runner-1'],
-            ),
+            run: buildRun(startTime: startTime, bookedCount: 1),
             runClubId: 'club1',
             isHost: false,
             now: startTime.subtract(const Duration(minutes: 5)),
@@ -368,17 +362,14 @@ void main() {
               body: ListView(
                 children: [
                   RunDetailCta(
-                    run: buildRun(
-                      capacityLimit: 1,
-                      signedUpUserIds: const ['other-runner'],
-                    ),
+                    run: buildRun(capacityLimit: 1, bookedCount: 1),
                     runClubId: 'club1',
                     isHost: false,
                     userProfile: buildUser(uid: 'runner-9'),
                     participation: null,
                   ),
                   RunDetailCta(
-                    run: buildRun(waitlistUserIds: const ['runner-9']),
+                    run: buildRun(waitlistedCount: 1),
                     runClubId: 'club1',
                     isHost: false,
                     userProfile: buildUser(uid: 'runner-9'),
@@ -413,7 +404,7 @@ void main() {
             mainAxisSize: MainAxisSize.min,
             children: [
               RunDetailCta(
-                run: buildRun(attendedUserIds: const ['runner-1']),
+                run: buildRun(checkedInCount: 1),
                 runClubId: 'club1',
                 isHost: false,
                 userProfile: buildUser(),
@@ -505,9 +496,13 @@ void main() {
   });
 
   group('RunDetailBody', () {
-    testWidgets('renders detail sections and review CTA when attended', (
+    testWidgets('renders overview detail sections for attended runs', (
       tester,
     ) async {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = const Size(430, 3000);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
       final user = buildUser(uid: 'runner-1');
       final run = buildRun(
         constraints: const RunConstraints(minAge: 21, maxAge: 35),
@@ -535,13 +530,8 @@ void main() {
         ],
       );
 
-      await _scrollRunDetailUntilVisible(tester, find.text("Who's running"));
-
       expect(find.text(run.title), findsWidgets);
       expect(find.text('Requirements'), findsOneWidget);
-      expect(find.text("Who's running"), findsOneWidget);
-      expect(find.text('Reviews'), findsOneWidget);
-      expect(find.text('Write a review'), findsOneWidget);
     });
 
     testWidgets('renders guest roster prompt and sign-in CTA', (tester) async {
@@ -614,7 +604,7 @@ void main() {
       await pumpRunsTestApp(
         tester,
         RunDetailBody(
-          run: buildRun(signedUpUserIds: const ['runner-1']),
+          run: buildRun(bookedCount: 1),
           userProfile: buildUser(),
           runClubId: 'club-1',
           isHost: false,
@@ -751,15 +741,8 @@ Future<void> _scrollRunDetailUntilVisible(
   WidgetTester tester,
   Finder finder,
 ) async {
-  await tester.scrollUntilVisible(
-    finder,
-    220,
-    scrollable: find.byWidgetPredicate(
-      (widget) =>
-          widget is Scrollable && widget.axisDirection == AxisDirection.down,
-      description: 'vertical run detail scrollable',
-    ),
-  );
+  final scrollView = find.byType(CustomScrollView);
+  await tester.dragUntilVisible(finder, scrollView, const Offset(0, -80));
   await tester.pump();
 }
 

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/matches/data/match_repository.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -7,8 +8,8 @@ part 'activity_controller.g.dart';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Performs batch operations on matches. [markAllReadMutation] tracks the
-/// async lifecycle so the UI can show a loading indicator.
+/// Performs batch operations for the Activity timeline. [markAllReadMutation]
+/// tracks the async lifecycle so the UI can show a loading indicator.
 @riverpod
 class ActivityController extends _$ActivityController {
   static final markAllReadMutation = Mutation<void>();
@@ -17,14 +18,27 @@ class ActivityController extends _$ActivityController {
   void build() {}
 
   Future<void> markAllRead({
-    required List<Match> matches,
+    required List<ActivityNotification> notifications,
     required String uid,
   }) async {
-    final repository = ref.read(matchRepositoryProvider);
-    for (final match in matches) {
-      if ((match.unreadCounts[uid] ?? 0) > 0) {
-        await repository.resetUnread(matchId: match.id, uid: uid);
-      }
+    final notificationRepository = ref.read(
+      activityNotificationRepositoryProvider,
+    );
+    await notificationRepository.markAllRead(
+      uid: uid,
+      notifications: notifications,
+    );
+
+    final matchRepository = ref.read(matchRepositoryProvider);
+    final matchIds = <String>{
+      for (final notification in notifications)
+        if (notification.isUnread &&
+            notification.type == ActivityNotificationType.message &&
+            notification.matchId != null)
+          notification.matchId!,
+    };
+    for (final matchId in matchIds) {
+      await matchRepository.resetUnread(matchId: matchId, uid: uid);
     }
   }
 }

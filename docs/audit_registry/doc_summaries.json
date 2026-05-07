@@ -1,6 +1,6 @@
 {
-  "version": "2.5.2",
-  "updated": "2026-05-06",
+  "version": "2.5.4",
+  "updated": "2026-05-07",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -149,10 +149,11 @@
       ]
     },
     "docs/firestore_relationship_documents_migration.md": {
-      "purpose": "Persistent tracker for migrating relationship arrays to edge/action documents, moving chat messages under matches, and using relationship docs for deletion/anonymization cleanup.",
+      "purpose": "Persistent tracker for retired relationship arrays, edge/action documents, match-scoped messages, Firestore rules simplification after relationship migration, and relationship-doc deletion/anonymization cleanup.",
       "read_when": [
         "Changing run-club membership, run participation, saved-run, match-message, or relationship-array behavior",
-        "Writing or running relationship migration scripts",
+        "Planning Firestore rules simplification after relationship-doc migration",
+        "Writing or running relationship validation or legacy chat migration scripts",
         "Planning account, run, club, review, match, or chat deletion/anonymization cleanup"
       ],
       "skip_when": [
@@ -170,9 +171,11 @@
       ]
     },
     "docs/deploy_runbook_2026_05_04.md": {
-      "purpose": "May 2026 deployment sequence and prerequisites.",
+      "purpose": "May 2026 relationship-doc deployment sequence, prerequisites, smoke tests, and Remote Config force-update timing.",
       "read_when": [
-        "Deploying Firebase/Functions/rules/storage changes"
+        "Deploying Firebase/Functions/rules/storage changes",
+        "Rolling out relationship-document schema changes",
+        "Planning Remote Config minimum-build gates"
       ],
       "skip_when": [
         "Not deploying"

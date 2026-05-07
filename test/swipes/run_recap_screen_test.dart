@@ -22,7 +22,7 @@ void main() {
       id: 'recap-run',
       startTime: endedAt.subtract(const Duration(hours: 1)),
       endTime: endedAt,
-      attendedUserIds: const ['stale-array-runner'],
+      checkedInCount: 1,
     );
 
     await tester.pumpWidget(
@@ -78,6 +78,5 @@ void main() {
     expect(find.byKey(SwipeKeys.vibeTile('runner-3')), findsOneWidget);
     expect(find.byKey(SwipeKeys.vibeTile('runner-1')), findsNothing);
     expect(find.byKey(SwipeKeys.vibeTile('runner-4')), findsNothing);
-    expect(find.byKey(SwipeKeys.vibeTile('stale-array-runner')), findsNothing);
   });
 }

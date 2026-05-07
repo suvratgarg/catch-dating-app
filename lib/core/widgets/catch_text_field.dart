@@ -171,6 +171,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
         final error = widget.errorText ?? state.errorText;
         final hasError = error != null;
         final supportText = error ?? widget.helperText;
+        final canInteract = !widget.readOnly || widget.onTap != null;
         final t = CatchTokens.of(context);
         final borderColor = _borderColor(t, hasError);
         final controlHeight = _singleLineControlHeight;
@@ -197,6 +198,8 @@ class _CatchTextFieldState extends State<CatchTextField> {
             focusNode: _focusNode,
             enabled: widget.enabled,
             readOnly: widget.readOnly,
+            canRequestFocus: canInteract,
+            enableInteractiveSelection: canInteract,
             autofocus: widget.autofocus,
             keyboardType: widget.keyboardType,
             textInputAction: widget.textInputAction,

@@ -17,10 +17,13 @@ const RunClubMembershipSchema = z.object({
   clubId: z.string().min(1),
 });
 
+const RunClubNotificationPreferenceSchema = z.object({
+  clubId: z.string().min(1),
+  enabled: z.boolean(),
+});
+
 interface RunClubMembershipDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  arrayUnion: (value: string) => FirebaseFirestore.FieldValue;
-  arrayRemove: (value: string) => FirebaseFirestore.FieldValue;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
     uid: string,
@@ -30,14 +33,11 @@ interface RunClubMembershipDeps {
 
 const defaultDeps: RunClubMembershipDeps = {
   firestore: () => admin.firestore(),
-  arrayUnion: (value) => admin.firestore.FieldValue.arrayUnion(value),
-  arrayRemove: (value) => admin.firestore.FieldValue.arrayRemove(value),
   checkRateLimit: defaultCheckRateLimit,
 };
 
 /**
- * Adds the signed-in user to a run club and mirrors the membership onto the
- * user's profile document.
+ * Adds the signed-in user to a run club through the membership edge document.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {RunClubMembershipDeps} deps Injectable dependencies for tests.
  * @return {Promise<{joined: boolean}>} Whether the user is a member now.
@@ -59,41 +59,39 @@ export async function joinRunClubHandler(
       .collection("runClubMemberships")
       .doc(runClubMembershipId(clubId, userId));
 
-    const [clubSnap, userSnap, deletedUserSnap] = await Promise.all([
-      tx.get(clubRef),
-      tx.get(userRef),
-      tx.get(deletedUserRef),
-    ]);
+    const [clubSnap, userSnap, deletedUserSnap, membershipSnap] =
+      await Promise.all([
+        tx.get(clubRef),
+        tx.get(userRef),
+        tx.get(deletedUserRef),
+        tx.get(membershipRef),
+      ]);
 
     assertCanMutateMembership(clubSnap, userSnap, deletedUserSnap);
 
     const club = requireDoc<RunClubDoc>(clubSnap, "RunClubDoc");
-    const nextMemberIds = uniqueStrings([...club.memberUserIds, userId]);
+    const membership = membershipSnap.exists ?
+      membershipSnap.data() as {status?: string} :
+      null;
 
-    const isAlreadyMember = club.memberUserIds.includes(userId);
-    if (!isAlreadyMember || club.memberCount !== nextMemberIds.length) {
+    const isAlreadyMember = membership?.status === "active";
+    if (!isAlreadyMember) {
       tx.update(clubRef, {
-        ...(!isAlreadyMember && {memberUserIds: deps.arrayUnion(userId)}),
-        memberCount: nextMemberIds.length,
+        memberCount: (club.memberCount ?? 0) + 1,
       });
+      tx.set(membershipRef, activeRunClubMembershipPatch({
+        clubId,
+        uid: userId,
+        role: club.hostUserId === userId ? "host" : "member",
+      }), {merge: true});
     }
-
-    tx.set(userRef, {
-      joinedRunClubIds: deps.arrayUnion(clubId),
-    }, {merge: true});
-    tx.set(membershipRef, activeRunClubMembershipPatch({
-      clubId,
-      uid: userId,
-      role: club.hostUserId === userId ? "host" : "member",
-    }), {merge: true});
   });
 
   return {joined: true};
 }
 
 /**
- * Removes the signed-in user from a run club and mirrors the removal onto the
- * user's profile document.
+ * Removes the signed-in user from a run club through the membership edge.
  * @param {CallableRequest<unknown>} request Callable request.
  * @param {RunClubMembershipDeps} deps Injectable dependencies for tests.
  * @return {Promise<{joined: boolean}>} Whether the user is a member now.
@@ -115,11 +113,13 @@ export async function leaveRunClubHandler(
       .collection("runClubMemberships")
       .doc(runClubMembershipId(clubId, userId));
 
-    const [clubSnap, userSnap, deletedUserSnap] = await Promise.all([
-      tx.get(clubRef),
-      tx.get(userRef),
-      tx.get(deletedUserRef),
-    ]);
+    const [clubSnap, userSnap, deletedUserSnap, membershipSnap] =
+      await Promise.all([
+        tx.get(clubRef),
+        tx.get(userRef),
+        tx.get(deletedUserRef),
+        tx.get(membershipRef),
+      ]);
 
     assertCanMutateMembership(clubSnap, userSnap, deletedUserSnap);
 
@@ -131,23 +131,72 @@ export async function leaveRunClubHandler(
       );
     }
 
-    const nextMemberIds = club.memberUserIds.filter((id) => id !== userId);
-
-    const isMember = club.memberUserIds.includes(userId);
-    if (isMember || club.memberCount !== nextMemberIds.length) {
+    const membership = membershipSnap.exists ?
+      membershipSnap.data() as {status?: string} :
+      null;
+    const isMember = membership?.status === "active";
+    if (isMember) {
       tx.update(clubRef, {
-        ...(isMember && {memberUserIds: deps.arrayRemove(userId)}),
-        memberCount: nextMemberIds.length,
+        memberCount: Math.max(0, (club.memberCount ?? 0) - 1),
       });
     }
 
-    tx.update(userRef, {
-      joinedRunClubIds: deps.arrayRemove(clubId),
-    });
     tx.set(membershipRef, leftRunClubMembershipPatch(), {merge: true});
   });
 
   return {joined: false};
+}
+
+/**
+ * Updates the signed-in user's per-club push notification opt-in.
+ *
+ * The active membership document is the ownership boundary for this setting:
+ * membership means the club's updates appear in Activity, while this boolean
+ * determines whether non-critical club updates also produce FCM pushes.
+ * @param {CallableRequest<unknown>} request Callable request.
+ * @param {RunClubMembershipDeps} deps Injectable dependencies for tests.
+ * @return {Promise<{enabled: boolean}>} The saved push preference.
+ */
+export async function setRunClubNotificationPreferenceHandler(
+  request: CallableRequest<unknown>,
+  deps: RunClubMembershipDeps = defaultDeps
+): Promise<{enabled: boolean}> {
+  const userId = requireAuth(request);
+  const {clubId, enabled} = validateCallable(
+    request,
+    RunClubNotificationPreferenceSchema
+  );
+  const db = deps.firestore();
+  await deps.checkRateLimit?.(
+    db,
+    userId,
+    "setRunClubNotificationPreference"
+  );
+
+  await db.runTransaction(async (tx) => {
+    const membershipRef = db
+      .collection("runClubMemberships")
+      .doc(runClubMembershipId(clubId, userId));
+    const membershipSnap = await tx.get(membershipRef);
+    if (!membershipSnap.exists) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Join this club before enabling notifications."
+      );
+    }
+    const membership = membershipSnap.data();
+    if (membership?.uid !== userId ||
+        membership?.clubId !== clubId ||
+        membership?.status !== "active") {
+      throw new HttpsError(
+        "failed-precondition",
+        "Join this club before enabling notifications."
+      );
+    }
+    tx.update(membershipRef, {pushNotificationsEnabled: enabled});
+  });
+
+  return {enabled};
 }
 
 /**
@@ -183,15 +232,6 @@ function assertCanMutateMembership(
   }
 }
 
-/**
- * Returns unique strings while preserving first-seen order.
- * @param {string[]} values Input values.
- * @return {string[]} Unique values.
- */
-function uniqueStrings(values: string[]): string[] {
-  return [...new Set(values)];
-}
-
 export const joinRunClub = onCall(
   appCheckCallableOptions,
   (request) => joinRunClubHandler(request)
@@ -199,4 +239,8 @@ export const joinRunClub = onCall(
 export const leaveRunClub = onCall(
   appCheckCallableOptions,
   (request) => leaveRunClubHandler(request)
+);
+export const setRunClubNotificationPreference = onCall(
+  appCheckCallableOptions,
+  (request) => setRunClubNotificationPreferenceHandler(request)
 );

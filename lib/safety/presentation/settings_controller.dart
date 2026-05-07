@@ -10,7 +10,10 @@ part 'settings_controller.g.dart';
 enum SettingsPreference {
   showOnMap('prefsShowOnMap'),
   newCatches('prefsNewCatches'),
+  messages('prefsMessages'),
   runReminders('prefsRunReminders'),
+  runStatusUpdates('prefsRunStatusUpdates'),
+  clubUpdates('prefsClubUpdates'),
   weeklyDigest('prefsWeeklyDigest');
 
   const SettingsPreference(this.fieldName);

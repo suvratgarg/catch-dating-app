@@ -15,6 +15,7 @@ import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_controller.dart';
@@ -24,6 +25,7 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_v
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_detail_body.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_hero_app_bar.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_schedule_section.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/host_stats_bar.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_strip.dart';
@@ -328,11 +330,15 @@ void main() {
                 clubId: 'club-1',
                 isMember: false,
                 isMutating: false,
+                pushNotificationsEnabled: false,
+                isPushMutating: false,
               ),
               MembershipButton(
                 clubId: 'club-1',
                 isMember: true,
                 isMutating: true,
+                pushNotificationsEnabled: false,
+                isPushMutating: false,
               ),
             ],
           ),
@@ -387,11 +393,15 @@ void main() {
                     clubId: 'club-join',
                     isMember: false,
                     isMutating: false,
+                    pushNotificationsEnabled: false,
+                    isPushMutating: false,
                   ),
                   MembershipButton(
                     clubId: 'club-leave',
                     isMember: true,
                     isMutating: false,
+                    pushNotificationsEnabled: false,
+                    isPushMutating: false,
                   ),
                 ],
               ),
@@ -423,14 +433,8 @@ void main() {
                   priceInPaise: 1500,
                   bookedCount: 2,
                   waitlistedCount: 1,
-                  signedUpUserIds: const ['stale-array-user'],
-                  waitlistUserIds: const [],
                 ),
-                buildRun(
-                  priceInPaise: 0,
-                  bookedCount: 1,
-                  signedUpUserIds: const [],
-                ),
+                buildRun(priceInPaise: 0, bookedCount: 1),
               ],
             ),
             StatsStrip(
@@ -644,6 +648,8 @@ void main() {
                 isHost: true,
                 isMember: true,
                 isMutating: false,
+                clubPushNotificationsEnabled: false,
+                isClubPushMutating: false,
                 isAuthenticated: true,
               ),
             ),
@@ -695,40 +701,57 @@ void main() {
       expect(find.text('Create club-host'), findsOneWidget);
     });
 
-    testWidgets('ClubDetailBody keeps club review aggregate read-only', (
-      tester,
-    ) async {
-      final club = buildRunClub(id: 'club-reviews');
+    testWidgets(
+      'ClubDetailBody keeps club review aggregate read-only below schedule',
+      (tester) async {
+        final club = buildRunClub(id: 'club-reviews');
+        final reviews = [
+          buildReview(id: 'review-1', comment: 'Most recent.'),
+          buildReview(id: 'review-2', comment: 'Second recent.'),
+          buildReview(id: 'review-3', comment: 'Third recent.'),
+          buildReview(id: 'review-4', comment: 'Fourth hidden.'),
+        ];
 
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: ClubDetailBody(
-              runClub: club,
-              upcoming: const [],
-              reviews: const [],
-              userProfile: buildUser(uid: 'runner-1'),
-              uid: 'runner-1',
-              isHost: false,
-              isMember: true,
-              isMutating: false,
-              isAuthenticated: true,
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: ClubDetailBody(
+                runClub: club,
+                upcoming: const [],
+                reviews: reviews,
+                userProfile: buildUser(uid: 'runner-1'),
+                uid: 'runner-1',
+                isHost: false,
+                isMember: true,
+                isMutating: false,
+                clubPushNotificationsEnabled: false,
+                isClubPushMutating: false,
+                isAuthenticated: true,
+              ),
             ),
           ),
-        ),
-      );
-      await _pumpRunClubUi(tester);
+        );
+        await _pumpRunClubUi(tester);
 
-      expect(find.text('Reviews'), findsOneWidget);
-      expect(find.text('No reviews yet'), findsOneWidget);
-      expect(
-        find.text('Reviews from runners will appear here after a run.'),
-        findsOneWidget,
-      );
-      expect(find.text('Write a review'), findsNothing);
-      expect(find.text('Edit your review'), findsNothing);
-    });
+        final scrollView = tester.widget<CustomScrollView>(
+          find.byType(CustomScrollView),
+        );
+        expect(scrollView.slivers[2], isA<ClubScheduleSection>());
+        expect(scrollView.slivers[3], isA<SliverPadding>());
+
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -900));
+        await _pumpRunClubUi(tester);
+
+        expect(find.text('Reviews'), findsOneWidget);
+        expect(find.text('Most recent.'), findsOneWidget);
+        expect(find.text('Second recent.'), findsOneWidget);
+        expect(find.text('Third recent.'), findsOneWidget);
+        expect(find.text('Fourth hidden.'), findsNothing);
+        expect(find.text('Write a review'), findsNothing);
+        expect(find.text('Edit your review'), findsNothing);
+      },
+    );
 
     testWidgets('ClubDetailBody agenda taps navigate to the selected run', (
       tester,
@@ -756,6 +779,8 @@ void main() {
                 isHost: false,
                 isMember: true,
                 isMutating: false,
+                clubPushNotificationsEnabled: false,
+                isClubPushMutating: false,
                 isAuthenticated: true,
               ),
             ),
@@ -797,6 +822,9 @@ void main() {
           watchUserProfileProvider.overrideWith(
             (ref) => Stream.value(buildUser(uid: 'runner-1')),
           ),
+          watchActiveRunClubMembershipsForUserProvider(
+            'runner-1',
+          ).overrideWith((ref) => Stream.value(const [])),
           watchRunClubsByLocationProvider(
             buildRunClub().location,
           ).overrideWith((ref) => Stream.value([buildRunClub(id: 'club-99')])),
@@ -822,7 +850,7 @@ void main() {
       );
       await _pumpRunClubUi(tester);
 
-      await tester.tap(find.widgetWithText(CatchButton, 'Join'));
+      await tester.tap(find.text('Join'));
       await _pumpRunClubUi(tester);
 
       expect(fakeRepository.joinedClubId, 'club-99');
@@ -1348,7 +1376,7 @@ void main() {
 
         tester.testTextInput.hide();
         await tester.pump();
-        final cityDropdownIcon = find.byIcon(Icons.keyboard_arrow_down_rounded);
+        final cityDropdownIcon = find.byIcon(Icons.expand_more_rounded);
         await tester.ensureVisible(cityDropdownIcon);
         await tester.tap(cityDropdownIcon);
         await _pumpRunClubUi(tester);

@@ -97,18 +97,16 @@ class RunClubsRepository {
     action: 'create club',
   );
 
-  /// Updates only the fields present in [fields] on the club document.
-  ///
-  /// Uses [DocumentReference.update] so only the supplied keys are touched —
-  /// other fields (notably `createdAt`) are never deserialized, avoiding the
-  /// Timestamp → DateTime → Timestamp round-trip that would lose nanosecond
-  /// precision and trip the Firestore rules `isValidRunClubHostUpdate` diff
-  /// check.
+  /// Updates only the fields present in [fields] via the `updateRunClub`
+  /// callable.
   Future<void> updateRunClub({
     required String clubId,
     required Map<String, dynamic> fields,
   }) => withFirestoreErrorContext(
-    () => _runClubRef(clubId).update(fields),
+    () => _functions.httpsCallable('updateRunClub').call({
+      'clubId': clubId,
+      'fields': fields,
+    }),
     collection: _collectionPath,
     action: 'update club',
   );
@@ -131,6 +129,19 @@ class RunClubsRepository {
     () => _functions.httpsCallable('leaveRunClub').call({'clubId': clubId}),
     collection: _collectionPath,
     action: 'leave',
+  );
+
+  /// Updates the signed-in user's per-club push notification opt-in.
+  Future<void> setClubPushNotifications({
+    required String clubId,
+    required bool enabled,
+  }) => withFirestoreErrorContext(
+    () => _functions.httpsCallable('setRunClubNotificationPreference').call({
+      'clubId': clubId,
+      'enabled': enabled,
+    }),
+    collection: _collectionPath,
+    action: 'update club notifications',
   );
 }
 

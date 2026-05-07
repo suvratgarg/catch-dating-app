@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:flutter/material.dart';
 
 class PhotoSlot extends StatelessWidget {
@@ -22,6 +21,7 @@ class PhotoSlot extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final borderRadius = BorderRadius.circular(CatchRadius.md);
 
     final hasPhoto = url != null;
     final label = switch ((hasPhoto, isLoading, isActive)) {
@@ -58,37 +58,65 @@ class PhotoSlot extends StatelessWidget {
       image: hasPhoto,
       child: Tooltip(
         message: label,
-        child: CatchSurface(
-          onTap: isActive && !isLoading ? onTap : null,
-          padding: EdgeInsets.zero,
-          backgroundColor: t.raised,
-          borderColor: t.line,
-          radius: CatchRadius.md,
-          clipBehavior: Clip.antiAlias,
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: t.raised,
+            borderRadius: borderRadius,
+          ),
           child: Stack(
             fit: StackFit.expand,
             children: [
-              content,
-              if (isLoading)
-                Container(
-                  color: Colors.black45,
-                  child: const Center(
-                    child: CatchLoadingIndicator(color: Colors.white),
+              ClipRRect(
+                borderRadius: borderRadius,
+                clipBehavior: Clip.antiAlias,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    content,
+                    if (isLoading)
+                      Container(
+                        color: Colors.black45,
+                        child: const Center(
+                          child: CatchLoadingIndicator(color: Colors.white),
+                        ),
+                      ),
+                    if (!isLoading && url != null)
+                      Positioned(
+                        bottom: 6,
+                        right: 6,
+                        child: Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: t.surface.withValues(alpha: 0.85),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.edit_outlined,
+                            size: 14,
+                            color: t.ink,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Material(
+                color: Colors.transparent,
+                borderRadius: borderRadius,
+                clipBehavior: Clip.antiAlias,
+                child: InkWell(
+                  onTap: isActive && !isLoading ? onTap : null,
+                  borderRadius: borderRadius,
+                ),
+              ),
+              IgnorePointer(
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    borderRadius: borderRadius,
+                    border: Border.all(color: t.line),
                   ),
                 ),
-              if (!isLoading && url != null)
-                Positioned(
-                  bottom: 6,
-                  right: 6,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: t.surface.withValues(alpha: 0.85),
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(Icons.edit_outlined, size: 14, color: t.ink),
-                  ),
-                ),
+              ),
             ],
           ),
         ),

@@ -22,8 +22,8 @@ const MarkAttendanceSchema = z.object({
  * Must be called by the host of the run (the run club's hostUserId).
  * Check-in window opens 10 minutes before the run's start time.
  *
- * If the user is already in attendedUserIds they are removed;
- * otherwise they are added.
+ * If the user is already attended they are moved back to signed up; otherwise
+ * they are marked attended. The runParticipation edge is the roster source.
  */
 export const markRunAttendance = onCall(appCheckCallableOptions, async (
   request
@@ -42,6 +42,12 @@ export const markRunAttendance = onCall(appCheckCallableOptions, async (
   }
 
   const run = runSnap.data() as RunDoc;
+  if (run.status === "cancelled") {
+    throw new HttpsError(
+      "failed-precondition",
+      "This run has been cancelled."
+    );
+  }
 
   // Verify the caller is the host of the run's club.
   const clubRef = db.collection("runClubs").doc(run.runClubId);
@@ -74,15 +80,19 @@ export const markRunAttendance = onCall(appCheckCallableOptions, async (
   const existingParticipation = participationSnap.exists ?
     participationSnap.data() as {status?: string} :
     null;
-  const alreadyAttended =
-    existingParticipation?.status === "attended" ||
-    (run.attendedUserIds ?? []).includes(userId);
+  if (
+    existingParticipation?.status !== "signedUp" &&
+    existingParticipation?.status !== "attended"
+  ) {
+    throw new HttpsError(
+      "failed-precondition",
+      "This runner is not booked for this run."
+    );
+  }
+  const alreadyAttended = existingParticipation.status === "attended";
 
   const batch = db.batch();
   batch.update(runRef, {
-    attendedUserIds: alreadyAttended ?
-      admin.firestore.FieldValue.arrayRemove(userId) :
-      admin.firestore.FieldValue.arrayUnion(userId),
     checkedInCount: admin.firestore.FieldValue.increment(
       alreadyAttended ? -1 : 1
     ),

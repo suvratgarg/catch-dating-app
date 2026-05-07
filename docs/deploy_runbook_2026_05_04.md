@@ -1,12 +1,12 @@
 ---
 doc_id: deploy_runbook
-version: 2.0.1
-updated: 2026-05-06
+version: 2.1.0
+updated: 2026-05-07
 owner: recursive_audit_loop
 status: runbook
 ---
 
-# Deploy Runbook — May 2026 Audit Changes
+# Deploy Runbook — May 2026 Relationship-Doc Release
 
 ## Read Policy
 
@@ -15,18 +15,60 @@ environment, Firebase project, and command outputs before running deployment
 steps. Do not copy deployment notes into new trackers; update this runbook or
 `docs/audit_registry/doc_versions.json`.
 
-**Date:** 2026-05-04
-**Context:** Deploying 14 audit fixes across functions, Firestore rules, and Storage rules.
-**Prerequisite:** All changes are on the current branch and have passed `flutter analyze`, `npm test`, and `npm run build`.
+**Date:** 2026-05-07
+**Context:** Deploying the relationship-document migration, simplified
+Firestore rules, backend-owned notifications, review/run-club mutation
+callables, deletion cleanup, and related app changes.
+**Prerequisite:** All intended changes are on the current branch and have
+passed the verification checklist below.
 
 ---
 
 ## Pre-deploy checklist
 
-- [ ] `cd functions && npm test` passes (24 tests)
-- [ ] `npm run build` succeeds
-- [ ] `flutter analyze` returns zero errors
-- [ ] Read this entire runbook before starting
+- [ ] Review `git diff --stat` and confirm the dirty tree is the intended
+  release candidate.
+- [ ] `dart run build_runner build --delete-conflicting-outputs` succeeds when
+  generated Dart files are stale.
+- [ ] `dart tool/generate_firestore_types.dart` succeeds.
+- [ ] `node tool/check_firestore_contract.mjs` succeeds.
+- [ ] `node --check tool/validate_firestore_data.mjs` succeeds.
+- [ ] `npm --prefix functions run lint` succeeds.
+- [ ] `npm --prefix functions run build` succeeds.
+- [ ] `npm --prefix functions test` succeeds.
+- [ ] `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"` succeeds.
+- [ ] Focused `flutter analyze --no-fatal-infos` for touched Flutter surfaces
+  succeeds.
+- [ ] Focused Flutter tests for touched surfaces succeed.
+- [ ] Beta data strategy is explicit: reset beta data or run validated
+  migration tooling before production users depend on the new schema.
+- [ ] Remote Config force-update values are planned but not raised until a
+  compatible app build is available.
+- [ ] Read this entire runbook before starting.
+
+## Relationship-Doc Release Notes
+
+The old SQL-style relationship arrays are retired. Do not verify, preserve, or
+reintroduce these fields during deploy or smoke tests:
+
+- `users/{uid}.joinedRunClubIds`
+- `users/{uid}.savedRunIds`
+- `runClubs/{clubId}.memberUserIds`
+- `runs/{runId}.signedUpUserIds`
+- `runs/{runId}.waitlistUserIds`
+- `runs/{runId}.attendedUserIds`
+
+The release validates these relationship/action documents instead:
+
+- `runClubMemberships/{clubId_uid}`
+- `runParticipations/{runId_uid}`
+- `savedRuns/{uid_runId}`
+- `matches/{matchId}/messages/{messageId}`
+
+Because Firestore rules now deny several old direct-write paths, deploy
+Functions before tightening rules in each environment. Older app builds may
+fail after rules deploy; use Remote Config force-update only after the new app
+build is available.
 
 ---
 
@@ -111,13 +153,51 @@ Do this for dev, staging, and prod.
 
 ---
 
-## Step 4: Deploy Firestore rules
+## Step 4: Deploy Functions
+
+Deploy Functions before rules so the new callable write surfaces exist before
+direct client writes are denied.
+
+```bash
+npm --prefix functions run build
+./tool/firebase_with_env.sh dev deploy --only functions
+```
+
+After dev smoke tests pass:
+
+```bash
+./tool/firebase_with_env.sh staging deploy --only functions
+./tool/firebase_with_env.sh prod deploy --only functions
+```
+
+### Sync callable invokers after prod deploy
+
+Cloud Run invoker permissions don't always propagate during deploy. Run the
+sync script after production Functions deploy:
+
+```bash
+npm --prefix functions run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
+```
+
+## Step 5: Deploy Firestore indexes
+
+Relationship-document queries require composite indexes, especially for
+`runParticipations` and notification timelines. Deploy indexes before relying
+on the app in each environment.
+
+```bash
+./tool/firebase_with_env.sh dev deploy --only firestore:indexes
+./tool/firebase_with_env.sh staging deploy --only firestore:indexes
+./tool/firebase_with_env.sh prod deploy --only firestore:indexes
+```
+
+## Step 6: Deploy Firestore rules
 
 ```bash
 ./tool/firebase_with_env.sh dev deploy --only firestore:rules
 ```
 
-Verify in dev (run the app, edit a profile, create a club) before proceeding:
+Verify in dev before proceeding:
 
 ```bash
 ./tool/firebase_with_env.sh staging deploy --only firestore:rules
@@ -128,9 +208,7 @@ The `firebase.json` predeploy hook runs Functions tests and the Firestore rules
 emulator tests before deploying. A failure here blocks the deploy; do not use
 `--no-verify`.
 
----
-
-## Step 5: Deploy Storage rules
+## Step 7: Deploy Storage rules
 
 ```bash
 ./tool/firebase_with_env.sh dev deploy --only storage
@@ -140,74 +218,66 @@ emulator tests before deploying. A failure here blocks the deploy; do not use
 
 Verification: upload a chat image in the dev emulator and verify it appears in Storage at `matches/{matchId}/images/{fileName}`.
 
----
+## Step 8: Full deploy (future patch releases only)
 
-## Step 6: Deploy Functions
-
-This is the largest deploy — new functions, modified functions, and new npm dependencies.
-
-```bash
-# Build and deploy to dev first
-cd functions
-npm run build
-cd ..
-./tool/firebase_with_env.sh dev deploy --only functions
-```
-
-The `firebase.json` predeploy hook runs lint + build before deploying. If it fails, fix the issue (do not skip hooks).
-
-After dev deploy succeeds and passes smoke tests:
+After this initial staggered relationship-doc deploy, future compatible patch
+releases can be deployed together:
 
 ```bash
-./tool/firebase_with_env.sh staging deploy --only functions
-```
-
-After staging deploy succeeds:
-
-```bash
-./tool/firebase_with_env.sh prod deploy --only functions
-```
-
-### Sync callable invokers after prod deploy
-
-Cloud Run invoker permissions don't always propagate during deploy. Run the sync script:
-
-```bash
-cd functions
-npm run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
+./tool/firebase_with_env.sh dev deploy --only functions,firestore:indexes,firestore:rules,storage
 ```
 
 ---
 
-## Step 7: Full deploy (all surfaces at once)
+## Step 9: Remote Config force-update rollout
 
-After the initial staggered deploy, future changes can be deployed together:
+Remote Config is not a schema migration tool. For this release it is a rollout
+guard that prevents older app builds from running against the new backend
+contract.
 
-```bash
-./tool/firebase_with_env.sh dev deploy --only functions,firestore:rules,storage
-```
+Only raise these values after the compatible app build is available:
 
----
+- `min_version`
+- `min_build_ios`
+- `min_build_android`
+- `min_build_web`
+- `min_build_macos`
+- `store_url_ios`
+- `store_url_android`
 
-## Step 8: Smoke tests (dev)
+Recommended sequence:
+
+1. Bump `pubspec.yaml` build number for the release build.
+2. Deploy backend to dev and staging.
+3. Install/test the new build against dev/staging.
+4. Release the compatible build to beta users.
+5. Raise Remote Config minimum build values so older builds see
+   `UpdateRequiredScreen`.
+
+## Step 10: Smoke tests (dev)
 
 Run through these flows after deploying to dev:
 
 ### Firestore mutation contract
 1. Complete or edit a profile, then verify `users/{uid}` updates without
    permission errors.
-2. Create a run club, then verify `runClubs/{clubId}.memberUserIds` includes
-   the host and `users/{uid}.joinedRunClubIds` includes the club.
-3. Join the club as another user, then verify both the club membership array
-   and user projection update.
-4. Leave the club, then verify both projections update and `memberCount`
-   matches the member array length.
+2. Create a run club, then verify `runClubs/{clubId}.memberCount == 1` and
+   `runClubMemberships/{clubId_uid}` exists with `role == host` and
+   `status == active`.
+3. Join the club as another user, then verify a second
+   `runClubMemberships/{clubId_uid}` exists and `memberCount` increments.
+4. Leave the club, then verify the membership edge is no longer active and
+   `memberCount` matches active membership edges.
 5. Create a run as the club host.
-6. Book a free run through the app.
+6. Book a free run through the app, then verify
+   `runParticipations/{runId_uid}` exists with `status == signedUp` and
+   `runs/{runId}.bookedCount` increments.
 7. Complete a paid run payment and verify `verifyRazorpayPayment` creates a
-   `payments/{paymentId}` record and books the run.
+   `payments/{paymentId}` record, books the run through
+   `runParticipations/{runId_uid}`, and updates aggregate counts.
 8. Send a chat message and verify the match preview, unread count, and
-   `functionEventReceipts` receipt are written once.
+   `functionEventReceipts` receipt are written once from
+   `matches/{matchId}/messages/{messageId}`.
 9. Reset unread count from the matches/chats UI.
 10. Block, report, and request account deletion from settings/safety flows.
 
@@ -227,7 +297,8 @@ Run through these flows after deploying to dev:
 2. Navigate to the run detail screen
 3. Verify "Check in" button appears during the 30-minute window
 4. Tap "Check in" — verify GPS permission request, check-in success
-5. Verify `attendedUserIds` updated in Firestore
+5. Verify `runParticipations/{runId_uid}.status == attended` and
+   `runs/{runId}.checkedInCount` updates in Firestore.
 
 ### Rate limiting
 1. Call `signUpForFreeRun` repeatedly (5+ times in 60 seconds)

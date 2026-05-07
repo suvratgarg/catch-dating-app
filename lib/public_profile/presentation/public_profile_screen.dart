@@ -142,9 +142,18 @@ class PublicProfileScreen extends ConsumerWidget {
                       );
                     }
                   },
-                  itemBuilder: (context) => const [
-                    PopupMenuItem(value: 'report', child: Text('Report')),
-                    PopupMenuItem(value: 'block', child: Text('Block')),
+                  items: const [
+                    CatchActionMenuItem(
+                      value: 'report',
+                      label: 'Report',
+                      icon: Icons.flag_outlined,
+                    ),
+                    CatchActionMenuItem(
+                      value: 'block',
+                      label: 'Block',
+                      icon: Icons.block_rounded,
+                      isDestructive: true,
+                    ),
                   ],
                 ),
             ],
