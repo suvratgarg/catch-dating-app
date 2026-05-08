@@ -105,7 +105,15 @@ class RunDetailBody extends ConsumerWidget {
             ),
             sliver: SliverList.list(
               children: [
-                RunDetailOverviewSection(run: run),
+                RunDetailOverviewSection(
+                  run: run,
+                  onLocationTap: run.hasExactStartingPoint
+                      ? () => context.pushNamed(
+                          Routes.runLocationMapScreen.name,
+                          pathParameters: {'runId': run.id},
+                        )
+                      : null,
+                ),
                 const SizedBox(height: 24),
                 Divider(color: t.line, height: 1),
                 const SizedBox(height: 24),

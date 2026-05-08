@@ -3,11 +3,12 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation_roster.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_hype_avatar_stack.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,10 @@ Future<Map<String, (String name, String? photoUrl)>> runnerProfiles(
   final profiles = await ref
       .watch(publicProfileRepositoryProvider)
       .fetchPublicProfiles(uids);
-  return {for (final p in profiles) p.uid: (p.name, p.photoUrls.firstOrNull)};
+  return {
+    for (final profile in profiles)
+      profile.uid: (profile.name, profile.primaryPhotoThumbnailUrl),
+  };
 }
 
 class WhoIsRunning extends ConsumerWidget {
@@ -42,6 +46,7 @@ class WhoIsRunning extends ConsumerWidget {
       loading: () => _WhoIsRunningContent(
         run: run,
         roster: RunParticipationRoster.empty(),
+        userProfile: userProfile,
         fallbackTotal: run.signedUpCount,
       ),
       error: (e, _) => CatchInlineErrorState.fromError(
@@ -51,7 +56,11 @@ class WhoIsRunning extends ConsumerWidget {
         onRetry: () =>
             ref.invalidate(watchRunParticipationRosterProvider(run.id)),
       ),
-      data: (roster) => _WhoIsRunningContent(run: run, roster: roster),
+      data: (roster) => _WhoIsRunningContent(
+        run: run,
+        roster: roster,
+        userProfile: userProfile,
+      ),
     );
   }
 }
@@ -60,11 +69,13 @@ class _WhoIsRunningContent extends ConsumerWidget {
   const _WhoIsRunningContent({
     required this.run,
     required this.roster,
+    required this.userProfile,
     this.fallbackTotal,
   });
 
   final Run run;
   final RunParticipationRoster roster;
+  final UserProfile userProfile;
   final int? fallbackTotal;
 
   @override
@@ -72,9 +83,6 @@ class _WhoIsRunningContent extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final total = fallbackTotal ?? roster.bookedCount;
     final hasActiveSwipeWindow = hasOpenSwipeWindow(run);
-    final previewIds = roster.bookedIds.take(7).toList();
-    final profilesAsync = ref.watch(runnerProfilesProvider(previewIds));
-    final profiles = profilesAsync.asData?.value ?? {};
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -100,20 +108,14 @@ class _WhoIsRunningContent extends ConsumerWidget {
             style: CatchTextStyles.bodyS(context, color: t.ink2),
           )
         else ...[
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              ...previewIds.map((uid) {
-                final profile = profiles[uid];
-                return PersonAvatar(
-                  size: 44,
-                  name: profile?.$1 ?? uid,
-                  imageUrl: profile?.$2,
-                );
-              }),
-              if (total > 7) PersonAvatar.count(count: total - 7, size: 44),
-            ],
+          RunHypeAvatarStack(
+            runId: run.id,
+            totalCount: total,
+            viewerInterestedInGenders: userProfile.interestedInGenders,
+            size: 44,
+            limit: 7,
+            obscured: true,
+            showOverflowCount: true,
           ),
           const SizedBox(height: 12),
         ],

@@ -283,7 +283,10 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   XFile? lastUploadedImage;
 
   @override
-  Future<XFile?> pickImage({int imageQuality = 85}) async {
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) async {
     if (pickError != null) {
       throw pickError!;
     }
@@ -319,6 +322,19 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   Future<String> uploadUserPhoto({
     required String uid,
     required int index,
+    required XFile image,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadedImage = image;
+    return uploadResult;
+  }
+
+  @override
+  Future<String> uploadChatImage({
+    required String matchId,
+    required String messageId,
     required XFile image,
   }) async {
     if (uploadError != null) {

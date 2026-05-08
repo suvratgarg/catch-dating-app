@@ -52,6 +52,12 @@ class CatchSurface extends StatelessWidget {
       padding: padding ?? EdgeInsets.zero,
       child: child,
     );
+    final borderDecoration = borderColor == null || borderWidth <= 0
+        ? null
+        : BoxDecoration(
+            borderRadius: borderRadius,
+            border: Border.all(color: borderColor!, width: borderWidth),
+          );
     final decorated = AnimatedContainer(
       duration: duration,
       curve: CatchMotion.standardCurve,
@@ -63,11 +69,9 @@ class CatchSurface extends StatelessWidget {
         color: gradient == null ? backgroundColor ?? _color(t) : null,
         gradient: gradient,
         borderRadius: borderRadius,
-        border: borderColor == null || borderWidth <= 0
-            ? null
-            : Border.all(color: borderColor!, width: borderWidth),
         boxShadow: boxShadow ?? _shadows,
       ),
+      foregroundDecoration: borderDecoration,
       child: onTap == null
           ? foreground
           : Material(

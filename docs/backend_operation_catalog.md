@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.1.13
-updated: 2026-05-07
+version: 1.1.17
+updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -54,7 +54,8 @@ machine-readable ownership contract and this document as the human map.
 | Function | Type | Initiator | Writes | Notes |
 |---|---|---|---|---|
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with Zod; owns complex profile edits after initial create; rate-limited at 60/minute. |
-| `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete | Sole owner of public profile projection. Uses `displayName`, then first name, then legacy fallback. |
+| `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete | Sole owner of public profile projection. Uses `displayName`, then first name, then legacy fallback; projects `photoThumbnailUrls` alongside `photoUrls` for tiny avatar surfaces. |
+| `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.photoThumbnailUrls` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/run-detail hype avatars must use these thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm run backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`. |
 | `createRunClub` | Callable | `RunClubsRepository.createRunClub` | `runClubs/{clubId}`, `runClubMemberships/{clubId_uid}`, `runClubHostClaims/{uid}` | Server derives host identity from authenticated user; the membership edge is the source of truth and `memberCount` is the only parent aggregate. `runClubHostClaims/{uid}` enforces the current product rule that a user can host at most one run club. |
 | `updateRunClub` | Callable | `RunClubsRepository.updateRunClub` | `runClubs/{clubId}` descriptive fields | Host-only profile edit seam. Direct client updates to `runClubs/{clubId}` are denied so Zod owns field validation and aggregate/projection fields stay backend-owned. |
 | `joinRunClub` | Callable | `RunClubsRepository.joinClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.memberCount` | Multi-doc membership mutation; does not mirror membership into user or club arrays. |
@@ -73,7 +74,7 @@ machine-readable ownership contract and this document as the human map.
 | `leaveRunWaitlist` | Callable | `RunRepository.leaveWaitlist` | `runParticipations/{runId_uid}`, `runs/{runId}.waitlistedCount` | Rate-limited before transaction work; marks the caller's waitlist edge cancelled. |
 | `markRunAttendance` | Callable | `RunRepository.markAttendance` | `runParticipations/{runId_uid}`, `runs/{runId}.checkedInCount` | Host-only attendance toggle. |
 | `selfCheckInAttendance` | Callable | `RunRepository.selfCheckInAttendance` | `runParticipations/{runId_uid}`, `runs/{runId}.checkedInCount` | Participant self-check only; verifies sign-up, time window, and location where available. |
-| `onSwipeCreated` | Firestore trigger on `swipes/{uid}/outgoing/{targetId}` create | Backend | `matches/{matchId}` | Deterministic match ID; creates a match only for reciprocal likes. |
+| `onSwipeCreated` | Firestore trigger on `swipes/{uid}/outgoing/{targetId}` create | Backend | `matches/{matchId}` | Deterministic match ID; creates a match only for reciprocal likes. Writes `runIds` so a match can track every shared run over time. |
 | `onMatchCreated` | Firestore trigger on `matches/{matchId}` create | Backend | `notifications/{uid}/items/{notificationId}`, FCM | Writes deterministic match activity notifications for both participants and sends push notifications when tokens exist. |
 | `onMessageCreated` | Firestore trigger on `matches/{matchId}/messages/{messageId}` create | Backend | `matches/{matchId}`, `functionEventReceipts/{receiptId}`, `notifications/{uid}/items/{notificationId}`, FCM | Idempotency receipt prevents duplicate unread increments; deterministic notification ID prevents duplicate activity rows. |
 | `moderateChatMessage` | Firestore trigger on match-scoped message create | Backend | `matches/{matchId}/messages/{messageId}`, `moderationFlags/{id}` | Deterministic moderation flag for blocked/flagged text. |
@@ -86,7 +87,7 @@ machine-readable ownership contract and this document as the human map.
 | `unblockUser` | Callable | `SafetyRepository.unblockUser` | `blocks/{blocker}__{target}` delete | Rate-limited before delete; removes directed block edge. |
 | `onBlockCreated` | Firestore trigger on `blocks/{blockId}` create | Backend | `matches/{matchId}` status | Secondary safety guard to close matches after block edge writes. |
 | `reportUser` | Callable | `SafetyRepository.reportUser` | `reports/{autoId}` | Bounded report payload. |
-| `requestAccountDeletion` | Callable | `SafetyRepository.requestAccountDeletion` | `deletedUsers/{uid}`, `users/{uid}`, `publicProfiles/{uid}`, Storage deletes, Auth delete, relationship cleanup across memberships, participations, saved runs, swipes, matches, reviews, payments, notifications, blocks, and reports | Rate-limited before destructive work; backend-only account deletion/anonymization. Uses relationship-doc queries instead of scanning parent arrays. |
+| `requestAccountDeletion` | Callable | `SafetyRepository.requestAccountDeletion` | `deletedUsers/{uid}`, `users/{uid}`, `publicProfiles/{uid}`, Storage deletes, Auth delete, relationship cleanup across memberships, participations, saved runs, swipes, matches, reviews, payments, notifications, blocks, and reports | Rate-limited before destructive work; backend-only account deletion/anonymization. Deletes original profile photos plus thumbnail URLs and uses relationship-doc queries instead of scanning parent arrays. |
 | `joinWaitlist` | HTTP function | Marketing site/waitlist form | `launchWaitlist/{emailHash}` | Public endpoint with CORS and IP rate limiting. |
 
 ## Direct Client Firestore Writes
@@ -99,7 +100,7 @@ machine-readable ownership contract and this document as the human map.
 | `OnboardingDraftRepository.saveDraft/deleteDraft` | `onboarding_drafts/{uid}` | Private draft set/delete. | Owner-only, intentionally extensible. | Yes. Private volatile draft state. |
 | `SwipeRepository.recordSwipe` | `swipes/{uid}/outgoing/{targetId}` | Create own outgoing swipe. | Path/data identity, attended-run, block, and payload rules. | Yes. Match creation remains trigger-owned. |
 | `ChatRepository.sendMessage` | `matches/{matchId}/messages/{id}` | Create text message. | Match participant create only. | Yes. Match preview/unread/moderation are trigger-owned. |
-| `ChatRepository.sendImageMessage` | Storage `matches/{matchId}/images/*`, then `matches/{matchId}/messages/{id}` | Upload chat image and create image message. | Storage rules plus message create rules. | Yes, but future media moderation should be audited separately. |
+| `ChatController.sendImage` / `ChatRepository.sendImageMessage` | Storage `matches/{matchId}/images/*`, then `matches/{matchId}/messages/{id}` | Shared `ImageUploadRepository` picks/compresses/uploads the chat image; repository writes the image message. | Storage rules plus message create rules. | Yes. Media picking/compression is centralized with profile/onboarding/run-club image upload policy. |
 | `MatchRepository.resetUnread` | `matches/{matchId}.unreadCounts.{uid}` | Reset own unread count to zero. | Participant narrow update. | Yes. |
 
 ## Backend-Owned Collections And Fields
@@ -119,7 +120,7 @@ machine-readable ownership contract and this document as the human map.
 | `runParticipations/{runId_uid}` | Booking, waitlist, attendance, cancellation, account deletion callables. Run detail reads current-viewer CTA/review state from this edge; shared signed-up/attended run streams query it by user/status; host attendance management, swipe candidate generation, and run recap derive roster/check-in state from run participation statuses. | Direct client writes denied. |
 | `payments/{paymentId}` | Payment verification/cancel callables | Direct client writes denied. |
 | `reviews/{reviewId}` writes | Review mutation callables plus review-stat trigger | Direct client writes denied. |
-| `matches/{matchId}` create/status/preview/unread increments | Matching/message/block triggers | Direct client creation denied; only participant unread reset allowed. |
+| `matches/{matchId}` create/status/preview/unread increments | Matching/message/block triggers | Direct client creation denied; only participant unread reset allowed. Match documents use `runIds` as the shared-run history; Dart reads legacy `runId` while older seeded/live data is being cleaned up. |
 | `notifications/{uid}/items/{notificationId}` | Match/message triggers, create-run fan-out, host run update/cancellation, and booking/cancellation callables now; remaining run producers should use the same backend-owned helper. | Owner can read own items and update only `readAt`; client create/delete/content edits are denied. |
 | `blocks/{blockId}` | Safety callables | Direct client writes denied. |
 | `reports/{reportId}` | Safety callable | Direct client writes denied. |

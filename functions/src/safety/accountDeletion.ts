@@ -49,8 +49,13 @@ export async function requestAccountDeletionHandler(
   const now = deps.serverTimestamp();
   const userSnap = await db.collection("users").doc(uid).get();
   const photoUrls = (userSnap.data()?.photoUrls ?? []) as string[];
+  const photoThumbnailUrls =
+    (userSnap.data()?.photoThumbnailUrls ?? []) as string[];
 
-  await deleteStorageUrls(photoUrls, deps.storageBucket());
+  await deleteStorageUrls(
+    [...photoUrls, ...photoThumbnailUrls],
+    deps.storageBucket()
+  );
 
   const writer = new BatchQueue(db);
   writer.set(db.collection("deletedUsers").doc(uid), {
@@ -81,6 +86,7 @@ export async function requestAccountDeletionHandler(
     phoneNumber: "",
     profileComplete: false,
     photoUrls: [],
+    photoThumbnailUrls: [],
     city: admin.firestore.FieldValue.delete(),
     interestedInGenders: [],
     minAgePreference: 18,

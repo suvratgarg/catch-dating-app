@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/chats/data/chat_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -14,8 +13,6 @@ class _FakeChatRepository extends Fake implements ChatRepository {
   Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
       Stream.value(messagesByMatch[matchId] ?? const []);
 }
-
-class _UnusedFirebaseStorage extends Fake implements FirebaseStorage {}
 
 ChatMessage _buildMessage({
   String id = 'message-1',
@@ -66,7 +63,7 @@ void main() {
 
     setUp(() {
       firestore = FakeFirebaseFirestore();
-      repository = ChatRepository(firestore, storage: _UnusedFirebaseStorage());
+      repository = ChatRepository(firestore);
     });
 
     test('watchMessages orders by sentAt and maps snapshot data', () async {
@@ -97,6 +94,19 @@ void main() {
       expect(messages.single.senderId, 'runner-1');
       expect(messages.single.text, 'hello there');
       expect(messages.single.sentAt, isA<DateTime>());
+    });
+
+    test('sendImageMessage stores the already-uploaded image URL', () async {
+      await repository.sendImageMessage(
+        matchId: 'match-1',
+        senderId: 'runner-1',
+        messageId: 'message-1',
+        imageUrl: 'https://storage.test/chat-image.jpg',
+      );
+
+      final messages = await repository.watchMessages(matchId: 'match-1').first;
+      expect(messages.single.imageUrl, 'https://storage.test/chat-image.jpg');
+      expect(messages.single.text, isEmpty);
     });
   });
 

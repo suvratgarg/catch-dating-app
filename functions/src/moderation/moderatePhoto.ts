@@ -97,6 +97,31 @@ function uidFromPath(filePath: string): string | null {
   return null;
 }
 
+/**
+ * Extracts the slot index from `users/{uid}/photos/{index}_...`.
+ * @param {string} filePath The Storage object path.
+ * @return {number|null} The profile photo slot index, or null.
+ */
+function profilePhotoIndexFromPath(filePath: string): number | null {
+  const parts = filePath.split("/");
+  if (parts[0] !== "users" || parts[2] !== "photos" || !parts[3]) {
+    return null;
+  }
+  const index = Number.parseInt(parts[3].split("_")[0], 10);
+  return Number.isInteger(index) && index >= 0 ? index : null;
+}
+
+/**
+ * Checks whether a Firebase download URL references a Storage object path.
+ * @param {string} url The stored download URL.
+ * @param {string} filePath The Storage object path.
+ * @return {boolean} True when the URL points at that object.
+ */
+function downloadUrlContainsPath(url: string, filePath: string) {
+  const encodedPath = encodeURIComponent(filePath);
+  return url.includes(encodedPath) || url.includes(filePath);
+}
+
 // ── Handler ────────────────────────────────────────────────────────────────
 
 /**
@@ -178,14 +203,38 @@ export const moderatePhotoOnUpload = onObjectFinalized(
         if (isProfilePhoto) {
           const uid = uidFromPath(filePath);
           if (uid) {
-            const publicUrl = `https://storage.googleapis.com/${bucket.name}/${filePath}`;
-            await admin.firestore()
-              .collection("users")
-              .doc(uid)
-              .update({
-                photoUrls: admin.firestore.FieldValue
-                  .arrayRemove(publicUrl),
+            const userRef = admin.firestore().collection("users").doc(uid);
+            const photoIndex = profilePhotoIndexFromPath(filePath);
+            await admin.firestore().runTransaction(async (tx) => {
+              const userSnap = await tx.get(userRef);
+              if (!userSnap.exists) return;
+              const data = userSnap.data() ?? {};
+              const photoUrls = Array.isArray(data.photoUrls) ?
+                data.photoUrls.filter(
+                  (url): url is string => typeof url === "string"
+                ) :
+                [];
+              const rawThumbnailUrls = data.photoThumbnailUrls;
+              const photoThumbnailUrls = Array.isArray(rawThumbnailUrls) ?
+                rawThumbnailUrls.filter(
+                  (url): url is string => typeof url === "string"
+                ) :
+                [];
+              const updatedPhotoUrls = photoUrls.filter(
+                (url) => !downloadUrlContainsPath(url, filePath)
+              );
+              const updatedThumbnailUrls = [...photoThumbnailUrls];
+              if (
+                photoIndex !== null &&
+                photoIndex < updatedThumbnailUrls.length
+              ) {
+                updatedThumbnailUrls.splice(photoIndex, 1);
+              }
+              tx.update(userRef, {
+                photoUrls: updatedPhotoUrls,
+                photoThumbnailUrls: updatedThumbnailUrls,
               });
+            });
           }
         }
 

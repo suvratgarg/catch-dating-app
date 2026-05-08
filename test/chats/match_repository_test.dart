@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -23,7 +24,10 @@ Match _buildMatch({
   String id = 'match-1',
   String user1Id = 'runner-1',
   String user2Id = 'runner-2',
+  List<String> runIds = const ['run-1'],
   DateTime? createdAt,
+  DateTime? lastMessageAt,
+  String? lastMessagePreview,
   MatchStatus status = MatchStatus.active,
   Map<String, int> unreadCounts = const {},
 }) {
@@ -31,8 +35,10 @@ Match _buildMatch({
     id: id,
     user1Id: user1Id,
     user2Id: user2Id,
-    runId: 'run-1',
+    runIds: runIds,
     createdAt: createdAt ?? DateTime(2025, 1, 1, 7),
+    lastMessageAt: lastMessageAt,
+    lastMessagePreview: lastMessagePreview,
     status: status,
     unreadCounts: unreadCounts,
   );
@@ -158,6 +164,47 @@ void main() {
     await container.read(watchMatchesForUserProvider('runner-1').future);
 
     expect(container.read(totalUnreadCountProvider('runner-1')), 5);
+  });
+
+  test('Match reads legacy runId documents into runIds', () {
+    final match = Match.fromJson({
+      'id': 'legacy-match',
+      'user1Id': 'runner-1',
+      'user2Id': 'runner-2',
+      'runId': 'legacy-run',
+      'createdAt': Timestamp.fromDate(DateTime(2025, 1, 1, 7)),
+    });
+
+    expect(match.runIds, const ['legacy-run']);
+    expect(match.latestRunId, 'legacy-run');
+  });
+
+  test('collapseMatchesByOtherUser keeps one latest thread per person', () {
+    final collapsed = collapseMatchesByOtherUser([
+      _buildMatch(
+        id: 'older',
+        runIds: const ['run-1'],
+        createdAt: DateTime(2025, 1, 1, 7),
+        lastMessageAt: DateTime(2025, 1, 1, 8),
+        lastMessagePreview: 'Older message',
+        unreadCounts: const {'runner-1': 1},
+      ),
+      _buildMatch(
+        id: 'newer',
+        runIds: const ['run-2'],
+        createdAt: DateTime(2025, 1, 2, 7),
+        lastMessageAt: DateTime(2025, 1, 2, 8),
+        lastMessagePreview: 'Newer message',
+        unreadCounts: const {'runner-1': 2},
+      ),
+    ], 'runner-1');
+
+    expect(collapsed, hasLength(1));
+    expect(collapsed.single.id, 'newer');
+    expect(collapsed.single.lastMessagePreview, 'Newer message');
+    expect(collapsed.single.unreadCounts['runner-1'], 3);
+    expect(collapsed.single.runIds, const ['run-1', 'run-2']);
+    expect(collapsed.single.latestRunId, 'run-2');
   });
 
   test(

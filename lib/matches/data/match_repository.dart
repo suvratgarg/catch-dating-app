@@ -111,6 +111,42 @@ class MatchRepository {
           );
 }
 
+List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
+  final buckets = <String, List<Match>>{};
+  for (final match in matches) {
+    buckets.putIfAbsent(match.otherId(uid), () => []).add(match);
+  }
+
+  return buckets.values.map((bucket) {
+    bucket.sort((a, b) => _chatSortTime(b).compareTo(_chatSortTime(a)));
+
+    final conversationMatches =
+        bucket.where((match) => match.lastMessagePreview != null).toList()
+          ..sort((a, b) => _chatSortTime(b).compareTo(_chatSortTime(a)));
+    final selected = conversationMatches.isNotEmpty
+        ? conversationMatches.first
+        : bucket.first;
+    final totalUnread = bucket.fold<int>(
+      0,
+      (total, match) => total + (match.unreadCounts[uid] ?? 0),
+    );
+
+    final mergedRunIds = <String>[];
+    for (final match in bucket.reversed) {
+      for (final runId in match.runIds) {
+        if (!mergedRunIds.contains(runId)) mergedRunIds.add(runId);
+      }
+    }
+
+    return selected.copyWith(
+      runIds: mergedRunIds,
+      unreadCounts: {...selected.unreadCounts, uid: totalUnread},
+    );
+  }).toList();
+}
+
+DateTime _chatSortTime(Match match) => match.lastMessageAt ?? match.createdAt;
+
 @riverpod
 MatchRepository matchRepository(Ref ref) =>
     MatchRepository(ref.watch(firebaseFirestoreProvider));
@@ -127,7 +163,7 @@ Stream<Match?> matchStream(Ref ref, String matchId) =>
 int totalUnreadCount(Ref ref, String uid) {
   final matches =
       ref.watch(watchMatchesForUserProvider(uid)).asData?.value ?? [];
-  return matches
+  return collapseMatchesByOtherUser(matches, uid)
       .where((match) => !match.isBlocked)
       .fold(0, (total, m) => total + (m.unreadCounts[uid] ?? 0));
 }

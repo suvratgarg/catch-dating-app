@@ -12,7 +12,7 @@ abstract class ChatMessage with _$ChatMessage {
     required String senderId,
     required String text,
     String? imageUrl,
-    @TimestampConverter() required DateTime sentAt,
+    @NullableTimestampConverter() DateTime? sentAt,
   }) = _ChatMessage;
 
   factory ChatMessage.fromJson(Map<String, dynamic> json) =>

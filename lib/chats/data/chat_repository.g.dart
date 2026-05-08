@@ -48,7 +48,7 @@ final class ChatRepositoryProvider
   }
 }
 
-String _$chatRepositoryHash() => r'89a20b768d7230c7137857de8047d713d0c75fa4';
+String _$chatRepositoryHash() => r'f5bb52f1c50ce09e2fe669c4ed8d1686727a46f4';
 
 @ProviderFor(watchChatMessages)
 final watchChatMessagesProvider = WatchChatMessagesFamily._();

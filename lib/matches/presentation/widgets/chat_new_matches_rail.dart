@@ -1,35 +1,29 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ChatNewMatchesRail extends ConsumerWidget {
-  const ChatNewMatchesRail({
-    super.key,
-    required this.matches,
-    required this.uid,
-  });
+class ChatNewMatchesRail extends StatelessWidget {
+  const ChatNewMatchesRail({super.key, required this.matches});
 
-  final List<Match> matches;
-  final String uid;
+  final List<ChatThreadPreview> matches;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  Widget build(BuildContext context) {
     return CatchHorizontalRail(
       title: 'New matches',
       itemCount: matches.length,
       itemBuilder: (context, index) {
-        final match = matches[index];
+        final preview = matches[index];
         return _NewMatchAvatar(
-          match: match,
-          uid: uid,
+          preview: preview,
           onTap: () => context.goNamed(
             Routes.chatScreen.name,
-            pathParameters: {'matchId': match.id},
+            pathParameters: {'matchId': preview.matchId},
           ),
         );
       },
@@ -37,32 +31,19 @@ class ChatNewMatchesRail extends ConsumerWidget {
   }
 }
 
-class _NewMatchAvatar extends ConsumerWidget {
-  const _NewMatchAvatar({
-    required this.match,
-    required this.uid,
-    required this.onTap,
-  });
+class _NewMatchAvatar extends StatelessWidget {
+  const _NewMatchAvatar({required this.preview, required this.onTap});
 
-  final Match match;
-  final String uid;
+  final ChatThreadPreview preview;
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final otherUid = match.otherId(uid);
-    final profileAsync = ref.watch(watchPublicProfileProvider(otherUid));
-    final t = CatchTokens.of(context);
-    final photoUrl = profileAsync.asData?.value?.photoUrls.isNotEmpty == true
-        ? profileAsync.asData!.value!.photoUrls.first
-        : null;
-    final name = profileAsync.asData?.value?.name ?? otherUid;
-
+  Widget build(BuildContext context) {
     return Tooltip(
-      message: 'Open chat with $name',
+      message: 'Open chat with ${preview.displayName}',
       child: Semantics(
         button: true,
-        label: 'Open chat with $name',
+        label: 'Open chat with ${preview.displayName}',
         child: GestureDetector(
           onTap: onTap,
           child: SizedBox(
@@ -70,31 +51,17 @@ class _NewMatchAvatar extends ConsumerWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                CircleAvatar(
-                  radius: 32,
-                  backgroundImage: photoUrl != null
-                      ? NetworkImage(photoUrl)
-                      : null,
-                  backgroundColor: t.primarySoft,
-                  child: photoUrl == null
-                      ? Text(
-                          name.isNotEmpty ? name[0].toUpperCase() : '?',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: t.primary,
-                          ),
-                        )
-                      : null,
+                PersonAvatar(
+                  size: 64,
+                  name: preview.displayName,
+                  imageUrl: preview.photoUrl,
+                  borderWidth: 2,
+                  borderColor: CatchTokens.of(context).primary,
                 ),
                 const SizedBox(height: 6),
                 Text(
-                  name,
-                  style: TextStyle(
-                    fontSize: 11,
-                    fontWeight: FontWeight.w600,
-                    color: t.ink,
-                  ),
+                  preview.displayName,
+                  style: CatchTextStyles.labelS(context),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   textAlign: TextAlign.center,

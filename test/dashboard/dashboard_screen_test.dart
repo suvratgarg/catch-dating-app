@@ -578,6 +578,75 @@ void main() {
       expect(greetingFinder, findsNothing);
     });
 
+    testWidgets('profile avatar uses thumbnail URL and opens Profile tab', (
+      tester,
+    ) async {
+      final joinedClubIds = ['club-1'];
+      final user = buildUser(uid: 'runner-1', name: 'Suvrat Garg').copyWith(
+        photoUrls: const ['https://example.test/full-profile.jpg'],
+        photoThumbnailUrls: const ['https://example.test/profile-thumb.jpg'],
+      );
+      final nextRun = buildRun(
+        id: 'next-run',
+        bookedCount: 1,
+        startTime: DateTime.now().add(const Duration(hours: 3)),
+      );
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => DashboardFull(
+              user: user,
+              followedClubIds: joinedClubIds,
+              signedUpRuns: [nextRun],
+            ),
+          ),
+          GoRoute(
+            path: Routes.profileScreen.path,
+            name: Routes.profileScreen.name,
+            builder: (_, _) => const Scaffold(body: Text('Profile tab')),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchAttendedRunsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            dashboardRecommendedRunsProvider(
+              _recommendationsQueryFor(user.uid, joinedClubIds),
+            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            ..._dashboardHostOverrides(user),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+
+      expect(
+        find.byWidgetPredicate(
+          (widget) =>
+              widget is Image &&
+              widget.image is NetworkImage &&
+              (widget.image as NetworkImage).url ==
+                  'https://example.test/profile-thumb.jpg',
+        ),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byKey(DashboardFull.profileAvatarButtonKey));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Profile tab'), findsOneWidget);
+    });
+
     testWidgets('shows self check-in as the first dashboard content card', (
       tester,
     ) async {

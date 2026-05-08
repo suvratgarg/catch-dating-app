@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatsListViewModel {
 
- List<Match> get newMatches; List<Match> get conversations;
+ List<ChatThreadPreview> get newMatches; List<ChatThreadPreview> get conversations; int get totalThreadCount;
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $ChatsListViewModelCopyWith<ChatsListViewModel> get copyWith => _$ChatsListViewM
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatsListViewModel&&const DeepCollectionEquality().equals(other.newMatches, newMatches)&&const DeepCollectionEquality().equals(other.conversations, conversations));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ChatsListViewModel&&const DeepCollectionEquality().equals(other.newMatches, newMatches)&&const DeepCollectionEquality().equals(other.conversations, conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(newMatches),const DeepCollectionEquality().hash(conversations));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(newMatches),const DeepCollectionEquality().hash(conversations),totalThreadCount);
 
 @override
 String toString() {
-  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations)';
+  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $ChatsListViewModelCopyWith<$Res>  {
   factory $ChatsListViewModelCopyWith(ChatsListViewModel value, $Res Function(ChatsListViewModel) _then) = _$ChatsListViewModelCopyWithImpl;
 @useResult
 $Res call({
- List<Match> newMatches, List<Match> conversations
+ List<ChatThreadPreview> newMatches, List<ChatThreadPreview> conversations, int totalThreadCount
 });
 
 
@@ -62,11 +62,12 @@ class _$ChatsListViewModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? newMatches = null,Object? conversations = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? newMatches = null,Object? conversations = null,Object? totalThreadCount = null,}) {
   return _then(_self.copyWith(
 newMatches: null == newMatches ? _self.newMatches : newMatches // ignore: cast_nullable_to_non_nullable
-as List<Match>,conversations: null == conversations ? _self.conversations : conversations // ignore: cast_nullable_to_non_nullable
-as List<Match>,
+as List<ChatThreadPreview>,conversations: null == conversations ? _self.conversations : conversations // ignore: cast_nullable_to_non_nullable
+as List<ChatThreadPreview>,totalThreadCount: null == totalThreadCount ? _self.totalThreadCount : totalThreadCount // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 
@@ -151,10 +152,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<Match> newMatches,  List<Match> conversations)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatsListViewModel() when $default != null:
-return $default(_that.newMatches,_that.conversations);case _:
+return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);case _:
   return orElse();
 
 }
@@ -172,10 +173,10 @@ return $default(_that.newMatches,_that.conversations);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<Match> newMatches,  List<Match> conversations)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount)  $default,) {final _that = this;
 switch (_that) {
 case _ChatsListViewModel():
-return $default(_that.newMatches,_that.conversations);case _:
+return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -192,10 +193,10 @@ return $default(_that.newMatches,_that.conversations);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<Match> newMatches,  List<Match> conversations)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<ChatThreadPreview> newMatches,  List<ChatThreadPreview> conversations,  int totalThreadCount)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatsListViewModel() when $default != null:
-return $default(_that.newMatches,_that.conversations);case _:
+return $default(_that.newMatches,_that.conversations,_that.totalThreadCount);case _:
   return null;
 
 }
@@ -207,23 +208,24 @@ return $default(_that.newMatches,_that.conversations);case _:
 
 
 class _ChatsListViewModel extends ChatsListViewModel {
-  const _ChatsListViewModel({required final  List<Match> newMatches, required final  List<Match> conversations}): _newMatches = newMatches,_conversations = conversations,super._();
+  const _ChatsListViewModel({required final  List<ChatThreadPreview> newMatches, required final  List<ChatThreadPreview> conversations, required this.totalThreadCount}): _newMatches = newMatches,_conversations = conversations,super._();
   
 
- final  List<Match> _newMatches;
-@override List<Match> get newMatches {
+ final  List<ChatThreadPreview> _newMatches;
+@override List<ChatThreadPreview> get newMatches {
   if (_newMatches is EqualUnmodifiableListView) return _newMatches;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_newMatches);
 }
 
- final  List<Match> _conversations;
-@override List<Match> get conversations {
+ final  List<ChatThreadPreview> _conversations;
+@override List<ChatThreadPreview> get conversations {
   if (_conversations is EqualUnmodifiableListView) return _conversations;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_conversations);
 }
 
+@override final  int totalThreadCount;
 
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +237,16 @@ _$ChatsListViewModelCopyWith<_ChatsListViewModel> get copyWith => __$ChatsListVi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatsListViewModel&&const DeepCollectionEquality().equals(other._newMatches, _newMatches)&&const DeepCollectionEquality().equals(other._conversations, _conversations));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ChatsListViewModel&&const DeepCollectionEquality().equals(other._newMatches, _newMatches)&&const DeepCollectionEquality().equals(other._conversations, _conversations)&&(identical(other.totalThreadCount, totalThreadCount) || other.totalThreadCount == totalThreadCount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_newMatches),const DeepCollectionEquality().hash(_conversations));
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_newMatches),const DeepCollectionEquality().hash(_conversations),totalThreadCount);
 
 @override
 String toString() {
-  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations)';
+  return 'ChatsListViewModel(newMatches: $newMatches, conversations: $conversations, totalThreadCount: $totalThreadCount)';
 }
 
 
@@ -255,7 +257,7 @@ abstract mixin class _$ChatsListViewModelCopyWith<$Res> implements $ChatsListVie
   factory _$ChatsListViewModelCopyWith(_ChatsListViewModel value, $Res Function(_ChatsListViewModel) _then) = __$ChatsListViewModelCopyWithImpl;
 @override @useResult
 $Res call({
- List<Match> newMatches, List<Match> conversations
+ List<ChatThreadPreview> newMatches, List<ChatThreadPreview> conversations, int totalThreadCount
 });
 
 
@@ -272,11 +274,12 @@ class __$ChatsListViewModelCopyWithImpl<$Res>
 
 /// Create a copy of ChatsListViewModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? newMatches = null,Object? conversations = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? newMatches = null,Object? conversations = null,Object? totalThreadCount = null,}) {
   return _then(_ChatsListViewModel(
 newMatches: null == newMatches ? _self._newMatches : newMatches // ignore: cast_nullable_to_non_nullable
-as List<Match>,conversations: null == conversations ? _self._conversations : conversations // ignore: cast_nullable_to_non_nullable
-as List<Match>,
+as List<ChatThreadPreview>,conversations: null == conversations ? _self._conversations : conversations // ignore: cast_nullable_to_non_nullable
+as List<ChatThreadPreview>,totalThreadCount: null == totalThreadCount ? _self.totalThreadCount : totalThreadCount // ignore: cast_nullable_to_non_nullable
+as int,
   ));
 }
 

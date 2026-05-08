@@ -15,7 +15,7 @@ abstract class Match with _$Match {
     @JsonKey(includeToJson: false) required String id,
     required String user1Id,
     required String user2Id,
-    required String runId,
+    @JsonKey(readValue: _readRunIds) @Default(<String>[]) List<String> runIds,
     @TimestampConverter() required DateTime createdAt,
     @NullableTimestampConverter() DateTime? lastMessageAt,
     String? lastMessagePreview,
@@ -31,5 +31,20 @@ abstract class Match with _$Match {
   /// Returns the UID of the other participant in this match.
   String otherId(String myUid) => user1Id == myUid ? user2Id : user1Id;
 
+  /// Latest shared run context for legacy call sites and notification copy.
+  String? get latestRunId => runIds.isEmpty ? null : runIds.last;
+
   bool get isBlocked => status == MatchStatus.blocked;
+}
+
+Object? _readRunIds(Map json, String key) {
+  final runIds = json[key];
+  if (runIds is List) return runIds;
+
+  final legacyRunId = json['runId'];
+  if (legacyRunId is String && legacyRunId.isNotEmpty) {
+    return [legacyRunId];
+  }
+
+  return null;
 }

@@ -34,6 +34,10 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
           "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
             "users%2Frunner-1%2Fphotos%2F0_123.jpg?alt=media&token=abc",
         ],
+        photoThumbnailUrls: [
+          "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
+            "users%2Frunner-1%2Fthumbnails%2F0_123.jpg?alt=media&token=abc",
+        ],
         name: "Asha Runner",
         dateOfBirth: admin.firestore.Timestamp.fromDate(
           new Date("1995-01-01T00:00:00.000Z")
@@ -113,6 +117,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.equal(data.phoneNumber, "");
   assert.deepEqual(data.photoUrls, []);
+  assert.deepEqual(data.photoThumbnailUrls, []);
   assert.deepEqual(data.preferredDistances, []);
   assert.deepEqual(data.runningReasons, []);
   assert.equal(data.paceMinSecsPerKm, 300);
@@ -203,6 +208,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.deepEqual(harness.deletedAuthUsers, ["runner-1"]);
   assert.deepEqual(harness.deletedStorageFiles, [
     "users/runner-1/photos/0_123.jpg",
+    "users/runner-1/thumbnails/0_123.jpg",
   ]);
   assert.equal(harness.commits, 1);
 });

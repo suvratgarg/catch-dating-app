@@ -292,9 +292,13 @@ class CatchSliverHeader {
   /// top padding, `s2` bottom padding, and one `s1` line gap.
   static const double twoLineTitleHeight = 96;
 
+  /// Taller feature title height for headers whose display title can wrap
+  /// beside a trailing badge/action before the pinned row starts.
+  static const double wrappedTitleHeight = 148;
+
   /// Pinned search header height for one compact search field plus the
   /// vertical padding used by simple search-only headers.
-  static const double compactSearchBottomHeight = 64;
+  static const double compactSearchBottomHeight = 68;
 
   final Widget title;
   final Widget? bottom;
@@ -377,7 +381,10 @@ class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {
     BuildContext context,
     double shrinkOffset,
     bool overlapsContent,
-  ) => SizedBox.expand(child: child);
+  ) => ColoredBox(
+    color: CatchTokens.of(context).bg,
+    child: SizedBox.expand(child: child),
+  );
 
   @override
   bool shouldRebuild(covariant _PinnedHeaderDelegate old) =>

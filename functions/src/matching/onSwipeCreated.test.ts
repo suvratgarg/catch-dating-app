@@ -32,7 +32,7 @@ test(
       user1Id: "user-a",
       user2Id: "user-b",
       participantIds: ["user-a", "user-b"],
-      runId: "run-2",
+      runIds: ["run-1", "run-2"],
       createdAt: "SERVER_TIMESTAMP",
       lastMessageAt: null,
       lastMessagePreview: null,
@@ -42,6 +42,37 @@ test(
     });
   }
 );
+
+test("onSwipeCreatedHandler appends run ids to an existing match", async () => {
+  const created: Record<string, unknown> = {};
+  const updated: Record<string, unknown> = {};
+
+  await onSwipeCreatedHandler(
+    {
+      swiperId: "user-b",
+      targetId: "user-a",
+      swipeData: swipe("user-b", "user-a", "run-3", "like"),
+    },
+    deps({
+      docs: {
+        "swipes/user-a/outgoing/user-b": swipe(
+          "user-a",
+          "user-b",
+          "run-2",
+          "like"
+        ),
+        "matches/user-a_user-b": {runIds: ["run-1"]},
+      },
+      created,
+      updated,
+    })
+  );
+
+  assert.deepEqual(created, {});
+  assert.deepEqual(updated["matches/user-a_user-b"], {
+    runIds: {arrayUnion: ["run-2", "run-3"]},
+  });
+});
 
 test(
   "onSwipeCreatedHandler ignores non-reciprocal and blocked likes",
@@ -99,22 +130,26 @@ function swipe(
 function deps({
   docs = {},
   created = {},
+  updated = {},
   blocked = false,
 }: {
   docs?: Record<string, unknown>;
   created?: Record<string, unknown>;
+  updated?: Record<string, unknown>;
   blocked?: boolean;
 }) {
   return {
-    firestore: () => firestore(docs, created),
+    firestore: () => firestore(docs, created, updated),
     hasBlockingRelationship: async () => blocked,
+    arrayUnion: (...elements: string[]) => ({arrayUnion: elements}),
     serverTimestamp: () => "SERVER_TIMESTAMP",
   } as never;
 }
 
 function firestore(
   docs: Record<string, unknown>,
-  created: Record<string, unknown>
+  created: Record<string, unknown>,
+  updated: Record<string, unknown>
 ) {
   return {
     collection: (collectionPath: string) => ({
@@ -135,12 +170,16 @@ function firestore(
         };
       },
       create: async (data: unknown) => {
-        if (created[path] !== undefined) {
+        if (docs[path] !== undefined || created[path] !== undefined) {
           const error = new Error("Already exists") as Error & {code: number};
           error.code = 6;
           throw error;
         }
         created[path] = data;
+      },
+      update: async (data: Record<string, unknown>) => {
+        const existing = (updated[path] ?? {}) as Record<string, unknown>;
+        updated[path] = {...existing, ...data};
       },
     };
   }

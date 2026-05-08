@@ -56,6 +56,7 @@ export async function onMatchCreatedHandler(
     (profile1Doc.data() as PublicProfileDoc | undefined)?.name ?? "Someone";
   const profile2Name =
     (profile2Doc.data() as PublicProfileDoc | undefined)?.name ?? "Someone";
+  const latestRunId = latestMatchRunId(match);
 
   await Promise.all([
     setActivityNotification(db, {
@@ -66,7 +67,7 @@ export async function onMatchCreatedHandler(
       body: `You and ${profile2Name} matched. Say hi!`,
       createdAt: deps.serverTimestamp(),
       matchId,
-      runId: match.runId,
+      runId: latestRunId,
       actorUid: user2Id,
       actorName: profile2Name,
     }),
@@ -78,7 +79,7 @@ export async function onMatchCreatedHandler(
       body: `You and ${profile1Name} matched. Say hi!`,
       createdAt: deps.serverTimestamp(),
       matchId,
-      runId: match.runId,
+      runId: latestRunId,
       actorUid: user1Id,
       actorName: profile1Name,
     }),
@@ -121,6 +122,20 @@ export async function onMatchCreatedHandler(
       })
     )
   );
+}
+
+type LegacyMatchDoc = MatchDoc & {runId?: string | null};
+
+/**
+ * Returns the newest shared run id for a match, including legacy runId docs.
+ *
+ * @param {MatchDoc} match Match document data.
+ * @return {string | undefined} Latest run id when one is available.
+ */
+function latestMatchRunId(match: MatchDoc): string | undefined {
+  const runIds = match.runIds ?? [];
+  const legacyRunId = (match as LegacyMatchDoc).runId;
+  return runIds.at(-1) ?? legacyRunId ?? undefined;
 }
 
 export const onMatchCreated = onDocumentCreated(

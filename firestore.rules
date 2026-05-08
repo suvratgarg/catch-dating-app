@@ -41,6 +41,12 @@ service cloud.firestore {
         || data[field] in values;
     }
 
+    function optionalList(data, field) {
+      return !hasField(data, field)
+        || data[field] == null
+        || data[field] is list;
+    }
+
     function isDefaultCity(city) {
       return city in [
         'mumbai',
@@ -126,7 +132,7 @@ service cloud.firestore {
           'instagramHandle', 'phoneNumber', 'dateOfBirth',
           'gender', 'sexualOrientation', 'profileComplete',
           // Photos
-          'photoUrls',
+          'photoUrls', 'photoThumbnailUrls',
           // Location
           'city',
           'latitude',
@@ -187,6 +193,7 @@ service cloud.firestore {
         && data.profileComplete is bool
         // Photos
         && data.photoUrls is list
+        && optionalList(data, 'photoThumbnailUrls')
         // Location
         && (!hasField(data, 'city') || data.city == null || isValidCity(data.city))
         && optionalNumber(data, 'latitude')

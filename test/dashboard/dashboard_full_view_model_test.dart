@@ -25,6 +25,32 @@ void main() {
       );
 
       expect(viewModel.nextRun?.id, earlier.id);
+      expect(viewModel.upcomingRuns.map((run) => run.id), [
+        earlier.id,
+        later.id,
+      ]);
+    });
+
+    test('filters past booked runs out of upcomingRuns', () {
+      final now = DateTime(2026, 4, 23, 9);
+      final past = buildRun(
+        id: 'past',
+        startTime: now.subtract(const Duration(hours: 2)),
+      );
+      final upcoming = buildRun(
+        id: 'upcoming',
+        startTime: now.add(const Duration(hours: 2)),
+      );
+
+      final viewModel = buildDashboardFullViewModel(
+        signedUpRuns: [past, upcoming],
+        attendedRunsAsync: const AsyncData<List<Run>>([]),
+        recommendedRunsAsync: const AsyncData<List<Run>>([]),
+        now: now,
+      );
+
+      expect(viewModel.nextRun?.id, 'upcoming');
+      expect(viewModel.upcomingRuns.map((run) => run.id), ['upcoming']);
     });
 
     test('surfaces attended section errors and clears the swipe run', () {

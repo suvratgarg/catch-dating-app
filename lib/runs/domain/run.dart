@@ -91,6 +91,8 @@ abstract class Run with _$Run {
   bool get isCancelled => status == RunLifecycleStatus.cancelled;
   bool get isUpcoming => !isCancelled && startTime.isAfter(DateTime.now());
   bool get hasRequirements => constraints.hasRequirements;
+  bool get hasExactStartingPoint =>
+      startingPointLat != null && startingPointLng != null;
 
   /// Returns fresh-viewer eligibility of [user] for this run.
   ///

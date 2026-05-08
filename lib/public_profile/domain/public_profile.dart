@@ -14,6 +14,7 @@ abstract class PublicProfile with _$PublicProfile {
     required String bio,
     required Gender gender,
     @Default([]) List<String> photoUrls,
+    @Default([]) List<String> photoThumbnailUrls,
 
     // Location
     @JsonKey(unknownEnumValue: null) IndianCity? city,
@@ -61,6 +62,7 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   bio: user.bio,
   gender: user.gender,
   photoUrls: user.photoUrls,
+  photoThumbnailUrls: user.photoThumbnailUrls,
   city: user.city,
   latitude: user.latitude,
   longitude: user.longitude,
@@ -81,3 +83,17 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   preferredDistances: user.preferredDistances,
   runningReasons: user.runningReasons,
 );
+
+extension PublicProfilePhotos on PublicProfile {
+  /// Tiny first-photo URL for avatar-scale UI. Falls back to the full photo
+  /// until the backend thumbnail generation queue has backfilled old profiles.
+  String? get primaryPhotoThumbnailUrl {
+    final thumbnailUrl = photoThumbnailUrls
+        .where((url) => url.isNotEmpty)
+        .firstOrNull;
+    if (thumbnailUrl != null) return thumbnailUrl;
+    final photoUrl = photoUrls.where((url) => url.isNotEmpty).firstOrNull;
+    if (photoUrl != null) return photoUrl;
+    return null;
+  }
+}

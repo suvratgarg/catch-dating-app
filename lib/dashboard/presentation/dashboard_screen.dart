@@ -9,12 +9,14 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -251,7 +253,7 @@ class _DashboardHeaderModel {
       title: "Let's find your first run",
       avatar: DashedAvatar(
         size: 42,
-        imageUrl: user?.photoUrls.firstOrNull,
+        imageUrl: user?.primaryPhotoThumbnailUrl,
         name: firstName,
       ),
     );
@@ -263,12 +265,24 @@ class _DashboardHeaderModel {
     return _DashboardHeaderModel(
       eyebrow: DashboardFull.dayCity(user.city?.label).toUpperCase(),
       title: '${DashboardFull.greeting()}, $firstName',
-      avatar: PersonAvatar(
-        size: 42,
-        name: user.name,
-        imageUrl: user.photoUrls.firstOrNull,
-        borderWidth: 2,
-        borderColor: t.primary,
+      avatar: Tooltip(
+        message: 'Open profile',
+        child: Semantics(
+          button: true,
+          label: 'Open profile',
+          child: InkResponse(
+            onTap: () => context.goNamed(Routes.profileScreen.name),
+            radius: 26,
+            customBorder: const CircleBorder(),
+            child: PersonAvatar(
+              size: 42,
+              name: user.name,
+              imageUrl: user.primaryPhotoThumbnailUrl,
+              borderWidth: 2,
+              borderColor: t.primary,
+            ),
+          ),
+        ),
       ),
     );
   }

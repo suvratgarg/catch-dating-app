@@ -27,9 +27,14 @@ class RunMapViewModel {
 RunMapViewModel buildRunMapViewModel({
   required List<Run> signedUpRuns,
   required List<Run> recommendedRuns,
+  DateTime? now,
 }) {
+  final effectiveNow = now ?? DateTime.now();
   final byId = <String, Run>{};
-  for (final run in [...recommendedRuns, ...signedUpRuns]) {
+  for (final run in [
+    ...recommendedRuns,
+    ...signedUpRuns,
+  ].where((run) => isUpcomingMapRun(run, effectiveNow))) {
     byId[run.id] = run;
   }
 
@@ -45,6 +50,9 @@ RunMapViewModel buildRunMapViewModel({
 
 bool hasRunMapPin(Run run) =>
     run.startingPointLat != null && run.startingPointLng != null;
+
+bool isUpcomingMapRun(Run run, DateTime now) =>
+    !run.isCancelled && run.startTime.isAfter(now);
 
 /// Combines the current user's booked runs and recommended runs for the map.
 ///

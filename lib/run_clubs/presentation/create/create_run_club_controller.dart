@@ -33,7 +33,10 @@ class CreateRunClubController extends _$CreateRunClubController {
   Future<PickedRunClubCover?> pickCoverImage({int imageQuality = 85}) async {
     final image = await ref
         .read(imageUploadRepositoryProvider)
-        .pickImage(imageQuality: imageQuality);
+        .pickImage(
+          purpose: ImageUploadPurpose.runClubCover,
+          imageQuality: imageQuality,
+        );
     if (image == null) {
       return null;
     }

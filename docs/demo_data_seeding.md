@@ -37,6 +37,10 @@ Synthetic users do not get Firebase Auth accounts. They exist as public app
 data so real TestFlight users can browse, attend seeded runs with them, swipe,
 match, and chat.
 
+Seeded matches use deterministic match IDs and write `runIds` instead of the
+legacy single `runId`, so the chats list can collapse one visible conversation
+per matched person while still preserving the shared-run history.
+
 ## Scenarios
 
 List available scenarios:
@@ -146,6 +150,14 @@ If an anchor user is missing, the script fails before writing. If an anchor user
 does not have a `publicProfiles/{uid}` document, the dry run prints a warning.
 Fix onboarding/profile sync first if that happens; the seeder intentionally does
 not overwrite real user profiles.
+
+Synthetic public identities must be deterministic and visibly distinct. The
+chat list, search, and profile flows are too hard to QA when two synthetic
+profiles share the same public name and primary photo. The seeder now generates
+full display names and offsets repeated photos, and the data validator warns on
+duplicate synthetic public name/photo pairs. If an environment was seeded before
+this rule, rerun the seed with `--reset-synthetic` to replace the misleading
+synthetic profiles.
 
 ## Apply To Dev Or Staging
 

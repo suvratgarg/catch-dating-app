@@ -36,6 +36,7 @@ Run buildRun({
   int? bookedCount,
   int? checkedInCount,
   int? waitlistedCount,
+  RunLifecycleStatus status = RunLifecycleStatus.active,
   RunConstraints constraints = const RunConstraints(),
   Map<String, int> genderCounts = const {},
 }) {
@@ -57,6 +58,7 @@ Run buildRun({
     bookedCount: bookedCount,
     checkedInCount: checkedInCount,
     waitlistedCount: waitlistedCount,
+    status: status,
     constraints: constraints,
     genderCounts: genderCounts,
   );

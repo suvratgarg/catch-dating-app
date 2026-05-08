@@ -162,6 +162,7 @@ export interface UserProfileDoc {
   bio: string;
   instagramHandle?: string | null;
   photoUrls: string[];
+  photoThumbnailUrls: string[];
   city?: IndianCity | null;
   latitude?: number | null;
   longitude?: number | null;
@@ -210,6 +211,7 @@ export interface PublicProfileDoc {
   bio: string;
   gender: Gender;
   photoUrls: string[];
+  photoThumbnailUrls: string[];
   city?: IndianCity | null;
   latitude?: number | null;
   longitude?: number | null;
@@ -403,7 +405,7 @@ export interface SwipeDoc {
 export interface MatchDoc {
   user1Id: string;
   user2Id: string;
-  runId: string;
+  runIds: string[];
   createdAt: FirebaseFirestore.Timestamp;
   lastMessageAt?: FirebaseFirestore.Timestamp | null;
   lastMessagePreview?: string | null;
@@ -425,7 +427,7 @@ export interface ChatMessageDoc {
   senderId: string;
   text: string;
   imageUrl?: string | null;
-  sentAt: FirebaseFirestore.Timestamp;
+  sentAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**

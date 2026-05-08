@@ -66,7 +66,7 @@ function event() {
         user1Id: "runner-1",
         user2Id: "runner-2",
         participantIds: ["runner-1", "runner-2"],
-        runId: "run-1",
+        runIds: ["run-1"],
         createdAt: {seconds: 0, nanoseconds: 0},
         unreadCounts: {"runner-1": 0, "runner-2": 0},
         status: "active",

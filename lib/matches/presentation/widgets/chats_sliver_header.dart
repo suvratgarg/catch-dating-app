@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chat_search_field.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +12,7 @@ class ChatsSliverHeader extends CatchSliverHeader {
     : super(
         title: _TitleRow(count: count),
         bottom: showSearchField ? const _SearchRow() : null,
-        titleHeight: CatchSliverHeader.twoLineTitleHeight,
+        titleHeight: CatchSliverHeader.wrappedTitleHeight,
         bottomHeight: CatchSliverHeader.compactSearchBottomHeight,
       );
 }
@@ -22,7 +24,6 @@ class _TitleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final countLabel = count == 1 ? '1 match' : '$count matches';
 
     return Padding(
@@ -33,6 +34,7 @@ class _TitleRow extends StatelessWidget {
         CatchSpacing.s2,
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Expanded(
             child: Column(
@@ -48,18 +50,13 @@ class _TitleRow extends StatelessWidget {
               ],
             ),
           ),
-          Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: CatchSpacing.s3,
-              vertical: CatchSpacing.s2,
-            ),
-            decoration: BoxDecoration(
-              color: t.primarySoft,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-            ),
-            child: Text(
-              countLabel,
-              style: CatchTextStyles.labelL(context, color: t.primary),
+          const SizedBox(width: CatchSpacing.s3),
+          Padding(
+            padding: const EdgeInsets.only(top: CatchSpacing.s2),
+            child: CatchBadge(
+              label: countLabel,
+              tone: CatchBadgeTone.brand,
+              size: CatchBadgeSize.md,
             ),
           ),
         ],
@@ -76,11 +73,14 @@ class _SearchRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        0,
+        CatchSpacing.s2,
         CatchSpacing.s5,
-        CatchSpacing.s3,
+        CatchSpacing.s2,
       ),
-      child: const ChatSearchField(),
+      child: const SizedBox(
+        height: CatchTextField.compactControlHeight,
+        child: ChatSearchField(),
+      ),
     );
   }
 }

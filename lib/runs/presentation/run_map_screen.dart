@@ -5,13 +5,13 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
+import 'package:catch_dating_app/runs/presentation/run_map_center.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_map_sheet.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_pins_map.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
 
 class RunMapScreen extends ConsumerStatefulWidget {
   const RunMapScreen({super.key, this.enableNetworkTiles = true});
@@ -29,6 +29,8 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final viewModelAsync = ref.watch(runMapViewModelProvider);
+    final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
+    final selectedCity = ref.watch(selectedRunClubCityProvider);
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -43,6 +45,11 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
         data: (viewModel) {
           final runs = viewModel.runs;
           final selectedRun = viewModel.selectedRun(_selectedRunId);
+          final mapCenter = resolveRunMapInitialCenter(
+            deviceLocation: deviceLocation,
+            selectedCity: selectedCity,
+            pinnedRuns: viewModel.pinnedRuns,
+          );
 
           return Column(
             children: [
@@ -52,8 +59,9 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
                     : Stack(
                         children: [
                           Positioned.fill(
-                            child: _RunsMap(
+                            child: RunPinsMap(
                               runs: viewModel.pinnedRuns,
+                              initialCenter: mapCenter,
                               selectedRunId: _selectedRunId,
                               enableNetworkTiles: widget.enableNetworkTiles,
                               onRunSelected: (run) =>
@@ -78,85 +86,6 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
           );
         },
       ),
-    );
-  }
-}
-
-class _RunsMap extends ConsumerWidget {
-  const _RunsMap({
-    required this.runs,
-    required this.selectedRunId,
-    required this.enableNetworkTiles,
-    required this.onRunSelected,
-  });
-
-  static const _mumbai = LatLng(19.0760, 72.8777);
-
-  final List<Run> runs;
-  final String? selectedRunId;
-  final bool enableNetworkTiles;
-  final ValueChanged<Run> onRunSelected;
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
-    final center = runs.isEmpty
-        ? (deviceLocation ?? _mumbai)
-        : LatLng(runs.first.startingPointLat!, runs.first.startingPointLng!);
-    final t = CatchTokens.of(context);
-
-    return FlutterMap(
-      options: MapOptions(initialCenter: center, initialZoom: 12.5),
-      children: [
-        if (enableNetworkTiles)
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.catchdating.app',
-          )
-        else
-          ColoredBox(color: t.primarySoft),
-        MarkerLayer(
-          markers: [
-            for (final run in runs)
-              Marker(
-                point: LatLng(run.startingPointLat!, run.startingPointLng!),
-                width: 52,
-                height: 52,
-                child: Semantics(
-                  button: true,
-                  selected: selectedRunId == run.id,
-                  label: 'Select ${run.title}',
-                  child: GestureDetector(
-                    onTap: () => onRunSelected(run),
-                    child: AnimatedScale(
-                      scale: selectedRunId == run.id ? 1.14 : 1,
-                      duration: const Duration(milliseconds: 160),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: selectedRunId == run.id ? t.primary : t.ink,
-                          shape: BoxShape.circle,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x33000000),
-                              blurRadius: 12,
-                              offset: Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.directions_run_rounded,
-                          color: selectedRunId == run.id
-                              ? t.primaryInk
-                              : t.surface,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ],
     );
   }
 }

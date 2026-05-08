@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -13,11 +14,41 @@ abstract class ChatsListViewModel with _$ChatsListViewModel {
   const ChatsListViewModel._();
 
   const factory ChatsListViewModel({
-    required List<Match> newMatches,
-    required List<Match> conversations,
+    required List<ChatThreadPreview> newMatches,
+    required List<ChatThreadPreview> conversations,
+    required int totalThreadCount,
   }) = _ChatsListViewModel;
 
   bool get isEmpty => newMatches.isEmpty && conversations.isEmpty;
+  int get visibleThreadCount => newMatches.length + conversations.length;
+}
+
+class ChatThreadPreview {
+  const ChatThreadPreview({
+    required this.match,
+    required this.matchId,
+    required this.otherUid,
+    required this.displayName,
+    required this.photoUrl,
+    required this.previewText,
+    required this.timestamp,
+    required this.unreadCount,
+    required this.hasConversation,
+    required this.runIds,
+  });
+
+  final Match match;
+  final String matchId;
+  final String otherUid;
+  final String displayName;
+  final String? photoUrl;
+  final String previewText;
+  final DateTime timestamp;
+  final int unreadCount;
+  final bool hasConversation;
+  final List<String> runIds;
+
+  String? get latestRunId => runIds.isEmpty ? null : runIds.last;
 }
 
 @Riverpod(keepAlive: true)
@@ -45,79 +76,70 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
   final query = ref.watch(chatSearchQueryProvider);
 
   return matchesAsync.whenData((matches) {
-    final matchesByPerson = _collapseMatchesByOtherUser(matches, uid);
-    final newMatches = <Match>[];
-    final conversations = <Match>[];
+    final matchesByPerson = collapseMatchesByOtherUser(matches, uid);
+    final previews = matchesByPerson
+        .map((match) => _previewForMatch(ref, match, uid))
+        .toList();
 
-    for (final match in matchesByPerson) {
-      if (match.lastMessagePreview == null) {
-        newMatches.add(match);
+    final newMatches = <ChatThreadPreview>[];
+    final conversations = <ChatThreadPreview>[];
+
+    for (final preview in previews) {
+      if (preview.hasConversation) {
+        conversations.add(preview);
       } else {
-        conversations.add(match);
+        newMatches.add(preview);
       }
     }
 
-    newMatches.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-    conversations.sort(
-      (a, b) =>
-          (b.lastMessageAt ?? b.createdAt)
-              .compareTo(a.lastMessageAt ?? a.createdAt),
-    );
+    newMatches.sort((a, b) => b.timestamp.compareTo(a.timestamp));
+    conversations.sort((a, b) => b.timestamp.compareTo(a.timestamp));
 
     final normalizedQuery = query.trim().toLowerCase();
     if (normalizedQuery.isNotEmpty) {
-      conversations.removeWhere((match) {
-        final otherUid = match.otherId(uid);
-        final profile =
-            ref.watch(watchPublicProfileProvider(otherUid)).asData?.value;
-        final name = profile?.name ?? '';
-        return !name.toLowerCase().contains(normalizedQuery);
-      });
-      newMatches.removeWhere((match) {
-        final otherUid = match.otherId(uid);
-        final profile =
-            ref.watch(watchPublicProfileProvider(otherUid)).asData?.value;
-        final name = profile?.name ?? '';
-        return !name.toLowerCase().contains(normalizedQuery);
-      });
+      conversations.removeWhere(
+        (preview) =>
+            !preview.displayName.toLowerCase().contains(normalizedQuery),
+      );
+      newMatches.removeWhere(
+        (preview) =>
+            !preview.displayName.toLowerCase().contains(normalizedQuery),
+      );
     }
 
     return ChatsListViewModel(
       newMatches: List.unmodifiable(newMatches),
       conversations: List.unmodifiable(conversations),
+      totalThreadCount: matchesByPerson.length,
     );
   });
 }
 
-List<Match> _collapseMatchesByOtherUser(List<Match> matches, String uid) {
-  final buckets = <String, List<Match>>{};
-  for (final match in matches) {
-    buckets.putIfAbsent(match.otherId(uid), () => []).add(match);
+ChatThreadPreview _previewForMatch(Ref ref, Match match, String uid) {
+  final otherUid = match.otherId(uid);
+  final profile = ref.watch(watchPublicProfileProvider(otherUid)).asData?.value;
+  final displayName = profile?.name ?? 'Unknown';
+  final photoUrl = profile?.primaryPhotoThumbnailUrl;
+  final hasConversation = match.lastMessagePreview != null;
+  final String previewText;
+  if (!hasConversation) {
+    previewText = 'You matched!';
+  } else if (match.lastMessageSenderId == uid) {
+    previewText = 'You: ${match.lastMessagePreview}';
+  } else {
+    previewText = match.lastMessagePreview!;
   }
 
-  return buckets.values.map((bucket) {
-    bucket.sort((a, b) => _chatSortTime(b).compareTo(_chatSortTime(a)));
-
-    final conversationMatches = bucket
-        .where((match) => match.lastMessagePreview != null)
-        .toList()
-      ..sort((a, b) => _chatSortTime(b).compareTo(_chatSortTime(a)));
-    final selected = conversationMatches.isNotEmpty
-        ? conversationMatches.first
-        : bucket.first;
-    final totalUnread = bucket.fold<int>(
-      0,
-      (total, match) => total + (match.unreadCounts[uid] ?? 0),
-    );
-
-    if (totalUnread == (selected.unreadCounts[uid] ?? 0)) {
-      return selected;
-    }
-
-    return selected.copyWith(
-      unreadCounts: {...selected.unreadCounts, uid: totalUnread},
-    );
-  }).toList();
+  return ChatThreadPreview(
+    match: match,
+    matchId: match.id,
+    otherUid: otherUid,
+    displayName: displayName,
+    photoUrl: photoUrl,
+    previewText: previewText,
+    timestamp: match.lastMessageAt ?? match.createdAt,
+    unreadCount: match.unreadCounts[uid] ?? 0,
+    hasConversation: hasConversation,
+    runIds: match.runIds,
+  );
 }
-
-DateTime _chatSortTime(Match match) => match.lastMessageAt ?? match.createdAt;

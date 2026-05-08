@@ -1,6 +1,6 @@
 ---
 doc_id: widget_cleanup
-version: 2.3.40
+version: 2.3.45
 updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
@@ -30,6 +30,36 @@ For future passes:
    old finding points there.
 
 ## Rule Changelog
+
+### 2.3.45
+
+- Closed `DASHBOARD-RUN-HYPE-THUMBNAILS-001`: Dashboard upcoming-run cards and
+  Run detail now share `RunHypeAvatarStack`, which uses blurred
+  `photoThumbnailUrls` selected from recent matching `runParticipations`.
+  `PersonAvatarStack` is the reusable primitive for overlapping avatars, and
+  chat/match surfaces consume thumbnail URLs without the blurred treatment.
+- Added backend profile-photo thumbnail generation plus a dry-run/apply
+  backfill script. Existing beta data needs `npm run
+  backfill:profile-thumbnails -- --apply` with `FIREBASE_STORAGE_BUCKET` set
+  after deploy/credentials are available.
+- Chat image picking/uploading now goes through `ImageUploadRepository` so
+  profile, onboarding, run-club cover, and chat media all use centralized
+  picker resize/compression policies.
+
+### 2.3.44
+
+- Run maps should share `RunPinsMap` rather than creating independent
+  `FlutterMap` stacks. Browse maps center on device location first, the
+  selected run-club city second, and run pins only as a last fallback. Keep
+  address-only runs in list/sheet UI but omit map pins until coordinates are
+  present.
+
+### 2.3.43
+
+- Run detail location affordances must reflect data capability: show a chevron
+  and map navigation only when a run has exact starting coordinates. Address-
+  only runs should keep the location card static so users do not enter an
+  empty or approximate map.
 
 ### 2.3.40
 
@@ -292,6 +322,31 @@ For future passes:
   still reports zero raw app-facing error surface candidates. Remaining
   `"Unable to load..."` / `"Something went wrong"` matches are branded
   primitive copy, mappers, framework fallback, or tests.
+
+### 2.3.42
+
+- Added the profile thumbnail seam: `users/{uid}` and `publicProfiles/{uid}`
+  now support `photoThumbnailUrls`, Home's header avatar consumes
+  `primaryPhotoThumbnailUrl` with full-photo fallback, and the avatar opens the
+  Profile tab. Backend generation/backfill plus participant hype-avatar
+  selection were completed in 2.3.45.
+
+### 2.3.41
+
+- Refactored the Dashboard next-run card flow. `DashboardFullViewModel` now
+  exposes all upcoming booked runs in soonest-first order, while preserving
+  `nextRun` as the first item for compatibility. `DashboardFullSliverBody`
+  renders `UpcomingRunsHero`, a horizontal pager that lets users switch between
+  booked upcoming runs and tap the active card into a dashboard-owned run detail
+  route.
+- Fixed a recurring rounded-card border issue at the shared `CatchSurface`
+  primitive by moving borders into foreground decoration so clipped card/image
+  children cannot paint over the outline.
+- Added `DASHBOARD-RUN-HYPE-THUMBNAILS-001` to the backlog. Do not load full
+  profile photos into the next-run hype avatars; add tiny backend-generated
+  first-photo thumbnails and public profile projections before replacing the
+  deterministic placeholder circles with blurred participant thumbnails. This
+  backlog item was completed in 2.3.45.
 
 ### 2.3.19
 

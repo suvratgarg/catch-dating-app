@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/chats/data/chat_repository.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -36,11 +37,24 @@ class ChatController extends _$ChatController {
     required String matchId,
     required String senderId,
   }) async {
-    final image = await ref.read(chatRepositoryProvider).pickImage();
+    final imageUploadRepository = ref.read(imageUploadRepositoryProvider);
+    final image = await imageUploadRepository.pickImage(
+      purpose: ImageUploadPurpose.chatImage,
+    );
     if (image == null) return; // User cancelled
-    await ref
-        .read(chatRepositoryProvider)
-        .sendImageMessage(matchId: matchId, senderId: senderId, image: image);
+    final chatRepository = ref.read(chatRepositoryProvider);
+    final messageId = chatRepository.createMessageId(matchId: matchId);
+    final imageUrl = await imageUploadRepository.uploadChatImage(
+      matchId: matchId,
+      messageId: messageId,
+      image: image,
+    );
+    await chatRepository.sendImageMessage(
+      matchId: matchId,
+      senderId: senderId,
+      messageId: messageId,
+      imageUrl: imageUrl,
+    );
   }
 
   Future<void> blockUser({required String targetUserId}) async {
@@ -72,3 +86,16 @@ class ChatController extends _$ChatController {
         .resetUnread(matchId: matchId, uid: uid);
   }
 }
+
+class ChatUnreadResetter {
+  const ChatUnreadResetter(this._matchRepository);
+
+  final MatchRepository _matchRepository;
+
+  Future<void> resetUnread({required String matchId, required String uid}) =>
+      _matchRepository.resetUnread(matchId: matchId, uid: uid);
+}
+
+@riverpod
+ChatUnreadResetter chatUnreadResetter(Ref ref) =>
+    ChatUnreadResetter(ref.watch(matchRepositoryProvider));

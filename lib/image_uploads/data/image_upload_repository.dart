@@ -6,25 +6,58 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'image_upload_repository.g.dart';
 
+enum ImageUploadPurpose { profilePhoto, runClubCover, chatImage }
+
+class ImageUploadPolicy {
+  const ImageUploadPolicy({
+    required this.maxWidth,
+    required this.maxHeight,
+    required this.quality,
+  });
+
+  final double maxWidth;
+  final double maxHeight;
+  final int quality;
+}
+
 class ImageUploadRepository {
   ImageUploadRepository(this._storage, {ImagePicker? picker})
     : _picker = picker ?? ImagePicker();
 
-  static const double _maxPickedImageWidth = 1600;
-  static const double _maxPickedImageHeight = 2133;
+  static const profilePhotoPolicy = ImageUploadPolicy(
+    maxWidth: 1600,
+    maxHeight: 2133,
+    quality: 85,
+  );
+  static const runClubCoverPolicy = ImageUploadPolicy(
+    maxWidth: 1800,
+    maxHeight: 1200,
+    quality: 82,
+  );
+  static const chatImagePolicy = ImageUploadPolicy(
+    maxWidth: 1440,
+    maxHeight: 1920,
+    quality: 78,
+  );
 
   final FirebaseStorage _storage;
   final ImagePicker _picker;
 
   // ── Picking ───────────────────────────────────────────────────────────────
 
-  Future<XFile?> pickImage({int imageQuality = 85}) => _picker.pickImage(
-    source: ImageSource.gallery,
-    maxWidth: _maxPickedImageWidth,
-    maxHeight: _maxPickedImageHeight,
-    imageQuality: imageQuality,
-    requestFullMetadata: false,
-  );
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) {
+    final policy = policyForPurpose(purpose);
+    return _picker.pickImage(
+      source: ImageSource.gallery,
+      maxWidth: policy.maxWidth,
+      maxHeight: policy.maxHeight,
+      imageQuality: imageQuality ?? policy.quality,
+      requestFullMetadata: false,
+    );
+  }
 
   // ── Generic upload ────────────────────────────────────────────────────────
 
@@ -36,7 +69,7 @@ class ImageUploadRepository {
       withFirestoreErrorContext(
         () async {
           final bytes = await image.readAsBytes();
-          final ext = _ext(image.name);
+          final ext = _normalizedExt(image.name);
           final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
           final ref = _storage.ref('$storagePath.$ext');
           await ref.putData(bytes, SettableMetadata(contentType: contentType));
@@ -63,12 +96,34 @@ class ImageUploadRepository {
     required XFile image,
   }) => upload(storagePath: 'runClubs/$clubId/cover', image: image);
 
+  Future<String> uploadChatImage({
+    required String matchId,
+    required String messageId,
+    required XFile image,
+  }) => upload(
+    storagePath:
+        'matches/$matchId/images/${messageId}_'
+        '${DateTime.now().millisecondsSinceEpoch}',
+    image: image,
+  );
+
   // ── Internal ──────────────────────────────────────────────────────────────
+
+  static ImageUploadPolicy policyForPurpose(ImageUploadPurpose purpose) {
+    return switch (purpose) {
+      ImageUploadPurpose.profilePhoto => profilePhotoPolicy,
+      ImageUploadPurpose.runClubCover => runClubCoverPolicy,
+      ImageUploadPurpose.chatImage => chatImagePolicy,
+    };
+  }
 
   static String _ext(String filename) {
     final dot = filename.lastIndexOf('.');
     return dot != -1 ? filename.substring(dot + 1).toLowerCase() : 'jpg';
   }
+
+  static String _normalizedExt(String filename) =>
+      _ext(filename) == 'png' ? 'png' : 'jpg';
 }
 
 @riverpod

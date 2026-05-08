@@ -18,6 +18,7 @@ const ERROR_DOC_BYTES = 950 * 1024;
 const ARRAY_LIMITS = {
   "users.photoUrls": 12,
   "matches.participantIds": 20,
+  "matches.runIds": 100,
 };
 
 const args = parseArgs(process.argv.slice(2));
@@ -196,6 +197,10 @@ function validateAll(collections, currentReport) {
   }
 
   for (const doc of collections.users) validateUser(doc, currentReport);
+  validateSyntheticPublicProfileIdentities(
+    collections.publicProfiles,
+    currentReport
+  );
   for (const doc of collections.runClubs) {
     validateRunClub(doc, users, currentReport);
   }
@@ -262,8 +267,36 @@ function validateUser(doc, currentReport) {
   requireString(data, "phoneNumber", doc, currentReport);
   requireBool(data, "profileComplete", doc, currentReport);
   requireStringArray(data, "photoUrls", doc, currentReport);
+  if (data.photoThumbnailUrls !== undefined) {
+    requireStringArray(data, "photoThumbnailUrls", doc, currentReport);
+  }
   requireStringArray(data, "interestedInGenders", doc, currentReport);
   checkArrayLimit("users.photoUrls", data.photoUrls, doc, currentReport);
+}
+
+function validateSyntheticPublicProfileIdentities(publicProfiles, currentReport) {
+  const seen = new Map();
+
+  for (const doc of publicProfiles) {
+    const data = doc.data;
+    if (!isSyntheticPublicProfile(doc)) continue;
+
+    const name = normalizedPublicName(data.name);
+    const firstPhoto = Array.isArray(data.photoUrls) ? data.photoUrls[0] : null;
+    if (!name || typeof firstPhoto !== "string" || firstPhoto.length === 0) {
+      continue;
+    }
+
+    const key = `${name}|${firstPhoto}`;
+    const firstPath = seen.get(key);
+    if (firstPath) {
+      issue(currentReport, "warning", doc.path,
+        "duplicate-synthetic-public-identity",
+        `Synthetic public profile has the same visible name and primary photo as ${firstPath}.`);
+    } else {
+      seen.set(key, doc.path);
+    }
+  }
 }
 
 function validateRunClub(doc, users, currentReport) {
@@ -288,6 +321,12 @@ function validateRunClub(doc, users, currentReport) {
     issue(currentReport, "warning", doc.path, "missing-host-user",
       `hostUserId references missing users/${data.hostUserId}.`);
   }
+}
+
+function isSyntheticPublicProfile(doc) {
+  return doc.data.synthetic === true ||
+    typeof doc.data.seedPrefix === "string" ||
+    doc.id.startsWith("demo_");
 }
 
 function validateRunClubMembership(doc, users, clubs, currentReport) {
@@ -506,11 +545,16 @@ function validateMatch(doc, users, currentReport) {
   requireString(data, "user1Id", doc, currentReport);
   requireString(data, "user2Id", doc, currentReport);
   requireStringArray(data, "participantIds", doc, currentReport);
-  requireString(data, "runId", doc, currentReport);
+  if (Array.isArray(data.runIds)) {
+    requireStringArray(data, "runIds", doc, currentReport);
+  } else {
+    requireString(data, "runId", doc, currentReport);
+  }
   requireTimestamp(data, "createdAt", doc, currentReport);
   requireObject(data, "unreadCounts", doc, currentReport);
   requireString(data, "status", doc, currentReport);
   checkArrayLimit("matches.participantIds", data.participantIds, doc, currentReport);
+  checkArrayLimit("matches.runIds", data.runIds, doc, currentReport);
 
   for (const uid of [data.user1Id, data.user2Id]) {
     if (uid && !users.has(uid)) {
@@ -630,6 +674,10 @@ function normalizeObject(value) {
 
 function byId(docs) {
   return new Map(docs.map((doc) => [doc.id, doc]));
+}
+
+function normalizedPublicName(value) {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
 function requireString(data, field, doc, currentReport) {

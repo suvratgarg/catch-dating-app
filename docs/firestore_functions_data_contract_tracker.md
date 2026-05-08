@@ -1,6 +1,6 @@
 ---
 doc_id: firestore_contract_tracker
-version: 2.2.17
+version: 2.2.18
 updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
@@ -106,6 +106,21 @@ Firestore rules drift, callable validation drift, live data migrations, or
 operation ownership drift.
 
 ## Recent Contract Notes
+
+### 2026-05-08: Chat Thread Preview And Match Run History Slice
+
+- Replaced the app-facing match run pointer with `runIds`, while preserving
+  Dart reads for legacy `runId` documents during the cleanup window.
+- Functions matching/message notifications now derive the latest shared run
+  from `runIds`, and demo data writes deterministic `runIds` so seeded chats do
+  not imply a separate conversation per message.
+- `ChatsListViewModel` is the collapse boundary for duplicated active match
+  documents. It renders one thread preview per other user, aggregates unread
+  counts, separates no-message matches into the new-match rail, and keeps raw
+  match/profile lookups out of chat row widgets.
+- Chat messages allow nullable `sentAt` while server timestamps are pending;
+  the UI renders a sending state instead of crashing or overflowing on null
+  timestamps.
 
 ### 2026-05-08: Functions Queue Hardening Slice
 

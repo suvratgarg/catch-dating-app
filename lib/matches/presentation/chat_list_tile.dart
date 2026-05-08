@@ -1,25 +1,17 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/matches/domain/match.dart';
-import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-class ChatListTile extends ConsumerWidget {
-  const ChatListTile({
-    super.key,
-    required this.match,
-    required this.currentUid,
-    required this.onTap,
-  });
+class ChatListTile extends StatelessWidget {
+  const ChatListTile({super.key, required this.preview, required this.onTap});
 
-  final Match match;
-  final String currentUid;
+  final ChatThreadPreview preview;
   final VoidCallback onTap;
-
-  String get _otherUid =>
-      match.user1Id == currentUid ? match.user2Id : match.user1Id;
 
   String _formatTime(DateTime? dt) {
     if (dt == null) return '';
@@ -30,65 +22,120 @@ class ChatListTile extends ConsumerWidget {
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final profileAsync = ref.watch(watchPublicProfileProvider(_otherUid));
+  Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final unreadCount = match.unreadCounts[currentUid] ?? 0;
+    final unreadCount = preview.unreadCount;
     final hasUnread = unreadCount > 0;
-    final profile = profileAsync.asData?.value;
-    final name =
-        profile?.name ?? (profileAsync.isLoading ? 'Loading…' : 'Unknown');
-    final photoUrl = profile?.photoUrls.isNotEmpty == true
-        ? profile!.photoUrls.first
-        : null;
 
-    final String previewText;
-    if (match.lastMessagePreview == null) {
-      previewText = 'You matched!';
-    } else if (match.lastMessageSenderId == currentUid) {
-      previewText = 'You: ${match.lastMessagePreview}';
-    } else {
-      previewText = match.lastMessagePreview!;
-    }
-
-    final avatar = CircleAvatar(
-      radius: 28,
-      backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-      backgroundColor: t.primarySoft,
-      child: photoUrl == null
-          ? Text(
-              name.isNotEmpty ? name[0].toUpperCase() : '?',
-              style: CatchTextStyles.labelL(context, color: t.primary),
-            )
-          : null,
-    );
-
-    return ListTile(
+    return CatchSurface(
       onTap: onTap,
-      leading: hasUnread
-          ? Badge(label: Text('$unreadCount'), child: avatar)
-          : avatar,
-      title: Text(
-        name,
-        style: CatchTextStyles.titleM(
-          context,
-        ).copyWith(fontWeight: hasUnread ? FontWeight.w700 : FontWeight.w600),
+      tone: CatchSurfaceTone.surface,
+      borderColor: t.line,
+      radius: CatchRadius.md,
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _ChatAvatar(
+            name: preview.displayName,
+            photoUrl: preview.photoUrl,
+            unreadCount: unreadCount,
+          ),
+          const SizedBox(width: CatchSpacing.s3),
+          Expanded(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        preview.displayName,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: CatchTextStyles.titleM(context).copyWith(
+                          fontWeight: hasUnread
+                              ? FontWeight.w700
+                              : FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: CatchSpacing.s2),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        _formatTime(preview.timestamp),
+                        style:
+                            CatchTextStyles.bodyS(
+                              context,
+                              color: hasUnread ? t.primary : t.ink2,
+                            ).copyWith(
+                              fontWeight: hasUnread
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                            ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: CatchSpacing.s1),
+                Text(
+                  preview.previewText,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style:
+                      CatchTextStyles.bodyS(
+                        context,
+                        color: hasUnread ? t.ink : t.ink2,
+                      ).copyWith(
+                        fontWeight: hasUnread
+                            ? FontWeight.w500
+                            : FontWeight.w400,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
-      subtitle: Text(
-        previewText,
-        maxLines: 1,
-        overflow: TextOverflow.ellipsis,
-        style: CatchTextStyles.bodyS(
-          context,
-          color: hasUnread ? t.ink : t.ink2,
-        ).copyWith(fontWeight: hasUnread ? FontWeight.w500 : FontWeight.w400),
-      ),
-      trailing: Text(
-        _formatTime(match.lastMessageAt ?? match.createdAt),
-        style: CatchTextStyles.bodyS(
-          context,
-          color: hasUnread ? t.primary : t.ink2,
-        ).copyWith(fontWeight: hasUnread ? FontWeight.w600 : FontWeight.normal),
+    );
+  }
+}
+
+class _ChatAvatar extends StatelessWidget {
+  const _ChatAvatar({
+    required this.name,
+    required this.photoUrl,
+    required this.unreadCount,
+  });
+
+  final String name;
+  final String? photoUrl;
+  final int unreadCount;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.square(
+      dimension: 64,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Center(
+            child: PersonAvatar(size: 60, name: name, imageUrl: photoUrl),
+          ),
+          if (unreadCount > 0)
+            Positioned(
+              top: 0,
+              right: -2,
+              child: CatchBadge(
+                label: '$unreadCount',
+                tone: CatchBadgeTone.warning,
+                size: CatchBadgeSize.sm,
+              ),
+            ),
+        ],
       ),
     );
   }

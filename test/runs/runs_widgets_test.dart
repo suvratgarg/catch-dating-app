@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
+import 'package:catch_dating_app/runs/presentation/run_location_map_screen.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/field_label.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/map_pin_tile.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/picker_tile.dart';
@@ -138,6 +139,81 @@ void main() {
         expect(find.text('5.5km'), findsOneWidget);
       },
     );
+
+    testWidgets('location card opens map only when exact coordinates exist', (
+      tester,
+    ) async {
+      var tapped = false;
+      final mappedRun = buildRun(
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+
+      await pumpRunsTestApp(
+        tester,
+        Scaffold(
+          body: WhenWhereCard(
+            run: mappedRun,
+            onLocationTap: () => tapped = true,
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.chevron_right_rounded), findsOneWidget);
+
+      await tester.tap(find.text('Race Course Road main gate'));
+      await tester.pump();
+
+      expect(tapped, isTrue);
+    });
+
+    testWidgets('location card hides map affordance without coordinates', (
+      tester,
+    ) async {
+      var tapped = false;
+
+      await pumpRunsTestApp(
+        tester,
+        Scaffold(
+          body: WhenWhereCard(
+            run: buildRun(meetingPoint: 'Race Course Road main gate'),
+            onLocationTap: () => tapped = true,
+          ),
+        ),
+      );
+
+      expect(find.byIcon(Icons.chevron_right_rounded), findsNothing);
+
+      await tester.tap(find.text('Race Course Road main gate'));
+      await tester.pump();
+
+      expect(tapped, isFalse);
+    });
+
+    testWidgets('run location map centers a pinned run and labels it', (
+      tester,
+    ) async {
+      final run = buildRun(
+        meetingPoint: 'Race Course Road main gate',
+        locationDetails: 'Look for the Catch demo pacer near the entrance.',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+
+      await pumpRunsTestApp(
+        tester,
+        RunLocationMapScreen(run: run, enableNetworkTiles: false),
+      );
+
+      expect(find.text('Run location'), findsOneWidget);
+      expect(find.byIcon(Icons.location_on_rounded), findsOneWidget);
+      expect(find.text('Race Course Road main gate'), findsOneWidget);
+      expect(
+        find.text('Look for the Catch demo pacer near the entrance.'),
+        findsOneWidget,
+      );
+    });
 
     testWidgets('requirements row hides itself when there are no constraints', (
       tester,

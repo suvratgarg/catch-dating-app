@@ -10,7 +10,11 @@ _Match _$MatchFromJson(Map<String, dynamic> json) => _Match(
   id: json['id'] as String,
   user1Id: json['user1Id'] as String,
   user2Id: json['user2Id'] as String,
-  runId: json['runId'] as String,
+  runIds:
+      (_readRunIds(json, 'runIds') as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const <String>[],
   createdAt: const TimestampConverter().fromJson(
     json['createdAt'] as Timestamp,
   ),
@@ -36,7 +40,7 @@ _Match _$MatchFromJson(Map<String, dynamic> json) => _Match(
 Map<String, dynamic> _$MatchToJson(_Match instance) => <String, dynamic>{
   'user1Id': instance.user1Id,
   'user2Id': instance.user2Id,
-  'runId': instance.runId,
+  'runIds': instance.runIds,
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
   'lastMessageAt': const NullableTimestampConverter().toJson(
     instance.lastMessageAt,

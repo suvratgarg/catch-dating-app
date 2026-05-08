@@ -12,6 +12,7 @@ class ChatInputBar extends StatelessWidget {
     required this.onSend,
     this.onSendImage,
     this.sendingImage = false,
+    this.disabledReason,
   });
 
   final TextEditingController controller;
@@ -19,6 +20,7 @@ class ChatInputBar extends StatelessWidget {
   final VoidCallback? onSend;
   final VoidCallback? onSendImage;
   final bool sendingImage;
+  final String? disabledReason;
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +59,7 @@ class ChatInputBar extends StatelessWidget {
                 textInputAction: TextInputAction.send,
                 minLines: 1,
                 maxLines: 4,
-                hintText: 'Message...',
+                hintText: disabledReason ?? 'Message...',
                 size: CatchTextFieldSize.compact,
                 shape: CatchTextFieldShape.pill,
                 tone: CatchTextFieldTone.raised,

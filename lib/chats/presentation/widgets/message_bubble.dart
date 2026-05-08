@@ -14,14 +14,16 @@ class MessageBubble extends StatelessWidget {
 
   final String text;
   final bool isMe;
-  final DateTime sentAt;
+  final DateTime? sentAt;
   final String? imageUrl;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final timeStr =
-        '${sentAt.hour.toString().padLeft(2, '0')}:${sentAt.minute.toString().padLeft(2, '0')}';
+    final sentAt = this.sentAt;
+    final timeStr = sentAt == null
+        ? 'Sending...'
+        : '${sentAt.hour.toString().padLeft(2, '0')}:${sentAt.minute.toString().padLeft(2, '0')}';
 
     return Padding(
       padding: const EdgeInsets.only(bottom: CatchSpacing.s2),

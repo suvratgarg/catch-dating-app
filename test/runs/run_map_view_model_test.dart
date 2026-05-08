@@ -1,10 +1,14 @@
+import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_map_center.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:latlong2/latlong.dart';
 
 import 'runs_test_helpers.dart';
 
@@ -22,25 +26,27 @@ RunClubMembership _membership({
 
 void main() {
   group('buildRunMapViewModel', () {
+    final now = DateTime(2026, 1, 1);
+
     test(
       'deduplicates runs, keeps signed-up data, and sorts chronologically',
       () {
         final laterRecommended = buildRun(
           id: 'run-2',
           meetingPoint: 'Later',
-          startTime: DateTime(2026, 1, 2, 7),
+          startTime: DateTime(2026, 1, 3, 7),
           startingPointLat: 19.1,
           startingPointLng: 72.9,
         );
         final recommendedDuplicate = buildRun(
           id: 'run-1',
           meetingPoint: 'Recommended copy',
-          startTime: DateTime(2026, 1, 1, 7),
+          startTime: DateTime(2026, 1, 2, 7),
         );
         final signedUpDuplicate = buildRun(
           id: 'run-1',
           meetingPoint: 'Signed-up copy',
-          startTime: DateTime(2026, 1, 1, 7),
+          startTime: DateTime(2026, 1, 2, 7),
           startingPointLat: 19.0,
           startingPointLng: 72.8,
         );
@@ -48,6 +54,7 @@ void main() {
         final viewModel = buildRunMapViewModel(
           signedUpRuns: [signedUpDuplicate],
           recommendedRuns: [laterRecommended, recommendedDuplicate],
+          now: now,
         );
 
         expect(viewModel.runs.map((run) => run.id), ['run-1', 'run-2']);
@@ -59,24 +66,100 @@ void main() {
     test('filters map pins without dropping unpinned sheet rows', () {
       final pinned = buildRun(
         id: 'pinned',
-        startTime: DateTime(2026, 1, 1, 7),
+        startTime: DateTime(2026, 1, 2, 7),
         startingPointLat: 19.0,
         startingPointLng: 72.8,
       );
       final unpinned = buildRun(
         id: 'unpinned',
-        startTime: DateTime(2026, 1, 2, 7),
+        startTime: DateTime(2026, 1, 3, 7),
       );
 
       final viewModel = buildRunMapViewModel(
         signedUpRuns: [unpinned],
         recommendedRuns: [pinned],
+        now: now,
       );
 
       expect(viewModel.runs.map((run) => run.id), ['pinned', 'unpinned']);
       expect(viewModel.pinnedRuns.map((run) => run.id), ['pinned']);
       expect(viewModel.selectedRun('unpinned'), unpinned);
     });
+
+    test('filters past and cancelled runs out of the map surface', () {
+      final past = buildRun(id: 'past', startTime: DateTime(2025, 12, 31, 7));
+      final cancelled = buildRun(
+        id: 'cancelled',
+        startTime: DateTime(2026, 1, 2, 7),
+        status: RunLifecycleStatus.cancelled,
+      );
+      final upcoming = buildRun(
+        id: 'upcoming',
+        startTime: DateTime(2026, 1, 2, 8),
+        startingPointLat: 19.0,
+        startingPointLng: 72.8,
+      );
+
+      final viewModel = buildRunMapViewModel(
+        signedUpRuns: [past, upcoming],
+        recommendedRuns: [cancelled],
+        now: now,
+      );
+
+      expect(viewModel.runs.map((run) => run.id), ['upcoming']);
+      expect(viewModel.pinnedRuns.map((run) => run.id), ['upcoming']);
+    });
+  });
+
+  group('resolveRunMapInitialCenter', () {
+    test('prefers device location over selected city and run pins', () {
+      final center = resolveRunMapInitialCenter(
+        deviceLocation: const LatLng(22.7, 75.8),
+        selectedCity: const CityData(
+          name: 'mumbai',
+          label: 'Mumbai',
+          latitude: 19.076,
+          longitude: 72.8777,
+        ),
+        pinnedRuns: [
+          buildRun(startingPointLat: 23.0225, startingPointLng: 72.5714),
+        ],
+      );
+
+      expect(center.latitude, 22.7);
+      expect(center.longitude, 75.8);
+    });
+
+    test('falls back to the selected city before run pins', () {
+      final center = resolveRunMapInitialCenter(
+        selectedCity: const CityData(
+          name: 'indore',
+          label: 'Indore',
+          latitude: 22.7196,
+          longitude: 75.8577,
+        ),
+        pinnedRuns: [
+          buildRun(startingPointLat: 23.0225, startingPointLng: 72.5714),
+        ],
+      );
+
+      expect(center.latitude, 22.7196);
+      expect(center.longitude, 75.8577);
+    });
+
+    test(
+      'uses the first pin only when location and selected city are absent',
+      () {
+        final center = resolveRunMapInitialCenter(
+          pinnedRuns: [
+            buildRun(startingPointLat: 23.0225, startingPointLng: 72.5714),
+          ],
+        );
+
+        expect(center.latitude, 23.0225);
+        expect(center.longitude, 72.5714);
+      },
+    );
   });
 
   group('runMapViewModelProvider', () {
@@ -85,14 +168,14 @@ void main() {
       final user = buildUser(uid: 'runner-1');
       final signedUpRun = buildRun(
         id: 'signed-up',
-        startTime: DateTime(2026, 1, 1, 7),
+        startTime: DateTime.now().add(const Duration(days: 1)),
         startingPointLat: 19.0,
         startingPointLng: 72.8,
       );
       final recommendedRun = buildRun(
         id: 'recommended',
         runClubId: 'club-1',
-        startTime: DateTime(2026, 1, 2, 7),
+        startTime: DateTime.now().add(const Duration(days: 2)),
         startingPointLat: 19.1,
         startingPointLng: 72.9,
       );

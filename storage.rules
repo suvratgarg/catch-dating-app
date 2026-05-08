@@ -19,6 +19,11 @@ service firebase.storage {
         && isImage();
     }
 
+    match /users/{uid}/photoThumbnails/{fileName} {
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
     match /matches/{matchId}/images/{fileName} {
       allow read: if isSignedIn()
         && firestore.get(

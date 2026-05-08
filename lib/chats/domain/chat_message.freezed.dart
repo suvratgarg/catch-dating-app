@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ChatMessage {
 
-@JsonKey(includeToJson: false) String get id; String get senderId; String get text; String? get imageUrl;@TimestampConverter() DateTime get sentAt;
+@JsonKey(includeToJson: false) String get id; String get senderId; String get text; String? get imageUrl;@NullableTimestampConverter() DateTime? get sentAt;
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $ChatMessageCopyWith<$Res>  {
   factory $ChatMessageCopyWith(ChatMessage value, $Res Function(ChatMessage) _then) = _$ChatMessageCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String senderId, String text, String? imageUrl,@TimestampConverter() DateTime sentAt
+@JsonKey(includeToJson: false) String id, String senderId, String text, String? imageUrl,@NullableTimestampConverter() DateTime? sentAt
 });
 
 
@@ -65,14 +65,14 @@ class _$ChatMessageCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? senderId = null,Object? text = null,Object? imageUrl = freezed,Object? sentAt = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? senderId = null,Object? text = null,Object? imageUrl = freezed,Object? sentAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,senderId: null == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
 as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
-as String?,sentAt: null == sentAt ? _self.sentAt : sentAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as String?,sentAt: freezed == sentAt ? _self.sentAt : sentAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -157,7 +157,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String senderId,  String text,  String? imageUrl, @TimestampConverter()  DateTime sentAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String senderId,  String text,  String? imageUrl, @NullableTimestampConverter()  DateTime? sentAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ChatMessage() when $default != null:
 return $default(_that.id,_that.senderId,_that.text,_that.imageUrl,_that.sentAt);case _:
@@ -178,7 +178,7 @@ return $default(_that.id,_that.senderId,_that.text,_that.imageUrl,_that.sentAt);
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String senderId,  String text,  String? imageUrl, @TimestampConverter()  DateTime sentAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String senderId,  String text,  String? imageUrl, @NullableTimestampConverter()  DateTime? sentAt)  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessage():
 return $default(_that.id,_that.senderId,_that.text,_that.imageUrl,_that.sentAt);case _:
@@ -198,7 +198,7 @@ return $default(_that.id,_that.senderId,_that.text,_that.imageUrl,_that.sentAt);
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String senderId,  String text,  String? imageUrl, @TimestampConverter()  DateTime sentAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String senderId,  String text,  String? imageUrl, @NullableTimestampConverter()  DateTime? sentAt)?  $default,) {final _that = this;
 switch (_that) {
 case _ChatMessage() when $default != null:
 return $default(_that.id,_that.senderId,_that.text,_that.imageUrl,_that.sentAt);case _:
@@ -213,14 +213,14 @@ return $default(_that.id,_that.senderId,_that.text,_that.imageUrl,_that.sentAt);
 @JsonSerializable()
 
 class _ChatMessage implements ChatMessage {
-  const _ChatMessage({@JsonKey(includeToJson: false) required this.id, required this.senderId, required this.text, this.imageUrl, @TimestampConverter() required this.sentAt});
+  const _ChatMessage({@JsonKey(includeToJson: false) required this.id, required this.senderId, required this.text, this.imageUrl, @NullableTimestampConverter() this.sentAt});
   factory _ChatMessage.fromJson(Map<String, dynamic> json) => _$ChatMessageFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
 @override final  String senderId;
 @override final  String text;
 @override final  String? imageUrl;
-@override@TimestampConverter() final  DateTime sentAt;
+@override@NullableTimestampConverter() final  DateTime? sentAt;
 
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
@@ -255,7 +255,7 @@ abstract mixin class _$ChatMessageCopyWith<$Res> implements $ChatMessageCopyWith
   factory _$ChatMessageCopyWith(_ChatMessage value, $Res Function(_ChatMessage) _then) = __$ChatMessageCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String senderId, String text, String? imageUrl,@TimestampConverter() DateTime sentAt
+@JsonKey(includeToJson: false) String id, String senderId, String text, String? imageUrl,@NullableTimestampConverter() DateTime? sentAt
 });
 
 
@@ -272,14 +272,14 @@ class __$ChatMessageCopyWithImpl<$Res>
 
 /// Create a copy of ChatMessage
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? senderId = null,Object? text = null,Object? imageUrl = freezed,Object? sentAt = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? senderId = null,Object? text = null,Object? imageUrl = freezed,Object? sentAt = freezed,}) {
   return _then(_ChatMessage(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,senderId: null == senderId ? _self.senderId : senderId // ignore: cast_nullable_to_non_nullable
 as String,text: null == text ? _self.text : text // ignore: cast_nullable_to_non_nullable
 as String,imageUrl: freezed == imageUrl ? _self.imageUrl : imageUrl // ignore: cast_nullable_to_non_nullable
-as String?,sentAt: null == sentAt ? _self.sentAt : sentAt // ignore: cast_nullable_to_non_nullable
-as DateTime,
+as String?,sentAt: freezed == sentAt ? _self.sentAt : sentAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

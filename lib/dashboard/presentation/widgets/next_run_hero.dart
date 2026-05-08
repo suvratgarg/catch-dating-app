@@ -2,18 +2,136 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/static_map_dark.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_hype_avatar_stack.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
+class UpcomingRunsHero extends StatefulWidget {
+  const UpcomingRunsHero({
+    super.key,
+    required this.runs,
+    required this.viewerInterestedInGenders,
+    required this.onRunTap,
+  });
+
+  final List<Run> runs;
+  final List<Gender> viewerInterestedInGenders;
+  final ValueChanged<Run> onRunTap;
+
+  @override
+  State<UpcomingRunsHero> createState() => _UpcomingRunsHeroState();
+}
+
+class _UpcomingRunsHeroState extends State<UpcomingRunsHero> {
+  late final PageController _controller;
+  var _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = PageController();
+  }
+
+  @override
+  void didUpdateWidget(covariant UpcomingRunsHero oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_index >= widget.runs.length) {
+      _index = widget.runs.isEmpty ? 0 : widget.runs.length - 1;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted || !_controller.hasClients) return;
+        _controller.jumpToPage(_index);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.runs.isEmpty) return const SizedBox.shrink();
+
+    final t = CatchTokens.of(context);
+    final hasMultipleRuns = widget.runs.length > 1;
+
+    return Column(
+      children: [
+        SizedBox(
+          height: NextRunHero.cardHeight,
+          child: PageView.builder(
+            controller: _controller,
+            itemCount: widget.runs.length,
+            onPageChanged: (index) => setState(() => _index = index),
+            itemBuilder: (context, index) {
+              final run = widget.runs[index];
+              return Padding(
+                padding: EdgeInsets.only(
+                  right: hasMultipleRuns && index < widget.runs.length - 1
+                      ? CatchSpacing.s2
+                      : 0,
+                ),
+                child: NextRunHero(
+                  nextRun: run,
+                  viewerInterestedInGenders: widget.viewerInterestedInGenders,
+                  runIndex: index,
+                  runCount: widget.runs.length,
+                  onTap: () => widget.onRunTap(run),
+                ),
+              );
+            },
+          ),
+        ),
+        if (hasMultipleRuns) ...[
+          gapH10,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              for (var i = 0; i < widget.runs.length; i++)
+                AnimatedContainer(
+                  duration: CatchMotion.fast,
+                  curve: CatchMotion.standardCurve,
+                  width: i == _index ? 20 : 6,
+                  height: 6,
+                  margin: const EdgeInsets.symmetric(horizontal: 3),
+                  decoration: BoxDecoration(
+                    color: i == _index
+                        ? t.primary
+                        : t.line2.withValues(alpha: 0.72),
+                    borderRadius: BorderRadius.circular(CatchRadius.pill),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ],
+    );
+  }
+}
+
 class NextRunHero extends StatelessWidget {
-  const NextRunHero({super.key, required this.nextRun});
+  const NextRunHero({
+    super.key,
+    required this.nextRun,
+    required this.viewerInterestedInGenders,
+    this.onTap,
+    this.runIndex = 0,
+    this.runCount = 1,
+  });
 
   static const cardKey = Key('next-run-hero-card');
+  static const cardHeight = 264.0;
 
   final Run nextRun;
+  final List<Gender> viewerInterestedInGenders;
+  final VoidCallback? onTap;
+  final int runIndex;
+  final int runCount;
 
   static String _countdown(DateTime startTime) {
     final diff = startTime.difference(DateTime.now());
@@ -32,12 +150,16 @@ class NextRunHero extends StatelessWidget {
     final textureOpacity = isDark ? 0.16 : 0.08;
 
     return CatchSurface(
-      key: cardKey,
+      key: runCount > 1
+          ? ValueKey('next-run-hero-card-${nextRun.id}')
+          : cardKey,
+      height: cardHeight,
       padding: EdgeInsets.zero,
       backgroundColor: t.surface,
       borderColor: t.line2,
       radius: 22,
       clipBehavior: Clip.antiAlias,
+      onTap: onTap,
       child: Stack(
         children: [
           Positioned.fill(
@@ -62,7 +184,19 @@ class NextRunHero extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _NextRunStatusPill(label: _countdown(nextRun.startTime)),
+                Row(
+                  children: [
+                    Flexible(
+                      child: _NextRunStatusPill(
+                        label: _countdown(nextRun.startTime),
+                      ),
+                    ),
+                    if (runCount > 1) ...[
+                      gapW8,
+                      _RunCountPill(index: runIndex, count: runCount),
+                    ],
+                  ],
+                ),
                 gapH14,
                 Text(
                   nextRun.title,
@@ -86,11 +220,40 @@ class NextRunHero extends StatelessWidget {
                   ],
                 ),
                 gapH16,
-                _ConfirmedRow(nextRun: nextRun),
+                _ConfirmedRow(
+                  nextRun: nextRun,
+                  viewerInterestedInGenders: viewerInterestedInGenders,
+                ),
               ],
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _RunCountPill extends StatelessWidget {
+  const _RunCountPill({required this.index, required this.count});
+
+  final int index;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s2,
+        vertical: CatchSpacing.s1,
+      ),
+      radius: CatchRadius.pill,
+      backgroundColor: t.surface.withValues(alpha: 0.72),
+      borderColor: t.line2,
+      child: Text(
+        '${index + 1}/$count',
+        style: CatchTextStyles.labelS(context, color: t.ink2),
       ),
     );
   }
@@ -177,9 +340,13 @@ class _RunMetaChip extends StatelessWidget {
 }
 
 class _ConfirmedRow extends StatelessWidget {
-  const _ConfirmedRow({required this.nextRun});
+  const _ConfirmedRow({
+    required this.nextRun,
+    required this.viewerInterestedInGenders,
+  });
 
   final Run nextRun;
+  final List<Gender> viewerInterestedInGenders;
 
   @override
   Widget build(BuildContext context) {
@@ -188,23 +355,14 @@ class _ConfirmedRow extends StatelessWidget {
     return Row(
       children: [
         if (nextRun.signedUpCount > 0) ...[
-          SizedBox(
-            height: 32,
-            width: 32 + (nextRun.signedUpCount.clamp(1, 4) - 1) * (32 - 9.0),
-            child: Stack(
-              children: [
-                for (var i = 0; i < nextRun.signedUpCount && i < 4; i++)
-                  Positioned(
-                    left: i * (32 - 9.0),
-                    child: PersonAvatar(
-                      size: 32,
-                      name: '${nextRun.id}-$i',
-                      borderWidth: 2,
-                      borderColor: t.surface,
-                    ),
-                  ),
-              ],
-            ),
+          RunHypeAvatarStack(
+            runId: nextRun.id,
+            totalCount: nextRun.signedUpCount,
+            viewerInterestedInGenders: viewerInterestedInGenders,
+            size: 32,
+            limit: 4,
+            obscured: true,
+            showOverflowCount: false,
           ),
           gapW10,
         ],

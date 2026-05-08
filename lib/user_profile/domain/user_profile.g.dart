@@ -24,6 +24,11 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   photoUrls:
       (json['photoUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
+  photoThumbnailUrls:
+      (json['photoThumbnailUrls'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList() ??
+      const [],
   city: $enumDecodeNullable(_$IndianCityEnumMap, json['city']),
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
@@ -90,6 +95,7 @@ Map<String, dynamic> _$UserProfileToJson(
   'bio': instance.bio,
   'instagramHandle': instance.instagramHandle,
   'photoUrls': instance.photoUrls,
+  'photoThumbnailUrls': instance.photoThumbnailUrls,
   'city': _$IndianCityEnumMap[instance.city],
   'latitude': instance.latitude,
   'longitude': instance.longitude,

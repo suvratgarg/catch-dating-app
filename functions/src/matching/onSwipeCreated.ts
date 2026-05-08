@@ -17,12 +17,15 @@ interface SwipeCreatedDeps {
     userId: string,
     peerIds: string[]
   ) => Promise<boolean>;
+  arrayUnion: (...elements: string[]) => FirebaseFirestore.FieldValue;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
 }
 
 const defaultDeps: SwipeCreatedDeps = {
   firestore: () => admin.firestore(),
   hasBlockingRelationship,
+  arrayUnion: (...elements) =>
+    admin.firestore.FieldValue.arrayUnion(...elements),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
 };
 
@@ -61,10 +64,9 @@ export async function onSwipeCreatedHandler(
     return;
   }
 
-  // Cross-run matching is intentional for MVP.
-  // If A liked B on Run1 and B liked A on Run2, they still match.
-  // Add `reverseSwipe.runId === swipeData.runId` here to restrict
-  // matches to runners from the same event.
+  const sharedRunIds = Array.from(
+    new Set([reverseSwipe.runId, swipeData.runId].filter(Boolean))
+  );
 
   // Deterministic match ID, regardless of who swiped first.
   const [id1, id2] = [swiperId, targetId].sort();
@@ -75,7 +77,7 @@ export async function onSwipeCreatedHandler(
     user1Id: id1,
     user2Id: id2,
     participantIds: [id1, id2],
-    runId: swipeData.runId,
+    runIds: sharedRunIds,
     createdAt:
       deps.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
     lastMessageAt: null,
@@ -96,7 +98,11 @@ export async function onSwipeCreatedHandler(
   } catch (e: unknown) {
     const code = (e as {code?: unknown}).code;
     if (code === 6 || code === "already-exists") {
-      // ALREADY_EXISTS - match already exists, nothing to do.
+      // ALREADY_EXISTS - keep one match doc per pair and append shared run
+      // history instead of creating another conversation.
+      if (sharedRunIds.length > 0) {
+        await matchRef.update({runIds: deps.arrayUnion(...sharedRunIds)});
+      }
       return;
     }
     throw e;

@@ -11,6 +11,7 @@
     "start": "npm run shell",
     "generate:types": "dart ../tool/generate_firestore_types.dart",
     "sync:callable-invokers": "node scripts/set-callable-invokers-public.cjs",
+    "backfill:profile-thumbnails": "node scripts/backfill-profile-thumbnails.cjs",
     "deploy": "firebase deploy --only functions",
     "logs": "firebase functions:log"
   },
@@ -24,6 +25,7 @@
     "firebase-admin": "^13.6.0",
     "firebase-functions": "^7.0.0",
     "razorpay": "^2.9.6",
+    "sharp": "^0.34.5",
     "zod": "^3.25.76"
   },
   "devDependencies": {

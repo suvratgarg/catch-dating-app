@@ -39,6 +39,7 @@ class DashboardSectionModel<T> {
 
 class DashboardFullViewModel {
   const DashboardFullViewModel({
+    required this.upcomingRuns,
     required this.nextRun,
     required this.arrivalAction,
     required this.activeSwipeRun,
@@ -47,6 +48,7 @@ class DashboardFullViewModel {
     required this.recommendationsSection,
   });
 
+  final List<Run> upcomingRuns;
   final Run? nextRun;
   final RunArrivalAction? arrivalAction;
   final Run? activeSwipeRun;
@@ -68,13 +70,11 @@ DashboardFullViewModel buildDashboardFullViewModel({
 }) {
   final effectiveNow = now ?? DateTime.now();
 
-  final nextRun = signedUpRuns
-      .where((run) => run.startTime.isAfter(effectiveNow))
-      .fold<Run?>(
-        null,
-        (best, run) =>
-            best == null || run.startTime.isBefore(best.startTime) ? run : best,
-      );
+  final upcomingRuns =
+      signedUpRuns.where((run) => run.startTime.isAfter(effectiveNow)).toList()
+        ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+  final nextRun = upcomingRuns.firstOrNull;
 
   final attendedRunsSection = attendedRunsAsync.when(
     loading: () => const DashboardSectionModel<List<Run>>.loading(
@@ -124,6 +124,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
         );
 
   return DashboardFullViewModel(
+    upcomingRuns: upcomingRuns,
     nextRun: nextRun,
     arrivalAction: arrivalAction,
     activeSwipeRun: activeSwipeRun,

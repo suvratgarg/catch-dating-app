@@ -1,7 +1,5 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chats_list.dart';
 import 'package:catch_dating_app/matches/presentation/widgets/chats_sliver_header.dart';
@@ -20,14 +18,9 @@ class ChatsListScreen extends ConsumerWidget {
 
     final viewModelAsync = ref.watch(chatsListViewModelProvider);
     final vm = viewModelAsync.asData?.value;
-    final count =
-        (vm?.newMatches.length ?? 0) + (vm?.conversations.length ?? 0);
+    final count = vm?.totalThreadCount ?? 0;
     final query = ref.watch(chatSearchQueryProvider).trim();
-    final uid = ref.watch(uidProvider).asData?.value;
-    final sourceMatchCount = uid == null
-        ? 0
-        : ref.watch(watchMatchesForUserProvider(uid)).asData?.value.length ?? 0;
-    final showSearchField = sourceMatchCount > 0 || query.isNotEmpty;
+    final showSearchField = count > 0 || query.isNotEmpty;
 
     return Scaffold(
       backgroundColor: t.bg,

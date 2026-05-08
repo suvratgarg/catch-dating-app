@@ -1,9 +1,10 @@
 import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -62,9 +63,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
 
     final profile = profileAsync.asData?.value;
     final name = profile?.name ?? '…';
-    final photoUrl = profile?.photoUrls.isNotEmpty == true
-        ? profile!.photoUrls.first
-        : null;
+    final photoUrl = profile?.primaryPhotoThumbnailUrl;
 
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.match,
@@ -72,16 +71,12 @@ class MatchCelebrationDialog extends ConsumerWidget {
       title: "It's a Catch.",
       message: 'You and $name both liked each other.',
       icon: Icons.favorite_rounded,
-      visual: CircleAvatar(
-        radius: 54,
-        backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
-        backgroundColor: Colors.white.withValues(alpha: 0.86),
-        child: photoUrl == null
-            ? Text(
-                name.isNotEmpty ? name[0].toUpperCase() : '?',
-                style: CatchTextStyles.displayXL(context, color: t.primary),
-              )
-            : null,
+      visual: PersonAvatar(
+        size: 108,
+        name: name,
+        imageUrl: photoUrl,
+        borderWidth: 3,
+        borderColor: t.primary,
       ),
       details: [
         CelebrationDetail(

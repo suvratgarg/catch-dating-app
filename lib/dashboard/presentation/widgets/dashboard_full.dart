@@ -13,10 +13,12 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.
 import 'package:catch_dating_app/dashboard/presentation/widgets/review_prompt_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/run_arrival_action_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class DashboardFull extends ConsumerWidget {
@@ -28,6 +30,9 @@ class DashboardFull extends ConsumerWidget {
   });
 
   static const scrollViewKey = ValueKey('dashboard-full-scroll-view');
+  static const profileAvatarButtonKey = ValueKey(
+    'dashboard-profile-avatar-button',
+  );
 
   final UserProfile user;
   final List<Run> signedUpRuns;
@@ -66,12 +71,25 @@ class DashboardFull extends ConsumerWidget {
             ...DashboardSliverHeader(
               eyebrow: dayCity(user.city?.label).toUpperCase(),
               title: '${greeting()}, $firstName',
-              avatar: PersonAvatar(
-                size: 42,
-                name: user.name,
-                imageUrl: user.photoUrls.firstOrNull,
-                borderWidth: 2,
-                borderColor: t.primary,
+              avatar: Tooltip(
+                message: 'Open profile',
+                child: Semantics(
+                  button: true,
+                  label: 'Open profile',
+                  child: InkResponse(
+                    key: profileAvatarButtonKey,
+                    onTap: () => context.goNamed(Routes.profileScreen.name),
+                    radius: 26,
+                    customBorder: const CircleBorder(),
+                    child: PersonAvatar(
+                      size: 42,
+                      name: user.name,
+                      imageUrl: user.primaryPhotoThumbnailUrl,
+                      borderWidth: 2,
+                      borderColor: t.primary,
+                    ),
+                  ),
+                ),
               ),
             ).buildSlivers(context),
             DashboardFullSliverBody(viewModel: viewModel, user: user),
@@ -107,8 +125,15 @@ class DashboardFullSliverBody extends StatelessWidget {
             RunArrivalActionCard(action: viewModel.arrivalAction!),
             gapH18,
           ],
-          if (viewModel.nextRun != null) ...[
-            NextRunHero(nextRun: viewModel.nextRun!),
+          if (viewModel.upcomingRuns.isNotEmpty) ...[
+            UpcomingRunsHero(
+              runs: viewModel.upcomingRuns,
+              viewerInterestedInGenders: user.interestedInGenders,
+              onRunTap: (run) => context.pushNamed(
+                Routes.dashboardRunDetailScreen.name,
+                pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+              ),
+            ),
             gapH18,
           ],
           ..._buildAttendedRunSection(

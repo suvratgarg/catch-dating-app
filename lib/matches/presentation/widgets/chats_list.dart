@@ -19,10 +19,6 @@ class ChatsList extends ConsumerWidget {
     final uidAsync = ref.watch(uidProvider);
     final uid = uidAsync.asData?.value;
     final query = ref.watch(chatSearchQueryProvider).trim();
-    final sourceMatchCount = uid == null
-        ? 0
-        : ref.watch(watchMatchesForUserProvider(uid)).asData?.value.length ?? 0;
-    final isSearchEmpty = query.isNotEmpty && sourceMatchCount > 0;
 
     if (uid != null) {
       ref.listen(watchMatchesForUserProvider(uid), (previous, next) {
@@ -60,13 +56,11 @@ class ChatsList extends ConsumerWidget {
       AsyncData(:final value) =>
         value.isEmpty || uid == null
             ? SliverFillRemaining(
-                child: isSearchEmpty
+                child: query.isNotEmpty && value.totalThreadCount > 0
                     ? const ChatsEmptyState.noSearchResults()
                     : const ChatsEmptyState(),
               )
-            : SliverToBoxAdapter(
-                child: ChatsListBody(viewModel: value, uid: uid),
-              ),
+            : ChatsListBody(viewModel: value),
     };
   }
 }

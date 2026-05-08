@@ -16,7 +16,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../runs/runs_test_helpers.dart';
 import '../test_pump_helpers.dart';
@@ -57,13 +56,14 @@ class _FakeChatRepository implements ChatRepository {
       const Stream.empty();
 
   @override
-  Future<XFile?> pickImage() async => null;
+  String createMessageId({required String matchId}) => 'message-1';
 
   @override
   Future<void> sendImageMessage({
     required String matchId,
     required String senderId,
-    required XFile image,
+    required String messageId,
+    required String imageUrl,
   }) async {}
 }
 
@@ -81,7 +81,7 @@ Match _buildMatch({
     id: id,
     user1Id: user1Id,
     user2Id: user2Id,
-    runId: 'run-1',
+    runIds: const ['run-1'],
     createdAt: createdAt ?? DateTime(2026, 4, 23, 9),
     lastMessageAt: lastMessageAt,
     lastMessagePreview: lastMessagePreview,
@@ -295,6 +295,7 @@ void main() {
 
     expect(find.text('Taylor'), findsOneWidget);
     expect(find.text('Morgan'), findsOneWidget);
+    expect(find.text('New matches'), findsOneWidget);
     expect(find.text('Latest message'), findsOneWidget);
     expect(find.text('Older message'), findsNothing);
     expect(find.text('3'), findsOneWidget);

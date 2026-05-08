@@ -1,7 +1,7 @@
 ---
 doc_id: sliver_layout
-version: 2.1.3
-updated: 2026-05-06
+version: 2.1.4
+updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -19,6 +19,17 @@ surfaces, sticky headers, or scroll-heavy widget tests. For other work, use the
 audit registry's `SLIVER-001` rule summary instead of loading this full guide.
 
 ## Rule Changelog
+
+### 2.1.4
+
+- `CatchSliverHeader` now owns the pinned bottom-row background and exposes a
+  taller `wrappedTitleHeight` for headers with a trailing badge/action that can
+  force display titles onto two lines. Do not compensate for title/search
+  collisions with feature-local negative padding.
+- Populated tab bodies such as Chats should stay sliver-native below the
+  header. Use `SliverMainAxisGroup`, `SliverToBoxAdapter` for one-off rails,
+  and `SliverList` for vertical rows rather than embedding shrink-wrapped
+  `ListView` widgets in a `SliverToBoxAdapter`.
 
 ### 2.1.3
 

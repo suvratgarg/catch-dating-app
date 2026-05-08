@@ -9,9 +9,14 @@ import 'package:catch_dating_app/runs/presentation/widgets/when_where_card.dart'
 import 'package:flutter/material.dart';
 
 class RunDetailOverviewSection extends StatelessWidget {
-  const RunDetailOverviewSection({super.key, required this.run});
+  const RunDetailOverviewSection({
+    super.key,
+    required this.run,
+    this.onLocationTap,
+  });
 
   final Run run;
+  final VoidCallback? onLocationTap;
 
   @override
   Widget build(BuildContext context) {
@@ -35,7 +40,7 @@ class RunDetailOverviewSection extends StatelessWidget {
         const SizedBox(height: 20),
         RunStatsGrid(run: run),
         const SizedBox(height: 20),
-        WhenWhereCard(run: run),
+        WhenWhereCard(run: run, onLocationTap: onLocationTap),
         if (run.description.isNotEmpty) ...[
           const SizedBox(height: 16),
           Text(

@@ -18,4 +18,15 @@ void main() {
     expect(message.text, 'Morning run?');
     expect(message.sentAt, sentAt);
   });
+
+  test('allows pending local server timestamp while sending', () {
+    final message = ChatMessage.fromJson({
+      'id': 'msg-1',
+      'senderId': 'runner-1',
+      'text': 'Morning run?',
+      'sentAt': null,
+    });
+
+    expect(message.sentAt, isNull);
+  });
 }

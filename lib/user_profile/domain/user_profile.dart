@@ -194,6 +194,7 @@ abstract class UserProfile with _$UserProfile {
 
     // Photos
     @Default([]) List<String> photoUrls,
+    @Default([]) List<String> photoThumbnailUrls,
 
     // Location
     @JsonKey(unknownEnumValue: null) IndianCity? city,
@@ -262,5 +263,17 @@ abstract class UserProfile with _$UserProfile {
     final legacyName = name.trim();
     if (legacyName.isEmpty) return 'Runner';
     return legacyName.split(RegExp(r'\s+')).first;
+  }
+
+  /// Tiny first-photo URL for avatar-scale UI. Falls back to the full photo
+  /// until the backend thumbnail generation queue has backfilled old profiles.
+  String? get primaryPhotoThumbnailUrl {
+    final thumbnailUrl = photoThumbnailUrls
+        .where((url) => url.isNotEmpty)
+        .firstOrNull;
+    if (thumbnailUrl != null) return thumbnailUrl;
+    final photoUrl = photoUrls.where((url) => url.isNotEmpty).firstOrNull;
+    if (photoUrl != null) return photoUrl;
+    return null;
   }
 }

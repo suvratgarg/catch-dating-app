@@ -1,5 +1,5 @@
 {
-  "version": "2.3.30",
+  "version": "2.3.33",
   "updated": "2026-05-08",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, and stable debt ids. Do not reread archived markdown history unless a debt id points there.",
@@ -23,8 +23,8 @@
       "raw_range_slider_candidates": 0,
       "raw_number_stepper_candidates": 0,
       "feature_tappable_candidates": 1,
-      "literal_sized_box_spacing_candidates": 175,
-      "raw_decorated_surface_candidates": 66,
+      "literal_sized_box_spacing_candidates": 176,
+      "raw_decorated_surface_candidates": 67,
       "unstyled_text_candidates": 15,
       "legacy_spacing_canonical_candidates": 0,
       "fine_grained_spacing_compatibility": 17,
@@ -48,6 +48,7 @@
       "Profile inline drawers now preserve full width while animating vertical reveal/fade, preventing Cancel/Done action rows from sliding sideways. Shared inline editor panel owns profile editor padding, save errors, and action placement.",
       "Profile row-owned text editors now use ProfileInlineEditableText so active text keeps the closed row style and icon-relative position with only cursor and text-width underline feedback.",
       "The decorated-surface scanner includes the ProfileInlineEditableText underline AnimatedContainer; that is intentional primitive-local focus chrome, not a feature-local card/surface.",
+      "The decorated-surface scanner includes primitive-local avatar obscuring/hero texture chrome; those are intentional low-level visual effects, not feature-local replacement surfaces.",
       "ChipField now enforces optionality for empty selections: optional fields may clear, required single-/multi-choice fields keep at least one selected value.",
       "CatchChip now constrains long labels so inline chip editors do not need field-local overflow patches.",
       "The 2026-05-08 scanner snapshot was taken in a dirty worktree with unrelated run-club draft UI changes; broad decorated-surface and unstyled-Text counts include that active work.",
@@ -440,6 +441,17 @@
     "PROFILE-001"
   ],
   "completed": [
+    {
+      "id": "DASHBOARD-RUN-HYPE-THUMBNAILS-001",
+      "title": "Generate and consume tiny profile thumbnails for run hype avatars",
+      "completed": "2026-05-08",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "EXTERNAL-SIDE-EFFECT-001",
+        "WIDGET-CATALOG-001"
+      ],
+      "summary": "Added backend profile-photo thumbnail generation with a dry-run/apply backfill script, shared `PersonAvatarStack`/obscured avatar support, `RunHypeAvatarStack` provider-owned participant selection from `runParticipations` plus `publicProfiles`, blurred hype avatars in Dashboard next-run and Run detail, and thumbnail-first normal avatars in Chats and match celebration surfaces. Chat image uploads now use the shared `ImageUploadRepository` policy instead of duplicating picker/storage logic."
+    },
     {
       "id": "CELEBRATION-MOMENTS-001",
       "title": "Unify high-emotion success moments under full-screen celebrations",

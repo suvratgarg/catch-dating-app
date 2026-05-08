@@ -66,7 +66,7 @@ final class RunnerProfilesProvider
   }
 }
 
-String _$runnerProfilesHash() => r'6afab18c66df19da27a304eb654a21ddf2f00103';
+String _$runnerProfilesHash() => r'b3efbdd7da12e876c2fd3bc17805fd06e6d11563';
 
 final class RunnerProfilesFamily extends $Family
     with

@@ -38,8 +38,10 @@ class ControlledImageUploadRepository extends Fake
   final uploadedIndices = <int>[];
 
   @override
-  Future<XFile?> pickImage({int imageQuality = 85}) async =>
-      XFile('picked-photo.jpg');
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) async => XFile('picked-photo.jpg');
 
   @override
   Future<String> uploadUserPhoto({
@@ -60,13 +62,24 @@ class SlowPickingImageUploadRepository extends Fake
   int pickImageCallCount = 0;
 
   @override
-  Future<XFile?> pickImage({int imageQuality = 85}) {
+  Future<XFile?> pickImage({
+    ImageUploadPurpose purpose = ImageUploadPurpose.profilePhoto,
+    int? imageQuality,
+  }) {
     pickImageCallCount += 1;
     return pickCompleter.future;
   }
 }
 
 void main() {
+  test('image upload policies keep picked media bounded by surface', () {
+    expect(ImageUploadRepository.profilePhotoPolicy.maxWidth, 1600);
+    expect(ImageUploadRepository.profilePhotoPolicy.quality, 85);
+    expect(ImageUploadRepository.chatImagePolicy.maxWidth, 1440);
+    expect(ImageUploadRepository.chatImagePolicy.quality, 78);
+    expect(ImageUploadRepository.runClubCoverPolicy.maxHeight, 1200);
+  });
+
   test(
     'rejects out-of-range photo slots before starting upload work',
     () async {

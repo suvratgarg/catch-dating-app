@@ -461,40 +461,15 @@ class _StackedAvatars extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const size = 30.0;
-    const border = 2.0;
-    const overlap = 10.0;
-
-    final shown = urls.take(4).toList();
-    final overflow = count - shown.length;
-
-    final avatars = <Widget>[
-      for (final url in shown)
-        PersonAvatar(
-          size: size,
-          imageUrl: url,
-          borderWidth: border,
-          borderColor: Colors.white,
-        ),
-      if (overflow > 0)
-        PersonAvatar.count(
-          size: size,
-          count: overflow,
-          borderWidth: border,
-          borderColor: Colors.white,
-        ),
-    ];
-
-    // Stack avatars with negative left margin via Row + SizedBox trick
-    return SizedBox(
-      height: size,
-      width: size + (avatars.length - 1) * (size - overlap),
-      child: Stack(
-        children: [
-          for (var i = 0; i < avatars.length; i++)
-            Positioned(left: i * (size - overlap), child: avatars[i]),
-        ],
-      ),
+    return PersonAvatarStack(
+      items: [
+        for (final url in urls.take(4))
+          PersonAvatarItem(name: url, imageUrl: url),
+      ],
+      totalCount: count,
+      size: 30,
+      overlap: 10,
+      borderColor: Colors.white,
     );
   }
 }

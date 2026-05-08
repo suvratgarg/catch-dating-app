@@ -43,33 +43,37 @@ class _ChatContent extends ConsumerStatefulWidget {
 class _ChatContentState extends ConsumerState<_ChatContent> {
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
+  late final ChatUnreadResetter _unreadResetter;
   bool _didScrollToLatestMessage = false;
   int _lastMessageCount = 0;
   String? _lastResetUid;
+  String? _lastKnownUid;
 
   @override
   void initState() {
     super.initState();
+    _unreadResetter = ref.read(chatUnreadResetterProvider);
     _resetUnread(ref.read(uidProvider).value);
   }
 
   @override
   void dispose() {
+    final uid = _lastKnownUid;
+    if (uid != null) {
+      unawaited(_unreadResetter.resetUnread(matchId: widget.matchId, uid: uid));
+    }
     _textController.dispose();
     _scrollController.dispose();
     super.dispose();
   }
 
-  void _resetUnread(String? uid) {
+  void _resetUnread(String? uid, {bool force = false}) {
     if (uid == null) return;
-    if (uid == _lastResetUid) return;
+    _lastKnownUid = uid;
+    if (!force && uid == _lastResetUid) return;
 
     _lastResetUid = uid;
-    unawaited(
-      ref
-          .read(chatControllerProvider.notifier)
-          .resetUnread(matchId: widget.matchId, uid: uid),
-    );
+    unawaited(_unreadResetter.resetUnread(matchId: widget.matchId, uid: uid));
   }
 
   bool _isNearBottom() {
@@ -133,13 +137,19 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     final sendMutation = ref.read(ChatController.sendMessageMutation);
     if (text.isEmpty || sendMutation.isPending || uid == null) return;
 
-    _textController.clear();
+    try {
+      await ChatController.sendMessageMutation.run(ref, (tx) async {
+        await tx
+            .get(chatControllerProvider.notifier)
+            .sendMessage(matchId: widget.matchId, senderId: uid, text: text);
+      });
+    } catch (_) {
+      return;
+    }
 
-    await ChatController.sendMessageMutation.run(ref, (tx) async {
-      await tx
-          .get(chatControllerProvider.notifier)
-          .sendMessage(matchId: widget.matchId, senderId: uid, text: text);
-    });
+    if (mounted && _textController.text.trim() == text) {
+      _textController.clear();
+    }
 
     if (_scrollController.hasClients) {
       unawaited(
@@ -157,11 +167,15 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     final imageMutation = ref.read(ChatController.sendImageMutation);
     if (imageMutation.isPending || uid == null) return;
 
-    await ChatController.sendImageMutation.run(ref, (tx) async {
-      await tx
-          .get(chatControllerProvider.notifier)
-          .sendImage(matchId: widget.matchId, senderId: uid);
-    });
+    try {
+      await ChatController.sendImageMutation.run(ref, (tx) async {
+        await tx
+            .get(chatControllerProvider.notifier)
+            .sendImage(matchId: widget.matchId, senderId: uid);
+      });
+    } catch (_) {
+      return;
+    }
   }
 
   Future<void> _confirmBlock({
@@ -174,11 +188,15 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     );
     if (confirmed != true) return;
 
-    await ChatController.blockUserMutation.run(ref, (tx) async {
-      await tx
-          .get(chatControllerProvider.notifier)
-          .blockUser(targetUserId: targetUserId);
-    });
+    try {
+      await ChatController.blockUserMutation.run(ref, (tx) async {
+        await tx
+            .get(chatControllerProvider.notifier)
+            .blockUser(targetUserId: targetUserId);
+      });
+    } catch (_) {
+      return;
+    }
     if (mounted) Navigator.of(context).pop();
   }
 
@@ -186,11 +204,15 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     required String targetUserId,
     required String targetName,
   }) async {
-    await ChatController.reportUserMutation.run(ref, (tx) async {
-      await tx
-          .get(chatControllerProvider.notifier)
-          .reportUser(targetUserId: targetUserId, matchId: widget.matchId);
-    });
+    try {
+      await ChatController.reportUserMutation.run(ref, (tx) async {
+        await tx
+            .get(chatControllerProvider.notifier)
+            .reportUser(targetUserId: targetUserId, matchId: widget.matchId);
+      });
+    } catch (_) {
+      return;
+    }
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Report submitted for $targetName.')),
@@ -207,30 +229,46 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
 
     ref.listen(watchChatMessagesProvider(widget.matchId), (previous, next) {
       final previousMessages = previous?.asData?.value;
-      next.whenData(
-        (messages) => _syncScrollWithMessages(
+      next.whenData((messages) {
+        _syncScrollWithMessages(
           messages: messages,
           previousMessages: previousMessages,
-        ),
-      );
+        );
+        final uid = ref.read(uidProvider).value;
+        final latest = messages.isEmpty ? null : messages.last;
+        if (uid != null && latest != null && latest.senderId != uid) {
+          _resetUnread(uid, force: true);
+        }
+      });
     });
 
     final uid = ref.watch(uidProvider.select((v) => v.value));
     final messagesAsync = ref.watch(watchChatMessagesProvider(widget.matchId));
     final matchAsync = ref.watch(matchStreamProvider(widget.matchId));
     final match = matchAsync.asData?.value;
-    final runAsync = match == null
+    final latestRunId = match?.latestRunId;
+    final runAsync = latestRunId == null
         ? const AsyncData<Run?>(null)
-        : ref.watch(watchRunProvider(match.runId));
+        : ref.watch(watchRunProvider(latestRunId));
     final otherUid = uid == null ? null : match?.otherId(uid);
     final otherProfileAsync = otherUid == null
         ? const AsyncData<PublicProfile?>(null)
         : ref.watch(watchPublicProfileProvider(otherUid));
     final profile = otherProfileAsync.asData?.value ?? widget.initialProfile;
     final name = profile?.name ?? 'Chat';
-    final photoUrl = profile?.photoUrls.isNotEmpty == true
-        ? profile!.photoUrls.first
-        : null;
+    final photoUrl = profile?.primaryPhotoThumbnailUrl;
+    final String? composerDisabledReason;
+    if (matchAsync.hasError) {
+      composerDisabledReason = 'Chat unavailable.';
+    } else if (matchAsync.isLoading) {
+      composerDisabledReason = 'Loading chat...';
+    } else if (match == null) {
+      composerDisabledReason = 'Chat unavailable.';
+    } else if (match.isBlocked) {
+      composerDisabledReason = 'This chat is closed.';
+    } else {
+      composerDisabledReason = null;
+    }
     final initialMessages = messagesAsync.asData?.value;
     if (!_didScrollToLatestMessage &&
         initialMessages != null &&
@@ -274,8 +312,9 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
             ChatInputBar(
               controller: _textController,
               sending: ref.watch(ChatController.sendMessageMutation).isPending,
-              onSend: match?.isBlocked == true ? null : _send,
-              onSendImage: match?.isBlocked == true ? null : _sendImage,
+              onSend: composerDisabledReason == null ? _send : null,
+              onSendImage: composerDisabledReason == null ? _sendImage : null,
+              disabledReason: composerDisabledReason,
               sendingImage: ref
                   .watch(ChatController.sendImageMutation)
                   .isPending,

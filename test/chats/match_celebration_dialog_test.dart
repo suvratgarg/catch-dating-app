@@ -31,7 +31,7 @@ void main() {
               id: 'match-1',
               user1Id: 'runner-1',
               user2Id: 'runner-2',
-              runId: 'run-1',
+              runIds: const ['run-1'],
               createdAt: DateTime(2026, 5, 6),
             ),
             otherUid: 'runner-2',

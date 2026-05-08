@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
@@ -87,17 +88,7 @@ class _ChatTitle extends StatelessWidget {
 
     return Row(
       children: [
-        CircleAvatar(
-          radius: 18,
-          backgroundImage: photoUrl != null ? NetworkImage(photoUrl!) : null,
-          backgroundColor: t.primarySoft,
-          child: photoUrl == null
-              ? Text(
-                  name.isNotEmpty ? name[0].toUpperCase() : '?',
-                  style: CatchTextStyles.labelL(context, color: t.primary),
-                )
-              : null,
-        ),
+        PersonAvatar(size: 36, name: name, imageUrl: photoUrl),
         gapW10,
         Expanded(
           child: Text(

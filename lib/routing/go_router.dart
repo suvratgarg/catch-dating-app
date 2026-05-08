@@ -24,6 +24,7 @@ import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_scre
 import 'package:catch_dating_app/runs/presentation/attendance_sheet_screen.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
+import 'package:catch_dating_app/runs/presentation/run_location_map_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
@@ -49,6 +50,8 @@ enum Routes {
   calendarRunDetailScreen('/calendar/run-clubs/:runClubId/runs/:runId'),
   filtersScreen('/filters'),
   runMapScreen('/map'),
+  dashboardRunDetailScreen('/dashboard/run-clubs/:runClubId/runs/:runId'),
+  runLocationMapScreen('/runs/:runId/location'),
   // Home / Dashboard branch (index 0)
   dashboardScreen('/'),
   // Clubs branch (index 1)
@@ -149,6 +152,20 @@ GoRouter goRouter(Ref ref) {
         path: Routes.runMapScreen.path,
         name: Routes.runMapScreen.name,
         builder: (context, state) => const RunMapScreen(),
+      ),
+      GoRoute(
+        path: Routes.runLocationMapScreen.path,
+        name: Routes.runLocationMapScreen.name,
+        builder: (context, state) =>
+            RunLocationMapRouteScreen(runId: state.pathParameters['runId']!),
+      ),
+      GoRoute(
+        path: Routes.dashboardRunDetailScreen.path,
+        name: Routes.dashboardRunDetailScreen.name,
+        builder: (context, state) => RunDetailScreen(
+          runClubId: state.pathParameters['runClubId']!,
+          runId: state.pathParameters['runId']!,
+        ),
       ),
       GoRoute(
         path: Routes.paymentHistoryScreen.path,
@@ -365,6 +382,11 @@ bool _isPublicRoute(String matchedLocation) {
     if (matchedLocation.endsWith('/edit')) return false;
     if (matchedLocation.endsWith('/create-run')) return false;
     if (matchedLocation.endsWith('/attendance')) return false;
+    return true;
+  }
+
+  if (matchedLocation.startsWith('/runs/') &&
+      matchedLocation.endsWith('/location')) {
     return true;
   }
 

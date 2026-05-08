@@ -15,7 +15,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../run_clubs/run_clubs_test_helpers.dart' as run_club_helpers;
 import '../runs/runs_test_helpers.dart' as run_helpers;
@@ -55,13 +54,14 @@ class _FakeChatRepository implements ChatRepository {
       Stream.value([]);
 
   @override
-  Future<XFile?> pickImage() async => null;
+  String createMessageId({required String matchId}) => 'message-1';
 
   @override
   Future<void> sendImageMessage({
     required String matchId,
     required String senderId,
-    required XFile image,
+    required String messageId,
+    required String imageUrl,
   }) async {}
 }
 
@@ -73,7 +73,7 @@ Match _buildMatch({
   id: id,
   user1Id: user1Id,
   user2Id: user2Id,
-  runId: 'run-1',
+  runIds: const ['run-1'],
   createdAt: DateTime(2026, 4, 23, 9),
 );
 

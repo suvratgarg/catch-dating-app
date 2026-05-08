@@ -3,8 +3,6 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'chat_repository.g.dart';
@@ -23,15 +21,11 @@ String buildChatPreviewText(String text, {int maxLength = 80}) {
 }
 
 class ChatRepository {
-  ChatRepository(this._db, {FirebaseStorage? storage, ImagePicker? picker})
-    : _storage = storage ?? FirebaseStorage.instance,
-      _picker = picker ?? ImagePicker();
+  ChatRepository(this._db);
 
   static const _matchesCollectionPath = 'matches';
 
   final FirebaseFirestore _db;
-  final FirebaseStorage _storage;
-  final ImagePicker _picker;
 
   CollectionReference<ChatMessage> _messagesRef(String matchId) => _db
       .collection(_matchesCollectionPath)
@@ -52,6 +46,13 @@ class ChatRepository {
           .map((snap) => snap.docs.map((d) => d.data()).toList());
 
   // ── Write ─────────────────────────────────────────────────────────────────
+
+  String createMessageId({required String matchId}) => _db
+      .collection(_matchesCollectionPath)
+      .doc(matchId)
+      .collection('messages')
+      .doc()
+      .id;
 
   Future<void> sendMessage({
     required String matchId,
@@ -75,40 +76,15 @@ class ChatRepository {
     action: 'send message',
   );
 
-  /// Opens the device photo gallery and returns the picked file, or null.
-  Future<XFile?> pickImage() => _picker.pickImage(
-    source: ImageSource.gallery,
-    maxWidth: 1600,
-    maxHeight: 2133,
-    imageQuality: 85,
-    requestFullMetadata: false,
-  );
-
-  /// Uploads [image] to the chat's Storage path and sends a message with
-  /// the download URL as [imageUrl]. The message text is set to an empty
-  /// string — the UI renders the image inline.
+  /// Sends a message with [imageUrl]. The message text is empty because the UI
+  /// renders the image inline.
   Future<void> sendImageMessage({
     required String matchId,
     required String senderId,
-    required XFile image,
+    required String messageId,
+    required String imageUrl,
   }) => withFirestoreErrorContext(
     () async {
-      final messageId = _db
-          .collection(_matchesCollectionPath)
-          .doc(matchId)
-          .collection('messages')
-          .doc()
-          .id;
-
-      final storagePath =
-          'matches/$matchId/images/${messageId}_'
-          '${DateTime.now().millisecondsSinceEpoch}';
-      final bytes = await image.readAsBytes();
-      final ref = _storage.ref(storagePath);
-      final metadata = SettableMetadata(contentType: 'image/jpeg');
-      await ref.putData(bytes, metadata);
-      final downloadUrl = await ref.getDownloadURL();
-
       await _db
           .collection(_matchesCollectionPath)
           .doc(matchId)
@@ -117,7 +93,7 @@ class ChatRepository {
           .set({
             'senderId': senderId,
             'text': '',
-            'imageUrl': downloadUrl,
+            'imageUrl': imageUrl,
             'sentAt': FieldValue.serverTimestamp(),
           });
     },
@@ -127,10 +103,8 @@ class ChatRepository {
 }
 
 @riverpod
-ChatRepository chatRepository(Ref ref) => ChatRepository(
-  ref.watch(firebaseFirestoreProvider),
-  storage: ref.watch(firebaseStorageProvider),
-);
+ChatRepository chatRepository(Ref ref) =>
+    ChatRepository(ref.watch(firebaseFirestoreProvider));
 
 @riverpod
 Stream<List<ChatMessage>> watchChatMessages(Ref ref, String matchId) =>

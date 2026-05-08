@@ -1,5 +1,14 @@
+import 'dart:ui';
+
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
+
+class PersonAvatarItem {
+  const PersonAvatarItem({required this.name, this.imageUrl});
+
+  final String name;
+  final String? imageUrl;
+}
 
 /// Circular avatar used across roster lists, chat threads, swipe cards, and
 /// the match modal.
@@ -39,6 +48,7 @@ class PersonAvatar extends StatelessWidget {
     this.borderWidth = 0,
     this.borderColor,
     this.showStatusDot = false,
+    this.obscured = false,
   }) : _count = null;
 
   /// Overflow avatar — shows "+[count]" instead of a photo.
@@ -51,7 +61,8 @@ class PersonAvatar extends StatelessWidget {
   }) : _count = count,
        name = '',
        imageUrl = null,
-       showStatusDot = false;
+       showStatusDot = false,
+       obscured = false;
 
   final double size;
   final String name;
@@ -61,6 +72,7 @@ class PersonAvatar extends StatelessWidget {
   /// The ring / stacking border colour. Defaults to transparent when null.
   final Color? borderColor;
   final bool showStatusDot;
+  final bool obscured;
   final int? _count;
 
   @override
@@ -92,17 +104,21 @@ class PersonAvatar extends StatelessWidget {
     } else if (imageUrl != null && imageUrl!.isNotEmpty) {
       avatar = _shell(
         size: innerSize,
-        child: Image.network(
-          imageUrl!,
-          fit: BoxFit.cover,
-          errorBuilder: (_, _, _) =>
-              _GradientPlaceholder(name: name, size: innerSize),
+        child: _obscureIfNeeded(
+          child: Image.network(
+            imageUrl!,
+            fit: BoxFit.cover,
+            errorBuilder: (_, _, _) =>
+                _GradientPlaceholder(name: name, size: innerSize),
+          ),
         ),
       );
     } else {
       avatar = _shell(
         size: innerSize,
-        child: _GradientPlaceholder(name: name, size: innerSize),
+        child: _obscureIfNeeded(
+          child: _GradientPlaceholder(name: name, size: innerSize),
+        ),
       );
     }
 
@@ -151,6 +167,87 @@ class PersonAvatar extends StatelessWidget {
   Widget _shell({required double size, required Widget child}) {
     return ClipOval(
       child: SizedBox.square(dimension: size, child: child),
+    );
+  }
+
+  Widget _obscureIfNeeded({required Widget child}) {
+    if (!obscured) return child;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        ImageFiltered(
+          imageFilter: ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
+          child: Transform.scale(scale: 1.16, child: child),
+        ),
+        DecoratedBox(
+          decoration: BoxDecoration(
+            color: Colors.black.withValues(alpha: 0.16),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class PersonAvatarStack extends StatelessWidget {
+  const PersonAvatarStack({
+    super.key,
+    required this.items,
+    this.totalCount,
+    this.size = 32,
+    this.overlap = 9,
+    this.borderWidth = 2,
+    this.borderColor,
+    this.limit = 4,
+    this.obscured = false,
+    this.showOverflowCount = true,
+  });
+
+  final List<PersonAvatarItem> items;
+  final int? totalCount;
+  final double size;
+  final double overlap;
+  final double borderWidth;
+  final Color? borderColor;
+  final int limit;
+  final bool obscured;
+  final bool showOverflowCount;
+
+  @override
+  Widget build(BuildContext context) {
+    final shown = items.take(limit).toList();
+    final count = totalCount ?? items.length;
+    final overflow = count - shown.length;
+    final avatars = <Widget>[
+      for (final item in shown)
+        PersonAvatar(
+          size: size,
+          name: item.name,
+          imageUrl: item.imageUrl,
+          borderWidth: borderWidth,
+          borderColor: borderColor ?? CatchTokens.of(context).surface,
+          obscured: obscured,
+        ),
+      if (showOverflowCount && overflow > 0)
+        PersonAvatar.count(
+          size: size,
+          count: overflow,
+          borderWidth: borderWidth,
+          borderColor: borderColor ?? CatchTokens.of(context).surface,
+        ),
+    ];
+    if (avatars.isEmpty) return const SizedBox.shrink();
+
+    return SizedBox(
+      height: size,
+      width: size + (avatars.length - 1) * (size - overlap),
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          for (var i = 0; i < avatars.length; i++)
+            Positioned(left: i * (size - overlap), child: avatars[i]),
+        ],
+      ),
     );
   }
 }

@@ -5,24 +5,21 @@ import 'package:catch_dating_app/matches/presentation/widgets/chat_new_matches_r
 import 'package:flutter/material.dart';
 
 class ChatsListBody extends StatelessWidget {
-  const ChatsListBody({super.key, required this.viewModel, required this.uid});
+  const ChatsListBody({super.key, required this.viewModel});
 
   final ChatsListViewModel viewModel;
-  final String uid;
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
+    return SliverMainAxisGroup(
+      slivers: [
         if (viewModel.newMatches.isNotEmpty)
-          ChatNewMatchesRail(matches: viewModel.newMatches, uid: uid),
-        if (viewModel.conversations.isNotEmpty)
-          ChatConversationsList(
-            matches: viewModel.conversations,
-            uid: uid,
+          SliverToBoxAdapter(
+            child: ChatNewMatchesRail(matches: viewModel.newMatches),
           ),
-        const SizedBox(height: CatchSpacing.s6),
+        if (viewModel.conversations.isNotEmpty)
+          ChatConversationsList(matches: viewModel.conversations),
+        const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
       ],
     );
   }

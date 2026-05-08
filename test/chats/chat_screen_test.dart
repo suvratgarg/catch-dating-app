@@ -12,7 +12,6 @@ import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../runs/runs_test_helpers.dart';
 import '../test_pump_helpers.dart';
@@ -40,6 +39,10 @@ class FakeMatchRepository implements MatchRepository {
 }
 
 class FakeChatRepository implements ChatRepository {
+  FakeChatRepository({this.failSends = false, this.messageStream});
+
+  final bool failSends;
+  final Stream<List<ChatMessage>>? messageStream;
   final Map<String, List<ChatMessage>> messagesByMatch = {};
   final List<(String matchId, String senderId, String text)> sendCalls = [];
 
@@ -50,21 +53,25 @@ class FakeChatRepository implements ChatRepository {
     required String text,
   }) async {
     sendCalls.add((matchId, senderId, text));
+    if (failSends) {
+      throw Exception('send failed');
+    }
   }
 
   @override
   Stream<List<ChatMessage>> watchMessages({required String matchId}) {
-    return Stream.value(messagesByMatch[matchId] ?? const []);
+    return messageStream ?? Stream.value(messagesByMatch[matchId] ?? const []);
   }
 
   @override
-  Future<XFile?> pickImage() async => null;
+  String createMessageId({required String matchId}) => 'message-1';
 
   @override
   Future<void> sendImageMessage({
     required String matchId,
     required String senderId,
-    required XFile image,
+    required String messageId,
+    required String imageUrl,
   }) async {}
 }
 
@@ -82,7 +89,7 @@ Match buildMatch({
     id: id,
     user1Id: user1Id,
     user2Id: user2Id,
-    runId: 'run-1',
+    runIds: const ['run-1'],
     createdAt: createdAt ?? DateTime(2026, 4, 23, 9),
     lastMessageAt: lastMessageAt,
     lastMessagePreview: lastMessagePreview,
@@ -215,6 +222,88 @@ void main() {
         tester.widget<TextField>(find.byType(TextField)).controller?.text,
         isEmpty,
       );
+    });
+
+    testWidgets('keeps composed text when send fails', (tester) async {
+      final matchRepository = FakeMatchRepository(
+        match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
+      );
+      final chatRepository = FakeChatRepository(failSends: true);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            matchRepositoryProvider.overrideWithValue(matchRepository),
+            chatRepositoryProvider.overrideWithValue(chatRepository),
+            watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: ChatScreen(
+              matchId: 'match-1',
+              otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+            ),
+          ),
+        ),
+      );
+
+      await pumpFeatureUi(tester);
+
+      await tester.enterText(find.byType(TextField), '  Still here  ');
+      await tester.tap(find.byIcon(Icons.send_rounded));
+      await pumpFeatureUi(tester);
+
+      expect(chatRepository.sendCalls, hasLength(1));
+      expect(
+        tester.widget<TextField>(find.byType(TextField)).controller?.text,
+        '  Still here  ',
+      );
+    });
+
+    testWidgets('resets unread again for incoming messages while open', (
+      tester,
+    ) async {
+      final messageController = StreamController<List<ChatMessage>>.broadcast();
+      addTearDown(messageController.close);
+      final matchRepository = FakeMatchRepository(
+        match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
+      );
+      final chatRepository = FakeChatRepository(
+        messageStream: messageController.stream,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            matchRepositoryProvider.overrideWithValue(matchRepository),
+            chatRepositoryProvider.overrideWithValue(chatRepository),
+            watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: ChatScreen(
+              matchId: 'match-1',
+              otherProfile: buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+            ),
+          ),
+        ),
+      );
+
+      await tester.pump();
+      expect(matchRepository.resetUnreadCalls, [('match-1', 'runner-1')]);
+
+      messageController.add([
+        buildMessage(id: 'msg-1', senderId: 'runner-2', text: 'Incoming'),
+      ]);
+      await tester.pump();
+      await tester.pump();
+
+      expect(matchRepository.resetUnreadCalls, [
+        ('match-1', 'runner-1'),
+        ('match-1', 'runner-1'),
+      ]);
     });
 
     testWidgets('shows a friendly error when messages fail to load', (

@@ -90,11 +90,12 @@ export async function onMessageCreatedHandler(
       "New message";
     notificationTitle = senderName;
     notificationBody = buildMessageBody(message);
+    const messageSentAt = message.sentAt ?? deps.serverTimestamp();
 
     // Keep match-list metadata server-owned. The client writes only the
     // message. The receipt makes this increment idempotent across retries.
     tx.update(matchRef, {
-      lastMessageAt: message.sentAt,
+      lastMessageAt: messageSentAt,
       lastMessagePreview: buildMessagePreview(message),
       lastMessageSenderId: message.senderId,
       [`unreadCounts.${recipientId}`]: deps.increment(1),
@@ -114,9 +115,9 @@ export async function onMessageCreatedHandler(
       type: "message",
       title: notificationTitle,
       body: notificationBody,
-      createdAt: message.sentAt,
+      createdAt: messageSentAt,
       matchId,
-      runId: match.runId,
+      runId: latestMatchRunId(match),
       actorUid: message.senderId,
       actorName: senderName,
     });
@@ -163,6 +164,20 @@ function buildMessagePreview(message: ChatMessageDoc): string {
 
   const text = message.text.trim();
   return text.length > 80 ? text.slice(0, 80) + "…" : text;
+}
+
+type LegacyMatchDoc = MatchDoc & {runId?: string | null};
+
+/**
+ * Returns the newest shared run id for a match, including legacy runId docs.
+ *
+ * @param {MatchDoc} match Match document data.
+ * @return {string | undefined} Latest run id when one is available.
+ */
+function latestMatchRunId(match: MatchDoc): string | undefined {
+  const runIds = match.runIds ?? [];
+  const legacyRunId = (match as LegacyMatchDoc).runId;
+  return runIds.at(-1) ?? legacyRunId ?? undefined;
 }
 
 /**

@@ -36,6 +36,9 @@ export {
 } from "./reviews/mutateReview";
 export {syncPublicProfile} from "./profiles/syncPublicProfile";
 export {updateUserProfile} from "./profiles/updateUserProfile";
+export {
+  generateProfilePhotoThumbnail,
+} from "./profiles/generateProfilePhotoThumbnail";
 export {joinWaitlist} from "./waitlist/joinWaitlist";
 export {blockUser, unblockUser, onBlockCreated} from "./safety/blocking";
 export {requestAccountDeletion} from "./safety/accountDeletion";

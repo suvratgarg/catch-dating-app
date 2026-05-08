@@ -69,6 +69,28 @@ void main() {
     expect(legacy.publicDisplayName, 'Asha');
   });
 
+  test(
+    'profile photo thumbnail getters prefer tiny URLs with full-photo fallback',
+    () {
+      final user = buildUser(dateOfBirth: DateTime(1995, 6, 15)).copyWith(
+        photoUrls: const ['https://example.test/full.jpg'],
+        photoThumbnailUrls: const ['https://example.test/thumb.jpg'],
+      );
+      final fullOnly = user.copyWith(photoThumbnailUrls: const []);
+      final publicProfile = publicProfileFromUserProfile(user);
+
+      expect(user.primaryPhotoThumbnailUrl, 'https://example.test/thumb.jpg');
+      expect(
+        fullOnly.primaryPhotoThumbnailUrl,
+        'https://example.test/full.jpg',
+      );
+      expect(
+        publicProfile.primaryPhotoThumbnailUrl,
+        'https://example.test/thumb.jpg',
+      );
+    },
+  );
+
   test('fromJson keeps omitted optional enum fields null', () {
     final user = UserProfile.fromJson({
       'uid': 'user-1',

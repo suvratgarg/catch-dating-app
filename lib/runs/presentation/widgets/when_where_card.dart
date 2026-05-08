@@ -6,14 +6,16 @@ import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 
 class WhenWhereCard extends StatelessWidget {
-  const WhenWhereCard({super.key, required this.run});
+  const WhenWhereCard({super.key, required this.run, this.onLocationTap});
 
   final Run run;
+  final VoidCallback? onLocationTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final start = run.startTime;
+    final canOpenLocation = run.hasExactStartingPoint && onLocationTap != null;
 
     return CatchSurface(
       padding: const EdgeInsets.all(16),
@@ -78,44 +80,62 @@ class WhenWhereCard extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             child: Divider(color: t.line, height: 1),
           ),
-          Row(
-            children: [
-              Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: t.raised,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(color: t.line),
-                ),
-                child: Icon(
-                  Icons.location_on_outlined,
-                  size: 20,
-                  color: t.ink2,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          Semantics(
+            button: canOpenLocation,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: canOpenLocation ? onLocationTap : null,
+                borderRadius: BorderRadius.circular(12),
+                child: Row(
                   children: [
-                    Text(
-                      run.meetingPoint,
-                      style: CatchTextStyles.titleM(context),
-                    ),
-                    if (run.locationDetails != null &&
-                        run.locationDetails!.isNotEmpty) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        run.locationDetails!,
-                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: t.raised,
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(color: t.line),
                       ),
-                    ],
+                      child: Icon(
+                        Icons.location_on_outlined,
+                        size: 20,
+                        color: t.ink2,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            run.meetingPoint,
+                            style: CatchTextStyles.titleM(context),
+                          ),
+                          if (run.locationDetails != null &&
+                              run.locationDetails!.isNotEmpty) ...[
+                            const SizedBox(height: 2),
+                            Text(
+                              run.locationDetails!,
+                              style: CatchTextStyles.bodyS(
+                                context,
+                                color: t.ink2,
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ),
+                    if (canOpenLocation)
+                      Icon(
+                        Icons.chevron_right_rounded,
+                        color: t.ink3,
+                        size: 20,
+                      ),
                   ],
                 ),
               ),
-              Icon(Icons.chevron_right_rounded, color: t.ink3, size: 20),
-            ],
+            ),
           ),
         ],
       ),

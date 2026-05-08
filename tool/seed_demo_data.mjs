@@ -194,7 +194,12 @@ if (!args.apply) {
 }
 
 const resetReport = args.resetSynthetic ?
-  await resetSyntheticData({db, manifestId: seed.manifestId, fallbackPaths: writePlan.paths}) :
+  await resetSyntheticData({
+    db,
+    manifestId: seed.manifestId,
+    seedPrefix: args.seedPrefix,
+    fallbackPaths: writePlan.paths,
+  }) :
   {deleted: 0, source: "skipped"};
 if (args.deleteOnly) {
   if (!args.json) {
@@ -502,6 +507,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
 
 function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
   const users = [];
+  const usedDisplayNames = new Set();
   let index = 0;
   for (const city of scenario.cities) {
     const cityMeta = cityData[city];
@@ -511,10 +517,16 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
       const lastName = lastNames[(index * 3) % lastNames.length];
       const gender = ["woman", "man", "woman", "man", "nonBinary", "woman", "man", "other"][index % 8];
       const age = 23 + (index % 16);
-      const displayName = firstName;
+      const displayName = uniqueSyntheticDisplayName({
+        firstName,
+        lastName,
+        city,
+        usedDisplayNames,
+      });
       const lat = cityMeta.lat + (((index % 7) - 3) * 0.008);
       const lng = cityMeta.lng + ((((index + 3) % 7) - 3) * 0.008);
-      const photo = profilePhotos[index % profilePhotos.length];
+      const repetition = Math.floor(index / firstNames.length);
+      const photo = profilePhotos[(index + repetition) % profilePhotos.length];
       const userDoc = {
         ...seedMarker,
         name: `${firstName} ${lastName}`,
@@ -578,6 +590,24 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
     }
   }
   return users;
+}
+
+function uniqueSyntheticDisplayName({firstName, lastName, city, usedDisplayNames}) {
+  const base = `${firstName} ${lastName}`;
+  if (!usedDisplayNames.has(base)) {
+    usedDisplayNames.add(base);
+    return base;
+  }
+
+  const cityLabel = cityData[city]?.label ?? city;
+  let candidate = `${base} (${cityLabel})`;
+  let suffix = 2;
+  while (usedDisplayNames.has(candidate)) {
+    candidate = `${base} (${cityLabel} ${suffix})`;
+    suffix += 1;
+  }
+  usedDisplayNames.add(candidate);
+  return candidate;
 }
 
 function publicProfileFromUserDoc(userDoc) {
@@ -880,7 +910,7 @@ function matchDoc({seedMarker, userA, userB, run, now}) {
       ...seedMarker,
       user1Id,
       user2Id,
-      runId: run.id,
+      runIds: [run.id],
       createdAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {hours: -3})),
       lastMessageAt: null,
       lastMessagePreview: null,
@@ -1121,6 +1151,7 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
   const existingManifest = manifestSnap.data();
   const existingAnchorIds = new Set(existingManifest.anchorUserIds ?? []);
   const currentAnchorIds = anchorProfiles.map((profile) => profile.uid);
+  const mergedAnchorIds = new Set([...existingAnchorIds, ...currentAnchorIds]);
   const newAnchorIds = currentAnchorIds.filter((uid) => !existingAnchorIds.has(uid));
   const existingPaths = new Set(existingManifest.paths ?? []);
 
@@ -1130,6 +1161,7 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
       paths: [],
       manifest: {
         ...seed.manifest,
+        anchorUserIds: [...mergedAnchorIds].sort(),
         paths: [...existingPaths].sort(),
         counts: countDocs([...existingPaths].map((docPath) => ({path: docPath}))),
       },
@@ -1162,6 +1194,7 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
     paths: docs.map((doc) => doc.path),
     manifest: {
       ...seed.manifest,
+      anchorUserIds: [...mergedAnchorIds].sort(),
       paths: [...mergedPaths].sort(),
       counts: countDocs([...mergedPaths].map((docPath) => ({path: docPath}))),
       appendMode: true,
@@ -1300,14 +1333,23 @@ function incrementPatch(increments) {
   );
 }
 
-async function resetSyntheticData({db: firestore, manifestId, fallbackPaths}) {
+async function resetSyntheticData({db: firestore, manifestId, seedPrefix, fallbackPaths}) {
   const manifestRef = firestore.collection("seedRuns").doc(manifestId);
   const manifestSnap = await manifestRef.get();
-  const paths = manifestSnap.exists && Array.isArray(manifestSnap.data().paths) ?
+  const manifestPaths = manifestSnap.exists && Array.isArray(manifestSnap.data().paths) ?
     manifestSnap.data().paths :
     fallbackPaths;
+  const orphanMessagePaths = await syntheticMatchMessagePaths({
+    db: firestore,
+    seedPrefix,
+  });
+  const paths = [...new Set([
+    ...manifestPaths,
+    ...orphanMessagePaths,
+    manifestRef.path,
+  ])];
   let deleted = 0;
-  for (const chunk of chunks([...paths, manifestRef.path], DEFAULT_MAX_BATCH_WRITES)) {
+  for (const chunk of chunks(paths, DEFAULT_MAX_BATCH_WRITES)) {
     const batch = firestore.batch();
     for (const docPath of chunk) {
       batch.delete(firestore.doc(docPath));
@@ -1319,6 +1361,13 @@ async function resetSyntheticData({db: firestore, manifestId, fallbackPaths}) {
     deleted,
     source: manifestSnap.exists ? `seedRuns/${manifestId}` : "current generated plan",
   };
+}
+
+async function syntheticMatchMessagePaths({db: firestore, seedPrefix}) {
+  const snap = await firestore.collectionGroup("messages").get();
+  return snap.docs
+    .filter((doc) => doc.ref.parent.parent?.id.includes(seedPrefix))
+    .map((doc) => doc.ref.path);
 }
 
 async function applyWritePlan({db: firestore, docs}) {
@@ -1339,6 +1388,7 @@ async function applyWritePlan({db: firestore, docs}) {
 }
 
 function printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}) {
+  const identityDiagnostics = syntheticPublicIdentityDiagnostics(seed.docs);
   console.log("Catch demo data seed plan");
   console.log(`Project: ${projectId}`);
   if (args.emulatorHost) console.log(`Emulator: ${args.emulatorHost}`);
@@ -1360,6 +1410,11 @@ function printSummary({args, projectId, scenario, anchorProfiles, seed, writePla
     console.log(`- ${collection}: ${count}`);
   }
   console.log(`\nTotal docs to write: ${writePlan.docs.length}`);
+  if (identityDiagnostics.duplicateNamePhotoPairs > 0) {
+    console.log(
+      `Warning: ${identityDiagnostics.duplicateNamePhotoPairs} duplicate synthetic public name/photo pairs generated.`
+    );
+  }
   console.log(`Manifest: seedRuns/${seed.manifestId}`);
 }
 
@@ -1377,6 +1432,7 @@ function summary({args, projectId, scenario, anchorProfiles, seed, writePlan, mi
     append: writePlan.append ?? null,
     anchorUserIds: anchorProfiles.map((profile) => profile.uid),
     missingPublicProfileIds,
+    syntheticPublicIdentityDiagnostics: syntheticPublicIdentityDiagnostics(seed.docs),
     counts: seed.counts,
     totalDocsToWrite: writePlan.docs.length,
     manifestPath: `seedRuns/${seed.manifestId}`,
@@ -1442,6 +1498,35 @@ function countKeyForPath(docPath) {
   if (/^swipes\/[^/]+\/outgoing\//.test(docPath)) return "swipes";
   if (/^notifications\/[^/]+\/items\//.test(docPath)) return "notifications";
   return docPath.split("/")[0];
+}
+
+function syntheticPublicIdentityDiagnostics(docs) {
+  const seen = new Map();
+  const duplicates = [];
+
+  for (const doc of docs) {
+    if (!doc.path.startsWith("publicProfiles/")) continue;
+    if (doc.data.synthetic !== true) continue;
+    const name = normalizedPublicName(doc.data.name);
+    const firstPhoto = Array.isArray(doc.data.photoUrls) ? doc.data.photoUrls[0] : null;
+    if (!name || typeof firstPhoto !== "string" || firstPhoto.length === 0) continue;
+    const key = `${name}|${firstPhoto}`;
+    const firstPath = seen.get(key);
+    if (firstPath) {
+      duplicates.push({firstPath, duplicatePath: doc.path, name: doc.data.name});
+    } else {
+      seen.set(key, doc.path);
+    }
+  }
+
+  return {
+    duplicateNamePhotoPairs: duplicates.length,
+    duplicateSamples: duplicates.slice(0, 10),
+  };
+}
+
+function normalizedPublicName(value) {
+  return typeof value === "string" ? value.trim().toLowerCase() : "";
 }
 
 function groupBy(items, keyFn) {
