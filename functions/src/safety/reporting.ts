@@ -8,11 +8,11 @@ import {requireAuth} from "../shared/auth";
 import {validateCallable} from "../shared/validation";
 
 const ReportUserSchema = z.object({
-  targetUserId: z.string(),
-  source: z.string().optional(),
-  reasonCode: z.string().max(64).optional(),
-  contextId: z.string().max(128).optional(),
-  notes: z.string().max(2000).optional(),
+  targetUserId: z.string().trim().min(1),
+  source: z.string().trim().max(64).optional(),
+  reasonCode: z.string().trim().max(64).optional(),
+  contextId: z.string().trim().max(128).optional(),
+  notes: z.string().trim().max(2000).optional(),
 });
 
 interface ReportingDeps {
@@ -57,15 +57,20 @@ export async function reportUserHandler(
     throw new HttpsError("invalid-argument", "targetUserId is invalid.");
   }
 
+  const source = normalizeReportText(data.source, 64) ?? "profile";
+  const reasonCode = normalizeReportText(data.reasonCode, 64);
+  const contextId = normalizeReportText(data.contextId, 128);
+  const notes = normalizeReportText(data.notes, 2000);
+
   await deps.firestore().collection("reports").add({
     reporterUserId,
     targetUserId: data.targetUserId,
     createdAt: deps.serverTimestamp(),
-    source: data.source ?? "profile",
+    source,
     status: "open",
-    ...(data.reasonCode && {reasonCode: data.reasonCode}),
-    ...(data.contextId && {contextId: data.contextId}),
-    ...(data.notes && {notes: data.notes}),
+    ...(reasonCode && {reasonCode}),
+    ...(contextId && {contextId}),
+    ...(notes && {notes}),
   });
 
   return {reported: true};

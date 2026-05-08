@@ -179,6 +179,33 @@ AsyncValue<RunClubsListViewModel> runClubsListViewModel(Ref ref) {
   );
 }
 
+/// **Pattern D: View-model provider**
+///
+/// Derives the create-club affordance from the server-owned hosted-club query.
+/// The callable enforces the one-club invariant; this provider keeps the list
+/// UI from offering a creation path after a host already has a club.
+@riverpod
+AsyncValue<bool> canCreateRunClub(Ref ref) {
+  final uidAsync = ref.watch(uidProvider);
+  if (uidAsync.isLoading) {
+    return const AsyncLoading();
+  }
+  if (uidAsync.hasError) {
+    return AsyncError(
+      uidAsync.error!,
+      uidAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+
+  final uid = uidAsync.asData?.value;
+  if (uid == null) {
+    return const AsyncData(false);
+  }
+
+  final hostedAsync = ref.watch(watchRunClubsHostedByProvider(uid));
+  return hostedAsync.whenData((clubs) => clubs.isEmpty);
+}
+
 bool matchesRunClubSearchQuery(RunClub club, String normalizedQuery) {
   return club.name.toLowerCase().contains(normalizedQuery) ||
       club.area.toLowerCase().contains(normalizedQuery) ||

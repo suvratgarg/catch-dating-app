@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/city_picker.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_search_field.dart';
 import 'package:flutter/material.dart';
@@ -23,12 +24,14 @@ class RunClubsSliverHeader extends CatchSliverHeader {
       );
 }
 
-class _TitleRow extends StatelessWidget {
+class _TitleRow extends ConsumerWidget {
   const _TitleRow();
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
+    final canCreate =
+        ref.watch(canCreateRunClubProvider).asData?.value ?? false;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -54,10 +57,11 @@ class _TitleRow extends StatelessWidget {
               ],
             ),
           ),
-          IconBtn(
-            onTap: () => context.pushNamed(Routes.createRunClubScreen.name),
-            child: Icon(Icons.add_rounded, size: 20, color: t.ink),
-          ),
+          if (canCreate)
+            IconBtn(
+              onTap: () => context.pushNamed(Routes.createRunClubScreen.name),
+              child: Icon(Icons.add_rounded, size: 20, color: t.ink),
+            ),
         ],
       ),
     );

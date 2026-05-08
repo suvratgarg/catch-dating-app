@@ -28,7 +28,7 @@ describe("moderateText", () => {
   it("blocks text containing explicit terms", () => {
     const result = moderateText("this is pedophile content");
     assert.equal(result.action, "block");
-    assert.ok(result.matches.includes("pedo"));
+    assert.ok(result.matches.includes("pedophile"));
   });
 
   it("blocks text with self-harm encouragement", () => {
@@ -61,10 +61,16 @@ describe("moderateText", () => {
     assert.ok(result.matches.includes("faggot"));
   });
 
-  it("detects substring matches within words", () => {
-    // "pedo" is in the block list, should match within "pedophile"
+  it("blocks exact listed terms inside normal punctuation", () => {
     const result = moderateText("pedophile content warning");
     assert.equal(result.action, "block");
+    assert.ok(result.matches.includes("pedophile"));
+  });
+
+  it("does not block benign words that merely contain listed terms", () => {
+    const result = moderateText("I am from Pakistan and like classical music");
+    assert.equal(result.action, "allow");
+    assert.deepEqual(result.matches, []);
   });
 });
 

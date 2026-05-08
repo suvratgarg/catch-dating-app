@@ -223,6 +223,16 @@ function validateAll(collections, currentReport) {
   for (const doc of collections.onboarding_drafts) {
     validateOnboardingDraft(doc, currentReport);
   }
+  validateRunClubMemberCountAggregates(
+    collections.runClubs,
+    collections.runClubMemberships,
+    currentReport
+  );
+  validateRunAggregateCounts(
+    collections.runs,
+    collections.runParticipations,
+    currentReport
+  );
 }
 
 function validateDocumentSize(doc, currentReport) {
@@ -544,6 +554,78 @@ function validateMessage(doc, matches, currentReport) {
 
 function validateOnboardingDraft(doc, currentReport) {
   requireInteger(doc.data, "step", doc, currentReport);
+}
+
+function validateRunClubMemberCountAggregates(
+  runClubs,
+  runClubMemberships,
+  currentReport
+) {
+  const activeCounts = new Map();
+  for (const doc of runClubMemberships) {
+    const data = doc.data;
+    if (data.status !== "active" || typeof data.clubId !== "string") continue;
+    activeCounts.set(data.clubId, (activeCounts.get(data.clubId) ?? 0) + 1);
+  }
+
+  for (const doc of runClubs) {
+    const expected = activeCounts.get(doc.id) ?? 0;
+    if (doc.data.memberCount !== expected) {
+      issue(currentReport, "error", doc.path, "member-count-drift",
+        `memberCount is ${doc.data.memberCount}, but active ` +
+        `runClubMemberships count is ${expected}.`);
+    }
+  }
+}
+
+function validateRunAggregateCounts(runs, runParticipations, currentReport) {
+  const aggregates = new Map();
+  for (const doc of runParticipations) {
+    const data = doc.data;
+    if (typeof data.runId !== "string") continue;
+    const aggregate = runAggregate(aggregates, data.runId);
+    if (data.status === "signedUp" || data.status === "attended") {
+      aggregate.bookedCount += 1;
+      if (typeof data.genderAtSignup === "string") {
+        aggregate.genderCounts[data.genderAtSignup] =
+          (aggregate.genderCounts[data.genderAtSignup] ?? 0) + 1;
+      }
+    }
+    if (data.status === "attended") aggregate.checkedInCount += 1;
+    if (data.status === "waitlisted") aggregate.waitlistedCount += 1;
+  }
+
+  for (const doc of runs) {
+    const expected = runAggregate(aggregates, doc.id);
+    for (const field of ["bookedCount", "checkedInCount", "waitlistedCount"]) {
+      if (doc.data[field] !== expected[field]) {
+        issue(currentReport, "error", doc.path, "run-count-drift",
+          `${field} is ${doc.data[field]}, but runParticipations imply ` +
+          `${expected[field]}.`);
+      }
+    }
+    if (JSON.stringify(normalizeObject(doc.data.genderCounts ?? {})) !==
+        JSON.stringify(normalizeObject(expected.genderCounts))) {
+      issue(currentReport, "error", doc.path, "run-gender-count-drift",
+        "genderCounts does not match signedUp/attended runParticipations.");
+    }
+  }
+}
+
+function runAggregate(aggregates, runId) {
+  if (!aggregates.has(runId)) {
+    aggregates.set(runId, {
+      bookedCount: 0,
+      checkedInCount: 0,
+      waitlistedCount: 0,
+      genderCounts: {},
+    });
+  }
+  return aggregates.get(runId);
+}
+
+function normalizeObject(value) {
+  return Object.fromEntries(Object.entries(value).sort());
 }
 
 function byId(docs) {

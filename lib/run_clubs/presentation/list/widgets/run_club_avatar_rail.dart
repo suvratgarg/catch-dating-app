@@ -7,9 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class RunClubAvatarRail extends StatelessWidget {
-  const RunClubAvatarRail({super.key, required this.clubs});
+  const RunClubAvatarRail({
+    super.key,
+    required this.clubs,
+    this.showCreateButton = true,
+  });
 
   final List<RunClub> clubs;
+  final bool showCreateButton;
 
   @override
   Widget build(BuildContext context) {
@@ -24,9 +29,11 @@ class RunClubAvatarRail extends StatelessWidget {
           showLiveBadge: club.nextRunLabel != null,
         );
       },
-      trailing: _CreateClubButton(
-        onTap: () => context.pushNamed(Routes.createRunClubScreen.name),
-      ),
+      trailing: showCreateButton
+          ? _CreateClubButton(
+              onTap: () => context.pushNamed(Routes.createRunClubScreen.name),
+            )
+          : null,
     );
   }
 }

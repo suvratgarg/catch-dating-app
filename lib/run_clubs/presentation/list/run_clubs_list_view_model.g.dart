@@ -287,3 +287,66 @@ final class RunClubsListViewModelProvider
 
 String _$runClubsListViewModelHash() =>
     r'592c22b89e9ca48e42f9b8c7b3b760908c4426a5';
+
+/// **Pattern D: View-model provider**
+///
+/// Derives the create-club affordance from the server-owned hosted-club query.
+/// The callable enforces the one-club invariant; this provider keeps the list
+/// UI from offering a creation path after a host already has a club.
+
+@ProviderFor(canCreateRunClub)
+final canCreateRunClubProvider = CanCreateRunClubProvider._();
+
+/// **Pattern D: View-model provider**
+///
+/// Derives the create-club affordance from the server-owned hosted-club query.
+/// The callable enforces the one-club invariant; this provider keeps the list
+/// UI from offering a creation path after a host already has a club.
+
+final class CanCreateRunClubProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<bool>,
+          AsyncValue<bool>,
+          AsyncValue<bool>
+        >
+    with $Provider<AsyncValue<bool>> {
+  /// **Pattern D: View-model provider**
+  ///
+  /// Derives the create-club affordance from the server-owned hosted-club query.
+  /// The callable enforces the one-club invariant; this provider keeps the list
+  /// UI from offering a creation path after a host already has a club.
+  CanCreateRunClubProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'canCreateRunClubProvider',
+        isAutoDispose: true,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$canCreateRunClubHash();
+
+  @$internal
+  @override
+  $ProviderElement<AsyncValue<bool>> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  AsyncValue<bool> create(Ref ref) {
+    return canCreateRunClub(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(AsyncValue<bool> value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<AsyncValue<bool>>(value),
+    );
+  }
+}
+
+String _$canCreateRunClubHash() => r'cb93ded59c5b5104bb3a559b8ad003b82fa453ef';

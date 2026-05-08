@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_relationship_documents_migration
-version: 1.0.13
-updated: 2026-05-07
+version: 1.0.14
+updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -59,6 +59,7 @@ idempotently, and record verification.
 | `users/{uid}` | Private user profile/account source of truth. | Does not store run-club membership or saved-run projections. |
 | `publicProfiles/{uid}` | Backend-derived public profile projection. | Good shape; keep backend-owned. |
 | `runClubs/{clubId}` | Run club profile/details. | Stores descriptive data plus `memberCount`; membership identity lives in `runClubMemberships`. |
+| `runClubHostClaims/{uid}` | Server-owned host lock. | Enforces one hosted run club per user without scanning client-side state or trusting hidden UI affordances. |
 | `runs/{runId}` | Run details and host-owned schedule fields. | Stores aggregate `bookedCount`, `waitlistedCount`, `checkedInCount`, and `genderCounts`; roster identity lives in `runParticipations`. |
 | `matches/{matchId}` | Match/chat thread header. | Good owner for thread metadata; messages currently live in a parallel `chats` namespace. |
 | `payments/{paymentId}` | Payment event/receipt. | Already action-like. Keep as document. |
@@ -115,6 +116,27 @@ Required fields:
 - `joinedAt`
 - `leftAt`
 - `deletedAt`
+
+### `runClubHostClaims/{uid}`
+
+Server-owned uniqueness lock for the current one-hosted-club product rule.
+
+Required fields:
+
+- `uid`
+- `clubId`
+- `createdAt`
+
+Rules:
+
+- Client reads and writes are denied.
+- `createRunClub` creates the claim in the same transaction as the run club and
+  host membership edge.
+- `deleteRunClub` deletes the claim only when an unused club is hard-deleted,
+  so a host can create another club after removing a club that never acquired
+  history.
+- Existing beta data should either be reset or backfilled with host-claim docs
+  before production users rely on the invariant.
 
 Optional display snapshot fields may be added only if a member list needs to
 avoid fetching full public profiles for every row.
@@ -414,7 +436,7 @@ Do not over-centralize these unless a concrete product need appears:
 | Delete account | `requestAccountDeletion` now writes `deletedUsers/{uid}`, deletes Storage profile photos and `publicProfiles/{uid}`, anonymizes `users/{uid}`, deletes Auth, and query-cleans memberships, participations, saved runs, swipes, matches, reviews, payments, notifications, blocks, and reports. | Backend implemented. Remaining product decisions: exact message retention/anonymization policy, payment retention wording, and admin observability/receipts. |
 | Delete review | Exists as `deleteRunReview`, an author-only callable delete of `reviews/{runId~uid}`. `syncRunClubReviewStats` recomputes run-club rating/count after deletion. | Backend implemented. The premise that review IDs are duplicated on run/user docs is not true in the current model. Remaining work is any UI/product policy around edit/delete affordances. |
 | Delete run | `cancelRun` handles runs with history. `deleteRun` now hard-deletes only unused hosted runs with no participations, payments, or reviews. Direct deletes stay denied. | Backend implemented. Remaining work: host UI/policy copy, refund policy, saved-run/swipe/match cleanup if we later allow broader run deletion. |
-| Delete run club | `archiveRunClub` now marks hosted clubs archived. `deleteRunClub` hard-deletes only never-used clubs with no runs, payments, reviews, or non-host members. Direct deletes stay denied. | Backend implemented. Remaining work: host UI, browse/search filters for archived clubs, future-run cancellation/refund policy for archived active clubs. |
+| Delete run club | `archiveRunClub` now marks hosted clubs archived. `deleteRunClub` hard-deletes only never-used clubs with no runs, payments, reviews, or non-host members, then removes the host claim. Direct deletes stay denied. | Backend implemented. Remaining work: host UI, browse/search filters for archived clubs, future-run cancellation/refund policy for archived active clubs. |
 
 ### Deletion Implementation Plan
 
@@ -531,6 +553,7 @@ Record every pass here with commands, result, and remaining gaps.
 
 | Date | Scope | Verification | Result |
 |---|---|---|---|
+| 2026-05-08 | Aggregate projection repair after edge-document migration | `node tool/recompute_run_club_member_counts.mjs --env dev --json`; `node tool/recompute_run_club_member_counts.mjs --env dev --apply`; `node tool/recompute_run_aggregate_counts.mjs --env dev --json`; `node tool/recompute_run_aggregate_counts.mjs --env dev --apply`; `node tool/validate_firestore_data.mjs --env dev --json`; `node --test tool/recompute_run_club_member_counts.test.mjs tool/recompute_run_aggregate_counts.test.mjs`; `npm --prefix functions test` | Passed. Dev had 0 membership edges and 0 participation edges after compatibility-array retirement, so stale parent projections were reset from the edge-doc source of truth: 2 run-club `memberCount` repairs and 4 run aggregate repairs. Validator now checks parent count drift against `runClubMemberships` and `runParticipations`; dev validation scanned 10 docs with 0 errors and 0 warnings. |
 | 2026-05-06 | Tracker creation | Document created before code edits. | Complete. |
 | 2026-05-06 | Relationship models, edge write paths, match-scoped messages, rules, and migration scaffolding | `flutter analyze --no-fatal-infos ...`; `flutter test test/chats/chat_repository_test.dart test/runs/run_detail_controller_test.dart test/runs/run_detail_widgets_test.dart`; `npm --prefix functions run lint`; `npm --prefix functions run build`; `npm --prefix functions test`; `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`; `node --check tool/firestore_relationship_migration.mjs`; `node --check tool/validate_firestore_data.mjs` | Passed. Superseded by the 2026-05-07 retirement pass for compatibility-array removal. Remaining non-array gaps are deletion UI/product policy and any migration/reset decision for beta data. |
 | 2026-05-06 | Saved-run read migration | `dart run build_runner build --delete-conflicting-outputs`; `flutter test test/runs/run_detail_controller_test.dart test/runs/run_detail_widgets_test.dart`; `flutter analyze --no-fatal-infos lib/runs/data/saved_run_repository.dart lib/runs/presentation/run_detail_view_model.dart lib/runs/presentation/run_detail_screen.dart lib/runs/presentation/widgets/run_detail_body.dart lib/user_profile/data/user_profile_repository.dart test/runs/run_detail_controller_test.dart test/runs/run_detail_widgets_test.dart` | Passed. Run detail now reads saved state from `savedRuns/{uid_runId}` through the view-model seam. Superseded by later rows for run-club membership, run participation, and final array retirement. |

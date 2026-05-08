@@ -400,6 +400,10 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    match /runClubHostClaims/{uid} {
+      allow read, write: if false;
+    }
+
     match /runClubs/{clubId} {
       allow read: if true;
 

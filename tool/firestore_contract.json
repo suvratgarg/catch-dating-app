@@ -423,6 +423,22 @@
       ]
     },
     {
+      "id": "runClubHostClaims",
+      "path": "runClubHostClaims/{uid}",
+      "rulesMatch": "/runClubHostClaims/{uid}",
+      "rulesTestFile": "functions/test/firestore.rules.test.cjs",
+      "owner": "createRunClub callable",
+      "read": "server only",
+      "write": "server only",
+      "allFields": ["uid", "clubId", "createdAt"],
+      "serverOwnedFields": ["uid", "clubId", "createdAt"],
+      "exportedFunctions": ["createRunClub"],
+      "migrationNotes": [
+        "One document per host UID enforces the product rule that a user can host at most one run club.",
+        "Existing beta data should be backfilled with a host claim or reset before relying on this invariant in production."
+      ]
+    },
+    {
       "id": "runs",
       "path": "runs/{runId}",
       "rulesMatch": "/runs/{runId}",

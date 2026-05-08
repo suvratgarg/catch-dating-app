@@ -73,13 +73,15 @@ class CatchChip extends StatelessWidget {
                         ),
                         const SizedBox(width: CatchSpacing.s2),
                       ],
-                      Text(
-                        label,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.titleS(
-                          context,
-                          color: foreground,
+                      Flexible(
+                        child: Text(
+                          label,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.titleS(
+                            context,
+                            color: foreground,
+                          ),
                         ),
                       ),
                       if (onRemove != null) ...[

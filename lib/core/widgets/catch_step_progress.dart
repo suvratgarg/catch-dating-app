@@ -8,12 +8,14 @@ class CatchStepProgress extends StatelessWidget {
     required this.currentStep,
     required this.totalSteps,
     this.label,
+    this.showCounter = true,
   }) : assert(totalSteps > 0),
        assert(currentStep >= 0);
 
   final int currentStep;
   final int totalSteps;
   final String? label;
+  final bool showCounter;
 
   @override
   Widget build(BuildContext context) {
@@ -23,26 +25,29 @@ class CatchStepProgress extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            if (label != null)
-              Expanded(
-                child: Text(
-                  label!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
+        if (label != null || showCounter) ...[
+          Row(
+            children: [
+              if (label != null)
+                Expanded(
+                  child: Text(
+                    label!,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: CatchTextStyles.labelL(context, color: t.ink2),
+                  ),
+                )
+              else
+                const Spacer(),
+              if (showCounter)
+                Text(
+                  '${clampedStep + 1}/$totalSteps',
                   style: CatchTextStyles.labelL(context, color: t.ink2),
                 ),
-              )
-            else
-              const Spacer(),
-            Text(
-              '${clampedStep + 1}/$totalSteps',
-              style: CatchTextStyles.labelL(context, color: t.ink2),
-            ),
-          ],
-        ),
-        const SizedBox(height: CatchSpacing.s2),
+            ],
+          ),
+          const SizedBox(height: CatchSpacing.s2),
+        ],
         Row(
           children: List.generate(
             totalSteps,

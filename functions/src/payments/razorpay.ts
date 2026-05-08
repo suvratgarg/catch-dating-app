@@ -35,10 +35,47 @@ export function verifyPaymentSignature({
   paymentId: string;
   signature: string;
 }): boolean {
+  return verifyPaymentSignatureWithSecret({
+    orderId,
+    paymentId,
+    signature,
+    secret: razorpayKeySecret.value(),
+  });
+}
+
+/**
+ * Verifies a Razorpay payment signature with an explicit secret.
+ *
+ * Exposed for focused tests so production verification can use a
+ * timing-safe comparison without reaching Firebase Secret Manager.
+ * @param {object} params Signature verification parameters.
+ * @param {string} params.orderId Razorpay order id.
+ * @param {string} params.paymentId Razorpay payment id.
+ * @param {string} params.signature Client-returned signature.
+ * @param {string} params.secret Razorpay key secret.
+ * @return {boolean} Whether the signature matches.
+ */
+export function verifyPaymentSignatureWithSecret({
+  orderId,
+  paymentId,
+  signature,
+  secret,
+}: {
+  orderId: string;
+  paymentId: string;
+  signature: string;
+  secret: string;
+}): boolean {
   const expectedSignature = crypto
-    .createHmac("sha256", razorpayKeySecret.value())
+    .createHmac("sha256", secret)
     .update(`${orderId}|${paymentId}`)
     .digest("hex");
 
-  return expectedSignature === signature;
+  if (!/^[a-f0-9]+$/i.test(signature)) {
+    return false;
+  }
+  const expected = Buffer.from(expectedSignature, "hex");
+  const actual = Buffer.from(signature, "hex");
+  return expected.length === actual.length &&
+    crypto.timingSafeEqual(expected, actual);
 }

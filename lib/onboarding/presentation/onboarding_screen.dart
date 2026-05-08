@@ -1,9 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
-import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
-import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
@@ -68,7 +65,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                                   .read(onboardingControllerProvider.notifier)
                                   .goToStep(previousStep),
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 8),
                     ],
                     Expanded(child: currentStep),
                   ],
@@ -98,52 +95,14 @@ class _OnboardingTopBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final progressStep = step.index - 1;
     final progressTotal = OnboardingStep.values.length - 1;
 
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(20, 12, 20, 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Row(
-            children: [
-              SizedBox.square(
-                dimension: 40,
-                child: onBack == null
-                    ? const SizedBox.shrink()
-                    : IconBtn(
-                        onTap: onBack,
-                        child: Tooltip(
-                          message: 'Back',
-                          child: Icon(
-                            Icons.arrow_back_ios_new_rounded,
-                            size: 18,
-                            color: t.ink,
-                          ),
-                        ),
-                      ),
-              ),
-              Expanded(
-                child: Text(
-                  step.appBarTitle,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.center,
-                  style: CatchTextStyles.titleM(context, color: t.ink),
-                ),
-              ),
-              const SizedBox.square(dimension: 40),
-            ],
-          ),
-          const SizedBox(height: 16),
-          CatchStepProgress(
-            currentStep: progressStep,
-            totalSteps: progressTotal,
-          ),
-        ],
-      ),
+    return CatchStepFlowHeader(
+      title: step.appBarTitle,
+      currentStep: progressStep,
+      totalSteps: progressTotal,
+      onBack: onBack,
     );
   }
 }

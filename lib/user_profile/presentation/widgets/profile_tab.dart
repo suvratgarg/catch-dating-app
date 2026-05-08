@@ -10,8 +10,8 @@ import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_edit_sheet.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_prompt_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -78,7 +78,7 @@ const profileTabBodyPadding = EdgeInsets.fromLTRB(
   CatchSpacing.s8,
 );
 
-class _ProfileTabContent extends ConsumerWidget {
+class _ProfileTabContent extends ConsumerStatefulWidget {
   const _ProfileTabContent({
     required this.user,
     required this.uploadState,
@@ -90,11 +90,32 @@ class _ProfileTabContent extends ConsumerWidget {
   final _ProfileTabContentBuilder builder;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_ProfileTabContent> createState() => _ProfileTabContentState();
+}
+
+class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
+  String? _expandedField;
+
+  bool _isExpanded(String fieldName) => _expandedField == fieldName;
+
+  void _toggleField(String fieldName) {
+    setState(() {
+      _expandedField = _expandedField == fieldName ? null : fieldName;
+    });
+  }
+
+  void _collapseField() {
+    if (_expandedField == null) return;
+    setState(() => _expandedField = null);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final user = widget.user;
+    final uploadState = widget.uploadState;
     final basics = [
       _textEntry(
         context: context,
-        ref: ref,
         icon: Icons.person_outlined,
         label: 'Display name',
         value: user.publicDisplayName,
@@ -121,7 +142,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _textEntry(
         context: context,
-        ref: ref,
         icon: Icons.phone_outlined,
         label: 'Phone',
         value: user.phoneNumber,
@@ -133,7 +153,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _textEntry(
         context: context,
-        ref: ref,
         icon: Icons.email_outlined,
         label: 'Email',
         value: user.email.isNotEmpty ? user.email : 'Email',
@@ -146,7 +165,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _textEntry(
         context: context,
-        ref: ref,
         icon: Icons.alternate_email_outlined,
         label: 'Instagram',
         value: user.instagramHandle?.isNotEmpty == true
@@ -168,10 +186,13 @@ class _ProfileTabContent extends ConsumerWidget {
         icon: Icons.height_outlined,
         label: 'Height',
         value: user.height != null ? '${user.height} cm' : 'Height',
-        onTap: () => showHeightEditSheet(
-          context: context,
-          ref: ref,
+        onTap: () => _toggleField('height'),
+        isExpanded: _isExpanded('height'),
+        editor: ProfileInlineHeightEditor(
+          key: const ValueKey('inline-height-editor'),
           currentValue: user.height,
+          onSaved: _collapseField,
+          onCancel: _collapseField,
         ),
         isAddAffordance: user.height == null,
       ),
@@ -179,7 +200,6 @@ class _ProfileTabContent extends ConsumerWidget {
     final background = [
       _textEntry(
         context: context,
-        ref: ref,
         icon: Icons.work_outline,
         label: 'Job title',
         value: user.occupation ?? 'Job title',
@@ -189,7 +209,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _textEntry(
         context: context,
-        ref: ref,
         icon: Icons.business_outlined,
         label: 'Company',
         value: user.company ?? 'Company',
@@ -199,7 +218,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _singleEnumEntry<EducationLevel>(
         context: context,
-        ref: ref,
         icon: Icons.school_outlined,
         label: 'Education',
         values: EducationLevel.values,
@@ -208,7 +226,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _singleEnumEntry<Religion>(
         context: context,
-        ref: ref,
         icon: Icons.volunteer_activism_outlined,
         label: 'Religion',
         values: Religion.values,
@@ -217,7 +234,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _multiEnumEntry<Language>(
         context: context,
-        ref: ref,
         icon: Icons.language_outlined,
         label: 'Languages',
         values: Language.values,
@@ -229,7 +245,6 @@ class _ProfileTabContent extends ConsumerWidget {
     final intentions = [
       _singleEnumEntry<RelationshipGoal>(
         context: context,
-        ref: ref,
         icon: Icons.favorite_outline,
         label: 'Looking for',
         values: RelationshipGoal.values,
@@ -240,7 +255,6 @@ class _ProfileTabContent extends ConsumerWidget {
     final lifestyle = [
       _singleEnumEntry<DrinkingHabit>(
         context: context,
-        ref: ref,
         icon: Icons.local_bar_outlined,
         label: 'Drinking',
         values: DrinkingHabit.values,
@@ -249,7 +263,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _singleEnumEntry<SmokingHabit>(
         context: context,
-        ref: ref,
         icon: Icons.smoke_free_outlined,
         label: 'Smoking',
         values: SmokingHabit.values,
@@ -258,7 +271,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _singleEnumEntry<WorkoutFrequency>(
         context: context,
-        ref: ref,
         icon: Icons.fitness_center_outlined,
         label: 'Workout',
         values: WorkoutFrequency.values,
@@ -267,7 +279,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _singleEnumEntry<DietaryPreference>(
         context: context,
-        ref: ref,
         icon: Icons.restaurant_outlined,
         label: 'Diet',
         values: DietaryPreference.values,
@@ -276,7 +287,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _singleEnumEntry<ChildrenStatus>(
         context: context,
-        ref: ref,
         icon: Icons.child_care_outlined,
         label: 'Children',
         values: ChildrenStatus.values,
@@ -287,7 +297,6 @@ class _ProfileTabContent extends ConsumerWidget {
     final location = [
       _singleEnumEntry<IndianCity>(
         context: context,
-        ref: ref,
         icon: Icons.location_on_outlined,
         label: 'City',
         values: IndianCity.values,
@@ -300,16 +309,27 @@ class _ProfileTabContent extends ConsumerWidget {
         icon: Icons.speed_outlined,
         label: 'Pace range',
         value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
-        onTap: () => showPaceEditSheet(
-          context: context,
-          ref: ref,
+        onTap: () => _toggleField('paceRange'),
+        isExpanded: _isExpanded('paceRange'),
+        editor: ProfileInlineRangeEditor(
+          key: const ValueKey('inline-pace-range-editor'),
+          title: 'Pace range',
           currentMin: user.paceMinSecsPerKm,
           currentMax: user.paceMaxSecsPerKm,
+          sliderMin: 240,
+          sliderMax: 540,
+          divisions: 20,
+          displayText: (r) =>
+              '${formatPace(r.start.round())} - ${formatPace(r.end.round())} /km',
+          labelText: (v) => formatPace(v.round()),
+          minFieldName: 'paceMinSecsPerKm',
+          maxFieldName: 'paceMaxSecsPerKm',
+          onSaved: _collapseField,
+          onCancel: _collapseField,
         ),
       ),
       _multiEnumEntry<PreferredDistance>(
         context: context,
-        ref: ref,
         icon: Icons.straighten_outlined,
         label: 'Preferred distances',
         values: PreferredDistance.values,
@@ -319,7 +339,6 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
       _multiEnumEntry<RunReason>(
         context: context,
-        ref: ref,
         icon: Icons.directions_run_outlined,
         label: 'Why I run',
         values: RunReason.values,
@@ -329,7 +348,7 @@ class _ProfileTabContent extends ConsumerWidget {
       ),
     ];
 
-    return builder(context, [
+    return widget.builder(context, [
       PhotoGrid(
         photoUrls: user.photoUrls,
         loadingIndices: uploadState.loadingIndices,
@@ -351,14 +370,20 @@ class _ProfileTabContent extends ConsumerWidget {
             ? user.bio
             : 'Add a bio to tell runners about yourself',
         isPrompt: user.bio.isEmpty,
-        onTap: () => showTextEditSheet(
-          context: context,
-          ref: ref,
-          title: 'Bio',
+        onTap: () => _toggleField('bio'),
+      ),
+      if (_isExpanded('bio')) ...[
+        gapH12,
+        ProfileInlineTextEditor(
+          key: const ValueKey('inline-bio-editor'),
+          label: 'Bio',
           currentValue: user.bio,
           fieldName: 'bio',
+          maxLines: 4,
+          onSaved: _collapseField,
+          onCancel: _collapseField,
         ),
-      ),
+      ],
       gapH20,
       SectionHeader(title: 'About'),
       ProfileInfoSection(entries: basics, grouped: true),
@@ -383,7 +408,6 @@ class _ProfileTabContent extends ConsumerWidget {
 
   ProfileInfoEntry _textEntry({
     required BuildContext context,
-    required WidgetRef ref,
     required IconData icon,
     required String label,
     required String value,
@@ -398,14 +422,16 @@ class _ProfileTabContent extends ConsumerWidget {
     FormFieldValidator<String>? validator,
     Object? Function(String value)? toFieldValue,
   }) {
+    final editorTitle = title ?? label;
     return ProfileInfoEntry(
       icon: icon,
       label: label,
       value: value,
-      onTap: () => showTextEditSheet(
-        context: context,
-        ref: ref,
-        title: title ?? label,
+      onTap: () => _toggleField(fieldName),
+      isExpanded: _isExpanded(fieldName),
+      editor: ProfileInlineTextEditor(
+        key: ValueKey('inline-$fieldName-editor'),
+        label: editorTitle,
         currentValue: currentValue ?? value,
         currentFieldValue: currentFieldValue ?? currentValue ?? value,
         fieldName: fieldName,
@@ -414,6 +440,8 @@ class _ProfileTabContent extends ConsumerWidget {
         autofillHints: autofillHints,
         validator: validator,
         toFieldValue: toFieldValue,
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
       isAddAffordance: isAddAffordance,
     );
@@ -421,7 +449,6 @@ class _ProfileTabContent extends ConsumerWidget {
 
   ProfileInfoEntry _singleEnumEntry<T extends Labelled>({
     required BuildContext context,
-    required WidgetRef ref,
     required IconData icon,
     required String label,
     required List<T> values,
@@ -434,13 +461,16 @@ class _ProfileTabContent extends ConsumerWidget {
       icon: icon,
       label: label,
       value: value?.label ?? placeholder ?? label,
-      onTap: () => showSingleEnumSheet<T>(
-        context: context,
-        ref: ref,
-        title: title ?? label,
+      onTap: () => _toggleField(fieldName),
+      isExpanded: _isExpanded(fieldName),
+      editor: ProfileInlineSingleChoiceEditor<T>(
+        key: ValueKey('inline-$fieldName-editor'),
+        label: title ?? label,
         values: values,
         currentValue: value,
         fieldName: fieldName,
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
       isAddAffordance: value == null,
     );
@@ -448,7 +478,6 @@ class _ProfileTabContent extends ConsumerWidget {
 
   ProfileInfoEntry _multiEnumEntry<T extends Labelled>({
     required BuildContext context,
-    required WidgetRef ref,
     required IconData icon,
     required String label,
     required List<T> values,
@@ -463,13 +492,16 @@ class _ProfileTabContent extends ConsumerWidget {
       icon: icon,
       label: label,
       value: isEmpty ? placeholder : selected.map((v) => v.label).join(', '),
-      onTap: () => showMultiEnumSheet<T>(
-        context: context,
-        ref: ref,
-        title: title ?? label,
+      onTap: () => _toggleField(fieldName),
+      isExpanded: _isExpanded(fieldName),
+      editor: ProfileInlineMultiChoiceEditor<T>(
+        key: ValueKey('inline-$fieldName-editor'),
+        label: title ?? label,
         values: values,
         currentValues: selected,
         fieldName: fieldName,
+        onSaved: _collapseField,
+        onCancel: _collapseField,
       ),
       isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
     );

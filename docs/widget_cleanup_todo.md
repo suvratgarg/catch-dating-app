@@ -1,7 +1,7 @@
 ---
 doc_id: widget_cleanup
-version: 2.3.26
-updated: 2026-05-07
+version: 2.3.31
+updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -30,6 +30,80 @@ For future passes:
    old finding points there.
 
 ## Rule Changelog
+
+### 2.3.31
+
+- `ChipField` empty-selection behavior is now tied to optionality. Optional
+  single-choice fields may clear by tapping the selected chip again when
+  `allowEmptySingleSelection` is enabled; required single-choice fields keep the
+  selected chip selected. Required multi-choice fields also keep the final
+  selected chip from being removed.
+- This is another reason Profile inline chip editors should not have a separate
+  `Clear` action: clearability belongs to the field contract, not a universal
+  visual affordance.
+
+### 2.3.30
+
+- Profile inline single-choice chip editors now follow the same commit model as
+  text, range, height, and multi-choice editors: tapping chips changes local
+  draft state, and `Cancel`/`Done` controls commit or discard the change.
+- Removed the separate `Clear` action from Profile inline chip editors. Optional
+  single-choice fields clear by tapping the selected chip again, then pressing
+  `Done`.
+- Added scanner coverage for Profile inline chip editors that reintroduce
+  separate `Clear` actions. Keep this at zero.
+
+### 2.3.29
+
+- Inline profile chip editors should not repeat the expanded tile label. The
+  tile row already names the field, so `ChipField` now has a defaulted
+  `showLabel` option and Profile inline single-/multi-choice editors set it to
+  `false`.
+- Added scanner coverage for Profile inline chip editors that forget
+  `showLabel: false`. Keep this at zero when continuing the inline-edit
+  migration.
+
+### 2.3.28
+
+- Migrated Create/Edit Run Club to the shared multi-step flow pattern. Future
+  app forms should prefer `CatchStepFlowHeader`, step-local finite form bodies,
+  and `StepperFooter` over one-off long forms when a screen has several
+  distinct input groups.
+- Added create-only run-club local drafts. Keep draft persistence in a
+  controller/repository seam; widgets may own `TextEditingController`s and
+  restoration mechanics, but repository writes and draft pruning belong outside
+  presentation code.
+- Added the one-hosted-club product rule. UI affordances should use
+  `canCreateRunClubProvider`, while the callable remains the source of truth
+  through the server-owned `runClubHostClaims/{uid}` document. Do not rely on
+  hiding buttons as the only enforcement.
+- Form validation lesson: do not put finite required form fields in lazily
+  mounted scroll children if the form validates the whole step. Use a
+  `SingleChildScrollView` with a `Column` for short step pages so validation
+  covers fields that are currently offscreen.
+- Scanner follow-up from this pass: draft save snackbars in Create Run and
+  Create Run Club still use local `SnackBar(content: Text(...))` copy. When the
+  error/snackbar queue resumes, route draft save feedback through the branded
+  snackbar helper instead of one-off `Text` content.
+
+### 2.3.27
+
+- Started the Profile inline-edit migration. Normal Edit Profile field changes
+  now expand inside the profile list instead of opening bottom sheets; the
+  removed bottom-sheet surface should not be reintroduced for ordinary text,
+  single-choice, multi-choice, height, or range edits.
+- Added `ProfileInlineTextEditor`, `ProfileInlineSingleChoiceEditor`,
+  `ProfileInlineMultiChoiceEditor`, `ProfileInlineHeightEditor`, and
+  `ProfileInlineRangeEditor`. These reuse existing primitives
+  (`CatchTextField`, `ChipField`, `CatchNumberStepper`, `CatchRangeSlider`,
+  `CatchButton`, and `CatchTextButton`) and keep saves on
+  `ProfileEditController.saveFields`.
+- Expanded `tool/widget_cleanup_scan.sh` with a Profile bottom-sheet editor
+  scanner. Future profile-edit work should keep this at zero and add a scanner
+  for any new repeated UI failure class exposed by screenshots or tests.
+- Tightened `CatchChip` so long chip labels ellipsize under narrow inline editor
+  constraints instead of overflowing. This primitive-level fix should prevent
+  row-specific chip patches.
 
 ### 2.3.26
 

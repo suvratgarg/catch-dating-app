@@ -36,7 +36,7 @@ test("reportUserHandler writes a bounded open report", async () => {
         reasonCode: "abusive_messages",
         contextId: "match-1",
         notes: "x".repeat(2000),
-      },
+      } as never,
     } as never,
     createReportingDeps(writes)
   );
@@ -54,6 +54,37 @@ test("reportUserHandler writes a bounded open report", async () => {
     notes: "x".repeat(2000),
   });
 });
+
+test(
+  "reportUserHandler trims optional fields and omits blank notes",
+  async () => {
+    const writes: unknown[] = [];
+
+    await reportUserHandler(
+      ({
+        auth: {uid: "reporter-1"},
+        data: {
+          targetUserId: " target-1 ",
+          source: " chat ",
+          reasonCode: " abusive_messages ",
+          contextId: " match-1 ",
+          notes: "   ",
+        },
+      } as never),
+      createReportingDeps(writes)
+    );
+
+    assert.deepEqual(writes[0], {
+      reporterUserId: "reporter-1",
+      targetUserId: "target-1",
+      createdAt: "SERVER_TIMESTAMP",
+      source: "chat",
+      status: "open",
+      reasonCode: "abusive_messages",
+      contextId: "match-1",
+    });
+  }
+);
 
 function createReportingDeps(writes: unknown[] = []) {
   return {

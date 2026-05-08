@@ -517,44 +517,43 @@ void main() {
     expect(find.textContaining('18 – 60+'), findsNothing);
   });
 
-  testWidgets(
-    'Pace range sheet opens via RangeSlider and shows formatted pace',
-    (tester) async {
-      final user = buildUser(name: 'Suvrat Garg');
-      await _pumpProfileTab(tester, user);
+  testWidgets('Pace range expands inline with shared RangeSlider', (
+    tester,
+  ) async {
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpProfileTab(tester, user);
 
-      // Scroll to and tap the pace range row.
-      await _dragProfileTabUntilVisible(tester, find.text('Pace range'));
-      await tester.tap(find.text('Pace range'));
-      await _pumpProfileSheet(tester);
+    // Scroll to and tap the pace range row.
+    await _dragProfileTabUntilVisible(tester, find.text('Pace range'));
+    await tester.tap(find.text('Pace range'));
+    await _pumpProfileSheet(tester);
 
-      // Bottom sheet is open with the shared range slider and Done button.
-      expect(find.byType(CatchRangeSlider), findsOneWidget);
-      expect(find.byType(RangeSlider), findsOneWidget);
-      expect(
-        tester
-            .widget<SliderTheme>(
-              find.ancestor(
-                of: find.byType(RangeSlider),
-                matching: find.byType(SliderTheme),
-              ),
-            )
-            .data
-            .inactiveTickMarkColor,
-        Colors.transparent,
-      );
-      expect(find.text('Done'), findsOneWidget);
+    // Inline editor is open with the shared range slider and Done button.
+    expect(find.byType(CatchRangeSlider), findsOneWidget);
+    expect(find.byType(RangeSlider), findsOneWidget);
+    expect(
+      tester
+          .widget<SliderTheme>(
+            find.ancestor(
+              of: find.byType(RangeSlider),
+              matching: find.byType(SliderTheme),
+            ),
+          )
+          .data
+          .inactiveTickMarkColor,
+      Colors.transparent,
+    );
+    expect(find.text('Done'), findsOneWidget);
 
-      // Dismiss with Done button.
-      await tester.tap(find.text('Done'));
-      await _pumpProfileSheet(tester);
+    // Dismiss with Done button.
+    await tester.tap(find.text('Done'));
+    await _pumpProfileSheet(tester);
 
-      // Sheet closed, no exceptions.
-      expect(tester.takeException(), isNull);
-    },
-  );
+    // Sheet closed, no exceptions.
+    expect(tester.takeException(), isNull);
+  });
 
-  testWidgets('text edit sheet owns its controller through dismissal', (
+  testWidgets('inline text edit owns its controller through dismissal', (
     tester,
   ) async {
     final user = buildUser(name: 'Suvrat Garg');
@@ -571,7 +570,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('email edit sheet uses the email keyboard', (tester) async {
+  testWidgets('inline email edit uses the email keyboard', (tester) async {
     final user = buildUser(name: 'Suvrat Garg', email: 'runner@example.com');
     await _pumpProfileTab(tester, user);
 
@@ -587,7 +586,7 @@ void main() {
     expect(field.autofillHints, contains(AutofillHints.email));
   });
 
-  testWidgets('height edit sheet uses bounded plus-minus controls', (
+  testWidgets('height inline edit uses bounded plus-minus controls', (
     tester,
   ) async {
     final user = buildUser(name: 'Suvrat Garg').copyWith(height: 172);
@@ -642,7 +641,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('text edit failure keeps the sheet open with an error', (
+  testWidgets('text edit failure keeps the inline editor open with an error', (
     tester,
   ) async {
     final repository = FakeProfileEditUserProfileRepository()
@@ -687,28 +686,31 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('optional single-choice sheets open with no selected chip', (
-    tester,
-  ) async {
-    final repository = FakeProfileEditUserProfileRepository();
-    final user = buildUser(name: 'Suvrat Garg');
-    await _pumpEditableProfileTab(tester, user, repository);
+  testWidgets(
+    'optional single-choice inline editors open with no selected chip',
+    (tester) async {
+      final repository = FakeProfileEditUserProfileRepository();
+      final user = buildUser(name: 'Suvrat Garg');
+      await _pumpEditableProfileTab(tester, user, repository);
 
-    for (final field in _nullableSingleChoiceFields) {
-      final tile = _profileInfoTile(field.tileLabel);
-      await _dragProfileTabUntilVisible(tester, tile);
-      await tester.tap(tile);
-      await _pumpProfileSheet(tester);
+      for (final field in _nullableSingleChoiceFields) {
+        final tile = _profileInfoTile(field.tileLabel);
+        await _dragProfileTabUntilVisible(tester, tile);
+        await tester.tap(tile);
+        await _pumpProfileSheet(tester);
 
-      final firstChip = tester.widget<CatchChip>(_catchChip(field.firstLabel));
-      expect(firstChip.active, isFalse, reason: field.tileLabel);
+        final firstChip = tester.widget<CatchChip>(
+          _catchChip(field.firstLabel),
+        );
+        expect(firstChip.active, isFalse, reason: field.tileLabel);
 
-      Navigator.of(tester.element(_catchChip(field.firstLabel))).pop();
-      await _pumpProfileSheet(tester);
-    }
-  });
+        await tester.tap(tile);
+        await _pumpProfileSheet(tester);
+      }
+    },
+  );
 
-  testWidgets('nullable drinking sheet does not preselect Never', (
+  testWidgets('nullable drinking inline editor does not preselect Never', (
     tester,
   ) async {
     final repository = FakeProfileEditUserProfileRepository();
@@ -726,9 +728,23 @@ void main() {
     expect(neverChip.active, isFalse);
   });
 
-  testWidgets('first optional single-choice chip saves on first selection', (
+  testWidgets('inline chip editors do not repeat the field label', (
     tester,
   ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final childrenTile = _profileInfoTile('Children');
+    await _dragProfileTabUntilVisible(tester, childrenTile);
+    await tester.tap(childrenTile);
+    await _pumpProfileSheet(tester);
+
+    expect(find.text('Children'), findsOneWidget);
+    expect(_catchChip(ChildrenStatus.dontHave.label), findsOneWidget);
+  });
+
+  testWidgets('single-choice chip saves only after Done', (tester) async {
     final repository = FakeProfileEditUserProfileRepository();
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
@@ -740,10 +756,52 @@ void main() {
     await tester.tap(_catchChip(EducationLevel.values.first.label));
     await _pumpProfileSheet(tester);
 
+    expect(repository.updatedFields, isNull);
+    expect(
+      tester
+          .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
+          .active,
+      isTrue,
+    );
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _pumpProfileSheet(tester);
+
     expect(repository.updatedFields, {
       'education': EducationLevel.values.first.name,
     });
     expect(_catchChip(EducationLevel.values.first.label), findsNothing);
+  });
+
+  testWidgets('single-choice chip can be deselected and saved as null', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(
+      name: 'Suvrat Garg',
+    ).copyWith(education: EducationLevel.highSchool);
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final educationTile = _profileInfoTile('Education');
+    await _dragProfileTabUntilVisible(tester, educationTile);
+    await tester.tap(educationTile);
+    await _pumpProfileSheet(tester);
+
+    await tester.tap(_catchChip(EducationLevel.highSchool.label));
+    await _pumpProfileSheet(tester);
+
+    expect(
+      tester
+          .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
+          .active,
+      isFalse,
+    );
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _pumpProfileSheet(tester);
+
+    expect(repository.updatedFields, {'education': null});
+    expect(_catchChip(EducationLevel.highSchool.label), findsNothing);
   });
 
   testWidgets('single-choice save shows pending state before closing', (
@@ -759,13 +817,20 @@ void main() {
     await tester.tap(educationTile);
     await _pumpProfileSheet(tester);
     await tester.tap(_catchChip(EducationLevel.values.first.label));
+    await _pumpProfileSheet(tester);
+
+    expect(repository.updatedFields, isNull);
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
     await tester.pump();
 
     expect(repository.updatedFields, {
       'education': EducationLevel.values.first.name,
     });
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.text('Saving Education...'), findsOneWidget);
+    expect(
+      tester.widget<CatchButton>(find.byType(CatchButton)).isLoading,
+      isTrue,
+    );
     expect(
       tester
           .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
@@ -780,7 +845,7 @@ void main() {
   });
 
   testWidgets(
-    'failed single-choice save clears pending selection and keeps sheet open',
+    'failed single-choice save clears pending selection and keeps editor open',
     (tester) async {
       final repository = FakeProfileEditUserProfileRepository()
         ..updateError = StateError('Save failed');
@@ -792,6 +857,7 @@ void main() {
       await tester.tap(educationTile);
       await _pumpProfileSheet(tester);
       await tester.tap(_catchChip(EducationLevel.values.first.label));
+      await tester.tap(find.widgetWithText(CatchButton, 'Done'));
       await _pumpProfileSheet(tester);
 
       expect(repository.updatedFields, {
@@ -803,13 +869,13 @@ void main() {
         tester
             .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
             .active,
-        isFalse,
+        isTrue,
       );
     },
   );
 
   testWidgets(
-    'failed single-choice sheets do not leak selection to another field',
+    'failed single-choice editors do not leak selection to another field',
     (tester) async {
       final repository = FakeProfileEditUserProfileRepository()
         ..updateError = StateError('Save failed');
@@ -821,18 +887,17 @@ void main() {
       await tester.tap(educationTile);
       await _pumpProfileSheet(tester);
       await tester.tap(_catchChip(EducationLevel.values.first.label));
+      await tester.tap(find.widgetWithText(CatchButton, 'Done'));
       await _pumpProfileSheet(tester);
 
       expect(
         tester
             .widget<CatchChip>(_catchChip(EducationLevel.values.first.label))
             .active,
-        isFalse,
+        isTrue,
       );
 
-      Navigator.of(
-        tester.element(_catchChip(EducationLevel.values.first.label)),
-      ).pop();
+      await tester.tap(educationTile);
       await _pumpProfileSheet(tester);
 
       final drinkingTile = _profileInfoTile('Drinking');

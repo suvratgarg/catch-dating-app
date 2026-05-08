@@ -136,6 +136,7 @@ export async function deleteRunClubHandler(
   await deps.checkRateLimit?.(db, hostUserId, "deleteRunClub");
 
   const clubRef = db.collection("runClubs").doc(data.clubId);
+  const hostClaimRef = db.collection("runClubHostClaims").doc(hostUserId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
 
   await db.runTransaction(async (tx) => {
@@ -182,6 +183,7 @@ export async function deleteRunClubHandler(
     }
 
     membershipsSnap.docs.forEach((doc) => tx.delete(doc.ref));
+    tx.delete(hostClaimRef);
     tx.delete(clubRef);
   });
 

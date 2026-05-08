@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_contract_tracker
-version: 2.2.15
-updated: 2026-05-07
+version: 2.2.17
+updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -106,6 +106,62 @@ Firestore rules drift, callable validation drift, live data migrations, or
 operation ownership drift.
 
 ## Recent Contract Notes
+
+### 2026-05-08: Functions Queue Hardening Slice
+
+- Added a testable `onSwipeCreatedHandler` seam and focused tests for
+  reciprocal match creation plus blocked-match suppression. The Firestore
+  trigger remains a thin adapter over the handler.
+- Tightened the moderation text filter so single-word block/flag terms match
+  whole words instead of arbitrary substrings. This avoids false positives such
+  as blocking benign references to "Pakistan" while preserving explicit listed
+  term and phrase matching.
+- Changed Razorpay signature verification to use `crypto.timingSafeEqual`
+  through `verifyPaymentSignatureWithSecret`, with tests for valid and malformed
+  signatures.
+- Added a testable `signUpForFreeRunHandler` seam. The callable now trims and
+  rejects blank `runId` values, rate-limits before reading run docs, verifies
+  the run is free, and delegates booking to the shared sign-up helper.
+- Report writes now trim bounded optional fields and omit blank optional notes
+  instead of storing raw whitespace.
+- Added a testable `syncRunClubReviewStatsHandler` seam. The review aggregate
+  trigger now remains a thin adapter while focused tests cover rating/count
+  recompute, last-review deletion reset, and review moves between clubs.
+- Fixed the Functions test entrypoint to include compiled review tests through
+  `lib/reviews/*.test.js`, so review trigger coverage is part of the normal
+  `npm --prefix functions test` command.
+- Added aggregate repair tooling for post-relationship-migration data:
+  - `tool/recompute_run_club_member_counts.mjs` recomputes
+    `runClubs/{clubId}.memberCount` from active
+    `runClubMemberships/{clubId_uid}` edge documents.
+  - `tool/recompute_run_aggregate_counts.mjs` recomputes
+    `runs/{runId}.bookedCount`, `checkedInCount`, `waitlistedCount`, and
+    `genderCounts` from `runParticipations/{runId_uid}` edge documents.
+  - `tool/validate_firestore_data.mjs` now reports member/run aggregate drift
+    by comparing parent projections to the current edge-document source of
+    truth.
+- Dev data repair completed after the edge-document migration:
+  - `node tool/recompute_run_club_member_counts.mjs --env dev --json` found 2
+    stale run-club count projections and 0 membership edges.
+  - `node tool/recompute_run_club_member_counts.mjs --env dev --apply`
+    reset both stale `memberCount` projections to 0.
+  - `node tool/recompute_run_aggregate_counts.mjs --env dev --json` found 4
+    stale run aggregate projections and 0 participation edges.
+  - `node tool/recompute_run_aggregate_counts.mjs --env dev --apply`
+    reset those run count projections and `genderCounts` from the edge source.
+  - `node tool/validate_firestore_data.mjs --env dev --json` then scanned 10
+    docs with 0 errors and 0 warnings.
+- Verification: `npm --prefix functions run lint` and
+  `npm --prefix functions test` passed, focused review tests passed through
+  `node --test functions/lib/reviews/*.test.js`, aggregate repair tool tests
+  passed through `node --test tool/recompute_run_club_member_counts.test.mjs
+  tool/recompute_run_aggregate_counts.test.mjs`, and dev live-data validation
+  passed with 0 errors / 0 warnings.
+- Next Functions queue: add handler seams and focused tests for remaining
+  trigger/direct callable files that are not yet covered by the normal suite,
+  starting with `syncPublicProfile`, `moderateChatMessage`,
+  `moderatePhotoOnUpload`, `joinRunWaitlist` / `leaveRunWaitlist`,
+  `cancelRunSignUp`, `markRunAttendance`, and `selfCheckInAttendance`.
 
 ### 2026-05-07: Relationship Array Retirement
 

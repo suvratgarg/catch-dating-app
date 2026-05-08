@@ -99,9 +99,10 @@ export interface ModerationResult {
 /**
  * Checks text against block and flag lists.
  *
- * Matching is case-insensitive and detects substrings. A single block-list
- * match causes `action: "block"`. Flag-list matches only cause `action:
- * "flag"` when no block-list term matched.
+ * Matching is case-insensitive. Single-word terms match whole words, while
+ * multi-word terms match normalized phrases. A single block-list match causes
+ * `action: "block"`. Flag-list matches only cause `action: "flag"` when no
+ * block-list term matched.
  *
  * @param {string|null|undefined} text Input text.
  * @return {ModerationResult} Recommended action and matched terms.
@@ -113,12 +114,12 @@ export function moderateText(
     return {action: "allow", matches: []};
   }
 
-  const lower = text.toLowerCase();
+  const lower = normalizeModerationText(text);
   const matches: string[] = [];
 
   // Check block terms first — these are always a block action.
   for (const term of BLOCK_TERMS) {
-    if (lower.includes(term)) {
+    if (matchesTerm(lower, term)) {
       matches.push(term);
     }
   }
@@ -129,7 +130,7 @@ export function moderateText(
 
   // Check flag terms — these trigger human review.
   for (const term of FLAG_TERMS) {
-    if (lower.includes(term)) {
+    if (matchesTerm(lower, term)) {
       matches.push(term);
     }
   }
@@ -151,4 +152,36 @@ export function isBlocked(
   text: string | undefined | null
 ): boolean {
   return moderateText(text).action === "block";
+}
+
+/**
+ * Normalizes text before matching moderation terms.
+ * @param {string} text Input text.
+ * @return {string} Lowercased text with compact whitespace.
+ */
+function normalizeModerationText(text: string): string {
+  return text.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+/**
+ * Checks whether normalized text contains a moderation term.
+ * @param {string} text Normalized user text.
+ * @param {string} term Moderation term.
+ * @return {boolean} True when the term matches.
+ */
+function matchesTerm(text: string, term: string): boolean {
+  const normalizedTerm = normalizeModerationText(term);
+  if (normalizedTerm.includes(" ")) {
+    return text.includes(normalizedTerm);
+  }
+  return new RegExp(`\\b${escapeRegExp(normalizedTerm)}\\b`, "i").test(text);
+}
+
+/**
+ * Escapes a string before embedding it in a regular expression.
+ * @param {string} value Raw string value.
+ * @return {string} Regex-safe string.
+ */
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }

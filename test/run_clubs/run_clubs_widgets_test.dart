@@ -47,6 +47,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../test_pump_helpers.dart';
 import 'run_clubs_test_helpers.dart';
@@ -77,6 +78,7 @@ Future<void> _pumpRunClubsSlivers(
 ) async {
   await tester.pumpWidget(
     ProviderScope(
+      overrides: [uidProvider.overrideWith((ref) => Stream.value(null))],
       child: MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(body: CustomScrollView(slivers: slivers)),
@@ -192,6 +194,7 @@ void main() {
           overrides: [
             cityListProvider.overrideWith((ref) async => _testCities),
             deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
+            uidProvider.overrideWith((ref) => Stream.value(null)),
           ],
         );
         addTearDown(container.dispose);
@@ -275,6 +278,12 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('host-1')),
+            watchRunClubsHostedByProvider(
+              'host-1',
+            ).overrideWith((ref) => Stream.value(const <RunClub>[])),
+          ],
           child: MaterialApp.router(
             theme: AppTheme.light,
             routerConfig: router,
@@ -987,6 +996,7 @@ void main() {
               ),
             ),
           ),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
         ],
       );
       addTearDown(container.dispose);
@@ -1199,6 +1209,7 @@ void main() {
     testWidgets('CreateRunClubScreen picks and previews a cover image', (
       tester,
     ) async {
+      SharedPreferences.setMockInitialValues({});
       const transparentPixel =
           'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIHWP4////fwAJ+wP9KobjigAAAABJRU5ErkJggg==';
       final fakeImageUploadRepository = FakeImageUploadRepository(
@@ -1233,6 +1244,7 @@ void main() {
     testWidgets('CreateRunClubScreen shows mutation errors inline', (
       tester,
     ) async {
+      SharedPreferences.setMockInitialValues({});
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
@@ -1260,6 +1272,7 @@ void main() {
     testWidgets('CreateRunClubScreen pre-fills fields in edit mode', (
       tester,
     ) async {
+      SharedPreferences.setMockInitialValues({});
       final club = buildRunClub(
         name: 'Morning Miles',
         area: 'Palasia',
@@ -1278,23 +1291,24 @@ void main() {
       await _pumpRunClubUi(tester);
 
       expect(find.text('Edit run club'), findsOneWidget);
-      expect(find.text('Update club'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Morning Miles'), findsOneWidget);
+      expect(find.widgetWithText(TextField, 'Palasia'), findsOneWidget);
+      expect(find.text('Indore'), findsOneWidget);
+
+      await tester.tap(find.text('Next'));
+      await _pumpRunClubUi(tester);
+
       expect(find.text('Save changes'), findsOneWidget);
       expect(
-        find.widgetWithText(CatchTextField, 'Morning Miles'),
+        find.widgetWithText(TextField, 'Indore morning loops.'),
         findsOneWidget,
       );
-      expect(find.widgetWithText(CatchTextField, 'Palasia'), findsOneWidget);
-      expect(
-        find.widgetWithText(CatchTextField, 'Indore morning loops.'),
-        findsOneWidget,
-      );
-      expect(find.text('Indore'), findsOneWidget);
     });
 
     testWidgets(
       'CreateRunClubScreen validates and pops after a successful submit',
       (tester) async {
+        SharedPreferences.setMockInitialValues({});
         final fakeRepository = FakeRunClubsRepository();
         final fakeImageUploadRepository = FakeImageUploadRepository(
           pickedImage: XFile('/tmp/club-cover.jpg'),
@@ -1352,14 +1366,12 @@ void main() {
         await tester.tap(find.text('Open create screen'));
         await _pumpRunClubUi(tester);
 
-        await tester.ensureVisible(find.text('Create club'));
-        await tester.tap(find.text('Create club'));
+        await tester.tap(find.text('Next'));
         await _pumpRunClubUi(tester);
 
         expect(find.text('Please enter a club name'), findsOneWidget);
         expect(find.text('Please select a city'), findsOneWidget);
         expect(find.text('Please enter an area'), findsOneWidget);
-        expect(find.text('Please add a description'), findsOneWidget);
 
         await tester.enterText(
           find.widgetWithText(CatchTextField, 'Club name'),
@@ -1368,10 +1380,6 @@ void main() {
         await tester.enterText(
           find.widgetWithText(CatchTextField, 'Area / neighbourhood'),
           'Bandra',
-        );
-        await tester.enterText(
-          find.widgetWithText(CatchTextField, 'Description'),
-          'Easy social club',
         );
 
         tester.testTextInput.hide();
@@ -1383,7 +1391,21 @@ void main() {
         await tester.tap(find.text('Mumbai').hitTestable());
         await _pumpRunClubUi(tester);
 
-        await tester.ensureVisible(find.text('Create club'));
+        await tester.tap(find.text('Next'));
+        await _pumpRunClubUi(tester);
+
+        await tester.tap(find.text('Create club'));
+        await _pumpRunClubUi(tester);
+
+        expect(find.text('Please add a description'), findsOneWidget);
+
+        await tester.enterText(
+          find.widgetWithText(CatchTextField, 'Description'),
+          'Easy social club',
+        );
+        tester.testTextInput.hide();
+        await tester.pump();
+
         await tester.tap(find.text('Create club'));
         await _pumpRunClubUi(tester);
 

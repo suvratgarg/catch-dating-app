@@ -35,6 +35,8 @@ class FakeFirestore {
         this,
         `${collectionPath}/${docId}`
       ),
+      where: (field: string, op: string, value: unknown) =>
+        new FakeQuery(this, collectionPath, field, op, value),
     };
   }
 
@@ -54,6 +56,53 @@ class FakeFirestore {
 
   set(path: string, data: FakeData) {
     this.docs[path] = data;
+  }
+
+  query(
+    collectionPath: string,
+    field: string,
+    op: string,
+    value: unknown,
+    limitCount: number
+  ): FakeData[] {
+    if (op !== "==") {
+      throw new Error(`Unsupported fake query op: ${op}`);
+    }
+    return Object.entries(this.docs)
+      .filter(([path]) => path.startsWith(`${collectionPath}/`))
+      .map(([, data]) => data)
+      .filter((data): data is FakeData => data !== undefined)
+      .filter((data) => data[field] === value)
+      .slice(0, limitCount)
+      .map((data) => ({...data}));
+  }
+}
+
+class FakeQuery {
+  private limitCount = Number.MAX_SAFE_INTEGER;
+
+  constructor(
+    private readonly firestore: FakeFirestore,
+    private readonly collectionPath: string,
+    private readonly field: string,
+    private readonly op: string,
+    private readonly value: unknown
+  ) {}
+
+  limit(count: number) {
+    this.limitCount = count;
+    return this;
+  }
+
+  async get(): Promise<{empty: boolean}> {
+    const docs = this.firestore.query(
+      this.collectionPath,
+      this.field,
+      this.op,
+      this.value,
+      this.limitCount
+    );
+    return {empty: docs.length === 0};
   }
 }
 
@@ -229,6 +278,11 @@ test("createRunClubHandler creates a club and host membership edge",
         status: "active",
       }
     );
+    assert.deepEqual(h.firestore.get("runClubHostClaims/host-1"), {
+      uid: "host-1",
+      clubId: "club-1",
+      createdAt: {kind: "serverTimestamp"},
+    });
   }
 );
 
@@ -285,3 +339,32 @@ test("createRunClubHandler rejects unsafe creation states", async () => {
     (error) => assertHttpsCode(error, "failed-precondition")
   );
 });
+
+test("createRunClubHandler rejects hosts that already own a club", async () => {
+  const h = harness({
+    "users/host-1": profile(),
+    "runClubs/existing-club": {
+      ...payload({clubId: undefined}),
+      hostUserId: "host-1",
+    },
+  });
+
+  await assert.rejects(
+    () => createRunClubHandler(request("host-1", payload()), h.deps),
+    (error) => assertHttpsCode(error, "failed-precondition")
+  );
+});
+
+test("createRunClubHandler rejects hosts with an existing host claim",
+  async () => {
+    const h = harness({
+      "users/host-1": profile(),
+      "runClubHostClaims/host-1": {uid: "host-1", clubId: "existing"},
+    });
+
+    await assert.rejects(
+      () => createRunClubHandler(request("host-1", payload()), h.deps),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+  }
+);

@@ -9,12 +9,16 @@ class StepperFooter extends StatelessWidget {
     required this.isLoading,
     required this.onNext,
     this.onSaveDraft,
+    this.nextLabel = 'Next',
+    this.lastStepLabel = 'Schedule run',
   });
 
   final bool isLastStep;
   final bool isLoading;
   final VoidCallback onNext;
   final VoidCallback? onSaveDraft;
+  final String nextLabel;
+  final String lastStepLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +49,7 @@ class StepperFooter extends StatelessWidget {
                 const Spacer(),
                 Expanded(
                   child: CatchButton(
-                    label: isLastStep ? 'Schedule run' : 'Next',
+                    label: isLastStep ? lastStepLabel : nextLabel,
                     onPressed: onNext,
                     isLoading: isLoading,
                     icon: isLastStep

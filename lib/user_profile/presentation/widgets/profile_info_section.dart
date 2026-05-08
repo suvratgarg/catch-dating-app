@@ -11,6 +11,8 @@ class ProfileInfoEntry {
     required this.label,
     required this.value,
     this.onTap,
+    this.editor,
+    this.isExpanded = false,
     this.isAddAffordance = false,
   });
 
@@ -18,6 +20,8 @@ class ProfileInfoEntry {
   final String label;
   final String value;
   final VoidCallback? onTap;
+  final Widget? editor;
+  final bool isExpanded;
   final bool isAddAffordance;
 }
 
@@ -49,8 +53,13 @@ class ProfileInfoSection extends StatelessWidget {
           value: entry.value,
           onTap: entry.onTap,
           isAddAffordance: entry.isAddAffordance,
+          isExpanded: entry.isExpanded,
         ),
       );
+      final editor = entry.isExpanded ? entry.editor : null;
+      if (editor != null) {
+        tiles.add(editor);
+      }
       if (grouped && i < entries.length - 1) {
         tiles.add(
           Divider(height: 1, indent: 52, color: CatchTokens.of(context).line),

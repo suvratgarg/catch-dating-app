@@ -414,6 +414,24 @@ describe("firestore.rules", () => {
   });
 
   describe("relationship documents", () => {
+    it("keeps run club host claims server-only", async () => {
+      await seed(["runClubHostClaims", "host-1"], {
+        uid: "host-1",
+        clubId: "club-1",
+        createdAt: Timestamp.fromDate(new Date("2026-05-08T00:00:00.000Z")),
+      });
+
+      await assertFails(
+        getDoc(doc(authedDb("host-1"), "runClubHostClaims", "host-1")),
+      );
+      await assertFails(
+        setDoc(doc(authedDb("host-1"), "runClubHostClaims", "host-1"), {
+          uid: "host-1",
+          clubId: "club-2",
+        }),
+      );
+    });
+
     it("allows active club membership reads but keeps writes callable-owned", async () => {
       await seed(
         ["runClubMemberships", "club-1_runner-1"],

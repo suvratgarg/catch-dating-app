@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.28
-updated: 2026-05-07
+version: 2.5.33
+updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,66 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.33
+
+- `ChipField` now enforces required-vs-optional empty selection rules at the
+  primitive boundary. `allowEmptySingleSelection` only clears on second tap when
+  `isOptional` is true; required single-choice fields keep the selected value.
+  Required multi-choice fields do not allow the last selected chip to be
+  removed.
+
+### 2.5.32
+
+- `ChipField` now supports `allowEmptySingleSelection`, defaulting to `false`.
+  Profile inline single-choice editors enable it so an already-selected chip can
+  be tapped again to clear the local draft selection before `Done` saves.
+- Profile inline single-choice editors no longer save immediately on chip tap
+  and no longer render a separate `Clear` action. They now use the same
+  `Cancel`/`Done` footer as text, range, height, and multi-choice editors.
+
+### 2.5.31
+
+- `ChipField` now supports `showLabel`, defaulting to `true` for standalone
+  form usage. Expanded Profile inline editors opt out because the parent
+  `ProfileInfoTile` already provides the visible field label.
+
+### 2.5.30
+
+- Create/Edit Run Club now uses the shared step-flow form pattern instead of a
+  single long form. `CreateRunClubScreen` owns a two-step wizard (`Club basics`
+  and `Club details`), reuses `CatchStepFlowHeader`/`StepperFooter`, and keeps
+  finite form pages fully mounted so validation covers offscreen fields.
+- Added local create-run-club draft support through `RunClubDraft`,
+  `RunClubDraftRepository`, and `CreateRunClubDraftController`. Drafts are
+  create-only, user-scoped, local to the device, and deleted after successful
+  club creation.
+- Run-club creation affordances now derive from `canCreateRunClubProvider`.
+  The UI hides plus/create controls after the signed-in user already hosts a
+  club; the `createRunClub` callable enforces the invariant with the
+  server-owned `runClubHostClaims/{uid}` lock.
+- Added `CatchStepFlowHeader` as the shared app-bar-level step primitive so
+  Create Run, Create Run Club, and Onboarding keep the step count aligned with
+  the title row instead of adding a separate vertical counter row.
+
+### 2.5.29
+
+- Edit Profile field editing now uses inline expansion as the default pattern.
+  `ProfileInfoSection`/`ProfileInfoEntry` can host an expanded editor below a
+  row, and `ProfileInfoTile` shows expanded state instead of always implying a
+  route or sheet drill-in.
+- Added the Profile inline editor family in
+  `lib/user_profile/presentation/widgets/profile_inline_editors.dart` for text,
+  nullable single-choice chips, multi-choice chips, height, and range edits.
+  These widgets own transient input state and save through
+  `ProfileEditController`, leaving repository and Firestore contracts
+  unchanged.
+- Removed the old profile field bottom-sheet editor file. Complex future flows
+  such as photo management may still use focused routes/dialogs, but ordinary
+  profile fields should not use bottom sheets.
+- `CatchChip` now constrains long labels inside the chip row so inline editors
+  and other narrow surfaces can reuse the primitive without feature-local
+  overflow fixes.
 
 ### 2.5.28
 
@@ -987,7 +1047,9 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateRunClubScreen` | `lib/run_clubs/presentation/create/create_run_club_screen.dart:22` | Create/edit run club form. Multi-section form with cover photo picker, details fields, contact fields, and a submit CTA. Handles both create and edit flows (initialized via `initialRunClub`). |
+| `CreateRunClubScreen` | `lib/run_clubs/presentation/create/create_run_club_screen.dart:23` | Create/edit run club form. Uses a two-step wizard with `CatchStepFlowHeader`, `StepperFooter`, create-only local drafts, cover photo picking, and submit mutation feedback. Handles both create and edit flows (initialized via `initialRunClub`). |
+| `RunClubBasicsStep` | `lib/run_clubs/presentation/create/widgets/run_club_basics_step.dart:10` | First run-club form step. Keeps cover, club name, city, and area fields in one fully mounted scroll body so validation sees all required fields. |
+| `RunClubDetailsStep` | `lib/run_clubs/presentation/create/widgets/run_club_details_step.dart:6` | Second run-club form step. Holds required description plus optional contact fields. |
 | `CityPicker` | `lib/run_clubs/presentation/list/widgets/city_picker.dart:12` | City selector dropdown at the top of the clubs list. Matches `CatchTextField.compactControlHeight` and pill styling so it aligns visually with `RunClubsSearchField`; watches and updates `selectedRunClubCityProvider`, listens for GPS location updates, and keeps showing the selected city while the remote city list is loading or unavailable. |
 
 ### ConsumerWidget

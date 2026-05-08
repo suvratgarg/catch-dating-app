@@ -262,6 +262,7 @@
 				9705A1C41CF9048500538489 /* Embed Frameworks */,
 				3B06AD1E1E4923F5004D2608 /* Thin Binary */,
 				144635B0962FED90A0299BB7 /* [CP] Embed Pods Frameworks */,
+				C0DEC0DE0000000000000002 /* Sign Flutter Native Assets */,
 				079ED8C745E71A322E6E9706 /* [CP] Copy Pods Resources */,
 				D40A89ECF777698BDB0E0D34 /* Copy Firebase Environment Config */,
 				F1C0D3A0F1C0D3A0F1C0D3A0 /* [firebase_crashlytics] Crashlytics Upload Symbols */,
@@ -387,6 +388,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
+		};
+		C0DEC0DE0000000000000002 /* Sign Flutter Native Assets */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/objective_c.framework",
+			);
+			name = "Sign Flutter Native Assets";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/bash;
+			shellScript = "/bin/bash \"${SRCROOT}/scripts/sign_flutter_native_assets.sh\"\n";
 		};
 		79578B5FFD3A68E4A863692B /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;

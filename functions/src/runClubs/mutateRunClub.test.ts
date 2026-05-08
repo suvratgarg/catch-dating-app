@@ -269,6 +269,10 @@ test("updateRunClubHandler rejects server-owned field updates", async () => {
 test("deleteRunClubHandler hard-deletes only unused clubs", async () => {
   const h = harness({
     "runClubs/club-1": club(),
+    "runClubHostClaims/host-1": {
+      uid: "host-1",
+      clubId: "club-1",
+    },
     "runClubMemberships/club-1_host-1": {
       clubId: "club-1",
       uid: "host-1",
@@ -284,6 +288,7 @@ test("deleteRunClubHandler hard-deletes only unused clubs", async () => {
   assert.deepEqual(result, {deleted: true});
   assert.deepEqual(h.rateLimitCalls, ["host-1:deleteRunClub"]);
   assert.equal(h.firestore.get("runClubs/club-1"), undefined);
+  assert.equal(h.firestore.get("runClubHostClaims/host-1"), undefined);
   assert.equal(
     h.firestore.get("runClubMemberships/club-1_host-1"),
     undefined

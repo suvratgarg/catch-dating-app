@@ -349,6 +349,34 @@ void main() {
   });
 
   testWidgets(
+    'ChipField optional single select clears a selected chip when enabled',
+    (tester) async {
+      Set<IndianCity> selected = {IndianCity.indore};
+
+      await tester.pumpWidget(
+        _wrap(
+          StatefulBuilder(
+            builder: (context, setState) => ChipField<IndianCity>(
+              label: 'City',
+              values: IndianCity.values,
+              selected: selected,
+              multiSelect: false,
+              isOptional: true,
+              allowEmptySingleSelection: true,
+              onChanged: (next) => setState(() => selected = next),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text(IndianCity.indore.label));
+      await tester.pump();
+
+      expect(selected, isEmpty);
+    },
+  );
+
+  testWidgets(
     'ChipField single select keeps chips inactive when selected is empty',
     (tester) async {
       await tester.pumpWidget(
@@ -407,6 +435,31 @@ void main() {
     expect(unselectedChip.active, isFalse);
     expect(unselectedChip.icon, isNull);
     expect(find.byIcon(Icons.check_rounded), findsOneWidget);
+  });
+
+  testWidgets('ChipField required multi select keeps the last chip selected', (
+    tester,
+  ) async {
+    Set<IndianCity> selected = {IndianCity.mumbai};
+
+    await tester.pumpWidget(
+      _wrap(
+        StatefulBuilder(
+          builder: (context, setState) => ChipField<IndianCity>(
+            label: 'Cities',
+            values: IndianCity.values.take(2).toList(),
+            selected: selected,
+            multiSelect: true,
+            onChanged: (next) => setState(() => selected = next),
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.text(IndianCity.mumbai.label));
+    await tester.pump();
+
+    expect(selected, {IndianCity.mumbai});
   });
 
   testWidgets('CatchBadge renders status tones and uppercase option', (

@@ -181,6 +181,76 @@ scan_raw_text_inputs() {
   printf '%s\n' "$output" | sed -n "1,${max_lines}p"
 }
 
+scan_profile_bottom_sheet_editors() {
+  echo
+  echo "==> Profile field editors that still use bottom sheets"
+  local output
+  output="$(rg -n \
+    "${common_globs[@]}" \
+    'showModalBottomSheet|CatchBottomSheetScaffold' \
+    lib/user_profile/presentation || true)"
+
+  output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
+  if [[ -z "$output" ]]; then
+    echo "No matches."
+    return
+  fi
+
+  local count
+  count="$(printf '%s\n' "$output" | wc -l | tr -d ' ')"
+  echo "$count match(es). Showing first $max_lines:"
+  printf '%s\n' "$output" | sed -n "1,${max_lines}p"
+}
+
+scan_profile_inline_chip_labels() {
+  echo
+  echo "==> Profile inline chip editors that repeat the expanded tile label"
+  local raw
+  raw="$(rg -n --with-filename 'ChipField<' lib/user_profile/presentation/widgets/profile_inline_editors.dart || true)"
+
+  local output=""
+  while IFS=: read -r file line _; do
+    [[ -z "$file" || -z "$line" ]] && continue
+    local end=$((line + 12))
+    local context
+    context="$(sed -n "${line},${end}p" "$file")"
+    if ! grep -Eq 'showLabel: false,' <<<"$context"; then
+      output+="${file}:${line}:$(sed -n "${line}p" "$file")"$'\n'
+    fi
+  done <<<"$raw"
+
+  output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
+  if [[ -z "$output" ]]; then
+    echo "No matches."
+    return
+  fi
+
+  local count
+  count="$(printf '%s\n' "$output" | wc -l | tr -d ' ')"
+  echo "$count match(es). Showing first $max_lines:"
+  printf '%s\n' "$output" | sed -n "1,${max_lines}p"
+}
+
+scan_profile_inline_chip_clear_actions() {
+  echo
+  echo "==> Profile inline chip editors with separate Clear actions"
+  local output
+  output="$(rg -n --with-filename \
+    "label: 'Clear'|label: \"Clear\"" \
+    lib/user_profile/presentation/widgets/profile_inline_editors.dart || true)"
+
+  output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
+  if [[ -z "$output" ]]; then
+    echo "No matches."
+    return
+  fi
+
+  local count
+  count="$(printf '%s\n' "$output" | wc -l | tr -d ' ')"
+  echo "$count match(es). Showing first $max_lines:"
+  printf '%s\n' "$output" | sed -n "1,${max_lines}p"
+}
+
 scan_raw_range_sliders() {
   echo
   echo "==> Raw range sliders that should use CatchRangeSlider"
@@ -377,6 +447,12 @@ scan "Feature widgets prop-drilling CatchTokens" \
 scan_raw_material_buttons
 
 scan_raw_text_inputs
+
+scan_profile_bottom_sheet_editors
+
+scan_profile_inline_chip_labels
+
+scan_profile_inline_chip_clear_actions
 
 scan_white_pill_ctas
 

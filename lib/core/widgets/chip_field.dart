@@ -21,6 +21,8 @@ class ChipField<T extends Labelled> extends StatelessWidget {
     required this.onChanged,
     this.enabled = true,
     this.isOptional = false,
+    this.showLabel = true,
+    this.allowEmptySingleSelection = false,
     this.validator,
     this.chipKeyBuilder,
   });
@@ -35,6 +37,11 @@ class ChipField<T extends Labelled> extends StatelessWidget {
   final void Function(Set<T> next) onChanged;
   final bool enabled;
   final bool isOptional;
+  final bool showLabel;
+
+  /// Allows a selected single-choice chip to be tapped again to clear the
+  /// selection. This only takes effect when [isOptional] is true.
+  final bool allowEmptySingleSelection;
   final FormFieldValidator<Set<T>>? validator;
   final Key? Function(T value)? chipKeyBuilder;
 
@@ -48,12 +55,14 @@ class ChipField<T extends Labelled> extends StatelessWidget {
       builder: (field) => Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CatchFormFieldLabel(
-            label: label,
-            isOptional: isOptional,
-            hasError: field.hasError,
-          ),
-          gapH8,
+          if (showLabel) ...[
+            CatchFormFieldLabel(
+              label: label,
+              isOptional: isOptional,
+              hasError: field.hasError,
+            ),
+            gapH8,
+          ],
           Wrap(
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
@@ -70,11 +79,19 @@ class ChipField<T extends Labelled> extends StatelessWidget {
                 onTap: () {
                   final next = Set<T>.from(selected);
                   if (!multiSelect) {
-                    next
-                      ..clear()
-                      ..add(v);
+                    next.clear();
+                    final canClear = isOptional && allowEmptySingleSelection;
+                    if (!canClear || !isSelected) {
+                      next.add(v);
+                    }
                   } else {
-                    isSelected ? next.remove(v) : next.add(v);
+                    if (isSelected) {
+                      if (isOptional || next.length > 1) {
+                        next.remove(v);
+                      }
+                    } else {
+                      next.add(v);
+                    }
                   }
                   onChanged(next);
                   field.didChange(next);

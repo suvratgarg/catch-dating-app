@@ -11,6 +11,7 @@ class ProfileInfoTile extends StatelessWidget {
     required this.value,
     this.onTap,
     this.isAddAffordance = false,
+    this.isExpanded = false,
   });
 
   final IconData icon;
@@ -18,6 +19,7 @@ class ProfileInfoTile extends StatelessWidget {
   final String value;
   final VoidCallback? onTap;
   final bool isAddAffordance;
+  final bool isExpanded;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +44,14 @@ class ProfileInfoTile extends StatelessWidget {
             ],
           ),
         ),
-        if (onTap != null) Icon(Icons.chevron_right, color: t.ink3, size: 20),
+        if (onTap != null)
+          Icon(
+            isExpanded
+                ? Icons.keyboard_arrow_up_rounded
+                : Icons.chevron_right_rounded,
+            color: t.ink3,
+            size: 20,
+          ),
       ],
     );
 
@@ -56,6 +65,7 @@ class ProfileInfoTile extends StatelessWidget {
     return Semantics(
       button: true,
       label: '$label: $value',
+      expanded: isExpanded,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(CatchRadius.sm),

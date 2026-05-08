@@ -71,21 +71,41 @@ export async function createRunClubHandler(
   const clubRef = data.clubId ?
     db.collection("runClubs").doc(data.clubId) :
     db.collection("runClubs").doc();
+  const hostClaimRef = db.collection("runClubHostClaims").doc(hostUserId);
   const membershipRef = db
     .collection("runClubMemberships")
     .doc(runClubMembershipId(clubRef.id, hostUserId));
   const userRef = db.collection("users").doc(hostUserId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
+  const existingHostedClubSnap = await db
+    .collection("runClubs")
+    .where("hostUserId", "==", hostUserId)
+    .limit(1)
+    .get();
+  if (!existingHostedClubSnap.empty) {
+    throw new HttpsError(
+      "failed-precondition",
+      "You can only host one run club."
+    );
+  }
 
   await db.runTransaction(async (tx) => {
-    const [clubSnap, userSnap, deletedUserSnap] = await Promise.all([
-      tx.get(clubRef),
-      tx.get(userRef),
-      tx.get(deletedUserRef),
-    ]);
+    const [clubSnap, hostClaimSnap, userSnap, deletedUserSnap] =
+      await Promise.all([
+        tx.get(clubRef),
+        tx.get(hostClaimRef),
+        tx.get(userRef),
+        tx.get(deletedUserRef),
+      ]);
 
     if (clubSnap.exists) {
       throw new HttpsError("already-exists", "Run club already exists.");
+    }
+    if (hostClaimSnap.exists) {
+      throw new HttpsError(
+        "failed-precondition",
+        "You can only host one run club."
+      );
     }
     if (!userSnap.exists) {
       throw new HttpsError("not-found", "User profile not found.");
@@ -130,6 +150,11 @@ export async function createRunClubHandler(
       uid: hostUserId,
       role: "host",
     }), {merge: true});
+    tx.create(hostClaimRef, {
+      uid: hostUserId,
+      clubId: clubRef.id,
+      createdAt: deps.serverTimestamp(),
+    });
   });
 
   return {clubId: clubRef.id};
