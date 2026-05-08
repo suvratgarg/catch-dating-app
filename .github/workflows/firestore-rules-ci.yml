@@ -2,34 +2,8 @@ name: Firestore Rules Tests
 
 on:
   pull_request:
-    paths:
-      - 'firestore.rules'
-      - 'functions/test/firestore.rules.test.cjs'
-      - 'functions/src/shared/firestore.ts'
-      - 'functions/src/runClubs/**'
-      - 'functions/package.json'
-      - 'functions/package-lock.json'
-      - 'lib/**/domain/**/*.dart'
-      - 'lib/core/indian_city.dart'
-      - 'tool/generate_firestore_types.dart'
-      - 'tool/check_firestore_contract.mjs'
-      - 'tool/firestore_contract.json'
-      - 'tool/firestore_ts_overlay.json'
   push:
     branches: [main]
-    paths:
-      - 'firestore.rules'
-      - 'functions/test/firestore.rules.test.cjs'
-      - 'functions/src/shared/firestore.ts'
-      - 'functions/src/runClubs/**'
-      - 'functions/package.json'
-      - 'functions/package-lock.json'
-      - 'lib/**/domain/**/*.dart'
-      - 'lib/core/indian_city.dart'
-      - 'tool/generate_firestore_types.dart'
-      - 'tool/check_firestore_contract.mjs'
-      - 'tool/firestore_contract.json'
-      - 'tool/firestore_ts_overlay.json'
 
 jobs:
   test:

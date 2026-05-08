@@ -2,34 +2,8 @@ name: App Build Matrix
 
 on:
   pull_request:
-    paths:
-      - 'android/**'
-      - 'assets/**'
-      - 'ios/**'
-      - 'lib/**'
-      - 'macos/**'
-      - 'pubspec.yaml'
-      - 'pubspec.lock'
-      - 'tool/dart_defines/**'
-      - 'tool/flutter_with_env.sh'
-      - 'tool/use_firebase_environment.sh'
-      - 'web/**'
-      - '.github/workflows/app-build-matrix.yml'
   push:
     branches: [main]
-    paths:
-      - 'android/**'
-      - 'assets/**'
-      - 'ios/**'
-      - 'lib/**'
-      - 'macos/**'
-      - 'pubspec.yaml'
-      - 'pubspec.lock'
-      - 'tool/dart_defines/**'
-      - 'tool/flutter_with_env.sh'
-      - 'tool/use_firebase_environment.sh'
-      - 'web/**'
-      - '.github/workflows/app-build-matrix.yml'
   workflow_dispatch:
 
 jobs:

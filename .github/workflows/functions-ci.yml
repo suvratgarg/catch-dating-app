@@ -2,22 +2,8 @@ name: Functions CI
 
 on:
   pull_request:
-    paths:
-      - 'functions/**'
-      - 'firestore.rules'
-      - 'storage.rules'
-      - 'tool/check_firestore_contract.mjs'
-      - 'tool/firestore_contract.json'
-      - 'tool/firestore_ts_overlay.json'
   push:
     branches: [main]
-    paths:
-      - 'functions/**'
-      - 'firestore.rules'
-      - 'storage.rules'
-      - 'tool/check_firestore_contract.mjs'
-      - 'tool/firestore_contract.json'
-      - 'tool/firestore_ts_overlay.json'
 
 jobs:
   lint-and-test:
