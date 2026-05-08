@@ -1,6 +1,6 @@
 ---
 doc_id: widget_cleanup
-version: 2.3.31
+version: 2.3.40
 updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
@@ -30,6 +30,97 @@ For future passes:
    old finding points there.
 
 ## Rule Changelog
+
+### 2.3.40
+
+- Chat message rows are variable-height content. Avoid `prototypeItem`,
+  `itemExtent`, or fixed row heights in `ChatMessageList`; otherwise multi-line
+  bubbles and image messages can clip or overlap timestamps and neighboring
+  rows.
+
+### 2.3.39
+
+- Chat inbox rows are one row per matched person, not one row per match
+  document when legacy/duplicate match docs exist. Collapse duplicates in
+  `ChatsListViewModel`, keep the latest preview/timestamp, and aggregate the
+  visible unread count for the current user.
+- Do not label chat counts as `active` without a real presence or activity
+  signal in the data model. Use match/person count copy until presence exists.
+- Avoid redundant list headers in tab roots. The Chats tab already has a
+  screen title, so the conversations list should not add a second `Messages`
+  header.
+
+### 2.3.38
+
+- Range editors should not repeat the selected range inside the expanded
+  drawer when the profile row already displays that selected value. Put fixed
+  slider bounds in `CatchRangeSlider.minLabel` / `maxLabel` instead.
+- Profile inline multi-choice chips must keep selected check icons in both
+  primitive `ChipField` usage and row-owned value-slot editors.
+- Keep inline editor spacing in the shared panel: editor controls should sit
+  visually close to `Cancel`/`Done`, while expanded row values need enough
+  gap below the label to avoid a cramped chip stack.
+
+### 2.3.37
+
+- Row-owned Profile text editors should use `ProfileInlineEditableText`, not a
+  boxed `CatchTextField`. The editable value must preserve the closed row's
+  typography, baseline, and icon-relative position; only the cursor and a
+  text-width underline should signal edit focus.
+- Inline Profile editor actions now align as a trailing action group. Keep
+  `Cancel`/`Done` placement in the shared inline panel so text, chip, range,
+  and stepper editors do not drift.
+- The Profile header should expose only the Settings button. Account-adjacent
+  actions such as review history, payment history, and sign out belong in the
+  Settings account section, not a second top-right overflow menu.
+
+### 2.3.36
+
+- Profile inline drawer animation should preserve full available width while
+  animating height. Do not animate from a zero-width `SizedBox.shrink()`:
+  action rows will appear to slide sideways. Use
+  `ProfileInlineAnimatedBody`, which keeps the collapsed/expanded body
+  full-width and fades content while `AnimatedSize` handles vertical reveal.
+- Profile inline editor spacing and `Cancel`/`Done` placement belong in the
+  shared inline panel, not in each field editor. Keep future text/chip/range/
+  stepper edits on the shared panel path so visual tuning remains one edit.
+- Bio editing now uses the same animated body contract as row-owned inline
+  editors; avoid direct conditional insertion for profile edit drawers.
+
+### 2.3.35
+
+- Profile inline editors should open and close through
+  `ProfileInlineDisclosure` / `ProfileInlineAnimatedBody`, not by conditionally
+  inserting editor bodies directly into the list. This keeps drawer open/close
+  transitions, row-height changes, chip option list changes, and validation
+  banner changes smooth without field-local height calculations.
+
+### 2.3.34
+
+- `SettingsRow` should own the common settings label/value alignment. Do not
+  hand-align individual two-column settings rows; pass `value` to the primitive
+  and let it keep the label left and secondary value right.
+
+### 2.3.33
+
+- Enum-style Profile rows now mirror text-row editing: selected chip values
+  render in the row value slot while expanded, and the expanded chip list shows
+  only available alternatives. This removes repeated selected labels such as
+  `Education` -> `High school` plus a second selected `High school` chip.
+- Multi-select Profile rows use the same pattern. Selected chips stay in the
+  row; tapping a selected row chip removes it from the draft when the field is
+  optional and returns that value to the available chip list below.
+- Added scanner coverage for old Profile chip tile editors that stack selected
+  chips below the row. Keep this at zero.
+
+### 2.3.32
+
+- Text-style Profile rows now edit in place. `ProfileInfoTile` supports a
+  `valueEditor` slot, and normal text rows use `ProfileInlineTextEntryEditor`
+  so the row value becomes a compact label-less `CatchTextField` while only
+  validation feedback and `Cancel`/`Done` render below the row.
+- Added scanner coverage for Profile text tile editors that reintroduce the old
+  stacked separate text field below a `ProfileInfoEntry`. Keep this at zero.
 
 ### 2.3.31
 

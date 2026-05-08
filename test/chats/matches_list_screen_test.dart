@@ -72,6 +72,10 @@ Match _buildMatch({
   String user1Id = 'runner-1',
   String user2Id = 'runner-2',
   DateTime? createdAt,
+  DateTime? lastMessageAt,
+  String? lastMessagePreview,
+  String? lastMessageSenderId,
+  Map<String, int> unreadCounts = const {},
 }) {
   return Match(
     id: id,
@@ -79,6 +83,10 @@ Match _buildMatch({
     user2Id: user2Id,
     runId: 'run-1',
     createdAt: createdAt ?? DateTime(2026, 4, 23, 9),
+    lastMessageAt: lastMessageAt,
+    lastMessagePreview: lastMessagePreview,
+    lastMessageSenderId: lastMessageSenderId,
+    unreadCounts: unreadCounts,
   );
 }
 
@@ -224,6 +232,75 @@ void main() {
       findsOneWidget,
     );
     expect(find.text('No catches yet'), findsNothing);
+  });
+
+  testWidgets('collapses duplicate match docs into one chat row per person', (
+    tester,
+  ) async {
+    final olderTaylorMatch = _buildMatch(
+      id: 'old-taylor',
+      user2Id: 'runner-2',
+      createdAt: DateTime(2026, 4, 21, 9),
+      lastMessageAt: DateTime(2026, 4, 21, 10),
+      lastMessagePreview: 'Older message',
+      lastMessageSenderId: 'runner-2',
+      unreadCounts: const {'runner-1': 1},
+    );
+    final latestTaylorMatch = _buildMatch(
+      id: 'latest-taylor',
+      user2Id: 'runner-2',
+      createdAt: DateTime(2026, 4, 22, 9),
+      lastMessageAt: DateTime(2026, 4, 22, 12),
+      lastMessagePreview: 'Latest message',
+      lastMessageSenderId: 'runner-2',
+      unreadCounts: const {'runner-1': 2},
+    );
+    final morganMatch = _buildMatch(
+      id: 'morgan',
+      user2Id: 'runner-3',
+      createdAt: DateTime(2026, 4, 23, 9),
+    );
+    final matches = [olderTaylorMatch, latestTaylorMatch, morganMatch];
+    final matchRepository = _FakeMatchRepository(matches: matches);
+    final chatRepository = _FakeChatRepository();
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          matchRepositoryProvider.overrideWithValue(matchRepository),
+          chatRepositoryProvider.overrideWithValue(chatRepository),
+          watchMatchesForUserProvider(
+            'runner-1',
+          ).overrideWith((ref) => Stream.value(matches)),
+          watchPublicProfileProvider('runner-2').overrideWith(
+            (ref) => Stream.value(
+              buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
+            ),
+          ),
+          watchPublicProfileProvider('runner-3').overrideWith(
+            (ref) => Stream.value(
+              buildPublicProfile(uid: 'runner-3', name: 'Morgan'),
+            ),
+          ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const ChatsListScreen(),
+        ),
+      ),
+    );
+
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Taylor'), findsOneWidget);
+    expect(find.text('Morgan'), findsOneWidget);
+    expect(find.text('Latest message'), findsOneWidget);
+    expect(find.text('Older message'), findsNothing);
+    expect(find.text('3'), findsOneWidget);
+    expect(find.text('2 matches'), findsOneWidget);
+    expect(find.text('3 active'), findsNothing);
+    expect(find.text('Messages'), findsNothing);
   });
 
   testWidgets('navigates from matches list to chat without route extra', (

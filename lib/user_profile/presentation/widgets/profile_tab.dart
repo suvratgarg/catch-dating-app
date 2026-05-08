@@ -11,6 +11,7 @@ import 'package:catch_dating_app/image_uploads/presentation/photo_upload_control
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_prompt_card.dart';
 import 'package:flutter/material.dart';
@@ -319,9 +320,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           sliderMin: 240,
           sliderMax: 540,
           divisions: 20,
-          displayText: (r) =>
-              '${formatPace(r.start.round())} - ${formatPace(r.end.round())} /km',
-          labelText: (v) => formatPace(v.round()),
+          labelText: (v) => '${formatPace(v.round())}/km',
           minFieldName: 'paceMinSecsPerKm',
           maxFieldName: 'paceMaxSecsPerKm',
           onSaved: _collapseField,
@@ -372,18 +371,21 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         isPrompt: user.bio.isEmpty,
         onTap: () => _toggleField('bio'),
       ),
-      if (_isExpanded('bio')) ...[
-        gapH12,
-        ProfileInlineTextEditor(
-          key: const ValueKey('inline-bio-editor'),
-          label: 'Bio',
-          currentValue: user.bio,
-          fieldName: 'bio',
-          maxLines: 4,
-          onSaved: _collapseField,
-          onCancel: _collapseField,
+      ProfileInlineAnimatedBody(
+        isExpanded: _isExpanded('bio'),
+        child: Padding(
+          padding: const EdgeInsets.only(top: CatchSpacing.s2),
+          child: ProfileInlineTextEditor(
+            key: const ValueKey('inline-bio-editor'),
+            label: 'Bio',
+            currentValue: user.bio,
+            fieldName: 'bio',
+            maxLines: 4,
+            onSaved: _collapseField,
+            onCancel: _collapseField,
+          ),
         ),
-      ],
+      ),
       gapH20,
       SectionHeader(title: 'About'),
       ProfileInfoSection(entries: basics, grouped: true),
@@ -424,17 +426,17 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
   }) {
     final editorTitle = title ?? label;
     return ProfileInfoEntry(
-      icon: icon,
-      label: label,
-      value: value,
-      onTap: () => _toggleField(fieldName),
-      isExpanded: _isExpanded(fieldName),
-      editor: ProfileInlineTextEditor(
-        key: ValueKey('inline-$fieldName-editor'),
-        label: editorTitle,
+      builder: (_) => ProfileInlineTextEntryEditor(
+        key: ValueKey('inline-$fieldName-entry-editor'),
+        icon: icon,
+        label: label,
+        value: value,
         currentValue: currentValue ?? value,
         currentFieldValue: currentFieldValue ?? currentValue ?? value,
         fieldName: fieldName,
+        isExpanded: _isExpanded(fieldName),
+        isAddAffordance: isAddAffordance,
+        onTap: () => _toggleField(fieldName),
         keyboardType: keyboardType,
         textCapitalization: textCapitalization,
         autofillHints: autofillHints,
@@ -443,6 +445,9 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         onSaved: _collapseField,
         onCancel: _collapseField,
       ),
+      icon: icon,
+      label: editorTitle,
+      value: value,
       isAddAffordance: isAddAffordance,
     );
   }
@@ -457,21 +462,25 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     String? title,
     String? placeholder,
   }) {
+    final displayValue = value?.label ?? placeholder ?? label;
     return ProfileInfoEntry(
-      icon: icon,
-      label: label,
-      value: value?.label ?? placeholder ?? label,
-      onTap: () => _toggleField(fieldName),
-      isExpanded: _isExpanded(fieldName),
-      editor: ProfileInlineSingleChoiceEditor<T>(
-        key: ValueKey('inline-$fieldName-editor'),
-        label: title ?? label,
+      builder: (_) => ProfileInlineSingleChoiceEntryEditor<T>(
+        key: ValueKey('inline-$fieldName-entry-editor'),
+        icon: icon,
+        label: label,
+        value: displayValue,
         values: values,
         currentValue: value,
         fieldName: fieldName,
+        isExpanded: _isExpanded(fieldName),
+        isAddAffordance: value == null,
+        onTap: () => _toggleField(fieldName),
         onSaved: _collapseField,
         onCancel: _collapseField,
       ),
+      icon: icon,
+      label: title ?? label,
+      value: displayValue,
       isAddAffordance: value == null,
     );
   }
@@ -488,21 +497,27 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     bool isAddAffordanceWhenEmpty = true,
   }) {
     final isEmpty = selected.isEmpty;
+    final displayValue = isEmpty
+        ? placeholder
+        : selected.map((v) => v.label).join(', ');
     return ProfileInfoEntry(
-      icon: icon,
-      label: label,
-      value: isEmpty ? placeholder : selected.map((v) => v.label).join(', '),
-      onTap: () => _toggleField(fieldName),
-      isExpanded: _isExpanded(fieldName),
-      editor: ProfileInlineMultiChoiceEditor<T>(
-        key: ValueKey('inline-$fieldName-editor'),
-        label: title ?? label,
+      builder: (_) => ProfileInlineMultiChoiceEntryEditor<T>(
+        key: ValueKey('inline-$fieldName-entry-editor'),
+        icon: icon,
+        label: label,
+        value: displayValue,
         values: values,
         currentValues: selected,
         fieldName: fieldName,
+        isExpanded: _isExpanded(fieldName),
+        isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
+        onTap: () => _toggleField(fieldName),
         onSaved: _collapseField,
         onCancel: _collapseField,
       ),
+      icon: icon,
+      label: title ?? label,
+      value: displayValue,
       isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
     );
   }

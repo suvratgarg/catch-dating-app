@@ -31,6 +31,8 @@ migrate_working_dir/
 service-account*.json
 *-service-account.json
 google-application-credentials*.json
+tool/demo_seed/beta_anchors.txt
+tool/demo_seed/beta_anchors.json
 
 # Signing keys and provisioning artifacts
 key.properties

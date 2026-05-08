@@ -52,11 +52,6 @@ class ChatMessageList extends StatelessWidget {
             vertical: CatchSpacing.s4,
           ),
           itemCount: messages.length,
-          prototypeItem: MessageBubble(
-            text: 'placeholder',
-            isMe: false,
-            sentAt: DateTime.now(),
-          ),
           itemBuilder: (context, i) {
             final msg = messages[i];
             return MessageBubble(

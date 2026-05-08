@@ -1,10 +1,8 @@
-import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class ProfileSliverHeader {
@@ -47,8 +45,6 @@ class _ProfileTitle extends StatelessWidget {
             ),
             const SizedBox(width: CatchSpacing.s2),
             const _SettingsButton(),
-            const SizedBox(width: CatchSpacing.s2),
-            const _OverflowMenu(),
           ],
         ),
       ),
@@ -92,51 +88,6 @@ class _SettingsButton extends StatelessWidget {
       icon: Icons.settings_outlined,
       tooltip: 'Settings',
       onPressed: () => context.pushNamed(Routes.settingsScreen.name),
-    );
-  }
-}
-
-class _OverflowMenu extends ConsumerWidget {
-  const _OverflowMenu();
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final signOutMutation = ref.watch(AuthSessionController.signOutMutation);
-
-    return CatchTopBarMenuAction<String>(
-      tooltip: 'More profile actions',
-      onSelected: (value) {
-        if (value == 'reviews') {
-          context.pushNamed(Routes.reviewsHistoryScreen.name);
-        } else if (value == 'payments') {
-          context.pushNamed(Routes.paymentHistoryScreen.name);
-        } else if (value == 'signOut') {
-          if (signOutMutation.isPending) return;
-          AuthSessionController.signOutMutation.run(
-            ref,
-            (tx) async =>
-                tx.get(authSessionControllerProvider.notifier).signOut(),
-          );
-        }
-      },
-      items: const [
-        CatchActionMenuItem(
-          value: 'reviews',
-          label: 'Review history',
-          icon: Icons.rate_review_outlined,
-        ),
-        CatchActionMenuItem(
-          value: 'payments',
-          label: 'Payment history',
-          icon: Icons.receipt_long_outlined,
-        ),
-        CatchActionMenuItem(
-          value: 'signOut',
-          label: 'Sign out',
-          icon: Icons.logout_rounded,
-          isDestructive: true,
-        ),
-      ],
     );
   }
 }

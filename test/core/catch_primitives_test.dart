@@ -17,6 +17,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
+import 'package:catch_dating_app/core/widgets/settings_row.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -199,6 +200,33 @@ void main() {
     expect(label.style?.color, CatchTokens.sunsetLight.primary);
   });
 
+  testWidgets('SettingsRow value occupies a right-aligned value lane', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const SizedBox(
+          width: 360,
+          child: SettingsRow(
+            label: 'Help & support',
+            value: 'Contact us',
+            icon: Icons.help_outline,
+            onTap: null,
+          ),
+        ),
+      ),
+    );
+
+    final valueText = tester.widget<Text>(find.text('Contact us'));
+    final valueBox = tester.getSize(find.text('Contact us'));
+    final labelRight = tester.getTopRight(find.text('Help & support')).dx;
+    final valueLeft = tester.getTopLeft(find.text('Contact us')).dx;
+
+    expect(valueText.textAlign, TextAlign.right);
+    expect(valueBox.width, greaterThanOrEqualTo(110));
+    expect(valueLeft, greaterThan(labelRight));
+  });
+
   testWidgets(
     'CatchOtpCodeField renders visible digits over one hidden input',
     (tester) async {
@@ -243,6 +271,8 @@ void main() {
           min: 18,
           max: 60,
           divisions: 42,
+          minLabel: '18',
+          maxLabel: '60+',
           onChanged: (_) {},
         ),
       ),
@@ -258,6 +288,8 @@ void main() {
 
     expect(theme.data.inactiveTickMarkColor, Colors.transparent);
     expect(slider.divisions, 42);
+    expect(find.text('18'), findsOneWidget);
+    expect(find.text('60+'), findsOneWidget);
   });
 
   testWidgets('CatchNumberStepper formats and clamps numeric changes', (

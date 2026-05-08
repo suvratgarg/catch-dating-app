@@ -45,10 +45,11 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
   final query = ref.watch(chatSearchQueryProvider);
 
   return matchesAsync.whenData((matches) {
+    final matchesByPerson = _collapseMatchesByOtherUser(matches, uid);
     final newMatches = <Match>[];
     final conversations = <Match>[];
 
-    for (final match in matches) {
+    for (final match in matchesByPerson) {
       if (match.lastMessagePreview == null) {
         newMatches.add(match);
       } else {
@@ -87,3 +88,36 @@ AsyncValue<ChatsListViewModel> chatsListViewModel(Ref ref) {
     );
   });
 }
+
+List<Match> _collapseMatchesByOtherUser(List<Match> matches, String uid) {
+  final buckets = <String, List<Match>>{};
+  for (final match in matches) {
+    buckets.putIfAbsent(match.otherId(uid), () => []).add(match);
+  }
+
+  return buckets.values.map((bucket) {
+    bucket.sort((a, b) => _chatSortTime(b).compareTo(_chatSortTime(a)));
+
+    final conversationMatches = bucket
+        .where((match) => match.lastMessagePreview != null)
+        .toList()
+      ..sort((a, b) => _chatSortTime(b).compareTo(_chatSortTime(a)));
+    final selected = conversationMatches.isNotEmpty
+        ? conversationMatches.first
+        : bucket.first;
+    final totalUnread = bucket.fold<int>(
+      0,
+      (total, match) => total + (match.unreadCounts[uid] ?? 0),
+    );
+
+    if (totalUnread == (selected.unreadCounts[uid] ?? 0)) {
+      return selected;
+    }
+
+    return selected.copyWith(
+      unreadCounts: {...selected.unreadCounts, uid: totalUnread},
+    );
+  }).toList();
+}
+
+DateTime _chatSortTime(Match match) => match.lastMessageAt ?? match.createdAt;

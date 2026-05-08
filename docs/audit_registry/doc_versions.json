@@ -15,7 +15,7 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.3.25",
+    "version": "2.3.30",
     "updated": "2026-05-08",
     "status": "active",
     "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, stream lifecycle queue, and branded error UI queue."
@@ -29,7 +29,7 @@
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "2.4.24",
+    "version": "2.4.30",
     "updated": "2026-05-08",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
@@ -141,14 +141,14 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.33",
+    "version": "2.5.42",
     "updated": "2026-05-08",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
   "widget_cleanup": {
     "path": "docs/widget_cleanup_todo.md",
-    "version": "2.3.31",
+    "version": "2.3.40",
     "updated": "2026-05-08",
     "status": "active",
     "read_policy": "Use as a short human-readable pointer; use backlog.json for active machine-readable state including stream lifecycle and branded error UI queues."

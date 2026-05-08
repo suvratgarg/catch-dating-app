@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.33
+version: 2.5.42
 updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,103 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.42
+
+- `ChatMessageList` must allow each `MessageBubble` to measure its own height.
+  Do not use a one-line `prototypeItem` or fixed item extent for chat messages:
+  multi-line bubbles and image bubbles need variable height so timestamps stay
+  inside their bubble and do not overlap the next row.
+
+### 2.5.41
+
+- `ChatsListViewModel` is the inbox grouping boundary. It must collapse
+  duplicate active match documents by the other participant before rendering,
+  keeping the latest message preview/timestamp and aggregating the current
+  user's unread count for the visible row.
+- The chats header count is a match/person count, not live presence. Do not
+  label it `active` unless the data model adds real presence or activity
+  tracking.
+- `ChatConversationsList` renders chat rows directly; do not reintroduce a
+  redundant `Messages` section title under the screen title.
+
+### 2.5.40
+
+- `CatchRangeSlider` now accepts optional `minLabel` / `maxLabel` endpoint
+  labels. Use endpoint labels for fixed slider bounds; do not repeat the
+  currently selected range above the slider when the row already shows it.
+- Profile inline multi-choice selected chips keep the multi-select check icon
+  when rendered in the row value slot.
+- Expanded profile row editors use a slightly larger label-to-value gap, while
+  the shared inline panel keeps `Cancel`/`Done` closer to the editor controls.
+
+### 2.5.39
+
+- Added `ProfileInlineEditableText` for row-owned Profile text editing. It uses
+  `EditableText` directly so the active value keeps the closed row style and
+  position while adding only cursor, selection, validation, and a text-width
+  underline.
+- `ProfileInlineTextEntryEditor` now uses that inline editable value instead
+  of embedding a boxed text-field primitive in the row. Keep `CatchTextField`
+  for standalone form/prompt-card text entry, including Bio.
+- The scroll-away Profile title header now owns only the Settings action. Review
+  history, payment history, and sign out moved to `SettingsScreen` Account rows.
+
+### 2.5.38
+
+- `ProfileInlineAnimatedBody` now keeps collapsed and expanded drawers
+  full-width and uses fade-only body content transitions while `AnimatedSize`
+  owns the vertical reveal. This prevents profile inline action rows from
+  sliding sideways during text/chip drawer open/close.
+- Profile inline editors now share one internal panel for save errors,
+  vertical padding, and `Cancel`/`Done` actions. Field-specific editors should
+  provide only their controls and draft-state logic.
+- Bio editing uses `ProfileInlineAnimatedBody` too, so prompt-card edits follow
+  the same drawer motion contract as grouped profile rows.
+- Removed stale catalog references to the deleted profile bottom-sheet editor
+  classes. Normal profile field editing is inline; future exceptions should be
+  explicit route/dialog flows, not a resurrected generic field sheet.
+
+### 2.5.37
+
+- Added `ProfileInlineDisclosure` and `ProfileInlineAnimatedBody` as the shared
+  animated shell for Edit Profile inline drawers. Text and enum row editors now
+  route through the shell, and legacy `ProfileInfoEntry.editor` bodies are
+  wrapped by `ProfileInfoSection`, so height/range drawers use the same
+  open/close motion.
+- `ProfileInfoTile` now animates row-height changes, row value swaps, and
+  chevron rotation with `CatchMotion.base`, which covers text-field entry,
+  selected chip wrapping, and dynamic chip list changes without custom
+  animation controllers.
+
+### 2.5.36
+
+- `SettingsRow` value text now gets a real right-hand value lane when no custom
+  trailing widget is supplied. Label/value rows therefore keep the primary
+  label pinned left and the secondary value pinned right, while switch/trailing
+  rows keep their existing trailing-widget behavior.
+
+### 2.5.35
+
+- Added `ProfileInlineSingleChoiceEntryEditor` and
+  `ProfileInlineMultiChoiceEntryEditor` for Profile enum rows. These editors
+  render selected `CatchChip` values inside the `ProfileInfoTile.valueEditor`
+  slot, exclude selected values from the option list below the row, and keep
+  `Cancel`/`Done` as the commit boundary.
+- `ProfileInlineSingleChoiceEditor` and `ProfileInlineMultiChoiceEditor` were
+  removed from Profile row usage so chip fields follow the same in-row editing
+  model as text fields.
+
+### 2.5.34
+
+- `ProfileInfoTile` now supports an optional `valueEditor` slot for in-row
+  editing. When present, the tile replaces its value text with the supplied
+  control and shows a small collapse icon button instead of wrapping the whole
+  row in an `InkWell`, so the embedded field can receive focus.
+- Added `ProfileInlineTextEntryEditor`, which renders text Profile rows with a
+  compact label-less `CatchTextField` in the value position and keeps
+  error/actions below the row. `ProfileInlineTextEditor` remains for non-row
+  text surfaces such as the Bio prompt card.
 
 ### 2.5.33
 
@@ -708,7 +805,7 @@ Generated 2026-05-06.
 | `CatchTextButton` | `lib/core/widgets/catch_text_button.dart:6` | Canonical text-only action primitive for inline actions, dialog actions, retry links, and top-bar text actions. Uses Catch tokens and text styles while preserving Material `TextButton` semantics. Use `CatchButton` for pill CTAs. |
 | `CatchOtpCodeField` | `lib/core/widgets/catch_otp_code_field.dart:10` | Canonical OTP input primitive. Renders visible token-styled digit boxes over one hidden platform `TextField` so SMS autofill, paste, keyboard input, tests, digit-only filtering, and length limiting stay centralized. |
 | `CatchNumberStepper` | `lib/core/widgets/catch_number_stepper.dart:6` | Canonical numeric +/- stepper. Renders the shared raised surface, compact add/remove buttons, centered mono value, optional min/max/step clamping, and feature-specific value formatting. Used by Create Run duration and Edit Profile height. |
-| `CatchRangeSlider` | `lib/core/widgets/catch_range_slider.dart:7` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. |
+| `CatchRangeSlider` | `lib/core/widgets/catch_range_slider.dart:7` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. Supports optional min/max endpoint labels for fixed slider bounds. |
 | `CatchTopBar` | `lib/core/widgets/catch_top_bar.dart:11` | Canonical top-bar. Renders a surface-fill bar with an optional back button (auto-detected from `Navigator.canPop`), title, leading widget, and action slots. Also supports a `bottom` `PreferredSizeWidget` (e.g., `TabBar`). Implements `PreferredSizeWidget` for use as an `AppBar`. |
 | `CatchTopBarTabBar` | `lib/core/widgets/catch_top_bar.dart:132` | Catch-styled `TabBar` for use inside `CatchTopBar.bottom` or sticky sliver headers. Uses `primary` indicator color and `labelL` text styles, implements `PreferredSizeWidget`, and accepts an optional explicit `TabController` for sliver-native tab rows that are not inside a `DefaultTabController`. |
 | `CatchSliverHeader` | `lib/core/widgets/catch_top_bar.dart:290` | Shared sliver header primitive. Builds a scroll-away title and optional pinned bottom row; the title translates upward as it collapses so sticky search/filter/tab rows do not visually cover it. Used by Run Clubs, Chats, and Profile. |
@@ -765,7 +862,10 @@ Generated 2026-05-06.
 | `_MapPlaceholder` | `lib/core/widgets/run_card.dart:547` | Stylized faux map painted with `CustomPaint` — land, water, roads, city blocks, a park, and a primary-colored route overlay. |
 | `_ButtonLabel` | `lib/core/widgets/catch_button.dart:141` | Internal label+icon row for `CatchButton`. |
 | `_LoadingDots` | `lib/core/widgets/catch_button.dart:193` | Three animated dots shown during `CatchButton`'s loading state. |
-| `SettingsRow` | `lib/core/widgets/settings_row.dart:25` | Settings-style row with icon, label, optional value, optional trailing widget (e.g., `Switch`), and a danger mode (primary-colored text). |
+| `SettingsRow` | `lib/core/widgets/settings_row.dart:25` | Settings-style row with icon, label, optional value, optional trailing widget (e.g., `Switch`), and a danger mode (primary-colored text). Label/value rows allocate separate left and right lanes so the value column right-aligns consistently. |
+| `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:9` | Profile row primitive with icon, label, value/valueEditor slot, animated row-height/value swap, compact closed label/value spacing, slightly roomier expanded editor spacing, and animated chevron state. |
+| `ProfileInlineDisclosure` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:113` | Animated profile inline-editor shell that pairs a row header with a drawer body. Use for row-owned edit interactions instead of manually inserting/removing editor widgets. |
+| `ProfileInlineAnimatedBody` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:137` | Animated open/close body used by profile disclosures, prompt-card editors, and legacy `ProfileInfoEntry.editor` bodies. Keeps body width stable while height/fade animates with Catch motion tokens. |
 
 ---
 
@@ -874,22 +974,22 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ChatsListScreen` | `lib/matches/presentation/matches_list_screen.dart:11` | "Chats" tab. Gates screen-owned streams while the retained tab branch is inactive, then renders the chat conversations list with a sliver header (search + new matches rail) and the list of `ChatListTile` widgets. |
+| `ChatsListScreen` | `lib/matches/presentation/matches_list_screen.dart:11` | "Chats" tab. Gates screen-owned streams while the retained tab branch is inactive, then renders the chat conversations list with a sliver header whose badge reports unique matches/people, not live active users. |
 | `ChatsList` | `lib/matches/presentation/widgets/chats_list.dart:13` | Sliver body for chat conversations fed from `ChatsListViewModel`. Uses a padded skeleton loading sliver, empty/error states, and delegates populated data to `ChatsListBody`. |
 | `MatchCelebrationDialog` | `lib/matches/presentation/widgets/match_celebration_dialog.dart:41` | Compatibility-named full-screen match celebration route. Uses `CatchCelebrationScreen` with match haptics, then routes the primary action into `ChatScreen` or dismisses back to swiping. |
 | `ChatListTile` | `lib/matches/presentation/chat_list_tile.dart:9` | Single chat thread row in the inbox. Shows `PersonRow` in chat-thread mode with name, last message, timestamp, unread badge, and on-tap navigation to `ChatScreen`. |
 | `ChatNewMatchesRail` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:10` | Horizontal rail of new match avatars at the top of the chats list. |
 | `_NewMatchAvatar` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:40` | Single new-match avatar in the rail — circular photo with name. |
 | `ChatSearchField` | `lib/matches/presentation/widgets/chat_search_field.dart:6` | Search text field for filtering chats list. |
-| `ChatConversationsList` | `lib/matches/presentation/widgets/chat_conversations_list.dart:8` | The actual `ListView` of chat tiles, driven by `ChatsListViewModel`. |
+| `ChatConversationsList` | `lib/matches/presentation/widgets/chat_conversations_list.dart:8` | Headerless `ListView` of chat tiles, driven by `ChatsListViewModel`, with subtle row separators. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `ChatsEmptyState` | `lib/matches/presentation/widgets/chats_empty_state.dart:6` | Empty state shown when there are no chat conversations. |
-| `ChatsListBody` | `lib/matches/presentation/widgets/chats_list_body.dart:7` | Body wrapper for the chats list (manages scroll controller, etc.). |
-| `_TitleRow` | `lib/matches/presentation/widgets/chats_sliver_header.dart:16` | "Chats" title row in the chats sliver header. |
+| `ChatsListBody` | `lib/matches/presentation/widgets/chats_list_body.dart:7` | Body wrapper for the chats list. Shows new-match rail and headerless conversation rows without a second "Messages" title. |
+| `_TitleRow` | `lib/matches/presentation/widgets/chats_sliver_header.dart:16` | "Chats" title row in the chats sliver header. Its badge is a unique match/person count, not presence/active-user detection. |
 | `_SearchRow` | `lib/matches/presentation/widgets/chats_sliver_header.dart:70` | Pinned search-field row in the chats sliver header. Reserves enough height for the shared compact `CatchTextField`. |
 
 ---
@@ -915,7 +1015,7 @@ Generated 2026-05-06.
 | `_ChatMutationListeners` | `lib/chats/presentation/chat_screen.dart:288` | Mutation snackbar boundary for chat send/send-image/report/block errors. Keeps mutation feedback out of the rendering widgets. |
 | `ChatTopBar` | `lib/chats/presentation/widgets/chat_top_bar.dart:10` | Chat app bar with avatar/name title and menu actions for profile/report/block. Navigation stays in the top-bar action because it is route UI, while safety actions are callbacks into the controller layer. |
 | `ChatRunContextHeader` | `lib/chats/presentation/widgets/chat_run_context_header.dart:9` | Header inside the chat showing the shared run context — run icon, run name, and date. |
-| `ChatMessageList` | `lib/chats/presentation/widgets/chat_message_list.dart:11` | Message-list renderer for loading, error, empty, and populated states. Uses `CatchEmptyState` for empty threads and `MessageBubble` for individual messages. |
+| `ChatMessageList` | `lib/chats/presentation/widgets/chat_message_list.dart:11` | Message-list renderer for loading, error, empty, and populated states. Uses `CatchEmptyState` for empty threads and variable-height `MessageBubble` rows for individual messages. Do not add `prototypeItem`/fixed item extents because chat bubbles can wrap or contain images. |
 | `ChatInputBar` | `lib/chats/presentation/widgets/chat_input_bar.dart:7` | Message input bar with text field, image picker button, and send button. |
 | `MessageBubble` | `lib/chats/presentation/widgets/message_bubble.dart:6` | Single chat message bubble. Renders differently for sent vs. received messages (alignment, color, corner rounding). Shows timestamp and optional image attachment. |
 
@@ -947,31 +1047,31 @@ Generated 2026-05-06.
 | `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:16` | Profile tab destination. Gates screen-owned streams while the retained tab branch is inactive, owns the route-level top safe area, uses `NestedScrollView` for a scroll-away Profile title header plus pinned `Edit`/`Preview` tab row, and native `TabBarView` paging for smooth horizontal tab swipes. The scroll-away title remains a normal outer sliver; the pinned tab row is wrapped in `SliverOverlapAbsorber`; each tab body starts with `SliverOverlapInjector`. Owns the `TabController` locally because tab selection is route UI state. |
 | `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone profile tab content. Wraps the shared profile sections in a `ListView` for isolated/non-sliver usage. Uses `profileTabBodyPadding` for the shared Profile tab inset. `Display name` is the first editable About field and is the only public-facing profile name; onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Optional/profile-detail fields, including Instagram, remain editable. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
 | `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:48` | Sliver-native profile tab body. Reuses the same profile sections as `ProfileTab` but contributes a padded `SliverList` for parent `CustomScrollView` usage. Uses the same `profileTabBodyPadding` as Preview. |
-| `_OverflowMenu` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:109` | Overflow menu in the scroll-away profile title header (payments, sign out). |
-
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared swipe `ProfileCard`, with owner-provided scroll and leading-overscroll callbacks when mounted inside ProfileScreen. |
 | `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:24` | Grouped section of `ProfileInfoTile` rows with a section header. |
-| `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:6` | Single tappable info row — icon, label, value, chevron. Opens the corresponding edit sheet on tap. |
+| `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:6` | Single profile info row with icon, label, value or in-row value editor, and animated expanded chevron. Row-owned edits expand inline rather than opening a field sheet; expanded editor values get a little more vertical breathing room than closed text values. |
 | `ProfilePromptCard` | `lib/user_profile/presentation/widgets/profile_prompt_card.dart:6` | Editable profile prompt card used by the signed-in profile bio section. Keeps its text hierarchy aligned with profile info rows: subdued body label plus body value/placeholder text. |
 | `_ProfileUnavailableBody` | `lib/user_profile/presentation/profile_screen.dart:103` | Missing-profile state. Prevents the profile route from rendering a blank body when the signed-in user profile is unavailable. |
 | `_PreviewTabSliverBody` | `lib/user_profile/presentation/profile_screen.dart:120` | Sliver-native preview body. Gives the shared `ProfileCard` bounded remaining viewport height inside the profile route's preview tab scroll view, passes a dedicated card scroll controller, applies `profileTabBodyPadding` inside the filled child so the card inset persists when the card scrolls back to top, and bridges card leading overscroll to the outer Profile header. |
-| `_ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:29` | Scroll-away Profile title row with settings and overflow actions. |
-| `_ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:66` | Pinned Edit/Preview tab bar surface for the sliver-native profile route. The route-level `SafeArea` keeps it below device cutouts without adding an expanded-header gap. |
-| `_SettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:96` | Settings gear button in the scroll-away profile title header. |
+| `_ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:25` | Scroll-away Profile title row with one Settings action. Account actions live inside Settings, not in a second header overflow menu. |
+| `_ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:55` | Pinned Edit/Preview tab bar surface for the sliver-native profile route. The route-level `SafeArea` keeps it below device cutouts without adding an expanded-header gap. |
+| `_SettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:82` | Settings gear button in the scroll-away profile title header. |
+| `ProfileInlineEditableText` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:105` | Row-value editable text primitive built on `EditableText`. Preserves the closed row value style/position and signals focus with cursor, selection, and a text-width underline instead of a boxed field. |
 
 ### StatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_TextEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:101` | Modal text editor for profile fields. Accepts field-specific keyboard, capitalization, autofill, shared validators from `profile_validation.dart`, optional value normalization, and save-before-pop mutation feedback. Keeps the sheet open with inline error feedback on failed saves. |
-| `_HeightEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:225` | Bounded height editor using `CatchNumberStepper` instead of free-text input. Saves only values between the shared profile height minimum and maximum, locks controls while saving, and closes only after persistence succeeds. |
-| `_SingleEnumEditSheet<T>` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:345` | Optional single-choice profile editor. Preserves an empty visual selection when the field is null, saves the tapped chip through `ProfileEditController`, shows inline pending feedback while saving, clears optimistic pending highlight on failed saves, and closes only after the mutation succeeds. |
-| `_MultiEnumEditSheet<T>` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:460` | Multi-choice profile editor. Owns local selected-chip state, disables chips while saving, and persists through the profile edit mutation before dismissing. |
-| `_RangeEditSheet` | `lib/user_profile/presentation/widgets/profile_edit_sheet.dart:568` | Range editor currently used for editable profile pace. Owns temporary slider state, disables the slider while saving, routes through `CatchRangeSlider` for tickless styling, and closes only after the mutation succeeds. |
+| `ProfileInlineTextEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:221` | Standalone inline text editor used by the Bio prompt card. Owns local text field state, saves through `ProfileEditController`, and uses the shared inline editor panel for errors/actions. |
+| `ProfileInlineTextEntryEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:328` | Row-owned text editor that turns the `ProfileInfoTile` value into `ProfileInlineEditableText` and keeps validation plus trailing `Cancel`/`Done` actions in the shared inline panel. |
+| `ProfileInlineHeightEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:473` | Inline bounded height editor using `CatchNumberStepper` and the shared inline editor panel. |
+| `ProfileInlineSingleChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:533` | Row-owned nullable single-choice editor. Selected value renders in the row slot, available alternatives render below, and `Cancel`/`Done` owns commit/discard. |
+| `ProfileInlineMultiChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:656` | Row-owned multi-choice editor. Selected chips stay in the row slot with check icons, available alternatives render below, and optional fields allow deselecting row chips. |
+| `ProfileInlineRangeEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:912` | Inline range editor using `CatchRangeSlider`, local draft range state, endpoint labels for slider bounds, and the shared inline editor panel. The row owns the selected range display, so the editor does not repeat it above the slider. |
 
 ---
 
@@ -1229,22 +1329,22 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `SettingsScreen` | `lib/safety/presentation/settings_screen.dart:26` | Full settings screen. Manages optimistic notification toggle state, wraps settings mutations in shared snackbar error feedback, delegates writes to `SettingsController`, and composes account, discovery, notification, safety, about, and delete-account sections. |
+| `SettingsScreen` | `lib/safety/presentation/settings_screen.dart:29` | Full settings screen. Manages optimistic notification toggle state, wraps settings and sign-out mutations in shared snackbar error feedback, delegates preference/deletion/unblock writes to `SettingsController`, owns sign out through `AuthSessionController`, and composes account/history, discovery, notification, safety, about, and delete-account sections. |
 
 ### ConsumerWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:345` | Section listing blocked accounts. Uses `CatchLoadingIndicator` for loading, `CatchEmptyState` for empty/error states, and renders `_BlockedAccountTile` rows for blocked users. |
-| `_BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:404` | Single blocked account row. Resolves the blocked user's public profile, renders a `PersonRow`, and routes the semantic unblock button through `SettingsController.unblockUserMutation`. |
+| `_BlockedAccountsSection` | `lib/safety/presentation/settings_screen.dart:454` | Section listing blocked accounts. Uses `CatchLoadingIndicator` for loading, `CatchEmptyState` for empty/error states, and renders `_BlockedAccountTile` rows for blocked users. |
+| `_BlockedAccountTile` | `lib/safety/presentation/settings_screen.dart:513` | Single blocked account row. Resolves the blocked user's public profile, renders a `PersonRow`, and routes the semantic unblock button through `SettingsController.unblockUserMutation`. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `_SettingsSection` | `lib/safety/presentation/settings_screen.dart:311` | Private section helper that pairs a `SectionHeader` with the shared settings card shell. |
-| `_SettingsCard` | `lib/safety/presentation/settings_screen.dart:329` | Private `CatchSurface` wrapper for settings row groups. |
-| `SettingsKeys` | `lib/safety/presentation/settings_keys.dart:3` | Stable semantic keys for settings switches, delete-account row, and blocked-user unblock buttons. |
+| `_SettingsSection` | `lib/safety/presentation/settings_screen.dart:420` | Private section helper that pairs a `SectionHeader` with the shared settings card shell. |
+| `_SettingsCard` | `lib/safety/presentation/settings_screen.dart:438` | Private `CatchSurface` wrapper for settings row groups. |
+| `SettingsKeys` | `lib/safety/presentation/settings_keys.dart:3` | Stable semantic keys for account action rows, settings switches, delete-account row, and blocked-user unblock buttons. |
 | `showConfirmDangerDialog` | `lib/core/widgets/confirm_danger_dialog.dart:4` | Shared destructive confirmation dialog helper used by safety/account actions such as block and delete-account confirmations. |
 
 ---

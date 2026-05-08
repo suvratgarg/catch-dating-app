@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
@@ -14,6 +16,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
+import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_sliver_header.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
@@ -127,8 +130,9 @@ void main() {
       expect(find.text('Edit profile'), findsNothing);
       expect(find.text('Preview profile'), findsNothing);
       expect(find.text('You'), findsNothing);
+      expect(find.byTooltip('More profile actions'), findsNothing);
       expect(
-        tester.getTopRight(find.byTooltip('More profile actions')).dx,
+        tester.getTopRight(find.byTooltip('Settings')).dx,
         lessThanOrEqualTo(370),
       );
       expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThan(190));
@@ -492,19 +496,121 @@ void main() {
     await tester.tap(displayNameTile);
     await _pumpProfileSheet(tester);
 
-    await tester.enterText(find.byType(CatchTextField), '   ');
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    expect(
+      find.descendant(
+        of: displayNameTile,
+        matching: find.byType(ProfileInlineEditableText),
+      ),
+      findsOneWidget,
+    );
+    expect(
+      find.descendant(
+        of: displayNameTile,
+        matching: find.byType(CatchTextField),
+      ),
+      findsNothing,
+    );
+    expect(find.text('Display name'), findsOneWidget);
+
+    var inlineEditable = find.descendant(
+      of: displayNameTile,
+      matching: find.byType(EditableText),
+    );
+    await tester.enterText(inlineEditable, '   ');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await tester.pump();
 
     expect(find.text('Display name is required'), findsOneWidget);
     expect(repository.updatedFields, isNull);
 
-    await tester.enterText(find.byType(CatchTextField), ' S. ');
-    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    inlineEditable = find.descendant(
+      of: displayNameTile,
+      matching: find.byType(EditableText),
+    );
+    await tester.enterText(inlineEditable, ' S. ');
+    await tester.testTextInput.receiveAction(TextInputAction.done);
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {'displayName': 'S.'});
     expect(find.byType(CatchTextField), findsNothing);
+  });
+
+  testWidgets('inline editable text underline follows scaled text width', (
+    tester,
+  ) async {
+    final controller = TextEditingController(text: '+919131404263');
+    final focusNode = FocusNode();
+    addTearDown(controller.dispose);
+    addTearDown(focusNode.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Builder(
+          builder: (context) {
+            return MediaQuery(
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(1.35)),
+              child: Scaffold(
+                body: Center(
+                  child: SizedBox(
+                    width: 340,
+                    child: ProfileInlineEditableText(
+                      label: 'Phone',
+                      controller: controller,
+                      focusNode: focusNode,
+                      enabled: true,
+                      keyboardType: TextInputType.phone,
+                    ),
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final context = tester.element(find.byType(ProfileInlineEditableText));
+    final t = CatchTokens.of(context);
+    final style = CatchTextStyles.bodyL(context, color: t.ink);
+    final painter = TextPainter(
+      text: TextSpan(text: controller.text, style: style),
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final underline = find.descendant(
+      of: find.byType(ProfileInlineEditableText),
+      matching: find.byType(AnimatedContainer),
+    );
+
+    expect(tester.getSize(underline).width, closeTo(painter.width, 0.1));
+  });
+
+  testWidgets('profile inline drawers animate open and closed', (tester) async {
+    final user = buildUser(name: 'Suvrat Garg').copyWith(height: 172);
+    await _pumpProfileTab(tester, user);
+
+    final heightTile = _profileInfoTile('Height');
+    await _dragProfileTabUntilVisible(tester, heightTile);
+    await tester.tap(heightTile);
+    await _pumpProfileSheet(tester);
+
+    expect(find.byType(ProfileInlineAnimatedBody), findsWidgets);
+    expect(find.byTooltip('Increase height'), findsOneWidget);
+
+    await tester.tap(heightTile);
+    await tester.pump();
+
+    expect(find.byTooltip('Increase height'), findsOneWidget);
+
+    await _pumpProfileSheet(tester);
+
+    expect(find.byTooltip('Increase height'), findsNothing);
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('ProfileTab omits private discovery filters', (tester) async {
@@ -531,6 +637,14 @@ void main() {
     // Inline editor is open with the shared range slider and Done button.
     expect(find.byType(CatchRangeSlider), findsOneWidget);
     expect(find.byType(RangeSlider), findsOneWidget);
+    expect(find.text('5:00 - 7:00 /km'), findsNothing);
+    expect(find.text('4:00/km'), findsOneWidget);
+    expect(find.text('9:00/km'), findsOneWidget);
+    final catchRangeSlider = tester.widget<CatchRangeSlider>(
+      find.byType(CatchRangeSlider),
+    );
+    expect(catchRangeSlider.minLabel, '4:00/km');
+    expect(catchRangeSlider.maxLabel, '9:00/km');
     expect(
       tester
           .widget<SliderTheme>(
@@ -581,7 +695,10 @@ void main() {
     await tester.tap(emailTile);
     await _pumpProfileSheet(tester);
 
-    final field = tester.widget<CatchTextField>(find.byType(CatchTextField));
+    expect(find.byType(CatchTextField), findsNothing);
+    final field = tester.widget<ProfileInlineEditableText>(
+      find.byType(ProfileInlineEditableText),
+    );
     expect(field.keyboardType, TextInputType.emailAddress);
     expect(field.autofillHints, contains(AutofillHints.email));
   });
@@ -601,6 +718,7 @@ void main() {
 
     expect(find.byType(CatchTextField), findsNothing);
     expect(find.text('172 cm'), findsAtLeastNWidgets(1));
+    expect(find.text('120-220 cm'), findsNothing);
     expect(find.byTooltip('Decrease height'), findsOneWidget);
     expect(find.byTooltip('Increase height'), findsOneWidget);
     expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
@@ -704,7 +822,7 @@ void main() {
         );
         expect(firstChip.active, isFalse, reason: field.tileLabel);
 
-        await tester.tap(tile);
+        await tester.tap(find.byTooltip('Collapse ${field.tileLabel}'));
         await _pumpProfileSheet(tester);
       }
     },
@@ -787,9 +905,19 @@ void main() {
     await tester.tap(educationTile);
     await _pumpProfileSheet(tester);
 
+    expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
+    expect(
+      tester
+          .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
+          .active,
+      isTrue,
+    );
+
     await tester.tap(_catchChip(EducationLevel.highSchool.label));
     await _pumpProfileSheet(tester);
 
+    expect(find.text('+ Education'), findsOneWidget);
+    expect(_catchChip(EducationLevel.highSchool.label), findsOneWidget);
     expect(
       tester
           .widget<CatchChip>(_catchChip(EducationLevel.highSchool.label))
@@ -802,6 +930,69 @@ void main() {
 
     expect(repository.updatedFields, {'education': null});
     expect(_catchChip(EducationLevel.highSchool.label), findsNothing);
+  });
+
+  testWidgets('single-choice empty draft does not show stale saved value', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(
+      name: 'Suvrat Garg',
+    ).copyWith(relationshipGoal: RelationshipGoal.relationship);
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final lookingForTile = _profileInfoTile('Looking for');
+    await _dragProfileTabUntilVisible(tester, lookingForTile);
+    await tester.tap(lookingForTile);
+    await _pumpProfileSheet(tester);
+
+    expect(_catchChip(RelationshipGoal.relationship.label), findsOneWidget);
+
+    await tester.tap(_catchChip(RelationshipGoal.relationship.label));
+    await _pumpProfileSheet(tester);
+
+    final relationshipTexts = find.text(RelationshipGoal.relationship.label);
+    expect(relationshipTexts, findsOneWidget);
+    expect(find.text('+ Looking for'), findsOneWidget);
+    expect(
+      tester
+          .widget<CatchChip>(_catchChip(RelationshipGoal.relationship.label))
+          .active,
+      isFalse,
+    );
+  });
+
+  testWidgets('multi-choice selected chips move into the row value slot', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(
+      name: 'Suvrat Garg',
+    ).copyWith(languages: [Language.english]);
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final languagesTile = _profileInfoTile('Languages');
+    await _dragProfileTabUntilVisible(tester, languagesTile);
+    await tester.tap(languagesTile);
+    await _pumpProfileSheet(tester);
+
+    expect(_catchChip(Language.english.label), findsOneWidget);
+    final selectedLanguageChip = tester.widget<CatchChip>(
+      _catchChip(Language.english.label),
+    );
+    expect(selectedLanguageChip.active, isTrue);
+    expect(selectedLanguageChip.icon, isA<Icon>());
+    expect((selectedLanguageChip.icon! as Icon).icon, Icons.check_rounded);
+
+    await tester.tap(_catchChip(Language.english.label));
+    await _pumpProfileSheet(tester);
+
+    expect(_catchChip(Language.english.label), findsOneWidget);
+    expect(
+      tester.widget<CatchChip>(_catchChip(Language.english.label)).active,
+      isFalse,
+    );
+    expect(repository.updatedFields, isNull);
   });
 
   testWidgets('single-choice save shows pending state before closing', (

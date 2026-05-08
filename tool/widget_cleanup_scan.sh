@@ -251,6 +251,55 @@ scan_profile_inline_chip_clear_actions() {
   printf '%s\n' "$output" | sed -n "1,${max_lines}p"
 }
 
+scan_profile_stacked_text_tile_editors() {
+  echo
+  echo "==> Profile text tile editors that stack a separate text field below the row"
+  local raw
+  raw="$(rg -n --with-filename --fixed-strings 'ProfileInfoEntry(' lib/user_profile/presentation/widgets/profile_tab.dart || true)"
+
+  local output=""
+  while IFS=: read -r file line _; do
+    [[ -z "$file" || -z "$line" ]] && continue
+    local end=$((line + 48))
+    local context
+    context="$(sed -n "${line},${end}p" "$file")"
+    if grep -Fq 'ProfileInlineTextEditor(' <<<"$context"; then
+      output+="${file}:${line}:$(sed -n "${line}p" "$file")"$'\n'
+    fi
+  done <<<"$raw"
+
+  output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
+  if [[ -z "$output" ]]; then
+    echo "No matches."
+    return
+  fi
+
+  local count
+  count="$(printf '%s\n' "$output" | wc -l | tr -d ' ')"
+  echo "$count match(es). Showing first $max_lines:"
+  printf '%s\n' "$output" | sed -n "1,${max_lines}p"
+}
+
+scan_profile_stacked_chip_tile_editors() {
+  echo
+  echo "==> Profile chip tile editors that stack selected chips below the row"
+  local output
+  output="$(rg -n --with-filename \
+    'ProfileInline(Single|Multi)ChoiceEditor<' \
+    lib/user_profile/presentation/widgets/profile_tab.dart || true)"
+
+  output="$(printf '%s\n' "$output" | sed '/^$/d' || true)"
+  if [[ -z "$output" ]]; then
+    echo "No matches."
+    return
+  fi
+
+  local count
+  count="$(printf '%s\n' "$output" | wc -l | tr -d ' ')"
+  echo "$count match(es). Showing first $max_lines:"
+  printf '%s\n' "$output" | sed -n "1,${max_lines}p"
+}
+
 scan_raw_range_sliders() {
   echo
   echo "==> Raw range sliders that should use CatchRangeSlider"
@@ -453,6 +502,10 @@ scan_profile_bottom_sheet_editors
 scan_profile_inline_chip_labels
 
 scan_profile_inline_chip_clear_actions
+
+scan_profile_stacked_text_tile_editors
+
+scan_profile_stacked_chip_tile_editors
 
 scan_white_pill_ctas
 

@@ -23,6 +23,7 @@ class _TitleRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final countLabel = count == 1 ? '1 match' : '$count matches';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -57,7 +58,7 @@ class _TitleRow extends StatelessWidget {
               borderRadius: BorderRadius.circular(CatchRadius.pill),
             ),
             child: Text(
-              '$count active',
+              countLabel,
               style: CatchTextStyles.labelL(context, color: t.primary),
             ),
           ),

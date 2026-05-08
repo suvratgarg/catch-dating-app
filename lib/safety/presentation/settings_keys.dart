@@ -10,6 +10,9 @@ abstract final class SettingsKeys {
   );
   static const clubUpdatesSwitch = ValueKey('settings.clubUpdates.switch');
   static const weeklyDigestSwitch = ValueKey('settings.weeklyDigest.switch');
+  static const reviewHistoryRow = ValueKey('settings.reviewHistory.row');
+  static const paymentHistoryRow = ValueKey('settings.paymentHistory.row');
+  static const signOutRow = ValueKey('settings.signOut.row');
   static const deleteAccountRow = ValueKey('settings.deleteAccount.row');
 
   static Key unblockButton(String uid) => ValueKey('settings.unblock.$uid');

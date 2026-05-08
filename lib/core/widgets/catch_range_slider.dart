@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 /// Canonical Catch range slider.
@@ -13,6 +15,8 @@ class CatchRangeSlider extends StatelessWidget {
     this.max = 100,
     this.divisions,
     this.labels,
+    this.minLabel,
+    this.maxLabel,
     this.semanticFormatterCallback,
   });
 
@@ -22,11 +26,14 @@ class CatchRangeSlider extends StatelessWidget {
   final double max;
   final int? divisions;
   final RangeLabels? labels;
+  final String? minLabel;
+  final String? maxLabel;
   final SemanticFormatterCallback? semanticFormatterCallback;
 
   @override
   Widget build(BuildContext context) {
-    return SliderTheme(
+    final t = CatchTokens.of(context);
+    final slider = SliderTheme(
       data: SliderTheme.of(context).copyWith(
         activeTickMarkColor: Colors.transparent,
         inactiveTickMarkColor: Colors.transparent,
@@ -42,6 +49,31 @@ class CatchRangeSlider extends StatelessWidget {
         semanticFormatterCallback: semanticFormatterCallback,
         onChanged: onChanged,
       ),
+    );
+
+    if (minLabel == null && maxLabel == null) return slider;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        slider,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s2),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                minLabel ?? '',
+                style: CatchTextStyles.bodyS(context, color: t.ink3),
+              ),
+              Text(
+                maxLabel ?? '',
+                style: CatchTextStyles.bodyS(context, color: t.ink3),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

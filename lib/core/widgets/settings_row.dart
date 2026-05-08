@@ -58,13 +58,16 @@ class SettingsRow extends StatelessWidget {
                 context,
                 color: color,
               ).copyWith(fontWeight: FontWeight.w600),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
           ),
           if (trailing != null)
             trailing!
           else ...[
-            if (value != null)
-              Flexible(
+            if (value != null) ...[
+              gapW12,
+              Expanded(
                 child: Text(
                   value!,
                   textAlign: TextAlign.right,
@@ -73,6 +76,7 @@ class SettingsRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
+            ],
             if (onTap != null) ...[
               gapW6,
               Icon(Icons.chevron_right_rounded, color: t.ink3),

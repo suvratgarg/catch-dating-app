@@ -110,6 +110,29 @@ void main() {
     expect(find.text('Account unblocked.'), findsOneWidget);
   });
 
+  testWidgets('account section owns profile history actions and sign out', (
+    tester,
+  ) async {
+    final authRepository = _FakeSettingsAuthRepository();
+    final container = _settingsContainer(
+      user: buildUser(uid: 'runner-1'),
+      blockedUsers: const [],
+      authRepository: authRepository,
+    );
+    addTearDown(container.dispose);
+
+    await _pumpSettings(tester, container);
+
+    expect(find.byKey(SettingsKeys.reviewHistoryRow), findsOneWidget);
+    expect(find.byKey(SettingsKeys.paymentHistoryRow), findsOneWidget);
+    expect(find.byKey(SettingsKeys.signOutRow), findsOneWidget);
+
+    await tester.tap(find.byKey(SettingsKeys.signOutRow));
+    await pumpFeatureUi(tester);
+
+    expect(authRepository.signOutCallCount, 1);
+  });
+
   testWidgets('delete account confirmation delegates to controller', (
     tester,
   ) async {
@@ -155,11 +178,15 @@ ProviderContainer _settingsContainer({
   required List<BlockedUser> blockedUsers,
   UserProfileRepository? userRepository,
   SafetyRepository? safetyRepository,
+  AuthRepository? authRepository,
   Map<String, PublicProfile> publicProfiles = const {},
 }) {
   final container = ProviderContainer(
     overrides: [
       uidProvider.overrideWith((ref) => Stream.value(user.uid)),
+      authRepositoryProvider.overrideWithValue(
+        authRepository ?? _FakeSettingsAuthRepository(),
+      ),
       watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
       userProfileRepositoryProvider.overrideWith(
         (ref) => userRepository ?? _FakeSettingsUserProfileRepository(),
@@ -246,5 +273,14 @@ class _FakeSettingsSafetyRepository extends Fake implements SafetyRepository {
   @override
   Future<void> unblockUser({required String targetUserId}) async {
     unblockedUserId = targetUserId;
+  }
+}
+
+class _FakeSettingsAuthRepository extends Fake implements AuthRepository {
+  int signOutCallCount = 0;
+
+  @override
+  Future<void> signOut() async {
+    signOutCallCount += 1;
   }
 }

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/widgets/catch_vertical_section.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/chat_list_tile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -17,8 +17,12 @@ class ChatConversationsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchVerticalSection(
-      title: 'Messages',
+    final t = CatchTokens.of(context);
+
+    return ListView.separated(
+      padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
       itemCount: matches.length,
       itemBuilder: (context, index) {
         final match = matches[index];
@@ -31,6 +35,11 @@ class ChatConversationsList extends StatelessWidget {
           ),
         );
       },
+      separatorBuilder: (_, _) => Divider(
+        height: 1,
+        indent: 72,
+        color: t.line,
+      ),
     );
   }
 }

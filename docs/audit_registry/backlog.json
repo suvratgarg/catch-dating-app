@@ -1,5 +1,5 @@
 {
-  "version": "2.3.25",
+  "version": "2.3.30",
   "updated": "2026-05-08",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, and stable debt ids. Do not reread archived markdown history unless a debt id points there.",
@@ -17,15 +17,17 @@
       "profile_bottom_sheet_editor_candidates": 0,
       "profile_inline_chip_label_candidates": 0,
       "profile_inline_chip_clear_action_candidates": 0,
+      "profile_stacked_text_tile_editor_candidates": 0,
+      "profile_stacked_chip_tile_editor_candidates": 0,
       "fixed_white_pill_cta_candidates": 0,
       "raw_range_slider_candidates": 0,
       "raw_number_stepper_candidates": 0,
       "feature_tappable_candidates": 1,
       "literal_sized_box_spacing_candidates": 175,
-      "raw_decorated_surface_candidates": 65,
+      "raw_decorated_surface_candidates": 66,
       "unstyled_text_candidates": 15,
       "legacy_spacing_canonical_candidates": 0,
-      "fine_grained_spacing_compatibility": 19,
+      "fine_grained_spacing_compatibility": 17,
       "presentation_plugin_imports": 0,
       "raw_error_surface_candidates": 0
     },
@@ -40,6 +42,12 @@
       "Profile bottom-sheet editor scanner reports zero candidates after moving normal Edit Profile field edits to inline expansion.",
       "Profile inline chip-label scanner reports zero candidates after hiding repeated ChipField labels inside expanded profile tiles.",
       "Profile inline chip Clear-action scanner reports zero candidates after moving nullable single-choice chip clearing to tap-selected-chip-again plus Done.",
+      "Profile stacked text-tile editor scanner reports zero candidates after moving normal text Profile rows to in-row value editing.",
+      "Profile stacked chip-tile editor scanner reports zero candidates after moving selected Profile chips into the row value slot and showing only available alternatives below.",
+      "Profile inline drawers now use ProfileInlineDisclosure/ProfileInlineAnimatedBody for shared open/close motion and dynamic body-height changes.",
+      "Profile inline drawers now preserve full width while animating vertical reveal/fade, preventing Cancel/Done action rows from sliding sideways. Shared inline editor panel owns profile editor padding, save errors, and action placement.",
+      "Profile row-owned text editors now use ProfileInlineEditableText so active text keeps the closed row style and icon-relative position with only cursor and text-width underline feedback.",
+      "The decorated-surface scanner includes the ProfileInlineEditableText underline AnimatedContainer; that is intentional primitive-local focus chrome, not a feature-local card/surface.",
       "ChipField now enforces optionality for empty selections: optional fields may clear, required single-/multi-choice fields keep at least one selected value.",
       "CatchChip now constrains long labels so inline chip editors do not need field-local overflow patches.",
       "The 2026-05-08 scanner snapshot was taken in a dirty worktree with unrelated run-club draft UI changes; broad decorated-surface and unstyled-Text counts include that active work.",
@@ -62,7 +70,7 @@
       "rules": [
         "SLIVER-001"
       ],
-      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. Normal Edit Profile field edits now expand inline inside the profile list instead of opening bottom sheets; the old profile field bottom-sheet file was removed, nullable single-choice editors keep no chip selected for null values, and regression tests cover inline save/error/pending states. Profile inline chip editors no longer repeat their row label, nullable single-choice chips can be cleared by tapping the selected chip again, and single-choice chip changes now wait for the shared Cancel/Done footer before saving. The Profile NestedScrollView overlap contract is explicit in code, but physical testing still shows an unresolved bug: when the user scrolls upward from the Preview tab at the top of the internal profile card, the outer Profile header does not reliably return unless the gesture starts near the tab row. Do not mark this complete until the preview-card leading overscroll expands the outer header continuously on device.",
+      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. Normal Edit Profile field edits now expand inline inside the profile list instead of opening bottom sheets; the old profile field bottom-sheet file was removed, nullable single-choice editors keep no chip selected for null values, and regression tests cover inline save/error/pending states. Normal text Profile rows now edit in the row value slot instead of stacking a separate text field below the row, using ProfileInlineEditableText so active values preserve closed-row typography and position with cursor plus text-width underline feedback rather than a boxed field. Profile inline chip editors no longer repeat their row label, nullable single-choice chips can be cleared by tapping the selected chip again, single-choice chip changes now wait for the shared Cancel/Done footer before saving, and selected enum chips now render in the row value slot while expanded so the option list only shows available alternatives. Inline profile drawers now open/close through the shared animated disclosure shell, including dynamic body-height changes for chip edits. The drawer body now preserves full width while animating vertical reveal/fade so action rows do not slide sideways, and the shared inline editor panel owns padding, save errors, and trailing Cancel/Done placement. The Profile header now exposes only Settings; review history, payment history, and sign out live in Settings account rows. The Profile NestedScrollView overlap contract is explicit in code, but physical testing still shows an unresolved bug: when the user scrolls upward from the Preview tab at the top of the internal profile card, the outer Profile header does not reliably return unless the gesture starts near the tab row. Do not mark this complete until the preview-card leading overscroll expands the outer header continuously on device.",
       "paths": [
         "lib/user_profile/presentation/profile_screen.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
