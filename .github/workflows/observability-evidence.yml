@@ -1,0 +1,40 @@
+name: Observability Evidence
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Environment where the evidence was captured.
+        required: true
+        default: staging
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      crashlytics_evidence:
+        description: Crashlytics issue URL or dashboard note.
+        required: true
+        type: string
+      analytics_evidence:
+        description: Analytics DebugView URL or dashboard note.
+        required: true
+        type: string
+
+jobs:
+  record:
+    name: Record observability evidence
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Write evidence summary
+        run: |
+          {
+            echo "## Observability evidence"
+            echo
+            echo "- Environment: \`${{ inputs.environment }}\`"
+            echo "- Crashlytics: ${{ inputs.crashlytics_evidence }}"
+            echo "- Analytics DebugView: ${{ inputs.analytics_evidence }}"
+            echo
+            echo "This workflow records dashboard evidence in the Actions run summary."
+          } >> "$GITHUB_STEP_SUMMARY"

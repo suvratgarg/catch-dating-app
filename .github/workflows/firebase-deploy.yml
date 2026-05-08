@@ -1,0 +1,85 @@
+name: Firebase Deploy
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Firebase environment alias to deploy.
+        required: true
+        default: staging
+        type: choice
+        options:
+          - dev
+          - staging
+          - prod
+      targets:
+        description: Comma-separated Firebase deploy targets.
+        required: true
+        default: firestore:rules,firestore:indexes,storage,functions
+        type: string
+
+concurrency:
+  group: firebase-deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - run: npm --prefix functions ci
+
+      - run: npm install -g firebase-tools
+
+      - name: Select Firebase service account
+        env:
+          FIREBASE_SERVICE_ACCOUNT_DEV: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
+          FIREBASE_SERVICE_ACCOUNT_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
+          FIREBASE_SERVICE_ACCOUNT_PROD: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}
+        run: |
+          case "${{ inputs.environment }}" in
+            dev) service_account="$FIREBASE_SERVICE_ACCOUNT_DEV" ;;
+            staging) service_account="$FIREBASE_SERVICE_ACCOUNT_STAGING" ;;
+            prod) service_account="$FIREBASE_SERVICE_ACCOUNT_PROD" ;;
+            *) echo "Unsupported environment: ${{ inputs.environment }}" >&2; exit 1 ;;
+          esac
+
+          if [[ -z "$service_account" ]]; then
+            echo "Missing FIREBASE_SERVICE_ACCOUNT_${{ inputs.environment }} secret." >&2
+            exit 1
+          fi
+
+          credentials_path="$RUNNER_TEMP/firebase-service-account.json"
+          printf '%s' "$service_account" > "$credentials_path"
+          echo "GOOGLE_APPLICATION_CREDENTIALS=$credentials_path" >> "$GITHUB_ENV"
+
+      - name: Contract check
+        run: node tool/check_firestore_contract.mjs
+
+      - name: Functions lint
+        run: npm --prefix functions run lint
+
+      - name: Functions tests
+        run: npm --prefix functions test
+
+      - name: Firestore rules tests
+        run: firebase emulators:exec --only firestore "npm --prefix functions run test:rules"
+
+      - name: Deploy selected Firebase targets
+        run: ./tool/firebase_with_env.sh "${{ inputs.environment }}" deploy --only "${{ inputs.targets }}" --non-interactive

@@ -53,23 +53,23 @@ Future<List<PersonAvatarItem>> runHypeAvatars(
     query.viewerInterestedInGenders.toSet(),
   );
   if (eligibleParticipations.isEmpty) return const [];
+  final visibleParticipations = eligibleParticipations.take(query.limit);
 
   final profiles = await ref
       .watch(publicProfileRepositoryProvider)
       .fetchPublicProfiles(
-        eligibleParticipations
+        visibleParticipations
             .map((participation) => participation.uid)
             .toList(),
       );
   final profilesByUid = {for (final profile in profiles) profile.uid: profile};
 
   final items = <PersonAvatarItem>[];
-  final interestedIn = query.viewerInterestedInGenders.toSet();
-  for (final participation in eligibleParticipations) {
+  for (final participation in visibleParticipations) {
     final profile = profilesByUid[participation.uid];
     if (profile == null) {
       items.add(PersonAvatarItem(name: participation.uid));
-    } else if (interestedIn.isEmpty || interestedIn.contains(profile.gender)) {
+    } else {
       items.add(
         PersonAvatarItem(
           name: profile.name,

@@ -1,0 +1,46 @@
+name: Functions CI
+
+on:
+  pull_request:
+    paths:
+      - 'functions/**'
+      - 'firestore.rules'
+      - 'storage.rules'
+      - 'tool/check_firestore_contract.mjs'
+      - 'tool/firestore_contract.json'
+      - 'tool/firestore_ts_overlay.json'
+  push:
+    branches: [main]
+    paths:
+      - 'functions/**'
+      - 'firestore.rules'
+      - 'storage.rules'
+      - 'tool/check_firestore_contract.mjs'
+      - 'tool/firestore_contract.json'
+      - 'tool/firestore_ts_overlay.json'
+
+jobs:
+  lint-and-test:
+    name: Lint & test Functions
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+
+      - run: npm --prefix functions ci
+
+      - name: Firestore contract check
+        run: node tool/check_firestore_contract.mjs
+
+      - name: Functions lint
+        run: npm --prefix functions run lint
+
+      - name: Functions tests
+        run: npm --prefix functions test

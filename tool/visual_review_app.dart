@@ -48,7 +48,7 @@ void main() {
     id: 'match-1',
     user1Id: 'runner-1',
     user2Id: 'runner-2',
-    runId: liveRun.id,
+    runIds: [liveRun.id],
     createdAt: DateTime.now().subtract(const Duration(hours: 3)),
     lastMessageAt: DateTime.now().subtract(const Duration(minutes: 18)),
     lastMessagePreview: 'Coffee after the next 10K?',
