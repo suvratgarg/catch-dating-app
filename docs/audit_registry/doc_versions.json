@@ -78,7 +78,7 @@
   },
   "backend_operation_catalog": {
     "path": "docs/backend_operation_catalog.md",
-    "version": "1.1.17",
+    "version": "1.1.18",
     "updated": "2026-05-08",
     "status": "active",
     "read_policy": "Read before changing repository writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for write paths, or notification fan-out."
@@ -148,7 +148,7 @@
   },
   "widget_cleanup": {
     "path": "docs/widget_cleanup_todo.md",
-    "version": "2.3.45",
+    "version": "2.3.46",
     "updated": "2026-05-08",
     "status": "active",
     "read_policy": "Use as a short human-readable pointer; use backlog.json for active machine-readable state including stream lifecycle and branded error UI queues."

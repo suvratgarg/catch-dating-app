@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/chat_repository.dart';
+import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
@@ -25,15 +25,12 @@ class _FakeMatchRepository implements MatchRepository {
 
   final List<Match> matches;
   final Match? match;
-  final List<(String, String)> resetUnreadCalls = [];
 
   @override
   Future<void> resetUnread({
     required String matchId,
     required String uid,
-  }) async {
-    resetUnreadCalls.add((matchId, uid));
-  }
+  }) async {}
 
   @override
   Stream<Match?> watchMatch({required String matchId}) => Stream.value(match);
@@ -43,28 +40,38 @@ class _FakeMatchRepository implements MatchRepository {
       Stream.value(matches);
 }
 
-class _FakeChatRepository implements ChatRepository {
+class _FakeConversationRepository implements ConversationRepository {
+  final List<(String matchId, String uid)> markReadCalls = [];
+
   @override
-  Future<void> sendMessage({
-    required String matchId,
+  Future<void> sendTextMessage({
+    required String conversationId,
     required String senderId,
     required String text,
   }) async {}
 
   @override
-  Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
+  Stream<List<ChatMessage>> watchMessages({required String conversationId}) =>
       const Stream.empty();
 
   @override
-  String createMessageId({required String matchId}) => 'message-1';
+  String createMessageId({required String conversationId}) => 'message-1';
 
   @override
   Future<void> sendImageMessage({
-    required String matchId,
+    required String conversationId,
     required String senderId,
     required String messageId,
     required String imageUrl,
   }) async {}
+
+  @override
+  Future<void> markRead({
+    required String conversationId,
+    required String uid,
+  }) async {
+    markReadCalls.add((conversationId, uid));
+  }
 }
 
 Match _buildMatch({
@@ -133,14 +140,16 @@ void main() {
     tester,
   ) async {
     final matchRepository = _FakeMatchRepository(matches: const []);
-    final chatRepository = _FakeChatRepository();
+    final conversationRepository = _FakeConversationRepository();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           matchRepositoryProvider.overrideWithValue(matchRepository),
-          chatRepositoryProvider.overrideWithValue(chatRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
           watchMatchesForUserProvider(
             'runner-1',
           ).overrideWith((ref) => Stream.value(const [])),
@@ -196,12 +205,14 @@ void main() {
   ) async {
     final match = _buildMatch();
     final matchRepository = _FakeMatchRepository(matches: [match]);
-    final chatRepository = _FakeChatRepository();
+    final conversationRepository = _FakeConversationRepository();
     final container = ProviderContainer(
       overrides: [
         uidProvider.overrideWith((ref) => Stream.value('runner-1')),
         matchRepositoryProvider.overrideWithValue(matchRepository),
-        chatRepositoryProvider.overrideWithValue(chatRepository),
+        conversationRepositoryProvider.overrideWithValue(
+          conversationRepository,
+        ),
         watchMatchesForUserProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value([match])),
@@ -262,14 +273,16 @@ void main() {
     );
     final matches = [olderTaylorMatch, latestTaylorMatch, morganMatch];
     final matchRepository = _FakeMatchRepository(matches: matches);
-    final chatRepository = _FakeChatRepository();
+    final conversationRepository = _FakeConversationRepository();
 
     await tester.pumpWidget(
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           matchRepositoryProvider.overrideWithValue(matchRepository),
-          chatRepositoryProvider.overrideWithValue(chatRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
           watchMatchesForUserProvider(
             'runner-1',
           ).overrideWith((ref) => Stream.value(matches)),
@@ -313,7 +326,7 @@ void main() {
       matches: [match],
       match: match,
     );
-    final chatRepository = _FakeChatRepository();
+    final conversationRepository = _FakeConversationRepository();
     final router = GoRouter(
       initialLocation: Routes.matchesListScreen.path,
       routes: [
@@ -342,7 +355,9 @@ void main() {
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
           matchRepositoryProvider.overrideWithValue(matchRepository),
-          chatRepositoryProvider.overrideWithValue(chatRepository),
+          conversationRepositoryProvider.overrideWithValue(
+            conversationRepository,
+          ),
           watchMatchesForUserProvider(
             'runner-1',
           ).overrideWith((ref) => Stream.value([match])),
@@ -352,7 +367,7 @@ void main() {
           watchPublicProfileProvider(
             'runner-2',
           ).overrideWith((ref) => Stream.value(profile)),
-          watchChatMessagesProvider(
+          watchConversationMessagesProvider(
             match.id,
           ).overrideWith((ref) => Stream.value(const [])),
         ],
@@ -369,6 +384,6 @@ void main() {
 
     expect(find.byType(ChatScreen), findsOneWidget);
     expect(find.text('Say hi to Taylor!'), findsOneWidget);
-    expect(matchRepository.resetUnreadCalls, [('match-1', 'runner-1')]);
+    expect(conversationRepository.markReadCalls, [('match-1', 'runner-1')]);
   });
 }

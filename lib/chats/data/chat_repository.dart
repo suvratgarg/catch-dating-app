@@ -20,6 +20,11 @@ String buildChatPreviewText(String text, {int maxLength = 80}) {
   return '${text.substring(0, maxLength)}…';
 }
 
+/// Firestore-backed message store for the current Catch chat schema.
+///
+/// UI and controllers should usually depend on `ConversationRepository` rather
+/// than this class directly. This repository intentionally remains a thin data
+/// adapter around `matches/{matchId}/messages`.
 class ChatRepository {
   ChatRepository(this._db);
 
@@ -105,7 +110,3 @@ class ChatRepository {
 @riverpod
 ChatRepository chatRepository(Ref ref) =>
     ChatRepository(ref.watch(firebaseFirestoreProvider));
-
-@riverpod
-Stream<List<ChatMessage>> watchChatMessages(Ref ref, String matchId) =>
-    ref.watch(chatRepositoryProvider).watchMessages(matchId: matchId);

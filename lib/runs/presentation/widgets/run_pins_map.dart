@@ -1,8 +1,9 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 class RunPinsMap extends StatefulWidget {
   const RunPinsMap({
@@ -17,7 +18,7 @@ class RunPinsMap extends StatefulWidget {
   });
 
   final List<Run> runs;
-  final LatLng initialCenter;
+  final LocationCoordinate initialCenter;
   final double initialZoom;
   final String? selectedRunId;
   final bool enableNetworkTiles;
@@ -29,14 +30,19 @@ class RunPinsMap extends StatefulWidget {
 }
 
 class _RunPinsMapState extends State<RunPinsMap> {
-  late final MapController _mapController;
-  late LatLng _lastAppliedCenter;
+  gmaps.GoogleMapController? _mapController;
+  late LocationCoordinate _lastAppliedCenter;
 
   @override
   void initState() {
     super.initState();
-    _mapController = MapController();
     _lastAppliedCenter = widget.initialCenter;
+  }
+
+  @override
+  void dispose() {
+    _mapController?.dispose();
+    super.dispose();
   }
 
   @override
@@ -46,82 +52,102 @@ class _RunPinsMapState extends State<RunPinsMap> {
     _lastAppliedCenter = widget.initialCenter;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _mapController.move(widget.initialCenter, _mapController.camera.zoom);
+      _mapController?.animateCamera(
+        gmaps.CameraUpdate.newLatLng(widget.initialCenter.toGoogleMapsLatLng()),
+      );
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final onRunSelected = widget.onRunSelected;
 
-    return FlutterMap(
-      mapController: _mapController,
-      options: MapOptions(
-        initialCenter: widget.initialCenter,
-        initialZoom: widget.initialZoom,
+    final pinnedRuns = widget.runs
+        .where((run) => run.hasExactStartingPoint)
+        .toList(growable: false);
+
+    if (!widget.enableNetworkTiles) {
+      return _RunPinsMapPlaceholder(
+        runs: pinnedRuns,
+        selectedRunId: widget.selectedRunId,
+        markerIcon: widget.markerIcon,
+        onRunSelected: onRunSelected,
+      );
+    }
+
+    return gmaps.GoogleMap(
+      initialCameraPosition: gmaps.CameraPosition(
+        target: widget.initialCenter.toGoogleMapsLatLng(),
+        zoom: widget.initialZoom,
       ),
-      children: [
-        if (widget.enableNetworkTiles)
-          TileLayer(
-            urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-            userAgentPackageName: 'com.catchdating.app',
-          )
-        else
-          ColoredBox(color: t.primarySoft),
-        MarkerLayer(
-          markers: [
-            for (final run in widget.runs.where(
-              (run) => run.hasExactStartingPoint,
-            ))
-              Marker(
-                point: LatLng(run.startingPointLat!, run.startingPointLng!),
-                width: 52,
-                height: 52,
-                child: Semantics(
-                  button: onRunSelected != null,
-                  selected: widget.selectedRunId == run.id,
-                  label: onRunSelected == null
-                      ? '${run.title} location'
-                      : 'Select ${run.title}',
-                  child: GestureDetector(
-                    onTap: onRunSelected == null
-                        ? null
-                        : () => onRunSelected(run),
-                    child: AnimatedScale(
-                      scale: widget.selectedRunId == run.id ? 1.14 : 1,
-                      duration: const Duration(milliseconds: 160),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          color: widget.selectedRunId == run.id
-                              ? t.primary
-                              : t.ink,
-                          shape: BoxShape.circle,
-                          boxShadow: const [
-                            BoxShadow(
-                              color: Color(0x33000000),
-                              blurRadius: 12,
-                              offset: Offset(0, 6),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          widget.markerIcon,
-                          color: widget.selectedRunId == run.id
-                              ? t.primaryInk
-                              : t.surface,
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-          ],
-        ),
-      ],
+      markers: {
+        for (final run in pinnedRuns)
+          gmaps.Marker(
+            markerId: gmaps.MarkerId(run.id),
+            position: gmaps.LatLng(
+              run.startingPointLat!,
+              run.startingPointLng!,
+            ),
+            infoWindow: gmaps.InfoWindow(title: run.title),
+            icon: widget.selectedRunId == run.id
+                ? gmaps.BitmapDescriptor.defaultMarkerWithHue(
+                    gmaps.BitmapDescriptor.hueOrange,
+                  )
+                : gmaps.BitmapDescriptor.defaultMarker,
+            onTap: onRunSelected == null ? null : () => onRunSelected(run),
+          ),
+      },
+      myLocationButtonEnabled: false,
+      mapToolbarEnabled: false,
+      zoomControlsEnabled: false,
+      compassEnabled: false,
+      onMapCreated: (controller) => _mapController = controller,
     );
   }
 }
 
-bool _samePoint(LatLng a, LatLng b) =>
+class _RunPinsMapPlaceholder extends StatelessWidget {
+  const _RunPinsMapPlaceholder({
+    required this.runs,
+    required this.selectedRunId,
+    required this.markerIcon,
+    required this.onRunSelected,
+  });
+
+  final List<Run> runs;
+  final String? selectedRunId;
+  final IconData markerIcon;
+  final ValueChanged<Run>? onRunSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return ColoredBox(
+      color: t.primarySoft,
+      child: Stack(
+        alignment: Alignment.center,
+        children: [
+          for (final run in runs)
+            Semantics(
+              button: onRunSelected != null,
+              selected: selectedRunId == run.id,
+              label: onRunSelected == null
+                  ? '${run.title} location'
+                  : 'Select ${run.title}',
+              child: GestureDetector(
+                onTap: onRunSelected == null ? null : () => onRunSelected!(run),
+                child: Icon(
+                  markerIcon,
+                  color: selectedRunId == run.id ? t.primary : t.ink,
+                  size: 42,
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+bool _samePoint(LocationCoordinate a, LocationCoordinate b) =>
     a.latitude == b.latitude && a.longitude == b.longitude;

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
@@ -13,10 +14,9 @@ import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/host_run_manage_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../test_pump_helpers.dart';
@@ -60,12 +60,14 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await tester.pump();
         expect(find.text('Required'), findsOneWidget);
+        expect(find.text('Pin a starting point'), findsOneWidget);
 
         await _enterCreateRunText(
           tester,
           CreateRunFormKeys.meetingPoint,
           'Bandra Fort',
         );
+        await _pickMapPoint(tester);
         await _enterCreateRunText(
           tester,
           CreateRunFormKeys.locationDetails,
@@ -115,6 +117,8 @@ void main() {
         expect(fakeRunRepository.createdRun, isNotNull);
         expect(fakeRunRepository.createdRun!.runClubId, 'club-1');
         expect(fakeRunRepository.createdRun!.meetingPoint, 'Bandra Fort');
+        expect(fakeRunRepository.createdRun!.startingPointLat, 19.12345);
+        expect(fakeRunRepository.createdRun!.startingPointLng, 72.98765);
         expect(
           fakeRunRepository.createdRun!.locationDetails,
           'Meet at the gate',
@@ -158,6 +162,7 @@ void main() {
           CreateRunFormKeys.meetingPoint,
           'Bandra Fort',
         );
+        await _pickMapPoint(tester);
         await _pumpTestAnimation(tester);
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
@@ -199,11 +204,12 @@ void main() {
       await tester.tap(find.byKey(CreateRunFormKeys.mapPicker));
       await _pumpTestAnimation(tester);
 
-      final flutterMap = tester.widget<FlutterMap>(find.byType(FlutterMap));
-      const selectedPoint = LatLng(19.12345, 72.98765);
-      flutterMap.options.onTap?.call(
-        const TapPosition(Offset.zero, Offset.zero),
-        selectedPoint,
+      final googleMap = tester.widget<gmaps.GoogleMap>(
+        find.byType(gmaps.GoogleMap),
+      );
+      const selectedPoint = LocationCoordinate(19.12345, 72.98765);
+      googleMap.onTap?.call(
+        gmaps.LatLng(selectedPoint.latitude, selectedPoint.longitude),
       );
       await tester.pump();
       await tester.tap(find.text('Confirm'));
@@ -440,6 +446,7 @@ Future<void> _submitValidRun(WidgetTester tester) async {
     CreateRunFormKeys.meetingPoint,
     'Bandra Fort',
   );
+  await _pickMapPoint(tester);
   await _enterCreateRunText(
     tester,
     CreateRunFormKeys.locationDetails,
@@ -460,6 +467,22 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await _enterCreateRunText(tester, CreateRunFormKeys.maxWomen, '9');
   await _pumpTestAnimation(tester);
   await _tapPrimaryButton(tester, 'Schedule run');
+  await _pumpTestAnimation(tester);
+}
+
+Future<void> _pickMapPoint(WidgetTester tester) async {
+  await tester.tap(find.byKey(CreateRunFormKeys.mapPicker));
+  await _pumpTestAnimation(tester);
+
+  final googleMap = tester.widget<gmaps.GoogleMap>(
+    find.byType(gmaps.GoogleMap),
+  );
+  const selectedPoint = LocationCoordinate(19.12345, 72.98765);
+  googleMap.onTap?.call(
+    gmaps.LatLng(selectedPoint.latitude, selectedPoint.longitude),
+  );
+  await tester.pump();
+  await tester.tap(find.text('Confirm'));
   await _pumpTestAnimation(tester);
 }
 

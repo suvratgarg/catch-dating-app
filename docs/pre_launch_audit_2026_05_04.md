@@ -149,7 +149,7 @@ This is the single biggest product reliability risk. One flaky host = dozens of 
 
 **Files:** `lib/core/indian_city.dart`, `firestore.rules:276-279`
 
-**Finding:** `IndianCity` is a Dart enum with 9 hardcoded values. The Firestore rules hardcode the same 9 values at line 276-279. Adding a city requires: a code change to the enum, a rules update, a deploy of both, and an app update (since the enum is compiled into the binary). The GPS-based city detection at `indian_city.dart:24` (`nearestCity()`) uses client-side Haversine over all 9 cities using the `latlong2` package.
+**Finding:** `IndianCity` is a Dart enum with 9 hardcoded values. The Firestore rules hardcode the same 9 values at line 276-279. Adding a city requires: a code change to the enum, a rules update, a deploy of both, and an app update (since the enum is compiled into the binary). The GPS-based city detection at `indian_city.dart:24` (`nearestCity()`) uses client-side Haversine over all 9 cities. This audit entry is historical; newer location code moved app-facing coordinates to `LocationCoordinate`.
 
 **Verified by:** Reading `indian_city.dart` and `firestore.rules:276-279`.
 

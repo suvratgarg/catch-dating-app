@@ -32,19 +32,23 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return CatchTopBar(
-      titleWidget: _ChatTitle(name: name, photoUrl: photoUrl),
+      titleWidget: _ChatTitle(
+        name: name,
+        photoUrl: photoUrl,
+        onTap: otherUid == null
+            ? null
+            : () => context.pushNamed(
+                Routes.publicProfileScreen.name,
+                pathParameters: {'uid': otherUid!},
+                extra: profile,
+              ),
+      ),
       actions: [
         if (otherUid != null)
           CatchTopBarMenuAction<String>(
             tooltip: 'Chat actions',
             onSelected: (value) {
               switch (value) {
-                case 'profile':
-                  context.pushNamed(
-                    Routes.publicProfileScreen.name,
-                    pathParameters: {'uid': otherUid!},
-                    extra: profile,
-                  );
                 case 'report':
                   onReport();
                 case 'block':
@@ -53,11 +57,6 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
               }
             },
             items: const [
-              CatchActionMenuItem(
-                value: 'profile',
-                label: 'View profile',
-                icon: Icons.person_outline_rounded,
-              ),
               CatchActionMenuItem(
                 value: 'report',
                 label: 'Report',
@@ -77,28 +76,44 @@ class ChatTopBar extends StatelessWidget implements PreferredSizeWidget {
 }
 
 class _ChatTitle extends StatelessWidget {
-  const _ChatTitle({required this.name, required this.photoUrl});
+  const _ChatTitle({
+    required this.name,
+    required this.photoUrl,
+    required this.onTap,
+  });
 
   final String name;
   final String? photoUrl;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return Row(
-      children: [
-        PersonAvatar(size: 36, name: name, imageUrl: photoUrl),
-        gapW10,
-        Expanded(
-          child: Text(
-            name,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: CatchTextStyles.titleL(context, color: t.ink),
+    return Semantics(
+      button: onTap != null,
+      label: onTap == null ? null : 'View $name profile',
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(20),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 4),
+          child: Row(
+            children: [
+              PersonAvatar(size: 36, name: name, imageUrl: photoUrl),
+              gapW10,
+              Expanded(
+                child: Text(
+                  name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: CatchTextStyles.titleL(context, color: t.ink),
+                ),
+              ),
+            ],
           ),
         ),
-      ],
+      ),
     );
   }
 }

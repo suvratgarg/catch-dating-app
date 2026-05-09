@@ -198,6 +198,12 @@ PODS:
   - geolocator_apple (1.2.0):
     - Flutter
     - FlutterMacOS
+  - Google-Maps-iOS-Utils (6.1.0):
+    - GoogleMaps (~> 9.0)
+  - google_maps_flutter_ios (0.0.1):
+    - Flutter
+    - Google-Maps-iOS-Utils (< 7.0, >= 5.0)
+    - GoogleMaps (< 11.0, >= 8.4)
   - GoogleAdsOnDeviceConversion (3.4.2):
     - GoogleUtilities/Environment (~> 8.1)
     - GoogleUtilities/Logger (~> 8.1)
@@ -228,6 +234,9 @@ PODS:
   - GoogleDataTransport (10.1.0):
     - nanopb (~> 3.30910.0)
     - PromisesObjC (~> 2.4)
+  - GoogleMaps (9.4.0):
+    - GoogleMaps/Maps (= 9.4.0)
+  - GoogleMaps/Maps (9.4.0)
   - GoogleUtilities/AppDelegateSwizzler (8.1.0):
     - GoogleUtilities/Environment
     - GoogleUtilities/Logger
@@ -300,6 +309,7 @@ DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_native_splash (from `.symlinks/plugins/flutter_native_splash/ios`)
   - geolocator_apple (from `.symlinks/plugins/geolocator_apple/darwin`)
+  - google_maps_flutter_ios (from `.symlinks/plugins/google_maps_flutter_ios/ios`)
   - image_picker_ios (from `.symlinks/plugins/image_picker_ios/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
   - razorpay_flutter (from `.symlinks/plugins/razorpay_flutter/ios`)
@@ -336,9 +346,11 @@ SPEC REPOS:
     - FirebaseSessions
     - FirebaseSharedSwift
     - FirebaseStorage
+    - Google-Maps-iOS-Utils
     - GoogleAdsOnDeviceConversion
     - GoogleAppMeasurement
     - GoogleDataTransport
+    - GoogleMaps
     - GoogleUtilities
     - GTMSessionFetcher
     - leveldb-library
@@ -381,6 +393,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/flutter_native_splash/ios"
   geolocator_apple:
     :path: ".symlinks/plugins/geolocator_apple/darwin"
+  google_maps_flutter_ios:
+    :path: ".symlinks/plugins/google_maps_flutter_ios/ios"
   image_picker_ios:
     :path: ".symlinks/plugins/image_picker_ios/ios"
   package_info_plus:
@@ -442,9 +456,12 @@ SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
   flutter_native_splash: df59bb2e1421aa0282cb2e95618af4dcb0c56c29
   geolocator_apple: 66b711889fd333205763b83c9dcf0a57a28c7afd
+  Google-Maps-iOS-Utils: 0a484b05ed21d88c9f9ebbacb007956edd508a96
+  google_maps_flutter_ios: 5f2ee3f5cc4fc2398574367f893e3f97bbbcea39
   GoogleAdsOnDeviceConversion: 02fc8fe599acd867e328321effb0d9b2d023a38a
   GoogleAppMeasurement: 3b4687de50ab25ee2d4d541849f10ca8df862a12
   GoogleDataTransport: aae35b7ea0c09004c3797d53c8c41f66f219d6a7
+  GoogleMaps: 0608099d4870cac8754bdba9b6953db543432438
   GoogleUtilities: 00c88b9a86066ef77f0da2fab05f65d7768ed8e1
   GTMSessionFetcher: 904bdd2a82c635bcd6f44edf94cc8775c5d1d6e6
   image_picker_ios: 4f2f91b01abdb52842a8e277617df877e40f905b

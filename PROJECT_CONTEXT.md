@@ -289,13 +289,16 @@ Swipe files:
 
 Swipe candidate rules:
 
-- Start from `run.attendedUserIds`.
+- Start from `runParticipations` for the selected run with `status == attended`.
+- Require the current user to have an attended participation edge for that run.
 - Remove current user.
 - Remove users already swiped on.
+- Remove blocked users.
 - Fetch public profiles in batches.
 - Filter by current user’s age and gender preferences.
 
-Important: swiping depends entirely on `attendedUserIds` being populated.
+Important: swiping depends on attended `runParticipations` being populated and
+kept consistent with run aggregate counts.
 
 Matching files:
 
@@ -568,9 +571,9 @@ Summary:
 
 GPS / device location:
 
-- [`lib/core/device_location.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/device_location.dart) — `DeviceLocation` provider, the single source of truth for device GPS. Uses `geolocator` with low accuracy + 10 s timeout. Returns `LatLng?` (null on permission denial or error). Cached per session via `keepAlive: true`.
+- [`lib/core/device_location.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/device_location.dart) — `DeviceLocation` provider, the single source of truth for device GPS. Uses `geolocator` with low accuracy + 10 s timeout. Returns `LocationCoordinate?` (null on permission denial or error). Cached per session via `keepAlive: true`.
 - [`lib/core/location_service.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/location_service.dart) — `LocationInitializer` provider, collects GPS once and writes `latitude`/`longitude` (and nearest `IndianCity` if not set) to the user's Firestore doc. Watched from `app.dart` so it fires on every app launch.
-- [`lib/core/indian_city.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/indian_city.dart) — `IndianCity` enum now carries lat/lng coordinates per city plus a `nearestCity(LatLng)` static method using Haversine distance (via `latlong2`).
+- [`lib/core/indian_city.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/core/indian_city.dart) — `IndianCity` enum carries lat/lng coordinates per city plus a deprecated `nearestCity(LocationCoordinate)` static method. New code should prefer the runtime `CityRepository` path.
 
 City auto-select:
 
@@ -579,8 +582,8 @@ City auto-select:
 
 Distance on profile cards:
 
-- [`lib/swipes/presentation/profile_card_content.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/profile_card_content.dart) — `ProfileCardContent.fromProfile()` accepts an optional `currentUserLocation`. When both the viewer and the viewed profile have coordinates, a distance attribute ("3.2 km away") appears on the card. Distance is computed client-side with `latlong2.Distance(roundResult: false)`.
-- [`lib/swipes/presentation/widgets/scrollable_profile.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/widgets/scrollable_profile.dart) — reads `DeviceLocation` and passes it to `fromProfile`.
+- [`lib/swipes/presentation/profile_card_content.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/profile_card_content.dart) — `ProfileCardContent.fromProfile()` intentionally does not expose exact distance on public swipe cards because public profiles no longer carry exact user coordinates.
+- [`lib/swipes/presentation/widgets/scrollable_profile.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/swipes/presentation/widgets/scrollable_profile.dart) — renders public profile content without requesting device location.
 
 Map center fallback:
 
@@ -589,14 +592,15 @@ Map center fallback:
 
 All map UIs use:
 
-- `flutter_map` with OpenStreetMap tiles.
-- No Google Maps SDK is involved.
+- `google_maps_flutter` for in-app maps.
+- Google Maps URLs for external turn-by-turn directions.
 
 Location data model:
 
-- `users/{uid}` and `publicProfiles/{uid}` both carry optional `latitude`/`longitude` (nullable doubles).
-- `syncPublicProfile` Cloud Function copies lat/lng from user docs to public profiles.
-- Firestore rules validate them as `number | null`.
+- `users/{uid}` carries optional private `latitude`/`longitude` (nullable doubles).
+- `publicProfiles/{uid}` carries coarse city only; exact user coordinates are not projected.
+- `runs/{runId}` stores required `startingPointLat`/`startingPointLng` for new runs.
+- Flutter app/domain code uses `LocationCoordinate`; Google Maps `LatLng` is confined to adapter/UI SDK edges.
 
 No geohash, GeoPoint, or server-side proximity queries are used — all distance math is client-side. If server-side "within X km" queries are needed later, add a geohash field in a separate migration.
 

@@ -1,17 +1,21 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/chats/data/chat_repository.dart';
+import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/matches/data/match_repository.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _FakeChatRepository extends Fake implements ChatRepository {
+class _FakeConversationRepository extends Fake
+    implements ConversationRepository {
   final messagesByMatch = <String, List<ChatMessage>>{};
 
   @override
-  Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
-      Stream.value(messagesByMatch[matchId] ?? const []);
+  Stream<List<ChatMessage>> watchMessages({required String conversationId}) =>
+      Stream.value(messagesByMatch[conversationId] ?? const []);
 }
 
 ChatMessage _buildMessage({
@@ -110,24 +114,74 @@ void main() {
     });
   });
 
+  group('FirestoreConversationRepository', () {
+    late FakeFirebaseFirestore firestore;
+    late FirestoreConversationRepository repository;
+
+    setUp(() {
+      firestore = FakeFirebaseFirestore();
+      repository = FirestoreConversationRepository(
+        chatRepository: ChatRepository(firestore),
+        matchRepository: MatchRepository(firestore),
+      );
+    });
+
+    test('sends text through the conversation boundary', () async {
+      await repository.sendTextMessage(
+        conversationId: 'match-1',
+        senderId: 'runner-1',
+        text: '  hello from the boundary  ',
+      );
+
+      final messages = await repository
+          .watchMessages(conversationId: 'match-1')
+          .first;
+
+      expect(messages, hasLength(1));
+      expect(messages.single.senderId, 'runner-1');
+      expect(messages.single.text, 'hello from the boundary');
+    });
+
+    test('marks a conversation read through match metadata', () async {
+      await firestore.collection('matches').doc('match-1').set({
+        'user1Id': 'runner-1',
+        'user2Id': 'runner-2',
+        'runIds': <String>[],
+        'createdAt': Timestamp.fromDate(DateTime(2026, 5, 9)),
+        'unreadCounts': {'runner-1': 4},
+      });
+
+      await repository.markRead(conversationId: 'match-1', uid: 'runner-1');
+
+      final matchDoc = await firestore
+          .collection('matches')
+          .doc('match-1')
+          .get();
+      final data = matchDoc.data();
+      expect(data?['unreadCounts'], {'runner-1': 0});
+    });
+  });
+
   test(
-    'watchChatMessagesProvider streams messages from the repository',
+    'watchConversationMessagesProvider streams messages from the repository',
     () async {
-      final fakeRepository = _FakeChatRepository();
+      final fakeRepository = _FakeConversationRepository();
       final message = _buildMessage();
       final container = ProviderContainer(
-        overrides: [chatRepositoryProvider.overrideWithValue(fakeRepository)],
+        overrides: [
+          conversationRepositoryProvider.overrideWithValue(fakeRepository),
+        ],
       );
       addTearDown(container.dispose);
       fakeRepository.messagesByMatch['match-1'] = [message];
       final subscription = container.listen<AsyncValue<List<ChatMessage>>>(
-        watchChatMessagesProvider('match-1'),
+        watchConversationMessagesProvider('match-1'),
         (_, _) {},
       );
       addTearDown(subscription.close);
 
       final messages = await container.read(
-        watchChatMessagesProvider('match-1').future,
+        watchConversationMessagesProvider('match-1').future,
       );
 
       expect(messages, [message]);
@@ -135,7 +189,7 @@ void main() {
   );
 
   test(
-    'watchChatMessagesProvider auto-disposes route listeners when unwatched',
+    'watchConversationMessagesProvider auto-disposes route listeners when unwatched',
     () async {
       final message = _buildMessage();
       final cancelCompleter = Completer<void>();
@@ -150,14 +204,14 @@ void main() {
 
       final container = ProviderContainer(
         overrides: [
-          chatRepositoryProvider.overrideWithValue(
-            _LifecycleChatRepository(messagesController.stream),
+          conversationRepositoryProvider.overrideWithValue(
+            _LifecycleConversationRepository(messagesController.stream),
           ),
         ],
       );
       addTearDown(container.dispose);
 
-      final provider = watchChatMessagesProvider('match-1');
+      final provider = watchConversationMessagesProvider('match-1');
       final subscription = container.listen(provider, (_, _) {});
 
       messagesController.add([message]);
@@ -172,13 +226,14 @@ void main() {
   );
 }
 
-class _LifecycleChatRepository extends Fake implements ChatRepository {
-  _LifecycleChatRepository(this.messagesStream);
+class _LifecycleConversationRepository extends Fake
+    implements ConversationRepository {
+  _LifecycleConversationRepository(this.messagesStream);
 
   final Stream<List<ChatMessage>> messagesStream;
 
   @override
-  Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
+  Stream<List<ChatMessage>> watchMessages({required String conversationId}) =>
       messagesStream;
 }
 

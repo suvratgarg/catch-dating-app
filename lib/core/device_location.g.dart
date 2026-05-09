@@ -13,7 +13,7 @@ part of 'device_location.dart';
 final deviceLocationProvider = DeviceLocationProvider._();
 
 final class DeviceLocationProvider
-    extends $AsyncNotifierProvider<DeviceLocation, LatLng?> {
+    extends $AsyncNotifierProvider<DeviceLocation, LocationCoordinate?> {
   DeviceLocationProvider._()
     : super(
         from: null,
@@ -33,19 +33,20 @@ final class DeviceLocationProvider
   DeviceLocation create() => DeviceLocation();
 }
 
-String _$deviceLocationHash() => r'c40e873d9b38a4bb7642cb3beb23ebaa43c7dac6';
+String _$deviceLocationHash() => r'8f514caa3b43b7c9cc43964e8ad8a6134f61a9bf';
 
-abstract class _$DeviceLocation extends $AsyncNotifier<LatLng?> {
-  FutureOr<LatLng?> build();
+abstract class _$DeviceLocation extends $AsyncNotifier<LocationCoordinate?> {
+  FutureOr<LocationCoordinate?> build();
   @$mustCallSuper
   @override
   void runBuild() {
-    final ref = this.ref as $Ref<AsyncValue<LatLng?>, LatLng?>;
+    final ref =
+        this.ref as $Ref<AsyncValue<LocationCoordinate?>, LocationCoordinate?>;
     final element =
         ref.element
             as $ClassProviderElement<
-              AnyNotifier<AsyncValue<LatLng?>, LatLng?>,
-              AsyncValue<LatLng?>,
+              AnyNotifier<AsyncValue<LocationCoordinate?>, LocationCoordinate?>,
+              AsyncValue<LocationCoordinate?>,
               Object?,
               Object?
             >;

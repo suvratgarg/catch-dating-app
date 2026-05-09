@@ -9,8 +9,8 @@ import {RunDoc} from "../shared/firestore";
 function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
   return {
     runClubId: "club-1",
-    startTime: {} as FirebaseFirestore.Timestamp,
-    endTime: {} as FirebaseFirestore.Timestamp,
+    startTime: timestamp("2026-05-02T01:30:00.000Z"),
+    endTime: timestamp("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Carter Road",
     distanceKm: 5,
     pace: "easy",
@@ -173,9 +173,25 @@ function createRunFirestore(
           }),
         };
       }
+      if (collectionName === "userRunScheduleLocks") {
+        return {
+          doc: () => ({
+            get: async () => ({
+              exists: false,
+              data: () => undefined,
+            }),
+          }),
+        };
+      }
       throw new Error(`Unexpected collection ${collectionName}`);
     },
   } as unknown as FirebaseFirestore.Firestore;
+}
+
+function timestamp(iso: string): FirebaseFirestore.Timestamp {
+  return {
+    toMillis: () => Date.parse(iso),
+  } as FirebaseFirestore.Timestamp;
 }
 
 function failOnClientUse(): Razorpay {

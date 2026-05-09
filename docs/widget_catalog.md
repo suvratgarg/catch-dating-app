@@ -1293,7 +1293,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `LocationPickerScreen` | `lib/runs/presentation/location_picker_screen.dart:8` | Map-based location picker. Lets users long-press or search for a location and returns the selected `LatLng` + address. |
+| `LocationPickerScreen` | `lib/runs/presentation/location_picker_screen.dart:8` | Map-based location picker. Lets users long-press or search for a location and returns the selected `LocationCoordinate` + address. |
 | `_DraftPickerSheet` | `lib/runs/presentation/widgets/draft_picker_sheet.dart:37` | `CatchBottomSheetScaffold` listing saved run drafts. Users can resume, start fresh, or permanently delete persisted drafts through the create-run draft controller. |
 
 ### StatelessWidget

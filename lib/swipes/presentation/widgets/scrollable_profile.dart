@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -32,11 +31,7 @@ class ScrollableProfile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final currentLocation = ref.watch(deviceLocationProvider).asData?.value;
-    final content = ProfileCardContent.fromProfile(
-      profile,
-      currentUserLocation: currentLocation,
-    );
+    final content = ProfileCardContent.fromProfile(profile);
     final palette = ProfileCardPalette.of(context);
     final firstAdditionalPhotoUrl = content.additionalPhotoUrls.firstOrNull;
     final remainingPhotoUrls = content.additionalPhotoUrls.skip(1);

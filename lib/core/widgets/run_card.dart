@@ -55,7 +55,7 @@ class RunCardData {
 
   final RunStatus status;
 
-  /// Optional map widget rendered in the photo area (e.g. flutter_map tile).
+  /// Optional map widget rendered in the photo area.
   /// If null and [heroImageUrl] is also null, a [_MapPlaceholder] is shown.
   final Widget? mapWidget;
   final String? heroImageUrl;

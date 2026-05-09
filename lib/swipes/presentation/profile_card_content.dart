@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
 
 typedef ProfileCardFact = ({IconData icon, String text});
 
@@ -13,10 +12,7 @@ class ProfileCardContent {
     required this.bio,
   });
 
-  factory ProfileCardContent.fromProfile(
-    PublicProfile profile, {
-    LatLng? currentUserLocation,
-  }) {
+  factory ProfileCardContent.fromProfile(PublicProfile profile) {
     final photos = profile.photoUrls;
     final occupation = _trimToNull(profile.occupation);
     final company = _trimToNull(profile.company);
@@ -26,19 +22,6 @@ class ProfileCardContent {
         (
           icon: Icons.favorite_border_rounded,
           text: profile.relationshipGoal!.label,
-        ),
-      if (currentUserLocation != null &&
-          profile.latitude != null &&
-          profile.longitude != null)
-        (
-          icon: Icons.near_me_outlined,
-          text: _formatDistance(
-            const Distance(roundResult: false).as(
-              LengthUnit.Kilometer,
-              currentUserLocation,
-              LatLng(profile.latitude!, profile.longitude!),
-            ),
-          ),
         ),
       if (profile.height != null)
         (icon: Icons.straighten_rounded, text: '${profile.height} cm'),
@@ -87,16 +70,6 @@ class ProfileCardContent {
   final String bio;
 
   bool get hasBio => bio.isNotEmpty;
-
-  static String _formatDistance(double km) {
-    if (km < 1.0) {
-      return '${(km * 1000).round()} m away';
-    } else if (km < 10.0) {
-      return '${km.toStringAsFixed(1)} km away';
-    } else {
-      return '${km.round()} km away';
-    }
-  }
 }
 
 String? _trimToNull(String? value) {

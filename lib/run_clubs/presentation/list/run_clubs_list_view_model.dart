@@ -167,12 +167,19 @@ AsyncValue<RunClubsListViewModel> runClubsListViewModel(Ref ref) {
     );
   }
 
-  final joinedClubIds =
+  final membershipClubIds =
       membershipsAsync.asData?.value
           .map((membership) => membership.clubId)
           .toSet() ??
       <String>{};
   final clubs = filteredAsync.asData?.value ?? const <RunClub>[];
+  final hostedClubIds = uid == null
+      ? <String>{}
+      : clubs
+            .where((club) => club.hostUserId == uid)
+            .map((club) => club.id)
+            .toSet();
+  final joinedClubIds = {...membershipClubIds, ...hostedClubIds};
 
   return AsyncData(
     RunClubsListViewModel.partition(clubs: clubs, joinedClubIds: joinedClubIds),

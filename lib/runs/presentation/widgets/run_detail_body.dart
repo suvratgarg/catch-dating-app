@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -10,6 +11,7 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
+import 'package:catch_dating_app/runs/presentation/run_location_links.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_overview_section.dart';
@@ -108,9 +110,10 @@ class RunDetailBody extends ConsumerWidget {
                 RunDetailOverviewSection(
                   run: run,
                   onLocationTap: run.hasExactStartingPoint
-                      ? () => context.pushNamed(
-                          Routes.runLocationMapScreen.name,
-                          pathParameters: {'runId': run.id},
+                      ? () => unawaited(
+                          ref
+                              .read(externalLinkControllerProvider)
+                              .openExternal(directionsUriForRun(run)),
                         )
                       : null,
                 ),

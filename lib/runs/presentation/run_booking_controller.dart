@@ -108,8 +108,8 @@ class RunBookingController extends _$RunBookingController {
   ///
   /// Reads the device's current location and passes it to the
   /// [selfCheckInAttendance] Cloud Function, which validates that the user
-  /// is within 200 m of the run's meeting point during the 30-minute
-  /// check-in window around the run start time.
+  /// is within the shared business-rules proximity and check-in window around
+  /// the run start time.
   Future<void> selfCheckIn({required String runId}) async {
     _requireSignedIn(action: 'check in to a run');
 

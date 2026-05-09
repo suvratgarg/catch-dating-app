@@ -1,6 +1,6 @@
 {
-  "version": "2.3.33",
-  "updated": "2026-05-08",
+  "version": "2.3.34",
+  "updated": "2026-05-09",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, and stable debt ids. Do not reread archived markdown history unless a debt id points there.",
   "scanner_snapshot": {
@@ -414,6 +414,83 @@
       ]
     },
     {
+      "id": "MATCH-CHAT-REMAINING-001",
+      "title": "Close remaining match and chat audit follow-ups",
+      "status": "active",
+      "area": "matches,chats,demo_data",
+      "priority": "high",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001",
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-TEST-001"
+      ],
+      "summary": "The match preview contract is now backend-owned and the chat list uses one thread preview per match, but remaining follow-ups still need a focused pass: inspect and clean seeded duplicate match/message data for the active phone account, run device QA on the Chats list and thread, decide whether to replace the current matches-count badge with a real presence model or rename it, polish chat tile width/separators/surfaces against shared spacing primitives, keep the new-match horizontal rail queued for product implementation, and audit chat image/media moderation plus profile thumbnail backfill in real data. Do not treat synthetic duplicate data as a UI bug until Firestore documents and seed scripts are inspected.",
+      "paths": [
+        "lib/matches/presentation/chats_list_screen.dart",
+        "lib/matches/presentation/widgets/chats_list.dart",
+        "lib/matches/presentation/chats_list_view_model.dart",
+        "lib/chats/data/chat_repository.dart",
+        "lib/chats/data/conversation_repository.dart",
+        "lib/chats/presentation/chat_screen.dart",
+        "lib/chats/presentation/widgets/message_bubble.dart",
+        "functions/src/matching/onMatchCreated.ts",
+        "functions/src/matching/onMessageCreated.ts",
+        "tool/seed_demo_data.mjs",
+        "docs/demo_data_seeding.md"
+      ]
+    },
+    {
+      "id": "RUN-SCHEDULE-CONFLICTS-001",
+      "title": "Enforce non-overlapping runs for clubs and users",
+      "status": "implemented_needs_deploy",
+      "area": "runs,functions,business_rules",
+      "priority": "high",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Implemented on 2026-05-09. Run creation and host schedule edits now enforce non-overlapping active runs per run club. User sign-up and waitlist joins now enforce non-overlapping signed-up/waitlisted user schedules. The overlap model is half-open, so 2:00-3:00 and 3:00-4:00 are allowed. Existing data without schedule locks is still protected by transactional run/participation queries; deterministic per-minute schedule lock docs protect concurrent writes going forward. Host time edits are rejected once signed-up, waitlisted, or attended participation edges exist so user schedule locks cannot be mass-rescheduled into inconsistent state. Deploy Functions before relying on this in production, and decide later whether to run a lock backfill for observability even though the query fallback protects existing data.",
+      "paths": [
+        "tool/business_rules.json",
+        "tool/generate_business_rules.mjs",
+        "tool/check_data_contract.sh",
+        "lib/core/business_rules.dart",
+        "lib/runs/presentation/create_run_screen.dart",
+        "lib/runs/domain/run_draft.dart",
+        "lib/runs/presentation/run_arrival_action.dart",
+        "functions/src/shared/businessRules.ts",
+        "functions/src/runs/scheduleConflicts.ts",
+        "functions/src/runs/mutateRun.ts",
+        "functions/src/runs/signUpUserForRun.ts",
+        "functions/src/runs/joinRunWaitlist.ts",
+        "functions/src/runs/cancelRunSignUp.ts",
+        "functions/src/payments/createRazorpayOrder.ts"
+      ]
+    },
+    {
+      "id": "BUSINESS-RULES-CONSOLIDATION-001",
+      "title": "Expand shared client/server business constants",
+      "status": "active",
+      "area": "core,functions,tooling",
+      "priority": "medium",
+      "rules": [
+        "CODEGEN-001",
+        "CONTROLLER-BOUNDARY-001"
+      ],
+      "summary": "Initial generated constants now cover run duration, schedule-lock slot size, self-check-in windows, self-check-in distance, and host attendance windows. Continue consolidating duplicated literals as touched: age bounds, profile text limits, price/capacity/distance limits, report text limits, rate-limit policy exposure, media upload limits, and swipe/match eligibility windows. Do not move purely visual constants into this file; this is for product/business invariants that cross the Flutter and Functions boundary.",
+      "paths": [
+        "tool/business_rules.json",
+        "tool/generate_business_rules.mjs",
+        "lib/core/business_rules.dart",
+        "functions/src/shared/businessRules.ts",
+        "functions/src/runs/mutateRun.ts",
+        "functions/src/runs/selfCheckInAttendance.ts",
+        "lib/runs/presentation/run_arrival_action.dart"
+      ]
+    },
+    {
       "id": "DOC-HYGIENE-QUEUE",
       "title": "Keep docs index and registry synchronized",
       "status": "active",
@@ -434,6 +511,9 @@
     }
   ],
   "next_up": [
+    "RUN-SCHEDULE-CONFLICTS-001",
+    "MATCH-CHAT-REMAINING-001",
+    "BUSINESS-RULES-CONSOLIDATION-001",
     "RELATIONSHIP-DOC-MIGRATION",
     "FIRESTORE-RULES-SIMPLIFICATION-001",
     "DELETE-METHODOLOGY-QUEUE",

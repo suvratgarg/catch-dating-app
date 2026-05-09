@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/material.dart';
-import 'package:latlong2/latlong.dart';
 
 class MapPinTile extends StatelessWidget {
   const MapPinTile({
@@ -11,7 +11,7 @@ class MapPinTile extends StatelessWidget {
     required this.onTap,
   });
 
-  final LatLng? startingPoint;
+  final LocationCoordinate? startingPoint;
   final VoidCallback onTap;
 
   @override

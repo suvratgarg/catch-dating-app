@@ -159,6 +159,23 @@ function event(eventId: string) {
   };
 }
 
+function demoEvent(eventId: string) {
+  const base = event(eventId);
+  return {
+    ...base,
+    data: {
+      data: () => ({
+        ...base.data.data(),
+        demoOps: true,
+        demoOpsId: "demo_ops_message_1",
+        demoOpsCommand: "match-phones",
+        seedPrefix: "demo_ops_2026",
+        synthetic: true,
+      }),
+    },
+  };
+}
+
 function harness() {
   const firestore = new FakeFirestore({
     "matches/match-1": {
@@ -255,3 +272,31 @@ test("onMessageCreatedHandler applies a retried event once", async () => {
   );
   assert.equal(h.notifications.length, 1);
 });
+
+test("onMessageCreatedHandler propagates demo metadata to notification",
+  async () => {
+    const h = harness();
+
+    await onMessageCreatedHandler(demoEvent("event-1"), h.deps);
+
+    const notification = h.firestore.get(
+      "notifications/runner-2/items/message_match-1_message-1"
+    );
+    assert.deepEqual(
+      {
+        demoOps: notification?.demoOps,
+        demoOpsId: notification?.demoOpsId,
+        demoOpsCommand: notification?.demoOpsCommand,
+        seedPrefix: notification?.seedPrefix,
+        synthetic: notification?.synthetic,
+      },
+      {
+        demoOps: true,
+        demoOpsId: "demo_ops_message_1",
+        demoOpsCommand: "match-phones",
+        seedPrefix: "demo_ops_2026",
+        synthetic: true,
+      }
+    );
+  }
+);

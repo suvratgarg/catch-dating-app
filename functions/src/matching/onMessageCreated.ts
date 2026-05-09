@@ -13,6 +13,7 @@ import {
   sendFcmNotification,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {demoMetadataFromSources} from "../shared/demoMetadata";
 
 interface MessageCreatedEvent {
   id?: string;
@@ -120,6 +121,7 @@ export async function onMessageCreatedHandler(
       runId: latestMatchRunId(match),
       actorUid: message.senderId,
       actorName: senderName,
+      ...demoMetadataFromSources(message, match),
     });
 
     shouldNotify = true;

@@ -14,6 +14,10 @@ export {markRunAttendance} from "./runs/markRunAttendance";
 export {selfCheckInAttendance} from "./runs/selfCheckInAttendance";
 export {createRun, updateRun, cancelRun, deleteRun} from "./runs/mutateRun";
 export {sendRunReminders} from "./runs/sendRunReminders";
+export {
+  placeDetails,
+  placesAutocomplete,
+} from "./places/placeAutocomplete";
 export {createRunClub} from "./runClubs/createRunClub";
 export {
   joinRunClub,

@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/core/labelled.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 
 enum IndianCity implements Labelled {
   mumbai('Mumbai', 19.0760, 72.8777),
@@ -18,16 +18,15 @@ enum IndianCity implements Labelled {
   final double latitude;
   final double longitude;
 
-  LatLng get coordinates => LatLng(latitude, longitude);
+  LocationCoordinate get coordinates => LocationCoordinate(latitude, longitude);
 
   /// Returns the city closest to [position], or null if no cities are defined.
   @Deprecated('Use CityRepository.nearestCity() via cityListProvider instead.')
-  static IndianCity? nearestCity(LatLng position) {
+  static IndianCity? nearestCity(LocationCoordinate position) {
     IndianCity? closest;
     double minDistance = double.infinity;
-    const distanceCalc = Distance();
     for (final city in values) {
-      final d = distanceCalc(city.coordinates, position);
+      final d = city.coordinates.distanceTo(position);
       if (d < minDistance) {
         minDistance = d;
         closest = city;

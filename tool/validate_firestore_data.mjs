@@ -3,6 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
+import {
+  RUN_MAX_DURATION_MINUTES,
+  scheduleComplianceIssues,
+} from "./demo_schedule_policy.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "..");
@@ -36,8 +40,10 @@ admin.initializeApp({projectId});
 const db = admin.firestore();
 const report = createReport({projectId, emulatorHost: args.emulatorHost});
 
-const collections = await loadCollections(db, args.maxDocs);
-validateAll(collections, report);
+const collections = await loadCollections(db, args.maxDocs, {
+  includeScheduleLocks: args.checkScheduleLocks,
+});
+validateAll(collections, report, {checkScheduleLocks: args.checkScheduleLocks});
 
 if (args.json) {
   console.log(JSON.stringify(report, null, 2));
@@ -57,6 +63,7 @@ function parseArgs(argv) {
     maxDocs: DEFAULT_MAX_DOCS,
     json: false,
     failOnWarning: false,
+    checkScheduleLocks: false,
     help: false,
   };
 
@@ -65,6 +72,7 @@ function parseArgs(argv) {
     if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--fail-on-warning") parsed.failOnWarning = true;
+    else if (arg === "--check-schedule-locks") parsed.checkScheduleLocks = true;
     else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
     else if (arg === "--emulator-host") parsed.emulatorHost = requireValue(argv, ++i, arg);
     else if (arg === "--env") parsed.env = requireValue(argv, ++i, arg);
@@ -123,12 +131,13 @@ Options:
   --emulator                     Use FIRESTORE_EMULATOR_HOST=127.0.0.1:8080.
   --emulator-host <host:port>    Use a custom Firestore emulator host.
   --max-docs <n>                 Per-collection cap, default ${DEFAULT_MAX_DOCS}.
+  --check-schedule-locks         Also verify server schedule lock documents.
   --json                         Emit machine-readable JSON.
   --fail-on-warning              Exit non-zero on warnings as well as errors.
 `);
 }
 
-async function loadCollections(firestore, maxDocs) {
+async function loadCollections(firestore, maxDocs, {includeScheduleLocks = false} = {}) {
   const topLevel = [
     "users",
     "publicProfiles",
@@ -148,6 +157,12 @@ async function loadCollections(firestore, maxDocs) {
       maxDocs
     );
   }
+  result.runClubScheduleLocks = includeScheduleLocks ?
+    await readQuery(firestore.collection("runClubScheduleLocks"), maxDocs) :
+    [];
+  result.userRunScheduleLocks = includeScheduleLocks ?
+    await readQuery(firestore.collection("userRunScheduleLocks"), maxDocs) :
+    [];
   result.swipes = await readQuery(
     firestore.collectionGroup("outgoing"),
     maxDocs
@@ -184,7 +199,7 @@ function createReport({projectId, emulatorHost}) {
   };
 }
 
-function validateAll(collections, currentReport) {
+function validateAll(collections, currentReport, {checkScheduleLocks = false} = {}) {
   const users = byId(collections.users);
   const publicProfiles = byId(collections.publicProfiles);
   const clubs = byId(collections.runClubs);
@@ -238,6 +253,7 @@ function validateAll(collections, currentReport) {
     collections.runParticipations,
     currentReport
   );
+  validateSchedulePolicy(collections, currentReport, {checkScheduleLocks});
 }
 
 function validateDocumentSize(doc, currentReport) {
@@ -384,6 +400,14 @@ function validateRun(doc, clubs, currentReport) {
       data.endTime.toMillis() <= data.startTime.toMillis()) {
     issue(currentReport, "error", doc.path, "invalid-run-time",
       "endTime must be after startTime.");
+  }
+  if (isTimestamp(data.startTime) && isTimestamp(data.endTime)) {
+    const durationMinutes =
+      (data.endTime.toMillis() - data.startTime.toMillis()) / (60 * 1000);
+    if (durationMinutes > RUN_MAX_DURATION_MINUTES) {
+      issue(currentReport, "error", doc.path, "run-duration-too-long",
+        `Run duration is ${durationMinutes} minutes, max ${RUN_MAX_DURATION_MINUTES}.`);
+    }
   }
   if (Number.isInteger(data.bookedCount) &&
       data.bookedCount > data.capacityLimit) {
@@ -653,6 +677,19 @@ function validateRunAggregateCounts(runs, runParticipations, currentReport) {
       issue(currentReport, "error", doc.path, "run-gender-count-drift",
         "genderCounts does not match signedUp/attended runParticipations.");
     }
+  }
+}
+
+function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}) {
+  const issues = scheduleComplianceIssues({
+    runs: collections.runs,
+    participations: collections.runParticipations,
+    runClubScheduleLocks: collections.runClubScheduleLocks,
+    userRunScheduleLocks: collections.userRunScheduleLocks,
+    checkLocks: checkScheduleLocks,
+  });
+  for (const found of issues) {
+    issue(currentReport, "error", found.path, found.code, found.message);
   }
 }
 

@@ -27,12 +27,14 @@ migrate_working_dir/
 .env
 .env.*
 *.local
+ios/Flutter/GoogleMapsKeys.xcconfig
 .runtimeconfig.json
 service-account*.json
 *-service-account.json
 google-application-credentials*.json
 tool/demo_seed/beta_anchors.txt
 tool/demo_seed/beta_anchors.json
+tool/demo_seed/golden_accounts.json
 
 # Signing keys and provisioning artifacts
 key.properties

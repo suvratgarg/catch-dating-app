@@ -232,7 +232,7 @@ return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capa
 @JsonSerializable()
 
 class _RunDraft implements RunDraft {
-  const _RunDraft({required this.id, required this.runClubId, required this.savedAt, this.distance, this.capacity, this.price, this.description, this.paceName, this.meetingPoint, this.locationDetails, this.startingPointLat, this.startingPointLng, this.selectedDateMillis, this.selectedStartHour, this.selectedStartMinute, this.durationMinutes = 60, this.minAge, this.maxAge, this.maxMen, this.maxWomen});
+  const _RunDraft({required this.id, required this.runClubId, required this.savedAt, this.distance, this.capacity, this.price, this.description, this.paceName, this.meetingPoint, this.locationDetails, this.startingPointLat, this.startingPointLng, this.selectedDateMillis, this.selectedStartHour, this.selectedStartMinute, this.durationMinutes = CatchBusinessRules.runDefaultDurationMinutes, this.minAge, this.maxAge, this.maxMen, this.maxWomen});
   factory _RunDraft.fromJson(Map<String, dynamic> json) => _$RunDraftFromJson(json);
 
 @override final  String id;

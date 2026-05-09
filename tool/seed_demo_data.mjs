@@ -3,6 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
+import {
+  assertScheduleCompliance,
+  buildScheduleLockDocs,
+} from "./demo_schedule_policy.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "..");
@@ -175,6 +179,7 @@ const seed = buildSeed({
   now: args.appendAnchors ?
     await readExistingSeedTime(db, `${args.seedPrefix}_${args.scenario}`) :
     new Date(),
+  includeScheduleLocks: args.includeScheduleLocks,
 });
 const writePlan = args.appendAnchors ?
   await createAppendWritePlan({db, seed, anchorProfiles}) :
@@ -238,6 +243,7 @@ function parseArgs(argv) {
     appendAnchors: false,
     emulatorHost: null,
     json: false,
+    includeScheduleLocks: false,
     help: false,
     listScenarios: false,
   };
@@ -247,6 +253,7 @@ function parseArgs(argv) {
     if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--list-scenarios") parsed.listScenarios = true;
     else if (arg === "--json") parsed.json = true;
+    else if (arg === "--include-schedule-locks") parsed.includeScheduleLocks = true;
     else if (arg === "--apply") parsed.apply = true;
     else if (arg === "--dry-run") parsed.apply = false;
     else if (arg === "--allow-prod") parsed.allowProd = true;
@@ -376,7 +383,14 @@ async function findMissingPublicProfiles(firestore, uids) {
   return missing;
 }
 
-function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
+function buildSeed({
+  scenarioName,
+  scenario,
+  seedPrefix,
+  anchorProfiles,
+  now,
+  includeScheduleLocks = false,
+}) {
   const seedId = `${seedPrefix}_${scenarioName}`;
   const seedMarker = {
     synthetic: true,
@@ -384,7 +398,6 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
     scenario: scenarioName,
   };
   const users = buildSyntheticUsers({scenario, seedPrefix, seedMarker});
-  const people = [...anchorProfiles, ...users];
   const clubs = [];
   const memberships = [];
   const runs = [];
@@ -398,7 +411,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
   const notifications = [];
 
   for (const city of scenario.cities) {
-    const cityUsers = people.filter((person) => person.city === city || person.source === "anchor");
+    const cityAnchors = anchorProfiles.filter((person) => person.city === city);
     const syntheticCityUsers = users.filter((person) => person.city === city);
     for (let clubIndex = 0; clubIndex < scenario.clubsPerCity; clubIndex += 1) {
       const host = syntheticCityUsers[clubIndex % syntheticCityUsers.length] ?? users[clubIndex % users.length];
@@ -407,7 +420,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
 
       const clubMembers = uniqueByUid([
         host,
-        ...anchorProfiles.slice(0, scenario.anchorsPerRun),
+        ...cityAnchors.slice(0, scenario.anchorsPerRun),
         ...rotate(syntheticCityUsers, clubIndex).slice(0, Math.min(10, syntheticCityUsers.length)),
       ]);
       for (const member of clubMembers) {
@@ -425,7 +438,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
           now,
           preferPaid: scenario.preferPaidRuns,
         });
-        const roster = buildRoster({run, runIndex, clubMembers, anchorProfiles});
+        const roster = buildRoster({run, runIndex, clubMembers, anchorProfiles: cityAnchors});
         applyRosterAggregates(run, roster);
         runs.push(run);
         for (const rosterEntry of roster) {
@@ -434,7 +447,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
             payments.push(buildPayment({seedPrefix, seedMarker, run, uid: rosterEntry.person.uid, state: rosterEntry.paymentState, now}));
           }
         }
-        for (const anchor of anchorProfiles.slice(0, Math.min(2, anchorProfiles.length))) {
+        for (const anchor of cityAnchors.slice(0, Math.min(2, cityAnchors.length))) {
           if (runIndex === 0 || runIndex === 1) {
             savedRuns.push(buildSavedRun({seedMarker, uid: anchor.uid, runId: run.id, now}));
           }
@@ -463,6 +476,10 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
   updateClubAggregates({clubs, memberships, reviews, runs});
   notifications.push(...buildGeneralNotifications({seedMarker, anchorProfiles, clubs, runs, now}));
   payments.push(...buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, runs, now}));
+  assertScheduleCompliance({runs, participations});
+  const scheduleLocks = includeScheduleLocks ?
+    buildScheduleLockDocs({runs, participations}) :
+    [];
 
   const docs = [
     ...users.flatMap((user) => [
@@ -473,6 +490,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
     ...memberships.map((membership) => ({path: `runClubMemberships/${membership.id}`, data: membership.doc})),
     ...runs.map((run) => ({path: `runs/${run.id}`, data: run.doc})),
     ...participations.map((participation) => ({path: `runParticipations/${participation.id}`, data: participation.doc})),
+    ...scheduleLocks,
     ...savedRuns.map((savedRun) => ({path: `savedRuns/${savedRun.id}`, data: savedRun.doc})),
     ...swipes.map((swipe) => ({path: `swipes/${swipe.swiperId}/outgoing/${swipe.targetId}`, data: swipe.doc})),
     ...matches.map((match) => ({path: `matches/${match.id}`, data: match.doc})),
@@ -1217,6 +1235,9 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
   if (doc.path.startsWith("runParticipations/")) {
     return newAnchorSet.has(doc.data.uid);
   }
+  if (doc.path.startsWith("userRunScheduleLocks/")) {
+    return newAnchorSet.has(doc.data.uid);
+  }
   if (doc.path.startsWith("savedRuns/")) {
     return newAnchorSet.has(doc.data.uid);
   }
@@ -1429,6 +1450,7 @@ function summary({args, projectId, scenario, anchorProfiles, seed, writePlan, mi
     resetSynthetic: args.resetSynthetic,
     deleteOnly: args.deleteOnly,
     appendAnchors: args.appendAnchors,
+    includeScheduleLocks: args.includeScheduleLocks,
     append: writePlan.append ?? null,
     anchorUserIds: anchorProfiles.map((profile) => profile.uid),
     missingPublicProfileIds,
@@ -1471,6 +1493,9 @@ Options:
                                  --apply --reset-synthetic.
   --append-anchors               Add only newly listed anchors to an existing
                                  seed manifest without recreating old anchors.
+  --include-schedule-locks       Also write denormalized schedule lock docs.
+                                 Usually unnecessary for demo worlds because
+                                 Functions query canonical run/participation docs.
   --allow-prod                   Required when writing to the prod Firebase project.
   --emulator                     Use FIRESTORE_EMULATOR_HOST=127.0.0.1:8080.
   --emulator-host <host:port>    Use a custom Firestore emulator host.

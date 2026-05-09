@@ -18,8 +18,6 @@ abstract class PublicProfile with _$PublicProfile {
 
     // Location
     @JsonKey(unknownEnumValue: null) IndianCity? city,
-    double? latitude,
-    double? longitude,
 
     // Background
     int? height,
@@ -64,8 +62,6 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   photoUrls: user.photoUrls,
   photoThumbnailUrls: user.photoThumbnailUrls,
   city: user.city,
-  latitude: user.latitude,
-  longitude: user.longitude,
   height: user.height,
   occupation: user.occupation,
   company: user.company,

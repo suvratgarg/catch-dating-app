@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/chat_repository.dart';
+import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
@@ -39,29 +39,35 @@ class _FakeMatchRepository implements MatchRepository {
       Stream.value([]);
 }
 
-class _FakeChatRepository implements ChatRepository {
-  _FakeChatRepository();
+class _FakeConversationRepository implements ConversationRepository {
+  _FakeConversationRepository();
 
   @override
-  Future<void> sendMessage({
-    required String matchId,
+  Future<void> sendTextMessage({
+    required String conversationId,
     required String senderId,
     required String text,
   }) async {}
 
   @override
-  Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
+  Stream<List<ChatMessage>> watchMessages({required String conversationId}) =>
       Stream.value([]);
 
   @override
-  String createMessageId({required String matchId}) => 'message-1';
+  String createMessageId({required String conversationId}) => 'message-1';
 
   @override
   Future<void> sendImageMessage({
-    required String matchId,
+    required String conversationId,
     required String senderId,
     required String messageId,
     required String imageUrl,
+  }) async {}
+
+  @override
+  Future<void> markRead({
+    required String conversationId,
+    required String uid,
   }) async {}
 }
 
@@ -89,7 +95,9 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
       matchRepositoryProvider.overrideWithValue(
         _FakeMatchRepository(match: match),
       ),
-      chatRepositoryProvider.overrideWithValue(_FakeChatRepository()),
+      conversationRepositoryProvider.overrideWithValue(
+        _FakeConversationRepository(),
+      ),
       watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
       if (streamedProfile != null)
         watchPublicProfileProvider(

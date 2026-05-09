@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
@@ -8,7 +9,6 @@ import 'package:catch_dating_app/runs/presentation/run_map_view_model.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:latlong2/latlong.dart';
 
 import 'runs_test_helpers.dart';
 
@@ -114,7 +114,7 @@ void main() {
   group('resolveRunMapInitialCenter', () {
     test('prefers device location over selected city and run pins', () {
       final center = resolveRunMapInitialCenter(
-        deviceLocation: const LatLng(22.7, 75.8),
+        deviceLocation: const LocationCoordinate(22.7, 75.8),
         selectedCity: const CityData(
           name: 'mumbai',
           label: 'Mumbai',

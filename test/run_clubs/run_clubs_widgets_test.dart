@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -46,7 +47,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../test_pump_helpers.dart';
@@ -69,7 +69,7 @@ const _testCities = [
 
 class _NoDeviceLocation extends DeviceLocation {
   @override
-  Future<LatLng?> build() async => null;
+  Future<LocationCoordinate?> build() async => null;
 }
 
 Future<void> _pumpRunClubsSlivers(
@@ -301,7 +301,13 @@ void main() {
     testWidgets('directory and avatar chip variants render club metadata', (
       tester,
     ) async {
-      final club = buildRunClub(name: 'Night Pacers', rating: 4.8);
+      final club = buildRunClub(
+        name: 'Night Pacers',
+        location: IndianCity.indore,
+        tags: const ['social', 'Indore'],
+        rating: 4.8,
+        nextRunLabel: 'Race Course Road Main Gate',
+      );
 
       await pumpTestApp(
         tester,
@@ -324,7 +330,11 @@ void main() {
       );
 
       expect(find.text('Night Pacers'), findsNWidgets(2));
-      expect(find.text('JOINED'), findsOneWidget);
+      expect(find.text('Joined'), findsOneWidget);
+      expect(find.text('Join'), findsNothing);
+      expect(find.text('SOCIAL'), findsOneWidget);
+      expect(find.text('INDORE'), findsNothing);
+      expect(find.text('NEXT: RACE COURSE ROAD MAIN GATE'), findsOneWidget);
       expect(find.text('4.8'), findsOneWidget);
     });
 

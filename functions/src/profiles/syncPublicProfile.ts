@@ -50,8 +50,6 @@ export const syncPublicProfile = onDocumentWritten(
       photoThumbnailUrls: user.photoThumbnailUrls ?? [],
       // Optional fields — omit undefined values so Firestore doesn't store them
       ...(user.city && {city: user.city}),
-      ...(user.latitude !== undefined && {latitude: user.latitude}),
-      ...(user.longitude !== undefined && {longitude: user.longitude}),
       ...(user.height !== undefined && {height: user.height}),
       ...(user.occupation && {occupation: user.occupation}),
       ...(user.company && {company: user.company}),

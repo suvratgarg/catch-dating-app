@@ -1,6 +1,6 @@
 ---
 doc_id: widget_cleanup
-version: 2.3.45
+version: 2.3.46
 updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
@@ -30,6 +30,25 @@ For future passes:
    old finding points there.
 
 ## Rule Changelog
+
+### 2.3.46
+
+- Ran the profile-photo thumbnail backfill against `catchdates-dev` with
+  `FIREBASE_STORAGE_BUCKET=catchdates-dev.firebasestorage.app`. Dry-run reported
+  5 missing thumbnails across 2 users, apply wrote all 5, and a final dry-run
+  reported 0 missing / 0 skipped.
+- Dry-ran staging (`catchdates-staging`) and found 0 users / 0 missing. Applied
+  the same backfill to prod/default (`catch-dating-app-64e51`): writable
+  Storage-backed profile photos were backfilled, while 72 demo placeholder URLs
+  remain skipped as unsupported and 1 existing source object remains missing a
+  thumbnail because the stored source downloads as an empty buffer. The backfill
+  script now skips empty/corrupt source images per-photo instead of aborting the
+  whole run.
+- Ran `npm audit fix` for Functions. The high `fast-xml-builder` and moderate
+  `uuid` advisories were resolved. Remaining audit output is 9 low-severity
+  Firebase Admin transitive advisories where npm's proposed fix is a breaking
+  downgrade to `firebase-admin@10.3.0`; do not force that downgrade for this
+  Functions v2 codebase.
 
 ### 2.3.45
 

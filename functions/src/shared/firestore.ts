@@ -213,8 +213,6 @@ export interface PublicProfileDoc {
   photoUrls: string[];
   photoThumbnailUrls: string[];
   city?: IndianCity | null;
-  latitude?: number | null;
-  longitude?: number | null;
   height?: number | null;
   occupation?: string | null;
   company?: string | null;

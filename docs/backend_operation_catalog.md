@@ -1,6 +1,6 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.1.17
+version: 1.1.18
 updated: 2026-05-08
 owner: recursive_audit_loop
 status: active
@@ -55,7 +55,7 @@ machine-readable ownership contract and this document as the human map.
 |---|---|---|---|---|
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with Zod; owns complex profile edits after initial create; rate-limited at 60/minute. |
 | `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete | Sole owner of public profile projection. Uses `displayName`, then first name, then legacy fallback; projects `photoThumbnailUrls` alongside `photoUrls` for tiny avatar surfaces. |
-| `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.photoThumbnailUrls` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/run-detail hype avatars must use these thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm run backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`. |
+| `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.photoThumbnailUrls` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/run-detail hype avatars must use these thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm run backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`; `catchdates-dev` and prod/default were backfilled on 2026-05-08. Staging had no users. Prod still has skipped demo placeholder URLs plus one empty source object that cannot be thumbnailed until the source photo is replaced. |
 | `createRunClub` | Callable | `RunClubsRepository.createRunClub` | `runClubs/{clubId}`, `runClubMemberships/{clubId_uid}`, `runClubHostClaims/{uid}` | Server derives host identity from authenticated user; the membership edge is the source of truth and `memberCount` is the only parent aggregate. `runClubHostClaims/{uid}` enforces the current product rule that a user can host at most one run club. |
 | `updateRunClub` | Callable | `RunClubsRepository.updateRunClub` | `runClubs/{clubId}` descriptive fields | Host-only profile edit seam. Direct client updates to `runClubs/{clubId}` are denied so Zod owns field validation and aggregate/projection fields stay backend-owned. |
 | `joinRunClub` | Callable | `RunClubsRepository.joinClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.memberCount` | Multi-doc membership mutation; does not mirror membership into user or club arrays. |
@@ -152,3 +152,9 @@ When adding a new producer, write the timeline item through
 source event has a stable ID, add Functions tests for duplicate delivery, add a
 rules test if the client read/update contract changes, and extend
 `tool/firestore_contract.json`.
+
+Internal demo tooling marks source documents with `demoOps`, `demoOpsId`,
+`demoOpsCommand`, `seedPrefix`, and `synthetic`. Trigger-owned notification
+projections should copy those fields through
+`functions/src/shared/demoMetadata.ts` so cleanup and single-user reset commands
+can remove derived demo activity precisely.

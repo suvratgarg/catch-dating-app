@@ -1,6 +1,6 @@
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:latlong2/latlong.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'device_location.g.dart';
@@ -8,7 +8,7 @@ part 'device_location.g.dart';
 @Riverpod(keepAlive: true)
 class DeviceLocation extends _$DeviceLocation {
   @override
-  Future<LatLng?> build() async {
+  Future<LocationCoordinate?> build() async {
     try {
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) return null;
@@ -28,7 +28,7 @@ class DeviceLocation extends _$DeviceLocation {
           timeLimit: Duration(seconds: 10),
         ),
       );
-      return LatLng(position.latitude, position.longitude);
+      return LocationCoordinate(position.latitude, position.longitude);
     } catch (error, stack) {
       debugPrint('[ERROR] DeviceLocation.build: $error\n$stack');
       return null;

@@ -216,6 +216,12 @@ test("signUpUserForRun writes a signup activity notification", async () => {
   assert.equal(notification?.runClubId, "club-1");
   assert.equal(notification?.readAt, null);
   assert.equal(participation?.status, "signedUp");
+  assert.equal(
+    fake.get(`userRunScheduleLocks/runner-1_${scheduleSlot(
+      "2026-05-02T01:30:00.000Z"
+    )}`)?.runId,
+    "run-1"
+  );
 });
 
 test("signUpUserForRun writes a waitlist promotion notification", async () => {
@@ -265,3 +271,67 @@ test("signUpUserForRun rejects cancelled runs", async () => {
       error.code === "failed-precondition"
   );
 });
+
+test("signUpUserForRun rejects overlapping user bookings", async () => {
+  const db = firestore({
+    "runs/run-1": run(),
+    "runs/run-2": run({
+      runClubId: "club-2",
+      startTime: admin.firestore.Timestamp.fromMillis(
+        Date.parse("2026-05-02T02:00:00.000Z")
+      ),
+      endTime: admin.firestore.Timestamp.fromMillis(
+        Date.parse("2026-05-02T03:00:00.000Z")
+      ),
+    }),
+    "users/runner-1": user(),
+    "runParticipations/run-2_runner-1": {
+      runId: "run-2",
+      runClubId: "club-2",
+      uid: "runner-1",
+      status: "signedUp",
+    },
+  });
+
+  await assert.rejects(
+    () => signUpUserForRun(db, "run-1", "runner-1"),
+    (error) =>
+      error instanceof Error &&
+      "code" in error &&
+      error.code === "failed-precondition"
+  );
+});
+
+test("signUpUserForRun allows adjacent user bookings", async () => {
+  const db = firestore({
+    "runs/run-1": run(),
+    "runs/run-2": run({
+      runClubId: "club-2",
+      startTime: admin.firestore.Timestamp.fromMillis(
+        Date.parse("2026-05-02T02:30:00.000Z")
+      ),
+      endTime: admin.firestore.Timestamp.fromMillis(
+        Date.parse("2026-05-02T03:30:00.000Z")
+      ),
+    }),
+    "users/runner-1": user(),
+    "runParticipations/run-2_runner-1": {
+      runId: "run-2",
+      runClubId: "club-2",
+      uid: "runner-1",
+      status: "signedUp",
+    },
+  });
+
+  await signUpUserForRun(db, "run-1", "runner-1");
+
+  const fake = db as unknown as FakeFirestore;
+  assert.equal(
+    fake.get("runParticipations/run-1_runner-1")?.status,
+    "signedUp"
+  );
+});
+
+function scheduleSlot(iso: string): number {
+  return Math.floor(Date.parse(iso) / 60000);
+}

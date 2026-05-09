@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'run_draft.freezed.dart';
@@ -26,7 +27,7 @@ abstract class RunDraft with _$RunDraft {
     int? selectedDateMillis,
     int? selectedStartHour,
     int? selectedStartMinute,
-    @Default(60) int durationMinutes,
+    @Default(CatchBusinessRules.runDefaultDurationMinutes) int durationMinutes,
     // Rules step
     String? minAge,
     String? maxAge,

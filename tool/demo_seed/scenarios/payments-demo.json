@@ -1,0 +1,14 @@
+{
+  "id": "payments-demo",
+  "label": "Payments Demo",
+  "description": "Paid booking history with completed, refunded, and failed payment examples.",
+  "recommendedCommands": [
+    "seed-world --scenario paid-flow-demo",
+    "create-refund",
+    "warm-user"
+  ],
+  "readiness": {
+    "payments": 3,
+    "participations": 2
+  }
+}

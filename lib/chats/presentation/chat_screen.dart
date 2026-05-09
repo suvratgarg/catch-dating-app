@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/chat_repository.dart';
+import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
@@ -43,7 +43,7 @@ class _ChatContent extends ConsumerStatefulWidget {
 class _ChatContentState extends ConsumerState<_ChatContent> {
   final _textController = TextEditingController();
   final _scrollController = ScrollController();
-  late final ChatUnreadResetter _unreadResetter;
+  late final ConversationReadMarker _readMarker;
   bool _didScrollToLatestMessage = false;
   int _lastMessageCount = 0;
   String? _lastResetUid;
@@ -52,7 +52,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
   @override
   void initState() {
     super.initState();
-    _unreadResetter = ref.read(chatUnreadResetterProvider);
+    _readMarker = ref.read(conversationReadMarkerProvider);
     _resetUnread(ref.read(uidProvider).value);
   }
 
@@ -60,7 +60,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
   void dispose() {
     final uid = _lastKnownUid;
     if (uid != null) {
-      unawaited(_unreadResetter.resetUnread(matchId: widget.matchId, uid: uid));
+      unawaited(_readMarker.markRead(conversationId: widget.matchId, uid: uid));
     }
     _textController.dispose();
     _scrollController.dispose();
@@ -73,7 +73,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     if (!force && uid == _lastResetUid) return;
 
     _lastResetUid = uid;
-    unawaited(_unreadResetter.resetUnread(matchId: widget.matchId, uid: uid));
+    unawaited(_readMarker.markRead(conversationId: widget.matchId, uid: uid));
   }
 
   bool _isNearBottom() {
@@ -227,7 +227,10 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
       }
     });
 
-    ref.listen(watchChatMessagesProvider(widget.matchId), (previous, next) {
+    ref.listen(watchConversationMessagesProvider(widget.matchId), (
+      previous,
+      next,
+    ) {
       final previousMessages = previous?.asData?.value;
       next.whenData((messages) {
         _syncScrollWithMessages(
@@ -243,7 +246,9 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     });
 
     final uid = ref.watch(uidProvider.select((v) => v.value));
-    final messagesAsync = ref.watch(watchChatMessagesProvider(widget.matchId));
+    final messagesAsync = ref.watch(
+      watchConversationMessagesProvider(widget.matchId),
+    );
     final matchAsync = ref.watch(matchStreamProvider(widget.matchId));
     final match = matchAsync.asData?.value;
     final latestRunId = match?.latestRunId;
@@ -305,8 +310,9 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
                 currentUid: uid,
                 otherName: profile?.name ?? 'your match',
                 scrollController: _scrollController,
-                onRetry: () =>
-                    ref.invalidate(watchChatMessagesProvider(widget.matchId)),
+                onRetry: () => ref.invalidate(
+                  watchConversationMessagesProvider(widget.matchId),
+                ),
               ),
             ),
             ChatInputBar(

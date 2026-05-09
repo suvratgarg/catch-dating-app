@@ -8,6 +8,7 @@ import {
   sendFcmNotification,
   setActivityNotification,
 } from "../shared/notifications";
+import {demoMetadataFromSources} from "../shared/demoMetadata";
 
 interface MatchCreatedEvent {
   params: {matchId: string};
@@ -70,6 +71,7 @@ export async function onMatchCreatedHandler(
       runId: latestRunId,
       actorUid: user2Id,
       actorName: profile2Name,
+      ...demoMetadataFromSources(match),
     }),
     setActivityNotification(db, {
       id: activityNotificationId("match", matchId),
@@ -82,6 +84,7 @@ export async function onMatchCreatedHandler(
       runId: latestRunId,
       actorUid: user1Id,
       actorName: profile1Name,
+      ...demoMetadataFromSources(match),
     }),
   ]);
 

@@ -2,6 +2,7 @@ import Flutter
 import FirebaseAppCheck
 import FirebaseAuth
 import FirebaseCore
+import GoogleMaps
 import UIKit
 
 final class AppAttestProviderFactory: NSObject, AppCheckProviderFactory {
@@ -23,6 +24,11 @@ final class AppAttestProviderFactory: NSObject, AppCheckProviderFactory {
     #endif
 
     application.registerForRemoteNotifications()
+    if let mapsApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsApiKey") as? String,
+       !mapsApiKey.isEmpty,
+       !mapsApiKey.hasPrefix("$(") {
+      GMSServices.provideAPIKey(mapsApiKey)
+    }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }

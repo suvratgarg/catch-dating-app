@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
@@ -19,7 +20,6 @@ import 'package:catch_dating_app/runs/presentation/widgets/when_where_card.dart'
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:latlong2/latlong.dart';
 
 import 'runs_test_helpers.dart';
 
@@ -53,7 +53,7 @@ void main() {
               ),
               MapPinTile(startingPoint: null, onTap: () => mapTapped = true),
               MapPinTile(
-                startingPoint: const LatLng(19.076, 72.8777),
+                startingPoint: const LocationCoordinate(19.076, 72.8777),
                 onTap: () {},
               ),
               CatchNumberStepper(

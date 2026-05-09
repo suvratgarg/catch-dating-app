@@ -69,6 +69,16 @@ void main() {
     expect(legacy.publicDisplayName, 'Asha');
   });
 
+  test('public profile projection does not expose exact coordinates', () {
+    final user = buildUser(
+      dateOfBirth: DateTime(1995, 6, 15),
+    ).copyWith(latitude: 19.076, longitude: 72.8777);
+    final publicProfileJson = publicProfileFromUserProfile(user).toJson();
+
+    expect(publicProfileJson.containsKey('latitude'), isFalse);
+    expect(publicProfileJson.containsKey('longitude'), isFalse);
+  });
+
   test(
     'profile photo thumbnail getters prefer tiny URLs with full-photo fallback',
     () {

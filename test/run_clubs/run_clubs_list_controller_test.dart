@@ -146,6 +146,10 @@ void main() {
           id: 'discover-club',
           hostUserId: 'host-3',
         );
+        final hostedClub = buildRunClub(
+          id: 'hosted-club',
+          hostUserId: 'runner-1',
+        );
 
         final container = ProviderContainer(
           overrides: [
@@ -159,7 +163,12 @@ void main() {
               ]),
             ),
             watchRunClubsByLocationProvider(IndianCity.mumbai).overrideWith(
-              (ref) => Stream.value([memberClub, followedClub, discoverClub]),
+              (ref) => Stream.value([
+                memberClub,
+                followedClub,
+                discoverClub,
+                hostedClub,
+              ]),
             ),
           ],
         );
@@ -179,13 +188,19 @@ void main() {
         expect(viewModel.joinedClubs.map((club) => club.id), [
           'member-club',
           'followed-club',
+          'hosted-club',
         ]);
         expect(viewModel.allClubs.map((club) => club.id), [
           'member-club',
           'followed-club',
           'discover-club',
+          'hosted-club',
         ]);
-        expect(viewModel.joinedClubIds, {'member-club', 'followed-club'});
+        expect(viewModel.joinedClubIds, {
+          'member-club',
+          'followed-club',
+          'hosted-club',
+        });
       },
     );
 

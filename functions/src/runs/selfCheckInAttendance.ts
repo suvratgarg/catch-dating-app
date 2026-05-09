@@ -10,9 +10,9 @@
  *
  *   1. Caller must be authenticated.
  *   2. Caller must have a signed-up runParticipation edge.
- *   3. Check-in window: 30 minutes before start to 30 minutes after start.
+ *   3. Check-in window: configured in tool/business_rules.json.
  *      Outside this window, only the host can mark attendance.
- *   4. GPS proximity: caller's lat/lng must be within 200 m of the run's
+ *   4. GPS proximity: caller must be within the configured distance of the
  *      meeting point. Runs without coordinates skip this check (graceful
  *      degradation for existing runs created before this feature).
  *
@@ -35,6 +35,11 @@ import {
   runParticipationId,
   runParticipationPatch,
 } from "../shared/relationshipDocuments";
+import {
+  RUN_SELF_CHECK_IN_MAX_DISTANCE_METERS,
+  RUN_SELF_CHECK_IN_WINDOW_AFTER_MINUTES,
+  RUN_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES,
+} from "../shared/businessRules";
 
 const SelfCheckInSchema = z.object({
   runId: z.string(),
@@ -43,15 +48,6 @@ const SelfCheckInSchema = z.object({
 });
 
 // ── Constants ──────────────────────────────────────────────────────────────
-
-/** Max distance (m) from meeting point to allow self check-in. */
-const MAX_CHECK_IN_DISTANCE_M = 200;
-
-/** Minutes before the run start that the self-check-in window opens. */
-const CHECK_IN_WINDOW_BEFORE_MIN = 30;
-
-/** Minutes after the run start that the self-check-in window closes. */
-const CHECK_IN_WINDOW_AFTER_MIN = 30;
 
 /** Earth's mean radius in metres — used by the Haversine formula. */
 const EARTH_RADIUS_M = 6_371_000;
@@ -150,17 +146,18 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
 
   const startTime = (run.startTime as FirebaseFirestore.Timestamp).toDate();
   const windowStart = new Date(
-    startTime.getTime() - CHECK_IN_WINDOW_BEFORE_MIN * 60 * 1000
+    startTime.getTime() - RUN_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES * 60 * 1000
   );
   const windowEnd = new Date(
-    startTime.getTime() + CHECK_IN_WINDOW_AFTER_MIN * 60 * 1000
+    startTime.getTime() + RUN_SELF_CHECK_IN_WINDOW_AFTER_MINUTES * 60 * 1000
   );
   const now = new Date();
 
   if (now < windowStart) {
     throw new HttpsError(
       "failed-precondition",
-      `Check-in opens ${CHECK_IN_WINDOW_BEFORE_MIN} min before the run starts.`
+      `Check-in opens ${RUN_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES} min ` +
+      "before the run starts."
     );
   }
 
@@ -168,7 +165,8 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
     throw new HttpsError(
       "failed-precondition",
       "Check-in closed. " +
-      `The ${CHECK_IN_WINDOW_AFTER_MIN}-min post-run window ended. ` +
+      `The ${RUN_SELF_CHECK_IN_WINDOW_AFTER_MINUTES}-min post-run ` +
+      "window ended. " +
       "Contact the host."
     );
   }
@@ -191,11 +189,12 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
       runLat, runLng
     );
 
-    if (distance > MAX_CHECK_IN_DISTANCE_M) {
+    if (distance > RUN_SELF_CHECK_IN_MAX_DISTANCE_METERS) {
       throw new HttpsError(
         "failed-precondition",
-        `You must be within ${MAX_CHECK_IN_DISTANCE_M} m of the meeting ` +
-        `point to check in. You appear to be ${Math.round(distance)} m away.`
+        `You must be within ${RUN_SELF_CHECK_IN_MAX_DISTANCE_METERS} m ` +
+        "of the meeting point to check in. You appear to be " +
+        `${Math.round(distance)} m away.`
       );
     }
   }

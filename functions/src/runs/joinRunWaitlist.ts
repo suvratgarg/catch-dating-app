@@ -13,6 +13,10 @@ import {
   runParticipationsByStatusInTransaction,
 } from "../shared/relationshipDocuments";
 import {checkRateLimit} from "../shared/rateLimit";
+import {
+  claimUserRunScheduleInTransaction,
+  releaseUserRunScheduleInTransaction,
+} from "./scheduleConflicts";
 
 const RunWaitlistSchema = z.object({
   runId: z.string(),
@@ -81,6 +85,14 @@ export const joinRunWaitlist = onCall(appCheckCallableOptions, async (
       participantUids(activeParticipations)
     );
 
+    await claimUserRunScheduleInTransaction(tx, db, {
+      uid: userId,
+      runId,
+      runClubId: run.runClubId,
+      startTimeMillis: run.startTime.toMillis(),
+      endTimeMillis: run.endTime.toMillis(),
+    });
+
     tx.update(runRef, {
       waitlistedCount: admin.firestore.FieldValue.increment(1),
     });
@@ -137,6 +149,12 @@ export const leaveRunWaitlist = onCall(appCheckCallableOptions, async (
       run.waitlistedCount ?? 1;
     tx.update(runRef, {
       waitlistedCount: Math.max(0, currentWaitlistedCount - 1),
+    });
+    releaseUserRunScheduleInTransaction(tx, db, {
+      uid: userId,
+      runId,
+      startTimeMillis: run.startTime.toMillis(),
+      endTimeMillis: run.endTime.toMillis(),
     });
     tx.set(participationRef, runParticipationPatch({
       exists: participationSnap.exists,

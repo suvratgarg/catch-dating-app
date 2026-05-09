@@ -23,8 +23,6 @@ _PublicProfile _$PublicProfileFromJson(
           .toList() ??
       const [],
   city: $enumDecodeNullable(_$IndianCityEnumMap, json['city']),
-  latitude: (json['latitude'] as num?)?.toDouble(),
-  longitude: (json['longitude'] as num?)?.toDouble(),
   height: (json['height'] as num?)?.toInt(),
   occupation: json['occupation'] as String?,
   company: json['company'] as String?,
@@ -68,8 +66,6 @@ Map<String, dynamic> _$PublicProfileToJson(
   'photoUrls': instance.photoUrls,
   'photoThumbnailUrls': instance.photoThumbnailUrls,
   'city': _$IndianCityEnumMap[instance.city],
-  'latitude': instance.latitude,
-  'longitude': instance.longitude,
   'height': instance.height,
   'occupation': instance.occupation,
   'company': instance.company,

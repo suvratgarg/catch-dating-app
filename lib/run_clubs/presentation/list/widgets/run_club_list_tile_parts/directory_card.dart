@@ -14,6 +14,7 @@ class _DirectoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final visibleTags = _visibleTags(club);
 
     return Semantics(
       button: onTap != null,
@@ -46,30 +47,26 @@ class _DirectoryCard extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (isJoined)
-                    Positioned(
-                      top: 10,
-                      left: 10,
-                      child: CatchBadge(
-                        label: 'Joined',
-                        icon: Icons.check_rounded,
-                        tone: CatchBadgeTone.neutral,
-                        size: CatchBadgeSize.sm,
-                        uppercase: true,
-                        backgroundColor: Colors.white.withValues(alpha: 0.95),
-                        foregroundColor: Colors.black,
-                      ),
-                    ),
                   if (club.nextRunLabel != null)
                     Positioned(
                       top: 10,
+                      left: 10,
                       right: 10,
-                      child: CatchBadge(
-                        label: 'NEXT: ${club.nextRunLabel}',
-                        tone: CatchBadgeTone.solid,
-                        size: CatchBadgeSize.sm,
-                        uppercase: true,
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        child: CatchBadge(
+                          label: 'NEXT: ${club.nextRunLabel}',
+                          tone: CatchBadgeTone.solid,
+                          size: CatchBadgeSize.sm,
+                          uppercase: true,
+                        ),
                       ),
+                    ),
+                  if (club.rating > 0)
+                    Positioned(
+                      right: 10,
+                      bottom: 10,
+                      child: _RatingBadge(rating: club.rating),
                     ),
                 ],
               ),
@@ -79,38 +76,23 @@ class _DirectoryCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          club.name,
-                          style: CatchTextStyles.titleL(context),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                      if (club.rating > 0) ...[
-                        const SizedBox(width: 6),
-                        Icon(Icons.star_rounded, size: 13, color: t.gold),
-                        const SizedBox(width: 2),
-                        Text(
-                          club.rating.toStringAsFixed(1),
-                          style: CatchTextStyles.bodyS(context, color: t.ink2),
-                        ),
-                      ],
-                    ],
+                  Text(
+                    club.name,
+                    style: CatchTextStyles.titleL(context),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     '${club.area} · ${club.memberCount} runners',
                     style: CatchTextStyles.bodyS(context),
                   ),
-                  if (club.tags.isNotEmpty) ...[
+                  if (visibleTags.isNotEmpty) ...[
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 6,
                       runSpacing: 6,
-                      children: club.tags.map((tag) {
+                      children: visibleTags.map((tag) {
                         return CatchBadge(
                           label: tag,
                           tone: CatchBadgeTone.brand,
@@ -127,12 +109,16 @@ class _DirectoryCard extends StatelessWidget {
                     children: [
                       _HostAvatar(club: club),
                       const SizedBox(width: 6),
-                      Text(
-                        club.hostName,
-                        style: CatchTextStyles.bodyS(context, color: t.ink2),
+                      Expanded(
+                        child: Text(
+                          club.hostName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        ),
                       ),
-                      const Spacer(),
-                      if (!isJoined) _JoinClubButton(clubId: club.id),
+                      const SizedBox(width: 10),
+                      _MembershipButton(clubId: club.id, isJoined: isJoined),
                     ],
                   ),
                 ],
@@ -142,6 +128,44 @@ class _DirectoryCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+List<String> _visibleTags(RunClub club) {
+  final locationNames = {
+    club.location.name.toLowerCase(),
+    club.location.label.toLowerCase(),
+  };
+  return club.tags
+      .where((tag) => !locationNames.contains(tag.trim().toLowerCase()))
+      .toList(growable: false);
+}
+
+class _MembershipButton extends StatelessWidget {
+  const _MembershipButton({required this.clubId, required this.isJoined});
+
+  final String clubId;
+  final bool isJoined;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    if (isJoined) {
+      return CatchButton(
+        label: 'Joined',
+        onPressed: null,
+        variant: CatchButtonVariant.secondary,
+        size: CatchButtonSize.sm,
+        icon: Icon(Icons.check_rounded, size: 16, color: t.success),
+        isInteractive: false,
+        backgroundColor: t.success.withValues(alpha: 0.10),
+        foregroundColor: t.success,
+        borderColor: t.success.withValues(alpha: 0.22),
+      );
+    }
+
+    return _JoinClubButton(clubId: clubId);
   }
 }
 
@@ -180,6 +204,39 @@ class _JoinClubButton extends ConsumerWidget {
           .get(runClubsListControllerProvider.notifier)
           .joinClub(clubId);
     });
+  }
+}
+
+class _RatingBadge extends StatelessWidget {
+  const _RatingBadge({required this.rating});
+
+  final double rating;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.94),
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.75)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.star_rounded, size: 13, color: t.gold),
+            const SizedBox(width: 2),
+            Text(
+              rating.toStringAsFixed(1),
+              style: CatchTextStyles.labelS(context, color: t.ink),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 

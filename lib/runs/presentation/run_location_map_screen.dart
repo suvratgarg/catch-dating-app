@@ -5,12 +5,12 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_pins_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
 
 class RunLocationMapRouteScreen extends ConsumerWidget {
   const RunLocationMapRouteScreen({
@@ -72,7 +72,10 @@ class RunLocationMapScreen extends StatelessWidget {
       );
     }
 
-    final point = LatLng(run.startingPointLat!, run.startingPointLng!);
+    final point = LocationCoordinate(
+      run.startingPointLat!,
+      run.startingPointLng!,
+    );
 
     return Scaffold(
       backgroundColor: t.bg,

@@ -1,10 +1,11 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/locations/data/places_repository.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 
 import '../test_pump_helpers.dart';
 import 'runs_test_helpers.dart';
@@ -12,7 +13,7 @@ import 'runs_test_helpers.dart';
 void main() {
   group('LocationPickerScreen', () {
     test('stores the initial location argument', () {
-      const initialLocation = LatLng(19.076, 72.8777);
+      const initialLocation = LocationCoordinate(19.076, 72.8777);
       const screen = LocationPickerScreen(initialLocation: initialLocation);
 
       expect(screen.initialLocation, initialLocation);
@@ -47,11 +48,12 @@ void main() {
         const LocationPickerScreen(loadMapTiles: false),
       );
 
-      final flutterMap = tester.widget<FlutterMap>(find.byType(FlutterMap));
-      const selectedPoint = LatLng(19.11, 72.91);
-      flutterMap.options.onTap?.call(
-        const TapPosition(Offset.zero, Offset.zero),
-        selectedPoint,
+      final googleMap = tester.widget<gmaps.GoogleMap>(
+        find.byType(gmaps.GoogleMap),
+      );
+      const selectedPoint = LocationCoordinate(19.11, 72.91);
+      googleMap.onTap?.call(
+        gmaps.LatLng(selectedPoint.latitude, selectedPoint.longitude),
       );
       await tester.pump();
 
@@ -78,9 +80,12 @@ void main() {
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute<LatLng?>(
+                        MaterialPageRoute<LocationCoordinate?>(
                           builder: (_) => const LocationPickerScreen(
-                            initialLocation: LatLng(19.076, 72.8777),
+                            initialLocation: LocationCoordinate(
+                              19.076,
+                              72.8777,
+                            ),
                             loadMapTiles: false,
                           ),
                         ),
@@ -114,5 +119,84 @@ void main() {
         expect(find.text('Open'), findsOneWidget);
       },
     );
+
+    testWidgets('searches places and uses the selected place coordinates', (
+      tester,
+    ) async {
+      await pumpRunsTestApp(
+        tester,
+        const LocationPickerScreen(loadMapTiles: false),
+        overrides: [
+          placesRepositoryProvider.overrideWithValue(
+            _FakePlacesRepository(
+              suggestions: const [
+                PlaceAutocompleteSuggestion(
+                  placeId: 'cubbon-park',
+                  description: 'Cubbon Park, Bengaluru, Karnataka',
+                  mainText: 'Cubbon Park',
+                  secondaryText: 'Bengaluru, Karnataka',
+                ),
+              ],
+              placeDetails: const PlaceDetails(
+                placeId: 'cubbon-park',
+                displayName: 'Cubbon Park',
+                formattedAddress: 'Cubbon Park, Bengaluru, Karnataka',
+                location: LocationCoordinate(12.9763, 77.5929),
+              ),
+            ),
+          ),
+        ],
+      );
+
+      await tester.enterText(
+        find.widgetWithText(TextField, 'Search for a meeting point'),
+        'Cubbon',
+      );
+      await tester.pump(const Duration(milliseconds: 350));
+      await tester.pump();
+
+      expect(find.text('Cubbon Park'), findsOneWidget);
+      expect(find.text('Bengaluru, Karnataka'), findsOneWidget);
+
+      await tester.tap(find.text('Cubbon Park'));
+      await tester.pump();
+
+      expect(find.text('12.976300, 77.592900'), findsOneWidget);
+      expect(
+        tester
+            .widget<CatchTopBarTextAction>(
+              find.widgetWithText(CatchTopBarTextAction, 'Confirm'),
+            )
+            .onPressed,
+        isNotNull,
+      );
+    });
   });
+}
+
+class _FakePlacesRepository implements PlacesRepository {
+  const _FakePlacesRepository({
+    required this.suggestions,
+    required this.placeDetails,
+  });
+
+  final List<PlaceAutocompleteSuggestion> suggestions;
+  final PlaceDetails placeDetails;
+
+  @override
+  Future<List<PlaceAutocompleteSuggestion>> autocomplete({
+    required String input,
+    required String sessionToken,
+    LocationCoordinate? bias,
+  }) async {
+    return suggestions;
+  }
+
+  @override
+  Future<PlaceDetails> details({
+    required String placeId,
+    required String sessionToken,
+  }) async {
+    return placeDetails;
+  }
 }

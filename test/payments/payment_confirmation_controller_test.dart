@@ -24,7 +24,10 @@ void main() {
 
     final uri = PaymentConfirmationController.directionsUri(run);
 
-    expect(uri.toString(), 'https://maps.google.com/maps?daddr=19.076,72.878');
+    expect(
+      uri.toString(),
+      'https://www.google.com/maps/dir/?api=1&destination=19.076%2C72.878&travelmode=walking',
+    );
   });
 
   test(
@@ -34,7 +37,7 @@ void main() {
 
       final uri = PaymentConfirmationController.directionsUri(run);
 
-      expect(uri.toString(), contains('Carter%20Road'));
+      expect(uri.queryParameters['query'], 'Carter Road');
     },
   );
 

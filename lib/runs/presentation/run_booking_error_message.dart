@@ -7,9 +7,6 @@ String runBookingErrorMessage(Object error) {
   if (error is AppException) {
     return error.message;
   }
-  if (error is FirebaseException) {
-    return firestoreErrorMessage(error);
-  }
   if (error is FirebaseFunctionsException) {
     if (error.code == 'unauthenticated') {
       return const SignInRequiredException('book a run').message;
@@ -19,6 +16,9 @@ String runBookingErrorMessage(Object error) {
     if (message != null && message.trim().isNotEmpty) {
       return message.trim();
     }
+  }
+  if (error is FirebaseException) {
+    return firestoreErrorMessage(error);
   }
   if (error is StateError && error.message.isNotEmpty) {
     return error.message;

@@ -154,7 +154,7 @@ This means:
 
 | # | Provider | Type | keepAlive | Depends On | Returns |
 |---|----------|------|-----------|------------|---------|
-| 11 | `deviceLocationProvider` | `AsyncNotifierProvider<DeviceLocation, LatLng?>` | Yes | — (uses Geolocator directly) | `Future<LatLng?>` |
+| 11 | `deviceLocationProvider` | `AsyncNotifierProvider<DeviceLocation, LocationCoordinate?>` | Yes | — (uses Geolocator directly) | `Future<LocationCoordinate?>` |
 | 12 | `locationInitializerProvider` | `AsyncNotifierProvider<LocationInitializer, void>` | Yes | `userProfileStreamProvider`, `deviceLocationProvider`, `userProfileRepositoryProvider` | `Future<void>` |
 | 13 | `fcmServiceProvider` | `Provider<FcmService>` | Yes | `FirebaseFirestore.instance` (direct) | `FcmService` |
 | 14 | `appAnalyticsProvider` | `Provider<AppAnalytics>` | No | — (overridden in main) | `AppAnalytics` |

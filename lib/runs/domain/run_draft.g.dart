@@ -22,7 +22,9 @@ _RunDraft _$RunDraftFromJson(Map<String, dynamic> json) => _RunDraft(
   selectedDateMillis: (json['selectedDateMillis'] as num?)?.toInt(),
   selectedStartHour: (json['selectedStartHour'] as num?)?.toInt(),
   selectedStartMinute: (json['selectedStartMinute'] as num?)?.toInt(),
-  durationMinutes: (json['durationMinutes'] as num?)?.toInt() ?? 60,
+  durationMinutes:
+      (json['durationMinutes'] as num?)?.toInt() ??
+      CatchBusinessRules.runDefaultDurationMinutes,
   minAge: json['minAge'] as String?,
   maxAge: json['maxAge'] as String?,
   maxMen: json['maxMen'] as String?,

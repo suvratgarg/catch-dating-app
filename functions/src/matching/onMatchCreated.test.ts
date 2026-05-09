@@ -75,6 +75,23 @@ function event() {
   };
 }
 
+function demoEvent() {
+  const base = event();
+  return {
+    ...base,
+    data: {
+      data: () => ({
+        ...base.data.data(),
+        demoOps: true,
+        demoOpsId: "demo_ops_match_1",
+        demoOpsCommand: "match-phones",
+        seedPrefix: "demo_ops_2026",
+        synthetic: true,
+      }),
+    },
+  };
+}
+
 function harness() {
   const firestore = new FakeFirestore({
     "users/runner-1": {fcmToken: "token-1"},
@@ -152,5 +169,33 @@ test(
         matchId: "match-1",
       },
     ]);
+  }
+);
+
+test("onMatchCreatedHandler propagates demo metadata to notifications",
+  async () => {
+    const h = harness();
+
+    await onMatchCreatedHandler(demoEvent(), h.deps);
+
+    const notification = h.firestore.get(
+      "notifications/runner-1/items/match_match-1"
+    );
+    assert.deepEqual(
+      {
+        demoOps: notification?.demoOps,
+        demoOpsId: notification?.demoOpsId,
+        demoOpsCommand: notification?.demoOpsCommand,
+        seedPrefix: notification?.seedPrefix,
+        synthetic: notification?.synthetic,
+      },
+      {
+        demoOps: true,
+        demoOpsId: "demo_ops_match_1",
+        demoOpsCommand: "match-phones",
+        seedPrefix: "demo_ops_2026",
+        synthetic: true,
+      }
+    );
   }
 );
