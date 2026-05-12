@@ -1,0 +1,34 @@
+{
+  "accounts": [
+    {
+      "role": "founder",
+      "label": "Founder / main walkthrough",
+      "phone": "+910000000001",
+      "scenario": "investor-demo"
+    },
+    {
+      "role": "host",
+      "label": "Run club host",
+      "phone": "+910000000002",
+      "scenario": "host-demo"
+    },
+    {
+      "role": "power_runner",
+      "label": "High-activity runner",
+      "phone": "+910000000003",
+      "scenario": "dogfood-group"
+    },
+    {
+      "role": "paid_user",
+      "label": "Paid booking user",
+      "phone": "+910000000004",
+      "scenario": "payments-demo"
+    },
+    {
+      "role": "new_user",
+      "label": "Sparse new-user state",
+      "phone": "+910000000005",
+      "scenario": "empty-state-demo"
+    }
+  ]
+}

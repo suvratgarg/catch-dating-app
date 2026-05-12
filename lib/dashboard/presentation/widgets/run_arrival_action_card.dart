@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -7,7 +8,6 @@ import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
-import 'package:catch_dating_app/runs/presentation/run_booking_error_message.dart';
 import 'package:catch_dating_app/runs/presentation/run_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
@@ -32,8 +32,9 @@ class RunArrivalActionCard extends ConsumerWidget {
       children: [
         if (hasCheckInError)
           ErrorBanner(
-            message: runBookingErrorMessage(
+            message: appErrorMessage(
               (checkInMutation as MutationError).error,
+              context: AppErrorContext.run,
             ),
           ),
         CatchSurface(

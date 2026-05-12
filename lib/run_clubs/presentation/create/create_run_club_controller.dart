@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
@@ -46,7 +45,7 @@ class CreateRunClubController extends _$CreateRunClubController {
 
   Future<void> submit({
     required String name,
-    required IndianCity location,
+    required String location,
     required String area,
     required String description,
     RunClub? existingRunClub,
@@ -73,7 +72,7 @@ class CreateRunClubController extends _$CreateRunClubController {
       final fields = <String, dynamic>{
         'name': name,
         'description': description,
-        'location': location.name,
+        'location': location,
         'area': area,
         'imageUrl': imageUrl,
       };

@@ -1,6 +1,5 @@
-import 'package:catch_dating_app/chats/data/chat_repository.dart';
+import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
-import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -29,8 +28,12 @@ class ChatController extends _$ChatController {
     required String text,
   }) async {
     await ref
-        .read(chatRepositoryProvider)
-        .sendMessage(matchId: matchId, senderId: senderId, text: text);
+        .read(conversationRepositoryProvider)
+        .sendTextMessage(
+          conversationId: matchId,
+          senderId: senderId,
+          text: text,
+        );
   }
 
   Future<void> sendImage({
@@ -42,15 +45,17 @@ class ChatController extends _$ChatController {
       purpose: ImageUploadPurpose.chatImage,
     );
     if (image == null) return; // User cancelled
-    final chatRepository = ref.read(chatRepositoryProvider);
-    final messageId = chatRepository.createMessageId(matchId: matchId);
+    final conversationRepository = ref.read(conversationRepositoryProvider);
+    final messageId = conversationRepository.createMessageId(
+      conversationId: matchId,
+    );
     final imageUrl = await imageUploadRepository.uploadChatImage(
       matchId: matchId,
       messageId: messageId,
       image: image,
     );
-    await chatRepository.sendImageMessage(
-      matchId: matchId,
+    await conversationRepository.sendImageMessage(
+      conversationId: matchId,
       senderId: senderId,
       messageId: messageId,
       imageUrl: imageUrl,
@@ -82,20 +87,7 @@ class ChatController extends _$ChatController {
     required String uid,
   }) async {
     await ref
-        .read(matchRepositoryProvider)
-        .resetUnread(matchId: matchId, uid: uid);
+        .read(conversationRepositoryProvider)
+        .markRead(conversationId: matchId, uid: uid);
   }
 }
-
-class ChatUnreadResetter {
-  const ChatUnreadResetter(this._matchRepository);
-
-  final MatchRepository _matchRepository;
-
-  Future<void> resetUnread({required String matchId, required String uid}) =>
-      _matchRepository.resetUnread(matchId: matchId, uid: uid);
-}
-
-@riverpod
-ChatUnreadResetter chatUnreadResetter(Ref ref) =>
-    ChatUnreadResetter(ref.watch(matchRepositoryProvider));

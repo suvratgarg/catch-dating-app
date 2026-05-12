@@ -1,5 +1,6 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -19,14 +20,22 @@ class SwipeRepository {
   // ── Read ──────────────────────────────────────────────────────────────────
 
   /// Returns the set of user IDs this user has already swiped on.
-  Future<Set<String>> fetchSwipedUserIds({required String uid}) async {
-    final snap = await _outgoingSwipesRef(uid).get();
-    return snap.docs.map((d) => d.id).toSet();
-  }
+  Future<Set<String>> fetchSwipedUserIds({required String uid}) =>
+      withBackendErrorContext(
+        () async {
+          final snap = await _outgoingSwipesRef(uid).get();
+          return snap.docs.map((d) => d.id).toSet();
+        },
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'fetch swiped users',
+          resource: _collectionPath,
+        ),
+      );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> recordSwipe({required Swipe swipe}) => withFirestoreErrorContext(
+  Future<void> recordSwipe({required Swipe swipe}) => withBackendErrorContext(
     () => _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
       'swiperId': swipe.swiperId,
       'targetId': swipe.targetId,
@@ -34,8 +43,11 @@ class SwipeRepository {
       'direction': swipe.direction.name,
       'createdAt': FieldValue.serverTimestamp(),
     }),
-    collection: _collectionPath,
-    action: 'record swipe',
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'record swipe',
+      resource: _collectionPath,
+    ),
   );
 }
 

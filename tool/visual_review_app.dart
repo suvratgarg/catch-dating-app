@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -24,7 +24,6 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
 
 void main() {
   final liveRun = _run(
@@ -199,7 +198,7 @@ final class _VisualReviewUserProfileRepository
     required String uid,
     required double latitude,
     required double longitude,
-    IndianCity? city,
+    String? city,
   }) async {}
 
   @override
@@ -209,6 +208,7 @@ final class _VisualReviewUserProfileRepository
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
+    String action = 'update_profile',
   }) async {}
 }
 
@@ -235,7 +235,7 @@ final class _VisualReviewPublicProfileRepository
 
 class _NoDeviceLocation extends DeviceLocation {
   @override
-  Future<LatLng?> build() async => null;
+  Future<LocationCoordinate?> build() async => null;
 }
 
 class _PhoneFrame extends StatelessWidget {
@@ -332,7 +332,7 @@ RunClub _club() {
     id: 'club-1',
     name: 'Bandra Striders',
     description: 'Morning runners who like easy city loops.',
-    location: IndianCity.mumbai,
+    location: 'mumbai',
     area: 'Bandra',
     hostUserId: 'host-1',
     hostName: 'Priya',

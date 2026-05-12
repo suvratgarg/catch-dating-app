@@ -24,6 +24,8 @@ part 'swipe_queue_notifier.g.dart';
 /// local filtering of fetched data).
 @riverpod
 class SwipeQueueNotifier extends _$SwipeQueueNotifier {
+  bool _recordingSwipe = false;
+
   @override
   Future<List<PublicProfile>> build(
     String runId, {
@@ -45,26 +47,45 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
   }
 
   Future<void> swipe(SwipeDirection direction) async {
+    if (_recordingSwipe) return;
+
     final profiles = state.value;
     if (profiles == null || profiles.isEmpty) return;
 
-    final currentUserId = ref.read(authRepositoryProvider).currentUser?.uid;
+    final currentUserId =
+        ref.read(watchUserProfileProvider).asData?.value?.uid ??
+        ref.read(uidProvider).asData?.value;
     final target = profiles.first;
 
     if (currentUserId == null) return;
 
-    await ref
-        .read(swipeRepositoryProvider)
-        .recordSwipe(
-          swipe: Swipe(
-            swiperId: currentUserId,
-            targetId: target.uid,
-            runId: runId,
-            direction: direction,
-            createdAt: DateTime.now(),
-          ),
-        );
+    _recordingSwipe = true;
+    try {
+      await ref
+          .read(swipeRepositoryProvider)
+          .recordSwipe(
+            swipe: Swipe(
+              swiperId: currentUserId,
+              targetId: target.uid,
+              runId: runId,
+              direction: direction,
+              createdAt: DateTime.now(),
+            ),
+          );
 
-    state = AsyncData(profiles.sublist(1));
+      final latestProfiles = state.value ?? profiles;
+      if (latestProfiles.isEmpty) return;
+
+      if (latestProfiles.first.uid == target.uid) {
+        state = AsyncData(latestProfiles.sublist(1));
+        return;
+      }
+
+      state = AsyncData(
+        latestProfiles.where((profile) => profile.uid != target.uid).toList(),
+      );
+    } finally {
+      _recordingSwipe = false;
+    }
   }
 }

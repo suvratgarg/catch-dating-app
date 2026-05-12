@@ -15,11 +15,25 @@ import {
   sendFcmNotification,
   setActivityNotification,
 } from "../shared/notifications";
+import {
+  runParticipationsByStatusInTransaction,
+} from "../shared/relationshipDocuments";
+import {
+  assertValidRunTimeRange,
+  claimRunClubScheduleInTransaction,
+  releaseRunClubScheduleInTransaction,
+  releaseUserRunScheduleInTransaction,
+  replaceRunClubScheduleInTransaction,
+} from "./scheduleConflicts";
+import {refreshRunClubNextRun as defaultRefreshRunClubNextRun} from
+  "../runClubs/syncRunClubNextRun";
 
 const PaceSchema = z.enum(["easy", "moderate", "fast", "competitive"]);
 const nullableString = z.string().trim().max(1000).nullable().optional();
 const nullableLat = z.number().min(-90).max(90).nullable().optional();
 const nullableLng = z.number().min(-180).max(180).nullable().optional();
+const requiredLat = z.number().min(-90).max(90);
+const requiredLng = z.number().min(-180).max(180);
 
 const RunConstraintsSchema = z.object({
   minAge: z.number().int().min(0).max(120).default(0),
@@ -34,8 +48,8 @@ const RunCreateDetailsSchema = z.object({
   startTimeMillis: z.number().int(),
   endTimeMillis: z.number().int(),
   meetingPoint: z.string().trim().min(1).max(240),
-  startingPointLat: nullableLat,
-  startingPointLng: nullableLng,
+  startingPointLat: requiredLat,
+  startingPointLng: requiredLng,
   locationDetails: nullableString,
   distanceKm: z.number().positive().max(100),
   pace: PaceSchema,
@@ -88,6 +102,13 @@ interface RunMutationDeps {
     uid: string,
     action: string
   ) => Promise<void>;
+  refreshRunClubNextRun?: (
+    runClubId: string,
+    deps?: {
+      firestore: () => FirebaseFirestore.Firestore;
+      nowTimestamp: () => FirebaseFirestore.Timestamp;
+    }
+  ) => Promise<void>;
 }
 
 type ParsedRunConstraints = {
@@ -121,6 +142,7 @@ const defaultDeps: RunMutationDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
+  refreshRunClubNextRun: defaultRefreshRunClubNextRun,
 };
 
 /**
@@ -135,8 +157,7 @@ export async function createRunHandler(
 ): Promise<{runId: string}> {
   const hostUserId = requireAuth(request);
   const data = validateCallable(request, CreateRunSchema);
-  assertValidTimeRange(data.startTimeMillis, data.endTimeMillis);
-  assertValidCoordinatePair(data.startingPointLat, data.startingPointLng);
+  assertValidRunTimeRange(data.startTimeMillis, data.endTimeMillis);
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "createRun");
@@ -175,11 +196,21 @@ export async function createRunHandler(
       genderCounts: {},
     };
 
+    await claimRunClubScheduleInTransaction(tx, db, {
+      runClubId: data.runClubId,
+      runId: runRef.id,
+      startTimeMillis: data.startTimeMillis,
+      endTimeMillis: data.endTimeMillis,
+    });
     tx.create(runRef, run);
     createdRun = run;
   });
 
   if (createdRun) {
+    await deps.refreshRunClubNextRun?.(data.runClubId, {
+      firestore: deps.firestore,
+      nowTimestamp: () => admin.firestore.Timestamp.now(),
+    });
     await notifyClubMembersForNewRun({
       db,
       deps,
@@ -212,6 +243,7 @@ export async function updateRunHandler(
   const runRef = db.collection("runs").doc(data.runId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   let updatedRun: RunDoc | null = null;
+  let affectedRunClubId: string | null = null;
   let shouldNotifyParticipants = false;
 
   await db.runTransaction(async (tx) => {
@@ -232,13 +264,37 @@ export async function updateRunHandler(
       );
     }
     const clubRef = db.collection("runClubs").doc(run.runClubId);
-    const clubSnap = await tx.get(clubRef);
+    const [clubSnap, activeParticipations] = await Promise.all([
+      tx.get(clubRef),
+      runParticipationsByStatusInTransaction(tx, db, data.runId, [
+        "signedUp",
+        "waitlisted",
+        "attended",
+      ]),
+    ]);
     assertCanMutateRunClub(clubSnap, deletedUserSnap, hostUserId);
     assertValidMergedRunUpdate(run, data.fields);
+    if (hasScheduleTimeChange(data.fields) && activeParticipations.length > 0) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Runs with participants or waitlisted users cannot be rescheduled."
+      );
+    }
 
     const patch = buildUpdateRunPatch(data.fields, deps);
+    if (hasScheduleTimeChange(data.fields)) {
+      await replaceRunClubScheduleInTransaction(tx, db, {
+        runClubId: run.runClubId,
+        runId: data.runId,
+        previousStartTimeMillis: run.startTime.toMillis(),
+        previousEndTimeMillis: run.endTime.toMillis(),
+        startTimeMillis: fieldsStartTimeMillis(run, data.fields),
+        endTimeMillis: fieldsEndTimeMillis(run, data.fields),
+      });
+    }
     tx.update(runRef, patch);
     updatedRun = {...run, ...patch};
+    affectedRunClubId = run.runClubId;
     shouldNotifyParticipants = hasScheduleOrLocationChange(data.fields);
   });
 
@@ -249,6 +305,12 @@ export async function updateRunHandler(
       runId: data.runId,
       run: updatedRun,
       type: "runUpdated",
+    });
+  }
+  if (affectedRunClubId) {
+    await deps.refreshRunClubNextRun?.(affectedRunClubId, {
+      firestore: deps.firestore,
+      nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
   }
 
@@ -277,6 +339,7 @@ export async function cancelRunHandler(
   const runRef = db.collection("runs").doc(data.runId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   let cancelledRun: RunDoc | null = null;
+  let affectedRunClubId: string | null = null;
   let shouldNotifyParticipants = false;
 
   await db.runTransaction(async (tx) => {
@@ -291,11 +354,18 @@ export async function cancelRunHandler(
 
     const run = requireDoc<RunDoc>(runSnap, "RunDoc");
     const clubRef = db.collection("runClubs").doc(run.runClubId);
-    const clubSnap = await tx.get(clubRef);
+    const [clubSnap, participantEdges] = await Promise.all([
+      tx.get(clubRef),
+      runParticipationsByStatusInTransaction(tx, db, data.runId, [
+        "signedUp",
+        "waitlisted",
+      ]),
+    ]);
     assertCanMutateRunClub(clubSnap, deletedUserSnap, hostUserId);
 
     if (run.status === "cancelled") {
       cancelledRun = run;
+      affectedRunClubId = run.runClubId;
       return;
     }
 
@@ -306,12 +376,27 @@ export async function cancelRunHandler(
       cancelledAt,
       cancellationReason: data.reason ?? null,
     });
+    releaseRunClubScheduleInTransaction(tx, db, {
+      runClubId: run.runClubId,
+      runId: data.runId,
+      startTimeMillis: run.startTime.toMillis(),
+      endTimeMillis: run.endTime.toMillis(),
+    });
+    for (const edge of participantEdges) {
+      releaseUserRunScheduleInTransaction(tx, db, {
+        uid: edge.data.uid,
+        runId: data.runId,
+        startTimeMillis: run.startTime.toMillis(),
+        endTimeMillis: run.endTime.toMillis(),
+      });
+    }
     cancelledRun = {
       ...run,
       status: "cancelled",
       cancelledAt: run.cancelledAt,
       cancellationReason: data.reason ?? null,
     };
+    affectedRunClubId = run.runClubId;
     shouldNotifyParticipants = true;
   });
 
@@ -322,6 +407,12 @@ export async function cancelRunHandler(
       runId: data.runId,
       run: cancelledRun,
       type: "runCancelled",
+    });
+  }
+  if (affectedRunClubId) {
+    await deps.refreshRunClubNextRun?.(affectedRunClubId, {
+      firestore: deps.firestore,
+      nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
   }
 
@@ -348,6 +439,7 @@ export async function deleteRunHandler(
 
   const runRef = db.collection("runs").doc(data.runId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
+  let deletedRunClubId: string | null = null;
 
   await db.runTransaction(async (tx) => {
     const runSnap = await tx.get(runRef);
@@ -390,7 +482,21 @@ export async function deleteRunHandler(
     }
 
     tx.delete(runRef);
+    deletedRunClubId = run.runClubId;
+    releaseRunClubScheduleInTransaction(tx, db, {
+      runClubId: run.runClubId,
+      runId: data.runId,
+      startTimeMillis: run.startTime.toMillis(),
+      endTimeMillis: run.endTime.toMillis(),
+    });
   });
+
+  if (deletedRunClubId) {
+    await deps.refreshRunClubNextRun?.(deletedRunClubId, {
+      firestore: deps.firestore,
+      nowTimestamp: () => admin.firestore.Timestamp.now(),
+    });
+  }
 
   return {deleted: true};
 }
@@ -410,8 +516,8 @@ function buildCreateRunDoc(
     startTime: deps.timestampFromMillis(data.startTimeMillis),
     endTime: deps.timestampFromMillis(data.endTimeMillis),
     meetingPoint: data.meetingPoint,
-    startingPointLat: data.startingPointLat ?? null,
-    startingPointLng: data.startingPointLng ?? null,
+    startingPointLat: data.startingPointLat,
+    startingPointLng: data.startingPointLng,
     locationDetails: data.locationDetails ?? null,
     distanceKm: data.distanceKm,
     pace: data.pace,
@@ -471,6 +577,44 @@ function hasScheduleOrLocationChange(
     fields.startingPointLat !== undefined ||
     fields.startingPointLng !== undefined ||
     fields.locationDetails !== undefined;
+}
+
+/**
+ * Returns true when the run's time window changes, not merely its location.
+ * @param {object} fields Host update fields.
+ * @return {boolean} Whether time locks must be replaced.
+ */
+function hasScheduleTimeChange(
+  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+): boolean {
+  return fields.startTimeMillis !== undefined ||
+    fields.endTimeMillis !== undefined;
+}
+
+/**
+ * Applies partial schedule edits to a run start time.
+ * @param {RunDoc} run Current run document.
+ * @param {object} fields Update fields.
+ * @return {number} Merged start time in epoch milliseconds.
+ */
+function fieldsStartTimeMillis(
+  run: RunDoc,
+  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+): number {
+  return fields.startTimeMillis ?? run.startTime.toMillis();
+}
+
+/**
+ * Applies partial schedule edits to a run end time.
+ * @param {RunDoc} run Current run document.
+ * @param {object} fields Update fields.
+ * @return {number} Merged end time in epoch milliseconds.
+ */
+function fieldsEndTimeMillis(
+  run: RunDoc,
+  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+): number {
+  return fields.endTimeMillis ?? run.endTime.toMillis();
 }
 
 /**
@@ -536,7 +680,7 @@ function assertValidMergedRunUpdate(
     run.startTime.toMillis();
   const endTimeMillis = fields.endTimeMillis ??
     run.endTime.toMillis();
-  assertValidTimeRange(startTimeMillis, endTimeMillis);
+  assertValidRunTimeRange(startTimeMillis, endTimeMillis);
   assertValidCoordinatePair(
     fields.startingPointLat !== undefined ?
       fields.startingPointLat :
@@ -545,20 +689,6 @@ function assertValidMergedRunUpdate(
       fields.startingPointLng :
       run.startingPointLng
   );
-}
-
-/**
- * Throws when a run does not end after it starts.
- * @param {number} startTimeMillis Start time in epoch milliseconds.
- * @param {number} endTimeMillis End time in epoch milliseconds.
- */
-function assertValidTimeRange(startTimeMillis: number, endTimeMillis: number) {
-  if (endTimeMillis <= startTimeMillis) {
-    throw new HttpsError(
-      "invalid-argument",
-      "Run end time must be after the start time."
-    );
-  }
 }
 
 /**

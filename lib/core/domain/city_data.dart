@@ -5,15 +5,13 @@ part 'city_data.g.dart';
 
 /// A supported city sourced from the `config/cities` Firestore document.
 ///
-/// This replaces the hardcoded [IndianCity] enum for UI selection and
-/// server-side validation. The enum is kept for backward compatibility
-/// with existing Firestore documents that store city as an enum string.
+/// This is the app-facing city representation for UI selection, nearest-city
+/// detection, and server-side validation.
 @freezed
 abstract class CityData with _$CityData {
   const factory CityData({
-    /// Machine name — matches the [IndianCity] enum value for existing
-    /// cities (e.g. `'mumbai'`, `'delhi'`). New cities use lowercase
-    /// kebab-case (e.g. `'jaipur'`, `'noida'`).
+    /// Machine name, e.g. `'mumbai'`, `'delhi'`, or lowercase kebab-case for
+    /// newer city regions.
     required String name,
 
     /// Human-readable label (e.g. `'Mumbai'`, `'New Delhi'`).

@@ -25,42 +25,49 @@ class StepperFooter extends StatelessWidget {
     final t = CatchTokens.of(context);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
 
-    return Container(
-      color: t.surface,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Divider(color: t.line, height: 1, thickness: 1),
-          Padding(
-            padding: EdgeInsets.fromLTRB(
-              CatchSpacing.s4,
-              12,
-              CatchSpacing.s4,
-              12 + bottomPadding,
-            ),
-            child: Row(
-              children: [
-                if (onSaveDraft != null)
-                  TextButton.icon(
-                    onPressed: isLoading ? null : onSaveDraft,
-                    icon: const Icon(Icons.save_outlined, size: 18),
-                    label: const Text('Save Draft'),
-                  ),
-                const Spacer(),
-                Expanded(
+    return ColoredBox(
+      color: t.bg,
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          CatchSpacing.s4,
+          CatchSpacing.s3,
+          CatchSpacing.s4,
+          CatchSpacing.s3 + bottomPadding,
+        ),
+        child: Row(
+          children: [
+            if (onSaveDraft != null) ...[
+              Expanded(
+                child: Align(
+                  alignment: Alignment.centerLeft,
                   child: CatchButton(
-                    label: isLastStep ? lastStepLabel : nextLabel,
-                    onPressed: onNext,
-                    isLoading: isLoading,
-                    icon: isLastStep
-                        ? null
-                        : const Icon(Icons.arrow_forward_rounded),
+                    label: 'Save Draft',
+                    onPressed: isLoading ? null : onSaveDraft,
+                    variant: CatchButtonVariant.ghost,
+                    size: CatchButtonSize.lg,
+                    icon: const Icon(Icons.save_outlined),
+                    foregroundColor: t.primary,
                   ),
                 ),
-              ],
+              ),
+              const SizedBox(width: CatchSpacing.s3),
+            ],
+            Expanded(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: CatchButton(
+                  label: isLastStep ? lastStepLabel : nextLabel,
+                  onPressed: onNext,
+                  isLoading: isLoading,
+                  fullWidth: true,
+                  icon: isLastStep
+                      ? null
+                      : const Icon(Icons.arrow_forward_rounded),
+                ),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }

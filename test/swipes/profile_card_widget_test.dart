@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/name_overlay.dart';
@@ -10,10 +9,10 @@ import 'package:flutter_test/flutter_test.dart';
 import '../runs/runs_test_helpers.dart';
 
 Widget _profileCardHarness({required ThemeData theme}) {
-  final profile = buildPublicProfile(name: 'Manan', age: 26).copyWith(
-    city: IndianCity.indore,
-    relationshipGoal: RelationshipGoal.casual,
-  );
+  final profile = buildPublicProfile(
+    name: 'Manan',
+    age: 26,
+  ).copyWith(city: 'indore', relationshipGoal: RelationshipGoal.casual);
 
   return ProviderScope(
     child: MaterialApp(
@@ -35,10 +34,10 @@ void main() {
   testWidgets('NameOverlay shows display name, age, and city only', (
     tester,
   ) async {
-    final profile = buildPublicProfile(name: 'Manan', age: 26).copyWith(
-      city: IndianCity.indore,
-      relationshipGoal: RelationshipGoal.casual,
-    );
+    final profile = buildPublicProfile(
+      name: 'Manan',
+      age: 26,
+    ).copyWith(city: 'indore', relationshipGoal: RelationshipGoal.casual);
 
     await tester.pumpWidget(
       MaterialApp(

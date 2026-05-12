@@ -1,13 +1,19 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_draft.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'run_club_draft_repository.g.dart';
 
 class RunClubDraftRepository {
+  RunClubDraftRepository(this._errorLogger);
+
   static const _maxStaleDays = 7;
+
+  final ErrorLogger _errorLogger;
 
   SharedPreferences? _prefsInstance;
 
@@ -34,8 +40,18 @@ class RunClubDraftRepository {
         return null;
       }
       return draft;
-    } catch (error, stack) {
-      debugPrint('[ERROR] RunClubDraftRepository.loadDraft: $error\n$stack');
+    } catch (error, stackTrace) {
+      _errorLogger.logAppException(
+        normalizeBackendError(
+          error,
+          stackTrace: stackTrace,
+          context: const BackendErrorContext(
+            service: BackendService.local,
+            action: 'load run club draft',
+            resource: 'shared_preferences',
+          ),
+        ),
+      );
       return null;
     }
   }
@@ -56,7 +72,7 @@ class RunClubDraftRepository {
 
 @riverpod
 RunClubDraftRepository runClubDraftRepository(Ref ref) =>
-    RunClubDraftRepository();
+    RunClubDraftRepository(ref.watch(errorLoggerProvider));
 
 @riverpod
 Future<RunClubDraft?> runClubDraft(Ref ref) async {

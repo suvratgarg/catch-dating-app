@@ -1,5 +1,7 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,30 +29,53 @@ class PublicProfileRepository {
   // ── Read ──────────────────────────────────────────────────────────────────
 
   Stream<PublicProfile?> watchPublicProfile({required String uid}) =>
-      _publicProfileRef(
-        uid,
-      ).snapshots().map((doc) => doc.exists ? doc.data() : null);
+      withBackendErrorStream(
+        () => _publicProfileRef(
+          uid,
+        ).snapshots().map((doc) => doc.exists ? doc.data() : null),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch public profile',
+          resource: _collectionPath,
+        ),
+      );
 
-  Future<PublicProfile?> fetchPublicProfile({required String uid}) async {
-    final doc = await _publicProfileRef(uid).get();
-    return doc.exists ? doc.data() : null;
-  }
+  Future<PublicProfile?> fetchPublicProfile({required String uid}) =>
+      withBackendErrorContext(
+        () async {
+          final doc = await _publicProfileRef(uid).get();
+          return doc.exists ? doc.data() : null;
+        },
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'fetch public profile',
+          resource: _collectionPath,
+        ),
+      );
 
   /// Batch-fetches profiles by UID. Splits into chunks of 30 to respect
   /// Firestore's `whereIn` limit.
-  Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) async {
-    if (uids.isEmpty) return [];
+  Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) =>
+      withBackendErrorContext(
+        () async {
+          if (uids.isEmpty) return [];
 
-    final profiles = <PublicProfile>[];
-    for (var i = 0; i < uids.length; i += 30) {
-      final chunk = uids.sublist(i, (i + 30).clamp(0, uids.length));
-      final snap = await _publicProfilesRef
-          .where(FieldPath.documentId, whereIn: chunk)
-          .get();
-      profiles.addAll(snap.docs.map((d) => d.data()));
-    }
-    return profiles;
-  }
+          final profiles = <PublicProfile>[];
+          for (var i = 0; i < uids.length; i += 30) {
+            final chunk = uids.sublist(i, (i + 30).clamp(0, uids.length));
+            final snap = await _publicProfilesRef
+                .where(FieldPath.documentId, whereIn: chunk)
+                .get();
+            profiles.addAll(snap.docs.map((d) => d.data()));
+          }
+          return profiles;
+        },
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'fetch public profiles',
+          resource: _collectionPath,
+        ),
+      );
 }
 
 @riverpod

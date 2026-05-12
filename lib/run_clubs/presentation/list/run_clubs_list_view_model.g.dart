@@ -216,7 +216,7 @@ final class FilteredRunClubsProvider
   }
 }
 
-String _$filteredRunClubsHash() => r'fa2dc7dc25481dceba433fd984e5c1f9d218fd93';
+String _$filteredRunClubsHash() => r'c041431a708032dd601e19d1493d80138308e298';
 
 /// **Pattern D: View-model provider**
 ///
@@ -286,7 +286,7 @@ final class RunClubsListViewModelProvider
 }
 
 String _$runClubsListViewModelHash() =>
-    r'592c22b89e9ca48e42f9b8c7b3b760908c4426a5';
+    r'876b482201eb4dcacc8a1ee16651b38fecf61731';
 
 /// **Pattern D: View-model provider**
 ///

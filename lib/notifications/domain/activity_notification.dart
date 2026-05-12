@@ -39,4 +39,6 @@ abstract class ActivityNotification with _$ActivityNotification {
       _$ActivityNotificationFromJson(json);
 
   bool get isUnread => readAt == null;
+
+  bool get isVisibleInActivity => type != ActivityNotificationType.message;
 }

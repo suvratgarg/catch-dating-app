@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -23,9 +22,7 @@ class RunClubsList extends ConsumerWidget {
     final sourceClubCount =
         ref
             .watch(
-              watchRunClubsByLocationProvider(
-                IndianCity.fromName(city.name) ?? IndianCity.mumbai,
-              ),
+              watchRunClubsByLocationProvider(city.name),
             )
             .asData
             ?.value
@@ -51,9 +48,7 @@ class RunClubsList extends ConsumerWidget {
         onRetry: () {
           ref.invalidate(runClubsListViewModelProvider);
           ref.invalidate(
-            watchRunClubsByLocationProvider(
-              IndianCity.fromName(city.name) ?? IndianCity.mumbai,
-            ),
+            watchRunClubsByLocationProvider(city.name),
           );
         },
       ),

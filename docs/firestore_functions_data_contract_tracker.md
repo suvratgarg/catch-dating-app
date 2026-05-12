@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_contract_tracker
-version: 2.2.18
-updated: 2026-05-08
+version: 2.3.1
+updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -73,6 +73,28 @@ The app has multiple contracts for the same Firestore documents:
 - Live Firestore documents in dev/staging/prod.
 - Client repository mutation methods.
 
+## Firestore Type Generation
+
+`tool/generate_firestore_types.dart` generates
+`functions/src/shared/firestore.ts` from Dart domain models plus
+`tool/firestore_ts_overlay.json`.
+
+Use this workflow whenever a Dart Firestore model, server-only overlay field, or
+Functions document interface changes:
+
+```bash
+dart tool/generate_firestore_types.dart
+npm --prefix functions run build
+```
+
+CI also runs the generator and fails if `functions/src/shared/firestore.ts`
+differs from the committed output. Do not hand-edit the generated TypeScript
+file. Add server-only fields or interfaces to `tool/firestore_ts_overlay.json`
+instead.
+
+The old standalone Firestore type-sync explainer was removed during the docs
+consolidation pass; this tracker now owns that workflow.
+
 ## 2026-05-07 Relationship Rules And Deletion Slice
 
 - Added callable-owned `leaveRunWaitlist` and removed the last direct client
@@ -106,6 +128,29 @@ Firestore rules drift, callable validation drift, live data migrations, or
 operation ownership drift.
 
 ## Recent Contract Notes
+
+### 2026-05-12: Edge-Owned Run-Club Projection Slice
+
+- Added `syncRunClubMemberStats`, a Firestore trigger on
+  `runClubMemberships/{membershipId}` writes. It recomputes
+  `runClubs/{clubId}.memberCount` from active membership edge documents so
+  duplicate trigger delivery and stale callable-era parent projections are
+  corrected from the source of truth.
+- Added `syncRunClubNextRun`, a Firestore trigger on `runs/{runId}` writes.
+  It recomputes `runClubs/{clubId}.nextRunAt` and `nextRunLabel` from active
+  future runs. `createRun`, `updateRun`, `cancelRun`, and `deleteRun` also
+  refresh this projection after their transaction commits so manual UI flows do
+  not wait on eventual trigger delivery.
+- `createRunClub` now initializes lifecycle fields (`status`, `archived`,
+  `archivedAt`, `archiveReason`) so newly created clubs match the generated
+  Dart/Functions schema contract.
+- Updated `firestore.indexes.json` with the run projection query index:
+  `runs(runClubId ASC, status ASC, startTime ASC)`.
+- Decision retained: membership, booking, waitlist, attendance, payments,
+  reviews, run lifecycle, and club lifecycle remain callable-owned because
+  they enforce multi-document product invariants. Direct client edge writes are
+  still reserved for narrow owner-scoped actions such as swipes, saved runs,
+  and chat messages.
 
 ### 2026-05-08: Chat Thread Preview And Match Run History Slice
 

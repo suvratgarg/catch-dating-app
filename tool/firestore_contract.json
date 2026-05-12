@@ -277,8 +277,6 @@
         "photoUrls",
         "photoThumbnailUrls",
         "city",
-        "latitude",
-        "longitude",
         "height",
         "occupation",
         "company",
@@ -304,8 +302,6 @@
         "photoUrls",
         "photoThumbnailUrls",
         "city",
-        "latitude",
-        "longitude",
         "height",
         "occupation",
         "company",
@@ -332,7 +328,7 @@
       "typescriptInterface": "RunClubDoc",
       "dartModel": "lib/run_clubs/domain/run_club.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "run-club create/update/membership lifecycle is callable-owned; aggregate stats are trigger-owned",
+      "owner": "run-club create/update/membership lifecycle is callable-owned; aggregate and next-run projections are trigger-owned",
       "read": "public",
       "write": "all run-club writes are callable-owned; direct client writes are denied",
       "allFields": [
@@ -363,13 +359,18 @@
       "callableOwnedFields": [
         "hostUserId",
         "createdAt",
-        "memberCount",
         "status",
         "archived",
         "archivedAt",
         "archiveReason"
       ],
-      "triggerOwnedFields": ["rating", "reviewCount", "nextRunAt", "nextRunLabel"],
+      "triggerOwnedFields": [
+        "memberCount",
+        "rating",
+        "reviewCount",
+        "nextRunAt",
+        "nextRunLabel"
+      ],
       "exportedFunctions": [
         "createRunClub",
         "updateRunClub",
@@ -377,11 +378,15 @@
         "leaveRunClub",
         "archiveRunClub",
         "deleteRunClub",
+        "syncRunClubMemberStats",
+        "syncRunClubNextRun",
         "syncRunClubReviewStats"
       ],
       "migrationNotes": [
         "archiveRunClub marks clubs archived when history exists.",
-        "deleteRunClub hard-deletes only never-used clubs with no runs, payments, reviews, or non-host members."
+        "deleteRunClub hard-deletes only never-used clubs with no runs, payments, reviews, or non-host members.",
+        "memberCount is recomputed from active runClubMemberships by syncRunClubMemberStats.",
+        "nextRunAt and nextRunLabel are recomputed from active future runs by syncRunClubNextRun."
       ]
     },
     {
@@ -391,7 +396,7 @@
       "typescriptInterface": "RunClubMembershipDoc",
       "dartModel": "lib/run_clubs/domain/run_club_membership.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "run-club membership callables",
+      "owner": "run-club membership callables; syncRunClubMemberStats derives parent count",
       "read": "active memberships visible to authenticated users; historical memberships visible to the member",
       "write": "server only",
       "allFields": [
@@ -419,10 +424,11 @@
         "joinRunClub",
         "leaveRunClub",
         "setRunClubNotificationPreference",
+        "syncRunClubMemberStats",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Owns run-club membership state; parent runClubs documents retain only memberCount as a callable-owned aggregate.",
+        "Owns run-club membership state; parent runClubs documents retain only memberCount as a trigger-recomputed aggregate.",
         "pushNotificationsEnabled is the per-club bell opt-in for FCM only; active membership still receives durable Activity updates."
       ]
     },

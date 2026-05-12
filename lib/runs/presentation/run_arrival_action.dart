@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 
@@ -57,8 +58,16 @@ bool _isSelfCheckInOpen({
   required bool hasAttended,
   required DateTime now,
 }) {
-  final startsAt = run.startTime.subtract(const Duration(minutes: 30));
-  final endsAt = run.startTime.add(const Duration(minutes: 30));
+  final startsAt = run.startTime.subtract(
+    const Duration(
+      minutes: CatchBusinessRules.runSelfCheckInWindowBeforeMinutes,
+    ),
+  );
+  final endsAt = run.startTime.add(
+    const Duration(
+      minutes: CatchBusinessRules.runSelfCheckInWindowAfterMinutes,
+    ),
+  );
   return isSignedUp &&
       !hasAttended &&
       now.isAfter(startsAt) &&
@@ -66,7 +75,15 @@ bool _isSelfCheckInOpen({
 }
 
 bool isHostAttendanceOpen({required Run run, required DateTime now}) {
-  final startsAt = run.startTime.subtract(const Duration(minutes: 10));
-  final endsAt = run.endTime.add(const Duration(hours: 6));
+  final startsAt = run.startTime.subtract(
+    const Duration(
+      minutes: CatchBusinessRules.runHostAttendanceWindowBeforeMinutes,
+    ),
+  );
+  final endsAt = run.endTime.add(
+    const Duration(
+      hours: CatchBusinessRules.runHostAttendanceWindowAfterRunHours,
+    ),
+  );
   return now.isAfter(startsAt) && now.isBefore(endsAt);
 }

@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -20,6 +21,11 @@ String buildChatPreviewText(String text, {int maxLength = 80}) {
   return '${text.substring(0, maxLength)}…';
 }
 
+/// Firestore-backed message store for the current Catch chat schema.
+///
+/// UI and controllers should usually depend on `ConversationRepository` rather
+/// than this class directly. This repository intentionally remains a thin data
+/// adapter around `matches/{matchId}/messages`.
 class ChatRepository {
   ChatRepository(this._db);
 
@@ -40,10 +46,17 @@ class ChatRepository {
   // ── Read ──────────────────────────────────────────────────────────────────
 
   Stream<List<ChatMessage>> watchMessages({required String matchId}) =>
-      _messagesRef(matchId)
-          .orderBy('sentAt')
-          .snapshots()
-          .map((snap) => snap.docs.map((d) => d.data()).toList());
+      withBackendErrorStream(
+        () => _messagesRef(matchId)
+            .orderBy('sentAt')
+            .snapshots()
+            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch chat messages',
+          resource: _matchesCollectionPath,
+        ),
+      );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
@@ -58,7 +71,7 @@ class ChatRepository {
     required String matchId,
     required String senderId,
     required String text,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () async {
       final normalizedText = normalizeOutgoingChatText(text);
       await _db
@@ -72,8 +85,11 @@ class ChatRepository {
             'sentAt': FieldValue.serverTimestamp(),
           });
     },
-    collection: _matchesCollectionPath,
-    action: 'send message',
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'send message',
+      resource: _matchesCollectionPath,
+    ),
   );
 
   /// Sends a message with [imageUrl]. The message text is empty because the UI
@@ -83,7 +99,7 @@ class ChatRepository {
     required String senderId,
     required String messageId,
     required String imageUrl,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () async {
       await _db
           .collection(_matchesCollectionPath)
@@ -97,15 +113,14 @@ class ChatRepository {
             'sentAt': FieldValue.serverTimestamp(),
           });
     },
-    collection: _matchesCollectionPath,
-    action: 'send image',
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'send image',
+      resource: _matchesCollectionPath,
+    ),
   );
 }
 
 @riverpod
 ChatRepository chatRepository(Ref ref) =>
     ChatRepository(ref.watch(firebaseFirestoreProvider));
-
-@riverpod
-Stream<List<ChatMessage>> watchChatMessages(Ref ref, String matchId) =>
-    ref.watch(chatRepositoryProvider).watchMessages(matchId: matchId);

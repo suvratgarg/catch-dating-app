@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_mocks/firebase_auth_mocks.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -114,14 +116,21 @@ class FakeAuthRepository extends Fake implements AuthRepository {
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
     required void Function(String verificationId, int? resendToken) codeSent,
-    required void Function(FirebaseAuthException e) verificationFailed,
+    required void Function(AppException e) verificationFailed,
     required void Function(PhoneAuthCredential credential)
     verificationCompleted,
   }) async {
+    const context = BackendErrorContext(
+      service: BackendService.auth,
+      action: 'send verification code',
+      resource: 'phone_auth',
+    );
     verifiedPhoneNumber = phoneNumber;
     await onVerifyPhoneNumber?.call(
       verificationCompleted: verificationCompleted,
-      verificationFailed: verificationFailed,
+      verificationFailed: (error) {
+        verificationFailed(normalizeBackendError(error, context: context));
+      },
       codeSent: codeSent,
       codeAutoRetrievalTimeout: (_) {},
     );

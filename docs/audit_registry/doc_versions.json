@@ -1,11 +1,4 @@
 {
-  "architecture_audit": {
-    "path": "docs/architecture-audit.md",
-    "version": "2.0.0",
-    "updated": "2026-05-05",
-    "status": "historical",
-    "read_policy": "Use for historical provider/state-management context; prefer controller_patterns for current controller rules."
-  },
   "audit_registry": {
     "path": "docs/audit_registry/README.md",
     "version": "2.2.0",
@@ -15,29 +8,29 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.3.33",
-    "updated": "2026-05-08",
+    "version": "2.6.0",
+    "updated": "2026-05-12",
     "status": "active",
-    "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, stream lifecycle queue, and branded error UI queue."
+    "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, app-wide error-management follow-up, and documentation hygiene follow-up."
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "2.5.4",
-    "updated": "2026-05-07",
+    "version": "3.0.2",
+    "updated": "2026-05-12",
     "status": "active",
-    "read_policy": "Use for compact read/skip policies before opening long markdown docs, including stream lifecycle, widget catalog rule routing, Firestore rules test workflow, and error catalogue scope."
+    "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "2.4.33",
-    "updated": "2026-05-08",
+    "version": "3.0.2",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
   "audit_rules": {
     "path": "docs/audit_registry/rules.json",
-    "version": "2.4.4",
-    "updated": "2026-05-06",
+    "version": "2.5.0",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, and error catalogue maintenance."
   },
@@ -48,68 +41,47 @@
     "status": "active",
     "read_policy": "Read for controller/view-model boundary rules and realtime stream lifecycle ownership before architecture or state-management cleanup."
   },
+  "action_cardinality_policy": {
+    "path": "docs/action_cardinality_policy.md",
+    "version": "1.0.0",
+    "updated": "2026-05-12",
+    "status": "active",
+    "read_policy": "Read before adding or changing user-visible actions, callables, relationship documents, mutation CTAs, list/rail surfaces, or product limits."
+  },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "2.4.1",
-    "updated": "2026-05-06",
+    "version": "3.0.1",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
-  "deploy_runbook": {
-    "path": "docs/deploy_runbook_2026_05_04.md",
-    "version": "2.1.0",
-    "updated": "2026-05-07",
-    "status": "runbook",
-    "read_policy": "Use for the May 2026 relationship-doc deployment sequence; re-verify environment, beta data strategy, Remote Config force-update timing, and command outputs before acting."
-  },
   "error_handling_audit": {
     "path": "docs/error-handling-audit.md",
-    "version": "2.3.1",
-    "updated": "2026-05-06",
-    "status": "snapshot",
-    "read_policy": "Use as the current error-handling snapshot, error 101 guide, app error catalogue, naming convention, and branded error surface guidance; re-verify counts before treating scanner totals as current."
+    "version": "2.6.0",
+    "updated": "2026-05-12",
+    "status": "active",
+    "read_policy": "Use as the current app-wide error-management source of truth, backend migration checklist, frontend/local error-management playbook, app error catalogue, descriptor contract, naming convention, and branded error surface guidance; refresh with dart tool/backend_error_candidates.dart before new backend error work and create the app-wide scanner before frontend/local migration."
   },
   "firestore_contract_tracker": {
     "path": "docs/firestore_functions_data_contract_tracker.md",
-    "version": "2.2.18",
-    "updated": "2026-05-08",
+    "version": "2.3.1",
+    "updated": "2026-05-12",
     "status": "active",
-    "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, data-contract work, or Firestore rules test execution."
+    "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, Firestore type generation, data-contract work, or Firestore rules test execution."
   },
   "backend_operation_catalog": {
     "path": "docs/backend_operation_catalog.md",
-    "version": "1.1.17",
-    "updated": "2026-05-08",
+    "version": "1.2.0",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before changing repository writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for write paths, or notification fan-out."
   },
   "firestore_relationship_documents_migration": {
     "path": "docs/firestore_relationship_documents_migration.md",
-    "version": "1.0.14",
-    "updated": "2026-05-08",
+    "version": "1.1.0",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before changing relationship arrays, edge/action documents, match-scoped messages, relationship migration tooling, beta reset strategy, or deletion/anonymization cleanup."
-  },
-  "firestore_type_sync": {
-    "path": "docs/firestore_type_sync_2026_05_05.md",
-    "version": "2.0.2",
-    "updated": "2026-05-06",
-    "status": "active",
-    "read_policy": "Read before changing Dart domain models, Functions TypeScript interfaces, or Firestore type generation."
-  },
-  "compensation_bar_assessment": {
-    "path": "docs/one_crore_compensation_bar_2026_05_05.md",
-    "version": "2.0.0",
-    "updated": "2026-05-05",
-    "status": "snapshot",
-    "read_policy": "Use as dated quality-assessment context only; re-run current verification before acting."
-  },
-  "pre_launch_audit": {
-    "path": "docs/pre_launch_audit_2026_05_04.md",
-    "version": "2.0.0",
-    "updated": "2026-05-05",
-    "status": "snapshot",
-    "read_policy": "Use for launch-readiness context; re-verify code paths and statuses before acting."
   },
   "project_context": {
     "path": "PROJECT_CONTEXT.md",
@@ -141,16 +113,37 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.48",
-    "updated": "2026-05-08",
+    "version": "2.5.56",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
   "widget_cleanup": {
     "path": "docs/widget_cleanup_todo.md",
-    "version": "2.3.45",
-    "updated": "2026-05-08",
+    "version": "3.0.0",
+    "updated": "2026-05-12",
     "status": "active",
-    "read_policy": "Use as a short human-readable pointer; use backlog.json for active machine-readable state including stream lifecycle and branded error UI queues."
+    "read_policy": "Use as a short human-readable pointer; use backlog.json for active machine-readable widget cleanup state."
+  },
+  "release_operations": {
+    "path": "docs/release_operations.md",
+    "version": "1.0.0",
+    "updated": "2026-05-12",
+    "status": "active",
+    "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, or release evidence."
+  },
+  "location_stack": {
+    "path": "docs/location_stack_plan.md",
+    "version": "1.1.1",
+    "updated": "2026-05-12",
+    "status": "active",
+    "read_policy": "Read before changing location permissions, Maps SDK/Places, run coordinates, check-in geofencing, map navigation, or map/demo readiness."
+  },
+  "demo_data_seeding": {
+    "path": "docs/demo_data_seeding.md",
+    "version": "1.1.0",
+    "updated": "2026-05-12",
+    "status": "active",
+    "read_policy": "Read before changing demo seeding, demo ops, warm accounts, beta data cleanup, or demo validation."
   }
 }

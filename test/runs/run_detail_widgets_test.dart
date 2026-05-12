@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
@@ -11,11 +12,13 @@ import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
+import 'package:catch_dating_app/runs/presentation/run_location_map_screen.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_body.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 
 import '../run_clubs/run_clubs_test_helpers.dart' show FakeRunClubsRepository;
 import '../test_pump_helpers.dart';
@@ -722,6 +725,81 @@ void main() {
       expect(fakeSavedRunRepository.unsavedUid, 'runner-1');
       expect(fakeSavedRunRepository.unsavedRunId, 'run-1');
       expect(find.text('Run removed.'), findsOneWidget);
+    });
+
+    testWidgets('location tap opens the in-app run map', (tester) async {
+      final run = buildRun(
+        id: 'run-1',
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+      final router = GoRouter(
+        initialLocation: '/detail',
+        routes: [
+          GoRoute(
+            path: '/detail',
+            builder: (context, state) => RunDetailBody(
+              run: run,
+              userProfile: buildUser(),
+              runClubId: 'club-1',
+              isHost: false,
+              reviews: const [],
+              isAuthenticated: true,
+              isSaved: false,
+              participation: null,
+            ),
+          ),
+          GoRoute(
+            path: Routes.runLocationMapScreen.path,
+            name: Routes.runLocationMapScreen.name,
+            builder: (context, state) => RunLocationMapRouteScreen(
+              runId: state.pathParameters['runId']!,
+              enableNetworkTiles: false,
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            runClubsRepositoryProvider.overrideWithValue(
+              FakeRunClubsRepository(),
+            ),
+            paymentRepositoryProvider.overrideWithValue(
+              FakePaymentRepository(),
+            ),
+            runDetailViewModelProvider('run-1').overrideWith(
+              (ref) => AsyncData(
+                RunDetailViewModel(
+                  run: run,
+                  userProfile: buildUser(),
+                  reviews: const [],
+                  isAuthenticated: true,
+                  isHost: false,
+                  isSaved: false,
+                  participation: null,
+                ),
+              ),
+            ),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+
+      await tester.pump();
+      final locationLabel = find.text('Race Course Road main gate').last;
+      await tester.ensureVisible(locationLabel);
+      await tester.pump();
+      await tester.tap(locationLabel);
+      await tester.pumpAndSettle();
+
+      expect(find.text('Run location'), findsOneWidget);
+      expect(find.text('Get directions'), findsOneWidget);
     });
   });
 }

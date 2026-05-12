@@ -21,7 +21,7 @@ class FakeDocRef {
   }
 
   async get(): Promise<FakeSnapshot> {
-    return new FakeSnapshot(this.firestore.get(this.path));
+    return new FakeSnapshot(this.firestore, this.path);
   }
 
   async set(data: FakeData, _options?: {merge: boolean}) {
@@ -38,14 +38,26 @@ class FakeDocRef {
 }
 
 class FakeSnapshot {
-  constructor(private readonly value: FakeData | undefined) {}
+  constructor(
+    private readonly firestore: FakeFirestore,
+    readonly path: string
+  ) {}
+
+  get id(): string {
+    return this.path.split("/").at(-1) ?? "";
+  }
+
+  get ref(): FakeDocRef {
+    return new FakeDocRef(this.firestore, this.path);
+  }
 
   get exists(): boolean {
-    return this.value !== undefined;
+    return this.firestore.get(this.path) !== undefined;
   }
 
   data(): FakeData | undefined {
-    return this.value === undefined ? undefined : {...this.value};
+    const value = this.firestore.get(this.path);
+    return value === undefined ? undefined : {...value};
   }
 }
 
@@ -82,7 +94,7 @@ class FakeFirestore {
 
   query(
     collectionPath: string,
-    filters: Array<{field: string; value: unknown}>
+    filters: Array<{field: string; operator: string; value: unknown}>
   ): FakeSnapshot[] {
     const prefix = `${collectionPath}/`;
     return Object.entries(this.docs)
@@ -91,10 +103,20 @@ class FakeFirestore {
         value !== undefined &&
         !path.slice(prefix.length).includes("/")
       )
-      .map(([, value]) => new FakeSnapshot(value))
+      .map(([path]) => new FakeSnapshot(this, path))
       .filter((snap) => {
         const data = snap.data() ?? {};
-        return filters.every((filter) => data[filter.field] === filter.value);
+        return filters.every((filter) => {
+          if (filter.operator === "==") {
+            return data[filter.field] === filter.value;
+          }
+          if (filter.operator === "in" && Array.isArray(filter.value)) {
+            return filter.value.includes(data[filter.field]);
+          }
+          throw new Error(
+            `Unsupported fake query operator: ${filter.operator}`
+          );
+        });
       });
   }
 }
@@ -103,7 +125,11 @@ class FakeCollectionRef {
   constructor(
     private readonly firestore: FakeFirestore,
     private readonly path: string,
-    private readonly filters: Array<{field: string; value: unknown}> = [],
+    private readonly filters: Array<{
+      field: string;
+      operator: string;
+      value: unknown;
+    }> = [],
     private readonly limitCount?: number
   ) {}
 
@@ -113,12 +139,12 @@ class FakeCollectionRef {
   }
 
   where(field: string, operator: string, value: unknown) {
-    if (operator !== "==") {
+    if (operator !== "==" && operator !== "in") {
       throw new Error(`Unsupported fake query operator: ${operator}`);
     }
     return new FakeCollectionRef(this.firestore, this.path, [
       ...this.filters,
-      {field, value},
+      {field, operator, value},
     ], this.limitCount);
   }
 
@@ -153,7 +179,7 @@ class FakeTransaction {
     if (ref instanceof FakeCollectionRef) {
       return ref.get();
     }
-    return new FakeSnapshot(this.firestore.get(ref.path));
+    return new FakeSnapshot(this.firestore, ref.path);
   }
 
   create(ref: FakeDocRef, data: FakeData) {
@@ -172,6 +198,13 @@ class FakeTransaction {
         throw new Error(`Missing doc for update: ${ref.path}`);
       }
       this.firestore.set(ref.path, {...current, ...patch});
+    });
+  }
+
+  set(ref: FakeDocRef, data: FakeData, _options?: {merge: boolean}) {
+    void _options;
+    this.writes.push(() => {
+      this.firestore.set(ref.path, data);
     });
   }
 
@@ -419,6 +452,47 @@ test("createRunHandler rejects unsafe creation states", async () => {
   );
 });
 
+test("createRunHandler rejects run-club schedule conflicts", async () => {
+  const h = harness({
+    "runClubs/club-1": club(),
+    "runs/overlapping": run({
+      startTime: ts("2026-05-02T01:00:00.000Z"),
+      endTime: ts("2026-05-02T02:00:00.000Z"),
+    }),
+  });
+
+  await assert.rejects(
+    () => createRunHandler(request("host-1", payload()), h.deps),
+    (error) => assertHttpsCode(error, "failed-precondition")
+  );
+});
+
+test("createRunHandler allows adjacent run-club schedules", async () => {
+  const h = harness({
+    "runClubs/club-1": club(),
+    "runs/adjacent": run({
+      startTime: ts("2026-05-02T02:30:00.000Z"),
+      endTime: ts("2026-05-02T03:30:00.000Z"),
+    }),
+  });
+
+  await createRunHandler(request("host-1", payload()), h.deps);
+
+  assert.equal(h.firestore.get("runs/run-1")?.runClubId, "club-1");
+});
+
+test("createRunHandler rejects runs over the shared max duration", async () => {
+  const h = harness({"runClubs/club-1": club()});
+
+  await assert.rejects(
+    () => createRunHandler(request("host-1", payload({
+      startTimeMillis: Date.parse("2026-05-02T01:30:00.000Z"),
+      endTimeMillis: Date.parse("2026-05-02T05:31:00.000Z"),
+    })), h.deps),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+});
+
 test("updateRunHandler updates only host-editable run fields", async () => {
   const h = harness({
     "runClubs/club-1": club(),
@@ -446,7 +520,7 @@ test("updateRunHandler updates only host-editable run fields", async () => {
   assert.equal(updated?.capacityLimit, 12);
 });
 
-test("updateRunHandler notifies participants for schedule changes",
+test("updateRunHandler notifies participants for location changes",
   async () => {
     const h = harness({
       "runClubs/club-1": club(),
@@ -478,8 +552,6 @@ test("updateRunHandler notifies participants for schedule changes",
       request("host-1", {
         runId: "run-1",
         fields: {
-          startTimeMillis: Date.parse("2026-05-02T02:00:00.000Z"),
-          endTimeMillis: Date.parse("2026-05-02T03:00:00.000Z"),
           meetingPoint: "Joggers Park",
         },
       }),
@@ -515,6 +587,35 @@ test("updateRunHandler notifies participants for schedule changes",
       runId: "run-1",
       runClubId: "club-1",
     }]);
+  }
+);
+
+test("updateRunHandler rejects schedule changes once participants exist",
+  async () => {
+    const h = harness({
+      "runClubs/club-1": club(),
+      "runs/run-1": run(),
+      "runParticipations/run-1_runner-1": {
+        runId: "run-1",
+        runClubId: "club-1",
+        uid: "runner-1",
+        status: "signedUp",
+      },
+    });
+
+    await assert.rejects(
+      () => updateRunHandler(
+        request("host-1", {
+          runId: "run-1",
+          fields: {
+            startTimeMillis: Date.parse("2026-05-02T02:00:00.000Z"),
+            endTimeMillis: Date.parse("2026-05-02T03:00:00.000Z"),
+          },
+        }),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
   }
 );
 

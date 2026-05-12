@@ -48,7 +48,8 @@ final class FirebaseCrashReporter implements CrashReporter {
     StackTrace stackTrace, {
     bool fatal = false,
     String? reason,
-  }) => _crashlytics.recordError(error, stackTrace, fatal: fatal, reason: reason);
+  }) =>
+      _crashlytics.recordError(error, stackTrace, fatal: fatal, reason: reason);
 
   @override
   Future<void> recordFlutterError(
@@ -74,6 +75,7 @@ class ErrorLogger {
   final bool _shouldReportErrors;
 
   static CrashReporter get _defaultCrashReporter {
+    if (!kReleaseMode) return ConsoleCrashReporter();
     if (kIsWeb) return ConsoleCrashReporter();
     return FirebaseCrashReporter(FirebaseCrashlytics.instance);
   }
@@ -95,8 +97,14 @@ class ErrorLogger {
     await crashReporter.setCollectionEnabled(_shouldReportErrors);
     if (!_shouldReportErrors) return;
 
-    await crashReporter.setCustomKey('app_environment', AppConfig.environmentName);
-    await crashReporter.setCustomKey('use_firebase_emulators', AppConfig.useFirebaseEmulators);
+    await crashReporter.setCustomKey(
+      'app_environment',
+      AppConfig.environmentName,
+    );
+    await crashReporter.setCustomKey(
+      'use_firebase_emulators',
+      AppConfig.useFirebaseEmulators,
+    );
     await crashReporter.setCustomKey('platform', defaultTargetPlatform.name);
 
     final packageInfo = await PackageInfo.fromPlatform();
@@ -160,7 +168,12 @@ class ErrorLogger {
     unawaited(_crashReporter!.recordFlutterError(details, fatal: fatal));
   }
 
-  void logError(Object error, StackTrace? stackTrace, {bool fatal = false, String? reason}) {
+  void logError(
+    Object error,
+    StackTrace? stackTrace, {
+    bool fatal = false,
+    String? reason,
+  }) {
     log(
       level: fatal ? LogLevel.fatal : LogLevel.error,
       message: reason ?? 'Unexpected error: $error',
@@ -170,10 +183,18 @@ class ErrorLogger {
   }
 
   void logAppException(AppException exception) {
+    final level = switch (exception.severity) {
+      AppErrorSeverity.info => LogLevel.info,
+      AppErrorSeverity.warning => LogLevel.warn,
+      AppErrorSeverity.error => LogLevel.error,
+      AppErrorSeverity.fatal => LogLevel.fatal,
+    };
     log(
-      level: LogLevel.warn,
+      level: level,
       message: '[${exception.code}] ${exception.message}',
-      error: exception.cause,
+      error: exception.cause ?? exception,
+      stackTrace: exception.stackTrace,
+      context: exception.context?.toLogContext(),
     );
   }
 }
@@ -181,23 +202,24 @@ class ErrorLogger {
 // ── Provider ─────────────────────────────────────────────────────────────────
 
 /// A no-op default that must be overridden in [main] with the real instance.
-@riverpod
+@Riverpod(keepAlive: true)
 ErrorLogger errorLogger(Ref ref) => ErrorLogger();
 
 // ── ProviderObserver ──────────────────────────────────────────────────────────
 
 base class AsyncErrorLogger extends ProviderObserver {
-  AsyncErrorLogger(this._logger, {this.onFirestoreWriteFailed});
+  AsyncErrorLogger(this._logger, {this.onBackendOperationFailed});
 
   final ErrorLogger _logger;
 
-  /// Called when a [FirestoreWriteException] is caught by the observer.
-  /// Use this to fire analytics events for write failures.
+  /// Called when an [AppException] has structured backend context.
   final void Function({
-    required String collection,
-    required String action,
+    required BackendErrorContext context,
     required String errorCode,
-  })? onFirestoreWriteFailed;
+    required bool retryable,
+    required AppErrorSeverity severity,
+  })?
+  onBackendOperationFailed;
 
   @override
   void didUpdateProvider(
@@ -209,11 +231,13 @@ base class AsyncErrorLogger extends ProviderObserver {
       final error = newValue.error;
       if (error is AppException) {
         _logger.logAppException(error);
-        if (error is FirestoreWriteException) {
-          onFirestoreWriteFailed?.call(
-            collection: error.collection ?? '',
-            action: error.action ?? '',
+        final backendContext = error.context;
+        if (backendContext != null) {
+          onBackendOperationFailed?.call(
+            context: backendContext,
             errorCode: error.code,
+            retryable: error.retryable,
+            severity: error.severity,
           );
         }
       } else {

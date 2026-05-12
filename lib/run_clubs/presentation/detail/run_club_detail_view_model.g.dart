@@ -11,9 +11,12 @@ part of 'run_club_detail_view_model.dart';
 /// **Pattern D: View-model provider**
 ///
 /// Watches the club, runs, reviews, user profile, and auth streams and
-/// combines them into a single [RunClubDetailViewModel]. Each input is
-/// individually checked so the combined result is [AsyncError] if any input
-/// fails or [AsyncLoading] if any input is still loading.
+/// combines them into a single [RunClubDetailViewModel].
+///
+/// Club, runs, and auth identity are blocking because they control the main
+/// route and schedule. Reviews, profile, and membership state are secondary;
+/// they hydrate the detail screen when available without hiding newly-created
+/// runs behind the route's placeholder body.
 
 @ProviderFor(runClubDetailViewModel)
 final runClubDetailViewModelProvider = RunClubDetailViewModelFamily._();
@@ -21,9 +24,12 @@ final runClubDetailViewModelProvider = RunClubDetailViewModelFamily._();
 /// **Pattern D: View-model provider**
 ///
 /// Watches the club, runs, reviews, user profile, and auth streams and
-/// combines them into a single [RunClubDetailViewModel]. Each input is
-/// individually checked so the combined result is [AsyncError] if any input
-/// fails or [AsyncLoading] if any input is still loading.
+/// combines them into a single [RunClubDetailViewModel].
+///
+/// Club, runs, and auth identity are blocking because they control the main
+/// route and schedule. Reviews, profile, and membership state are secondary;
+/// they hydrate the detail screen when available without hiding newly-created
+/// runs behind the route's placeholder body.
 
 final class RunClubDetailViewModelProvider
     extends
@@ -36,9 +42,12 @@ final class RunClubDetailViewModelProvider
   /// **Pattern D: View-model provider**
   ///
   /// Watches the club, runs, reviews, user profile, and auth streams and
-  /// combines them into a single [RunClubDetailViewModel]. Each input is
-  /// individually checked so the combined result is [AsyncError] if any input
-  /// fails or [AsyncLoading] if any input is still loading.
+  /// combines them into a single [RunClubDetailViewModel].
+  ///
+  /// Club, runs, and auth identity are blocking because they control the main
+  /// route and schedule. Reviews, profile, and membership state are secondary;
+  /// they hydrate the detail screen when available without hiding newly-created
+  /// runs behind the route's placeholder body.
   RunClubDetailViewModelProvider._({
     required RunClubDetailViewModelFamily super.from,
     required String super.argument,
@@ -100,9 +109,12 @@ String _$runClubDetailViewModelHash() =>
 /// **Pattern D: View-model provider**
 ///
 /// Watches the club, runs, reviews, user profile, and auth streams and
-/// combines them into a single [RunClubDetailViewModel]. Each input is
-/// individually checked so the combined result is [AsyncError] if any input
-/// fails or [AsyncLoading] if any input is still loading.
+/// combines them into a single [RunClubDetailViewModel].
+///
+/// Club, runs, and auth identity are blocking because they control the main
+/// route and schedule. Reviews, profile, and membership state are secondary;
+/// they hydrate the detail screen when available without hiding newly-created
+/// runs behind the route's placeholder body.
 
 final class RunClubDetailViewModelFamily extends $Family
     with
@@ -119,9 +131,12 @@ final class RunClubDetailViewModelFamily extends $Family
   /// **Pattern D: View-model provider**
   ///
   /// Watches the club, runs, reviews, user profile, and auth streams and
-  /// combines them into a single [RunClubDetailViewModel]. Each input is
-  /// individually checked so the combined result is [AsyncError] if any input
-  /// fails or [AsyncLoading] if any input is still loading.
+  /// combines them into a single [RunClubDetailViewModel].
+  ///
+  /// Club, runs, and auth identity are blocking because they control the main
+  /// route and schedule. Reviews, profile, and membership state are secondary;
+  /// they hydrate the detail screen when available without hiding newly-created
+  /// runs behind the route's placeholder body.
 
   RunClubDetailViewModelProvider call(String clubId) =>
       RunClubDetailViewModelProvider._(argument: clubId, from: this);

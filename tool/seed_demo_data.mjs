@@ -3,6 +3,10 @@ import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
+import {
+  assertScheduleCompliance,
+  buildScheduleLockDocs,
+} from "./demo_schedule_policy.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "..");
@@ -43,7 +47,7 @@ const scenarios = {
     cities: allCities,
     usersPerCity: 8,
     clubsPerCity: 2,
-    runsPerClub: 6,
+    runsPerClub: 8,
     anchorsPerRun: 4,
   },
   "city-dense": {
@@ -59,7 +63,7 @@ const scenarios = {
     cities: ["mumbai", "delhi", "bangalore", "indore"],
     usersPerCity: 4,
     clubsPerCity: 1,
-    runsPerClub: 5,
+    runsPerClub: 7,
     anchorsPerRun: 1,
   },
   "paid-flow-demo": {
@@ -115,6 +119,54 @@ const clubImages = [
   "https://images.unsplash.com/photo-1546483875-ad9014c88eba?auto=format&fit=crop&w=1400&q=80",
   "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&w=1400&q=80",
 ];
+
+const meetingPointData = {
+  mumbai: [
+    {label: "Bandra Carter Road amphitheatre", lat: 19.0704, lng: 72.8220, detail: "Meet beside the amphitheatre steps facing the promenade."},
+    {label: "Marine Drive police gymkhana gate", lat: 18.9432, lng: 72.8234, detail: "Meet near the sea-facing gate before the promenade warm-up."},
+    {label: "Powai lake garden entrance", lat: 19.1197, lng: 72.9052, detail: "Meet at the garden entrance opposite the lake path."},
+  ],
+  delhi: [
+    {label: "Lodhi Garden gate 1", lat: 28.5933, lng: 77.2209, detail: "Meet just inside gate 1 near the stone benches."},
+    {label: "Hauz Khas deer park gate", lat: 28.5494, lng: 77.2001, detail: "Meet at the deer park entrance before the loop."},
+    {label: "India Gate lawns east side", lat: 28.6129, lng: 77.2295, detail: "Meet on the east lawn path facing India Gate."},
+  ],
+  bangalore: [
+    {label: "Cubbon Park Queen's statue", lat: 12.9763, lng: 77.5929, detail: "Meet near the Queen's statue before the park loop."},
+    {label: "Indiranagar 100 ft road metro gate", lat: 12.9784, lng: 77.6408, detail: "Meet outside the metro gate on the service-road side."},
+    {label: "Jayanagar 4th block bus stand", lat: 12.9250, lng: 77.5938, detail: "Meet near the bus stand entrance before the neighbourhood route."},
+  ],
+  hyderabad: [
+    {label: "Necklace Road People's Plaza", lat: 17.4239, lng: 78.4738, detail: "Meet at the plaza entrance facing Hussain Sagar."},
+    {label: "Gachibowli stadium gate", lat: 17.4401, lng: 78.3489, detail: "Meet outside the main stadium gate."},
+    {label: "Jubilee Hills check post", lat: 17.4326, lng: 78.4071, detail: "Meet near the check-post pavement before the hill route."},
+  ],
+  chennai: [
+    {label: "Besant Nagar beach police booth", lat: 12.9995, lng: 80.2668, detail: "Meet beside the beach police booth before the promenade run."},
+    {label: "Marina lighthouse entrance", lat: 13.0500, lng: 80.2824, detail: "Meet near the lighthouse entrance facing the service road."},
+    {label: "Adyar theosophical gate", lat: 13.0067, lng: 80.2574, detail: "Meet outside the gate before the shaded loop."},
+  ],
+  kolkata: [
+    {label: "Maidan Victoria Memorial north gate", lat: 22.5600, lng: 88.3426, detail: "Meet at the north gate before the Maidan loop."},
+    {label: "Salt Lake Central Park gate", lat: 22.5867, lng: 88.4171, detail: "Meet by the Central Park gate near the lake path."},
+    {label: "New Town Eco Park gate 1", lat: 22.5810, lng: 88.4765, detail: "Meet outside gate 1 before the long loop."},
+  ],
+  pune: [
+    {label: "Koregaon Park lane 5 corner", lat: 18.5362, lng: 73.8938, detail: "Meet at the lane 5 corner before the tree-lined route."},
+    {label: "Baner hill trail gate", lat: 18.5590, lng: 73.7868, detail: "Meet at the trail gate before the hill warm-up."},
+    {label: "Viman Nagar jogging track gate", lat: 18.5679, lng: 73.9143, detail: "Meet outside the jogging track gate."},
+  ],
+  ahmedabad: [
+    {label: "Sabarmati Riverfront event centre", lat: 23.0300, lng: 72.5800, detail: "Meet at the event-centre entrance on the riverfront path."},
+    {label: "Satellite prahladnagar garden gate", lat: 23.0301, lng: 72.5178, detail: "Meet by the garden gate before the neighbourhood route."},
+    {label: "Bodakdev sindhu bhavan corner", lat: 23.0396, lng: 72.5130, detail: "Meet at the corner pavement near the cafe row."},
+  ],
+  indore: [
+    {label: "Race Course Road main gate", lat: 22.7274, lng: 75.8818, detail: "Meet by the main gate on the Race Course Road side."},
+    {label: "Vijay Nagar main gate", lat: 22.7533, lng: 75.8937, detail: "Meet outside the Vijay Nagar main gate before the service-road loop."},
+    {label: "Rajwada square clock tower", lat: 22.7196, lng: 75.8577, detail: "Meet near the clock tower side of Rajwada square."},
+  ],
+};
 
 const args = parseArgs(process.argv.slice(2));
 if (args.help) {
@@ -175,6 +227,7 @@ const seed = buildSeed({
   now: args.appendAnchors ?
     await readExistingSeedTime(db, `${args.seedPrefix}_${args.scenario}`) :
     new Date(),
+  includeScheduleLocks: args.includeScheduleLocks,
 });
 const writePlan = args.appendAnchors ?
   await createAppendWritePlan({db, seed, anchorProfiles}) :
@@ -238,6 +291,7 @@ function parseArgs(argv) {
     appendAnchors: false,
     emulatorHost: null,
     json: false,
+    includeScheduleLocks: false,
     help: false,
     listScenarios: false,
   };
@@ -247,6 +301,7 @@ function parseArgs(argv) {
     if (arg === "--help" || arg === "-h") parsed.help = true;
     else if (arg === "--list-scenarios") parsed.listScenarios = true;
     else if (arg === "--json") parsed.json = true;
+    else if (arg === "--include-schedule-locks") parsed.includeScheduleLocks = true;
     else if (arg === "--apply") parsed.apply = true;
     else if (arg === "--dry-run") parsed.apply = false;
     else if (arg === "--allow-prod") parsed.allowProd = true;
@@ -376,7 +431,14 @@ async function findMissingPublicProfiles(firestore, uids) {
   return missing;
 }
 
-function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
+function buildSeed({
+  scenarioName,
+  scenario,
+  seedPrefix,
+  anchorProfiles,
+  now,
+  includeScheduleLocks = false,
+}) {
   const seedId = `${seedPrefix}_${scenarioName}`;
   const seedMarker = {
     synthetic: true,
@@ -384,7 +446,6 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
     scenario: scenarioName,
   };
   const users = buildSyntheticUsers({scenario, seedPrefix, seedMarker});
-  const people = [...anchorProfiles, ...users];
   const clubs = [];
   const memberships = [];
   const runs = [];
@@ -398,7 +459,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
   const notifications = [];
 
   for (const city of scenario.cities) {
-    const cityUsers = people.filter((person) => person.city === city || person.source === "anchor");
+    const cityAnchors = anchorProfiles.filter((person) => person.city === city);
     const syntheticCityUsers = users.filter((person) => person.city === city);
     for (let clubIndex = 0; clubIndex < scenario.clubsPerCity; clubIndex += 1) {
       const host = syntheticCityUsers[clubIndex % syntheticCityUsers.length] ?? users[clubIndex % users.length];
@@ -407,7 +468,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
 
       const clubMembers = uniqueByUid([
         host,
-        ...anchorProfiles.slice(0, scenario.anchorsPerRun),
+        ...cityAnchors.slice(0, scenario.anchorsPerRun),
         ...rotate(syntheticCityUsers, clubIndex).slice(0, Math.min(10, syntheticCityUsers.length)),
       ]);
       for (const member of clubMembers) {
@@ -425,7 +486,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
           now,
           preferPaid: scenario.preferPaidRuns,
         });
-        const roster = buildRoster({run, runIndex, clubMembers, anchorProfiles});
+        const roster = buildRoster({run, runIndex, clubMembers, anchorProfiles: cityAnchors});
         applyRosterAggregates(run, roster);
         runs.push(run);
         for (const rosterEntry of roster) {
@@ -434,7 +495,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
             payments.push(buildPayment({seedPrefix, seedMarker, run, uid: rosterEntry.person.uid, state: rosterEntry.paymentState, now}));
           }
         }
-        for (const anchor of anchorProfiles.slice(0, Math.min(2, anchorProfiles.length))) {
+        for (const anchor of cityAnchors.slice(0, Math.min(2, cityAnchors.length))) {
           if (runIndex === 0 || runIndex === 1) {
             savedRuns.push(buildSavedRun({seedMarker, uid: anchor.uid, runId: run.id, now}));
           }
@@ -463,6 +524,11 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
   updateClubAggregates({clubs, memberships, reviews, runs});
   notifications.push(...buildGeneralNotifications({seedMarker, anchorProfiles, clubs, runs, now}));
   payments.push(...buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, runs, now}));
+  assertScheduleCompliance({runs, participations});
+  assertRunCoordinateQuality({runs});
+  const scheduleLocks = includeScheduleLocks ?
+    buildScheduleLockDocs({runs, participations}) :
+    [];
 
   const docs = [
     ...users.flatMap((user) => [
@@ -473,6 +539,7 @@ function buildSeed({scenarioName, scenario, seedPrefix, anchorProfiles, now}) {
     ...memberships.map((membership) => ({path: `runClubMemberships/${membership.id}`, data: membership.doc})),
     ...runs.map((run) => ({path: `runs/${run.id}`, data: run.doc})),
     ...participations.map((participation) => ({path: `runParticipations/${participation.id}`, data: participation.doc})),
+    ...scheduleLocks,
     ...savedRuns.map((savedRun) => ({path: `savedRuns/${savedRun.id}`, data: savedRun.doc})),
     ...swipes.map((swipe) => ({path: `swipes/${swipe.swiperId}/outgoing/${swipe.targetId}`, data: swipe.doc})),
     ...matches.map((match) => ({path: `matches/${match.id}`, data: match.doc})),
@@ -621,8 +688,6 @@ function publicProfileFromUserDoc(userDoc) {
     gender: userDoc.gender,
     photoUrls: userDoc.photoUrls,
     city: userDoc.city,
-    latitude: userDoc.latitude,
-    longitude: userDoc.longitude,
     height: userDoc.height,
     occupation: userDoc.occupation,
     company: userDoc.company,
@@ -698,19 +763,20 @@ function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now,
   const cityMeta = cityData[city];
   const patterns = [
     {kind: "upcomingFree", offsetHours: 30, price: 0, capacity: 12, durationMinutes: 70},
-    {kind: "upcomingPaid", offsetHours: 74, price: preferPaid ? 79900 : 29900, capacity: 10, durationMinutes: 80},
-    {kind: "upcomingFull", offsetHours: 120, price: preferPaid ? 49900 : 0, capacity: 6, durationMinutes: 60},
-    {kind: "upcomingWaitlist", offsetHours: 168, price: 0, capacity: 5, durationMinutes: 65},
+    {kind: "upcomingPaid", offsetHours: 84, price: preferPaid ? 79900 : 29900, capacity: 10, durationMinutes: 80},
+    {kind: "upcomingFull", offsetHours: 168, price: preferPaid ? 49900 : 0, capacity: 6, durationMinutes: 60},
+    {kind: "upcomingWaitlist", offsetHours: 336, price: 0, capacity: 5, durationMinutes: 65},
     {kind: "pastOpen", offsetHours: -8, price: 0, capacity: 14, durationMinutes: 60},
     {kind: "pastOld", offsetHours: -120, price: preferPaid ? 39900 : 0, capacity: 14, durationMinutes: 75},
     {kind: "cancelled", offsetHours: 220, price: 0, capacity: 10, durationMinutes: 70},
-    {kind: "upcomingFree", offsetHours: 260, price: 0, capacity: 16, durationMinutes: 90},
+    {kind: "upcomingFree", offsetHours: 504, price: 0, capacity: 16, durationMinutes: 90},
   ];
   const pattern = patterns[runIndex % patterns.length];
-  const start = offsetDate(now, {hours: pattern.offsetHours + clubIndex * 3 + runIndex});
+  const start = offsetDate(now, {hours: pattern.offsetHours + clubIndex * 8 + runIndex * 2});
   const end = offsetDate(start, {minutes: pattern.durationMinutes});
   const id = `${seedPrefix}_run_${city}_${String(clubIndex + 1).padStart(2, "0")}_${String(runIndex + 1).padStart(2, "0")}`;
   const pace = ["easy", "moderate", "fast", "competitive"][runIndex % 4];
+  const meetingPoint = meetingPointForRun({city, clubIndex, runIndex});
   return {
     id,
     clubId: club.id,
@@ -722,10 +788,10 @@ function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now,
       runClubId: club.id,
       startTime: admin.firestore.Timestamp.fromDate(start),
       endTime: admin.firestore.Timestamp.fromDate(end),
-      meetingPoint: `${cityMeta.areas[(clubIndex + runIndex) % cityMeta.areas.length]} main gate`,
-      startingPointLat: cityMeta.lat + (runIndex - 2) * 0.006,
-      startingPointLng: cityMeta.lng + (clubIndex - 1) * 0.006,
-      locationDetails: "Look for the Catch demo pacer near the entrance.",
+      meetingPoint: meetingPoint.label,
+      startingPointLat: meetingPoint.lat,
+      startingPointLng: meetingPoint.lng,
+      locationDetails: meetingPoint.detail,
       distanceKm: [3, 5, 7, 10, 12, 15][runIndex % 6],
       pace,
       capacityLimit: pattern.capacity,
@@ -748,6 +814,52 @@ function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now,
       genderCounts: {},
     },
   };
+}
+
+function meetingPointForRun({city, clubIndex, runIndex}) {
+  const points = meetingPointData[city] ?? [];
+  if (points.length === 0) {
+    const cityMeta = cityData[city];
+    return {
+      label: `${cityMeta.label} demo meeting point`,
+      lat: cityMeta.lat,
+      lng: cityMeta.lng,
+      detail: "Meet near the Catch demo pacer.",
+    };
+  }
+  return points[(clubIndex + runIndex) % points.length];
+}
+
+function assertRunCoordinateQuality({runs}) {
+  const issues = [];
+  for (const run of runs) {
+    if (run.doc.status === "cancelled") continue;
+    const lat = run.doc.startingPointLat;
+    const lng = run.doc.startingPointLng;
+    if (typeof lat !== "number" || typeof lng !== "number") {
+      issues.push(`${run.id}: missing exact starting coordinates`);
+      continue;
+    }
+
+    const knownPoint = (meetingPointData[run.city] ?? []).find(
+      (point) => point.label === run.doc.meetingPoint
+    );
+    if (!knownPoint) {
+      issues.push(`${run.id}: meeting point is not in the curated venue catalog`);
+      continue;
+    }
+    if (Math.abs(knownPoint.lat - lat) > 0.000001 ||
+        Math.abs(knownPoint.lng - lng) > 0.000001) {
+      issues.push(`${run.id}: coordinates do not match curated venue catalog`);
+    }
+  }
+
+  if (issues.length > 0) {
+    throw new Error(
+      "Demo run coordinates are not map/check-in ready:\n" +
+        issues.map((issue) => `- ${issue}`).join("\n")
+    );
+  }
 }
 
 function buildRoster({run, runIndex, clubMembers, anchorProfiles}) {
@@ -1185,6 +1297,11 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
   let docs = seed.docs.filter((doc) =>
     isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds)
   );
+  const existingTargetFilter = await filterAppendDocsForExistingTargets(
+    firestore,
+    docs
+  );
+  docs = existingTargetFilter.docs;
   docs = await normalizeAppendParticipationsForCapacity(firestore, docs);
   const aggregateUpdates = buildAppendAggregateUpdates(docs);
   const mergedPaths = new Set([...existingPaths, ...docs.map((doc) => doc.path)]);
@@ -1205,6 +1322,8 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
       newAnchorIds,
       existingPathCount: existingPaths.size,
       finalPathCount: mergedPaths.size,
+      skippedMissingTargetCount: existingTargetFilter.skippedPaths.length,
+      skippedMissingTargetPaths: existingTargetFilter.skippedPaths,
     },
   };
 }
@@ -1215,6 +1334,9 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
     return newAnchorSet.has(doc.data.uid);
   }
   if (doc.path.startsWith("runParticipations/")) {
+    return newAnchorSet.has(doc.data.uid);
+  }
+  if (doc.path.startsWith("userRunScheduleLocks/")) {
     return newAnchorSet.has(doc.data.uid);
   }
   if (doc.path.startsWith("savedRuns/")) {
@@ -1238,6 +1360,85 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
     return newAnchorSet.has(parts[1]);
   }
   return false;
+}
+
+async function filterAppendDocsForExistingTargets(firestore, docs) {
+  const runIds = new Set();
+  const clubIds = new Set();
+
+  for (const doc of docs) {
+    collectString(doc.data.runId, runIds);
+    collectString(doc.data.runClubId, clubIds);
+    collectString(doc.data.clubId, clubIds);
+    if (Array.isArray(doc.data.runIds)) {
+      for (const runId of doc.data.runIds) collectString(runId, runIds);
+    }
+  }
+
+  const [existingRunIds, existingClubIds] = await Promise.all([
+    existingDocumentIds(firestore, "runs", runIds),
+    existingDocumentIds(firestore, "runClubs", clubIds),
+  ]);
+
+  const skippedPaths = [];
+  let kept = docs.filter((doc) => {
+    const hasExistingTargets = docTargetsExist(doc, {
+      existingRunIds,
+      existingClubIds,
+    });
+    if (!hasExistingTargets) skippedPaths.push(doc.path);
+    return hasExistingTargets;
+  });
+
+  const keptMatchIds = new Set(
+    kept
+      .filter((doc) => {
+        const parts = doc.path.split("/");
+        return parts[0] === "matches" && parts.length === 2;
+      })
+      .map((doc) => doc.path.split("/")[1])
+  );
+
+  kept = kept.filter((doc) => {
+    const parts = doc.path.split("/");
+    const isMessage = parts[0] === "matches" && parts[2] === "messages";
+    if (!isMessage || keptMatchIds.has(parts[1])) return true;
+    skippedPaths.push(doc.path);
+    return false;
+  });
+
+  return {docs: kept, skippedPaths};
+}
+
+async function existingDocumentIds(firestore, collection, ids) {
+  const existing = new Set();
+  await Promise.all([...ids].map(async (id) => {
+    const snap = await firestore.collection(collection).doc(id).get();
+    if (snap.exists) existing.add(id);
+  }));
+  return existing;
+}
+
+function docTargetsExist(doc, {existingRunIds, existingClubIds}) {
+  if (!stringTargetExists(doc.data.runId, existingRunIds)) return false;
+  if (!stringTargetExists(doc.data.runClubId, existingClubIds)) return false;
+  if (!stringTargetExists(doc.data.clubId, existingClubIds)) return false;
+  if (Array.isArray(doc.data.runIds)) {
+    return doc.data.runIds.every((runId) =>
+      stringTargetExists(runId, existingRunIds)
+    );
+  }
+  return true;
+}
+
+function collectString(value, target) {
+  if (typeof value === "string" && value.length > 0) target.add(value);
+}
+
+function stringTargetExists(value, existingIds) {
+  return typeof value !== "string" ||
+    value.length === 0 ||
+    existingIds.has(value);
 }
 
 async function normalizeAppendParticipationsForCapacity(firestore, docs) {
@@ -1429,6 +1630,7 @@ function summary({args, projectId, scenario, anchorProfiles, seed, writePlan, mi
     resetSynthetic: args.resetSynthetic,
     deleteOnly: args.deleteOnly,
     appendAnchors: args.appendAnchors,
+    includeScheduleLocks: args.includeScheduleLocks,
     append: writePlan.append ?? null,
     anchorUserIds: anchorProfiles.map((profile) => profile.uid),
     missingPublicProfileIds,
@@ -1471,6 +1673,9 @@ Options:
                                  --apply --reset-synthetic.
   --append-anchors               Add only newly listed anchors to an existing
                                  seed manifest without recreating old anchors.
+  --include-schedule-locks       Also write denormalized schedule lock docs.
+                                 Usually unnecessary for demo worlds because
+                                 Functions query canonical run/participation docs.
   --allow-prod                   Required when writing to the prod Firebase project.
   --emulator                     Use FIRESTORE_EMULATOR_HOST=127.0.0.1:8080.
   --emulator-host <host:port>    Use a custom Firestore emulator host.

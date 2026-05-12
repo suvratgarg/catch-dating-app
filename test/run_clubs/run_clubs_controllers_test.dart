@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -119,7 +118,7 @@ void main() {
       expect(vm.reviews, hasLength(1));
     });
 
-    test('returns loading while any dependency is still loading', () {
+    test('returns loading while a core dependency is still loading', () {
       final result = buildRunClubDetailViewModel(
         clubAsync: const AsyncLoading(),
         runsAsync: const AsyncData(<Run>[]),
@@ -130,6 +129,31 @@ void main() {
       );
 
       expect(result.isLoading, isTrue);
+    });
+
+    test('keeps schedule visible while secondary auth data hydrates', () {
+      final now = DateTime(2025, 1, 1, 9);
+      final futureRun = buildRun(
+        id: 'future-run',
+        startTime: now.add(const Duration(hours: 1)),
+      );
+
+      final result = buildRunClubDetailViewModel(
+        clubAsync: AsyncData(buildRunClub(hostUserId: 'host-1')),
+        runsAsync: AsyncData([futureRun]),
+        reviewsAsync: const AsyncLoading(),
+        userProfileAsync: const AsyncLoading(),
+        uidAsync: const AsyncData('host-1'),
+        membershipAsync: const AsyncLoading(),
+        now: now,
+      );
+
+      final vm = result.requireValue!;
+      expect(vm.isHost, isTrue);
+      expect(vm.upcomingRuns.map((run) => run.id), ['future-run']);
+      expect(vm.reviews, isEmpty);
+      expect(vm.userProfile, isNull);
+      expect(vm.isMember, isFalse);
     });
 
     test('returns null data when the club stream yields no club', () {
@@ -173,7 +197,7 @@ void main() {
       expect(result.error, isA<StateError>());
     });
 
-    test('surfaces review stream errors', () {
+    test('uses empty reviews when the review stream is unavailable', () {
       final result = buildRunClubDetailViewModel(
         clubAsync: AsyncData(buildRunClub()),
         runsAsync: const AsyncData(<Run>[]),
@@ -186,8 +210,7 @@ void main() {
         membershipAsync: const AsyncData(null),
       );
 
-      expect(result.hasError, isTrue);
-      expect(result.error, isA<StateError>());
+      expect(result.requireValue!.reviews, isEmpty);
     });
 
     test('surfaces uid stream errors', () {
@@ -204,7 +227,7 @@ void main() {
       expect(result.error, isA<StateError>());
     });
 
-    test('surfaces downstream errors instead of silently swallowing them', () {
+    test('uses null profile when profile stream is unavailable', () {
       final result = buildRunClubDetailViewModel(
         clubAsync: AsyncData(buildRunClub()),
         runsAsync: const AsyncData(<Run>[]),
@@ -217,8 +240,7 @@ void main() {
         membershipAsync: const AsyncData(null),
       );
 
-      expect(result.hasError, isTrue);
-      expect(result.error, isA<StateError>());
+      expect(result.requireValue!.userProfile, isNull);
     });
   });
 
@@ -413,7 +435,7 @@ void main() {
           .read(createRunClubControllerProvider.notifier)
           .submit(
             name: 'New Name',
-            location: IndianCity.indore,
+            location: 'indore',
             area: 'Vijay Nagar',
             description: 'Updated description',
             existingRunClub: existingClub,
@@ -497,7 +519,7 @@ void main() {
             .read(createRunClubControllerProvider.notifier)
             .submit(
               name: 'New Name',
-              location: IndianCity.mumbai,
+              location: 'mumbai',
               area: 'Bandra',
               description: 'Updated description',
               existingRunClub: buildRunClub(hostUserId: 'host-1'),

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -263,7 +264,7 @@ class _DashboardHeaderModel {
     final firstName = user.name.split(' ').first;
     final t = CatchTokens.of(context);
     return _DashboardHeaderModel(
-      eyebrow: DashboardFull.dayCity(user.city?.label).toUpperCase(),
+      eyebrow: DashboardFull.dayCity(cityLabel(user.city)).toUpperCase(),
       title: '${DashboardFull.greeting()}, $firstName',
       avatar: Tooltip(
         message: 'Open profile',

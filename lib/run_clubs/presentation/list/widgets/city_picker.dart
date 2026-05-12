@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -67,7 +68,10 @@ class _CityPickerState extends ConsumerState<CityPicker> {
   Future<void> _tryAutoSelectFromGps() async {
     final location = ref.read(deviceLocationProvider).asData?.value;
     if (location == null) return;
-    final repo = CityRepository(ref.read(firebaseFirestoreProvider));
+    final repo = CityRepository(
+      ref.read(firebaseFirestoreProvider),
+      ref.read(errorLoggerProvider),
+    );
     final nearest = await repo.nearestCity(
       location.latitude,
       location.longitude,

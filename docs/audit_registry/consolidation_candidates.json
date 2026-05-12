@@ -1,0 +1,465 @@
+{
+  "generated_at": "2026-05-12T18:23:36.806897+00:00",
+  "total_candidates": 6,
+  "candidates": [
+    {
+      "match_type": "exact_name_collision",
+      "severity": "high",
+      "name": "_ErrorIcon",
+      "kind": "class",
+      "is_widget": true,
+      "sites": [
+        {
+          "file": "lib/core/widgets/catch_error_state.dart",
+          "line": 282,
+          "signature": "class _ErrorIcon extends StatelessWidget {"
+        },
+        {
+          "file": "lib/core/widgets/catch_framework_error_view.dart",
+          "line": 81,
+          "signature": "class _ErrorIcon extends StatelessWidget {"
+        }
+      ],
+      "suggestion": "Class '_ErrorIcon' is defined in 2 files. Extract a single shared implementation and import it.",
+      "id": "C-001"
+    },
+    {
+      "match_type": "exact_name_collision",
+      "severity": "high",
+      "name": "_SearchRow",
+      "kind": "class",
+      "is_widget": true,
+      "sites": [
+        {
+          "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+          "line": 71,
+          "signature": "class _SearchRow extends StatelessWidget {"
+        },
+        {
+          "file": "lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart",
+          "line": 71,
+          "signature": "class _SearchRow extends ConsumerWidget {"
+        }
+      ],
+      "suggestion": "Class '_SearchRow' is defined in 2 files. Extract a single shared implementation and import it.",
+      "id": "C-002"
+    },
+    {
+      "match_type": "exact_name_collision",
+      "severity": "high",
+      "name": "_TitleRow",
+      "kind": "class",
+      "is_widget": true,
+      "sites": [
+        {
+          "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
+          "line": 23,
+          "signature": "class _TitleRow extends StatelessWidget {"
+        },
+        {
+          "file": "lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart",
+          "line": 27,
+          "signature": "class _TitleRow extends ConsumerWidget {"
+        }
+      ],
+      "suggestion": "Class '_TitleRow' is defined in 2 files. Extract a single shared implementation and import it.",
+      "id": "C-003"
+    },
+    {
+      "id": "C-004",
+      "match_type": "inline_color_literals",
+      "severity": "medium",
+      "name": "Hardcoded Color(0x...) literals",
+      "kind": "token",
+      "sites": [
+        {
+          "file": "lib/core/celebration/catch_celebration_screen.dart",
+          "line": 14,
+          "color": "0xFF24110A",
+          "context": "const _celebrationActionInk = Color(0xFF24110A);"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 266,
+          "color": "0xFFFF8A5B",
+          "context": "[Color(0xFFFF8A5B), Color(0xFFFF3E6F)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 267,
+          "color": "0xFF6B8CFF",
+          "context": "[Color(0xFF6B8CFF), Color(0xFFA3E4FF)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 268,
+          "color": "0xFFFFCE54",
+          "context": "[Color(0xFFFFCE54), Color(0xFFFF7846)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 269,
+          "color": "0xFF2E8F6B",
+          "context": "[Color(0xFF2E8F6B), Color(0xFF9AD469)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 270,
+          "color": "0xFFA86BFF",
+          "context": "[Color(0xFFA86BFF), Color(0xFFFF6BC7)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 271,
+          "color": "0xFF1F3A4D",
+          "context": "[Color(0xFF1F3A4D), Color(0xFF6B9BB8)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 272,
+          "color": "0xFFE74F3B",
+          "context": "[Color(0xFFE74F3B), Color(0xFFFFA26E)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 273,
+          "color": "0xFF4B3A2E",
+          "context": "[Color(0xFF4B3A2E), Color(0xFFB68A5F)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 274,
+          "color": "0xFF0F2F2F",
+          "context": "[Color(0xFF0F2F2F), Color(0xFF3EA89B)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 275,
+          "color": "0xFFC24B2C",
+          "context": "[Color(0xFFC24B2C), Color(0xFFF2B06E)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 276,
+          "color": "0xFF2C3E50",
+          "context": "[Color(0xFF2C3E50), Color(0xFF7FAFCE)],"
+        },
+        {
+          "file": "lib/core/widgets/person_avatar.dart",
+          "line": 277,
+          "color": "0xFFD48A2D",
+          "context": "[Color(0xFFD48A2D), Color(0xFFF6D27A)],"
+        },
+        {
+          "file": "lib/core/widgets/run_card.dart",
+          "line": 528,
+          "color": "0xFF1A2E2A",
+          "context": "final landBg = dark ? const Color(0xFF1A2E2A) : const Color(0xFFE8EDE5);"
+        },
+        {
+          "file": "lib/core/widgets/run_card.dart",
+          "line": 529,
+          "color": "0xFF0F1E2B",
+          "context": "final water = dark ? const Color(0xFF0F1E2B) : const Color(0xFFCDDDE6);"
+        },
+        {
+          "file": "lib/core/widgets/run_card.dart",
+          "line": 530,
+          "color": "0xFF2F2A24",
+          "context": "final road = dark ? const Color(0xFF2F2A24) : const Color(0xFFFFFFFF);"
+        },
+        {
+          "file": "lib/core/widgets/run_card.dart",
+          "line": 531,
+          "color": "0xFF2A423D",
+          "context": "final block = dark ? const Color(0xFF2A423D) : const Color(0xFFD5DCC8);"
+        },
+        {
+          "file": "lib/core/widgets/run_card.dart",
+          "line": 608,
+          "color": "0xFF25413A",
+          "context": "paint.color = (dark ? const Color(0xFF25413A) : const Color(0xFFCFDCB8))"
+        },
+        {
+          "file": "lib/core/widgets/run_card.dart",
+          "line": 639,
+          "color": "0xFF1A2E2A",
+          "context": "bool get dark => landBg == const Color(0xFF1A2E2A);"
+        },
+        {
+          "file": "lib/dashboard/presentation/widgets/static_map_dark.dart",
+          "line": 19,
+          "color": "0xFF1A2E2A",
+          "context": "p.color = const Color(0xFF1A2E2A);"
+        },
+        {
+          "file": "lib/dashboard/presentation/widgets/static_map_dark.dart",
+          "line": 22,
+          "color": "0xFF0F1E2B",
+          "context": "p.color = const Color(0xFF0F1E2B);"
+        },
+        {
+          "file": "lib/dashboard/presentation/widgets/static_map_dark.dart",
+          "line": 33,
+          "color": "0xFF2F2A24",
+          "context": "..color = const Color(0xFF2F2A24)"
+        },
+        {
+          "file": "lib/dashboard/presentation/widgets/static_map_dark.dart",
+          "line": 39,
+          "color": "0xFFFF6A3F",
+          "context": "..color = const Color(0xFFFF6A3F)"
+        },
+        {
+          "file": "lib/public_profile/presentation/public_profile_screen.dart",
+          "line": 217,
+          "color": "0x66000000",
+          "context": "color: Color(0x66000000),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/list/widgets/run_club_list_tile_parts/directory_card.dart",
+          "line": 43,
+          "color": "0x40000000",
+          "context": "Color(0x40000000),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/list/widgets/run_club_list_tile_parts/directory_card.dart",
+          "line": 45,
+          "color": "0x1A000000",
+          "context": "Color(0x1A000000),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 198,
+          "color": "0xFF21433D",
+          "context": "start: const Color(0xFF21433D),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 199,
+          "color": "0xFF6A3D2A",
+          "context": "end: const Color(0xFF6A3D2A),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 200,
+          "color": "0xFFE6D8B8",
+          "context": "line: const Color(0xFFE6D8B8).withValues(alpha: 0.20),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 203,
+          "color": "0xFF243D5A",
+          "context": "start: const Color(0xFF243D5A),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 204,
+          "color": "0xFF5B2F4B",
+          "context": "end: const Color(0xFF5B2F4B),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 205,
+          "color": "0xFFD9E7F2",
+          "context": "line: const Color(0xFFD9E7F2).withValues(alpha: 0.20),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 208,
+          "color": "0xFF39452D",
+          "context": "start: const Color(0xFF39452D),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 209,
+          "color": "0xFF7A4C32",
+          "context": "end: const Color(0xFF7A4C32),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 210,
+          "color": "0xFFF1E3C6",
+          "context": "line: const Color(0xFFF1E3C6).withValues(alpha: 0.20),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 213,
+          "color": "0xFF2E385A",
+          "context": "start: const Color(0xFF2E385A),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 214,
+          "color": "0xFF365947",
+          "context": "end: const Color(0xFF365947),"
+        },
+        {
+          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
+          "line": 215,
+          "color": "0xFFE2F0DD",
+          "context": "line: const Color(0xFFE2F0DD).withValues(alpha: 0.20),"
+        },
+        {
+          "file": "lib/runs/domain/pace_level_theme.dart",
+          "line": 18,
+          "color": "0xFFDCFCE7",
+          "context": "bg: Color(0xFFDCFCE7),"
+        },
+        {
+          "file": "lib/runs/domain/pace_level_theme.dart",
+          "line": 19,
+          "color": "0xFF166534",
+          "context": "fg: Color(0xFF166534),"
+        },
+        {
+          "file": "lib/runs/domain/pace_level_theme.dart",
+          "line": 22,
+          "color": "0xFFDBEAFE",
+          "context": "bg: Color(0xFFDBEAFE),"
+        },
+        {
+          "file": "lib/runs/domain/pace_level_theme.dart",
+          "line": 23,
+          "color": "0xFF1E40AF",
+          "context": "fg: Color(0xFF1E40AF),"
+        },
+        {
+          "file": "lib/runs/domain/pace_level_theme.dart",
+          "line": 26,
+          "color": "0xFFFEF3C7",
+          "context": "bg: Color(0xFFFEF3C7),"
+        },
+        {
+          "file": "lib/runs/domain/pace_level_theme.dart",
+          "line": 27,
+          "color": "0xFF92400E",
+          "context": "fg: Color(0xFF92400E),"
+        },
+        {
+          "file": "lib/runs/domain/pace_level_theme.dart",
+          "line": 30,
+          "color": "0xFFFFE4E6",
+          "context": "bg: Color(0xFFFFE4E6),"
+        },
+        {
+          "file": "lib/runs/domain/pace_level_theme.dart",
+          "line": 31,
+          "color": "0xFF9F1239",
+          "context": "fg: Color(0xFF9F1239),"
+        },
+        {
+          "file": "lib/runs/presentation/widgets/run_photo_header.dart",
+          "line": 120,
+          "color": "0xFF1A2E2A",
+          "context": "paint.color = const Color(0xFF1A2E2A);"
+        },
+        {
+          "file": "lib/runs/presentation/widgets/run_photo_header.dart",
+          "line": 123,
+          "color": "0xFF0F1E2B",
+          "context": "paint.color = const Color(0xFF0F1E2B);"
+        },
+        {
+          "file": "lib/runs/presentation/widgets/run_photo_header.dart",
+          "line": 134,
+          "color": "0xFF2A423D",
+          "context": "..color = const Color(0xFF2A423D)"
+        },
+        {
+          "file": "lib/runs/presentation/widgets/run_photo_header.dart",
+          "line": 153,
+          "color": "0xFF2F2A24",
+          "context": "..color = const Color(0xFF2F2A24)"
+        },
+        {
+          "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
+          "line": 38,
+          "color": "0xFF090706",
+          "context": "final base = isDark ? const Color(0xFF090706) : const Color(0xFF11100E);"
+        },
+        {
+          "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
+          "line": 39,
+          "color": "0xFF18100D",
+          "context": "final surface = isDark ? const Color(0xFF18100D) : const Color(0xFF1C1713);"
+        },
+        {
+          "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
+          "line": 40,
+          "color": "0xFF241914",
+          "context": "final raised = isDark ? const Color(0xFF241914) : const Color(0xFF2A2019);"
+        },
+        {
+          "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
+          "line": 47,
+          "color": "0xFFFFF8F0",
+          "context": "textPrimary: const Color(0xFFFFF8F0),"
+        },
+        {
+          "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
+          "line": 48,
+          "color": "0xFFD8C8B6",
+          "context": "textSecondary: const Color(0xFFD8C8B6),"
+        },
+        {
+          "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
+          "line": 49,
+          "color": "0xFF9E8B79",
+          "context": "textMuted: const Color(0xFF9E8B79),"
+        }
+      ],
+      "suggestion": "Move these hardcoded colors into CatchTokens or a theme file so they can be managed centrally."
+    },
+    {
+      "id": "C-006",
+      "match_type": "duplicate_date_format",
+      "severity": "low",
+      "name": "DateFormat('EEE d MMM')",
+      "kind": "function",
+      "sites": [
+        {
+          "file": "lib/chats/presentation/widgets/chat_run_context_header.dart",
+          "line": 20,
+          "context": ": DateFormat('EEE d MMM').format(run!.startTime);"
+        },
+        {
+          "file": "lib/dashboard/presentation/widgets/recommend_card.dart",
+          "line": 29,
+          "context": "when: DateFormat('EEE d MMM').format(run.startTime),"
+        },
+        {
+          "file": "lib/swipes/presentation/widgets/attended_run_tile.dart",
+          "line": 22,
+          "context": "final dateStr = DateFormat('EEE d MMM').format(run.startTime);"
+        }
+      ],
+      "suggestion": "DateFormat('EEE d MMM') used in 3 files. Consider a shared formatRunDate() utility."
+    },
+    {
+      "id": "C-007",
+      "match_type": "duplicate_date_format",
+      "severity": "low",
+      "name": "DateFormat('EEEE')",
+      "kind": "function",
+      "sites": [
+        {
+          "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
+          "line": 50,
+          "context": "final day = DateFormat('EEEE').format(DateTime.now());"
+        },
+        {
+          "file": "lib/runs/domain/run.dart",
+          "line": 128,
+          "context": "final weekday = DateFormat('EEEE').format(startTime);"
+        },
+        {
+          "file": "lib/runs/presentation/run_formatters.dart",
+          "line": 7,
+          "context": "static final _weekdayLong = DateFormat('EEEE');"
+        }
+      ],
+      "suggestion": "DateFormat('EEEE') used in 3 files. Consider a shared formatRunDate() utility."
+    }
+  ]
+}

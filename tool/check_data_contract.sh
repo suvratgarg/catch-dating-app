@@ -23,6 +23,19 @@ if ! diff -u "$before_diff" "$after_diff"; then
   exit 1
 fi
 
+echo "==> Checking generated shared business constants"
+git diff -- lib/core/business_rules.dart functions/src/shared/businessRules.ts \
+  >"$before_diff"
+node tool/generate_business_rules.mjs
+git diff -- lib/core/business_rules.dart functions/src/shared/businessRules.ts \
+  >"$after_diff"
+if ! diff -u "$before_diff" "$after_diff"; then
+  echo
+  echo "Generated shared business constants are stale."
+  echo "Run: node tool/generate_business_rules.mjs"
+  exit 1
+fi
+
 echo "==> Analyzing Firestore type generator"
 dart analyze tool/generate_firestore_types.dart
 

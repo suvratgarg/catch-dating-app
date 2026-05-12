@@ -29,6 +29,10 @@ import {
   sendFcmNotification,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {
+  claimUserRunScheduleInTransaction,
+  releaseUserRunScheduleInTransaction,
+} from "./scheduleConflicts";
 
 const CancelSchema = z.object({
   runId: z.string(),
@@ -160,6 +164,22 @@ export const cancelRunSignUp = onCall(
         if (wGender === "woman" && run.constraints.maxWomen != null &&
             currentCount >= run.constraints.maxWomen) continue;
 
+        try {
+          await claimUserRunScheduleInTransaction(tx, db, {
+            uid: waitlistUserId,
+            runId,
+            runClubId: run.runClubId,
+            startTimeMillis: run.startTime.toMillis(),
+            endTimeMillis: run.endTime.toMillis(),
+          });
+        } catch (error) {
+          if (error instanceof HttpsError &&
+              error.code === "failed-precondition") {
+            continue;
+          }
+          throw error;
+        }
+
         // Promote this user.
         nextBookedCount += 1;
         nextWaitlistedCount = Math.max(0, nextWaitlistedCount - 1);
@@ -201,6 +221,12 @@ export const cancelRunSignUp = onCall(
         status: "cancelled",
         genderAtSignup: cancellerGender,
       }), {merge: true});
+      releaseUserRunScheduleInTransaction(tx, db, {
+        uid: userId,
+        runId,
+        startTimeMillis: run.startTime.toMillis(),
+        endTimeMillis: run.endTime.toMillis(),
+      });
       if (promotedParticipationRef && promotedParticipationPatch) {
         tx.set(promotedParticipationRef, promotedParticipationPatch, {
           merge: true,

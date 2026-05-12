@@ -18,6 +18,7 @@ import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {validateCallable, requireDoc} from "../shared/validation";
 import {runParticipationId} from "../shared/relationshipDocuments";
+import {assertNoUserRunScheduleConflict} from "../runs/scheduleConflicts";
 import {z} from "zod";
 
 const CreateOrderSchema = z.object({
@@ -95,6 +96,14 @@ export async function createRazorpayOrderHandler(
       "This run is full. You can join the waitlist instead."
     );
   }
+
+  await assertNoUserRunScheduleConflict(db, {
+    uid,
+    runId,
+    runClubId: run.runClubId,
+    startTimeMillis: run.startTime.toMillis(),
+    endTimeMillis: run.endTime.toMillis(),
+  });
 
   if (await hasBlockingRelationship(db, uid, activeParticipantIds)) {
     throw new HttpsError(

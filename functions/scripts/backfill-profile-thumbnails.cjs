@@ -59,37 +59,54 @@ async function main() {
       }
 
       const thumbnailPath = thumbnailPathFor(userDoc.id, index, sourcePath);
-      console.log(
-        `[${apply ? "write" : "dry-run"}] ${userDoc.id} ${sourcePath} -> ` +
-          thumbnailPath
-      );
-      if (!apply) continue;
+      if (!apply) {
+        console.log(
+          `[dry-run] ${userDoc.id} ${sourcePath} -> ${thumbnailPath}`
+        );
+        continue;
+      }
 
-      const [sourceBuffer] = await sourceFile.download();
-      const thumbnailBuffer = await sharp(sourceBuffer)
-        .rotate()
-        .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, {
-          fit: "cover",
-          position: "attention",
-        })
-        .jpeg({quality: JPEG_QUALITY, mozjpeg: true})
-        .toBuffer();
-      const token = randomUUID();
-      await bucket.file(thumbnailPath).save(thumbnailBuffer, {
-        resumable: false,
-        contentType: "image/jpeg",
-        metadata: {
+      try {
+        const [sourceBuffer] = await sourceFile.download();
+        if (sourceBuffer.length === 0) {
+          skipped += 1;
+          console.warn(`[skip] ${userDoc.id} photo ${index}: empty source`);
+          continue;
+        }
+
+        const thumbnailBuffer = await sharp(sourceBuffer)
+          .rotate()
+          .resize(THUMBNAIL_SIZE, THUMBNAIL_SIZE, {
+            fit: "cover",
+            position: "attention",
+          })
+          .jpeg({quality: JPEG_QUALITY, mozjpeg: true})
+          .toBuffer();
+        const token = randomUUID();
+        await bucket.file(thumbnailPath).save(thumbnailBuffer, {
+          resumable: false,
+          contentType: "image/jpeg",
           metadata: {
-            firebaseStorageDownloadTokens: token,
-            sourceObject: sourcePath,
-            profilePhotoIndex: String(index),
+            metadata: {
+              firebaseStorageDownloadTokens: token,
+              sourceObject: sourcePath,
+              profilePhotoIndex: String(index),
+            },
           },
-        },
-      });
-      while (updated.length <= index) updated.push("");
-      updated[index] = downloadUrl(bucket.name, thumbnailPath, token);
-      changed = true;
-      written += 1;
+        });
+        while (updated.length <= index) updated.push("");
+        updated[index] = downloadUrl(bucket.name, thumbnailPath, token);
+        changed = true;
+        written += 1;
+        console.log(
+          `[write] ${userDoc.id} ${sourcePath} -> ${thumbnailPath}`
+        );
+      } catch (error) {
+        skipped += 1;
+        console.warn(
+          `[skip] ${userDoc.id} photo ${index}: ${error.message}`
+        );
+      }
     }
 
     if (apply && changed) {

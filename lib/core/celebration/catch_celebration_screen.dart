@@ -9,8 +9,9 @@ import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-const _celebrationInk = Color(0xFF24110A);
-const _celebrationCream = Color(0xFFFFF7ED);
+const _celebrationInk = Colors.white;
+const _celebrationCream = Colors.white;
+const _celebrationActionInk = Color(0xFF24110A);
 
 class CelebrationDetail {
   const CelebrationDetail({
@@ -197,7 +198,7 @@ class _CatchCelebrationScreenState
                           variant: CatchButtonVariant.light,
                           fullWidth: true,
                           backgroundColor: _celebrationCream,
-                          foregroundColor: _celebrationInk,
+                          foregroundColor: _celebrationActionInk,
                         ),
                         if (secondaryAction != null) ...[
                           gapH12,
@@ -211,8 +212,8 @@ class _CatchCelebrationScreenState
                             backgroundColor: _celebrationCream.withValues(
                               alpha: 0.58,
                             ),
-                            foregroundColor: _celebrationInk,
-                            borderColor: _celebrationInk.withValues(
+                            foregroundColor: _celebrationActionInk,
+                            borderColor: _celebrationActionInk.withValues(
                               alpha: 0.16,
                             ),
                           ),
@@ -271,7 +272,7 @@ class _CelebrationDetailsCard extends StatelessWidget {
               _CelebrationDetailRow(detail: entry.$2),
               if (entry.$1 != details.length - 1)
                 Divider(
-                  color: _celebrationInk.withValues(alpha: 0.12),
+                  color: _celebrationInk.withValues(alpha: 0.20),
                   height: CatchSpacing.s4,
                 ),
             ],
@@ -306,7 +307,7 @@ class _CelebrationDetailRow extends StatelessWidget {
                 detail.label,
                 style: CatchTextStyles.labelS(
                   context,
-                  color: _celebrationInk.withValues(alpha: 0.68),
+                  color: _celebrationInk.withValues(alpha: 0.74),
                 ),
               ),
               gapH3,

@@ -1,6 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
@@ -107,11 +106,7 @@ class RunClubSearchQuery extends _$RunClubSearchQuery {
 AsyncValue<List<RunClub>> filteredRunClubs(Ref ref) {
   final city = ref.watch(selectedRunClubCityProvider);
   final query = ref.watch(runClubSearchQueryProvider);
-  final clubsAsync = ref.watch(
-    watchRunClubsByLocationProvider(
-      IndianCity.fromName(city.name) ?? IndianCity.mumbai,
-    ),
-  );
+  final clubsAsync = ref.watch(watchRunClubsByLocationProvider(city.name));
 
   return clubsAsync.whenData((clubs) {
     final normalizedQuery = query.trim().toLowerCase();
@@ -167,12 +162,19 @@ AsyncValue<RunClubsListViewModel> runClubsListViewModel(Ref ref) {
     );
   }
 
-  final joinedClubIds =
+  final membershipClubIds =
       membershipsAsync.asData?.value
           .map((membership) => membership.clubId)
           .toSet() ??
       <String>{};
   final clubs = filteredAsync.asData?.value ?? const <RunClub>[];
+  final hostedClubIds = uid == null
+      ? <String>{}
+      : clubs
+            .where((club) => club.hostUserId == uid)
+            .map((club) => club.id)
+            .toSet();
+  final joinedClubIds = {...membershipClubIds, ...hostedClubIds};
 
   return AsyncData(
     RunClubsListViewModel.partition(clubs: clubs, joinedClubIds: joinedClubIds),

@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -22,11 +21,7 @@ class RunClubsListScreen extends ConsumerWidget {
     final query = ref.watch(runClubSearchQueryProvider).trim();
     final sourceClubCount =
         ref
-            .watch(
-              watchRunClubsByLocationProvider(
-                IndianCity.fromName(city.name) ?? IndianCity.mumbai,
-              ),
-            )
+            .watch(watchRunClubsByLocationProvider(city.name))
             .asData
             ?.value
             .length ??

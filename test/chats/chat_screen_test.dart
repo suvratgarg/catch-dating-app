@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/chats/data/chat_repository.dart';
+import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -20,15 +20,12 @@ class FakeMatchRepository implements MatchRepository {
   FakeMatchRepository({this.match});
 
   Match? match;
-  final List<(String, String)> resetUnreadCalls = [];
 
   @override
   Future<void> resetUnread({
     required String matchId,
     required String uid,
-  }) async {
-    resetUnreadCalls.add((matchId, uid));
-  }
+  }) async {}
 
   @override
   Stream<Match?> watchMatch({required String matchId}) => Stream.value(match);
@@ -38,41 +35,51 @@ class FakeMatchRepository implements MatchRepository {
       const Stream.empty();
 }
 
-class FakeChatRepository implements ChatRepository {
-  FakeChatRepository({this.failSends = false, this.messageStream});
+class FakeConversationRepository implements ConversationRepository {
+  FakeConversationRepository({this.failSends = false, this.messageStream});
 
   final bool failSends;
   final Stream<List<ChatMessage>>? messageStream;
   final Map<String, List<ChatMessage>> messagesByMatch = {};
   final List<(String matchId, String senderId, String text)> sendCalls = [];
+  final List<(String matchId, String uid)> markReadCalls = [];
 
   @override
-  Future<void> sendMessage({
-    required String matchId,
+  Future<void> sendTextMessage({
+    required String conversationId,
     required String senderId,
     required String text,
   }) async {
-    sendCalls.add((matchId, senderId, text));
+    sendCalls.add((conversationId, senderId, text));
     if (failSends) {
       throw Exception('send failed');
     }
   }
 
   @override
-  Stream<List<ChatMessage>> watchMessages({required String matchId}) {
-    return messageStream ?? Stream.value(messagesByMatch[matchId] ?? const []);
+  Stream<List<ChatMessage>> watchMessages({required String conversationId}) {
+    return messageStream ??
+        Stream.value(messagesByMatch[conversationId] ?? const []);
   }
 
   @override
-  String createMessageId({required String matchId}) => 'message-1';
+  String createMessageId({required String conversationId}) => 'message-1';
 
   @override
   Future<void> sendImageMessage({
-    required String matchId,
+    required String conversationId,
     required String senderId,
     required String messageId,
     required String imageUrl,
   }) async {}
+
+  @override
+  Future<void> markRead({
+    required String conversationId,
+    required String uid,
+  }) async {
+    markReadCalls.add((conversationId, uid));
+  }
 }
 
 Match buildMatch({
@@ -120,14 +127,16 @@ void main() {
       final matchRepository = FakeMatchRepository(
         match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
       );
-      final chatRepository = FakeChatRepository();
+      final conversationRepository = FakeConversationRepository();
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
-            chatRepositoryProvider.overrideWithValue(chatRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
             watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
             watchPublicProfileProvider('runner-2').overrideWith(
               (ref) => Stream.value(
@@ -157,14 +166,16 @@ void main() {
       final matchRepository = FakeMatchRepository(
         match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
       );
-      final chatRepository = FakeChatRepository();
+      final conversationRepository = FakeConversationRepository();
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => uidController.stream),
             matchRepositoryProvider.overrideWithValue(matchRepository),
-            chatRepositoryProvider.overrideWithValue(chatRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
             watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
@@ -175,27 +186,29 @@ void main() {
       );
 
       await tester.pump();
-      expect(matchRepository.resetUnreadCalls, isEmpty);
+      expect(conversationRepository.markReadCalls, isEmpty);
 
       uidController.add('runner-1');
       await tester.pump();
       await tester.pump();
 
-      expect(matchRepository.resetUnreadCalls, [('match-1', 'runner-1')]);
+      expect(conversationRepository.markReadCalls, [('match-1', 'runner-1')]);
     });
 
     testWidgets('sends trimmed messages and clears the input', (tester) async {
       final matchRepository = FakeMatchRepository(
         match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
       );
-      final chatRepository = FakeChatRepository();
+      final conversationRepository = FakeConversationRepository();
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
-            chatRepositoryProvider.overrideWithValue(chatRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
             watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
@@ -214,10 +227,10 @@ void main() {
       await tester.tap(find.byIcon(Icons.send_rounded));
       await pumpFeatureUi(tester);
 
-      expect(chatRepository.sendCalls, hasLength(1));
-      expect(chatRepository.sendCalls.single.$1, 'match-1');
-      expect(chatRepository.sendCalls.single.$2, 'runner-1');
-      expect(chatRepository.sendCalls.single.$3, 'Hello Taylor');
+      expect(conversationRepository.sendCalls, hasLength(1));
+      expect(conversationRepository.sendCalls.single.$1, 'match-1');
+      expect(conversationRepository.sendCalls.single.$2, 'runner-1');
+      expect(conversationRepository.sendCalls.single.$3, 'Hello Taylor');
       expect(
         tester.widget<TextField>(find.byType(TextField)).controller?.text,
         isEmpty,
@@ -228,14 +241,18 @@ void main() {
       final matchRepository = FakeMatchRepository(
         match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
       );
-      final chatRepository = FakeChatRepository(failSends: true);
+      final conversationRepository = FakeConversationRepository(
+        failSends: true,
+      );
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
-            chatRepositoryProvider.overrideWithValue(chatRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
             watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
@@ -254,7 +271,7 @@ void main() {
       await tester.tap(find.byIcon(Icons.send_rounded));
       await pumpFeatureUi(tester);
 
-      expect(chatRepository.sendCalls, hasLength(1));
+      expect(conversationRepository.sendCalls, hasLength(1));
       expect(
         tester.widget<TextField>(find.byType(TextField)).controller?.text,
         '  Still here  ',
@@ -269,7 +286,7 @@ void main() {
       final matchRepository = FakeMatchRepository(
         match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
       );
-      final chatRepository = FakeChatRepository(
+      final conversationRepository = FakeConversationRepository(
         messageStream: messageController.stream,
       );
 
@@ -278,7 +295,9 @@ void main() {
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
-            chatRepositoryProvider.overrideWithValue(chatRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
             watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
@@ -292,7 +311,7 @@ void main() {
       );
 
       await tester.pump();
-      expect(matchRepository.resetUnreadCalls, [('match-1', 'runner-1')]);
+      expect(conversationRepository.markReadCalls, [('match-1', 'runner-1')]);
 
       messageController.add([
         buildMessage(id: 'msg-1', senderId: 'runner-2', text: 'Incoming'),
@@ -300,7 +319,7 @@ void main() {
       await tester.pump();
       await tester.pump();
 
-      expect(matchRepository.resetUnreadCalls, [
+      expect(conversationRepository.markReadCalls, [
         ('match-1', 'runner-1'),
         ('match-1', 'runner-1'),
       ]);
@@ -312,16 +331,18 @@ void main() {
       final matchRepository = FakeMatchRepository(
         match: buildMatch(user1Id: 'runner-1', user2Id: 'runner-2'),
       );
-      final chatRepository = FakeChatRepository();
+      final conversationRepository = FakeConversationRepository();
 
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
             uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             matchRepositoryProvider.overrideWithValue(matchRepository),
-            chatRepositoryProvider.overrideWithValue(chatRepository),
+            conversationRepositoryProvider.overrideWithValue(
+              conversationRepository,
+            ),
             watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
-            watchChatMessagesProvider('match-1').overrideWithValue(
+            watchConversationMessagesProvider('match-1').overrideWithValue(
               AsyncError<List<ChatMessage>>(
                 Exception('boom'),
                 StackTrace.empty,

@@ -1,8 +1,8 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -32,24 +32,42 @@ class UserProfileRepository {
 
   Stream<UserProfile?> watchUserProfile({required String? uid}) {
     if (uid == null) return Stream.value(null);
-    return _userRef(
-      uid,
-    ).snapshots().map((snap) => snap.exists ? snap.data() : null);
+    return withBackendErrorStream(
+      () => _userRef(
+        uid,
+      ).snapshots().map((snap) => snap.exists ? snap.data() : null),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch profile',
+        resource: _collectionPath,
+      ),
+    );
   }
 
-  Future<UserProfile?> fetchUserProfile({required String? uid}) async {
-    if (uid == null) return null;
-    final doc = await _userRef(uid).get();
-    return doc.exists ? doc.data() : null;
-  }
+  Future<UserProfile?> fetchUserProfile({required String? uid}) =>
+      withBackendErrorContext(
+        () async {
+          if (uid == null) return null;
+          final doc = await _userRef(uid).get();
+          return doc.exists ? doc.data() : null;
+        },
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'fetch profile',
+          resource: _collectionPath,
+        ),
+      );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> setUserProfile({required UserProfile userProfile}) =>
-      withFirestoreErrorContext(
+      withBackendErrorContext(
         () => _userRef(userProfile.uid).set(userProfile),
-        collection: _collectionPath,
-        action: 'set profile',
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'set profile',
+          resource: _collectionPath,
+        ),
       );
 
   /// Applies a validated profile patch via the `updateUserProfile` callable.
@@ -60,20 +78,24 @@ class UserProfileRepository {
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
-  }) => withFirestoreErrorContext(
+    String action = 'update profile',
+  }) => withBackendErrorContext(
     () => _functions.httpsCallable('updateUserProfile').call({
       'fields': _callableFields(fields),
     }),
-    collection: _collectionPath,
-    action: 'update profile',
+    context: BackendErrorContext(
+      service: BackendService.functions,
+      action: action,
+      resource: _collectionPath,
+    ),
   );
 
   Future<void> updatePhotoUrls({
     required String uid,
     required List<String> photoUrls,
-  }) => withFirestoreErrorContext(
-    () => updateUserProfile(uid: uid, fields: {'photoUrls': photoUrls}),
-    collection: _collectionPath,
+  }) => updateUserProfile(
+    uid: uid,
+    fields: {'photoUrls': photoUrls},
     action: 'update photo URLs',
   );
 
@@ -81,24 +103,20 @@ class UserProfileRepository {
     required String uid,
     required double latitude,
     required double longitude,
-    IndianCity? city,
+    String? city,
   }) {
+    final cityPatch = city == null ? null : {'city': city};
     return updateUserProfile(
       uid: uid,
-      fields: {
-        'latitude': latitude,
-        'longitude': longitude,
-        if (city != null) 'city': city.name,
-      },
+      fields: {'latitude': latitude, 'longitude': longitude, ...?cityPatch},
     );
   }
 
-  Future<void> setProfileComplete({required String uid}) =>
-      withFirestoreErrorContext(
-        () => updateUserProfile(uid: uid, fields: {'profileComplete': true}),
-        collection: _collectionPath,
-        action: 'set profile complete',
-      );
+  Future<void> setProfileComplete({required String uid}) => updateUserProfile(
+    uid: uid,
+    fields: {'profileComplete': true},
+    action: 'set profile complete',
+  );
 }
 
 Map<String, Object?> _callableFields(Map<String, dynamic> fields) =>

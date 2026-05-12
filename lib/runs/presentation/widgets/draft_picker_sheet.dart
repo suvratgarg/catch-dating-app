@@ -2,12 +2,11 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:flutter/material.dart';
@@ -72,23 +71,14 @@ class _DraftPickerSheetState extends State<_DraftPickerSheet> {
   }
 
   Future<void> _onDelete(RunDraft draft) async {
-    final confirmed = await showDialog<bool>(
+    final confirmed = await showCatchAdaptiveDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete draft?'),
-        content: Text('This will permanently delete "${draft.summary}".'),
-        actions: [
-          CatchTextButton(
-            label: 'Cancel',
-            onPressed: () => Navigator.of(ctx).pop(false),
-          ),
-          CatchTextButton(
-            label: 'Delete',
-            tone: CatchTextButtonTone.danger,
-            onPressed: () => Navigator.of(ctx).pop(true),
-          ),
-        ],
-      ),
+      title: 'Delete draft?',
+      message: 'This will permanently delete "${draft.summary}".',
+      actions: const [
+        CatchDialogAction(label: 'Cancel', value: false),
+        CatchDialogAction(label: 'Delete', value: true, isDestructive: true),
+      ],
     );
     if (confirmed != true || !mounted) return;
 

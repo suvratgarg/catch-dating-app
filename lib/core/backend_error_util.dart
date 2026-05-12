@@ -1,0 +1,487 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+typedef BackendErrorMapper =
+    AppException? Function(
+      Object error,
+      StackTrace stackTrace,
+      BackendErrorContext context,
+    );
+
+Future<T> withBackendErrorContext<T>(
+  Future<T> Function() operation, {
+  required BackendErrorContext context,
+  BackendErrorMapper? mapper,
+}) async {
+  try {
+    return await operation();
+  } catch (error, stackTrace) {
+    throw normalizeBackendError(
+      error,
+      stackTrace: stackTrace,
+      context: context,
+      mapper: mapper,
+    );
+  }
+}
+
+Stream<T> withBackendErrorStream<T>(
+  Stream<T> Function() operation, {
+  required BackendErrorContext context,
+  BackendErrorMapper? mapper,
+}) {
+  try {
+    return operation().handleError((Object error, StackTrace stackTrace) {
+      throw normalizeBackendError(
+        error,
+        stackTrace: stackTrace,
+        context: context,
+        mapper: mapper,
+      );
+    });
+  } catch (error, stackTrace) {
+    return Stream.error(
+      normalizeBackendError(
+        error,
+        stackTrace: stackTrace,
+        context: context,
+        mapper: mapper,
+      ),
+      stackTrace,
+    );
+  }
+}
+
+AppException normalizeBackendError(
+  Object error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+  BackendErrorMapper? mapper,
+}) {
+  if (error case AppException appException) {
+    return appException;
+  }
+
+  final mapped = mapper?.call(error, stackTrace ?? StackTrace.current, context);
+  if (mapped != null) return mapped;
+
+  if (error case FirebaseFunctionsException functionsError) {
+    return _mapFunctionsException(
+      functionsError,
+      stackTrace: stackTrace,
+      context: context,
+    );
+  }
+  if (error case FirebaseAuthException authError) {
+    return _mapAuthException(
+      authError,
+      stackTrace: stackTrace,
+      context: context,
+    );
+  }
+  if (error case FirebaseException firebaseError) {
+    return _mapFirebaseException(
+      firebaseError,
+      stackTrace: stackTrace,
+      context: context,
+    );
+  }
+  if (error case TimeoutException timeout) {
+    return NetworkException(
+      'timeout',
+      'The request timed out. Please try again.',
+      debugMessage: timeout.message,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    );
+  }
+
+  return BackendOperationException(
+    code: 'unexpected',
+    message: 'Unable to ${context.action} right now. Please try again.',
+    debugMessage: 'Unexpected ${error.runtimeType}: $error',
+    cause: error,
+    stackTrace: stackTrace,
+    context: context,
+    severity: AppErrorSeverity.error,
+  );
+}
+
+BackendService backendServiceForFirebaseException(FirebaseException error) {
+  if (error is FirebaseFunctionsException) return BackendService.functions;
+  if (error is FirebaseAuthException) return BackendService.auth;
+  return switch (error.plugin) {
+    'cloud_firestore' || 'firestore' => BackendService.firestore,
+    'firebase_storage' || 'storage' => BackendService.storage,
+    'firebase_remote_config' || 'remoteconfig' => BackendService.remoteConfig,
+    'firebase_app_check' || 'app_check' => BackendService.appCheck,
+    'firebase_messaging' || 'messaging' => BackendService.messaging,
+    'firebase_auth' || 'auth' => BackendService.auth,
+    _ => BackendService.unknown,
+  };
+}
+
+BackendErrorContext backendContextForFirebaseException(
+  FirebaseException error, {
+  String action = 'complete this action',
+  String? resource,
+}) {
+  return BackendErrorContext(
+    service: backendServiceForFirebaseException(error),
+    action: action,
+    resource: resource ?? error.plugin,
+  );
+}
+
+AppException _mapFirebaseException(
+  FirebaseException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  return switch (backendServiceForFirebaseException(error)) {
+    BackendService.storage => _mapStorageException(
+      error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    BackendService.auth => _mapAuthLikeFirebaseException(
+      error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    BackendService.remoteConfig => _mapRemoteConfigException(
+      error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    BackendService.appCheck => _mapAppCheckException(
+      error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    BackendService.messaging => _mapMessagingException(
+      error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    _ => _mapCommonFirebaseException(
+      error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+  };
+}
+
+AppException _mapCommonFirebaseException(
+  FirebaseException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  final debugMessage = _firebaseDebugMessage(error, context);
+  return switch (error.code) {
+    'permission-denied' => PermissionException(
+      "You don't have permission to do that.",
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'unauthenticated' => SignInRequiredException(
+      context.action,
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'unavailable' || 'network-request-failed' => NetworkException(
+      'connection-failed',
+      "We're having trouble connecting. Please check your internet and try again.",
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'deadline-exceeded' => NetworkException(
+      'timeout',
+      'The request timed out. Please try again.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'resource-exhausted' => NetworkException(
+      'too-many-requests',
+      "We're experiencing high traffic. Please try again in a moment.",
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'not-found' => DocumentNotFoundException(
+      context.resource ?? 'the requested data',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'already-exists' => BackendOperationException(
+      code: error.code,
+      message: 'This already exists.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'aborted' => BackendOperationException(
+      code: error.code,
+      message: 'The operation could not be completed. Please try again.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+      retryable: true,
+    ),
+    _ => BackendOperationException(
+      code: error.code,
+      message: 'Unable to ${context.action} right now. Please try again.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+      severity: AppErrorSeverity.error,
+    ),
+  };
+}
+
+AppException _mapFunctionsException(
+  FirebaseFunctionsException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  return _mapCommonFirebaseException(
+    error,
+    stackTrace: stackTrace,
+    context: BackendErrorContext(
+      service: context.service == BackendService.unknown
+          ? BackendService.functions
+          : context.service,
+      action: context.action,
+      resource: context.resource,
+      metadata: context.metadata,
+    ),
+  );
+}
+
+AppException _mapAuthException(
+  FirebaseAuthException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  final debugMessage = _firebaseDebugMessage(error, context);
+  return switch (error.code) {
+    'invalid-phone-number' => ValidationException(
+      'Please enter a valid phone number.',
+      code: error.code,
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'invalid-verification-code' => ValidationException(
+      'That code is invalid. Please try again.',
+      code: error.code,
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'session-expired' || 'code-expired' => BackendOperationException(
+      code: error.code,
+      message: 'That code expired. Please request a new one.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'network-request-failed' || 'internal-error' => NetworkException(
+      'connection-failed',
+      error.code == 'internal-error'
+          ? 'Unable to reach authentication services. Please try again.'
+          : 'Check your internet connection and try again.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'timeout' => NetworkException(
+      'timeout',
+      'The verification request timed out. Please check your connection and try again.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'too-many-requests' => NetworkException(
+      'too-many-requests',
+      'Too many attempts. Please wait a bit and try again.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'operation-not-allowed' => PermissionException(
+      'This sign-in method is not enabled.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'user-disabled' => PermissionException(
+      'This account has been disabled.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    _ => BackendOperationException(
+      code: error.code,
+      message: error.message ?? 'Something went wrong. Please try again.',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+      severity: AppErrorSeverity.error,
+    ),
+  };
+}
+
+AppException _mapAuthLikeFirebaseException(
+  FirebaseException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  return _mapCommonFirebaseException(
+    error,
+    stackTrace: stackTrace,
+    context: context,
+  );
+}
+
+AppException _mapStorageException(
+  FirebaseException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  final debugMessage = _firebaseDebugMessage(error, context);
+  return switch (error.code) {
+    'unauthorized' || 'permission-denied' => PermissionException(
+      "You don't have permission to upload that file.",
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'unauthenticated' => SignInRequiredException(
+      context.action,
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'object-not-found' => DocumentNotFoundException(
+      context.resource ?? 'the uploaded file',
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'canceled' || 'cancelled' => StorageException(
+      'Upload was cancelled.',
+      code: error.code,
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+    'retry-limit-exceeded' || 'unknown' || 'quota-exceeded' => StorageException(
+      'Unable to upload right now. Please check your connection and try again.',
+      code: error.code,
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+      retryable: true,
+    ),
+    _ => StorageException(
+      'Unable to upload right now. Please try again.',
+      code: error.code,
+      debugMessage: debugMessage,
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    ),
+  };
+}
+
+AppException _mapRemoteConfigException(
+  FirebaseException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  return BackendOperationException(
+    code: error.code,
+    message: 'Unable to check the latest app configuration right now.',
+    debugMessage: _firebaseDebugMessage(error, context),
+    cause: error,
+    stackTrace: stackTrace,
+    context: context,
+    retryable: true,
+  );
+}
+
+AppException _mapAppCheckException(
+  FirebaseException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  return BackendOperationException(
+    code: error.code,
+    message: 'Unable to verify this app session. Please try again.',
+    debugMessage: _firebaseDebugMessage(error, context),
+    cause: error,
+    stackTrace: stackTrace,
+    context: context,
+    severity: AppErrorSeverity.error,
+  );
+}
+
+AppException _mapMessagingException(
+  FirebaseException error, {
+  StackTrace? stackTrace,
+  required BackendErrorContext context,
+}) {
+  return BackendOperationException(
+    code: error.code,
+    message: 'Unable to update notification settings right now.',
+    debugMessage: _firebaseDebugMessage(error, context),
+    cause: error,
+    stackTrace: stackTrace,
+    context: context,
+    retryable: error.code == 'network-request-failed',
+  );
+}
+
+String _firebaseDebugMessage(
+  FirebaseException error,
+  BackendErrorContext context,
+) {
+  final plugin = error.plugin.isEmpty ? 'unknown-plugin' : error.plugin;
+  final message = error.message;
+  return '${context.service.label}.${context.action} failed '
+      'with $plugin/${error.code}'
+      '${message == null || message.isEmpty ? '' : ': $message'}';
+}

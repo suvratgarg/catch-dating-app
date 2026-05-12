@@ -36,7 +36,7 @@ class RunMapSheet extends StatelessWidget {
           Text('Nearby runs', style: CatchTextStyles.labelM(context)),
           gapH10,
           SizedBox(
-            height: 96,
+            height: 152,
             child: ListView.separated(
               scrollDirection: Axis.horizontal,
               itemCount: runs.length,

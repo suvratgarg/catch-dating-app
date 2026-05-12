@@ -228,6 +228,27 @@ void main() {
     );
 
     test(
+      'processPayment rejects malformed order responses before checkout',
+      () async {
+        functions.callables['createRazorpayOrder'] = TestHttpsCallable(
+          'createRazorpayOrder',
+        )..resultData = {'orderId': 'order_123', 'currency': 'INR'};
+
+        await expectLater(
+          repository.processPayment(
+            runId: 'run-1',
+            description: 'Sunrise Run',
+            userName: 'Priya',
+            userEmail: 'priya@example.com',
+            userContact: '+919876543210',
+          ),
+          throwsA(isA<PaymentVerificationFailedException>()),
+        );
+        expect(razorpay.openCalls, isEmpty);
+      },
+    );
+
+    test(
       'success callback fails fast when Razorpay response is incomplete',
       () async {
         functions.callables['createRazorpayOrder'] =

@@ -1,7 +1,9 @@
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
@@ -19,7 +21,7 @@ import 'package:catch_dating_app/runs/presentation/widgets/when_where_card.dart'
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:latlong2/latlong.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'runs_test_helpers.dart';
 
@@ -53,7 +55,7 @@ void main() {
               ),
               MapPinTile(startingPoint: null, onTap: () => mapTapped = true),
               MapPinTile(
-                startingPoint: const LatLng(19.076, 72.8777),
+                startingPoint: const LocationCoordinate(19.076, 72.8777),
                 onTap: () {},
               ),
               CatchNumberStepper(
@@ -215,6 +217,42 @@ void main() {
       );
     });
 
+    testWidgets('run location map keeps directions as an explicit action', (
+      tester,
+    ) async {
+      Uri? openedUri;
+      LaunchMode? openedMode;
+      final run = buildRun(
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+
+      await pumpRunsTestApp(
+        tester,
+        RunLocationMapScreen(run: run, enableNetworkTiles: false),
+        overrides: [
+          externalUrlLauncherProvider.overrideWithValue((
+            uri, {
+            mode = LaunchMode.platformDefault,
+          }) async {
+            openedUri = uri;
+            openedMode = mode;
+            return true;
+          }),
+        ],
+      );
+
+      await tester.tap(find.text('Get directions'));
+      await tester.pump();
+
+      expect(openedMode, LaunchMode.externalApplication);
+      expect(
+        openedUri.toString(),
+        'https://www.google.com/maps/dir/?api=1&destination=22.7196%2C75.8577&travelmode=walking',
+      );
+    });
+
     testWidgets('requirements row hides itself when there are no constraints', (
       tester,
     ) async {
@@ -340,6 +378,52 @@ void main() {
       expect(selectedRunId, 'run-7');
       expect(footerTapped, isTrue);
     });
+
+    testWidgets(
+      'stepper footer blends into page and keeps actions inside width',
+      (tester) async {
+        tester.view.physicalSize = const Size(320, 640);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await pumpRunsTestApp(
+          tester,
+          Scaffold(
+            body: const SizedBox.expand(),
+            bottomNavigationBar: StepperFooter(
+              isLastStep: true,
+              isLoading: false,
+              onNext: _noop,
+              onSaveDraft: _noop,
+              lastStepLabel: 'Schedule run',
+            ),
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Save Draft'), findsOneWidget);
+        expect(find.text('Schedule run'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(StepperFooter),
+            matching: find.byType(Divider),
+          ),
+          findsNothing,
+        );
+        expect(
+          find.descendant(
+            of: find.byType(StepperFooter),
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is ColoredBox &&
+                  widget.color == CatchTokens.sunsetLight.bg,
+            ),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
 
     testWidgets('agenda list sorts runs and forwards selected-run taps', (
       tester,

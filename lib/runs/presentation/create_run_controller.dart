@@ -74,11 +74,10 @@ class CreateRunController extends _$CreateRunController {
         'Price cannot be negative.',
       );
     }
-    if ((startingPointLat == null) != (startingPointLng == null)) {
-      throw ArgumentError(
-        'Starting point latitude and longitude must both be provided or both be omitted.',
-      );
-    }
+    final normalizedStartingPoint = _requireStartingPoint(
+      latitude: startingPointLat,
+      longitude: startingPointLng,
+    );
 
     final runRepo = ref.read(runRepositoryProvider);
     final run = Run(
@@ -87,8 +86,8 @@ class CreateRunController extends _$CreateRunController {
       startTime: startTime,
       endTime: endTime,
       meetingPoint: normalizedMeetingPoint,
-      startingPointLat: startingPointLat,
-      startingPointLng: startingPointLng,
+      startingPointLat: normalizedStartingPoint.latitude,
+      startingPointLng: normalizedStartingPoint.longitude,
       locationDetails: normalizedLocationDetails,
       distanceKm: distanceKm,
       pace: pace,
@@ -100,6 +99,32 @@ class CreateRunController extends _$CreateRunController {
     await runRepo.createRun(run: run);
     return run;
   }
+}
+
+({double latitude, double longitude}) _requireStartingPoint({
+  required double? latitude,
+  required double? longitude,
+}) {
+  if (latitude == null || longitude == null) {
+    throw ArgumentError(
+      'A pinned starting point is required for run check-in and directions.',
+    );
+  }
+  if (latitude < -90 || latitude > 90) {
+    throw ArgumentError.value(
+      latitude,
+      'startingPointLat',
+      'Invalid latitude.',
+    );
+  }
+  if (longitude < -180 || longitude > 180) {
+    throw ArgumentError.value(
+      longitude,
+      'startingPointLng',
+      'Invalid longitude.',
+    );
+  }
+  return (latitude: latitude, longitude: longitude);
 }
 
 String _requireNonBlank(

@@ -113,10 +113,7 @@ void main() {
     });
 
     test('uses projected bookedCount for roster capacity', () {
-      final run = buildRun(
-        capacityLimit: 5,
-        bookedCount: 4,
-      );
+      final run = buildRun(capacityLimit: 5, bookedCount: 4);
 
       expect(run.signedUpCount, 4);
       expect(run.spotsRemaining, 1);
@@ -124,10 +121,7 @@ void main() {
     });
 
     test('uses projected checked-in and waitlist counts', () {
-      final run = buildRun(
-        checkedInCount: 3,
-        waitlistedCount: 2,
-      );
+      final run = buildRun(checkedInCount: 3, waitlistedCount: 2);
 
       expect(run.attendedCount, 3);
       expect(run.waitlistCount, 2);

@@ -1,15 +1,21 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:collection/collection.dart';
-import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 part 'run_draft_repository.g.dart';
 
 class RunDraftRepository {
+  RunDraftRepository(this._errorLogger);
+
   static const _maxDrafts = 5;
   static const _maxStaleDays = 7;
+
+  final ErrorLogger _errorLogger;
 
   SharedPreferences? _prefsInstance;
 
@@ -31,8 +37,9 @@ class RunDraftRepository {
 
     try {
       final allDrafts = RunDraft.listFromJson(jsonString);
-      final staleThreshold =
-          DateTime.now().subtract(const Duration(days: _maxStaleDays));
+      final staleThreshold = DateTime.now().subtract(
+        const Duration(days: _maxStaleDays),
+      );
       final fresh = allDrafts
           .where((d) => d.savedAt.isAfter(staleThreshold))
           .toList();
@@ -46,8 +53,18 @@ class RunDraftRepository {
       }
       fresh.sort((a, b) => b.savedAt.compareTo(a.savedAt));
       return fresh;
-    } catch (error, stack) {
-      debugPrint('[ERROR] RunDraftRepository.loadDrafts: $error\n$stack');
+    } catch (error, stackTrace) {
+      _errorLogger.logAppException(
+        normalizeBackendError(
+          error,
+          stackTrace: stackTrace,
+          context: const BackendErrorContext(
+            service: BackendService.local,
+            action: 'load run drafts',
+            resource: 'shared_preferences',
+          ),
+        ),
+      );
       return [];
     }
   }
@@ -124,7 +141,8 @@ class RunDraftRepository {
 }
 
 @riverpod
-RunDraftRepository runDraftRepository(Ref ref) => RunDraftRepository();
+RunDraftRepository runDraftRepository(Ref ref) =>
+    RunDraftRepository(ref.watch(errorLoggerProvider));
 
 @riverpod
 Future<List<RunDraft>> clubRunDrafts(
@@ -132,8 +150,7 @@ Future<List<RunDraft>> clubRunDrafts(
   required String runClubId,
 }) async {
   final uid = requireSignedInUid(ref, action: 'load drafts');
-  return ref.read(runDraftRepositoryProvider).loadDrafts(
-        runClubId: runClubId,
-        userId: uid,
-      );
+  return ref
+      .read(runDraftRepositoryProvider)
+      .loadDrafts(runClubId: runClubId, userId: uid);
 }

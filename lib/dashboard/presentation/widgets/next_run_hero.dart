@@ -21,6 +21,8 @@ class UpcomingRunsHero extends StatefulWidget {
   final List<Gender> viewerInterestedInGenders;
   final ValueChanged<Run> onRunTap;
 
+  static const progressIndicatorKey = Key('upcoming-runs-progress-indicator');
+
   @override
   State<UpcomingRunsHero> createState() => _UpcomingRunsHeroState();
 }
@@ -57,7 +59,6 @@ class _UpcomingRunsHeroState extends State<UpcomingRunsHero> {
   Widget build(BuildContext context) {
     if (widget.runs.isEmpty) return const SizedBox.shrink();
 
-    final t = CatchTokens.of(context);
     final hasMultipleRuns = widget.runs.length > 1;
 
     return Column(
@@ -89,27 +90,58 @@ class _UpcomingRunsHeroState extends State<UpcomingRunsHero> {
         ),
         if (hasMultipleRuns) ...[
           gapH10,
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              for (var i = 0; i < widget.runs.length; i++)
-                AnimatedContainer(
-                  duration: CatchMotion.fast,
-                  curve: CatchMotion.standardCurve,
-                  width: i == _index ? 20 : 6,
-                  height: 6,
-                  margin: const EdgeInsets.symmetric(horizontal: 3),
-                  decoration: BoxDecoration(
-                    color: i == _index
-                        ? t.primary
-                        : t.line2.withValues(alpha: 0.72),
-                    borderRadius: BorderRadius.circular(CatchRadius.pill),
-                  ),
-                ),
-            ],
+          _UpcomingRunsProgressIndicator(
+            index: _index,
+            count: widget.runs.length,
           ),
         ],
       ],
+    );
+  }
+}
+
+class _UpcomingRunsProgressIndicator extends StatelessWidget {
+  const _UpcomingRunsProgressIndicator({
+    required this.index,
+    required this.count,
+  });
+
+  static const _width = 132.0;
+  static const _height = 6.0;
+
+  final int index;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final progress = count <= 0
+        ? 0.0
+        : ((index + 1) / count).clamp(0.0, 1.0).toDouble();
+
+    return Semantics(
+      label: 'Run ${index + 1} of $count',
+      child: Center(
+        child: SizedBox(
+          key: UpcomingRunsHero.progressIndicatorKey,
+          width: _width,
+          height: _height,
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(end: progress),
+            duration: CatchMotion.fast,
+            curve: CatchMotion.standardCurve,
+            builder: (context, value, _) {
+              return LinearProgressIndicator(
+                value: value,
+                minHeight: _height,
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
+                backgroundColor: t.line2.withValues(alpha: 0.72),
+                valueColor: AlwaysStoppedAnimation<Color>(t.primary),
+              );
+            },
+          ),
+        ),
+      ),
     );
   }
 }

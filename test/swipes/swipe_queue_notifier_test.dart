@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
@@ -13,10 +15,14 @@ import '../runs/runs_test_helpers.dart';
 
 class FakeSwipeRecordRepository extends Fake implements SwipeRepository {
   Swipe? recordedSwipe;
+  final recordedSwipes = <Swipe>[];
+  Completer<void>? recordCompleter;
 
   @override
   Future<void> recordSwipe({required Swipe swipe}) async {
     recordedSwipe = swipe;
+    recordedSwipes.add(swipe);
+    await recordCompleter?.future;
   }
 }
 
@@ -42,12 +48,11 @@ void main() {
       addTearDown(authRepository.dispose);
     });
 
-    test('does not pop the queue when auth uid is unavailable', () async {
+    test('does not pop the queue when signed-in uid is unavailable', () async {
       final container = ProviderContainer(
         overrides: [
-          watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
-          ),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           authRepositoryProvider.overrideWithValue(authRepository),
           swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
           swipeCandidateRepositoryProvider.overrideWith(
@@ -115,6 +120,59 @@ void main() {
         expect(swipeRepository.recordedSwipe?.targetId, 'runner-2');
         expect(swipeRepository.recordedSwipe?.runId, 'run-9');
         expect(swipeRepository.recordedSwipe?.direction, SwipeDirection.pass);
+        expect(
+          container.read(swipeQueueProvider('run-9')).value?.map((p) => p.uid),
+          ['runner-3'],
+        );
+      },
+    );
+
+    test(
+      'ignores duplicate swipe attempts while a swipe write is pending',
+      () async {
+        authRepository.currentUserValue = TestUser(uid: 'runner-1');
+        swipeRepository.recordCompleter = Completer<void>();
+        final container = ProviderContainer(
+          overrides: [
+            watchUserProfileProvider.overrideWith(
+              (ref) => Stream.value(buildUser(uid: 'runner-1')),
+            ),
+            authRepositoryProvider.overrideWithValue(authRepository),
+            swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
+            swipeCandidateRepositoryProvider.overrideWith(
+              (ref) => candidateRepository,
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final sub = container.listen(
+          swipeQueueProvider('run-9'),
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(sub.close);
+        await container.pump();
+
+        final notifier = container.read(swipeQueueProvider('run-9').notifier);
+        notifier.state = AsyncData([
+          buildPublicProfile(uid: 'runner-2'),
+          buildPublicProfile(uid: 'runner-3'),
+        ]);
+
+        final firstSwipe = notifier.swipe(SwipeDirection.like);
+        final secondSwipe = notifier.swipe(SwipeDirection.pass);
+
+        await pumpEventQueue();
+        expect(swipeRepository.recordedSwipes, hasLength(1));
+        expect(
+          swipeRepository.recordedSwipes.single.direction,
+          SwipeDirection.like,
+        );
+
+        swipeRepository.recordCompleter!.complete();
+        await Future.wait([firstSwipe, secondSwipe]);
+
         expect(
           container.read(swipeQueueProvider('run-9')).value?.map((p) => p.uid),
           ['runner-3'],

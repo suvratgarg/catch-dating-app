@@ -96,6 +96,22 @@ void main() {
           () => controller.submit(
             runClubId: 'club-1',
             startTime: DateTime(2025, 3, 1, 6),
+            endTime: DateTime(2025, 3, 1, 7),
+            meetingPoint: 'Marine Drive',
+            distanceKm: 5,
+            pace: PaceLevel.easy,
+            capacityLimit: 10,
+            description: 'Run',
+            priceInPaise: 0,
+            constraints: const RunConstraints(),
+          ),
+          throwsArgumentError,
+        );
+
+        await expectLater(
+          () => controller.submit(
+            runClubId: 'club-1',
+            startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 6),
             meetingPoint: 'Marine Drive',
             distanceKm: 5,
@@ -179,6 +195,7 @@ void main() {
             endTime: DateTime(2025, 3, 1, 7),
             meetingPoint: 'Marine Drive',
             startingPointLat: 19.076,
+            startingPointLng: 181,
             distanceKm: 5,
             pace: PaceLevel.easy,
             capacityLimit: 10,

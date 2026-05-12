@@ -1,0 +1,16 @@
+{
+  "id": "dogfood-group",
+  "label": "Dogfood Group",
+  "description": "Small real tester cohort with pairwise matches and starter chats so friends/family can use Catch chat instead of WhatsApp.",
+  "recommendedCommands": [
+    "seed-world --scenario beta-full",
+    "warm-group",
+    "validate-demo-state"
+  ],
+  "readiness": {
+    "activeMatches": 3,
+    "messages": 3,
+    "participations": 1,
+    "notifications": 1
+  }
+}

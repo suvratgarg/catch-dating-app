@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -14,7 +13,7 @@ abstract class RunClub with _$RunClub {
     @JsonKey(includeToJson: false) required String id,
     required String name,
     required String description,
-    required IndianCity location,
+    required String location,
     required String area,
     required String hostUserId,
     required String hostName,

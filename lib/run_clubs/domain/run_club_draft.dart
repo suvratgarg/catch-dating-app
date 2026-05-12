@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'run_club_draft.freezed.dart';
@@ -13,7 +12,7 @@ abstract class RunClubDraft with _$RunClubDraft {
     String? name,
     String? area,
     String? description,
-    IndianCity? location,
+    String? location,
     String? instagramHandle,
     String? phoneNumber,
     String? email,

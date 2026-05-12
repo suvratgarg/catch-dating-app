@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -114,23 +113,23 @@ void main() {
       () async {
         final older = buildRunClub(
           id: 'older',
-          location: IndianCity.mumbai,
+          location: 'mumbai',
           createdAt: DateTime(2025, 1, 1),
         );
         final newer = buildRunClub(
           id: 'newer',
-          location: IndianCity.mumbai,
+          location: 'mumbai',
           createdAt: DateTime(2025, 1, 2),
         );
         await _seedRunClub(firestore, older);
         await _seedRunClub(firestore, newer);
         await _seedRunClub(
           firestore,
-          buildRunClub(id: 'delhi-club', location: IndianCity.delhi),
+          buildRunClub(id: 'delhi-club', location: 'delhi'),
         );
 
         await expectLater(
-          repository.watchRunClubsByLocation(IndianCity.mumbai),
+          repository.watchRunClubsByLocation('mumbai'),
           emits([newer, older]),
         );
       },
@@ -139,19 +138,19 @@ void main() {
     test('watchRunClubsByLocationSortedByRating orders by rating', () async {
       final lowerRated = buildRunClub(
         id: 'club-low',
-        location: IndianCity.delhi,
+        location: 'delhi',
         rating: 3.8,
       );
       final topClub = buildRunClub(
         id: 'club-top',
-        location: IndianCity.delhi,
+        location: 'delhi',
         rating: 4.9,
       );
       await _seedRunClub(firestore, lowerRated);
       await _seedRunClub(firestore, topClub);
 
       await expectLater(
-        repository.watchRunClubsByLocationSortedByRating(IndianCity.delhi),
+        repository.watchRunClubsByLocationSortedByRating('delhi'),
         emits([topClub, lowerRated]),
       );
     });
@@ -177,7 +176,7 @@ void main() {
         clubId: 'club-42',
         name: 'Sunset Striders',
         description: 'Easy city loops',
-        location: IndianCity.mumbai,
+        location: 'mumbai',
         area: 'Bandra',
         imageUrl: 'https://example.com/cover.jpg',
       );
@@ -209,7 +208,7 @@ void main() {
           clubId: 'club-42',
           name: 'Contact Club',
           description: 'A club with contact info.',
-          location: IndianCity.mumbai,
+          location: 'mumbai',
           area: 'Bandra',
           instagramHandle: '@contactclub',
           phoneNumber: '+91 99999 99999',
@@ -237,8 +236,8 @@ void main() {
         fields: {'name': 'New Name', 'area': 'New Area'},
       );
 
-      final callable = functions.httpsCallable('updateRunClub')
-          as TestHttpsCallable;
+      final callable =
+          functions.httpsCallable('updateRunClub') as TestHttpsCallable;
       expect(callable.calls, [
         {
           'clubId': 'club-1',
@@ -247,21 +246,24 @@ void main() {
       ]);
     });
 
-    test('updateRunClub delegates nullable media fields to the callable', () async {
-      await repository.updateRunClub(
-        clubId: 'club-1',
-        fields: {'imageUrl': 'https://example.com/updated.jpg'},
-      );
+    test(
+      'updateRunClub delegates nullable media fields to the callable',
+      () async {
+        await repository.updateRunClub(
+          clubId: 'club-1',
+          fields: {'imageUrl': 'https://example.com/updated.jpg'},
+        );
 
-      final callable = functions.httpsCallable('updateRunClub')
-          as TestHttpsCallable;
-      expect(callable.calls, [
-        {
-          'clubId': 'club-1',
-          'fields': {'imageUrl': 'https://example.com/updated.jpg'},
-        },
-      ]);
-    });
+        final callable =
+            functions.httpsCallable('updateRunClub') as TestHttpsCallable;
+        expect(callable.calls, [
+          {
+            'clubId': 'club-1',
+            'fields': {'imageUrl': 'https://example.com/updated.jpg'},
+          },
+        ]);
+      },
+    );
 
     test('joinClub delegates membership to the callable', () async {
       await repository.joinClub('club-1');
@@ -301,15 +303,15 @@ void main() {
 
     test('repository provider wrappers delegate to the repository', () async {
       final fakeRepository = FakeRunClubsRepository();
-      final club = buildRunClub(id: 'club-1', location: IndianCity.mumbai);
+      final club = buildRunClub(id: 'club-1', location: 'mumbai');
       final topClub = buildRunClub(
         id: 'club-top',
-        location: IndianCity.mumbai,
+        location: 'mumbai',
         rating: 4.9,
       );
       fakeRepository.clubsById[club.id] = club;
       fakeRepository.clubsById[topClub.id] = topClub;
-      fakeRepository.clubsByLocation[IndianCity.mumbai] = [club, topClub];
+      fakeRepository.clubsByLocation['mumbai'] = [club, topClub];
 
       final container = ProviderContainer(
         overrides: [
@@ -324,12 +326,12 @@ void main() {
         fireImmediately: true,
       );
       final locationSubscription = container.listen(
-        watchRunClubsByLocationProvider(IndianCity.mumbai),
+        watchRunClubsByLocationProvider('mumbai'),
         (_, _) {},
         fireImmediately: true,
       );
       final ratingSubscription = container.listen(
-        watchRunClubsByLocationSortedByRatingProvider(IndianCity.mumbai),
+        watchRunClubsByLocationSortedByRatingProvider('mumbai'),
         (_, _) {},
         fireImmediately: true,
       );
@@ -354,7 +356,7 @@ void main() {
     testWidgets(
       'watchRunClubsByLocationProvider keeps realtime streams alive while idle',
       (tester) async {
-        final club = buildRunClub(id: 'club-1', location: IndianCity.mumbai);
+        final club = buildRunClub(id: 'club-1', location: 'mumbai');
         final clubsController = StreamController<List<RunClub>>();
         addTearDown(clubsController.close);
 
@@ -369,7 +371,7 @@ void main() {
         );
         addTearDown(container.dispose);
 
-        final provider = watchRunClubsByLocationProvider(IndianCity.mumbai);
+        final provider = watchRunClubsByLocationProvider('mumbai');
         final subscription = container.listen(provider, (_, _) {});
         addTearDown(subscription.close);
 
@@ -397,7 +399,7 @@ class _IdleRunClubsRepository extends Fake implements RunClubsRepository {
   final Stream<List<RunClub>> clubsByLocationStream;
 
   @override
-  Stream<List<RunClub>> watchRunClubsByLocation(IndianCity location) =>
+  Stream<List<RunClub>> watchRunClubsByLocation(String location) =>
       clubsByLocationStream;
 }
 

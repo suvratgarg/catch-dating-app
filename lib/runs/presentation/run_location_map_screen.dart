@@ -1,16 +1,21 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
+import 'package:catch_dating_app/runs/presentation/run_location_links.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_pins_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
 
 class RunLocationMapRouteScreen extends ConsumerWidget {
   const RunLocationMapRouteScreen({
@@ -50,7 +55,7 @@ class RunLocationMapRouteScreen extends ConsumerWidget {
   }
 }
 
-class RunLocationMapScreen extends StatelessWidget {
+class RunLocationMapScreen extends ConsumerWidget {
   const RunLocationMapScreen({
     super.key,
     required this.run,
@@ -61,7 +66,7 @@ class RunLocationMapScreen extends StatelessWidget {
   final bool enableNetworkTiles;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
 
     if (!run.hasExactStartingPoint) {
@@ -72,7 +77,10 @@ class RunLocationMapScreen extends StatelessWidget {
       );
     }
 
-    final point = LatLng(run.startingPointLat!, run.startingPointLng!);
+    final point = LocationCoordinate(
+      run.startingPointLat!,
+      run.startingPointLng!,
+    );
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -100,43 +108,59 @@ class RunLocationMapScreen extends StatelessWidget {
                 elevation: CatchSurfaceElevation.overlay,
                 borderColor: t.line,
                 padding: const EdgeInsets.all(CatchSpacing.s4),
-                child: Row(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Container(
-                      width: 44,
-                      height: 44,
-                      decoration: BoxDecoration(
-                        color: t.primarySoft,
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Icon(
-                        Icons.location_on_outlined,
-                        color: t.primary,
-                        size: 22,
-                      ),
-                    ),
-                    const SizedBox(width: CatchSpacing.s3),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            run.meetingPoint,
-                            style: CatchTextStyles.titleM(context),
+                    Row(
+                      children: [
+                        Container(
+                          width: 44,
+                          height: 44,
+                          decoration: BoxDecoration(
+                            color: t.primarySoft,
+                            borderRadius: BorderRadius.circular(12),
                           ),
-                          if (run.locationDetails != null &&
-                              run.locationDetails!.isNotEmpty) ...[
-                            const SizedBox(height: 2),
-                            Text(
-                              run.locationDetails!,
-                              style: CatchTextStyles.bodyS(
-                                context,
-                                color: t.ink2,
+                          child: Icon(
+                            Icons.location_on_outlined,
+                            color: t.primary,
+                            size: 22,
+                          ),
+                        ),
+                        const SizedBox(width: CatchSpacing.s3),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                run.meetingPoint,
+                                style: CatchTextStyles.titleM(context),
                               ),
-                            ),
-                          ],
-                        ],
+                              if (run.locationDetails != null &&
+                                  run.locationDetails!.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  run.locationDetails!,
+                                  style: CatchTextStyles.bodyS(
+                                    context,
+                                    color: t.ink2,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: CatchSpacing.s3),
+                    CatchButton(
+                      label: 'Get directions',
+                      icon: const Icon(Icons.directions_outlined, size: 18),
+                      fullWidth: true,
+                      onPressed: () => unawaited(
+                        ref
+                            .read(externalLinkControllerProvider)
+                            .openExternal(directionsUriForRun(run)),
                       ),
                     ),
                   ],

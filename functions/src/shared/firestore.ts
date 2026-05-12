@@ -60,17 +60,6 @@ export type EducationLevel =
 
 export type Gender = "man" | "woman" | "nonBinary" | "other";
 
-export type IndianCity =
-  | "mumbai"
-  | "delhi"
-  | "bangalore"
-  | "hyderabad"
-  | "chennai"
-  | "kolkata"
-  | "pune"
-  | "ahmedabad"
-  | "indore";
-
 export type Language =
   | "english"
   | "hindi"
@@ -163,7 +152,7 @@ export interface UserProfileDoc {
   instagramHandle?: string | null;
   photoUrls: string[];
   photoThumbnailUrls: string[];
-  city?: IndianCity | null;
+  city?: string | null;
   latitude?: number | null;
   longitude?: number | null;
   interestedInGenders: Gender[];
@@ -212,9 +201,7 @@ export interface PublicProfileDoc {
   gender: Gender;
   photoUrls: string[];
   photoThumbnailUrls: string[];
-  city?: IndianCity | null;
-  latitude?: number | null;
-  longitude?: number | null;
+  city?: string | null;
   height?: number | null;
   occupation?: string | null;
   company?: string | null;
@@ -241,7 +228,7 @@ export interface PublicProfileDoc {
 export interface RunClubDoc {
   name: string;
   description: string;
-  location: IndianCity;
+  location: string;
   area: string;
   hostUserId: string;
   hostName: string;

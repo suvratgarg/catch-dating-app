@@ -64,7 +64,8 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final borderRadius = BorderRadius.circular(_radius);
+    final triggerBorderRadius = BorderRadius.circular(_triggerRadius);
+    final menuBorderRadius = BorderRadius.circular(CatchRadius.sm);
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -81,7 +82,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
             shadowColor: WidgetStatePropertyAll(t.overlay),
             surfaceTintColor: const WidgetStatePropertyAll(Colors.transparent),
             shape: WidgetStatePropertyAll(
-              RoundedRectangleBorder(borderRadius: borderRadius),
+              RoundedRectangleBorder(borderRadius: menuBorderRadius),
             ),
             padding: const WidgetStatePropertyAll(
               EdgeInsets.symmetric(vertical: CatchSpacing.s1),
@@ -135,7 +136,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
                 focusNode: _focusNode,
                 child: Material(
                   color: Colors.transparent,
-                  borderRadius: borderRadius,
+                  borderRadius: triggerBorderRadius,
                   child: InkWell(
                     onTap: _canOpen
                         ? () {
@@ -145,7 +146,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
                                 : controller.open();
                           }
                         : null,
-                    borderRadius: borderRadius,
+                    borderRadius: triggerBorderRadius,
                     child: AnimatedContainer(
                       duration: CatchMotion.fast,
                       curve: CatchMotion.standardCurve,
@@ -153,7 +154,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       decoration: BoxDecoration(
                         color: widget.enabled ? t.surface : t.raised,
-                        borderRadius: borderRadius,
+                        borderRadius: triggerBorderRadius,
                         border: Border.all(color: _borderColor(t), width: 1.5),
                         boxShadow: _focusNode.hasFocus && !widget.hasError
                             ? [
@@ -240,7 +241,7 @@ class _CatchSelectMenuState<T> extends State<CatchSelectMenu<T>> {
     };
   }
 
-  double get _radius {
+  double get _triggerRadius {
     return switch (widget.shape) {
       CatchSelectMenuShape.rounded => CatchRadius.sm,
       CatchSelectMenuShape.pill => CatchRadius.pill,

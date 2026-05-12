@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -39,59 +41,81 @@ class MatchRepository {
     List<Match>? user1Matches;
     List<Match>? user2Matches;
 
-    return Stream.multi((controller) {
-      void emitIfReady() {
-        final first = user1Matches;
-        final second = user2Matches;
-        if (first == null || second == null) return;
+    return withBackendErrorStream(
+      () => Stream.multi((controller) {
+        void emitIfReady() {
+          final first = user1Matches;
+          final second = user2Matches;
+          if (first == null || second == null) return;
 
-        final byId = <String, Match>{};
-        for (final match in [...first, ...second]) {
-          byId[match.id] = match;
+          final byId = <String, Match>{};
+          for (final match in [...first, ...second]) {
+            byId[match.id] = match;
+          }
+
+          final matches = byId.values.toList()
+            ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+          controller.add(matches);
         }
 
-        final matches = byId.values.toList()
-          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
-        controller.add(matches);
-      }
+        user1Subscription =
+            _watchActiveMatchesByParticipantField(
+              field: 'user1Id',
+              uid: uid,
+            ).listen((matches) {
+              user1Matches = matches;
+              emitIfReady();
+            }, onError: controller.addError);
+        user2Subscription =
+            _watchActiveMatchesByParticipantField(
+              field: 'user2Id',
+              uid: uid,
+            ).listen((matches) {
+              user2Matches = matches;
+              emitIfReady();
+            }, onError: controller.addError);
 
-      user1Subscription =
-          _watchActiveMatchesByParticipantField(
-            field: 'user1Id',
-            uid: uid,
-          ).listen((matches) {
-            user1Matches = matches;
-            emitIfReady();
-          }, onError: controller.addError);
-      user2Subscription =
-          _watchActiveMatchesByParticipantField(
-            field: 'user2Id',
-            uid: uid,
-          ).listen((matches) {
-            user2Matches = matches;
-            emitIfReady();
-          }, onError: controller.addError);
-
-      controller.onCancel = () async {
-        await user1Subscription.cancel();
-        await user2Subscription.cancel();
-      };
-    });
+        controller.onCancel = () async {
+          await user1Subscription.cancel();
+          await user2Subscription.cancel();
+        };
+      }),
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch matches',
+        resource: _collectionPath,
+      ),
+    );
   }
 
   Stream<List<Match>> _watchActiveMatchesByParticipantField({
     required String field,
     required String uid,
-  }) => _matchesRef
-      .where(field, isEqualTo: uid)
-      .where('status', isEqualTo: 'active')
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((snap) => snap.docs.map((d) => d.data()).toList());
+  }) => withBackendErrorStream(
+    () => _matchesRef
+        .where(field, isEqualTo: uid)
+        .where('status', isEqualTo: 'active')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => d.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch active matches',
+      resource: _collectionPath,
+    ),
+  );
 
-  Stream<Match?> watchMatch({required String matchId}) => _matchRef(
-    matchId,
-  ).snapshots().map((doc) => doc.exists ? doc.data() : null);
+  Stream<Match?> watchMatch({required String matchId}) =>
+      withBackendErrorStream(
+        () => _matchRef(
+          matchId,
+        ).snapshots().map((doc) => doc.exists ? doc.data() : null),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch match',
+          resource: _collectionPath,
+        ),
+      );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
@@ -102,13 +126,20 @@ class MatchRepository {
   /// document may not exist yet if a Cloud Function hasn't created it.
   /// All other errors (permission-denied, network, etc.) propagate.
   Future<void> resetUnread({required String matchId, required String uid}) =>
-      _matchRef(matchId)
-          .update({'unreadCounts.$uid': 0})
-          .catchError(
-            (Object _) {},
-            test: (Object error) =>
-                error is FirebaseException && error.code == 'not-found',
-          );
+      withBackendErrorContext(
+        () => _matchRef(matchId)
+            .update({'unreadCounts.$uid': 0})
+            .catchError(
+              (Object _) {},
+              test: (Object error) =>
+                  error is FirebaseException && error.code == 'not-found',
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'reset unread count',
+          resource: _collectionPath,
+        ),
+      );
 }
 
 List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {

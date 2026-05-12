@@ -1,7 +1,9 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -107,9 +109,19 @@ class PhotoUploadController extends _$PhotoUploadController {
   }
 
   void _failUploading(int index, Object error, [StackTrace? st]) {
-    debugPrint(
-      '[ERROR] PhotoUploadController._failUploading($index): $error\n$st',
-    );
+    ref
+        .read(errorLoggerProvider)
+        .logAppException(
+          normalizeBackendError(
+            error,
+            stackTrace: st,
+            context: const BackendErrorContext(
+              service: BackendService.local,
+              action: 'upload profile photo',
+              resource: 'photo_upload_controller',
+            ),
+          ),
+        );
     state = (
       loadingIndices: state.loadingIndices.difference({index}),
       uploadError: error,
@@ -142,9 +154,19 @@ class PhotoUploadController extends _$PhotoUploadController {
     _pendingPhotoWrite = nextWrite.then<void>(
       (_) {},
       onError: (Object error, StackTrace stack) {
-        debugPrint(
-          '[ERROR] PhotoUploadController._serializePhotoWrite: $error\n$stack',
-        );
+        ref
+            .read(errorLoggerProvider)
+            .logAppException(
+              normalizeBackendError(
+                error,
+                stackTrace: stack,
+                context: const BackendErrorContext(
+                  service: BackendService.local,
+                  action: 'serialize photo write',
+                  resource: 'photo_upload_controller',
+                ),
+              ),
+            );
       },
     );
     return nextWrite;

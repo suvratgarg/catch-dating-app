@@ -1,3 +1,11 @@
+---
+doc_id: demo_data_seeding
+version: 1.1.0
+updated: 2026-05-12
+owner: recursive_audit_loop
+status: active
+---
+
 # Demo Data Seeding
 
 This repo has a repeatable Firebase Admin SDK seeder for filling Catch with
@@ -5,7 +13,18 @@ realistic demo data. It is intended for TestFlight/dev/staging testing where
 the app needs enough users, clubs, runs, attendance history, swipes, matches,
 messages, payments, reviews, and notifications to exercise real flows.
 
-The script is:
+The day-to-day internal CLI is:
+
+```bash
+node tool/demo_ops.mjs
+```
+
+It wraps the original world seeder for large scenario writes and owns smaller
+demo operations such as matching two testers, warming one user, warming a group,
+resetting one user's demo state, and validating whether an account is ready for
+a high-fidelity demo.
+
+The lower-level world seeder is still available:
 
 ```bash
 node tool/seed_demo_data.mjs
@@ -40,6 +59,411 @@ match, and chat.
 Seeded matches use deterministic match IDs and write `runIds` instead of the
 legacy single `runId`, so the chats list can collapse one visible conversation
 per matched person while still preserving the shared-run history.
+
+Seeded run schedules are validated before any write plan is emitted. The seed
+fails if a run exceeds the shared max duration, if one club hosts overlapping
+active runs, or if a user is signed up, waitlisted, or attended in overlapping
+run windows. Adjacent runs are allowed when one ends at the exact time the next
+one starts. Real anchor users are only placed into seeded runs for their
+normalized profile city, so a tester is not fabricated into simultaneous runs
+across multiple cities.
+
+Seeded run coordinates come from a curated venue catalog per supported city.
+The seeder fails if an active run is missing exact coordinates or if the
+coordinates drift away from the catalog entry for that meeting point. This keeps
+map pins, directions, and location-gated check-in testing aligned with real
+venues instead of city-center offsets.
+
+The `beta-full` scenario intentionally creates a longer run horizon: near-term
+runs, mid-term runs, three-week-ahead runs, past attended runs, and cancelled
+runs. That gives TestFlight accounts enough upcoming inventory for ongoing
+manual QA instead of aging out after a couple of days.
+
+The world seed does not write `runClubScheduleLocks` or `userRunScheduleLocks`
+by default. Those collections are denormalized server-owned race guards for
+callable writes; the Functions also query canonical `runs` and
+`runParticipations`, so seeded existing state remains conflict-safe without
+exploding demo document counts. Use `--include-schedule-locks` only when
+explicitly testing the lock collections themselves.
+
+## Internal Demo Ops CLI
+
+List commands:
+
+```bash
+node tool/demo_ops.mjs list-commands
+```
+
+The supported commands are:
+
+| Command | Purpose |
+|---|---|
+| `seed-world` | Wrapper around `tool/seed_demo_data.mjs` for full scenario seeds. |
+| `append-user` | Wrapper around append mode for adding new testers without resetting existing testers. |
+| `match-phones` | Resolve two real phone numbers and create a deterministic match without starter messages by default. |
+| `warm-user` | Prepare one real account with saved runs, run edges, notifications, payments, synthetic matches, and starter messages. |
+| `warm-group` | Pairwise-match a small real tester group so they can dogfood chat together. |
+| `reset-user-demo-state` | Delete only demo-owned relationship docs for one user while retaining their manually configured profile. |
+| `validate-demo-state` | Check whether one or more users have enough state for a realistic demo. |
+| `demo-checklist` | Print the screens/flows a given phone number can confidently demonstrate. |
+| `cleanup-demo-data` | Pre-launch cleanup plan for all demo/synthetic documents. |
+| `cleanup-stale-runs` | Delete seeded past/cancelled runs and dependent edges while preserving real profiles. |
+| `make-run-full` | Fill a run to capacity with synthetic signed-up participants. |
+| `mark-attended` | Force one real user into an attended run state for recap/swipe testing. |
+| `promote-waitlist` | Move one real user into a signed-up state and create a promotion notification. |
+| `create-unread-message` | Add a deterministic demo chat message so the recipient sees unread activity. |
+| `create-refund` | Add a refunded payment-history row for one user/run. |
+| `create-host-account` | Give one real user a host-owned demo club and run. |
+| `create-check-in-run` | Create a near-immediate signed-up run at manual/user coordinates for location-gated check-in. |
+| `scenario-info` | List scenario definitions under `tool/demo_seed/scenarios`. |
+| `list-golden-accounts` | Read the golden account registry JSON. |
+
+All write/delete commands are dry-run-first. Add `--apply` to mutate data.
+Production writes also require `--allow-prod`.
+
+### Match Two Real Testers
+
+Use this when you want yourself and a friend to appear in each other's chat tab
+so you can dogfood Catch instead of moving the conversation to WhatsApp:
+
+```bash
+node tool/demo_ops.mjs match-phones \
+  --env prod \
+  --phone-a +919131404263 \
+  --phone-b +919870042103 \
+  --apply \
+  --allow-prod
+```
+
+By default this creates/repairs the match directly and writes match
+notifications, but it does not fabricate a chat transcript. It records all
+written paths under
+`demoOpsRuns/{operationId}` and marks documents with `demoOps: true` so they can
+be reset later.
+
+To intentionally create starter messages for a scripted demo, add:
+
+```bash
+--with-messages
+```
+
+Opt-in starter messages are backdated into the recent past. The command does
+not use a Firestore server timestamp for generated chat rows because demo plans
+need deterministic dry-run output and repeatable document IDs.
+
+To exercise the actual swipe trigger as well, add:
+
+```bash
+--via-swipes
+```
+
+To write only reciprocal swipe likes and rely on the deployed trigger to create
+the match:
+
+```bash
+--via-swipes-only
+```
+
+`--via-swipes` requires a shared attended run. The command auto-detects one from
+`runParticipations`; if there is no shared attended run, pass `--run-id` or warm
+the users first.
+
+### Warm One Account
+
+Use this before handing a TestFlight build to an investor, advisor, or beta
+tester who needs the app to feel alive immediately:
+
+```bash
+node tool/demo_ops.mjs warm-user \
+  --env prod \
+  --phone +919131404263 \
+  --apply \
+  --allow-prod
+```
+
+This creates a curated demo state around the real account:
+
+- saved upcoming runs;
+- signed-up, waitlisted, and attended run participation edges when matching runs exist;
+- a completed paid-flow payment when a paid upcoming run exists;
+- dashboard notifications;
+- synthetic matches and starter chat messages.
+
+After applying, the tool recomputes run and run-club aggregate projections from
+edge documents so list/detail counts remain consistent.
+
+### Warm A Dogfood Group
+
+Use this for 3-10 real testers who should all be able to chat with each other:
+
+```bash
+node tool/demo_ops.mjs warm-group \
+  --env prod \
+  --phones +919131404263,+919870042103,+919717473191 \
+  --apply \
+  --allow-prod
+```
+
+The command pairwise-matches every phone number in the group and creates starter
+messages. It is intentionally deterministic, so rerunning repairs the same
+match docs instead of creating duplicate conversations.
+
+### Reset One Account's Demo State
+
+Use this when one tester's seeded state is messy but you want to preserve their
+manual onboarding/profile edits:
+
+```bash
+node tool/demo_ops.mjs reset-user-demo-state \
+  --env prod \
+  --phone +919818759929 \
+  --apply \
+  --allow-prod
+```
+
+The reset command deletes only demo-owned relationship/activity docs connected
+to that user:
+
+- `runClubMemberships` by `uid`;
+- `runParticipations` by `uid`;
+- `userRunScheduleLocks` by `uid`;
+- `savedRuns` by `uid`;
+- `payments` by `userId`;
+- `swipes/{uid}/outgoing/*` and incoming demo swipes;
+- demo-owned `matches` involving the user and the entire message subcollection
+  under those disposable match threads, including real dogfood messages sent
+  inside the seeded relationship;
+- `notifications/{uid}/items/*`.
+
+It does not delete `users/{uid}` or `publicProfiles/{uid}`.
+
+### Clean Up Stale Seeded Runs
+
+Use this when the seeded world has accumulated cancelled or past runs and you
+want to remove those stale run docs plus their relationship edges without
+touching real user profiles:
+
+```bash
+node tool/demo_ops.mjs cleanup-stale-runs \
+  --env prod \
+  --apply \
+  --allow-prod
+```
+
+The command is dry-run-first if you omit `--apply`. It deletes stale seeded
+`runs`, `runParticipations`, schedule locks, saved runs, payments, reviews,
+run-linked swipes, demo match threads tied to stale run IDs, and run/match
+notifications. It recomputes run and run-club aggregates after apply.
+
+To keep one stale category:
+
+```bash
+--keep-past-runs
+--keep-cancelled-runs
+```
+
+### Create A Check-In Test Run
+
+Use this when you need to test the location-gated self check-in flow on a real
+phone. The run starts five minutes after the command runs, so the 10-minute
+pre-run check-in window is already open:
+
+```bash
+node tool/demo_ops.mjs create-check-in-run \
+  --env prod \
+  --phone +919131404263 \
+  --lat 28.6129 \
+  --lng 77.2295 \
+  --meeting-point "India Gate" \
+  --apply \
+  --allow-prod
+```
+
+If you omit `--lat` and `--lng`, the command uses the private coordinates on
+`users/{uid}`. It creates a demo run club, host membership, one signed-up
+participation edge for the real tester, schedule locks, and aggregate repairs.
+
+### Validate Demo Readiness
+
+Before a demo, run:
+
+```bash
+node tool/demo_ops.mjs validate-demo-state \
+  --env prod \
+  --phones +919131404263,+919870042103
+```
+
+The validator checks for a public profile and enough active matches, messages,
+run participations, notifications, saved runs, payments, and outgoing swipes to
+make the app feel warm. It is deliberately product-oriented: it answers “will
+this account feel useful in a demo?” rather than merely validating Firestore
+schema shape.
+
+## Demo Checklist
+
+Use this before handing someone a phone or TestFlight login:
+
+```bash
+node tool/demo_ops.mjs demo-checklist \
+  --env prod \
+  --phone +919131404263
+```
+
+The checklist converts raw counts into capabilities such as profile, run detail,
+post-run recap, matches, chat, saved runs, payment history, and notifications.
+
+## State Toggles
+
+Use these to force specific screens or edge states without reseeding the whole
+world:
+
+```bash
+# Fill a run to capacity with synthetic participants.
+node tool/demo_ops.mjs make-run-full \
+  --env prod \
+  --run-id demo_beta_2026_run_mumbai_01_01 \
+  --apply \
+  --allow-prod
+
+# Mark a real tester as attended so recap/swipe flows unlock.
+node tool/demo_ops.mjs mark-attended \
+  --env prod \
+  --phone +919131404263 \
+  --run-id demo_beta_2026_run_mumbai_01_05 \
+  --apply \
+  --allow-prod
+
+# Promote a waitlisted tester and create the activity item.
+node tool/demo_ops.mjs promote-waitlist \
+  --env prod \
+  --phone +919131404263 \
+  --run-id demo_beta_2026_run_mumbai_01_01 \
+  --apply \
+  --allow-prod
+
+# Add a new chat message from one tester to another.
+node tool/demo_ops.mjs create-unread-message \
+  --env prod \
+  --from-phone +919870042103 \
+  --to-phone +919131404263 \
+  --text "Want to try the Saturday route?" \
+  --apply \
+  --allow-prod
+
+# Create a refunded payment row.
+node tool/demo_ops.mjs create-refund \
+  --env prod \
+  --phone +919131404263 \
+  --run-id demo_beta_2026_run_mumbai_01_02 \
+  --apply \
+  --allow-prod
+
+# Create a host-owned club/run for host tools.
+node tool/demo_ops.mjs create-host-account \
+  --env prod \
+  --phone +919131404263 \
+  --apply \
+  --allow-prod
+```
+
+Edge-writing commands mark documents with demo metadata and write manifests.
+Commands that change run participation or club membership state also recompute
+aggregate projections after apply.
+
+## Scenarios And Golden Accounts
+
+Scenario JSON files live under `tool/demo_seed/scenarios`:
+
+- `investor-demo`
+- `dogfood-group`
+- `host-demo`
+- `payments-demo`
+- `empty-state-demo`
+- `safety-demo`
+
+Inspect them with:
+
+```bash
+node tool/demo_ops.mjs scenario-info
+node tool/demo_ops.mjs scenario-info --demo-scenario investor-demo
+```
+
+The golden-account registry template is:
+
+```bash
+tool/demo_seed/golden_accounts.example.json
+```
+
+Read it with:
+
+```bash
+node tool/demo_ops.mjs list-golden-accounts
+```
+
+Create a local, ignored `tool/demo_seed/golden_accounts.json` later when real
+TestFlight accounts are assigned to stable roles.
+
+## Launch Cleanup
+
+Before public launch, run a dry run:
+
+```bash
+node tool/demo_ops.mjs cleanup-demo-data \
+  --env prod \
+  --allow-prod
+```
+
+Then apply only after reviewing the path count:
+
+```bash
+node tool/demo_ops.mjs cleanup-demo-data \
+  --env prod \
+  --apply \
+  --allow-prod
+```
+
+Cleanup scans known top-level and nested demo surfaces for `demoOps`,
+`synthetic`, and known `seedPrefix` markers. It deletes match messages before
+match docs and includes `seedRuns` plus `demoOpsRuns` manifests. Run
+`validate-demo-state` and the broader Firestore validator after cleanup to prove
+zero demo residue before launch.
+
+## TestFlight Refresh Cadence
+
+For active beta testing, use this rhythm:
+
+- Weekly: dry-run `seed-world --scenario beta-full --reset-synthetic`, review
+  counts, then apply if the synthetic world itself needs a full refresh.
+- When inviting a new tester: use `append-user`, not `--reset-synthetic`, so
+  existing testers do not receive duplicate seeded notifications.
+- When one tester gets messy: use `reset-user-demo-state`, then `warm-user`.
+- When runs age out: use `cleanup-stale-runs`, then `append-user` or `warm-user`
+  for accounts that need fresh future state.
+- Before any investor/advisor walkthrough: run `demo-checklist` for the exact
+  phone number and fix the listed gaps.
+
+## First-Class Demo Tooling Principles
+
+Treat this tooling as product infrastructure:
+
+- **Dry-run first:** every mutation command should show its plan before writes.
+- **Prod guard:** prod writes require both `--apply` and `--allow-prod`.
+- **Deterministic IDs:** reruns should repair state, not create duplicates.
+- **Manifested writes:** each operation writes a `demoOpsRuns/{operationId}`
+  manifest with affected users and document paths.
+- **Reversible state:** demo-owned documents include `demoOps`, `demoOpsId`, and
+  `seedPrefix` markers so single-user reset and future cleanup can find them.
+- **Explicit disposal policy:** demo-created match documents are tagged as
+  `demoOpsEntityType: "matchThread"` with
+  `demoOpsDisposalPolicy: "deleteThreadWithMessages"` because the relationship
+  is disposable even when real testers chat inside it.
+- **Profile preservation:** never overwrite real `users/{uid}` or
+  `publicProfiles/{uid}` from demo tooling.
+- **Edge-first counts:** when tooling writes relationship edges, recompute parent
+  aggregate projections instead of hand-tuning counts.
+- **Architecture signal:** if a demo command has to duplicate complicated product
+  logic, that is evidence the production mutation should probably move behind a
+  callable/repository seam.
 
 ## Scenarios
 
@@ -326,3 +750,53 @@ Firebase projects.
    dashboard activity, club discovery, club detail, upcoming run detail, saved
    runs, paid/free booking states, attended run recap, swiping, matches, chat,
    payment history, reviews, and notification preferences.
+
+## Demo Ops Backlog
+
+Approved and implemented:
+
+- Full world seeding with `tool/seed_demo_data.mjs`.
+- Append-only tester seeding without resetting existing anchor users.
+- One-command direct matching for two real phone numbers.
+- Optional reciprocal swipe writes for match trigger testing.
+- One-user warmup for investor/beta demos.
+- Real tester group warmup for dogfooding chat.
+- One-user demo-state reset that preserves real profile configuration.
+- Product-oriented demo-readiness validation.
+
+Recommended next additions:
+
+- **Golden personas:** named internal demo accounts such as founder, host,
+  high-activity runner, new user, paid-run user, and empty-state user.
+- **Scenario snapshots:** `investor-demo`, `press-demo`, `host-demo`,
+  `payments-demo`, `safety-demo`, and `empty-state-demo` JSON scenario files.
+- **Conversation scripts:** deterministic chat transcripts with richer pacing,
+  unread/read variants, image-message variants, and moderation-edge examples.
+- **State toggles:** commands such as `make-run-full`, `promote-waitlist`,
+  `mark-attended`, `create-refund`, `create-unread-message`, and
+  `create-host-account`.
+- **Demo checklist export:** a command that prints a human checklist for the
+  exact screens a given phone number can demonstrate.
+- **Launch cleanup:** a hard pre-launch command that deletes all `synthetic`,
+  `demoOps`, and `seedPrefix` documents and then validates zero demo residue.
+- **Admin UI:** later, wrap the CLI operations in a locked internal admin panel
+  or callable-only staff tool once the command semantics stabilize.
+
+Architecture signals to watch:
+
+- If demo tools need to create production-owned documents directly, that is
+  acceptable for Admin SDK tooling but should stay visibly marked and audited.
+- If direct writes become the only reliable way to create valid app state, move
+  the matching/bookings/notifications operation into a callable that both app
+  and tooling can invoke.
+- Match/message triggers now copy demo metadata through
+  `functions/src/shared/demoMetadata.ts` so notification projections remain
+  cleanup-safe.
+- If resetting one user's state requires broad collection scans, add stronger
+  ownership indexes or per-operation manifests before beta data volume grows.
+  The current reset command intentionally scans `swipes/*/outgoing` instead of
+  requiring an indexed collection-group query; this is acceptable for small beta
+  data and should be revisited before seeded data becomes large.
+- If “warm user” requires too many unrelated writes, consider adding a formal
+  onboarding/demo-state service boundary in Functions so network-effect setup
+  becomes one backend-owned transaction.

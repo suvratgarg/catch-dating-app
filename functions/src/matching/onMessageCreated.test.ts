@@ -224,20 +224,9 @@ test("onMessageCreatedHandler updates match metadata and notifies recipient",
         createdAt: {kind: "serverTimestamp"},
       }
     );
-    assert.deepEqual(
+    assert.equal(
       h.firestore.get("notifications/runner-2/items/message_match-1_message-1"),
-      {
-        uid: "runner-2",
-        type: "message",
-        title: "Runner One",
-        body: "Hello there",
-        createdAt: {seconds: 1, nanoseconds: 0},
-        matchId: "match-1",
-        runId: "run-1",
-        actorUid: "runner-1",
-        actorName: "Runner One",
-        readAt: null,
-      }
+      undefined
     );
     assert.equal(h.notifications.length, 1);
   }

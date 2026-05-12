@@ -26,8 +26,13 @@ void main() {
             title: "You're in.",
             message: 'Your spot is confirmed.',
             details: const [
-              CelebrationDetail(label: 'Where', value: 'Carter Road'),
+              CelebrationDetail(
+                icon: Icons.location_on_outlined,
+                label: 'Where',
+                value: 'Carter Road',
+              ),
             ],
+            note: 'Arrive by the meeting time.',
             primaryAction: CelebrationAction(
               label: 'View run',
               onPressed: () => primaryPressed++,
@@ -48,6 +53,34 @@ void main() {
     expect(find.text('Your spot is confirmed.'), findsOneWidget);
     expect(find.text('Where'), findsOneWidget);
     expect(find.text('Carter Road'), findsOneWidget);
+    expect(find.text('Arrive by the meeting time.'), findsOneWidget);
+    expect(
+      tester.widget<Icon>(find.byIcon(Icons.check_rounded)).color,
+      Colors.white,
+    );
+    expect(
+      tester.widget<Icon>(find.byIcon(Icons.location_on_outlined)).color,
+      Colors.white,
+    );
+    expect(
+      tester.widget<Icon>(find.byIcon(Icons.bolt_rounded)).color,
+      Colors.white,
+    );
+    expect(
+      tester.widget<Text>(find.text('Where')).style?.color,
+      Colors.white.withValues(alpha: 0.74),
+    );
+    expect(
+      tester.widget<Text>(find.text('Carter Road')).style?.color,
+      Colors.white,
+    );
+    expect(
+      tester
+          .widget<Text>(find.text('Arrive by the meeting time.'))
+          .style
+          ?.color,
+      Colors.white,
+    );
 
     await tester.tap(find.text('View run'));
     await tester.pump();

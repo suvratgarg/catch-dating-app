@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -16,7 +15,7 @@ RunClub buildRunClub({
   String id = 'club-1',
   String name = 'Stride Social',
   String description = 'Morning runners who like easy city loops.',
-  IndianCity location = IndianCity.mumbai,
+  String location = 'mumbai',
   String area = 'Bandra',
   String hostUserId = 'host-1',
   String hostName = 'Host',
@@ -151,7 +150,7 @@ class FakeRunClubsRepository implements RunClubsRepository {
   Map<String, dynamic>? lastUpdatedFields;
 
   final Map<String, RunClub> clubsById = {};
-  final Map<IndianCity, List<RunClub>> clubsByLocation = {};
+  final Map<String, List<RunClub>> clubsByLocation = {};
 
   @override
   String generateId() => generatedId;
@@ -161,7 +160,7 @@ class FakeRunClubsRepository implements RunClubsRepository {
     String? clubId,
     required String name,
     required String description,
-    required IndianCity location,
+    required String location,
     required String area,
     String? imageUrl,
     String? instagramHandle,
@@ -227,13 +226,11 @@ class FakeRunClubsRepository implements RunClubsRepository {
   Stream<RunClub?> watchRunClub(String id) => Stream.value(clubsById[id]);
 
   @override
-  Stream<List<RunClub>> watchRunClubsByLocation(IndianCity location) =>
+  Stream<List<RunClub>> watchRunClubsByLocation(String location) =>
       Stream.value(clubsByLocation[location] ?? const []);
 
   @override
-  Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
-    IndianCity location,
-  ) {
+  Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(String location) {
     final clubs = <RunClub>[...(clubsByLocation[location] ?? const <RunClub>[])]
       ..sort((a, b) => b.rating.compareTo(a.rating));
     return Stream.value(clubs);
@@ -261,7 +258,7 @@ class CreateRunClubCall {
   final String clubId;
   final String name;
   final String description;
-  final IndianCity location;
+  final String location;
   final String area;
   final String? imageUrl;
   final String? instagramHandle;

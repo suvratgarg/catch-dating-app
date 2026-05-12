@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
@@ -71,7 +72,7 @@ class RunClubCoverFallback extends StatelessWidget {
               top: CatchSpacing.s4,
               child: _CoverChip(
                 icon: Icons.location_on_outlined,
-                label: club.location.label,
+                label: cityLabel(club.location),
               ),
             ),
           Positioned(

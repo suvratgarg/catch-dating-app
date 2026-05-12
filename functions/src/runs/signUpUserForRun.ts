@@ -15,6 +15,7 @@ import {
   runActivityNotificationCopy,
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
+import {claimUserRunScheduleInTransaction} from "./scheduleConflicts";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid runs)
@@ -154,6 +155,14 @@ export async function signUpUserForRun(
         "This run is now full."
       );
     }
+
+    await claimUserRunScheduleInTransaction(tx, db, {
+      uid: userId,
+      runId,
+      runClubId: run.runClubId,
+      startTimeMillis: run.startTime.toMillis(),
+      endTimeMillis: run.endTime.toMillis(),
+    });
 
     const wasWaitlisted = existingParticipation?.status === "waitlisted";
     const notificationType = wasWaitlisted ?

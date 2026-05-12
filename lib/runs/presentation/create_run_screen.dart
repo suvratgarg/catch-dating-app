@@ -1,8 +1,11 @@
+import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
@@ -22,7 +25,6 @@ import 'package:catch_dating_app/runs/presentation/widgets/when_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/where_step.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:latlong2/latlong.dart';
 
 DateTime _systemNow() => DateTime.now();
 
@@ -67,18 +69,15 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   final _startTimeController = TextEditingController();
   DateTime? _selectedDate;
   TimeOfDay? _selectedStartTime;
-  int _durationMinutes = 60;
+  int _durationMinutes = CatchBusinessRules.runDefaultDurationMinutes;
   String? _scheduleErrorText;
 
-  static const _minDuration = 30;
-  static const _maxDuration = 240;
-  static const _durationStep = 15;
   static const _futureStartError = 'Choose a start time later than now';
 
   // Step 1 — Where
   final _meetingPointController = TextEditingController();
   final _locationDetailsController = TextEditingController();
-  LatLng? _startingPoint;
+  LocationCoordinate? _startingPoint;
 
   // Step 2 — The run
   final _distanceController = TextEditingController();
@@ -114,12 +113,18 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     maxWomen: int.tryParse(_maxWomenController.text.trim()),
   );
 
-  VoidCallback? get _decreaseDurationCallback => _durationMinutes > _minDuration
-      ? () => setState(() => _durationMinutes -= _durationStep)
+  VoidCallback? get _decreaseDurationCallback =>
+      _durationMinutes > CatchBusinessRules.runMinDurationMinutes
+      ? () => setState(
+          () => _durationMinutes -= CatchBusinessRules.runDurationStepMinutes,
+        )
       : null;
 
-  VoidCallback? get _increaseDurationCallback => _durationMinutes < _maxDuration
-      ? () => setState(() => _durationMinutes += _durationStep)
+  VoidCallback? get _increaseDurationCallback =>
+      _durationMinutes < CatchBusinessRules.runMaxDurationMinutes
+      ? () => setState(
+          () => _durationMinutes += CatchBusinessRules.runDurationStepMinutes,
+        )
       : null;
 
   @override
@@ -153,11 +158,12 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
 
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(widget.now());
-    final picked = await showDatePicker(
+    final picked = await showCatchDatePicker(
       context: context,
       initialDate: _selectedDate ?? today,
       firstDate: today,
       lastDate: today.add(const Duration(days: 365)),
+      title: 'Run date',
     );
     if (picked != null) {
       final scheduleError = _scheduleErrorFor(picked, _selectedStartTime);
@@ -175,9 +181,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   }
 
   Future<void> _pickStartTime() async {
-    final picked = await showTimePicker(
+    final picked = await showCatchTimePicker(
       context: context,
       initialTime: _selectedStartTime ?? _initialStartTime(),
+      title: 'Start time',
     );
     if (picked != null) {
       final scheduleError = _scheduleErrorFor(_selectedDate, picked);
@@ -198,7 +205,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
 
   Future<void> _pickLocation() async {
     final deviceLocation = ref.read(deviceLocationProvider).asData?.value;
-    final result = await Navigator.of(context).push<LatLng>(
+    final result = await Navigator.of(context).push<LocationCoordinate>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
           initialLocation: _startingPoint ?? deviceLocation,
@@ -331,7 +338,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
           _startingPoint != null ||
           _selectedDate != null ||
           _selectedStartTime != null ||
-          _durationMinutes != 60 ||
+          _durationMinutes != CatchBusinessRules.runDefaultDurationMinutes ||
           _trimmedTextOrNull(_minAgeController) != null ||
           _trimmedTextOrNull(_maxAgeController) != null ||
           _trimmedTextOrNull(_maxMenController) != null ||
@@ -388,7 +395,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
         _locationDetailsController.text = draft.locationDetails!;
       }
       if (draft.startingPointLat != null && draft.startingPointLng != null) {
-        _startingPoint = LatLng(
+        _startingPoint = LocationCoordinate(
           draft.startingPointLat!,
           draft.startingPointLng!,
         );
@@ -483,27 +490,14 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   }
 
   void _showUnsavedChangesDialog() {
-    showDialog<bool>(
+    showCatchAdaptiveDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Unsaved changes'),
-        content: const Text(
-          'You have unsaved changes. Would you like to save a draft?',
-        ),
-        actions: [
-          CatchButton(
-            label: 'Discard',
-            onPressed: () => Navigator.of(ctx).pop(false),
-            variant: CatchButtonVariant.ghost,
-            size: CatchButtonSize.sm,
-          ),
-          CatchButton(
-            label: 'Save Draft',
-            onPressed: () => Navigator.of(ctx).pop(true),
-            size: CatchButtonSize.sm,
-          ),
-        ],
-      ),
+      title: 'Unsaved changes',
+      message: 'You have unsaved changes. Would you like to save a draft?',
+      actions: const [
+        CatchDialogAction(label: 'Discard', value: false, isDestructive: true),
+        CatchDialogAction(label: 'Save Draft', value: true, isDefault: true),
+      ],
     ).then((save) async {
       if (!mounted) return;
       if (save == true) {

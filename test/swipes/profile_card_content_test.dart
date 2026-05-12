@@ -1,69 +1,15 @@
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../runs/runs_test_helpers.dart';
 
 void main() {
   group('ProfileCardContent', () {
-    test('shows distance when both user locations are available', () {
-      final profile = buildPublicProfile().copyWith(
-        latitude: 19.0760,
-        longitude: 72.8777,
-      );
-      const currentLocation = LatLng(19.0860, 72.8777);
-
-      final content = ProfileCardContent.fromProfile(
-        profile,
-        currentUserLocation: currentLocation,
-      );
-
-      final distanceAttr = content.attributes.firstWhere(
-        (a) => a.icon == Icons.near_me_outlined,
-      );
-      expect(distanceAttr.text, contains('away'));
-    });
-
-    test('omits distance when profile has no coordinates', () {
-      final profile = buildPublicProfile(); // no lat/lng
-      const currentLocation = LatLng(19.0760, 72.8777);
-
-      final content = ProfileCardContent.fromProfile(
-        profile,
-        currentUserLocation: currentLocation,
-      );
-
-      final hasDistance = content.attributes.any(
-        (a) => a.icon == Icons.near_me_outlined,
-      );
-      expect(hasDistance, isFalse);
-    });
-
-    test('omits distance when current location is null', () {
-      final profile = buildPublicProfile().copyWith(
-        latitude: 19.0760,
-        longitude: 72.8777,
-      );
-
-      final content = ProfileCardContent.fromProfile(
-        profile,
-        currentUserLocation: null,
-      );
-
-      final hasDistance = content.attributes.any(
-        (a) => a.icon == Icons.near_me_outlined,
-      );
-      expect(hasDistance, isFalse);
-    });
-
-    test('does not break when currentUserLocation is not passed', () {
-      final profile = buildPublicProfile().copyWith(
-        latitude: 19.0760,
-        longitude: 72.8777,
-      );
+    test('does not expose exact distance on public swipe cards', () {
+      final profile = buildPublicProfile();
 
       final content = ProfileCardContent.fromProfile(profile);
 
@@ -124,7 +70,7 @@ void main() {
 
     test('keeps city on the hero overlay and relationship goal in details', () {
       final profile = buildPublicProfile().copyWith(
-        city: IndianCity.indore,
+        city: 'indore',
         relationshipGoal: RelationshipGoal.casual,
       );
 
@@ -132,7 +78,7 @@ void main() {
 
       expect(content.attributes.map((fact) => fact.text), ['Something casual']);
       expect(
-        content.attributes.any((fact) => fact.text == IndianCity.indore.label),
+        content.attributes.any((fact) => fact.text == cityLabel('indore')),
         isFalse,
       );
     });

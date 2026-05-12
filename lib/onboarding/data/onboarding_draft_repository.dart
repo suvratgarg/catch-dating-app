@@ -1,5 +1,6 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -16,25 +17,39 @@ class OnboardingDraftRepository {
   DocumentReference<Map<String, dynamic>> _draftRef(String uid) =>
       _db.collection(_collectionPath).doc(uid);
 
-  Future<OnboardingDraft?> fetchDraft({required String uid}) async {
-    final snap = await _draftRef(uid).get();
-    if (!snap.exists) return null;
-    return OnboardingDraft.fromJson(snap.data()!);
-  }
+  Future<OnboardingDraft?> fetchDraft({required String uid}) =>
+      withBackendErrorContext(
+        () async {
+          final snap = await _draftRef(uid).get();
+          if (!snap.exists) return null;
+          return OnboardingDraft.fromJson(snap.data()!);
+        },
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'fetch onboarding draft',
+          resource: _collectionPath,
+        ),
+      );
 
   Future<void> saveDraft({
     required String uid,
     required OnboardingDraft draft,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () => _draftRef(uid).set(draft.toJson()),
-    collection: _collectionPath,
-    action: 'save draft',
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'save draft',
+      resource: _collectionPath,
+    ),
   );
 
-  Future<void> deleteDraft({required String uid}) => withFirestoreErrorContext(
+  Future<void> deleteDraft({required String uid}) => withBackendErrorContext(
     () => _draftRef(uid).delete(),
-    collection: _collectionPath,
-    action: 'delete draft',
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'delete draft',
+      resource: _collectionPath,
+    ),
   );
 }
 

@@ -12,8 +12,11 @@ class ChatsSliverHeader extends CatchSliverHeader {
     : super(
         title: _TitleRow(count: count),
         bottom: showSearchField ? const _SearchRow() : null,
-        titleHeight: CatchSliverHeader.wrappedTitleHeight,
-        bottomHeight: CatchSliverHeader.compactSearchBottomHeight,
+        titleHeight: CatchSliverHeader.twoLineTitleHeight,
+        bottomHeight:
+            CatchTextField.compactControlHeight +
+            CatchSliverHeader.searchControlTopPadding +
+            CatchSliverHeader.contentAfterSearchGap,
       );
 }
 
@@ -24,7 +27,7 @@ class _TitleRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final countLabel = count == 1 ? '1 match' : '$count matches';
+    final countLabel = count == 1 ? '1 chat' : '$count chats';
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -41,10 +44,10 @@ class _TitleRow extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Your catches', style: CatchTextStyles.displayL(context)),
+                Text('Chats', style: CatchTextStyles.displayL(context)),
                 gapH4,
                 Text(
-                  'Chat with your matches',
+                  'Messages from your matches',
                   style: CatchTextStyles.bodyS(context),
                 ),
               ],
@@ -73,9 +76,9 @@ class _SearchRow extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        CatchSpacing.s2,
+        CatchSliverHeader.searchControlTopPadding,
         CatchSpacing.s5,
-        CatchSpacing.s2,
+        CatchSliverHeader.contentAfterSearchGap,
       ),
       child: const SizedBox(
         height: CatchTextField.compactControlHeight,

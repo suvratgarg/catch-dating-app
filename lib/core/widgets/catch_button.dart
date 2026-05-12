@@ -164,7 +164,7 @@ class _ButtonLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final content = Row(
       mainAxisSize: fullWidth ? MainAxisSize.max : MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -194,6 +194,10 @@ class _ButtonLabel extends StatelessWidget {
           ),
       ],
     );
+
+    if (fullWidth) return content;
+
+    return FittedBox(fit: BoxFit.scaleDown, child: content);
   }
 }
 

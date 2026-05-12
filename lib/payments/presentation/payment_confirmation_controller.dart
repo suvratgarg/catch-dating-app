@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_location_links.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final paymentConfirmationControllerProvider =
@@ -50,18 +51,7 @@ class PaymentConfirmationController {
     );
   }
 
-  static Uri directionsUri(Run run) {
-    final lat = run.startingPointLat;
-    final lng = run.startingPointLng;
-    if (lat != null && lng != null) {
-      return Uri.parse('https://maps.google.com/maps?daddr=$lat,$lng');
-    }
-
-    return Uri.parse(
-      'https://maps.google.com/maps?q='
-      '${Uri.encodeComponent(run.meetingPoint)}',
-    );
-  }
+  static Uri directionsUri(Run run) => directionsUriForRun(run);
 
   static String inviteText(Run run) {
     return 'Join me for a run! ${run.title} - ${run.meetingPoint}. '

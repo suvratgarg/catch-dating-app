@@ -143,6 +143,7 @@ scan_raw_material_buttons() {
     "${common_globs[@]}" \
     '(^|[^A-Za-z])(ElevatedButton|OutlinedButton|FilledButton|TextButton|CupertinoButton|FloatingActionButton)\(' \
     lib/core lib/*/presentation \
+    --glob '!lib/core/widgets/catch_adaptive_picker.dart' \
     --glob '!lib/core/widgets/catch_button.dart' \
     --glob '!lib/core/widgets/catch_text_button.dart' || true)"
 
@@ -433,6 +434,7 @@ scan_unstyled_text() {
     "${common_globs[@]}" \
     '(^|[^A-Za-z])Text\(' \
     lib/core/widgets lib/*/presentation \
+    --glob '!lib/core/widgets/catch_adaptive_dialog.dart' \
     --glob '!lib/core/widgets/catch_button.dart' \
     --glob '!lib/core/widgets/catch_text_button.dart' || true)"
 

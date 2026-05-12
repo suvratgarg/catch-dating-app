@@ -56,6 +56,11 @@ void main() {
       expect(validateOptionalEmail('not-an-email'), 'Enter a valid email');
       expect(validateOptionalEmail('runner@example.com'), isNull);
       expect(validateOptionalEmail(''), isNull);
+      expect(validateOptionalBio('a' * maximumBioLength), isNull);
+      expect(
+        validateOptionalBio('a' * (maximumBioLength + 1)),
+        'Bio must be $maximumBioLength characters or fewer',
+      );
     });
 
     test('normalizes and validates profile height', () {

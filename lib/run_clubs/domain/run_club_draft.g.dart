@@ -12,7 +12,7 @@ _RunClubDraft _$RunClubDraftFromJson(Map<String, dynamic> json) =>
       name: json['name'] as String?,
       area: json['area'] as String?,
       description: json['description'] as String?,
-      location: $enumDecodeNullable(_$IndianCityEnumMap, json['location']),
+      location: json['location'] as String?,
       instagramHandle: json['instagramHandle'] as String?,
       phoneNumber: json['phoneNumber'] as String?,
       email: json['email'] as String?,
@@ -24,20 +24,8 @@ Map<String, dynamic> _$RunClubDraftToJson(_RunClubDraft instance) =>
       'name': instance.name,
       'area': instance.area,
       'description': instance.description,
-      'location': _$IndianCityEnumMap[instance.location],
+      'location': instance.location,
       'instagramHandle': instance.instagramHandle,
       'phoneNumber': instance.phoneNumber,
       'email': instance.email,
     };
-
-const _$IndianCityEnumMap = {
-  IndianCity.mumbai: 'mumbai',
-  IndianCity.delhi: 'delhi',
-  IndianCity.bangalore: 'bangalore',
-  IndianCity.hyderabad: 'hyderabad',
-  IndianCity.chennai: 'chennai',
-  IndianCity.kolkata: 'kolkata',
-  IndianCity.pune: 'pune',
-  IndianCity.ahmedabad: 'ahmedabad',
-  IndianCity.indore: 'indore',
-};

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
@@ -11,7 +12,6 @@ import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
-import 'package:catch_dating_app/runs/presentation/run_booking_error_message.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/run_joined_celebration_screen.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -75,8 +75,9 @@ class RunDetailCta extends ConsumerWidget {
       children: [
         if (errorMutation.hasError)
           ErrorBanner(
-            message: runBookingErrorMessage(
+            message: appErrorMessage(
               (errorMutation as MutationError).error,
+              context: AppErrorContext.run,
             ),
           ),
         switch (status) {
@@ -89,21 +90,26 @@ class RunDetailCta extends ConsumerWidget {
             onPressed: bookMutation.isPending || (!run.isFree && !supportsPaid)
                 ? null
                 : () {
+                    final router = GoRouter.maybeOf(context);
+                    final navigator = Navigator.of(
+                      context,
+                      rootNavigator: true,
+                    );
                     RunBookingController.bookMutation.run(ref, (tx) async {
                       final data = await tx
                           .get(runBookingControllerProvider.notifier)
                           .book(run: run, user: userProfile);
-                      if (!context.mounted) return;
                       if (data != null) {
+                        if (router == null) return;
                         unawaited(
-                          GoRouter.of(context).pushNamed(
+                          router.pushNamed(
                             Routes.paymentConfirmationScreen.name,
                             extra: data,
                           ),
                         );
                       } else {
                         unawaited(
-                          Navigator.of(context, rootNavigator: true).push(
+                          navigator.push(
                             MaterialPageRoute<void>(
                               fullscreenDialog: true,
                               builder: (routeContext) =>
@@ -113,9 +119,9 @@ class RunDetailCta extends ConsumerWidget {
                                         Navigator.of(routeContext).pop(),
                                     onBackHome: () {
                                       Navigator.of(routeContext).pop();
-                                      GoRouter.of(
-                                        context,
-                                      ).goNamed(Routes.dashboardScreen.name);
+                                      router?.goNamed(
+                                        Routes.dashboardScreen.name,
+                                      );
                                     },
                                   ),
                             ),

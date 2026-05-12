@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_relationship_documents_migration
-version: 1.0.14
-updated: 2026-05-08
+version: 1.1.0
+updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -43,6 +43,10 @@ idempotently, and record verification.
   Firestore rule is owner-scoped, narrow, and easy to prove in emulator tests.
 - Relationship arrays are retired. Do not add them back to Flutter models,
   Functions writes, Firestore rules, active tooling, or tests.
+- Parent aggregate/projection fields derived from relationship documents must
+  have an idempotent trigger or recompute tool. Prefer recomputing from the
+  edge source of truth over retry-sensitive increments when the parent field is
+  not part of a capacity/payment-critical transaction.
 - Every implementation slice must update:
   - `tool/firestore_contract.json`,
   - `docs/backend_operation_catalog.md`,
@@ -242,6 +246,8 @@ Fields remain:
 - [x] Move Dashboard, Run Clubs list/detail, and Run Map membership reads to
   `runClubMemberships` and `memberCount`.
 - [x] Remove compatibility membership arrays/writes.
+- [x] Add `syncRunClubMemberStats` so `memberCount` is recomputed from active
+  `runClubMemberships` after edge writes.
 
 ### Phase 4: Run Participation Edges
 
@@ -264,6 +270,8 @@ Fields remain:
   `WhoIsRunning` and `HostRunManageScreen` use edge-derived rosters, while
   list/stat surfaces read `Run` aggregate count projections.
 - [x] Move remaining roster/count projections off participant arrays.
+- [x] Add `syncRunClubNextRun` so `runClubs.nextRunAt` and `nextRunLabel` are
+  recomputed from active future `runs` after run writes.
 
 ### Phase 5: Saved Run Edges
 

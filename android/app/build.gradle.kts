@@ -13,6 +13,25 @@ plugins {
 
 val keystoreProperties = Properties()
 val keystorePropertiesFile = rootProject.file("key.properties")
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use(localProperties::load)
+}
+fun localPropertyOrEnv(name: String): String =
+    localProperties.getProperty(name)
+        ?: providers.environmentVariable(name).orNull
+        ?: ""
+
+fun googleMapsApiKeyValue(name: String): String =
+    localPropertyOrEnv(name)
+        .removePrefix("keyString:")
+        .trim()
+
+fun googleMapsApiKeyFor(environmentName: String): String =
+    googleMapsApiKeyValue("GOOGLE_MAPS_ANDROID_API_KEY_$environmentName")
+        .ifBlank { googleMapsApiKeyValue("GOOGLE_MAPS_ANDROID_API_KEY") }
+
 val releaseBuildRequested = gradle.startParameter.taskNames.any {
     it.contains("release", ignoreCase = true)
 }
@@ -78,6 +97,9 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+        manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyValue(
+            "GOOGLE_MAPS_ANDROID_API_KEY"
+        )
     }
 
     flavorDimensions += "environment"
@@ -86,15 +108,18 @@ android {
             dimension = "environment"
             applicationIdSuffix = ".dev"
             resValue("string", "app_name", "Catch Dev")
+            manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("DEV")
         }
         create("staging") {
             dimension = "environment"
             applicationIdSuffix = ".staging"
             resValue("string", "app_name", "Catch Staging")
+            manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("STAGING")
         }
         create("prod") {
             dimension = "environment"
             resValue("string", "app_name", "Catch")
+            manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyFor("PROD")
         }
     }
 

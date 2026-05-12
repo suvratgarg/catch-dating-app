@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RunClubDraft {
 
- DateTime get savedAt; String? get name; String? get area; String? get description; IndianCity? get location; String? get instagramHandle; String? get phoneNumber; String? get email;
+ DateTime get savedAt; String? get name; String? get area; String? get description; String? get location; String? get instagramHandle; String? get phoneNumber; String? get email;
 /// Create a copy of RunClubDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $RunClubDraftCopyWith<$Res>  {
   factory $RunClubDraftCopyWith(RunClubDraft value, $Res Function(RunClubDraft) _then) = _$RunClubDraftCopyWithImpl;
 @useResult
 $Res call({
- DateTime savedAt, String? name, String? area, String? description, IndianCity? location, String? instagramHandle, String? phoneNumber, String? email
+ DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email
 });
 
 
@@ -72,7 +72,7 @@ as DateTime,name: freezed == name ? _self.name : name // ignore: cast_nullable_t
 as String?,area: freezed == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,location: freezed == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
-as IndianCity?,instagramHandle: freezed == instagramHandle ? _self.instagramHandle : instagramHandle // ignore: cast_nullable_to_non_nullable
+as String?,instagramHandle: freezed == instagramHandle ? _self.instagramHandle : instagramHandle // ignore: cast_nullable_to_non_nullable
 as String?,phoneNumber: freezed == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  IndianCity? location,  String? instagramHandle,  String? phoneNumber,  String? email)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RunClubDraft() when $default != null:
 return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email);case _:
@@ -181,7 +181,7 @@ return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.loca
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  IndianCity? location,  String? instagramHandle,  String? phoneNumber,  String? email)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email)  $default,) {final _that = this;
 switch (_that) {
 case _RunClubDraft():
 return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email);case _:
@@ -201,7 +201,7 @@ return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.loca
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime savedAt,  String? name,  String? area,  String? description,  IndianCity? location,  String? instagramHandle,  String? phoneNumber,  String? email)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( DateTime savedAt,  String? name,  String? area,  String? description,  String? location,  String? instagramHandle,  String? phoneNumber,  String? email)?  $default,) {final _that = this;
 switch (_that) {
 case _RunClubDraft() when $default != null:
 return $default(_that.savedAt,_that.name,_that.area,_that.description,_that.location,_that.instagramHandle,_that.phoneNumber,_that.email);case _:
@@ -223,7 +223,7 @@ class _RunClubDraft implements RunClubDraft {
 @override final  String? name;
 @override final  String? area;
 @override final  String? description;
-@override final  IndianCity? location;
+@override final  String? location;
 @override final  String? instagramHandle;
 @override final  String? phoneNumber;
 @override final  String? email;
@@ -261,7 +261,7 @@ abstract mixin class _$RunClubDraftCopyWith<$Res> implements $RunClubDraftCopyWi
   factory _$RunClubDraftCopyWith(_RunClubDraft value, $Res Function(_RunClubDraft) _then) = __$RunClubDraftCopyWithImpl;
 @override @useResult
 $Res call({
- DateTime savedAt, String? name, String? area, String? description, IndianCity? location, String? instagramHandle, String? phoneNumber, String? email
+ DateTime savedAt, String? name, String? area, String? description, String? location, String? instagramHandle, String? phoneNumber, String? email
 });
 
 
@@ -285,7 +285,7 @@ as DateTime,name: freezed == name ? _self.name : name // ignore: cast_nullable_t
 as String?,area: freezed == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
 as String?,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,location: freezed == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
-as IndianCity?,instagramHandle: freezed == instagramHandle ? _self.instagramHandle : instagramHandle // ignore: cast_nullable_to_non_nullable
+as String?,instagramHandle: freezed == instagramHandle ? _self.instagramHandle : instagramHandle // ignore: cast_nullable_to_non_nullable
 as String?,phoneNumber: freezed == phoneNumber ? _self.phoneNumber : phoneNumber // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,

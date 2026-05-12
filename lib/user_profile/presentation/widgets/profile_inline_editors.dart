@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/firestore_error_message.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -9,7 +9,6 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
-import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
@@ -63,7 +62,9 @@ mixin _InlineSaveState<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   Widget? buildSaveError() {
     final error = _saveError;
     if (error == null) return null;
-    return ErrorBanner(message: firestoreErrorMessage(error));
+    return ErrorBanner(
+      message: appErrorMessage(error, context: AppErrorContext.profile),
+    );
   }
 }
 
@@ -111,7 +112,9 @@ class ProfileInlineEditableText extends StatelessWidget {
     required this.enabled,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
-    this.textInputAction = TextInputAction.done,
+    this.textInputAction,
+    this.maxLines = 1,
+    this.minLines,
     this.autofillHints,
     this.onSubmitted,
   });
@@ -124,7 +127,9 @@ class ProfileInlineEditableText extends StatelessWidget {
   final bool enabled;
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
-  final TextInputAction textInputAction;
+  final TextInputAction? textInputAction;
+  final int maxLines;
+  final int? minLines;
   final Iterable<String>? autofillHints;
   final ValueChanged<String>? onSubmitted;
 
@@ -134,9 +139,11 @@ class ProfileInlineEditableText extends StatelessWidget {
     final direction = Directionality.of(context);
     final textScaler = MediaQuery.textScalerOf(context);
     final valueStyle = CatchTextStyles.bodyL(context, color: t.ink);
-    final editableHeight =
-        ((valueStyle.fontSize ?? 18) * (valueStyle.height ?? 1.2)) +
-        CatchSpacing.s2;
+    final lineCount = minLines ?? maxLines;
+    final lineHeight =
+        textScaler.scale(valueStyle.fontSize ?? 18) *
+        (valueStyle.height ?? 1.2);
+    final editableHeight = (lineHeight * lineCount) + CatchSpacing.s2;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -167,10 +174,15 @@ class ProfileInlineEditableText extends StatelessWidget {
                       focusNode: focusNode,
                       readOnly: !enabled,
                       autofocus: true,
-                      maxLines: 1,
+                      maxLines: maxLines,
+                      minLines: minLines,
                       keyboardType: keyboardType,
                       textCapitalization: textCapitalization,
-                      textInputAction: textInputAction,
+                      textInputAction:
+                          textInputAction ??
+                          (maxLines == 1
+                              ? TextInputAction.done
+                              : TextInputAction.newline),
                       autofillHints: autofillHints,
                       onSubmitted: onSubmitted,
                       style: valueStyle,
@@ -222,113 +234,6 @@ class ProfileInlineEditableText extends StatelessWidget {
   }
 }
 
-class ProfileInlineTextEditor extends ConsumerStatefulWidget {
-  const ProfileInlineTextEditor({
-    super.key,
-    required this.label,
-    required this.currentValue,
-    required this.fieldName,
-    required this.onSaved,
-    required this.onCancel,
-    this.currentFieldValue,
-    this.maxLines = 1,
-    this.keyboardType,
-    this.textCapitalization = TextCapitalization.sentences,
-    this.autofillHints,
-    this.validator,
-    this.toFieldValue,
-  });
-
-  final String label;
-  final String currentValue;
-  final Object? currentFieldValue;
-  final String fieldName;
-  final int maxLines;
-  final TextInputType? keyboardType;
-  final TextCapitalization textCapitalization;
-  final Iterable<String>? autofillHints;
-  final FormFieldValidator<String>? validator;
-  final Object? Function(String value)? toFieldValue;
-  final ProfileInlineSaveCallback onSaved;
-  final VoidCallback onCancel;
-
-  @override
-  ConsumerState<ProfileInlineTextEditor> createState() =>
-      _ProfileInlineTextEditorState();
-}
-
-class _ProfileInlineTextEditorState
-    extends ConsumerState<ProfileInlineTextEditor>
-    with _InlineSaveState<ProfileInlineTextEditor> {
-  final _formKey = GlobalKey<FormState>();
-  late final TextEditingController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController(text: widget.currentValue);
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<void> _submit() async {
-    if (isSaving) return;
-    if (!_formKey.currentState!.validate()) return;
-
-    final rawValue = _controller.text.trim();
-    final Object? fieldValue = widget.toFieldValue != null
-        ? widget.toFieldValue!(rawValue)
-        : rawValue;
-    final currentFieldValue = widget.currentFieldValue;
-    final comparableCurrentValue = currentFieldValue ?? widget.currentValue;
-    final isUnchanged =
-        fieldValue == comparableCurrentValue ||
-        (fieldValue == null && widget.currentValue.trim().isEmpty) ||
-        (fieldValue == '' && currentFieldValue == null);
-    if (isUnchanged) {
-      widget.onCancel();
-      return;
-    }
-
-    final saved = await saveFields({widget.fieldName: fieldValue});
-    if (saved && mounted) widget.onSaved();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: _InlineEditorPanel(
-        saveError: buildSaveError(),
-        isSaving: isSaving,
-        onCancel: widget.onCancel,
-        onSubmit: _submit,
-        children: [
-          CatchTextField(
-            label: widget.label,
-            controller: _controller,
-            enabled: !isSaving,
-            autofocus: true,
-            maxLines: widget.maxLines,
-            keyboardType: widget.keyboardType,
-            textCapitalization: widget.textCapitalization,
-            textInputAction: widget.maxLines == 1
-                ? TextInputAction.done
-                : TextInputAction.newline,
-            autofillHints: widget.autofillHints,
-            validator: widget.validator,
-            onSubmitted: (_) => _submit(),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
 class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
   const ProfileInlineTextEntryEditor({
     super.key,
@@ -343,6 +248,8 @@ class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
     required this.onCancel,
     this.currentFieldValue,
     this.isAddAffordance = false,
+    this.maxLines = 1,
+    this.minLines,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.autofillHints,
@@ -358,6 +265,8 @@ class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
   final String fieldName;
   final bool isExpanded;
   final bool isAddAffordance;
+  final int maxLines;
+  final int? minLines;
   final VoidCallback onTap;
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
@@ -456,7 +365,8 @@ class _ProfileInlineTextEntryEditorState
                 enabled: !isSaving,
                 keyboardType: widget.keyboardType,
                 textCapitalization: widget.textCapitalization,
-                textInputAction: TextInputAction.done,
+                maxLines: widget.maxLines,
+                minLines: widget.minLines,
                 autofillHints: widget.autofillHints,
                 onSubmitted: (_) => _submit(),
               )
@@ -469,6 +379,7 @@ class _ProfileInlineTextEntryEditorState
         isSaving: isSaving,
         onCancel: widget.onCancel,
         onSubmit: _submit,
+        children: const [],
       ),
     );
   }

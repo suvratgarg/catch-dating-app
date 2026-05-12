@@ -1,0 +1,13 @@
+{
+  "id": "safety-demo",
+  "label": "Safety Demo",
+  "description": "Future scenario for block/report/moderation flows once staff review tools exist.",
+  "recommendedCommands": [
+    "match-phones",
+    "create-unread-message"
+  ],
+  "readiness": {
+    "activeMatches": 1,
+    "messages": 1
+  }
+}

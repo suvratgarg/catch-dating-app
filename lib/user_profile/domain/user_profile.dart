@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -197,7 +196,7 @@ abstract class UserProfile with _$UserProfile {
     @Default([]) List<String> photoThumbnailUrls,
 
     // Location
-    @JsonKey(unknownEnumValue: null) IndianCity? city,
+    String? city,
     double? latitude,
     double? longitude,
 

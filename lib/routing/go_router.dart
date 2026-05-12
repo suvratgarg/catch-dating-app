@@ -173,6 +173,11 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => const PaymentHistoryScreen(),
       ),
       GoRoute(
+        path: Routes.reviewsHistoryScreen.path,
+        name: Routes.reviewsHistoryScreen.name,
+        builder: (context, state) => const ReviewsHistoryScreen(),
+      ),
+      GoRoute(
         path: Routes.paymentConfirmationScreen.path,
         name: Routes.paymentConfirmationScreen.name,
         builder: (context, state) {
@@ -357,13 +362,6 @@ GoRouter goRouter(Ref ref) {
                 path: Routes.profileScreen.path,
                 name: Routes.profileScreen.name,
                 builder: (context, state) => const ProfileScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'reviews',
-                    name: Routes.reviewsHistoryScreen.name,
-                    builder: (context, state) => const ReviewsHistoryScreen(),
-                  ),
-                ],
               ),
             ],
           ),

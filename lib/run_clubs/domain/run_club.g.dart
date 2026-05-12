@@ -10,7 +10,7 @@ _RunClub _$RunClubFromJson(Map<String, dynamic> json) => _RunClub(
   id: json['id'] as String,
   name: json['name'] as String,
   description: json['description'] as String,
-  location: $enumDecode(_$IndianCityEnumMap, json['location']),
+  location: json['location'] as String,
   area: json['area'] as String,
   hostUserId: json['hostUserId'] as String,
   hostName: json['hostName'] as String,
@@ -47,7 +47,7 @@ _RunClub _$RunClubFromJson(Map<String, dynamic> json) => _RunClub(
 Map<String, dynamic> _$RunClubToJson(_RunClub instance) => <String, dynamic>{
   'name': instance.name,
   'description': instance.description,
-  'location': _$IndianCityEnumMap[instance.location]!,
+  'location': instance.location,
   'area': instance.area,
   'hostUserId': instance.hostUserId,
   'hostName': instance.hostName,
@@ -73,18 +73,6 @@ Map<String, dynamic> _$RunClubToJson(_RunClub instance) => <String, dynamic>{
     const TimestampConverter().toJson,
   ),
   'archiveReason': instance.archiveReason,
-};
-
-const _$IndianCityEnumMap = {
-  IndianCity.mumbai: 'mumbai',
-  IndianCity.delhi: 'delhi',
-  IndianCity.bangalore: 'bangalore',
-  IndianCity.hyderabad: 'hyderabad',
-  IndianCity.chennai: 'chennai',
-  IndianCity.kolkata: 'kolkata',
-  IndianCity.pune: 'pune',
-  IndianCity.ahmedabad: 'ahmedabad',
-  IndianCity.indore: 'indore',
 };
 
 Value? _$JsonConverterFromJson<Json, Value>(

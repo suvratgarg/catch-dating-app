@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -9,7 +10,7 @@ void main() {
 
     setUp(() async {
       SharedPreferences.setMockInitialValues({});
-      repo = RunDraftRepository();
+      repo = RunDraftRepository(ErrorLogger());
     });
 
     RunDraft buildDraft({
@@ -151,8 +152,14 @@ void main() {
 
     group('deleteDraft', () {
       test('removes the specified draft, leaves others', () async {
-        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-1'));
-        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-2'));
+        await repo.saveDraft(
+          userId: 'user-1',
+          draft: buildDraft(id: 'd-1'),
+        );
+        await repo.saveDraft(
+          userId: 'user-1',
+          draft: buildDraft(id: 'd-2'),
+        );
 
         await repo.deleteDraft(
           runClubId: 'club-1',
@@ -169,7 +176,10 @@ void main() {
       });
 
       test('does nothing when draft not found', () async {
-        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-1'));
+        await repo.saveDraft(
+          userId: 'user-1',
+          draft: buildDraft(id: 'd-1'),
+        );
         await repo.deleteDraft(
           runClubId: 'club-1',
           userId: 'user-1',
@@ -186,8 +196,14 @@ void main() {
 
     group('deleteAllDrafts', () {
       test('clears all drafts for the club/user', () async {
-        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-1'));
-        await repo.saveDraft(userId: 'user-1', draft: buildDraft(id: 'd-2'));
+        await repo.saveDraft(
+          userId: 'user-1',
+          draft: buildDraft(id: 'd-1'),
+        );
+        await repo.saveDraft(
+          userId: 'user-1',
+          draft: buildDraft(id: 'd-2'),
+        );
 
         await repo.deleteAllDrafts(runClubId: 'club-1', userId: 'user-1');
 

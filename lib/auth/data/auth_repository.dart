@@ -1,4 +1,6 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -11,46 +13,81 @@ class AuthRepository {
 
   User? get currentUser => _auth.currentUser;
 
-  Stream<User?> authStateChanges() => _auth.authStateChanges();
+  Stream<User?> authStateChanges() => withBackendErrorStream(
+    () => _auth.authStateChanges(),
+    context: const BackendErrorContext(
+      service: BackendService.auth,
+      action: 'watch auth session',
+      resource: 'auth_session',
+    ),
+  );
 
   // ── Phone OTP auth ────────────────────────────────────────────────────────
 
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
     required void Function(String verificationId, int? resendToken) codeSent,
-    required void Function(FirebaseAuthException e) verificationFailed,
+    required void Function(AppException e) verificationFailed,
     required void Function(PhoneAuthCredential credential)
     verificationCompleted,
-  }) async {
-    await _auth.verifyPhoneNumber(
-      phoneNumber: phoneNumber,
-      verificationCompleted: verificationCompleted,
-      verificationFailed: verificationFailed,
-      codeSent: codeSent,
-      codeAutoRetrievalTimeout: (_) {},
+  }) {
+    const context = BackendErrorContext(
+      service: BackendService.auth,
+      action: 'send verification code',
+      resource: 'phone_auth',
+    );
+    return withBackendErrorContext(
+      () => _auth.verifyPhoneNumber(
+        phoneNumber: phoneNumber,
+        verificationCompleted: verificationCompleted,
+        verificationFailed: (error) {
+          verificationFailed(normalizeBackendError(error, context: context));
+        },
+        codeSent: codeSent,
+        codeAutoRetrievalTimeout: (_) {},
+      ),
+      context: context,
     );
   }
 
   Future<void> signInWithOtp({
     required String verificationId,
     required String smsCode,
-  }) async {
-    final credential = PhoneAuthProvider.credential(
-      verificationId: verificationId,
-      smsCode: smsCode,
-    );
-    await signInWithCredential(credential);
-  }
+  }) => withBackendErrorContext(
+    () async {
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verificationId,
+        smsCode: smsCode,
+      );
+      await _auth.signInWithCredential(credential);
+    },
+    context: const BackendErrorContext(
+      service: BackendService.auth,
+      action: 'verify sign-in code',
+      resource: 'phone_auth',
+    ),
+  );
 
-  Future<void> signInWithCredential(AuthCredential credential) async {
-    await _auth.signInWithCredential(credential);
-  }
+  Future<void> signInWithCredential(AuthCredential credential) =>
+      withBackendErrorContext(
+        () => _auth.signInWithCredential(credential),
+        context: const BackendErrorContext(
+          service: BackendService.auth,
+          action: 'sign in',
+          resource: 'auth_session',
+        ),
+      );
 
   // ── Sign out ──────────────────────────────────────────────────────────────
 
-  Future<void> signOut() async {
-    await _auth.signOut();
-  }
+  Future<void> signOut() => withBackendErrorContext(
+    () => _auth.signOut(),
+    context: const BackendErrorContext(
+      service: BackendService.auth,
+      action: 'sign out',
+      resource: 'auth_session',
+    ),
+  );
 }
 
 @Riverpod(keepAlive: true)

@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/firestore_error_message.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 
 /// Returns a user-facing error message for a mutation in error state.
@@ -10,5 +10,5 @@ import 'package:flutter_riverpod/experimental/mutation.dart';
 /// ```
 String mutationErrorMessage(MutationState mutation) {
   if (!mutation.hasError) return '';
-  return firestoreErrorMessage((mutation as MutationError).error);
+  return appErrorMessage((mutation as MutationError).error);
 }

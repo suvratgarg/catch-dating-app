@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -14,12 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import '../test_pump_helpers.dart';
 import 'run_clubs_test_helpers.dart';
 
-CityData _cityFromEnum(IndianCity c) => CityData(
-  name: c.name,
-  label: c.label,
-  latitude: c.latitude,
-  longitude: c.longitude,
-);
+CityData _city(String name) => cityOptionByName(name)!.toCityData();
 
 RunClubMembership _membership({
   required String clubId,
@@ -41,20 +36,14 @@ void main() {
         final container = ProviderContainer();
         addTearDown(container.dispose);
 
-        expect(
-          container.read(selectedRunClubCityProvider),
-          _cityFromEnum(IndianCity.mumbai),
-        );
+        expect(container.read(selectedRunClubCityProvider), _city('mumbai'));
 
         container.read(runClubSearchQueryProvider.notifier).setQuery('stride');
         container
             .read(selectedRunClubCityProvider.notifier)
-            .setCity(_cityFromEnum(IndianCity.delhi));
+            .setCity(_city('delhi'));
 
-        expect(
-          container.read(selectedRunClubCityProvider),
-          _cityFromEnum(IndianCity.delhi),
-        );
+        expect(container.read(selectedRunClubCityProvider), _city('delhi'));
         expect(container.read(runClubSearchQueryProvider), isEmpty);
       },
     );
@@ -63,19 +52,13 @@ void main() {
       final container = ProviderContainer();
       addTearDown(container.dispose);
 
-      expect(
-        container.read(selectedRunClubCityProvider),
-        _cityFromEnum(IndianCity.mumbai),
-      );
+      expect(container.read(selectedRunClubCityProvider), _city('mumbai'));
 
       container
           .read(selectedRunClubCityProvider.notifier)
-          .autoSelectCity(_cityFromEnum(IndianCity.delhi));
+          .autoSelectCity(_city('delhi'));
 
-      expect(
-        container.read(selectedRunClubCityProvider),
-        _cityFromEnum(IndianCity.delhi),
-      );
+      expect(container.read(selectedRunClubCityProvider), _city('delhi'));
     });
 
     test('autoSelectCity does not override a manual city choice', () {
@@ -84,19 +67,13 @@ void main() {
 
       container
           .read(selectedRunClubCityProvider.notifier)
-          .setCity(_cityFromEnum(IndianCity.bangalore));
-      expect(
-        container.read(selectedRunClubCityProvider),
-        _cityFromEnum(IndianCity.bangalore),
-      );
+          .setCity(_city('bangalore'));
+      expect(container.read(selectedRunClubCityProvider), _city('bangalore'));
 
       container
           .read(selectedRunClubCityProvider.notifier)
-          .autoSelectCity(_cityFromEnum(IndianCity.mumbai));
-      expect(
-        container.read(selectedRunClubCityProvider),
-        _cityFromEnum(IndianCity.bangalore),
-      );
+          .autoSelectCity(_city('mumbai'));
+      expect(container.read(selectedRunClubCityProvider), _city('bangalore'));
     });
 
     test('setCity clears search query while autoSelectCity also clears it', () {
@@ -106,7 +83,7 @@ void main() {
       container.read(runClubSearchQueryProvider.notifier).setQuery('stride');
       container
           .read(selectedRunClubCityProvider.notifier)
-          .autoSelectCity(_cityFromEnum(IndianCity.delhi));
+          .autoSelectCity(_city('delhi'));
 
       expect(container.read(runClubSearchQueryProvider), isEmpty);
     });
@@ -146,6 +123,10 @@ void main() {
           id: 'discover-club',
           hostUserId: 'host-3',
         );
+        final hostedClub = buildRunClub(
+          id: 'hosted-club',
+          hostUserId: 'runner-1',
+        );
 
         final container = ProviderContainer(
           overrides: [
@@ -158,8 +139,13 @@ void main() {
                 _membership(clubId: 'followed-club'),
               ]),
             ),
-            watchRunClubsByLocationProvider(IndianCity.mumbai).overrideWith(
-              (ref) => Stream.value([memberClub, followedClub, discoverClub]),
+            watchRunClubsByLocationProvider('mumbai').overrideWith(
+              (ref) => Stream.value([
+                memberClub,
+                followedClub,
+                discoverClub,
+                hostedClub,
+              ]),
             ),
           ],
         );
@@ -179,13 +165,19 @@ void main() {
         expect(viewModel.joinedClubs.map((club) => club.id), [
           'member-club',
           'followed-club',
+          'hosted-club',
         ]);
         expect(viewModel.allClubs.map((club) => club.id), [
           'member-club',
           'followed-club',
           'discover-club',
+          'hosted-club',
         ]);
-        expect(viewModel.joinedClubIds, {'member-club', 'followed-club'});
+        expect(viewModel.joinedClubIds, {
+          'member-club',
+          'followed-club',
+          'hosted-club',
+        });
       },
     );
 
@@ -201,7 +193,7 @@ void main() {
         final container = ProviderContainer(
           overrides: [
             watchRunClubsByLocationProvider(
-              IndianCity.mumbai,
+              'mumbai',
             ).overrideWith((ref) => Stream.value([bandraClub, ashaClub])),
           ],
         );

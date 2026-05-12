@@ -30,70 +30,101 @@ class ChatListTile extends StatelessWidget {
     return CatchSurface(
       onTap: onTap,
       tone: CatchSurfaceTone.surface,
-      borderColor: t.line,
+      backgroundColor: hasUnread ? t.primarySoft : null,
+      borderColor: hasUnread ? t.primary.withValues(alpha: 0.36) : t.line,
       radius: CatchRadius.md,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      padding: EdgeInsets.zero,
+      clipBehavior: Clip.antiAlias,
+      child: Stack(
         children: [
-          _ChatAvatar(
-            name: preview.displayName,
-            photoUrl: preview.photoUrl,
-            unreadCount: unreadCount,
-          ),
-          const SizedBox(width: CatchSpacing.s3),
-          Expanded(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
+          if (hasUnread)
+            Positioned(
+              left: 0,
+              top: 0,
+              bottom: 0,
+              width: 4,
+              child: ColoredBox(
+                color: t.primary,
+                child: const SizedBox.expand(),
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.all(CatchSpacing.s3),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: Text(
-                        preview.displayName,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: CatchTextStyles.titleM(context).copyWith(
-                          fontWeight: hasUnread
-                              ? FontWeight.w700
-                              : FontWeight.w600,
-                        ),
+                PersonAvatar(
+                  size: 60,
+                  name: preview.displayName,
+                  imageUrl: preview.photoUrl,
+                  borderWidth: hasUnread ? 2 : 0,
+                  borderColor: hasUnread ? t.primary : null,
+                ),
+                const SizedBox(width: CatchSpacing.s3),
+                Expanded(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              preview.displayName,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: CatchTextStyles.titleM(context).copyWith(
+                                fontWeight: hasUnread
+                                    ? FontWeight.w800
+                                    : FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: CatchSpacing.s2),
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _formatTime(preview.timestamp),
+                                  style:
+                                      CatchTextStyles.bodyS(
+                                        context,
+                                        color: hasUnread ? t.primary : t.ink2,
+                                      ).copyWith(
+                                        fontWeight: hasUnread
+                                            ? FontWeight.w800
+                                            : FontWeight.w500,
+                                      ),
+                                ),
+                                if (hasUnread) ...[
+                                  const SizedBox(width: CatchSpacing.s2),
+                                  _UnreadCountPill(count: unreadCount),
+                                ],
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                    const SizedBox(width: CatchSpacing.s2),
-                    Padding(
-                      padding: const EdgeInsets.only(top: 2),
-                      child: Text(
-                        _formatTime(preview.timestamp),
+                      const SizedBox(height: CatchSpacing.s1),
+                      Text(
+                        preview.previewText,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                         style:
                             CatchTextStyles.bodyS(
                               context,
-                              color: hasUnread ? t.primary : t.ink2,
+                              color: hasUnread ? t.ink : t.ink2,
                             ).copyWith(
                               fontWeight: hasUnread
                                   ? FontWeight.w700
-                                  : FontWeight.w500,
+                                  : FontWeight.w400,
                             ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: CatchSpacing.s1),
-                Text(
-                  preview.previewText,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      CatchTextStyles.bodyS(
-                        context,
-                        color: hasUnread ? t.ink : t.ink2,
-                      ).copyWith(
-                        fontWeight: hasUnread
-                            ? FontWeight.w500
-                            : FontWeight.w400,
-                      ),
+                    ],
+                  ),
                 ),
               ],
             ),
@@ -104,38 +135,24 @@ class ChatListTile extends StatelessWidget {
   }
 }
 
-class _ChatAvatar extends StatelessWidget {
-  const _ChatAvatar({
-    required this.name,
-    required this.photoUrl,
-    required this.unreadCount,
-  });
+class _UnreadCountPill extends StatelessWidget {
+  const _UnreadCountPill({required this.count});
 
-  final String name;
-  final String? photoUrl;
-  final int unreadCount;
+  final int count;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox.square(
-      dimension: 64,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Center(
-            child: PersonAvatar(size: 60, name: name, imageUrl: photoUrl),
-          ),
-          if (unreadCount > 0)
-            Positioned(
-              top: 0,
-              right: -2,
-              child: CatchBadge(
-                label: '$unreadCount',
-                tone: CatchBadgeTone.warning,
-                size: CatchBadgeSize.sm,
-              ),
-            ),
-        ],
+    final t = CatchTokens.of(context);
+    final label = count > 99 ? '99+' : '$count';
+
+    return Semantics(
+      label: '$label unread messages',
+      child: CatchBadge(
+        label: label,
+        tone: CatchBadgeTone.brand,
+        backgroundColor: t.primary,
+        foregroundColor: t.primaryInk,
+        borderColor: Colors.transparent,
       ),
     );
   }

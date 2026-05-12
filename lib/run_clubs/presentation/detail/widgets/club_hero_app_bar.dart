@@ -1,9 +1,13 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/shared/run_club_cover_fallback.dart';
@@ -135,7 +139,7 @@ class ClubHeroAppBar extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        club.location.label,
+                        cityLabel(club.location),
                         style: const TextStyle(
                           fontSize: 13,
                           color: Colors.white70,
@@ -177,15 +181,35 @@ Future<void> shareRunClub(
   try {
     await share.shareText(
       text:
-          'Check out ${club.name}, a run club in ${club.area}, ${club.location.label}: ${uri.toString()}',
+          'Check out ${club.name}, a run club in ${club.area}, ${cityLabel(club.location)}: ${uri.toString()}',
       subject: club.name,
       origin: origin,
     );
-  } on Object catch (error, stack) {
-    debugPrint('[ERROR] ClubHeroAppBar share failed: $error\n$stack');
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Could not open share sheet.')),
+  } on Object catch (error, stackTrace) {
+    final actionError = ExternalActionException(
+      'Failed to share run club',
+      cause: error,
+      stackTrace: stackTrace,
     );
+
+    if (context.mounted) {
+      ProviderScope.containerOf(context, listen: false)
+          .read(errorLoggerProvider)
+          .logAppException(
+            normalizeBackendError(
+              actionError,
+              stackTrace: stackTrace,
+              context: const BackendErrorContext(
+                service: BackendService.external,
+                action: 'share run club',
+                resource: 'share_sheet',
+              ),
+            ),
+          );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open share sheet.')),
+      );
+    }
   }
 }

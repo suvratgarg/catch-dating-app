@@ -435,7 +435,7 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byType(PhotoGrid), findsOneWidget);
-    expect(find.text('On a perfect run'), findsOneWidget);
+    expect(_profileInfoTile('Bio'), findsOneWidget);
   });
 
   testWidgets(
@@ -464,13 +464,7 @@ void main() {
       expect(find.text('Name'), findsNothing);
       expect(dobTile.onTap, isNull);
       expect(genderTile.onTap, isNull);
-      expect(
-        tester
-            .widgetList<ProfileInfoTile>(find.byType(ProfileInfoTile))
-            .first
-            .label,
-        'Display name',
-      );
+      expect(_profileInfoTile('Bio'), findsOneWidget);
 
       final instagramTile = tester.widget<ProfileInfoTile>(
         _profileInfoTile('Instagram'),
@@ -684,6 +678,44 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('bio edit uses the profile row-owned multiline inline editor', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final bioTile = _profileInfoTile('Bio');
+    await tester.tap(bioTile);
+    await _pumpProfileSheet(tester);
+
+    expect(
+      find.descendant(
+        of: bioTile,
+        matching: find.byType(ProfileInlineEditableText),
+      ),
+      findsOneWidget,
+    );
+    final bioField = tester.widget<ProfileInlineEditableText>(
+      find.descendant(
+        of: bioTile,
+        matching: find.byType(ProfileInlineEditableText),
+      ),
+    );
+    expect(bioField.maxLines, 4);
+    expect(bioField.minLines, 3);
+
+    await tester.enterText(
+      find.descendant(of: bioTile, matching: find.byType(EditableText)),
+      ' Updated bio ',
+    );
+    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _pumpProfileSheet(tester);
+
+    expect(repository.updatedFields, {'bio': 'Updated bio'});
+    expect(find.byType(ProfileInlineEditableText), findsNothing);
+  });
+
   testWidgets('inline email edit uses the email keyboard', (tester) async {
     final user = buildUser(name: 'Suvrat Garg', email: 'runner@example.com');
     await _pumpProfileTab(tester, user);
@@ -767,15 +799,41 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    await tester.tap(find.text('Here for the run.'));
+    final bioTile = _profileInfoTile('Bio');
+    await tester.tap(bioTile);
     await _pumpProfileSheet(tester);
-    await tester.enterText(find.byType(CatchTextField), 'Updated bio');
+    await tester.enterText(
+      find.descendant(of: bioTile, matching: find.byType(EditableText)),
+      'Updated bio',
+    );
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
     await _pumpProfileSheet(tester);
 
     expect(repository.updatedFields, {'bio': 'Updated bio'});
-    expect(find.byType(CatchTextField), findsOneWidget);
+    expect(find.byType(ProfileInlineEditableText), findsOneWidget);
     expect(find.textContaining('Save failed'), findsOneWidget);
+  });
+
+  testWidgets('bio edit validates against callable length limit', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final bioTile = _profileInfoTile('Bio');
+    await tester.tap(bioTile);
+    await _pumpProfileSheet(tester);
+    await tester.enterText(
+      find.descendant(of: bioTile, matching: find.byType(EditableText)),
+      'a' * 2001,
+    );
+    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await tester.pump();
+
+    expect(repository.updatedFields, isNull);
+    expect(find.text('Bio must be 2000 characters or fewer'), findsOneWidget);
+    expect(find.byType(ProfileInlineEditableText), findsOneWidget);
   });
 
   testWidgets('text edit waits for save before closing', (tester) async {
@@ -784,14 +842,18 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    await tester.tap(find.text('Here for the run.'));
+    final bioTile = _profileInfoTile('Bio');
+    await tester.tap(bioTile);
     await _pumpProfileSheet(tester);
-    await tester.enterText(find.byType(CatchTextField), 'Updated bio');
+    await tester.enterText(
+      find.descendant(of: bioTile, matching: find.byType(EditableText)),
+      'Updated bio',
+    );
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
     await tester.pump();
 
     expect(repository.updatedFields, {'bio': 'Updated bio'});
-    expect(find.byType(CatchTextField), findsOneWidget);
+    expect(find.byType(ProfileInlineEditableText), findsOneWidget);
     expect(
       tester.widget<CatchButton>(find.byType(CatchButton)).isLoading,
       isTrue,
@@ -800,7 +862,7 @@ void main() {
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
 
-    expect(find.byType(CatchTextField), findsNothing);
+    expect(find.byType(ProfileInlineEditableText), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -1230,6 +1292,7 @@ class FakeProfileEditUserProfileRepository extends Fake
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
+    String action = 'update_profile',
   }) async {
     updatedUid = uid;
     updatedFields = Map<String, dynamic>.from(fields);

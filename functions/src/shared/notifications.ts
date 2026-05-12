@@ -33,6 +33,11 @@ interface ActivityNotificationParams {
   runClubId?: string;
   actorUid?: string;
   actorName?: string;
+  demoOps?: boolean;
+  demoOpsId?: string;
+  demoOpsCommand?: string;
+  seedPrefix?: string;
+  synthetic?: boolean;
 }
 
 export type NotificationPreference =
@@ -250,6 +255,13 @@ function activityNotificationData(
       runClubId: params.runClubId,
       actorUid: params.actorUid,
       actorName: params.actorName,
+      demoOpsId: params.demoOpsId,
+      demoOpsCommand: params.demoOpsCommand,
+      seedPrefix: params.seedPrefix,
+    }),
+    ...compactBooleanMap({
+      demoOps: params.demoOps,
+      synthetic: params.synthetic,
     }),
   };
 }
@@ -265,6 +277,21 @@ function compactStringMap(
   return Object.fromEntries(
     Object.entries(value).filter((entry): entry is [string, string] =>
       typeof entry[1] === "string" && entry[1].length > 0
+    )
+  );
+}
+
+/**
+ * Removes undefined optional boolean values before writing Firestore data.
+ * @param {Record<string, boolean | undefined>} value Raw boolean map.
+ * @return {Record<string, boolean>} Map containing only booleans.
+ */
+function compactBooleanMap(
+  value: Record<string, boolean | undefined>
+): Record<string, boolean> {
+  return Object.fromEntries(
+    Object.entries(value).filter((entry): entry is [string, boolean] =>
+      typeof entry[1] === "boolean"
     )
   );
 }

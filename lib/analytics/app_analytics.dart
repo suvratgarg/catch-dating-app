@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
@@ -108,18 +109,25 @@ class AppAnalytics {
     unawaited(_reporter.setUserId(userId));
   }
 
-  /// Logs a Firestore write failure so we can track permission-denied,
-  /// network, and quota errors in dashboards alongside Crashlytics.
-  void logFirestoreWriteFailed({
-    required String collection,
-    required String action,
+  /// Logs a normalized backend failure with non-PII operation context.
+  void logBackendOperationFailed({
+    required BackendErrorContext context,
     required String errorCode,
+    required bool retryable,
+    required AppErrorSeverity severity,
   }) {
-    logEvent(AnalyticsEvents.firestoreWriteFailed, parameters: {
-      AnalyticsParameters.firestoreCollection: collection,
-      AnalyticsParameters.firestoreAction: action,
-      AnalyticsParameters.firestoreErrorCode: errorCode,
-    });
+    logEvent(
+      AnalyticsEvents.backendOperationFailed,
+      parameters: {
+        AnalyticsParameters.backendService: context.service.label,
+        AnalyticsParameters.backendAction: context.action,
+        AnalyticsParameters.backendResource: context.resource,
+        AnalyticsParameters.backendErrorCode: errorCode,
+        AnalyticsParameters.backendRetryable: retryable,
+        AnalyticsParameters.backendSeverity: severity.name,
+        ...context.metadata,
+      },
+    );
   }
 
   static String _validateEventName(String name) {
@@ -194,7 +202,7 @@ abstract final class AnalyticsEvents {
   static const matchViewed = 'match_viewed';
   static const chatMessageSent = 'chat_message_sent';
   static const profileEdited = 'profile_edited';
-  static const firestoreWriteFailed = 'firestore_write_failed';
+  static const backendOperationFailed = 'backend_operation_failed';
 }
 
 abstract final class AnalyticsParameters {
@@ -208,8 +216,11 @@ abstract final class AnalyticsParameters {
   static const runId = 'run_id';
   static const matchId = 'match_id';
 
-  // Firestore error context
-  static const firestoreCollection = 'firestore_collection';
-  static const firestoreAction = 'firestore_action';
-  static const firestoreErrorCode = 'firestore_error_code';
+  // Backend error context. Values must be non-PII.
+  static const backendService = 'backend_service';
+  static const backendAction = 'backend_action';
+  static const backendResource = 'backend_resource';
+  static const backendErrorCode = 'backend_error_code';
+  static const backendRetryable = 'backend_retryable';
+  static const backendSeverity = 'backend_severity';
 }

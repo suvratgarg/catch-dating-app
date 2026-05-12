@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/safety/domain/blocked_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -20,54 +21,77 @@ class SafetyRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Stream<List<BlockedUser>> watchBlockedUsers({required String uid}) => _db
-      .collection('blocks')
-      .where('blockerUserId', isEqualTo: uid)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map(
-        (snap) => snap.docs
-            .map((doc) => BlockedUser.fromFirestore(doc.data()))
-            .toList(),
+  Stream<List<BlockedUser>> watchBlockedUsers({required String uid}) =>
+      withBackendErrorStream(
+        () => _db
+            .collection('blocks')
+            .where('blockerUserId', isEqualTo: uid)
+            .orderBy('createdAt', descending: true)
+            .snapshots()
+            .map(
+              (snap) => snap.docs
+                  .map((doc) => BlockedUser.fromFirestore(doc.data()))
+                  .toList(),
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch blocked users',
+          resource: 'blocks',
+        ),
       );
 
-  Future<Set<String>> fetchBlockedUserIds({required String uid}) async {
-    final outgoing = await _db
-        .collection('blocks')
-        .where('blockerUserId', isEqualTo: uid)
-        .get();
-    final incoming = await _db
-        .collection('blocks')
-        .where('blockedUserId', isEqualTo: uid)
-        .get();
+  Future<Set<String>> fetchBlockedUserIds({
+    required String uid,
+  }) => withBackendErrorContext(
+    () async {
+      final outgoing = await _db
+          .collection('blocks')
+          .where('blockerUserId', isEqualTo: uid)
+          .get();
+      final incoming = await _db
+          .collection('blocks')
+          .where('blockedUserId', isEqualTo: uid)
+          .get();
 
-    return {
-      ...outgoing.docs.map((doc) => doc.data()['blockedUserId'] as String),
-      ...incoming.docs.map((doc) => doc.data()['blockerUserId'] as String),
-    };
-  }
+      return {
+        ...outgoing.docs.map((doc) => doc.data()['blockedUserId'] as String),
+        ...incoming.docs.map((doc) => doc.data()['blockerUserId'] as String),
+      };
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch blocked users',
+      resource: 'blocks',
+    ),
+  );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> blockUser({
     required String targetUserId,
     String source = 'profile',
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () => _functions.httpsCallable('blockUser').call({
       'targetUserId': targetUserId,
       'source': source,
     }),
-    collection: 'blocks',
-    action: 'block user',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'block user',
+      resource: 'blocks',
+    ),
   );
 
   Future<void> unblockUser({required String targetUserId}) =>
-      withFirestoreErrorContext(
+      withBackendErrorContext(
         () => _functions.httpsCallable('unblockUser').call({
           'targetUserId': targetUserId,
         }),
-        collection: 'blocks',
-        action: 'unblock user',
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'unblock user',
+          resource: 'blocks',
+        ),
       );
 
   Future<void> reportUser({
@@ -76,7 +100,7 @@ class SafetyRepository {
     String? reasonCode,
     String? contextId,
     String? notes,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () => _functions.httpsCallable('reportUser').call({
       'targetUserId': targetUserId,
       'source': source,
@@ -84,17 +108,23 @@ class SafetyRepository {
       'contextId': ?contextId,
       'notes': ?notes,
     }),
-    collection: 'reports',
-    action: 'report user',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'report user',
+      resource: 'reports',
+    ),
   );
 
-  Future<void> requestAccountDeletion() => withFirestoreErrorContext(
+  Future<void> requestAccountDeletion() => withBackendErrorContext(
     () async {
       await _functions.httpsCallable('requestAccountDeletion').call<void>();
       await _auth.signOut();
     },
-    collection: 'users',
-    action: 'request account deletion',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'request account deletion',
+      resource: 'users',
+    ),
   );
 }
 

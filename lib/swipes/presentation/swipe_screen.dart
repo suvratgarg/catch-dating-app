@@ -114,8 +114,12 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                         8,
                       ),
                       child: CardSwiper(
+                        key: ValueKey(
+                          profiles.map((profile) => profile.uid).join('|'),
+                        ),
                         controller: _controller,
                         cardsCount: profiles.length,
+                        numberOfCardsDisplayed: profiles.length.clamp(1, 3),
                         onSwipe: _onSwipe,
                         allowedSwipeDirection: const AllowedSwipeDirection.only(
                           left: true,
@@ -127,22 +131,28 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                               index,
                               horizontalOffsetPercentage,
                               verticalOffsetPercentage,
-                            ) => Semantics(
-                              button: true,
-                              label: 'Open ${profiles[index].name} profile',
-                              child: GestureDetector(
-                                onTap: () => context.pushNamed(
-                                  Routes.publicProfileScreen.name,
-                                  pathParameters: {'uid': profiles[index].uid},
-                                  extra: profiles[index],
+                            ) {
+                              if (index >= profiles.length) {
+                                return const SizedBox.shrink();
+                              }
+                              final profile = profiles[index];
+                              return Semantics(
+                                button: true,
+                                label: 'Open ${profile.name} profile',
+                                child: GestureDetector(
+                                  onTap: () => context.pushNamed(
+                                    Routes.publicProfileScreen.name,
+                                    pathParameters: {'uid': profile.uid},
+                                    extra: profile,
+                                  ),
+                                  child: ProfileCard(
+                                    profile: profile,
+                                    horizontalOffsetPercentage:
+                                        horizontalOffsetPercentage,
+                                  ),
                                 ),
-                                child: ProfileCard(
-                                  profile: profiles[index],
-                                  horizontalOffsetPercentage:
-                                      horizontalOffsetPercentage,
-                                ),
-                              ),
-                            ),
+                              );
+                            },
                       ),
                     ),
                   ),

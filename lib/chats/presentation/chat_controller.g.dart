@@ -56,7 +56,7 @@ final class ChatControllerProvider
   }
 }
 
-String _$chatControllerHash() => r'27bb07f30b6528af4270deadb49073e39f5f9aed';
+String _$chatControllerHash() => r'f4236de86033f46422c04ef3f3673f823da145ae';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
@@ -81,51 +81,3 @@ abstract class _$ChatController extends $Notifier<void> {
     element.handleCreate(ref, build);
   }
 }
-
-@ProviderFor(chatUnreadResetter)
-final chatUnreadResetterProvider = ChatUnreadResetterProvider._();
-
-final class ChatUnreadResetterProvider
-    extends
-        $FunctionalProvider<
-          ChatUnreadResetter,
-          ChatUnreadResetter,
-          ChatUnreadResetter
-        >
-    with $Provider<ChatUnreadResetter> {
-  ChatUnreadResetterProvider._()
-    : super(
-        from: null,
-        argument: null,
-        retry: null,
-        name: r'chatUnreadResetterProvider',
-        isAutoDispose: true,
-        dependencies: null,
-        $allTransitiveDependencies: null,
-      );
-
-  @override
-  String debugGetCreateSourceHash() => _$chatUnreadResetterHash();
-
-  @$internal
-  @override
-  $ProviderElement<ChatUnreadResetter> $createElement(
-    $ProviderPointer pointer,
-  ) => $ProviderElement(pointer);
-
-  @override
-  ChatUnreadResetter create(Ref ref) {
-    return chatUnreadResetter(ref);
-  }
-
-  /// {@macro riverpod.override_with_value}
-  Override overrideWithValue(ChatUnreadResetter value) {
-    return $ProviderOverride(
-      origin: this,
-      providerOverride: $SyncValueProvider<ChatUnreadResetter>(value),
-    );
-  }
-}
-
-String _$chatUnreadResetterHash() =>
-    r'ff424538592002dccc8574c33393a4ddee490091';
