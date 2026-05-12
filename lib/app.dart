@@ -16,6 +16,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+typedef ForceUpdateRefresh =
+    Future<void> Function(
+      WidgetRef ref, {
+      required bool invalidatePackageInfo,
+      bool Function()? shouldInvalidate,
+    });
+
+@visibleForTesting
+final forceUpdateRefreshProvider = Provider<ForceUpdateRefresh>(
+  (ref) => _refreshForceUpdateGate,
+);
+
 class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
@@ -72,7 +84,12 @@ class MyApp extends ConsumerWidget {
       return _ForceUpdateCheckErrorScreen(
         error: forceUpdate.error,
         onRetry: () {
-          unawaited(_refreshForceUpdateGate(ref, invalidatePackageInfo: true));
+          unawaited(
+            ref.read(forceUpdateRefreshProvider)(
+              ref,
+              invalidatePackageInfo: true,
+            ),
+          );
         },
       );
     }
@@ -113,7 +130,7 @@ class _ForceUpdateLifecycleWrapperState
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
       unawaited(
-        _refreshForceUpdateGate(
+        widget.ref.read(forceUpdateRefreshProvider)(
           widget.ref,
           invalidatePackageInfo: false,
           shouldInvalidate: () => mounted,

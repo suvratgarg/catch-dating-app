@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.55
+version: 2.5.56
 updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,21 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.56
+
+- Platform chrome is now adaptive for the high-visibility native surfaces:
+  `AppShell` uses `CupertinoTabBar` with Cupertino icons on iOS and Material
+  `NavigationBar` elsewhere; `CatchTopBarTabBar` uses
+  `CupertinoSlidingSegmentedControl` on iOS and Material `TabBar` elsewhere.
+- Date/time selection must go through `showCatchDatePicker` and
+  `showCatchTimePicker` so iOS gets bottom-wheel Cupertino pickers while
+  Android keeps Material calendar/clock pickers.
+- Confirmation dialogs must go through `showCatchAdaptiveDialog` or wrappers
+  such as `showConfirmDangerDialog` so iOS gets `CupertinoAlertDialog` and
+  Android keeps Material dialogs. Snackbars, the offline `MaterialBanner`, and
+  content-heavy Catch bottom sheets remain separate app-notification/sheet
+  conventions for a future platform pass.
 
 ### 2.5.55
 
@@ -894,14 +909,14 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `AppShell` | `lib/core/presentation/app_shell.dart:33` | Main tab shell with a `NavigationBar` (Home, Clubs, Catches, Chats, Profile). Watches provider-backed connectivity for the offline banner, initializes FCM through `appShellFcmInitializationProvider`, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics user ID synced with auth state. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
+| `AppShell` | `lib/core/presentation/app_shell.dart:34` | Main tab shell with adaptive bottom navigation (Home, Clubs, Catches, Chats, Profile): Material `NavigationBar` on Android/non-iOS platforms and `CupertinoTabBar` on iOS. Watches provider-backed connectivity for the offline banner, initializes FCM through `appShellFcmInitializationProvider`, exposes active-tab state through `AppShellActiveTab`, and keeps Crashlytics user ID synced with auth state. Shell-level streams stay limited to shell-wide UI such as auth, connectivity, FCM, and unread badges. |
 
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
 | `AppShellActiveTab` | `lib/core/presentation/app_shell_active_tab.dart:9` | Inherited lifecycle signal for indexed-stack tabs. Lets retained tab branches detect whether they are currently selected without coupling feature screens directly to `StatefulNavigationShell`. |
-| `_AppShellNavigationBar` | `lib/core/presentation/app_shell.dart:101` | Private bottom-navigation wrapper with stable key and unread chat badge handling. |
+| `_AppShellNavigationBar` | `lib/core/presentation/app_shell.dart:102` | Private adaptive bottom-navigation wrapper with stable key and unread chat badge handling. Uses Cupertino tab-bar chrome/icons on iOS and Material 3 navigation chrome elsewhere. |
 | `_ConnectivityBanner` | `lib/core/presentation/app_shell.dart:165` | Inline keyed `MaterialBanner` shown at the top of the shell when provider-backed connectivity reports offline. |
 | `_RouterLoadingScreen` | `lib/routing/go_router.dart:438` | Minimal scaffold with `CatchLoadingIndicator` shown during route-level async data resolution. |
 
@@ -935,7 +950,9 @@ Generated 2026-05-06.
 | `CatchNumberStepper` | `lib/core/widgets/catch_number_stepper.dart:6` | Canonical numeric +/- stepper. Renders the shared raised surface, compact add/remove buttons, centered mono value, optional min/max/step clamping, and feature-specific value formatting. Used by Create Run duration and Edit Profile height. |
 | `CatchRangeSlider` | `lib/core/widgets/catch_range_slider.dart:7` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. Supports optional min/max endpoint labels for fixed slider bounds. |
 | `CatchTopBar` | `lib/core/widgets/catch_top_bar.dart:11` | Canonical top-bar. Renders a surface-fill bar with an optional back button (auto-detected from `Navigator.canPop`), title, leading widget, and action slots. Also supports a `bottom` `PreferredSizeWidget` (e.g., `TabBar`). Implements `PreferredSizeWidget` for use as an `AppBar`. |
-| `CatchTopBarTabBar` | `lib/core/widgets/catch_top_bar.dart:132` | Catch-styled `TabBar` for use inside `CatchTopBar.bottom` or sticky sliver headers. Uses `primary` indicator color and `labelL` text styles, implements `PreferredSizeWidget`, and accepts an optional explicit `TabController` for sliver-native tab rows that are not inside a `DefaultTabController`. |
+| `CatchTopBarTabBar` | `lib/core/widgets/catch_top_bar.dart:133` | Adaptive top-tab primitive for use inside `CatchTopBar.bottom` or sticky sliver headers. Uses Material `TabBar` with primary indicator on Android/non-iOS platforms and `CupertinoSlidingSegmentedControl` on iOS. Implements `PreferredSizeWidget` and accepts an optional explicit `TabController` for sliver-native tab rows that are not inside a `DefaultTabController`. |
+| `showCatchAdaptiveDialog<T>` | `lib/core/widgets/catch_adaptive_dialog.dart:18` | Shared platform-adaptive confirmation/dialog helper. Renders `CupertinoAlertDialog` on iOS and Material `AlertDialog` elsewhere, with typed action values plus default/destructive action metadata. |
+| `showCatchDatePicker` / `showCatchTimePicker` | `lib/core/widgets/catch_adaptive_picker.dart:7` | Shared platform-adaptive date/time picker helpers. iOS renders bottom-wheel `CupertinoDatePicker` sheets with Cancel/Done toolbar; Android/non-iOS platforms keep Flutter's Material calendar and clock pickers. |
 | `CatchSliverHeader` | `lib/core/widgets/catch_top_bar.dart:290` | Shared sliver header primitive. Builds a scroll-away title and optional pinned bottom row; the title translates upward as it collapses so sticky search/filter/tab rows do not visually cover it. Use `twoLineTitleHeight` for short title/subtitle headers, `wrappedTitleHeight` only when long titles need the extra space, and the shared search-row spacing constants before adding feature-local search/list gap math. Used by Run Clubs, Chats, and Profile. |
 | `CatchTopBarMenuAction<T>` | `lib/core/widgets/catch_top_bar.dart:156` | Overflow menu action for `CatchTopBar`. Renders a `PopupMenuButton<T>` wrapped in an `IconBtn`. |
 | `CatchTopBarIconAction` | `lib/core/widgets/catch_top_bar.dart:189` | Icon-only action button for `CatchTopBar` actions. Renders a tooltip-wrapped `IconBtn`. |
@@ -1476,7 +1493,7 @@ Generated 2026-05-06.
 | `_SettingsSection` | `lib/safety/presentation/settings_screen.dart:420` | Private section helper that pairs a `SectionHeader` with the shared settings card shell. |
 | `_SettingsCard` | `lib/safety/presentation/settings_screen.dart:438` | Private `CatchSurface` wrapper for settings row groups. |
 | `SettingsKeys` | `lib/safety/presentation/settings_keys.dart:3` | Stable semantic keys for account action rows, settings switches, delete-account row, and blocked-user unblock buttons. |
-| `showConfirmDangerDialog` | `lib/core/widgets/confirm_danger_dialog.dart:4` | Shared destructive confirmation dialog helper used by safety/account actions such as block and delete-account confirmations. |
+| `showConfirmDangerDialog` | `lib/core/widgets/confirm_danger_dialog.dart:4` | Shared destructive confirmation dialog helper used by safety/account actions such as block and delete-account confirmations. Delegates to `showCatchAdaptiveDialog` so iOS gets Cupertino alert chrome and Android/non-iOS platforms keep Material alert chrome. |
 
 ---
 

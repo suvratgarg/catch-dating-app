@@ -5,8 +5,15 @@ void showCatchErrorSnackBar(
   BuildContext context,
   Object error, {
   AppErrorContext errorContext = AppErrorContext.generic,
+  VoidCallback? onRetry,
 }) {
+  final descriptor = appErrorDescriptor(error, context: errorContext);
   ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(content: Text(appErrorMessage(error, context: errorContext))),
+    SnackBar(
+      content: Text(descriptor.message),
+      action: onRetry != null && descriptor.retryable
+          ? SnackBarAction(label: descriptor.retryLabel, onPressed: onRetry)
+          : null,
+    ),
   );
 }

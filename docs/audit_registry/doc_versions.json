@@ -8,21 +8,21 @@
   },
   "audit_backlog": {
     "path": "docs/audit_registry/backlog.json",
-    "version": "2.4.0",
+    "version": "2.6.0",
     "updated": "2026-05-12",
     "status": "active",
-    "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, and documentation hygiene follow-up."
+    "read_policy": "Use for active backlog, next-up order, stable debt ids, scanner counts, app-wide error-management follow-up, and documentation hygiene follow-up."
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "3.0.0",
+    "version": "3.0.2",
     "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "3.0.0",
+    "version": "3.0.2",
     "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
@@ -50,17 +50,17 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "3.0.0",
+    "version": "3.0.1",
     "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
   "error_handling_audit": {
     "path": "docs/error-handling-audit.md",
-    "version": "2.4.0",
+    "version": "2.6.0",
     "updated": "2026-05-12",
     "status": "active",
-    "read_policy": "Use as the current backend error-management source of truth, migration checklist, app error catalogue, naming convention, and branded error surface guidance; refresh with dart tool/backend_error_candidates.dart before new backend error work."
+    "read_policy": "Use as the current app-wide error-management source of truth, backend migration checklist, frontend/local error-management playbook, app error catalogue, descriptor contract, naming convention, and branded error surface guidance; refresh with dart tool/backend_error_candidates.dart before new backend error work and create the app-wide scanner before frontend/local migration."
   },
   "firestore_contract_tracker": {
     "path": "docs/firestore_functions_data_contract_tracker.md",
@@ -113,7 +113,7 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.55",
+    "version": "2.5.56",
     "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."

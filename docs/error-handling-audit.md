@@ -1,6 +1,6 @@
 ---
 doc_id: error_handling_audit
-version: 2.4.0
+version: 2.6.0
 updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
@@ -14,13 +14,284 @@ status: active
 
 ## Read Policy
 
-Use this as the backend error-management source of truth, migration checklist,
+Use this as the app-wide error-management source of truth, migration checklist,
 error catalogue, and remediation map. Re-run
-`dart tool/backend_error_candidates.dart` before backend error work. Stamp files
-reviewed against this doc in the audit registry rather than copying findings
-into new trackers.
+`dart tool/backend_error_candidates.dart` before backend error work. Before the
+next migration pass, add an app-wide scanner for frontend/local/provider error
+surfaces and keep its to-do list in the audit registry rather than copying
+findings into new trackers. Stamp files reviewed against this doc in the audit
+registry.
 
 ## Current State of Truth
+
+### 2026-05-12: App-Wide Error Management Playbook
+
+The backend hard migration fixed the most obvious weak point, but a first-class
+error system is broader than Firebase service wrapping. It needs one app-level
+contract for all failures that a user, developer, tester, or release dashboard
+needs to understand.
+
+Research anchors used for this playbook:
+
+- Flutter's error handling guide separates Flutter framework callback/build
+  errors from asynchronous errors that Flutter does not catch automatically:
+  https://docs.flutter.dev/testing/errors
+- Firebase Crashlytics for Flutter recommends wiring both
+  `FlutterError.onError` and `PlatformDispatcher.instance.onError`, then using
+  caught/non-fatal reporting plus custom keys/logs/user identifiers for context:
+  https://firebase.google.com/docs/crashlytics/flutter/get-started and
+  https://firebase.google.com/docs/crashlytics/flutter/customize-crash-reports
+- Dart exceptions are unchecked, and `Error` represents programmer failures
+  that callers should not normally be expected to handle:
+  https://dart.dev/language/error-handling and
+  https://api.dart.dev/dart-core/Error-class.html
+- Riverpod exposes `AsyncValue` for data/loading/error states and
+  `ProviderObserver` for lifecycle logging/analytics/debugging:
+  https://pub.dev/documentation/riverpod/latest/riverpod/AsyncValue-class.html
+  and https://riverpod.dev/docs/concepts2/observers
+- Firebase Auth and Storage expose structured exception codes/messages, and
+  Storage documents user-cancelled, permission, retry, missing-object, quota,
+  and invalid-argument failures separately:
+  https://firebase.google.com/docs/auth/flutter/errors and
+  https://firebase.google.com/docs/storage/flutter/handle-errors
+
+#### What "first-class" means for Catch
+
+A finished Catch error-management system should cover these channels:
+
+| Channel | Examples | Required handling |
+|---|---|---|
+| Firebase backend services | Firestore, Auth, Functions, Storage, Messaging, Remote Config, App Check | Normalize vendor exceptions once at the boundary, preserve non-PII operation context, map to `AppException`, log/report with stable codes. |
+| Platform/plugin side effects | Share sheet, URL launcher, image picker, location, device permissions, app-store launches | Put behind provider/service seams, normalize expected plugin failures, treat user cancellation as low severity, log unexpected plugin bugs. |
+| Frontend validation and parsing | Form input, local draft JSON, route/deep-link params, profile/run fields, date/number parsing | Convert user-correctable failures into `ValidationException` or typed local exceptions before they reach raw UI. |
+| Domain/business rejections | Sign-in required, permission denied, already joined, not eligible, payment cancelled/failed, run booking rejected | Use typed `AppException` subclasses only when code, retry policy, analytics, or tests need stable branching. |
+| Controller/mutation failures | Riverpod mutations, multi-step flow mutations, callback-completer APIs | Let typed errors propagate to mutation state; add action context where the repository boundary cannot explain the failure. |
+| Provider/load failures | `FutureProvider`, `StreamProvider`, cached/stale refresh, empty vs error states | Render through the `CatchErrorState` family, preserve retry actions, and log provider errors centrally. |
+| Flutter framework failures | Build/layout/render exceptions, `ErrorWidget.builder` fallback | Keep a minimal `CatchFrameworkErrorView`; report through Flutter's global hooks; do not try to run normal app UI during an unstable build tree. |
+| Uncaught asynchronous failures | Timers, plugin callbacks, unawaited futures, platform dispatcher errors | Wire `PlatformDispatcher.instance.onError`, pass to `ErrorLogger`, report fatal/nonfatal according to severity. |
+| Unexpected programmer bugs | Bad state, invalid arguments, invariant violations, null/schema mismatch | Do not show raw details to users. Log/report with stack trace, show generic app copy, and turn recurring user-correctable instances into typed exceptions. |
+| Operational/release signals | Crashlytics, Analytics, console fallback, emulator tests, dashboards, alerts | Attach custom keys/logs that help triage without PII; smoke-test reporting in release-like builds. |
+
+The goal is not "catch everything everywhere." The goal is:
+
+1. Expected failures are typed, user-safe, retry-aware, and testable.
+2. Unexpected failures retain stack traces and enough context to diagnose.
+3. Every app-facing surface gets a branded error primitive instead of raw
+   `toString()` or vendor messages.
+4. Every caught error is either displayed, rethrown as a typed app error,
+   reported/logged, or intentionally documented as silent/noisy.
+5. Product-significant expected failures appear in analytics without polluting
+   Crashlytics as crashes.
+
+#### Boundary classification rules
+
+Classify low-level errors at the closest stable boundary:
+
+| Boundary | Preferred API | Notes |
+|---|---|---|
+| Firebase/backend repository call | `withBackendErrorContext` / `withBackendErrorStream` | Keep as-is for backend calls; it is the correct transport wrapper. |
+| Non-backend app operation | Future `withAppErrorContext` / `normalizeAppError` | Proposed next layer for local, platform, validation, parsing, and controller-owned failures. |
+| Form field validation | `FormField` validators plus reusable domain validators | Use inline field errors for simple per-field validation; throw only when async flow or shared business logic needs an exception. |
+| Domain guard | `requireSignedInUid`, eligibility guards, action cardinality checks | Throw typed `AppException` when the UI can recover or message the user. |
+| Provider/load state | Riverpod `AsyncValue` | Preserve `error` and `stackTrace`; render with descriptor primitives. |
+| Framework/global runtime | `FlutterError.onError`, `ErrorWidget.builder`, `PlatformDispatcher.instance.onError` | Report globally; avoid feature-level copy because the app tree may be compromised. |
+
+`BackendErrorContext` should not remain the only context concept forever. It is
+correct for Firebase/service calls, but the app also needs a more general
+operation context for frontend/local failures. The next design should either:
+
+- introduce `AppOperationContext` / `OperationErrorContext`, then let
+  `BackendErrorContext` be a backend-specialized adapter; or
+- rename the current backend context only if the migration can be done in one
+  pass without making service-specific metadata ambiguous.
+
+Do not reuse presentation `AppErrorContext` for operation logging. Presentation
+context answers "where are we showing this?" Operation context answers "what was
+the app trying to do?" They are related but not the same API.
+
+#### Exception taxonomy target
+
+Current `AppException` coverage is strongest for backend and payment flows. The
+target catalogue for an app-wide system should distinguish:
+
+| Family | Examples | Existing / target |
+|---|---|---|
+| Auth/session | signed out, expired credential, auth provider disabled, throttled OTP | Existing via `SignInRequiredException`, Auth mapper, `ValidationException`, `NetworkException`. |
+| Network/backend | offline, timeout, rate limit, permission denied, not found, backend unknown | Existing via `NetworkException`, `PermissionException`, `DocumentNotFoundException`, `BackendOperationException`. |
+| Storage/media | upload cancelled, file missing, unauthorized, retry limit, invalid file | Existing via `StorageException`; should confirm all photo/cover/image-picker failures use the same path. |
+| Payments/booking | checkout cancelled, payment failed, verification failed, booking rejected | Existing via payment/run-booking exceptions; should confirm support-oriented reporting and nonfatal severity. |
+| Validation/forms | invalid name, date, phone, age, height, route params, local payload | Partially existing through validators and `ValidationException`; needs a catalogue pass for repeated user-correctable failures. |
+| Local persistence/cache | corrupt draft, unsupported schema, local write/read failure | Target addition: local data exception family or normalized `ValidationException`/`BackendOperationException` equivalent with local service context. |
+| Navigation/deep links | malformed link, missing route id, inaccessible target, stale invite | Target addition if these become user-facing flows rather than generic not-found screens. |
+| Location/permissions | permission denied, permission permanently denied, service disabled, unavailable | Target addition when map/check-in/location failures become product-significant. |
+| External actions | share failed, URL launch failed, store link failed, picker failure | Existing `ExternalActionException`; needs candidate scan for every platform side effect. |
+| Programmer bugs | `StateError`, `ArgumentError`, assertion, schema invariant | Should remain bugs unless the user can correct the condition. Never show raw details. |
+| User cancellation | picker cancelled, upload cancelled, payment cancelled | Usually info/warning severity, often no full error surface. Must be explicit so cancellation does not look like a crash. |
+
+The rule for sealed classes remains unchanged: add a subclass only when it is a
+stable product/domain concept with branching, analytics, retry policy, audit
+value, or tests. Use mapped copy for one-off message wording.
+
+#### Descriptor and UI contract
+
+Every app-facing error should end in one descriptor contract:
+
+```
+Object error + presentation AppErrorContext
+  -> appErrorDescriptor
+     -> title
+     -> message
+     -> severity
+     -> retryable
+     -> retryLabel
+     -> icon
+     -> support/report affordance when needed
+```
+
+Surface rules:
+
+| Surface | Use when | Required behavior |
+|---|---|---|
+| `CatchErrorScaffold` | Root screen/tab cannot load | Title/message/retry from descriptor; never raw exception text. |
+| `CatchSliverErrorState` | Sliver-native load failure | Same descriptor, sliver-compatible layout. |
+| `CatchInlineErrorState` | Section/card-level failure | Compact descriptor copy and retry when retryable. |
+| `ErrorBanner.fromError` | Persistent form/mutation failure | No retry unless action exists; avoid duplicating field-level validation. |
+| `showCatchErrorSnackBar` | Transient action failure | Descriptor message and retry action if the failed action can safely rerun. |
+| Field validation error | Per-field invalid input | Specific field copy, not a snackbar or generic exception. |
+| `CatchFrameworkErrorView` | Flutter build/render failure | Minimal fallback; diagnostic details only in debug/reporting. |
+| Empty state | Successful load with zero items | Never use an error primitive for empty data. |
+
+The next pass must check that every current and future `AsyncValue` error branch,
+mutation error branch, caught snackbar, route guard, sheet/dialog failure, and
+framework fallback flows through this contract or has a documented exception.
+
+#### Reporting and observability contract
+
+Crash/reporting should be useful, not noisy:
+
+| Event type | User display | Crashlytics | Analytics | Notes |
+|---|---|---|---|---|
+| Expected validation/auth/permission | User-safe copy | Usually no crash issue; optional nonfatal only if high impact | Yes when product-significant | Avoid alert fatigue. |
+| Expected retryable backend/network | Retry copy | Nonfatal only if repeated/high impact | Yes with service/action/code/retryable | Prefer aggregated analytics for frequency. |
+| User cancellation | Usually no error or low-key copy | No | Usually no, unless funnel analysis needs it | Cancellation is not failure unless product says so. |
+| Payment/booking verification failure | Support-oriented copy | Nonfatal with context | Yes | High business impact but not necessarily crash. |
+| Unexpected exception/bug | Generic user copy | Yes with stack trace | Optional | Must retain stack and operation context. |
+| Framework/global uncaught fatal | Fallback or app crash | Fatal | Optional | Covered by FlutterError/PlatformDispatcher. |
+
+Recommended custom keys/logs for reportability:
+
+- `app_env`, `app_version`, build mode, platform, and Firebase project alias.
+- `error_family`, stable `code`, `severity`, `retryable`, and whether it was
+  expected.
+- Operation `service`, `feature`, `action`, and `resource` without document ids,
+  phone numbers, names, chat text, profile bio, exact coordinates, or payment
+  secrets.
+- Presentation context (`dashboard`, `profile`, `run`, `club`, `chat`,
+  `payments`, `auth`, `generic`) when available.
+- Hashed/opaque user identifier only if product/privacy policy accepts it.
+
+Crashlytics custom keys are limited, so do not set one key for every dynamic
+detail. Prefer a small stable set and put short breadcrumbs/log messages around
+important transitions.
+
+#### Privacy and safety rules
+
+- Never show raw `FirebaseException.message`, stack traces, callable details, or
+  plugin object dumps to normal users.
+- Never log PII in error metadata: names, phone numbers, exact birth dates,
+  chat/message text, profile bio, photo URLs, precise locations, payment ids or
+  signatures, and document ids unless they are already non-sensitive public ids.
+- Separate debug-only diagnostics from release UI copy.
+- Preserve the original `cause` and `stackTrace` for developer diagnosis, but
+  do not make them part of user-facing copy.
+- Treat security-rule denials as product/security signals, not generic "try
+  again" failures unless retry can actually succeed after a user action.
+
+#### App-wide scanner requirements
+
+Before candidate migration, add a scanner that surfaces every possible local
+and frontend error-management candidate. It should produce stable buckets like
+the backend scanner: `mustMigrate`, `review`, `verified`, `intentional`,
+`fixture`, and `migrated`.
+
+Candidate rules to scan:
+
+| Pattern | Why it matters |
+|---|---|
+| `catch (_)`, empty `catch`, `.catchError` without logging/rethrow | Silent failures. |
+| `catch (e)` followed by `debugPrint`, raw `SnackBar`, or `Text(e.toString())` | Invisible in release or unsafe user copy. |
+| `throw StateError`, `throw ArgumentError`, `throw Exception`, thrown strings | Possible user-correctable errors bypassing `AppException`. |
+| `AsyncValue(error:)` branches not using descriptor primitives | Raw provider errors in UI. |
+| `requireValue` in widgets/providers without explicit reason | Loading/error states can become runtime exceptions. |
+| `Timer`, subscription, stream, listener, callback, `unawaited`, plugin futures | Async errors may bypass normal try/catch. |
+| `jsonDecode`, model parsing, local storage reads, route/deep-link parsing | Local/schema failures need typed context. |
+| `url_launcher`, share, image picker, geolocator, permission handlers | Platform failures need consistent external-action handling. |
+| `FirebaseException.message`, `FirebaseAuthException.message`, `FirebaseFunctionsException.message` in UI | Raw vendor copy leaks implementation detail and may be unstable. |
+| `FlutterError.presentError`, `ErrorWidget.builder`, global handlers | Confirm framework/global reporting remains wired. |
+| Test fakes and fixtures | Must be classified so the scanner is actionable. |
+
+The scanner is not proof by itself. Its value is a single source of truth for
+what still needs migration and what was intentionally retained.
+
+#### Comprehensive pre-migration checklist
+
+Use this checklist before editing candidates:
+
+| Check | Done bar |
+|---|---|
+| Taxonomy | Every stable failure family has an `AppException` decision: existing subclass, new subclass, mapped copy, or logged unexpected bug. |
+| Context | There is one operation-context API for backend and non-backend actions, with explicit non-PII rules. |
+| Normalization | Backend, plugin, validation, local parsing, route/deep-link, and domain guard failures normalize through one `normalizeAppError` path or documented specialized mappers. |
+| Presentation | Every full-screen, sliver, inline, banner, snackbar, field, and framework fallback uses the correct primitive. |
+| Riverpod | Provider/mutation errors preserve stack traces and are observed/logged centrally; UI does not call `requireValue` casually. |
+| Global handlers | `FlutterError.onError`, `PlatformDispatcher.instance.onError`, and `ErrorWidget.builder` remain installed and tested. |
+| Reporting | Crashlytics/Analytics get stable codes and low-cardinality context; expected errors do not pollute crash dashboards. |
+| Privacy | Error logs and descriptors avoid PII and sensitive document/payment/location details. |
+| Tests | Mappers, descriptors, widgets, provider observers, global handlers, and scanner buckets have focused tests. |
+| Release proof | Production-like build has Crashlytics/Analytics smoke evidence and dashboard/alert review. |
+
+#### General to-do list
+
+Persistent implementation work should be tracked by `APP-ERROR-INFRA-001` in
+`docs/audit_registry/backlog.json`. The intended order is:
+
+1. Design the app-wide context API and normalizer.
+2. Add the app-wide error-candidate scanner with stable buckets and tests.
+3. Run the scanner and create the migration source of truth from its output.
+4. Migrate frontend/local candidates by family: validation, local persistence,
+   route/deep-link parsing, plugin/external actions, provider/mutation UI,
+   uncaught async/listeners, and framework/global hooks.
+5. Expand `AppException` only where the taxonomy rule justifies it.
+6. Connect every app-facing failure to `appErrorDescriptor` and branded
+   primitives.
+7. Add non-PII Crashlytics custom keys/logs and Analytics events for
+   product-significant expected failures.
+8. Add tests for every mapper family and every surface primitive.
+9. Run release-like reporting QA: forced test exception, forced nonfatal,
+   expected validation failure, expected backend failure, plugin failure, and
+   framework error fallback.
+10. Keep scanner `mustMigrate=0` and `review=0` as the finished state, with
+    intentional exceptions documented here and in the registry.
+
+#### Definition of done for "finished"
+
+Error management is not finished until all of these are true:
+
+- Backend scanner stays at `mustMigrate=0` and `review=0`.
+- App-wide frontend/local scanner exists and stays at `mustMigrate=0` and
+  `review=0`.
+- No user-facing screen renders raw `error.toString()`, raw Firebase messages,
+  or generic Dart exception text.
+- Expected user-correctable failures are typed or mapped, retry-aware, and
+  covered by tests.
+- Unexpected failures preserve stack traces and operation context through
+  `ErrorLogger`/Crashlytics.
+- Provider, mutation, stream, callback, timer, plugin, and global framework
+  errors have a documented capture path.
+- Every branded error primitive consumes the descriptor contract.
+- Crashlytics/Analytics reporting is smoke-tested in a release-like build and
+  dashboard alert thresholds are reviewed.
+- The catalogue, scanner output, backlog item, and audit registry stamp agree.
 
 ### 2026-05-12: Backend Error Management Hard Migration
 
@@ -53,12 +324,15 @@ Current scanner proof:
 dart tool/backend_error_candidates.dart --json
 ```
 
-Latest result: `mustMigrate=0`, `review=153`, `migrated=136`.
+Latest result: `mustMigrate=0`, `review=0`, `verified=80`,
+`intentional=29`, `fixture=56`, `migrated=148`.
 
-`review` candidates are intentionally broad. They include direct
-`.httpsCallable`, `.snapshots`, `.get`, `.set`, `.update`, `.delete`, and raw
-Firebase exception references so future work can verify each backend boundary is
-still wrapped. The key invariant is that `mustMigrate` remains zero.
+The scanner intentionally still looks for direct `.httpsCallable`,
+`.snapshots`, `.get`, `.set`, `.update`, `.delete`, and raw Firebase exception
+references. It now classifies them as `verified`, `intentional`, `fixture`, or
+`review` so future work can tell the difference between a real migration risk
+and an inspected backend boundary. The key invariants are that `mustMigrate` and
+`review` remain zero.
 
 #### Backend Error Migration Checklist
 
@@ -83,6 +357,53 @@ Future error-management work should update this checklist instead of creating a
 parallel tracker. If the scanner reports a new `mustMigrate` item, fix it in
 the same pass unless it is explicitly documented here as an intentional
 exception.
+
+### 2026-05-12: Error Feature Completion Pass
+
+The backend error feature now has a single presentation descriptor:
+
+- `appErrorDescriptor(error, context: ...)` returns title, message, icon,
+  retry label, retryability, and severity.
+- `appErrorTitle` and `appErrorMessage` are compatibility helpers over the
+  descriptor.
+- `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`,
+  `CatchInlineErrorState`, `showCatchErrorSnackBar`, and `ErrorBanner.fromError`
+  all consume the same descriptor contract.
+- Non-retryable typed failures such as validation and permission errors no
+  longer show retry actions merely because a caller passed an `onRetry`.
+- Retryable failures expose descriptor-owned retry labels such as
+  `Reload messages`, `Reload profile`, `Try upload again`, or
+  `Try payment again`.
+
+Mapper coverage is now explicit in tests:
+
+- Firestore permission, network, missing document, and unexpected failures.
+- Callable Functions auth failures and feature-specific mapper overrides.
+- Firebase Auth validation, session, network, and throttling failures.
+- Firebase Storage permission, missing object, cancelled, retry, and unknown
+  upload failures.
+- Remote Config, App Check, Messaging, timeout, and unexpected failures.
+- Descriptor behavior for network, validation, storage, external action,
+  payment, and run-booking failures.
+- Branded primitives hide retry for non-retryable errors and expose snackbar
+  retry actions for retryable errors.
+
+The old flat scanner result `review=153` has been reviewed and classified by
+`tool/backend_error_candidates.dart`:
+
+| Status | Count | Meaning |
+|---|---:|---|
+| `mustMigrate` | 0 | No legacy Firestore/Auth/run-booking error APIs remain in `lib` or `test`. |
+| `review` | 0 | No direct backend/error candidate is currently unclassified. |
+| `verified` | 80 | Direct Firebase calls are inside `withBackendErrorContext`, `withBackendErrorStream`, feature mappers, or normalized best-effort catches. |
+| `intentional` | 29 | Raw error checks are in mapper/message/logger/bootstrap/diagnostic/not-found-swallow seams. |
+| `fixture` | 56 | Direct Firebase calls or raw Firebase exceptions are test setup/assertion code. |
+| `migrated` | 148 | Unified backend error API call sites. |
+
+This is the current done bar for code-level backend error management. Remaining
+release-quality work is operational rather than structural: production
+Crashlytics/Analytics dashboard review, alert thresholds, and device/UI QA for
+the most important failure states.
 
 ### 2026-05-06: Error Catalogue Decision
 
@@ -589,20 +910,31 @@ Error thrown
 
 ### Key gaps
 
-1. **Controller/mutation context is uneven**: provider-level logging sees the
+1. **App-wide operation context is missing**: backend calls carry
+   `BackendErrorContext`, but local validation, parsing, navigation, platform,
+   and controller-owned failures do not yet have one shared context API.
+
+2. **Frontend/local scanner is missing**: backend drift is now measurable, but
+   the app still needs a repeatable scanner for raw UI errors, `StateError` /
+   `ArgumentError` candidates, silent catches, plugin failures, local parsing,
+   callbacks, and provider error branches.
+
+3. **Controller/mutation context is uneven**: provider-level logging sees the
    error, but not every controller failure includes feature/action metadata.
 
-2. **Expected AppExceptions are warning-level by default**: this is intentional
+4. **Expected AppExceptions are warning-level by default**: this is intentional
    to avoid polluting crash dashboards with user-correctable states, but
    product-significant expected failures should still emit analytics where
    useful.
 
-3. **Error catalogue coverage is incomplete**: image uploads, reusable
-   validation failures, external action failures, and optional location failures
-   are still handled by local logic rather than typed app-level exceptions.
+5. **Error catalogue coverage is incomplete outside backend/payment flows**:
+   reusable validation failures, local persistence/schema failures,
+   route/deep-link failures, external action failures, and optional location
+   failures need an app-wide catalogue pass.
 
-4. **Some raw UI branches remain**: scanner candidates remain in payments,
-   routing wrappers, run detail, run map, attendance, filters, and run recap.
+6. **Operational reporting still needs release-like proof**: Crashlytics,
+   Analytics, custom keys, nonfatal reporting, and alert thresholds should be
+   smoke-tested after the app-wide system is in place.
 
 ---
 
@@ -725,11 +1057,13 @@ Catching an error:
 
 | Phase | Work | Proof |
 |-------|------|-------|
-| 1 | Keep migrating `ERROR-UI-QUEUE` raw candidates to `CatchErrorState` family. | Scanner raw error candidate count decreases or each retained candidate is justified. |
-| 2 | Add typed catalogue entries only for repeated stable product failures: likely image upload/storage, reusable validation, external action, and location. | New subclass, mapper copy, tests, and catalogue row in this doc. |
-| 3 | Add scanner coverage for direct raw app-facing error branches and direct string snackbars in presentation code. | `tool/widget_cleanup_scan.sh` catches new violations. |
-| 4 | Add feature-level analytics for expected but product-significant failures. | ErrorLogger/analytics tests prove events fire without treating expected errors as crashes. |
-| 5 | Consider generated error catalogue checks if manual drift becomes expensive. | CI or registry validates subclass/code/doc catalogue parity. |
+| 1 | Create the app-wide operation context and normalizer described in `APP-ERROR-INFRA-001`. | Unit tests prove backend, validation, local, plugin, and unexpected failures normalize consistently. |
+| 2 | Add the app-wide candidate scanner for frontend/local/provider/plugin/global error surfaces. | Scanner emits `mustMigrate`, `review`, `verified`, `intentional`, `fixture`, and `migrated` buckets. |
+| 3 | Run the scanner and migrate all `mustMigrate` / `review` items by failure family. | Scanner reaches `mustMigrate=0` and `review=0`; retained exceptions are documented. |
+| 4 | Add typed catalogue entries only for repeated stable product failures: likely reusable validation, local persistence, route/deep-link, external action, and location. | New subclass or mapper decision, descriptor copy, tests, and catalogue row in this doc. |
+| 5 | Add feature-level analytics for expected but product-significant failures. | ErrorLogger/analytics tests prove events fire without treating expected errors as crashes. |
+| 6 | Prove release-like reporting. | Forced fatal, forced nonfatal, expected backend failure, expected frontend validation failure, and plugin/platform failure appear with useful non-PII context. |
+| 7 | Consider generated error catalogue checks if manual drift becomes expensive. | CI or registry validates subclass/code/doc catalogue parity. |
 
 ---
 
@@ -737,12 +1071,26 @@ Catching an error:
 
 - Dart language error handling:
   https://dart.dev/language/error-handling
+- Dart `Error` class semantics:
+  https://api.dart.dev/dart-core/Error-class.html
 - Flutter app error handling:
   https://docs.flutter.dev/testing/errors
 - Flutter `ErrorWidget.builder` contract:
   https://api.flutter.dev/flutter/widgets/ErrorWidget/builder.html
+- Firebase Crashlytics setup for Flutter:
+  https://firebase.google.com/docs/crashlytics/flutter/get-started
+- Firebase Crashlytics custom reports for Flutter:
+  https://firebase.google.com/docs/crashlytics/flutter/customize-crash-reports
+- Firebase Auth Flutter error handling:
+  https://firebase.google.com/docs/auth/flutter/errors
+- Firebase Storage Flutter error handling:
+  https://firebase.google.com/docs/storage/flutter/handle-errors
+- Firestore error code reference:
+  https://firebase.google.com/docs/reference/js/v8/firebase.firestore#firestoreerrorcode
 - Riverpod `AsyncValue`:
   https://pub.dev/documentation/riverpod/latest/riverpod/AsyncValue-class.html
+- Riverpod `ProviderObserver`:
+  https://riverpod.dev/docs/concepts2/observers
 - Riverpod mutations:
   https://riverpod.dev/docs/concepts2/mutations
 - Firestore offline persistence:

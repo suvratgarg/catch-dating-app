@@ -1,8 +1,10 @@
+import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 export 'package:catch_dating_app/core/widgets/catch_action_menu.dart';
@@ -133,7 +135,7 @@ class CatchTopBar extends StatelessWidget implements PreferredSizeWidget {
   }
 }
 
-class CatchTopBarTabBar extends StatelessWidget implements PreferredSizeWidget {
+class CatchTopBarTabBar extends StatefulWidget implements PreferredSizeWidget {
   const CatchTopBarTabBar({super.key, required this.tabs, this.controller});
 
   final List<Widget> tabs;
@@ -143,12 +145,79 @@ class CatchTopBarTabBar extends StatelessWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(48);
 
   @override
+  State<CatchTopBarTabBar> createState() => _CatchTopBarTabBarState();
+}
+
+class _CatchTopBarTabBarState extends State<CatchTopBarTabBar> {
+  TabController? _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _setController(widget.controller);
+  }
+
+  @override
+  void didUpdateWidget(CatchTopBarTabBar oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      _setController(widget.controller);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller?.removeListener(_handleControllerChanged);
+    super.dispose();
+  }
+
+  void _setController(TabController? controller) {
+    if (_controller == controller) return;
+    _controller?.removeListener(_handleControllerChanged);
+    _controller = controller;
+    _controller?.addListener(_handleControllerChanged);
+  }
+
+  void _handleControllerChanged() {
+    if (mounted) setState(() {});
+  }
+
+  @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
+    if (prefersCupertinoControls() && _controller != null) {
+      return SizedBox(
+        height: widget.preferredSize.height,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: CatchSpacing.s4,
+            vertical: CatchSpacing.s1,
+          ),
+          child: CupertinoSlidingSegmentedControl<int>(
+            groupValue: _controller!.index,
+            backgroundColor: t.raised,
+            thumbColor: t.surface,
+            padding: const EdgeInsets.all(3),
+            onValueChanged: (index) {
+              if (index == null || index == _controller!.index) return;
+              _controller!.animateTo(index);
+            },
+            children: {
+              for (var index = 0; index < widget.tabs.length; index++)
+                index: _CupertinoTabLabel(
+                  tab: widget.tabs[index],
+                  selected: index == _controller!.index,
+                ),
+            },
+          ),
+        ),
+      );
+    }
+
     return TabBar(
-      controller: controller,
-      tabs: tabs,
+      controller: widget.controller,
+      tabs: widget.tabs,
       labelColor: t.ink,
       unselectedLabelColor: t.ink3,
       indicatorColor: t.primary,
@@ -156,6 +225,46 @@ class CatchTopBarTabBar extends StatelessWidget implements PreferredSizeWidget {
       labelStyle: CatchTextStyles.labelL(context),
       unselectedLabelStyle: CatchTextStyles.labelL(context),
     );
+  }
+}
+
+class _CupertinoTabLabel extends StatelessWidget {
+  const _CupertinoTabLabel({required this.tab, required this.selected});
+
+  final Widget tab;
+  final bool selected;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final color = selected ? t.ink : t.ink2;
+    final style = CatchTextStyles.labelL(context, color: color);
+
+    return Center(
+      child: DefaultTextStyle(
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.center,
+        style: style,
+        child: IconTheme(
+          data: IconThemeData(color: color, size: CatchIcon.sm),
+          child: _tabChild(style),
+        ),
+      ),
+    );
+  }
+
+  Widget _tabChild(TextStyle style) {
+    final tab = this.tab;
+    if (tab is Tab) {
+      final text = tab.text;
+      if (text != null) return Text(text, style: style);
+      final child = tab.child;
+      if (child != null) return child;
+      final icon = tab.icon;
+      if (icon != null) return icon;
+    }
+    return tab;
   }
 }
 

@@ -153,11 +153,20 @@ List<Candidate> _scan(List<String> roots) {
             continue;
           }
           if (!rule.pattern.hasMatch(line)) continue;
+          final disposition = _dispositionFor(
+            path: file.path,
+            lineIndex: i,
+            lines: lines,
+            rule: rule,
+          );
           candidates.add(
             Candidate(
               path: file.path,
               line: i + 1,
               rule: rule,
+              status: disposition.status,
+              disposition: disposition.reason,
+              recommendation: disposition.recommendation ?? rule.recommendation,
               snippet: line.trim(),
             ),
           );
@@ -167,7 +176,7 @@ List<Candidate> _scan(List<String> roots) {
   }
 
   candidates.sort((a, b) {
-    final statusCompare = a.rule.status.index.compareTo(b.rule.status.index);
+    final statusCompare = a.status.index.compareTo(b.status.index);
     if (statusCompare != 0) return statusCompare;
     final pathCompare = a.path.compareTo(b.path);
     if (pathCompare != 0) return pathCompare;
@@ -181,8 +190,7 @@ Map<String, int> _summary(List<Candidate> candidates) {
     for (final status in CandidateStatus.values) status.name: 0,
   };
   for (final candidate in candidates) {
-    summary[candidate.rule.status.name] =
-        (summary[candidate.rule.status.name] ?? 0) + 1;
+    summary[candidate.status.name] = (summary[candidate.status.name] ?? 0) + 1;
   }
   return summary;
 }
@@ -196,8 +204,9 @@ void _printText(List<String> roots, List<Candidate> candidates) {
   stdout.writeln('');
   for (final candidate in candidates) {
     stdout.writeln(
-      '${candidate.rule.status.name} | ${candidate.rule.id} | '
-      '${candidate.path}:${candidate.line} | ${candidate.snippet}',
+      '${candidate.status.name} | ${candidate.rule.id} | '
+      '${candidate.path}:${candidate.line} | ${candidate.disposition} | '
+      '${candidate.snippet}',
     );
   }
 }
@@ -214,14 +223,184 @@ void _printMarkdown(List<String> roots, List<Candidate> candidates) {
   stdout.writeln('|---|---|---|---|');
   for (final candidate in candidates) {
     stdout.writeln(
-      '| ${candidate.rule.status.name} | ${candidate.rule.id} | '
+      '| ${candidate.status.name} | ${candidate.rule.id} | '
       '`${candidate.path}:${candidate.line}` | '
-      '${candidate.rule.recommendation} |',
+      '${candidate.disposition}: ${candidate.recommendation} |',
     );
   }
 }
 
-enum CandidateStatus { mustMigrate, review, migrated }
+CandidateDisposition _dispositionFor({
+  required String path,
+  required int lineIndex,
+  required List<String> lines,
+  required CandidateRule rule,
+}) {
+  if (rule.status != CandidateStatus.review) {
+    return CandidateDisposition(
+      status: rule.status,
+      reason: rule.status == CandidateStatus.migrated
+          ? 'uses unified backend error API'
+          : 'legacy API must be migrated',
+    );
+  }
+
+  if (path.startsWith('test/')) {
+    return const CandidateDisposition(
+      status: CandidateStatus.fixture,
+      reason: 'test fixture or direct mapper assertion',
+    );
+  }
+
+  if (_isCoreMapperFile(path)) {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'core mapper/message layer intentionally inspects raw errors',
+    );
+  }
+
+  if (path == 'lib/exceptions/error_logger.dart') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'central logger implementation owns raw crash logging',
+    );
+  }
+
+  if (path == 'lib/main.dart') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'bootstrap framework/platform error handler',
+    );
+  }
+
+  if (path == 'lib/force_update/presentation/force_update_diagnostics.dart') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'developer diagnostic surface inspects Remote Config errors',
+    );
+  }
+
+  if (path == 'lib/matches/data/match_repository.dart' &&
+      rule.id == 'raw_firebase_exception_type') {
+    return const CandidateDisposition(
+      status: CandidateStatus.intentional,
+      reason: 'documented not-found swallow inside backend wrapper',
+    );
+  }
+
+  if (rule.id == 'manual_error_logging') {
+    return const CandidateDisposition(
+      status: CandidateStatus.review,
+      reason: 'manual logError outside central logger/bootstrap',
+    );
+  }
+
+  if (_near(
+    lines,
+    lineIndex,
+    before: 18,
+    after: 18,
+    needle: 'BackendErrorMapper',
+  )) {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
+      reason:
+          'feature-specific backend mapper intentionally inspects raw error',
+    );
+  }
+
+  if (_isBackendWrapped(lines, lineIndex)) {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
+      reason: 'direct backend call is inside unified backend wrapper',
+    );
+  }
+
+  if (_isNormalizedCatch(lines, lineIndex)) {
+    return const CandidateDisposition(
+      status: CandidateStatus.verified,
+      reason: 'best-effort direct call is caught and normalized before logging',
+    );
+  }
+
+  return const CandidateDisposition(
+    status: CandidateStatus.review,
+    reason: 'needs human review',
+  );
+}
+
+bool _isCoreMapperFile(String path) {
+  return path == 'lib/core/backend_error_util.dart' ||
+      path == 'lib/core/backend_error_message.dart' ||
+      path == 'lib/core/app_error_message.dart';
+}
+
+bool _isBackendWrapped(List<String> lines, int lineIndex) {
+  return _near(
+        lines,
+        lineIndex,
+        before: 35,
+        after: 70,
+        needle: 'withBackendErrorContext',
+      ) ||
+      _near(
+        lines,
+        lineIndex,
+        before: 35,
+        after: 70,
+        needle: 'withBackendErrorStream',
+      );
+}
+
+bool _isNormalizedCatch(List<String> lines, int lineIndex) {
+  return _near(lines, lineIndex, before: 8, after: 30, needle: 'try {') &&
+      _near(lines, lineIndex, before: 5, after: 40, needle: 'catch') &&
+      _near(
+        lines,
+        lineIndex,
+        before: 5,
+        after: 45,
+        needle: 'normalizeBackendError',
+      );
+}
+
+bool _near(
+  List<String> lines,
+  int lineIndex, {
+  required int before,
+  required int after,
+  required String needle,
+}) {
+  final start = lineIndex - before < 0 ? 0 : lineIndex - before;
+  final end = lineIndex + after >= lines.length
+      ? lines.length - 1
+      : lineIndex + after;
+  for (var i = start; i <= end; i += 1) {
+    if (lines[i].contains(needle)) return true;
+  }
+  return false;
+}
+
+enum CandidateStatus {
+  mustMigrate,
+  review,
+  verified,
+  intentional,
+  fixture,
+  migrated,
+}
+
+class CandidateDisposition {
+  const CandidateDisposition({
+    required this.status,
+    required this.reason,
+    this.recommendation,
+  });
+
+  final CandidateStatus status;
+  final String reason;
+  final String? recommendation;
+}
 
 class CandidateRule {
   const CandidateRule({
@@ -244,20 +423,27 @@ class Candidate {
     required this.path,
     required this.line,
     required this.rule,
+    required this.status,
+    required this.disposition,
+    required this.recommendation,
     required this.snippet,
   });
 
   final String path;
   final int line;
   final CandidateRule rule;
+  final CandidateStatus status;
+  final String disposition;
+  final String recommendation;
   final String snippet;
 
   Map<String, Object> toJson() => {
     'path': path,
     'line': line,
     'rule': rule.id,
-    'status': rule.status.name,
-    'recommendation': rule.recommendation,
+    'status': status.name,
+    'disposition': disposition,
+    'recommendation': recommendation,
     'snippet': snippet,
   };
 }

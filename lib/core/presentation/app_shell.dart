@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
+import 'package:catch_dating_app/core/platform/adaptive_platform.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -11,6 +12,7 @@ import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -109,13 +111,62 @@ class _AppShellNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final selectedIndex = navigationShell.currentIndex;
+    void onDestinationSelected(int index) => navigationShell.goBranch(
+      index,
+      initialLocation: index == selectedIndex,
+    );
+
+    if (prefersCupertinoControls()) {
+      return CupertinoTabBar(
+        key: AppShellKeys.navigationBar,
+        currentIndex: selectedIndex,
+        onTap: onDestinationSelected,
+        activeColor: t.primary,
+        inactiveColor: t.ink3,
+        backgroundColor: t.surface.withValues(alpha: 0.96),
+        border: Border(top: BorderSide(color: t.line)),
+        items: [
+          const BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.house),
+            activeIcon: Icon(CupertinoIcons.house_fill),
+            label: 'Home',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.person_2),
+            activeIcon: Icon(CupertinoIcons.person_2_fill),
+            label: 'Clubs',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.heart),
+            activeIcon: Icon(CupertinoIcons.heart_fill),
+            label: 'Catches',
+          ),
+          BottomNavigationBarItem(
+            icon: _NavigationBadge(
+              count: unreadCount,
+              child: const Icon(CupertinoIcons.chat_bubble_2),
+            ),
+            activeIcon: _NavigationBadge(
+              count: unreadCount,
+              child: const Icon(CupertinoIcons.chat_bubble_2_fill),
+            ),
+            label: 'Chats',
+          ),
+          const BottomNavigationBarItem(
+            icon: Icon(CupertinoIcons.person),
+            activeIcon: Icon(CupertinoIcons.person_fill),
+            label: 'Profile',
+          ),
+        ],
+      );
+    }
+
     return NavigationBar(
       key: AppShellKeys.navigationBar,
-      selectedIndex: navigationShell.currentIndex,
-      onDestinationSelected: (index) => navigationShell.goBranch(
-        index,
-        initialLocation: index == navigationShell.currentIndex,
-      ),
+      selectedIndex: selectedIndex,
+      onDestinationSelected: onDestinationSelected,
       destinations: [
         // 0 — Home
         const NavigationDestination(
@@ -138,14 +189,14 @@ class _AppShellNavigationBar extends StatelessWidget {
         // 3 — Chats
         NavigationDestination(
           icon: unreadCount > 0
-              ? Badge(
-                  label: Text('$unreadCount'),
+              ? _NavigationBadge(
+                  count: unreadCount,
                   child: const Icon(Icons.chat_bubble_outline_rounded),
                 )
               : const Icon(Icons.chat_bubble_outline_rounded),
           selectedIcon: unreadCount > 0
-              ? Badge(
-                  label: Text('$unreadCount'),
+              ? _NavigationBadge(
+                  count: unreadCount,
                   child: const Icon(Icons.chat_bubble_rounded),
                 )
               : const Icon(Icons.chat_bubble_rounded),
@@ -156,6 +207,49 @@ class _AppShellNavigationBar extends StatelessWidget {
           icon: Icon(Icons.person_outline_rounded),
           selectedIcon: Icon(Icons.person_rounded),
           label: 'Profile',
+        ),
+      ],
+    );
+  }
+}
+
+class _NavigationBadge extends StatelessWidget {
+  const _NavigationBadge({required this.count, required this.child});
+
+  final int count;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    if (count <= 0) return child;
+
+    final t = CatchTokens.of(context);
+    final label = count > 99 ? '99+' : '$count';
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        child,
+        Positioned(
+          top: -6,
+          right: -10,
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: t.primary,
+              borderRadius: BorderRadius.circular(CatchRadius.pill),
+              border: Border.all(color: t.surface, width: 1.5),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+              child: Text(
+                label,
+                style: CatchTextStyles.labelS(
+                  context,
+                  color: t.primaryInk,
+                ).copyWith(fontSize: 10),
+              ),
+            ),
+          ),
         ),
       ],
     );

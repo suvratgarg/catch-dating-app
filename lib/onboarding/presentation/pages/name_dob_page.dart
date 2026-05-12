@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -39,11 +40,12 @@ class _NameDobPageState extends ConsumerState<NameDobPage> {
   }
 
   Future<void> _pickDate() async {
-    final picked = await showDatePicker(
+    final picked = await showCatchDatePicker(
       context: context,
       initialDate: _selectedDate ?? DateTime(2000),
       firstDate: DateTime(1920),
       lastDate: latestAllowedDateOfBirth(),
+      title: 'Date of birth',
     );
     if (picked != null) {
       setState(() {

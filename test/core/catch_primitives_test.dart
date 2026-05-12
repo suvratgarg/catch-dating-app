@@ -19,6 +19,7 @@ import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/chip_field.dart';
 import 'package:catch_dating_app/core/widgets/settings_row.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -606,6 +607,23 @@ void main() {
     expect(retryCount, 1);
   });
 
+  testWidgets('CatchErrorState hides retry UI for non-retryable errors', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        CatchErrorState.fromError(
+          const ValidationException('Please enter a valid phone number.'),
+          onRetry: () {},
+        ),
+      ),
+    );
+
+    expect(find.text('Check your details'), findsOneWidget);
+    expect(find.text('Please enter a valid phone number.'), findsOneWidget);
+    expect(find.text('Try again'), findsNothing);
+  });
+
   testWidgets('CatchSliverErrorState fills a sliver viewport', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
@@ -666,6 +684,41 @@ void main() {
 
     expect(find.text('snack failed'), findsOneWidget);
   });
+
+  testWidgets(
+    'showCatchErrorSnackBar exposes retry action for retryable errors',
+    (tester) async {
+      var retryCount = 0;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: Builder(
+              builder: (context) => TextButton(
+                onPressed: () => showCatchErrorSnackBar(
+                  context,
+                  const NetworkException(
+                    'timeout',
+                    'The request timed out. Please try again.',
+                  ),
+                  onRetry: () => retryCount++,
+                ),
+                child: const Text('Show error'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Show error'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('Try again'));
+      await tester.pumpAndSettle();
+
+      expect(retryCount, 1);
+    },
+  );
 
   testWidgets(
     'CatchTextField renders label, helper text, changes, and errors',

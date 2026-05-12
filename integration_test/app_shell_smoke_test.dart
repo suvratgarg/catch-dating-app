@@ -3,6 +3,7 @@ import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -19,6 +20,7 @@ import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -94,7 +96,7 @@ void main() {
         find.text('Morning runners who like easy city loops.'),
         findsOneWidget,
       );
-      expect(find.text('Join club'), findsOneWidget);
+      expect(find.text('Sign in to join'), findsOneWidget);
     },
   );
 
@@ -132,6 +134,49 @@ void main() {
 
     expect(find.text('Carter Road Amphitheatre'), findsWidgets);
     expect(find.text('Join run — 18 spots left'), findsOneWidget);
+  });
+
+  testWidgets('run detail books a free run and shows confirmation', (
+    tester,
+  ) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final run = run_helpers.buildRun(
+      id: 'run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      meetingPoint: 'Carter Road Amphitheatre',
+      bookedCount: 1,
+    );
+    final paymentRepository = run_helpers.FakePaymentRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        clubRuns: {
+          club.id: [run],
+        },
+        paymentRepository: paymentRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Carter Road Amphitheatre'));
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Join run — 19 spots left'));
+    await pumpFeatureUi(tester);
+
+    expect(paymentRepository.bookFreeRunCalled, isTrue);
+    expect(paymentRepository.bookedFreeRunId, run.id);
+    expect(find.text('Booking confirmed'), findsOneWidget);
+    expect(find.text("You're in."), findsOneWidget);
   });
 
   testWidgets('matches list opens chat and resets unread state', (
@@ -206,7 +251,7 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Carter Road Amphitheatre'), findsWidgets);
-    expect(find.text('Booked'), findsWidgets);
+    expect(find.text('Cancel booking'), findsOneWidget);
   });
 
   testWidgets('incomplete profiles resume onboarding before app shell', (
@@ -273,12 +318,12 @@ void main() {
     expect(find.text('Start catching'), findsOneWidget);
 
     await _openTab(tester, 'Chats');
-    expect(find.text('Chats'), findsOneWidget);
+    expect(find.text('Chats'), findsWidgets);
     expect(find.text('No catches yet'), findsOneWidget);
 
     await _openTab(tester, 'Profile');
-    expect(find.text('Profile'), findsOneWidget);
-    expect(find.text('Suvrat Garg'), findsWidgets);
+    expect(find.text('Profile'), findsWidgets);
+    expect(find.text('Display name'), findsOneWidget);
   });
 }
 
@@ -308,6 +353,7 @@ List<Object> _appOverrides({
   List<Match> matches = const [],
   List<PublicProfile> publicProfiles = const [],
   ConversationRepository? conversationRepository,
+  PaymentRepository? paymentRepository,
 }) {
   final joinedClubs = clubs
       .where((club) => joinedClubIds.contains(club.id))
@@ -317,11 +363,34 @@ List<Object> _appOverrides({
     for (final run in attendedRuns) run.id: run,
     for (final run in clubRuns.values.expand((runs) => runs)) run.id: run,
   };
+  final knownRunClubIds = knownRunsById.values
+      .map((run) => run.runClubId)
+      .toSet();
+  final participationsByRunId = <String, RunParticipation>{
+    if (uid != null)
+      for (final run in signedUpRuns)
+        run.id: run_helpers.buildRunParticipation(run: run, uid: uid),
+    if (uid != null)
+      for (final run in attendedRuns)
+        run.id: run_helpers.buildRunParticipation(
+          run: run,
+          uid: uid,
+          status: RunParticipationStatus.attended,
+        ),
+  };
 
   return [
     forceUpdateRequiredProvider.overrideWithValue(const AsyncData(false)),
+    forceUpdateRefreshProvider.overrideWithValue(
+      (ref, {required invalidatePackageInfo, shouldInvalidate}) async {},
+    ),
     locationInitializerProvider.overrideWith(_NoopLocationInitializer.new),
-    appAnalyticsProvider.overrideWithValue(AppAnalytics(shouldCollect: false)),
+    appAnalyticsProvider.overrideWithValue(
+      AppAnalytics(
+        reporter: const _NoopAnalyticsReporter(),
+        shouldCollect: false,
+      ),
+    ),
     errorLoggerProvider.overrideWithValue(
       ErrorLogger(shouldReportErrors: false),
     ),
@@ -362,11 +431,12 @@ List<Object> _appOverrides({
           ),
         ),
     ],
+    for (final runClubId in knownRunClubIds)
+      fetchRunClubProvider(
+        runClubId,
+      ).overrideWith((ref) async => _clubById(clubs, runClubId)),
     for (final run in knownRunsById.values) ...[
       watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
-      fetchRunClubProvider(
-        run.runClubId,
-      ).overrideWith((ref) async => _clubById(clubs, run.runClubId)),
       watchReviewsForRunProvider(run.id).overrideWithValue(const AsyncData([])),
       if (uid != null) ...[
         watchSavedRunProvider(
@@ -376,7 +446,7 @@ List<Object> _appOverrides({
         watchRunParticipationProvider(
           run.id,
           uid,
-        ).overrideWithValue(const AsyncData<RunParticipation?>(null)),
+        ).overrideWithValue(AsyncData(participationsByRunId[run.id])),
       ],
     ],
     runClubsListViewModelProvider.overrideWithValue(
@@ -390,6 +460,12 @@ List<Object> _appOverrides({
     ),
     canCreateRunClubProvider.overrideWithValue(const AsyncData(false)),
     runRepositoryProvider.overrideWithValue(run_helpers.FakeRunRepository()),
+    paymentRepositoryProvider.overrideWithValue(
+      paymentRepository ?? run_helpers.FakePaymentRepository(),
+    ),
+    celebrationEffectsControllerProvider.overrideWithValue(
+      const _NoopCelebrationEffectsController(),
+    ),
     runCheckInLocationServiceProvider.overrideWithValue(
       const _FakeRunCheckInLocationService(),
     ),
@@ -486,6 +562,32 @@ class _FakeRunCheckInLocationService implements RunCheckInLocationService {
   Future<RunCheckInLocation> getCurrentLocation() async {
     return const RunCheckInLocation(latitude: 19.07, longitude: 72.87);
   }
+}
+
+class _NoopAnalyticsReporter implements AnalyticsReporter {
+  const _NoopAnalyticsReporter();
+
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {}
+
+  @override
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {}
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {}
+
+  @override
+  Future<void> setUserId(String? userId) async {}
+}
+
+class _NoopCelebrationEffectsController extends CelebrationEffectsController {
+  const _NoopCelebrationEffectsController();
+
+  @override
+  Future<void> play(CelebrationMomentKind kind) async {}
 }
 
 class _FakeConversationRepository implements ConversationRepository {

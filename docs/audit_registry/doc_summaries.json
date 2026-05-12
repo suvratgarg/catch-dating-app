@@ -1,5 +1,5 @@
 {
-  "version": "3.0.0",
+  "version": "3.0.2",
   "updated": "2026-05-12",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -106,10 +106,11 @@
       ]
     },
     "docs/error-handling-audit.md": {
-      "purpose": "Active backend error-management source of truth, hard-migration checklist, Error 101 guide, app error catalogue, remediation map, and branded error surface guidance.",
+      "purpose": "Active app-wide error-management source of truth, backend hard-migration checklist, frontend/local error-management playbook, presentation descriptor contract, Error 101 guide, app error catalogue, remediation map, and branded error surface guidance.",
       "read_when": [
-        "Changing exceptions, stable error codes, backend error mapping, logging, analytics, or user-facing error rendering",
+        "Changing exceptions, stable error codes, backend or frontend/local error mapping, presentation descriptors, logging, analytics, or user-facing error rendering",
         "Adding Firebase/Auth/Storage/Functions/Messaging/Remote Config/App Check operations",
+        "Adding validation, local persistence, route/deep-link, plugin/platform, provider, mutation, or global-framework error handling",
         "Deciding whether a repeated failure deserves a new AppException subclass",
         "Replacing raw AsyncValue error branches"
       ],

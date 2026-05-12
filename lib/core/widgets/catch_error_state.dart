@@ -25,18 +25,19 @@ class CatchErrorState extends StatelessWidget {
     Key? key,
     AppErrorContext context = AppErrorContext.generic,
     VoidCallback? onRetry,
-    String retryLabel = 'Try again',
+    String? retryLabel,
     Widget? secondaryAction,
     CatchErrorStateMode mode = CatchErrorStateMode.fullScreen,
-    IconData icon = Icons.error_outline_rounded,
+    IconData? icon,
   }) {
+    final descriptor = appErrorDescriptor(error, context: context);
     return CatchErrorState(
       key: key,
-      title: appErrorTitle(error, context: context),
-      message: appErrorMessage(error, context: context),
-      icon: icon,
-      onRetry: onRetry,
-      retryLabel: retryLabel,
+      title: descriptor.title,
+      message: descriptor.message,
+      icon: icon ?? descriptor.icon,
+      onRetry: descriptor.retryable ? onRetry : null,
+      retryLabel: retryLabel ?? descriptor.retryLabel,
       secondaryAction: secondaryAction,
       mode: mode,
     );
@@ -131,16 +132,17 @@ class CatchErrorScaffold extends StatelessWidget {
     Key? key,
     AppErrorContext context = AppErrorContext.generic,
     VoidCallback? onRetry,
-    String retryLabel = 'Try again',
-    IconData icon = Icons.error_outline_rounded,
+    String? retryLabel,
+    IconData? icon,
   }) {
+    final descriptor = appErrorDescriptor(error, context: context);
     return CatchErrorScaffold(
       key: key,
-      title: appErrorTitle(error, context: context),
-      message: appErrorMessage(error, context: context),
-      onRetry: onRetry,
-      retryLabel: retryLabel,
-      icon: icon,
+      title: descriptor.title,
+      message: descriptor.message,
+      onRetry: descriptor.retryable ? onRetry : null,
+      retryLabel: retryLabel ?? descriptor.retryLabel,
+      icon: icon ?? descriptor.icon,
     );
   }
 
@@ -184,17 +186,18 @@ class CatchSliverErrorState extends StatelessWidget {
     Key? key,
     AppErrorContext context = AppErrorContext.generic,
     VoidCallback? onRetry,
-    String retryLabel = 'Try again',
-    IconData icon = Icons.error_outline_rounded,
+    String? retryLabel,
+    IconData? icon,
     bool fillRemaining = true,
   }) {
+    final descriptor = appErrorDescriptor(error, context: context);
     return CatchSliverErrorState(
       key: key,
-      title: appErrorTitle(error, context: context),
-      message: appErrorMessage(error, context: context),
-      onRetry: onRetry,
-      retryLabel: retryLabel,
-      icon: icon,
+      title: descriptor.title,
+      message: descriptor.message,
+      onRetry: descriptor.retryable ? onRetry : null,
+      retryLabel: retryLabel ?? descriptor.retryLabel,
+      icon: icon ?? descriptor.icon,
       fillRemaining: fillRemaining,
     );
   }
@@ -240,17 +243,18 @@ class CatchInlineErrorState extends StatelessWidget {
     Key? key,
     AppErrorContext context = AppErrorContext.generic,
     VoidCallback? onRetry,
-    String retryLabel = 'Try again',
-    IconData icon = Icons.error_outline_rounded,
+    String? retryLabel,
+    IconData? icon,
     bool compact = false,
   }) {
+    final descriptor = appErrorDescriptor(error, context: context);
     return CatchInlineErrorState(
       key: key,
-      title: appErrorTitle(error, context: context),
-      message: appErrorMessage(error, context: context),
-      onRetry: onRetry,
-      retryLabel: retryLabel,
-      icon: icon,
+      title: descriptor.title,
+      message: descriptor.message,
+      onRetry: descriptor.retryable ? onRetry : null,
+      retryLabel: retryLabel ?? descriptor.retryLabel,
+      icon: icon ?? descriptor.icon,
       compact: compact,
     );
   }

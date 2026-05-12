@@ -1,7 +1,8 @@
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -157,11 +158,12 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
 
   Future<void> _pickDate() async {
     final today = DateUtils.dateOnly(widget.now());
-    final picked = await showDatePicker(
+    final picked = await showCatchDatePicker(
       context: context,
       initialDate: _selectedDate ?? today,
       firstDate: today,
       lastDate: today.add(const Duration(days: 365)),
+      title: 'Run date',
     );
     if (picked != null) {
       final scheduleError = _scheduleErrorFor(picked, _selectedStartTime);
@@ -179,9 +181,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   }
 
   Future<void> _pickStartTime() async {
-    final picked = await showTimePicker(
+    final picked = await showCatchTimePicker(
       context: context,
       initialTime: _selectedStartTime ?? _initialStartTime(),
+      title: 'Start time',
     );
     if (picked != null) {
       final scheduleError = _scheduleErrorFor(_selectedDate, picked);
@@ -487,27 +490,14 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   }
 
   void _showUnsavedChangesDialog() {
-    showDialog<bool>(
+    showCatchAdaptiveDialog<bool>(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Unsaved changes'),
-        content: const Text(
-          'You have unsaved changes. Would you like to save a draft?',
-        ),
-        actions: [
-          CatchButton(
-            label: 'Discard',
-            onPressed: () => Navigator.of(ctx).pop(false),
-            variant: CatchButtonVariant.ghost,
-            size: CatchButtonSize.sm,
-          ),
-          CatchButton(
-            label: 'Save Draft',
-            onPressed: () => Navigator.of(ctx).pop(true),
-            size: CatchButtonSize.sm,
-          ),
-        ],
-      ),
+      title: 'Unsaved changes',
+      message: 'You have unsaved changes. Would you like to save a draft?',
+      actions: const [
+        CatchDialogAction(label: 'Discard', value: false, isDestructive: true),
+        CatchDialogAction(label: 'Save Draft', value: true, isDefault: true),
+      ],
     ).then((save) async {
       if (!mounted) return;
       if (save == true) {

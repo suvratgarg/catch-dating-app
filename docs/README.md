@@ -1,6 +1,6 @@
 ---
 doc_id: docs_index
-version: 3.0.0
+version: 3.0.1
 updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
@@ -42,7 +42,7 @@ section unless the task requires a full historical audit.
 | Sliver layout guidance | `sliver_layout_guide.md` | Sliver-native screen pattern, performance tradeoffs, migration rubric, and Catch code examples. |
 | Controller architecture | `controller_patterns.md` | Current controller/view-model patterns, UI/controller boundary rules, and realtime stream lifecycle ownership guidance. |
 | Action cardinality | `action_cardinality_policy.md` | Product and engineering rule for whether each action is disallowed, singleton, unbounded, or domain-bounded, plus initial action-surface audit. |
-| Error handling | `error-handling-audit.md` | Error-handling architecture snapshot, Error 101 guide, app error catalogue, naming conventions, branded app error surface guidance, and remediation history. Re-verify before acting on counts. |
+| Error handling | `error-handling-audit.md` | App-wide error-management architecture, backend migration checklist, frontend/local error playbook, Error 101 guide, app error catalogue, naming conventions, branded app error surface guidance, and remediation history. Re-verify before acting on counts. |
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
 | Firestore and Functions data contracts | `firestore_functions_data_contract_tracker.md` | Firestore rules, Cloud Functions boundaries, schema drift, contract-test workflow, and rules emulator requirements. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |

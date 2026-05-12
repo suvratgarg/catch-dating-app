@@ -1,5 +1,5 @@
 {
-  "version": "2.4.0",
+  "version": "2.6.0",
   "updated": "2026-05-12",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Do not reread archived markdown history unless a debt id points there.",
@@ -441,7 +441,7 @@
         "ERROR-CATALOG-001",
         "DESIGN-PRIMITIVES-001"
       ],
-      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, and `appErrorMessage` / `appErrorTitle`. The 2026-05-12 backend error hard migration added `BackendErrorContext`, `withBackendErrorContext`, `withBackendErrorStream`, `normalizeBackendError`, `backendErrorMessage`, `backend_operation_failed` analytics, and `tool/backend_error_candidates.dart`; deleted the Firestore/Auth/run-booking-specific message wrappers; and migrated Auth, Firestore, Functions, Storage, FCM, local cache, location, external share/link, payments, and repository/controller boundaries. `docs/error-handling-audit.md` is now the active source of truth. Keep `dart tool/backend_error_candidates.dart --json` at `mustMigrate=0`.",
+      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, `ErrorBanner.fromError`, and `appErrorDescriptor` / `appErrorMessage` / `appErrorTitle`. The 2026-05-12 backend error hard migration added `BackendErrorContext`, `withBackendErrorContext`, `withBackendErrorStream`, `normalizeBackendError`, `backendErrorMessage`, `backend_operation_failed` analytics, and `tool/backend_error_candidates.dart`; deleted the Firestore/Auth/run-booking-specific message wrappers; and migrated Auth, Firestore, Functions, Storage, FCM, local cache, location, external share/link, payments, and repository/controller boundaries. The completion pass classified the old flat scanner `review=153` queue as `review=0`, `verified=80`, `intentional=29`, `fixture=56`, and `migrated=148`. `docs/error-handling-audit.md` is now the active source of truth. Keep `dart tool/backend_error_candidates.dart --json` at `mustMigrate=0` and `review=0`.",
       "paths": [
         "lib/core/widgets/catch_framework_error_view.dart",
         "lib/core/widgets/catch_error_state.dart",
@@ -463,6 +463,35 @@
         "lib/public_profile/presentation/public_profile_screen.dart",
         "lib/user_profile/presentation/profile_screen.dart",
         "lib/routing/go_router.dart"
+      ]
+    },
+    {
+      "id": "APP-ERROR-INFRA-001",
+      "title": "Finish app-wide error management beyond backend wrappers",
+      "status": "pending",
+      "area": "core,presentation,controllers,repositories,platform,observability",
+      "priority": "high",
+      "rules": [
+        "ERROR-UI-001",
+        "ERROR-CATALOG-001",
+        "CONTROLLER-BOUNDARY-001",
+        "EXTERNAL-SIDE-EFFECT-001",
+        "AUDIT-REGISTRY-001"
+      ],
+      "summary": "Create the app-wide error-management layer described in docs/error-handling-audit.md version 2.6.0. The next pass should design a non-backend operation-context API, add a scanner for frontend/local/provider/plugin/global error candidates, classify scanner output into mustMigrate/review/verified/intentional/fixture/migrated buckets, then migrate validation, local persistence, route/deep-link parsing, platform/plugin side effects, provider/mutation UI, uncaught async callbacks, and framework/global reporting until the scanner is clean. Do not start ad hoc candidate fixes without making the scanner and this backlog item the source of truth.",
+      "paths": [
+        "docs/error-handling-audit.md",
+        "docs/audit_registry/backlog.json",
+        "lib/exceptions/app_exception.dart",
+        "lib/exceptions/error_logger.dart",
+        "lib/core/app_error_message.dart",
+        "lib/core/backend_error_util.dart",
+        "lib/core/backend_error_message.dart",
+        "lib/core/widgets/catch_error_state.dart",
+        "lib/core/widgets/catch_error_snackbar.dart",
+        "lib/core/widgets/error_banner.dart",
+        "lib/main.dart",
+        "tool/backend_error_candidates.dart"
       ]
     },
     {
