@@ -208,6 +208,7 @@ final class _VisualReviewUserProfileRepository
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
+    String action = 'update_profile',
   }) async {}
 }
 

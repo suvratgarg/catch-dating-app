@@ -131,6 +131,7 @@ class _SettingsUserProfileRepository extends Fake
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
+    String action = 'update_profile',
   }) async {
     updatedUid = uid;
     updatedFields = fields;
