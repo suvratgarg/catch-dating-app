@@ -48,12 +48,11 @@ void main() {
       addTearDown(authRepository.dispose);
     });
 
-    test('does not pop the queue when auth uid is unavailable', () async {
+    test('does not pop the queue when signed-in uid is unavailable', () async {
       final container = ProviderContainer(
         overrides: [
-          watchUserProfileProvider.overrideWith(
-            (ref) => Stream.value(buildUser(uid: 'runner-1')),
-          ),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+          watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
           authRepositoryProvider.overrideWithValue(authRepository),
           swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
           swipeCandidateRepositoryProvider.overrideWith(

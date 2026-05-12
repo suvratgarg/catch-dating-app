@@ -51,6 +51,7 @@ class AppShell extends ConsumerWidget {
     final isOffline =
         connectivityResults != null &&
         connectivityResultsAreOffline(connectivityResults);
+    final errorLogger = ref.read(errorLoggerProvider);
 
     if (isAuthenticated) {
       ref.watch(appShellFcmInitializationProvider(uid));
@@ -69,9 +70,10 @@ class AppShell extends ConsumerWidget {
 
     // Keep Crashlytics user ID in sync with auth state. Also invalidate
     // the user profile stream on sign-out so the next user starts fresh.
+    errorLogger.setUserId(uid.isEmpty ? null : uid);
     ref.listen(uidProvider, (prev, next) {
       final uid = next.asData?.value;
-      ref.read(errorLoggerProvider).setUserId(uid);
+      errorLogger.setUserId(uid);
       if (uid == null && prev?.asData?.value != null) {
         unawaited(ref.read(fcmServiceProvider).reset());
         ref.invalidate(watchUserProfileProvider);

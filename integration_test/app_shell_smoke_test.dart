@@ -1,6 +1,9 @@
+import 'dart:ui' as ui;
+
 import 'package:catch_dating_app/analytics/app_analytics.dart';
 import 'package:catch_dating_app/app.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
@@ -8,13 +11,16 @@ import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
@@ -30,9 +36,12 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/run_clubs/data/run_club_draft_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
+import 'package:catch_dating_app/run_clubs/domain/run_club_draft.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
@@ -47,14 +56,20 @@ import 'package:catch_dating_app/runs/presentation/run_check_in_location_service
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
+import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
+import 'package:catch_dating_app/swipes/domain/swipe.dart';
+import 'package:catch_dating_app/swipes/presentation/swipe_keys.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:flutter/material.dart' show TextButton, TextField;
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
+import 'package:flutter/material.dart' show Icons, TextButton, TextField;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:go_router/go_router.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
+import 'package:image_picker/image_picker.dart';
 import 'package:integration_test/integration_test.dart';
 
 import '../test/onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
@@ -114,6 +129,51 @@ void main() {
     },
   );
 
+  testWidgets('phone auth route sends and verifies an OTP', (tester) async {
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final authRepository = onboarding_helpers.FakeAuthRepository()
+      ..onVerifyPhoneNumber =
+          ({
+            required codeSent,
+            required verificationCompleted,
+            required verificationFailed,
+            required codeAutoRetrievalTimeout,
+          }) {
+            codeSent('verification-id', null);
+          };
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: null,
+        user: null,
+        clubs: [club],
+        authRepository: authRepository,
+      ),
+    );
+
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await _tapCatchButton(tester, 'Sign in to join');
+    await _tapCatchButton(tester, 'Continue with phone');
+
+    await tester.enterText(find.byKey(AuthFormKeys.phoneField), '9876543210');
+    await tester.tap(find.byKey(AuthFormKeys.sendCode));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(authRepository.verifyPhoneNumberCallCount, 1);
+    expect(authRepository.verifiedPhoneNumber, '+919876543210');
+    expect(find.text('Enter the code'), findsOneWidget);
+
+    await tester.enterText(find.byType(TextField).last, '123456');
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(authRepository.otpVerificationId, 'verification-id');
+    expect(authRepository.otpSmsCode, '123456');
+  });
+
   testWidgets('club detail joins through the membership action', (
     tester,
   ) async {
@@ -167,6 +227,138 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(runClubsRepository.leftClubId, club.id);
+  });
+
+  testWidgets('run clubs tab creates a new club', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        canCreateRunClub: true,
+        runClubsRepository: runClubsRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.byIcon(Icons.add_rounded).first);
+    await pumpFeatureUi(tester);
+
+    await _enterRunClubText('Club name', 'Sunset Striders', tester);
+    await _enterRunClubText('Area / neighbourhood', 'Bandra', tester);
+    await _selectRunClubCity(tester, 'Mumbai');
+    await _tapCatchButton(tester, 'Next');
+
+    await _enterRunClubText('Description', 'Easy social club', tester);
+    await _tapCatchButton(tester, 'Create club');
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(runClubsRepository.lastCreateCall, isNotNull);
+    expect(runClubsRepository.lastCreateCall?.name, 'Sunset Striders');
+    expect(runClubsRepository.lastCreateCall?.location, 'mumbai');
+    expect(runClubsRepository.lastCreateCall?.area, 'Bandra');
+    expect(runClubsRepository.lastCreateCall?.description, 'Easy social club');
+  });
+
+  testWidgets('run clubs tab uploads a picked cover while creating a club', (
+    tester,
+  ) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+    final pickedCover = await _generatedPngXFile('run-club-cover.png');
+    final imageUploadRepository = club_helpers.FakeImageUploadRepository(
+      pickedImage: pickedCover,
+      uploadResult: 'https://example.com/uploaded-cover.jpg',
+    );
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        canCreateRunClub: true,
+        runClubsRepository: runClubsRepository,
+        imageUploadRepository: imageUploadRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.byIcon(Icons.add_rounded).first);
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Add cover photo'));
+    await pumpFeatureUi(tester);
+    expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
+
+    await _enterRunClubText('Club name', 'Sunset Striders', tester);
+    await _enterRunClubText('Area / neighbourhood', 'Bandra', tester);
+    await _selectRunClubCity(tester, 'Mumbai');
+    await _tapCatchButton(tester, 'Next');
+
+    await _enterRunClubText('Description', 'Easy social club', tester);
+    await _tapCatchButton(tester, 'Create club');
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(imageUploadRepository.lastUploadClubId, isNotNull);
+    expect(
+      await imageUploadRepository.lastUploadedImage?.readAsBytes(),
+      isNotEmpty,
+    );
+    expect(
+      runClubsRepository.lastCreateCall?.imageUrl,
+      imageUploadRepository.uploadResult,
+    );
+  });
+
+  testWidgets('host edits a run club from club detail', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(
+      id: 'club-1',
+      name: 'Stride Social',
+      hostUserId: user.uid,
+      hostName: user.name,
+    );
+    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        runClubsRepository: runClubsRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await tester.scrollUntilVisible(find.text('Edit club'), 240);
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Edit club'));
+    await pumpFeatureUi(tester);
+
+    await _tapCatchButton(tester, 'Next');
+    await _enterRunClubText(
+      'Description',
+      'Updated host-led city loops.',
+      tester,
+    );
+    await _tapCatchButton(tester, 'Save changes');
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(runClubsRepository.lastUpdatedClubId, club.id);
+    expect(
+      runClubsRepository.lastUpdatedFields?['description'],
+      'Updated host-led city loops.',
+    );
   });
 
   testWidgets('club schedule opens a run detail route with booking CTA', (
@@ -544,6 +736,99 @@ void main() {
     expect(find.text('Cancel booking'), findsOneWidget);
   });
 
+  testWidgets('dashboard self check-in records attendance', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final run = run_helpers.buildRun(
+      id: 'check-in-run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().add(const Duration(minutes: 5)),
+      endTime: DateTime.now().add(const Duration(hours: 1)),
+      meetingPoint: 'Carter Road Amphitheatre',
+      bookedCount: 1,
+    );
+    final runRepository = run_helpers.FakeRunRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        signedUpRuns: [run],
+        runRepository: runRepository,
+      ),
+    );
+
+    expect(find.text('CHECK-IN OPEN'), findsOneWidget);
+    await tester.tap(find.text('Check in'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(runRepository.selfCheckedInRunId, run.id);
+    expect(find.text('CHECKED IN'), findsOneWidget);
+    expect(find.text('Checked in.'), findsOneWidget);
+  });
+
+  testWidgets('dashboard host attendance toggles an attendee', (tester) async {
+    final host = run_helpers.buildUser(uid: 'host-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(
+      id: 'club-1',
+      name: 'Stride Social',
+      hostUserId: host.uid,
+      hostName: host.name,
+    );
+    final run = run_helpers.buildRun(
+      id: 'attendance-run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().subtract(const Duration(minutes: 5)),
+      endTime: DateTime.now().add(const Duration(minutes: 55)),
+      meetingPoint: 'Carter Road Amphitheatre',
+      bookedCount: 1,
+    );
+    final attendeeProfile = run_helpers.buildPublicProfile(
+      uid: 'runner-2',
+      name: 'Taylor',
+    );
+    final runRepository = run_helpers.FakeRunRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: host.uid,
+        user: host,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        clubRuns: {
+          club.id: [run],
+        },
+        runParticipations: {
+          run.id: [
+            run_helpers.buildRunParticipation(run: run, uid: 'runner-2'),
+          ],
+        },
+        publicProfiles: [attendeeProfile],
+        runRepository: runRepository,
+      ),
+    );
+
+    expect(find.text('HOST TOOLS'), findsOneWidget);
+    await tester.tap(find.text('Take Attendance'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Take Attendance'), findsOneWidget);
+    expect(find.text('Taylor'), findsOneWidget);
+    expect(find.text('Not checked in'), findsOneWidget);
+
+    await tester.tap(find.text('Taylor'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(runRepository.markedAttendanceRunId, run.id);
+    expect(runRepository.markedAttendanceUserId, 'runner-2');
+  });
+
   testWidgets('dashboard recommended run opens run detail', (tester) async {
     final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
     final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
@@ -618,6 +903,72 @@ void main() {
     expect(find.text('Discover'), findsOneWidget);
     expect(find.text('No more runners'), findsOneWidget);
     expect(find.text('Join more runs to meet new people'), findsOneWidget);
+  });
+
+  testWidgets('catches deck records like and pass decisions', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final attendedRun = run_helpers.buildRun(
+      id: 'attended-run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().subtract(const Duration(hours: 11)),
+      endTime: DateTime.now().subtract(const Duration(hours: 10)),
+      meetingPoint: 'Bandstand Steps',
+      checkedInCount: 3,
+    );
+    final firstCandidate = run_helpers.buildPublicProfile(
+      uid: 'runner-2',
+      name: 'Taylor',
+      gender: Gender.woman,
+    );
+    final secondCandidate = run_helpers.buildPublicProfile(
+      uid: 'runner-3',
+      name: 'Riya',
+      gender: Gender.woman,
+    );
+    final swipeRepository = _FakeSwipeRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        attendedRuns: [attendedRun],
+        swipeCandidates: [firstCandidate, secondCandidate],
+        swipeRepository: swipeRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Catches');
+    await tester.tap(find.text('Start catching'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Taylor'), findsOneWidget);
+
+    await tester.tap(find.byKey(SwipeKeys.likeButton));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(swipeRepository.recordedSwipes, hasLength(1));
+    expect(swipeRepository.recordedSwipes.single.swiperId, user.uid);
+    expect(swipeRepository.recordedSwipes.single.targetId, firstCandidate.uid);
+    expect(swipeRepository.recordedSwipes.single.runId, attendedRun.id);
+    expect(
+      swipeRepository.recordedSwipes.single.direction,
+      SwipeDirection.like,
+    );
+    expect(find.text('Riya'), findsOneWidget);
+
+    await tester.tap(find.byKey(SwipeKeys.passButton));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(swipeRepository.recordedSwipes, hasLength(2));
+    expect(swipeRepository.recordedSwipes.last.targetId, secondCandidate.uid);
+    expect(swipeRepository.recordedSwipes.last.direction, SwipeDirection.pass);
+    expect(find.text('No more runners'), findsOneWidget);
   });
 
   testWidgets('settings opens payment history from profile', (tester) async {
@@ -896,6 +1247,61 @@ void main() {
     expect(safetyRepository.requestDeletionCallCount, 1);
   });
 
+  testWidgets(
+    'authenticated shell initializes push messaging and crash context',
+    (tester) async {
+      final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+      final fcmService = _RecordingFcmService();
+      final crashReporter = _RecordingCrashReporter();
+      final errorLogger = ErrorLogger(
+        crashReporter: crashReporter,
+        shouldReportErrors: true,
+      );
+
+      await _pumpCatchApp(
+        tester,
+        overrides: _appOverrides(
+          uid: user.uid,
+          user: user,
+          errorLogger: errorLogger,
+          fcmService: fcmService,
+          initializeFcm: true,
+        ),
+      );
+      await flushTestEventQueue();
+      await pumpFeatureUi(tester);
+
+      expect(fcmService.initializedUids, [user.uid]);
+      expect(crashReporter.customKeys['user_id'], user.uid);
+    },
+  );
+
+  testWidgets('app router reports screen views to analytics', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final reporter = _RecordingAnalyticsReporter();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        analytics: AppAnalytics(reporter: reporter, shouldCollect: true),
+      ),
+    );
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(reporter.screenViews, contains(Routes.runClubDetailScreen.name));
+  });
+
   testWidgets('incomplete profiles resume onboarding before app shell', (
     tester,
   ) async {
@@ -1012,6 +1418,25 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await _tapCatchButton(tester, 'Schedule run');
 }
 
+Future<void> _enterRunClubText(
+  String label,
+  String text,
+  WidgetTester tester,
+) async {
+  await tester.enterText(find.widgetWithText(CatchTextField, label), text);
+}
+
+Future<void> _selectRunClubCity(WidgetTester tester, String label) async {
+  tester.binding.focusManager.primaryFocus?.unfocus();
+  await tester.pump();
+  final cityDropdownIcon = find.byIcon(Icons.expand_more_rounded);
+  await tester.ensureVisible(cityDropdownIcon);
+  await tester.tap(cityDropdownIcon);
+  await pumpFeatureUi(tester);
+  await tester.tap(find.text(label).hitTestable());
+  await pumpFeatureUi(tester);
+}
+
 Future<void> _fillCreateRunBasicsStep(WidgetTester tester) async {
   await _enterCreateRunText(tester, CreateRunFormKeys.distance, '7.5');
   await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
@@ -1079,6 +1504,20 @@ Future<void> _tapCatchButton(WidgetTester tester, String label) async {
   await pumpFeatureUi(tester);
 }
 
+Future<XFile> _generatedPngXFile(String name) async {
+  final recorder = ui.PictureRecorder();
+  final canvas = ui.Canvas(recorder);
+  canvas.drawColor(const ui.Color(0xFFFF6B4A), ui.BlendMode.src);
+  final picture = recorder.endRecording();
+  final image = await picture.toImage(2, 2);
+  final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+  return XFile.fromData(
+    byteData!.buffer.asUint8List(),
+    name: name,
+    mimeType: 'image/png',
+  );
+}
+
 List<Object> _appOverrides({
   required String? uid,
   required UserProfile? user,
@@ -1088,10 +1527,12 @@ List<Object> _appOverrides({
   List<Run> attendedRuns = const [],
   List<Run> recommendedRuns = const [],
   Map<String, List<Run>> clubRuns = const {},
+  Map<String, List<RunParticipation>> runParticipations = const {},
   Map<String, List<Review>> clubReviews = const {},
   Map<String, List<Review>> runReviews = const {},
   List<Review> reviewsByUser = const [],
   bool canCreateRunClub = false,
+  List<PublicProfile> swipeCandidates = const [],
   List<Match> matches = const [],
   List<PublicProfile> publicProfiles = const [],
   ConversationRepository? conversationRepository,
@@ -1102,6 +1543,12 @@ List<Object> _appOverrides({
   SafetyRepository? safetyRepository,
   UserProfileRepository? userProfileRepository,
   ReviewsRepository? reviewsRepository,
+  SwipeRepository? swipeRepository,
+  ImageUploadRepository? imageUploadRepository,
+  AppAnalytics? analytics,
+  ErrorLogger? errorLogger,
+  FcmService? fcmService,
+  bool initializeFcm = false,
 }) {
   final joinedClubs = clubs
       .where((club) => joinedClubIds.contains(club.id))
@@ -1135,13 +1582,14 @@ List<Object> _appOverrides({
     ),
     locationInitializerProvider.overrideWith(_NoopLocationInitializer.new),
     appAnalyticsProvider.overrideWithValue(
-      AppAnalytics(
-        reporter: const _NoopAnalyticsReporter(),
-        shouldCollect: false,
-      ),
+      analytics ??
+          AppAnalytics(
+            reporter: const _NoopAnalyticsReporter(),
+            shouldCollect: false,
+          ),
     ),
     errorLoggerProvider.overrideWithValue(
-      ErrorLogger(shouldReportErrors: false),
+      errorLogger ?? ErrorLogger(shouldReportErrors: false),
     ),
     appConnectivityProvider.overrideWith(
       (ref) => Stream.value(const [ConnectivityResult.wifi]),
@@ -1173,12 +1621,24 @@ List<Object> _appOverrides({
     runClubsRepositoryProvider.overrideWithValue(
       runClubsRepository ?? club_helpers.FakeRunClubsRepository(),
     ),
+    runClubDraftRepositoryProvider.overrideWithValue(
+      _FakeRunClubDraftRepository(),
+    ),
     swipeCandidateRepositoryProvider.overrideWithValue(
-      const _FakeSwipeCandidateRepository(),
+      _FakeSwipeCandidateRepository(candidates: swipeCandidates),
+    ),
+    swipeRepositoryProvider.overrideWithValue(
+      swipeRepository ?? _FakeSwipeRepository(),
     ),
     safetyRepositoryProvider.overrideWithValue(
       safetyRepository ?? _FakeSafetyRepository(),
     ),
+    publicProfileRepositoryProvider.overrideWithValue(
+      _FakePublicProfileRepository(publicProfiles),
+    ),
+    if (imageUploadRepository != null)
+      imageUploadRepositoryProvider.overrideWithValue(imageUploadRepository),
+    if (fcmService != null) fcmServiceProvider.overrideWithValue(fcmService),
     for (final club in clubs) ...[
       watchRunClubProvider(club.id).overrideWith((ref) => Stream.value(club)),
       watchRunsForClubProvider(
@@ -1211,6 +1671,11 @@ List<Object> _appOverrides({
       watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
       watchReviewsForRunProvider(run.id).overrideWithValue(
         AsyncData<List<Review>>(runReviews[run.id] ?? const []),
+      ),
+      watchRunParticipationsForRunProvider(run.id).overrideWithValue(
+        AsyncData<List<RunParticipation>>(
+          runParticipations[run.id] ?? const [],
+        ),
       ),
       if (uid != null) ...[
         watchSavedRunProvider(
@@ -1247,7 +1712,8 @@ List<Object> _appOverrides({
       const _FakeRunCheckInLocationService(),
     ),
     if (uid != null) ...[
-      appShellFcmInitializationProvider(uid).overrideWith((ref) async {}),
+      if (!initializeFcm)
+        appShellFcmInitializationProvider(uid).overrideWith((ref) async {}),
       watchSignedUpRunsProvider(
         uid,
       ).overrideWithValue(AsyncData<List<Run>>(signedUpRuns)),
@@ -1282,7 +1748,11 @@ List<Object> _appOverrides({
             ),
         ]),
       ),
-      watchRunClubsHostedByProvider(uid).overrideWithValue(const AsyncData([])),
+      watchRunClubsHostedByProvider(uid).overrideWithValue(
+        AsyncData<List<RunClub>>(
+          clubs.where((club) => club.hostUserId == uid).toList(growable: false),
+        ),
+      ),
       watchMatchesForUserProvider(
         uid,
       ).overrideWith((ref) => Stream.value(matches)),
@@ -1344,6 +1814,88 @@ class _FakeRunCheckInLocationService implements RunCheckInLocationService {
   @override
   Future<RunCheckInLocation> getCurrentLocation() async {
     return const RunCheckInLocation(latitude: 19.07, longitude: 72.87);
+  }
+}
+
+class _RecordingFcmService extends FcmService {
+  _RecordingFcmService()
+    : super(FakeFirebaseFirestore(), ErrorLogger(shouldReportErrors: false));
+
+  final initializedUids = <String>[];
+
+  @override
+  bool get isSupportedPlatform => true;
+
+  @override
+  Future<void> initialize({
+    required String uid,
+    required GoRouter router,
+  }) async {
+    initializedUids.add(uid);
+  }
+}
+
+class _RecordingCrashReporter implements CrashReporter {
+  final customKeys = <String, Object>{};
+  final recordedErrors = <Object>[];
+  bool? collectionEnabled;
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {
+    collectionEnabled = enabled;
+  }
+
+  @override
+  Future<void> setCustomKey(String key, Object value) async {
+    customKeys[key] = value;
+  }
+
+  @override
+  Future<void> recordError(
+    Object error,
+    StackTrace stackTrace, {
+    bool fatal = false,
+    String? reason,
+  }) async {
+    recordedErrors.add(error);
+  }
+
+  @override
+  Future<void> recordFlutterError(
+    FlutterErrorDetails details, {
+    bool fatal = false,
+  }) async {
+    recordedErrors.add(details.exception);
+  }
+}
+
+class _RecordingAnalyticsReporter implements AnalyticsReporter {
+  final screenViews = <String>[];
+  final events = <String>[];
+  bool? collectionEnabled;
+  String? userId;
+
+  @override
+  Future<void> setCollectionEnabled(bool enabled) async {
+    collectionEnabled = enabled;
+  }
+
+  @override
+  Future<void> logEvent(String name, {Map<String, Object>? parameters}) async {
+    events.add(name);
+  }
+
+  @override
+  Future<void> logScreenView({
+    required String screenName,
+    String? screenClass,
+  }) async {
+    screenViews.add(screenName);
+  }
+
+  @override
+  Future<void> setUserId(String? userId) async {
+    this.userId = userId;
   }
 }
 
@@ -1457,6 +2009,23 @@ class _FakeReviewsRepository implements ReviewsRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
+class _FakePublicProfileRepository implements PublicProfileRepository {
+  const _FakePublicProfileRepository(this.profiles);
+
+  final List<PublicProfile> profiles;
+
+  @override
+  Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) async {
+    final requested = uids.toSet();
+    return profiles
+        .where((profile) => requested.contains(profile.uid))
+        .toList(growable: false);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class _FakeRunDraftRepository implements RunDraftRepository {
   @override
   Future<List<RunDraft>> loadDrafts({
@@ -1484,6 +2053,23 @@ class _FakeRunDraftRepository implements RunDraftRepository {
     required String runClubId,
     required String userId,
   }) async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FakeRunClubDraftRepository implements RunClubDraftRepository {
+  @override
+  Future<RunClubDraft?> loadDraft({required String userId}) async => null;
+
+  @override
+  Future<void> saveDraft({
+    required String userId,
+    required RunClubDraft draft,
+  }) async {}
+
+  @override
+  Future<void> deleteDraft({required String userId}) async {}
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -1540,15 +2126,37 @@ class _FakeConversationRepository implements ConversationRepository {
 }
 
 class _FakeSwipeCandidateRepository implements SwipeCandidateRepository {
-  const _FakeSwipeCandidateRepository();
+  const _FakeSwipeCandidateRepository({this.candidates = const []});
+
+  final List<PublicProfile> candidates;
 
   @override
   Future<List<PublicProfile>> fetchCandidates({
     required String runId,
     required UserProfile currentUser,
   }) async {
-    return const [];
+    return candidates;
   }
+}
+
+class _FakeSwipeRepository implements SwipeRepository {
+  final List<Swipe> recordedSwipes = [];
+
+  @override
+  Future<void> recordSwipe({required Swipe swipe}) async {
+    recordedSwipes.add(swipe);
+  }
+
+  @override
+  Future<Set<String>> fetchSwipedUserIds({required String uid}) async {
+    return recordedSwipes
+        .where((swipe) => swipe.swiperId == uid)
+        .map((swipe) => swipe.targetId)
+        .toSet();
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 class _FakeSafetyRepository implements SafetyRepository {

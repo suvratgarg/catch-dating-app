@@ -52,7 +52,9 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
     final profiles = state.value;
     if (profiles == null || profiles.isEmpty) return;
 
-    final currentUserId = ref.read(authRepositoryProvider).currentUser?.uid;
+    final currentUserId =
+        ref.read(watchUserProfileProvider).asData?.value?.uid ??
+        ref.read(uidProvider).asData?.value;
     final target = profiles.first;
 
     if (currentUserId == null) return;
