@@ -1,7 +1,7 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -296,12 +296,12 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
     ];
     final location = [
-      _singleEnumEntry<IndianCity>(
+      _singleEnumEntry<CityOption>(
         context: context,
         icon: Icons.location_on_outlined,
         label: 'City',
-        values: IndianCity.values,
-        value: user.city,
+        values: defaultCityOptions,
+        value: cityOptionByName(user.city),
         fieldName: 'city',
       ),
     ];

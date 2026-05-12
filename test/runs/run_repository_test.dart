@@ -360,6 +360,30 @@ void main() {
         {'runId': 'run-9', 'userId': 'user-1'},
       ]);
     });
+
+    test('selfCheckInAttendance calls the matching Cloud Function', () async {
+      await repository.selfCheckInAttendance(
+        runId: 'run-9',
+        latitude: 19.076,
+        longitude: 72.8777,
+      );
+
+      expect(functions.callables['selfCheckInAttendance']!.calls, [
+        {'runId': 'run-9', 'latitude': 19.076, 'longitude': 72.8777},
+      ]);
+    });
+
+    test('selfCheckInAttendance omits missing coordinates', () async {
+      await repository.selfCheckInAttendance(
+        runId: 'run-9',
+        latitude: null,
+        longitude: null,
+      );
+
+      expect(functions.callables['selfCheckInAttendance']!.calls, [
+        {'runId': 'run-9'},
+      ]);
+    });
   });
 
   group('RunRepository providers', () {

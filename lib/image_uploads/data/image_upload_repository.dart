@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -65,19 +66,30 @@ class ImageUploadRepository {
   ///
   /// The extension is derived from the file name and appended to [storagePath],
   /// so pass a path without an extension (e.g. `'users/abc/photos/0_1234'`).
-  Future<String> upload({required String storagePath, required XFile image}) =>
-      withFirestoreErrorContext(
-        () async {
-          final bytes = await image.readAsBytes();
-          final ext = _normalizedExt(image.name);
-          final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
-          final ref = _storage.ref('$storagePath.$ext');
-          await ref.putData(bytes, SettableMetadata(contentType: contentType));
-          return ref.getDownloadURL();
-        },
-        collection: 'storage',
-        action: 'upload',
+  Future<String> upload({
+    required String storagePath,
+    required XFile image,
+  }) async {
+    try {
+      final bytes = await image.readAsBytes();
+      final ext = _normalizedExt(image.name);
+      final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
+      final ref = _storage.ref('$storagePath.$ext');
+      await ref.putData(bytes, SettableMetadata(contentType: contentType));
+      return ref.getDownloadURL();
+    } on FirebaseException catch (e) {
+      throw StorageException(
+        'Failed to upload image: ${e.message ?? e.code}',
+        cause: e,
       );
+    } catch (e, st) {
+      throw StorageException(
+        'Unexpected error during upload',
+        cause: e,
+        stackTrace: st,
+      );
+    }
+  }
 
   // ── Path helpers ──────────────────────────────────────────────────────────
 

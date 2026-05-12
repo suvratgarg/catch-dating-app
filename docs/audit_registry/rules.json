@@ -167,6 +167,25 @@
         "Feature screens consistently read view models/controllers and no scanner reaches remain"
       ]
     },
+    "ACTION-CARDINALITY-001": {
+      "title": "Declare action cardinality before wiring UI affordances",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "action_cardinality_policy",
+        "version": "1.0.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/**/data/**",
+        "functions/src/**",
+        "docs/**"
+      ],
+      "instruction": "Every user-visible action must declare its scope key and cardinality: not allowed, singleton, unbounded, or domain-bounded. Singleton actions must render their resulting state instead of duplicate CTAs and be enforced server-side. Unbounded actions must have a UI that supports zero, one, and many items. Domain bounds must be real product constraints, not UI shortcuts.",
+      "sunset_when": [
+        "The action inventory covers all primary callables and CTAs",
+        "New feature specs include action cardinality as a required field"
+      ]
+    },
     "STREAM-LIFECYCLE-001": {
       "title": "Do not idle-timeout realtime Firestore listeners",
       "status": "active",

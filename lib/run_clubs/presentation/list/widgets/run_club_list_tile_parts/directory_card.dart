@@ -133,8 +133,8 @@ class _DirectoryCard extends StatelessWidget {
 
 List<String> _visibleTags(RunClub club) {
   final locationNames = {
-    club.location.name.toLowerCase(),
-    club.location.label.toLowerCase(),
+    club.location.toLowerCase(),
+    cityLabel(club.location).toLowerCase(),
   };
   return club.tags
       .where((tag) => !locationNames.contains(tag.trim().toLowerCase()))

@@ -21,6 +21,8 @@ export const DEMO_MANIFEST_COLLECTION = "demoOpsRuns";
 export const DEFAULT_MAX_BATCH_WRITES = 450;
 export const DEFAULT_GOLDEN_ACCOUNTS_FILE =
   "tool/demo_seed/golden_accounts.example.json";
+const SELF_CHECK_IN_WINDOW_BEFORE_MINUTES = 10;
+const SELF_CHECK_IN_WINDOW_AFTER_MINUTES = 30;
 
 const cityLabels = {
   mumbai: "Mumbai",
@@ -161,12 +163,16 @@ export async function findSharedAttendedRunId(db, uidA, uidB) {
   return shared.sort()[0] ?? null;
 }
 
-export async function findDemoRuns(db, {now = new Date()} = {}) {
+export async function findDemoRuns(db, {now = new Date(), city = null} = {}) {
   const snap = await db.collection("runs").get();
-  const runs = snap.docs
+  let runs = snap.docs
     .map((doc) => ({id: doc.id, path: doc.ref.path, data: doc.data()}))
     .filter((run) => run.data.status !== "cancelled")
     .filter((run) => typeof run.data.startTime?.toDate === "function");
+
+  if (city) {
+    runs = await filterRunsByClubCity(db, runs, city);
+  }
 
   const upcoming = runs
     .filter((run) => run.data.startTime.toDate() > now)
@@ -177,6 +183,24 @@ export async function findDemoRuns(db, {now = new Date()} = {}) {
   const paidUpcoming = upcoming.filter((run) => Number(run.data.priceInPaise ?? 0) > 0);
 
   return {upcoming, past, paidUpcoming};
+}
+
+async function filterRunsByClubCity(db, runs, city) {
+  const clubCityById = new Map();
+  const filtered = [];
+  for (const run of runs) {
+    const clubId = run.data.runClubId;
+    if (typeof clubId !== "string" || clubId.length === 0) continue;
+    if (!clubCityById.has(clubId)) {
+      const clubSnap = await db.collection("runClubs").doc(clubId).get();
+      clubCityById.set(
+        clubId,
+        clubSnap.exists ? clubSnap.data()?.location ?? null : null
+      );
+    }
+    if (clubCityById.get(clubId) === city) filtered.push(run);
+  }
+  return filtered;
 }
 
 export async function findSyntheticTargets(db, {excludeUid, limit = 3}) {
@@ -493,7 +517,11 @@ export async function buildWarmUserPlan({
     seedPrefix,
     now,
   });
-  const {upcoming, past, paidUpcoming} = await findDemoRuns(db, {now});
+  const userCity = typeof user.data.city === "string" ? user.data.city : null;
+  const {upcoming, past, paidUpcoming} = await findDemoRuns(db, {
+    now,
+    city: userCity,
+  });
   const docs = [];
 
   for (const run of upcoming.slice(0, 3)) {
@@ -1166,6 +1194,162 @@ export async function buildHostAccountPlan({
   };
 }
 
+export async function buildCheckInRunPlan({
+  db,
+  admin,
+  phone,
+  seedPrefix = DEFAULT_DEMO_OPS_PREFIX,
+  latitude,
+  longitude,
+  meetingPoint = "Check-in test point",
+  now = new Date(),
+}) {
+  const user = await resolveUserByPhone(db, phone);
+  const profile = await requirePublicProfile(db, user.uid);
+  const lat = finiteNumber(latitude ?? user.data.latitude);
+  const lng = finiteNumber(longitude ?? user.data.longitude);
+  if (lat == null || lng == null) {
+    throw new Error(
+      "create-check-in-run requires --lat/--lng or stored users latitude/longitude."
+    );
+  }
+
+  const operationId = demoOperationId({
+    command: "check_in_run",
+    seedPrefix,
+    subject: user.uid,
+  });
+  const marker = buildDemoMarker({
+    admin,
+    command: "create-check-in-run",
+    operationId,
+    seedPrefix,
+    now,
+  });
+  const city = user.data.city ?? "mumbai";
+  const name = publicName(profile.data, user.data);
+  const clubId = `${seedPrefix}_checkin_club_${user.uid}`;
+  const runId = `${seedPrefix}_checkin_run_${user.uid}`;
+  const startTime = offsetDate(now, {minutes: 5});
+  const endTime = offsetDate(now, {minutes: 50});
+  const run = {
+    id: runId,
+    path: `runs/${runId}`,
+    data: {
+      ...marker,
+      runClubId: clubId,
+      startTime: timestampFromDate(admin, startTime),
+      endTime: timestampFromDate(admin, endTime),
+      meetingPoint,
+      startingPointLat: lat,
+      startingPointLng: lng,
+      locationDetails: "Demo check-in run. The check-in window is already open.",
+      distanceKm: 5,
+      pace: "easy",
+      capacityLimit: 12,
+      description: "Short-lived demo run for testing location-gated self check-in.",
+      priceInPaise: 0,
+      bookedCount: 1,
+      checkedInCount: 0,
+      waitlistedCount: 0,
+      status: "active",
+      cancelledAt: null,
+      cancellationReason: null,
+      constraints: {minAge: 18, maxAge: 70, maxMen: null, maxWomen: null},
+      genderCounts: {[user.data.gender ?? "other"]: 1},
+    },
+  };
+  const docs = [
+    {
+      path: `runClubHostClaims/${user.uid}`,
+      data: {
+        ...marker,
+        uid: user.uid,
+        runClubId: clubId,
+        createdAt: timestampFromDate(admin, now),
+      },
+    },
+    {
+      path: `runClubs/${clubId}`,
+      data: {
+        ...marker,
+        name: `${name} Check-In Club`,
+        description: "Demo club for testing location-gated check-in.",
+        location: city,
+        area: cityLabel(city),
+        hostUserId: user.uid,
+        hostName: name,
+        hostAvatarUrl: firstPhoto(profile.data),
+        createdAt: timestampFromDate(admin, now),
+        imageUrl: null,
+        tags: ["Demo", "Check-in"],
+        memberCount: 1,
+        rating: 0,
+        reviewCount: 0,
+        nextRunAt: timestampFromDate(admin, startTime),
+        nextRunLabel: meetingPoint,
+        instagramHandle: null,
+        phoneNumber: user.phoneNumber,
+        email: user.data.email ?? null,
+        status: "active",
+        archived: false,
+        archivedAt: null,
+        archiveReason: null,
+      },
+    },
+    {
+      path: `runClubMemberships/${clubId}_${user.uid}`,
+      data: {
+        ...marker,
+        clubId,
+        uid: user.uid,
+        role: "host",
+        status: "active",
+        pushNotificationsEnabled: true,
+        joinedAt: timestampFromDate(admin, now),
+        leftAt: null,
+        deletedAt: null,
+      },
+    },
+    {
+      path: run.path,
+      data: run.data,
+    },
+    ...buildRunClubScheduleLockDocs({run}),
+    ...await buildParticipationDocsWithLocks({
+      db,
+      admin,
+      marker,
+      uid: user.uid,
+      run,
+      status: "signedUp",
+      genderAtSignup: user.data.gender,
+      now,
+    }),
+  ];
+
+  return {
+    command: "create-check-in-run",
+    operationId,
+    phone: user.phoneNumber,
+    uid: user.uid,
+    runId,
+    runClubId: clubId,
+    latitude: lat,
+    longitude: lng,
+    checkInWindowOpensAt: offsetDate(startTime, {minutes: -10}).toISOString(),
+    startTime: startTime.toISOString(),
+    docs: uniqueDocsByPath(docs),
+    aggregateRepairRecommended: true,
+  };
+}
+
+function finiteNumber(value) {
+  if (value == null || value === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
 export async function buildResetUserDemoStatePlan({db, phone, uid}) {
   const resolved = uid ? {uid} : await resolveUserByPhone(db, phone);
   const userId = resolved.uid;
@@ -1258,7 +1442,7 @@ export function isDemoOwned(data) {
     typeof data?.seedPrefix === "string";
 }
 
-export async function buildValidateDemoStateReport({db, phone, uid}) {
+export async function buildValidateDemoStateReport({db, phone, uid, now = new Date()}) {
   const resolved = uid ? {uid, phoneNumber: null} : await resolveUserByPhone(db, phone);
   const userId = resolved.uid;
   const [
@@ -1269,6 +1453,7 @@ export async function buildValidateDemoStateReport({db, phone, uid}) {
     payments,
     notifications,
     outgoingSwipes,
+    runs,
   ] = await Promise.all([
     db.collection("publicProfiles").doc(userId).get(),
     db.collection("matches").where("participantIds", "array-contains", userId).get(),
@@ -1277,6 +1462,7 @@ export async function buildValidateDemoStateReport({db, phone, uid}) {
     db.collection("payments").where("userId", "==", userId).get(),
     db.collection("notifications").doc(userId).collection("items").get(),
     db.collection("swipes").doc(userId).collection("outgoing").get(),
+    db.collection("runs").get(),
   ]);
 
   let messageCount = 0;
@@ -1294,6 +1480,12 @@ export async function buildValidateDemoStateReport({db, phone, uid}) {
     payments: payments.size,
     notifications: notifications.size,
     outgoingSwipes: outgoingSwipes.size,
+    upcomingMappedRuns: countUpcomingMappedRuns(runs.docs, now),
+    checkInReadyRuns: countCheckInReadyRuns({
+      runDocs: runs.docs,
+      participationDocs: participations.docs,
+      now,
+    }),
   };
   const issues = [];
   if (!publicProfile.exists) issues.push(`Missing publicProfiles/${userId}.`);
@@ -1301,6 +1493,10 @@ export async function buildValidateDemoStateReport({db, phone, uid}) {
   if (counts.messages < 3) issues.push("Fewer than 3 chat messages.");
   if (counts.participations < 3) issues.push("Fewer than 3 run participation edges.");
   if (counts.notifications < 3) issues.push("Fewer than 3 notifications.");
+  if (counts.upcomingMappedRuns < 1) issues.push("No upcoming mapped runs.");
+  if (counts.checkInReadyRuns < 1) {
+    issues.push("No signed-up run is currently check-in ready.");
+  }
 
   return {
     uid: userId,
@@ -1312,8 +1508,8 @@ export async function buildValidateDemoStateReport({db, phone, uid}) {
   };
 }
 
-export async function buildDemoChecklist({db, phone, uid}) {
-  const report = await buildValidateDemoStateReport({db, phone, uid});
+export async function buildDemoChecklist({db, phone, uid, now = new Date()}) {
+  const report = await buildValidateDemoStateReport({db, phone, uid, now});
   const canDemo = [];
   const gaps = [];
   addCapability({
@@ -1361,6 +1557,20 @@ export async function buildDemoChecklist({db, phone, uid}) {
   addCapability({
     canDemo,
     gaps,
+    ok: report.counts.upcomingMappedRuns > 0,
+    label: "run map pins",
+    gap: "no upcoming runs with map coordinates",
+  });
+  addCapability({
+    canDemo,
+    gaps,
+    ok: report.counts.checkInReadyRuns > 0,
+    label: "location-gated self check-in",
+    gap: "no signed-up mapped run inside the check-in window",
+  });
+  addCapability({
+    canDemo,
+    gaps,
     ok: report.counts.payments > 0,
     label: "payment history",
     gap: "no payment history",
@@ -1373,6 +1583,60 @@ export async function buildDemoChecklist({db, phone, uid}) {
     gap: "no notifications",
   });
   return {...report, canDemo, gaps};
+}
+
+function countUpcomingMappedRuns(runDocs, now) {
+  return runDocs
+    .map((doc) => doc.data())
+    .filter((run) => run.status !== "cancelled")
+    .filter(hasRunCoordinates)
+    .filter((run) => {
+      const startTime = dateFromTimestampLike(run.startTime);
+      return startTime != null && startTime > now;
+    })
+    .length;
+}
+
+function countCheckInReadyRuns({runDocs, participationDocs, now}) {
+  const runsById = new Map(runDocs.map((doc) => [doc.id, doc.data()]));
+  return participationDocs
+    .map((doc) => doc.data())
+    .filter((participation) => participation.status === "signedUp")
+    .filter((participation) => {
+      const run = runsById.get(participation.runId);
+      return run != null &&
+        run.status !== "cancelled" &&
+        hasRunCoordinates(run) &&
+        isSelfCheckInWindowOpen(run.startTime, now);
+    })
+    .length;
+}
+
+function hasRunCoordinates(run) {
+  return finiteNumber(run.startingPointLat) != null &&
+    finiteNumber(run.startingPointLng) != null;
+}
+
+function isSelfCheckInWindowOpen(startTimeValue, now) {
+  const startTime = dateFromTimestampLike(startTimeValue);
+  if (startTime == null) return false;
+  const opensAt = offsetDate(startTime, {
+    minutes: -SELF_CHECK_IN_WINDOW_BEFORE_MINUTES,
+  });
+  const closesAt = offsetDate(startTime, {
+    minutes: SELF_CHECK_IN_WINDOW_AFTER_MINUTES,
+  });
+  return now > opensAt && now < closesAt;
+}
+
+function dateFromTimestampLike(value) {
+  if (typeof value?.toDate === "function") return value.toDate();
+  if (value instanceof Date) return value;
+  if (typeof value === "string") {
+    const parsed = new Date(value);
+    return Number.isNaN(parsed.getTime()) ? null : parsed;
+  }
+  return null;
 }
 
 function addCapability({canDemo, gaps, ok, label, gap}) {
@@ -1449,6 +1713,98 @@ export async function buildLaunchCleanupPlan({
     command: "cleanup-demo-data",
     paths: [...paths].sort(),
     seedPrefixes,
+  };
+}
+
+export async function buildStaleRunCleanupPlan({
+  db,
+  seedPrefixes = [DEFAULT_DEMO_OPS_PREFIX, DEFAULT_SEED_PREFIX],
+  now = new Date(),
+  includePast = true,
+  includeCancelled = true,
+} = {}) {
+  if (!includePast && !includeCancelled) {
+    throw new Error("Stale run cleanup requires past runs, cancelled runs, or both.");
+  }
+
+  const paths = new Set();
+  const staleRunIds = new Set();
+  const staleDemoMatchIds = new Set();
+  const runs = await db.collection("runs").get();
+  for (const doc of runs.docs) {
+    const data = doc.data();
+    if (!isDemoOwned(data) && !hasDemoPrefix(doc.id, seedPrefixes)) continue;
+    const startTime = typeof data.startTime?.toDate === "function" ?
+      data.startTime.toDate() :
+      null;
+    const isPast = includePast && startTime != null && startTime <= now;
+    const isCancelled = includeCancelled && data.status === "cancelled";
+    if (!isPast && !isCancelled) continue;
+    staleRunIds.add(doc.id);
+    paths.add(doc.ref.path);
+  }
+
+  if (staleRunIds.size === 0) {
+    return {
+      command: "cleanup-stale-runs",
+      seedPrefixes,
+      staleRunIds: [],
+      paths: [],
+      aggregateRepairRecommended: false,
+    };
+  }
+
+  for (const collectionName of [
+    "runParticipations",
+    "runClubScheduleLocks",
+    "userRunScheduleLocks",
+    "savedRuns",
+    "payments",
+    "reviews",
+  ]) {
+    const snap = await db.collection(collectionName).get();
+    for (const doc of snap.docs) {
+      if (staleRunIds.has(doc.data().runId)) paths.add(doc.ref.path);
+    }
+  }
+
+  const matches = await db.collection("matches").get();
+  for (const doc of matches.docs) {
+    const data = doc.data();
+    const touchesStaleRun = Array.isArray(data.runIds) &&
+      data.runIds.some((runId) => staleRunIds.has(runId));
+    if (!touchesStaleRun || !isDemoOwned(data)) continue;
+    staleDemoMatchIds.add(doc.id);
+    const messages = await doc.ref.collection("messages").get();
+    for (const message of messages.docs) paths.add(message.ref.path);
+    paths.add(doc.ref.path);
+  }
+
+  const swipers = await db.collection("swipes").get();
+  for (const swiperDoc of swipers.docs) {
+    const outgoing = await swiperDoc.ref.collection("outgoing").get();
+    for (const doc of outgoing.docs) {
+      if (staleRunIds.has(doc.data().runId)) paths.add(doc.ref.path);
+    }
+  }
+
+  const notificationUsers = await db.collection("notifications").get();
+  for (const userDoc of notificationUsers.docs) {
+    const items = await userDoc.ref.collection("items").get();
+    for (const doc of items.docs) {
+      const data = doc.data();
+      if (staleRunIds.has(data.runId) || staleDemoMatchIds.has(data.matchId)) {
+        paths.add(doc.ref.path);
+      }
+    }
+  }
+
+  return {
+    command: "cleanup-stale-runs",
+    seedPrefixes,
+    staleRunIds: [...staleRunIds].sort(),
+    paths: [...paths].sort(),
+    aggregateRepairRecommended: true,
   };
 }
 

@@ -8,6 +8,7 @@ import {
   DEFAULT_SEED_PREFIX,
   applyDeletePlan,
   applyDocPlan,
+  buildCheckInRunPlan,
   buildDemoChecklist,
   buildHostAccountPlan,
   buildLaunchCleanupPlan,
@@ -17,6 +18,7 @@ import {
   buildPromoteWaitlistPlan,
   buildRefundPlan,
   buildResetUserDemoStatePlan,
+  buildStaleRunCleanupPlan,
   buildUnreadMessagePlan,
   buildValidateDemoStateReport,
   buildWarmGroupPlans,
@@ -91,6 +93,8 @@ export async function main(argv = process.argv.slice(2)) {
     await runDemoChecklist({db, args, projectId});
   } else if (command === "cleanup-demo-data") {
     await runCleanupDemoData({db, args, projectId});
+  } else if (command === "cleanup-stale-runs") {
+    await runCleanupStaleRuns({db, args, projectId});
   } else if (command === "make-run-full") {
     await runWritePlan({
       db,
@@ -174,6 +178,23 @@ export async function main(argv = process.argv.slice(2)) {
         db,
         admin,
         phone: requireArg(args, "phone", "--phone"),
+        seedPrefix: args.seedPrefix,
+      }),
+      repair: true,
+    });
+  } else if (command === "create-check-in-run") {
+    await runWritePlan({
+      db,
+      args,
+      projectId,
+      title: "Demo check-in run plan",
+      plan: await buildCheckInRunPlan({
+        db,
+        admin,
+        phone: requireArg(args, "phone", "--phone"),
+        latitude: args.lat,
+        longitude: args.lng,
+        meetingPoint: args.meetingPoint,
         seedPrefix: args.seedPrefix,
       }),
       repair: true,
@@ -354,6 +375,30 @@ async function runCleanupDemoData({db, args, projectId}) {
   });
 }
 
+async function runCleanupStaleRuns({db, args, projectId}) {
+  const plan = await buildStaleRunCleanupPlan({
+    db,
+    seedPrefixes: args.seedPrefixes.length > 0 ?
+      args.seedPrefixes :
+      undefined,
+    includePast: args.cleanupPast,
+    includeCancelled: args.cleanupCancelled,
+  });
+  let aggregateSummary = null;
+  if (args.apply) {
+    await applyDeletePlan({db, paths: plan.paths});
+    aggregateSummary = await repairAggregates(db);
+  }
+  printPlan({
+    args,
+    projectId,
+    title: "Demo stale run cleanup plan",
+    plan,
+    manifest: {pathCount: plan.paths.length},
+    appliedSummary: args.apply ? {deleted: plan.paths.length, aggregateSummary} : null,
+  });
+}
+
 async function runWritePlan({db, args, projectId, title, plan, repair = false}) {
   let aggregateSummary = null;
   if (args.apply) {
@@ -438,9 +483,14 @@ function parseArgs(argv) {
     toPhone: null,
     uid: null,
     runId: null,
+    lat: null,
+    lng: null,
+    meetingPoint: undefined,
     text: "Can you check this demo chat?",
     syntheticMatches: 3,
     seedPrefixes: [],
+    cleanupPast: true,
+    cleanupCancelled: true,
     goldenFile: null,
     demoScenario: null,
     apply: false,
@@ -468,6 +518,8 @@ function parseArgs(argv) {
       args.viaSwipesOnly = true;
       args.withMessages = false;
     } else if (arg === "--no-messages") args.withMessages = false;
+    else if (arg === "--keep-past-runs") args.cleanupPast = false;
+    else if (arg === "--keep-cancelled-runs") args.cleanupCancelled = false;
     else if (arg === "--emulator") args.emulatorHost = "127.0.0.1:8080";
     else if (arg === "--emulator-host") args.emulatorHost = requireValue(argv, ++i, arg);
     else if (arg === "--env") args.env = requireValue(argv, ++i, arg);
@@ -486,6 +538,9 @@ function parseArgs(argv) {
     else if (arg === "--to-phone") args.toPhone = requireValue(argv, ++i, arg);
     else if (arg === "--uid") args.uid = requireValue(argv, ++i, arg);
     else if (arg === "--run-id") args.runId = requireValue(argv, ++i, arg);
+    else if (arg === "--lat") args.lat = requireValue(argv, ++i, arg);
+    else if (arg === "--lng") args.lng = requireValue(argv, ++i, arg);
+    else if (arg === "--meeting-point") args.meetingPoint = requireValue(argv, ++i, arg);
     else if (arg === "--text") args.text = requireValue(argv, ++i, arg);
     else if (arg === "--seed-prefixes") args.seedPrefixes = splitCsv(requireValue(argv, ++i, arg));
     else if (arg === "--golden-file") args.goldenFile = requireValue(argv, ++i, arg);
@@ -617,12 +672,14 @@ function printCommands() {
 - validate-demo-state
 - demo-checklist
 - cleanup-demo-data
+- cleanup-stale-runs
 - make-run-full
 - mark-attended
 - promote-waitlist
 - create-unread-message
 - create-refund
 - create-host-account
+- create-check-in-run
 - scenario-info
 - list-golden-accounts`);
 }
@@ -639,6 +696,8 @@ Usage:
   node tool/demo_ops.mjs reset-user-demo-state --env prod --phone +91... --apply --allow-prod
   node tool/demo_ops.mjs validate-demo-state --env prod --phones +91...,+91...
   node tool/demo_ops.mjs cleanup-demo-data --env prod --allow-prod
+  node tool/demo_ops.mjs cleanup-stale-runs --env prod --apply --allow-prod
+  node tool/demo_ops.mjs create-check-in-run --env prod --phone +91... --lat 28.6 --lng 77.2 --apply --allow-prod
   node tool/demo_ops.mjs demo-checklist --env prod --phone +91...
   node tool/demo_ops.mjs scenario-info --demo-scenario investor-demo
 
@@ -656,6 +715,8 @@ Command options:
   --phone-a / --phone-b          Pair for match-phones.
   --from-phone / --to-phone      Sender and recipient for unread-message.
   --run-id <runId>               Force match/shared run context.
+  --lat / --lng                  Manual coordinates for create-check-in-run.
+  --meeting-point <label>        Meeting label for create-check-in-run.
   --text <message>               Demo chat message text.
   --via-swipes                   Also write reciprocal swipe likes.
   --via-swipes-only              Write reciprocal likes only; rely on trigger.
@@ -663,6 +724,8 @@ Command options:
   --no-messages                  Deprecated; match-phones defaults to no messages.
   --synthetic-matches <n>        warm-user synthetic match count. Default: 3.
   --seed-prefixes <prefix,...>   cleanup-demo-data prefixes.
+  --keep-past-runs               cleanup-stale-runs leaves past seeded runs.
+  --keep-cancelled-runs          cleanup-stale-runs leaves cancelled seeded runs.
   --demo-scenario <name|path>    scenario-info target.
   --golden-file <path>           Golden account registry JSON.
   --anchor-file <path>           seed-world/append-user anchor file.

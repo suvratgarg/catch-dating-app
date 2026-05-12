@@ -75,7 +75,7 @@ final class PhotoUploadControllerProvider
 }
 
 String _$photoUploadControllerHash() =>
-    r'111e97af8945c31cfc9c69e6c6f1c1ecb2cce1e5';
+    r'0d6142fc3bc3944b797d96b3cdb5f775889bef98';
 
 /// **Pattern B: State controller with record state + Mutation**
 ///

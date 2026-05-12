@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -39,17 +38,16 @@ class RunClubsRepository {
     return doc.exists ? doc.data() : null;
   }
 
-  Stream<List<RunClub>> watchRunClubsByLocation(IndianCity location) =>
-      _runClubsRef
-          .where('location', isEqualTo: location.name)
-          .orderBy('createdAt', descending: true)
-          .snapshots()
-          .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<RunClub>> watchRunClubsByLocation(String location) => _runClubsRef
+      .where('location', isEqualTo: location)
+      .orderBy('createdAt', descending: true)
+      .snapshots()
+      .map((snap) => snap.docs.map((d) => d.data()).toList());
 
   Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
-    IndianCity location,
+    String location,
   ) => _runClubsRef
-      .where('location', isEqualTo: location.name)
+      .where('location', isEqualTo: location)
       .orderBy('rating', descending: true)
       .snapshots()
       .map((snap) => snap.docs.map((d) => d.data()).toList());
@@ -67,7 +65,7 @@ class RunClubsRepository {
     String? clubId,
     required String name,
     required String description,
-    required IndianCity location,
+    required String location,
     required String area,
     String? imageUrl,
     String? instagramHandle,
@@ -78,7 +76,7 @@ class RunClubsRepository {
       final data = <String, dynamic>{
         'name': name,
         'description': description,
-        'location': location.name,
+        'location': location,
         'area': area,
         'imageUrl': imageUrl,
         'instagramHandle': instagramHandle,
@@ -158,7 +156,7 @@ Stream<RunClub?> watchRunClub(Ref ref, String id) {
 }
 
 @riverpod
-Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) {
+Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, String location) {
   final repository = ref.watch(runClubsRepositoryProvider);
   return repository.watchRunClubsByLocation(location);
 }
@@ -166,7 +164,7 @@ Stream<List<RunClub>> watchRunClubsByLocation(Ref ref, IndianCity location) {
 @riverpod
 Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
   Ref ref,
-  IndianCity location,
+  String location,
 ) {
   final repository = ref.watch(runClubsRepositoryProvider);
   return repository.watchRunClubsByLocationSortedByRating(location);

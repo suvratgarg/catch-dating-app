@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RunClub {
 
-@JsonKey(includeToJson: false) String get id; String get name; String get description; IndianCity get location; String get area; String get hostUserId; String get hostName; String? get hostAvatarUrl;@TimestampConverter() DateTime get createdAt; String? get imageUrl; List<String> get tags; int get memberCount; double get rating; int get reviewCount;@TimestampConverter() DateTime? get nextRunAt; String? get nextRunLabel; String? get instagramHandle; String? get phoneNumber; String? get email; RunClubLifecycleStatus get status; bool get archived;@TimestampConverter() DateTime? get archivedAt; String? get archiveReason;
+@JsonKey(includeToJson: false) String get id; String get name; String get description; String get location; String get area; String get hostUserId; String get hostName; String? get hostAvatarUrl;@TimestampConverter() DateTime get createdAt; String? get imageUrl; List<String> get tags; int get memberCount; double get rating; int get reviewCount;@TimestampConverter() DateTime? get nextRunAt; String? get nextRunLabel; String? get instagramHandle; String? get phoneNumber; String? get email; RunClubLifecycleStatus get status; bool get archived;@TimestampConverter() DateTime? get archivedAt; String? get archiveReason;
 /// Create a copy of RunClub
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $RunClubCopyWith<$Res>  {
   factory $RunClubCopyWith(RunClub value, $Res Function(RunClub) _then) = _$RunClubCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String name, String description, IndianCity location, String area, String hostUserId, String hostName, String? hostAvatarUrl,@TimestampConverter() DateTime createdAt, String? imageUrl, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextRunAt, String? nextRunLabel, String? instagramHandle, String? phoneNumber, String? email, RunClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason
+@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String hostUserId, String hostName, String? hostAvatarUrl,@TimestampConverter() DateTime createdAt, String? imageUrl, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextRunAt, String? nextRunLabel, String? instagramHandle, String? phoneNumber, String? email, RunClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason
 });
 
 
@@ -71,7 +71,7 @@ id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
-as IndianCity,area: null == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
+as String,area: null == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
 as String,hostUserId: null == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
 as String,hostName: null == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
 as String,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable
@@ -175,7 +175,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  IndianCity location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextRunAt,  String? nextRunLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  RunClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextRunAt,  String? nextRunLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  RunClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RunClub() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.createdAt,_that.imageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextRunAt,_that.nextRunLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason);case _:
@@ -196,7 +196,7 @@ return $default(_that.id,_that.name,_that.description,_that.location,_that.area,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  IndianCity location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextRunAt,  String? nextRunLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  RunClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextRunAt,  String? nextRunLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  RunClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)  $default,) {final _that = this;
 switch (_that) {
 case _RunClub():
 return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.createdAt,_that.imageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextRunAt,_that.nextRunLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason);case _:
@@ -216,7 +216,7 @@ return $default(_that.id,_that.name,_that.description,_that.location,_that.area,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  IndianCity location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextRunAt,  String? nextRunLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  RunClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String name,  String description,  String location,  String area,  String hostUserId,  String hostName,  String? hostAvatarUrl, @TimestampConverter()  DateTime createdAt,  String? imageUrl,  List<String> tags,  int memberCount,  double rating,  int reviewCount, @TimestampConverter()  DateTime? nextRunAt,  String? nextRunLabel,  String? instagramHandle,  String? phoneNumber,  String? email,  RunClubLifecycleStatus status,  bool archived, @TimestampConverter()  DateTime? archivedAt,  String? archiveReason)?  $default,) {final _that = this;
 switch (_that) {
 case _RunClub() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.location,_that.area,_that.hostUserId,_that.hostName,_that.hostAvatarUrl,_that.createdAt,_that.imageUrl,_that.tags,_that.memberCount,_that.rating,_that.reviewCount,_that.nextRunAt,_that.nextRunLabel,_that.instagramHandle,_that.phoneNumber,_that.email,_that.status,_that.archived,_that.archivedAt,_that.archiveReason);case _:
@@ -237,7 +237,7 @@ class _RunClub implements RunClub {
 @override@JsonKey(includeToJson: false) final  String id;
 @override final  String name;
 @override final  String description;
-@override final  IndianCity location;
+@override final  String location;
 @override final  String area;
 @override final  String hostUserId;
 @override final  String hostName;
@@ -297,7 +297,7 @@ abstract mixin class _$RunClubCopyWith<$Res> implements $RunClubCopyWith<$Res> {
   factory _$RunClubCopyWith(_RunClub value, $Res Function(_RunClub) _then) = __$RunClubCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String name, String description, IndianCity location, String area, String hostUserId, String hostName, String? hostAvatarUrl,@TimestampConverter() DateTime createdAt, String? imageUrl, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextRunAt, String? nextRunLabel, String? instagramHandle, String? phoneNumber, String? email, RunClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason
+@JsonKey(includeToJson: false) String id, String name, String description, String location, String area, String hostUserId, String hostName, String? hostAvatarUrl,@TimestampConverter() DateTime createdAt, String? imageUrl, List<String> tags, int memberCount, double rating, int reviewCount,@TimestampConverter() DateTime? nextRunAt, String? nextRunLabel, String? instagramHandle, String? phoneNumber, String? email, RunClubLifecycleStatus status, bool archived,@TimestampConverter() DateTime? archivedAt, String? archiveReason
 });
 
 
@@ -320,7 +320,7 @@ id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,location: null == location ? _self.location : location // ignore: cast_nullable_to_non_nullable
-as IndianCity,area: null == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
+as String,area: null == area ? _self.area : area // ignore: cast_nullable_to_non_nullable
 as String,hostUserId: null == hostUserId ? _self.hostUserId : hostUserId // ignore: cast_nullable_to_non_nullable
 as String,hostName: null == hostName ? _self.hostName : hostName // ignore: cast_nullable_to_non_nullable
 as String,hostAvatarUrl: freezed == hostAvatarUrl ? _self.hostAvatarUrl : hostAvatarUrl // ignore: cast_nullable_to_non_nullable

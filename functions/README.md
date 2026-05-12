@@ -177,9 +177,9 @@ start — photos are allowed but never scanned.
 ## Deploy runbook
 
 For multi-surface deploys (functions + rules + storage), follow
-[`docs/deploy_runbook_2026_05_04.md`](../docs/deploy_runbook_2026_05_04.md).
-The runbook covers ordering dependencies (`config/cities` before rules),
-smoke tests, and rollback procedures.
+[`docs/release_operations.md`](../docs/release_operations.md). The runbook
+covers ordering dependencies (`config/cities` before rules), smoke tests, and
+release evidence.
 
 ## Firestore rules
 

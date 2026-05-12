@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
@@ -315,7 +316,7 @@ void main() {
     testWidgets('draft picker deletes persisted drafts and resumes another', (
       tester,
     ) async {
-      final draftRepository = RunDraftRepository();
+      final draftRepository = RunDraftRepository(ErrorLogger());
       await draftRepository.saveDraft(
         userId: 'runner-1',
         draft: _buildRunDraft(

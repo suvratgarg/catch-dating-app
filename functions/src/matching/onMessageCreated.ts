@@ -9,11 +9,8 @@ import {
 } from "../shared/firestore";
 import {
   allowsPushPreference,
-  activityNotificationId,
   sendFcmNotification,
-  setActivityNotificationInTransaction,
 } from "../shared/notifications";
-import {demoMetadataFromSources} from "../shared/demoMetadata";
 
 interface MessageCreatedEvent {
   id?: string;
@@ -110,20 +107,6 @@ export async function onMessageCreatedHandler(
       createdAt: deps.serverTimestamp(),
     });
 
-    setActivityNotificationInTransaction(tx, db, {
-      id: activityNotificationId("message", `${matchId}_${messageId}`),
-      uid: recipientId,
-      type: "message",
-      title: notificationTitle,
-      body: notificationBody,
-      createdAt: messageSentAt,
-      matchId,
-      runId: latestMatchRunId(match),
-      actorUid: message.senderId,
-      actorName: senderName,
-      ...demoMetadataFromSources(message, match),
-    });
-
     shouldNotify = true;
   });
 
@@ -166,20 +149,6 @@ function buildMessagePreview(message: ChatMessageDoc): string {
 
   const text = message.text.trim();
   return text.length > 80 ? text.slice(0, 80) + "…" : text;
-}
-
-type LegacyMatchDoc = MatchDoc & {runId?: string | null};
-
-/**
- * Returns the newest shared run id for a match, including legacy runId docs.
- *
- * @param {MatchDoc} match Match document data.
- * @return {string | undefined} Latest run id when one is available.
- */
-function latestMatchRunId(match: MatchDoc): string | undefined {
-  const runIds = match.runIds ?? [];
-  const legacyRunId = (match as LegacyMatchDoc).runId;
-  return runIds.at(-1) ?? legacyRunId ?? undefined;
 }
 
 /**

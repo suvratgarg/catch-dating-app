@@ -31,7 +31,12 @@ class ActivityNotificationRepository {
       .orderBy('createdAt', descending: true)
       .limit(limit)
       .snapshots()
-      .map((snap) => snap.docs.map((doc) => doc.data()).toList());
+      .map(
+        (snap) => snap.docs
+            .map((doc) => doc.data())
+            .where((notification) => notification.isVisibleInActivity)
+            .toList(),
+      );
 
   Future<void> markAllRead({
     required String uid,

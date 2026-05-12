@@ -7,18 +7,8 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {validateCallable} from "../shared/validation";
 
-const IndianCitySchema = z.enum([
-  "mumbai",
-  "delhi",
-  "bangalore",
-  "hyderabad",
-  "chennai",
-  "kolkata",
-  "pune",
-  "ahmedabad",
-  "indore",
-]);
-
+const CityNameSchema = z.string().trim().min(1).max(80)
+  .regex(/^[a-z0-9-]+$/);
 const GenderSchema = z.enum(["man", "woman", "nonBinary", "other"]);
 const EducationSchema = z.enum([
   "highSchool",
@@ -82,7 +72,7 @@ const UserProfilePatchSchema = z.object({
   sexualOrientation: SexualOrientationSchema.nullable().optional(),
   profileComplete: z.boolean().optional(),
   photoUrls: z.array(z.string().url()).max(12).optional(),
-  city: IndianCitySchema.nullable().optional(),
+  city: CityNameSchema.nullable().optional(),
   latitude: z.number().min(-90).max(90).nullable().optional(),
   longitude: z.number().min(-180).max(180).nullable().optional(),
   interestedInGenders: z.array(GenderSchema).min(1).max(8).optional(),

@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 mixin _$PublicProfile {
 
 @JsonKey(includeToJson: false) String get uid; String get name; int get age; String get bio; Gender get gender; List<String> get photoUrls; List<String> get photoThumbnailUrls;// Location
-@JsonKey(unknownEnumValue: null) IndianCity? get city;// Background
+ String? get city;// Background
  int? get height; String? get occupation; String? get company;@JsonKey(unknownEnumValue: null) EducationLevel? get education;@JsonKey(unknownEnumValue: null) Religion? get religion; List<Language> get languages;// Intentions
 @JsonKey(unknownEnumValue: null) RelationshipGoal? get relationshipGoal;// Lifestyle
 @JsonKey(unknownEnumValue: null) DrinkingHabit? get drinking;@JsonKey(unknownEnumValue: null) SmokingHabit? get smoking;@JsonKey(unknownEnumValue: null) WorkoutFrequency? get workout;@JsonKey(unknownEnumValue: null) DietaryPreference? get diet;@JsonKey(unknownEnumValue: null) ChildrenStatus? get children;// Running identity
@@ -53,7 +53,7 @@ abstract mixin class $PublicProfileCopyWith<$Res>  {
   factory $PublicProfileCopyWith(PublicProfile value, $Res Function(PublicProfile) _then) = _$PublicProfileCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String uid, String name, int age, String bio, Gender gender, List<String> photoUrls, List<String> photoThumbnailUrls,@JsonKey(unknownEnumValue: null) IndianCity? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, int paceMinSecsPerKm, int paceMaxSecsPerKm, List<PreferredDistance> preferredDistances, List<RunReason> runningReasons
+@JsonKey(includeToJson: false) String uid, String name, int age, String bio, Gender gender, List<String> photoUrls, List<String> photoThumbnailUrls, String? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, int paceMinSecsPerKm, int paceMaxSecsPerKm, List<PreferredDistance> preferredDistances, List<RunReason> runningReasons
 });
 
 
@@ -80,7 +80,7 @@ as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullabl
 as Gender,photoUrls: null == photoUrls ? _self.photoUrls : photoUrls // ignore: cast_nullable_to_non_nullable
 as List<String>,photoThumbnailUrls: null == photoThumbnailUrls ? _self.photoThumbnailUrls : photoThumbnailUrls // ignore: cast_nullable_to_non_nullable
 as List<String>,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
-as IndianCity?,height: freezed == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
+as String?,height: freezed == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
 as int?,occupation: freezed == occupation ? _self.occupation : occupation // ignore: cast_nullable_to_non_nullable
 as String?,company: freezed == company ? _self.company : company // ignore: cast_nullable_to_non_nullable
 as String?,education: freezed == education ? _self.education : education // ignore: cast_nullable_to_non_nullable
@@ -181,7 +181,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls, @JsonKey(unknownEnumValue: null)  IndianCity? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PublicProfile() when $default != null:
 return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.photoUrls,_that.photoThumbnailUrls,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons);case _:
@@ -202,7 +202,7 @@ return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.phot
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls, @JsonKey(unknownEnumValue: null)  IndianCity? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)  $default,) {final _that = this;
 switch (_that) {
 case _PublicProfile():
 return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.photoUrls,_that.photoThumbnailUrls,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons);case _:
@@ -222,7 +222,7 @@ return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.phot
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls, @JsonKey(unknownEnumValue: null)  IndianCity? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)?  $default,) {final _that = this;
 switch (_that) {
 case _PublicProfile() when $default != null:
 return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.photoUrls,_that.photoThumbnailUrls,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons);case _:
@@ -237,7 +237,7 @@ return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.phot
 @JsonSerializable()
 
 class _PublicProfile implements PublicProfile {
-  const _PublicProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, required this.age, required this.bio, required this.gender, final  List<String> photoUrls = const [], final  List<String> photoThumbnailUrls = const [], @JsonKey(unknownEnumValue: null) this.city, this.height, this.occupation, this.company, @JsonKey(unknownEnumValue: null) this.education, @JsonKey(unknownEnumValue: null) this.religion, final  List<Language> languages = const [], @JsonKey(unknownEnumValue: null) this.relationshipGoal, @JsonKey(unknownEnumValue: null) this.drinking, @JsonKey(unknownEnumValue: null) this.smoking, @JsonKey(unknownEnumValue: null) this.workout, @JsonKey(unknownEnumValue: null) this.diet, @JsonKey(unknownEnumValue: null) this.children, this.paceMinSecsPerKm = 300, this.paceMaxSecsPerKm = 420, final  List<PreferredDistance> preferredDistances = const [], final  List<RunReason> runningReasons = const []}): _photoUrls = photoUrls,_photoThumbnailUrls = photoThumbnailUrls,_languages = languages,_preferredDistances = preferredDistances,_runningReasons = runningReasons;
+  const _PublicProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, required this.age, required this.bio, required this.gender, final  List<String> photoUrls = const [], final  List<String> photoThumbnailUrls = const [], this.city, this.height, this.occupation, this.company, @JsonKey(unknownEnumValue: null) this.education, @JsonKey(unknownEnumValue: null) this.religion, final  List<Language> languages = const [], @JsonKey(unknownEnumValue: null) this.relationshipGoal, @JsonKey(unknownEnumValue: null) this.drinking, @JsonKey(unknownEnumValue: null) this.smoking, @JsonKey(unknownEnumValue: null) this.workout, @JsonKey(unknownEnumValue: null) this.diet, @JsonKey(unknownEnumValue: null) this.children, this.paceMinSecsPerKm = 300, this.paceMaxSecsPerKm = 420, final  List<PreferredDistance> preferredDistances = const [], final  List<RunReason> runningReasons = const []}): _photoUrls = photoUrls,_photoThumbnailUrls = photoThumbnailUrls,_languages = languages,_preferredDistances = preferredDistances,_runningReasons = runningReasons;
   factory _PublicProfile.fromJson(Map<String, dynamic> json) => _$PublicProfileFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String uid;
@@ -260,7 +260,7 @@ class _PublicProfile implements PublicProfile {
 }
 
 // Location
-@override@JsonKey(unknownEnumValue: null) final  IndianCity? city;
+@override final  String? city;
 // Background
 @override final  int? height;
 @override final  String? occupation;
@@ -333,7 +333,7 @@ abstract mixin class _$PublicProfileCopyWith<$Res> implements $PublicProfileCopy
   factory _$PublicProfileCopyWith(_PublicProfile value, $Res Function(_PublicProfile) _then) = __$PublicProfileCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String uid, String name, int age, String bio, Gender gender, List<String> photoUrls, List<String> photoThumbnailUrls,@JsonKey(unknownEnumValue: null) IndianCity? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, int paceMinSecsPerKm, int paceMaxSecsPerKm, List<PreferredDistance> preferredDistances, List<RunReason> runningReasons
+@JsonKey(includeToJson: false) String uid, String name, int age, String bio, Gender gender, List<String> photoUrls, List<String> photoThumbnailUrls, String? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, int paceMinSecsPerKm, int paceMaxSecsPerKm, List<PreferredDistance> preferredDistances, List<RunReason> runningReasons
 });
 
 
@@ -360,7 +360,7 @@ as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullabl
 as Gender,photoUrls: null == photoUrls ? _self._photoUrls : photoUrls // ignore: cast_nullable_to_non_nullable
 as List<String>,photoThumbnailUrls: null == photoThumbnailUrls ? _self._photoThumbnailUrls : photoThumbnailUrls // ignore: cast_nullable_to_non_nullable
 as List<String>,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
-as IndianCity?,height: freezed == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
+as String?,height: freezed == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
 as int?,occupation: freezed == occupation ? _self.occupation : occupation // ignore: cast_nullable_to_non_nullable
 as String?,company: freezed == company ? _self.company : company // ignore: cast_nullable_to_non_nullable
 as String?,education: freezed == education ? _self.education : education // ignore: cast_nullable_to_non_nullable

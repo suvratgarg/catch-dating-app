@@ -216,7 +216,7 @@ final class FilteredRunClubsProvider
   }
 }
 
-String _$filteredRunClubsHash() => r'fa2dc7dc25481dceba433fd984e5c1f9d218fd93';
+String _$filteredRunClubsHash() => r'c041431a708032dd601e19d1493d80138308e298';
 
 /// **Pattern D: View-model provider**
 ///

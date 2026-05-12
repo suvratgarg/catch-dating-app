@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
@@ -23,8 +23,8 @@ class RunClubBasicsStep extends StatelessWidget {
 
   final GlobalKey<FormState> formKey;
   final TextEditingController nameController;
-  final IndianCity? selectedCity;
-  final ValueChanged<IndianCity?> onCityChanged;
+  final CityOption? selectedCity;
+  final ValueChanged<CityOption?> onCityChanged;
   final TextEditingController areaController;
   final Uint8List? coverImageBytes;
   final String? existingImageUrl;
@@ -63,8 +63,8 @@ class RunClubBasicsStep extends StatelessWidget {
               },
             ),
             gapH16,
-            CatchDropdownField<IndianCity>(
-              values: IndianCity.values,
+            CatchDropdownField<CityOption>(
+              values: defaultCityOptions,
               label: 'City',
               prefixIcon: const Icon(Icons.location_city_outlined),
               value: selectedCity,

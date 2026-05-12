@@ -47,7 +47,7 @@ const scenarios = {
     cities: allCities,
     usersPerCity: 8,
     clubsPerCity: 2,
-    runsPerClub: 6,
+    runsPerClub: 8,
     anchorsPerRun: 4,
   },
   "city-dense": {
@@ -63,7 +63,7 @@ const scenarios = {
     cities: ["mumbai", "delhi", "bangalore", "indore"],
     usersPerCity: 4,
     clubsPerCity: 1,
-    runsPerClub: 5,
+    runsPerClub: 7,
     anchorsPerRun: 1,
   },
   "paid-flow-demo": {
@@ -119,6 +119,54 @@ const clubImages = [
   "https://images.unsplash.com/photo-1546483875-ad9014c88eba?auto=format&fit=crop&w=1400&q=80",
   "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?auto=format&fit=crop&w=1400&q=80",
 ];
+
+const meetingPointData = {
+  mumbai: [
+    {label: "Bandra Carter Road amphitheatre", lat: 19.0704, lng: 72.8220, detail: "Meet beside the amphitheatre steps facing the promenade."},
+    {label: "Marine Drive police gymkhana gate", lat: 18.9432, lng: 72.8234, detail: "Meet near the sea-facing gate before the promenade warm-up."},
+    {label: "Powai lake garden entrance", lat: 19.1197, lng: 72.9052, detail: "Meet at the garden entrance opposite the lake path."},
+  ],
+  delhi: [
+    {label: "Lodhi Garden gate 1", lat: 28.5933, lng: 77.2209, detail: "Meet just inside gate 1 near the stone benches."},
+    {label: "Hauz Khas deer park gate", lat: 28.5494, lng: 77.2001, detail: "Meet at the deer park entrance before the loop."},
+    {label: "India Gate lawns east side", lat: 28.6129, lng: 77.2295, detail: "Meet on the east lawn path facing India Gate."},
+  ],
+  bangalore: [
+    {label: "Cubbon Park Queen's statue", lat: 12.9763, lng: 77.5929, detail: "Meet near the Queen's statue before the park loop."},
+    {label: "Indiranagar 100 ft road metro gate", lat: 12.9784, lng: 77.6408, detail: "Meet outside the metro gate on the service-road side."},
+    {label: "Jayanagar 4th block bus stand", lat: 12.9250, lng: 77.5938, detail: "Meet near the bus stand entrance before the neighbourhood route."},
+  ],
+  hyderabad: [
+    {label: "Necklace Road People's Plaza", lat: 17.4239, lng: 78.4738, detail: "Meet at the plaza entrance facing Hussain Sagar."},
+    {label: "Gachibowli stadium gate", lat: 17.4401, lng: 78.3489, detail: "Meet outside the main stadium gate."},
+    {label: "Jubilee Hills check post", lat: 17.4326, lng: 78.4071, detail: "Meet near the check-post pavement before the hill route."},
+  ],
+  chennai: [
+    {label: "Besant Nagar beach police booth", lat: 12.9995, lng: 80.2668, detail: "Meet beside the beach police booth before the promenade run."},
+    {label: "Marina lighthouse entrance", lat: 13.0500, lng: 80.2824, detail: "Meet near the lighthouse entrance facing the service road."},
+    {label: "Adyar theosophical gate", lat: 13.0067, lng: 80.2574, detail: "Meet outside the gate before the shaded loop."},
+  ],
+  kolkata: [
+    {label: "Maidan Victoria Memorial north gate", lat: 22.5600, lng: 88.3426, detail: "Meet at the north gate before the Maidan loop."},
+    {label: "Salt Lake Central Park gate", lat: 22.5867, lng: 88.4171, detail: "Meet by the Central Park gate near the lake path."},
+    {label: "New Town Eco Park gate 1", lat: 22.5810, lng: 88.4765, detail: "Meet outside gate 1 before the long loop."},
+  ],
+  pune: [
+    {label: "Koregaon Park lane 5 corner", lat: 18.5362, lng: 73.8938, detail: "Meet at the lane 5 corner before the tree-lined route."},
+    {label: "Baner hill trail gate", lat: 18.5590, lng: 73.7868, detail: "Meet at the trail gate before the hill warm-up."},
+    {label: "Viman Nagar jogging track gate", lat: 18.5679, lng: 73.9143, detail: "Meet outside the jogging track gate."},
+  ],
+  ahmedabad: [
+    {label: "Sabarmati Riverfront event centre", lat: 23.0300, lng: 72.5800, detail: "Meet at the event-centre entrance on the riverfront path."},
+    {label: "Satellite prahladnagar garden gate", lat: 23.0301, lng: 72.5178, detail: "Meet by the garden gate before the neighbourhood route."},
+    {label: "Bodakdev sindhu bhavan corner", lat: 23.0396, lng: 72.5130, detail: "Meet at the corner pavement near the cafe row."},
+  ],
+  indore: [
+    {label: "Race Course Road main gate", lat: 22.7274, lng: 75.8818, detail: "Meet by the main gate on the Race Course Road side."},
+    {label: "Vijay Nagar main gate", lat: 22.7533, lng: 75.8937, detail: "Meet outside the Vijay Nagar main gate before the service-road loop."},
+    {label: "Rajwada square clock tower", lat: 22.7196, lng: 75.8577, detail: "Meet near the clock tower side of Rajwada square."},
+  ],
+};
 
 const args = parseArgs(process.argv.slice(2));
 if (args.help) {
@@ -477,6 +525,7 @@ function buildSeed({
   notifications.push(...buildGeneralNotifications({seedMarker, anchorProfiles, clubs, runs, now}));
   payments.push(...buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, runs, now}));
   assertScheduleCompliance({runs, participations});
+  assertRunCoordinateQuality({runs});
   const scheduleLocks = includeScheduleLocks ?
     buildScheduleLockDocs({runs, participations}) :
     [];
@@ -639,8 +688,6 @@ function publicProfileFromUserDoc(userDoc) {
     gender: userDoc.gender,
     photoUrls: userDoc.photoUrls,
     city: userDoc.city,
-    latitude: userDoc.latitude,
-    longitude: userDoc.longitude,
     height: userDoc.height,
     occupation: userDoc.occupation,
     company: userDoc.company,
@@ -716,19 +763,20 @@ function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now,
   const cityMeta = cityData[city];
   const patterns = [
     {kind: "upcomingFree", offsetHours: 30, price: 0, capacity: 12, durationMinutes: 70},
-    {kind: "upcomingPaid", offsetHours: 74, price: preferPaid ? 79900 : 29900, capacity: 10, durationMinutes: 80},
-    {kind: "upcomingFull", offsetHours: 120, price: preferPaid ? 49900 : 0, capacity: 6, durationMinutes: 60},
-    {kind: "upcomingWaitlist", offsetHours: 168, price: 0, capacity: 5, durationMinutes: 65},
+    {kind: "upcomingPaid", offsetHours: 84, price: preferPaid ? 79900 : 29900, capacity: 10, durationMinutes: 80},
+    {kind: "upcomingFull", offsetHours: 168, price: preferPaid ? 49900 : 0, capacity: 6, durationMinutes: 60},
+    {kind: "upcomingWaitlist", offsetHours: 336, price: 0, capacity: 5, durationMinutes: 65},
     {kind: "pastOpen", offsetHours: -8, price: 0, capacity: 14, durationMinutes: 60},
     {kind: "pastOld", offsetHours: -120, price: preferPaid ? 39900 : 0, capacity: 14, durationMinutes: 75},
     {kind: "cancelled", offsetHours: 220, price: 0, capacity: 10, durationMinutes: 70},
-    {kind: "upcomingFree", offsetHours: 260, price: 0, capacity: 16, durationMinutes: 90},
+    {kind: "upcomingFree", offsetHours: 504, price: 0, capacity: 16, durationMinutes: 90},
   ];
   const pattern = patterns[runIndex % patterns.length];
-  const start = offsetDate(now, {hours: pattern.offsetHours + clubIndex * 3 + runIndex});
+  const start = offsetDate(now, {hours: pattern.offsetHours + clubIndex * 8 + runIndex * 2});
   const end = offsetDate(start, {minutes: pattern.durationMinutes});
   const id = `${seedPrefix}_run_${city}_${String(clubIndex + 1).padStart(2, "0")}_${String(runIndex + 1).padStart(2, "0")}`;
   const pace = ["easy", "moderate", "fast", "competitive"][runIndex % 4];
+  const meetingPoint = meetingPointForRun({city, clubIndex, runIndex});
   return {
     id,
     clubId: club.id,
@@ -740,10 +788,10 @@ function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now,
       runClubId: club.id,
       startTime: admin.firestore.Timestamp.fromDate(start),
       endTime: admin.firestore.Timestamp.fromDate(end),
-      meetingPoint: `${cityMeta.areas[(clubIndex + runIndex) % cityMeta.areas.length]} main gate`,
-      startingPointLat: cityMeta.lat + (runIndex - 2) * 0.006,
-      startingPointLng: cityMeta.lng + (clubIndex - 1) * 0.006,
-      locationDetails: "Look for the Catch demo pacer near the entrance.",
+      meetingPoint: meetingPoint.label,
+      startingPointLat: meetingPoint.lat,
+      startingPointLng: meetingPoint.lng,
+      locationDetails: meetingPoint.detail,
       distanceKm: [3, 5, 7, 10, 12, 15][runIndex % 6],
       pace,
       capacityLimit: pattern.capacity,
@@ -766,6 +814,52 @@ function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now,
       genderCounts: {},
     },
   };
+}
+
+function meetingPointForRun({city, clubIndex, runIndex}) {
+  const points = meetingPointData[city] ?? [];
+  if (points.length === 0) {
+    const cityMeta = cityData[city];
+    return {
+      label: `${cityMeta.label} demo meeting point`,
+      lat: cityMeta.lat,
+      lng: cityMeta.lng,
+      detail: "Meet near the Catch demo pacer.",
+    };
+  }
+  return points[(clubIndex + runIndex) % points.length];
+}
+
+function assertRunCoordinateQuality({runs}) {
+  const issues = [];
+  for (const run of runs) {
+    if (run.doc.status === "cancelled") continue;
+    const lat = run.doc.startingPointLat;
+    const lng = run.doc.startingPointLng;
+    if (typeof lat !== "number" || typeof lng !== "number") {
+      issues.push(`${run.id}: missing exact starting coordinates`);
+      continue;
+    }
+
+    const knownPoint = (meetingPointData[run.city] ?? []).find(
+      (point) => point.label === run.doc.meetingPoint
+    );
+    if (!knownPoint) {
+      issues.push(`${run.id}: meeting point is not in the curated venue catalog`);
+      continue;
+    }
+    if (Math.abs(knownPoint.lat - lat) > 0.000001 ||
+        Math.abs(knownPoint.lng - lng) > 0.000001) {
+      issues.push(`${run.id}: coordinates do not match curated venue catalog`);
+    }
+  }
+
+  if (issues.length > 0) {
+    throw new Error(
+      "Demo run coordinates are not map/check-in ready:\n" +
+        issues.map((issue) => `- ${issue}`).join("\n")
+    );
+  }
 }
 
 function buildRoster({run, runIndex, clubMembers, anchorProfiles}) {

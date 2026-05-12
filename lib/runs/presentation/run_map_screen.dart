@@ -56,6 +56,23 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
               Expanded(
                 child: viewModel.isEmpty
                     ? const _MapEmptyState()
+                    : !viewModel.hasPinnedRuns
+                    ? Stack(
+                        children: [
+                          const Positioned.fill(child: _NoPinnedRunsState()),
+                          Positioned(
+                            left: CatchSpacing.s5,
+                            right: CatchSpacing.s5,
+                            bottom: CatchSpacing.s5,
+                            child: RunMapSheet(
+                              runs: runs,
+                              selectedRun: selectedRun,
+                              onRunSelected: (run) =>
+                                  setState(() => _selectedRunId = run.id),
+                            ),
+                          ),
+                        ],
+                      )
                     : Stack(
                         children: [
                           Positioned.fill(
@@ -85,6 +102,23 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
             ],
           );
         },
+      ),
+    );
+  }
+}
+
+class _NoPinnedRunsState extends StatelessWidget {
+  const _NoPinnedRunsState();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: CatchEmptyState(
+        icon: Icons.add_location_alt_outlined,
+        title: 'No exact pins yet',
+        message:
+            'These runs are visible, but none have pinned starting points.',
+        surface: false,
       ),
     );
   }

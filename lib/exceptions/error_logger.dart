@@ -74,6 +74,7 @@ class ErrorLogger {
   final bool _shouldReportErrors;
 
   static CrashReporter get _defaultCrashReporter {
+    if (!kReleaseMode) return ConsoleCrashReporter();
     if (kIsWeb) return ConsoleCrashReporter();
     return FirebaseCrashReporter(FirebaseCrashlytics.instance);
   }

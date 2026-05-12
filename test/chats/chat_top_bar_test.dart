@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -74,5 +73,5 @@ final _profile = PublicProfile(
   age: 29,
   bio: 'Runner',
   gender: Gender.woman,
-  city: IndianCity.mumbai,
+  city: 'mumbai',
 );

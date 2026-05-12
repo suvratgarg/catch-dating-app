@@ -1,3 +1,11 @@
+---
+doc_id: demo_data_seeding
+version: 1.1.0
+updated: 2026-05-12
+owner: recursive_audit_loop
+status: active
+---
+
 # Demo Data Seeding
 
 This repo has a repeatable Firebase Admin SDK seeder for filling Catch with
@@ -60,6 +68,17 @@ one starts. Real anchor users are only placed into seeded runs for their
 normalized profile city, so a tester is not fabricated into simultaneous runs
 across multiple cities.
 
+Seeded run coordinates come from a curated venue catalog per supported city.
+The seeder fails if an active run is missing exact coordinates or if the
+coordinates drift away from the catalog entry for that meeting point. This keeps
+map pins, directions, and location-gated check-in testing aligned with real
+venues instead of city-center offsets.
+
+The `beta-full` scenario intentionally creates a longer run horizon: near-term
+runs, mid-term runs, three-week-ahead runs, past attended runs, and cancelled
+runs. That gives TestFlight accounts enough upcoming inventory for ongoing
+manual QA instead of aging out after a couple of days.
+
 The world seed does not write `runClubScheduleLocks` or `userRunScheduleLocks`
 by default. Those collections are denormalized server-owned race guards for
 callable writes; the Functions also query canonical `runs` and
@@ -88,12 +107,14 @@ The supported commands are:
 | `validate-demo-state` | Check whether one or more users have enough state for a realistic demo. |
 | `demo-checklist` | Print the screens/flows a given phone number can confidently demonstrate. |
 | `cleanup-demo-data` | Pre-launch cleanup plan for all demo/synthetic documents. |
+| `cleanup-stale-runs` | Delete seeded past/cancelled runs and dependent edges while preserving real profiles. |
 | `make-run-full` | Fill a run to capacity with synthetic signed-up participants. |
 | `mark-attended` | Force one real user into an attended run state for recap/swipe testing. |
 | `promote-waitlist` | Move one real user into a signed-up state and create a promotion notification. |
 | `create-unread-message` | Add a deterministic demo chat message so the recipient sees unread activity. |
 | `create-refund` | Add a refunded payment-history row for one user/run. |
 | `create-host-account` | Give one real user a host-owned demo club and run. |
+| `create-check-in-run` | Create a near-immediate signed-up run at manual/user coordinates for location-gated check-in. |
 | `scenario-info` | List scenario definitions under `tool/demo_seed/scenarios`. |
 | `list-golden-accounts` | Read the golden account registry JSON. |
 
@@ -215,6 +236,52 @@ to that user:
 - `notifications/{uid}/items/*`.
 
 It does not delete `users/{uid}` or `publicProfiles/{uid}`.
+
+### Clean Up Stale Seeded Runs
+
+Use this when the seeded world has accumulated cancelled or past runs and you
+want to remove those stale run docs plus their relationship edges without
+touching real user profiles:
+
+```bash
+node tool/demo_ops.mjs cleanup-stale-runs \
+  --env prod \
+  --apply \
+  --allow-prod
+```
+
+The command is dry-run-first if you omit `--apply`. It deletes stale seeded
+`runs`, `runParticipations`, schedule locks, saved runs, payments, reviews,
+run-linked swipes, demo match threads tied to stale run IDs, and run/match
+notifications. It recomputes run and run-club aggregates after apply.
+
+To keep one stale category:
+
+```bash
+--keep-past-runs
+--keep-cancelled-runs
+```
+
+### Create A Check-In Test Run
+
+Use this when you need to test the location-gated self check-in flow on a real
+phone. The run starts five minutes after the command runs, so the 10-minute
+pre-run check-in window is already open:
+
+```bash
+node tool/demo_ops.mjs create-check-in-run \
+  --env prod \
+  --phone +919131404263 \
+  --lat 28.6129 \
+  --lng 77.2295 \
+  --meeting-point "India Gate" \
+  --apply \
+  --allow-prod
+```
+
+If you omit `--lat` and `--lng`, the command uses the private coordinates on
+`users/{uid}`. It creates a demo run club, host membership, one signed-up
+participation edge for the real tester, schedule locks, and aggregate repairs.
 
 ### Validate Demo Readiness
 
@@ -360,6 +427,20 @@ Cleanup scans known top-level and nested demo surfaces for `demoOps`,
 match docs and includes `seedRuns` plus `demoOpsRuns` manifests. Run
 `validate-demo-state` and the broader Firestore validator after cleanup to prove
 zero demo residue before launch.
+
+## TestFlight Refresh Cadence
+
+For active beta testing, use this rhythm:
+
+- Weekly: dry-run `seed-world --scenario beta-full --reset-synthetic`, review
+  counts, then apply if the synthetic world itself needs a full refresh.
+- When inviting a new tester: use `append-user`, not `--reset-synthetic`, so
+  existing testers do not receive duplicate seeded notifications.
+- When one tester gets messy: use `reset-user-demo-state`, then `warm-user`.
+- When runs age out: use `cleanup-stale-runs`, then `append-user` or `warm-user`
+  for accounts that need fresh future state.
+- Before any investor/advisor walkthrough: run `demo-checklist` for the exact
+  phone number and fix the listed gaps.
 
 ## First-Class Demo Tooling Principles
 

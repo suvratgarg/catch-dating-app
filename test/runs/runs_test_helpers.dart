@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -150,7 +149,7 @@ RunClub buildRunClub({
   String id = 'club-1',
   String name = 'Stride Social',
   String description = 'Morning runners who like easy city loops.',
-  IndianCity location = IndianCity.mumbai,
+  String location = 'mumbai',
   String area = 'Bandra',
   String hostUserId = 'host-1',
   String hostName = 'Host',

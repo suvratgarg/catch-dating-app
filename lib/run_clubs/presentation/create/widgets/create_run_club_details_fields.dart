@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_dropdown_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
@@ -15,8 +15,8 @@ class CreateRunClubDetailsFields extends StatelessWidget {
   });
 
   final TextEditingController nameController;
-  final IndianCity? selectedCity;
-  final ValueChanged<IndianCity?> onCityChanged;
+  final CityOption? selectedCity;
+  final ValueChanged<CityOption?> onCityChanged;
   final TextEditingController areaController;
   final TextEditingController descriptionController;
 
@@ -38,8 +38,8 @@ class CreateRunClubDetailsFields extends StatelessWidget {
           },
         ),
         gapH16,
-        CatchDropdownField<IndianCity>(
-          values: IndianCity.values,
+        CatchDropdownField<CityOption>(
+          values: defaultCityOptions,
           label: 'City',
           prefixIcon: const Icon(Icons.location_city_outlined),
           value: selectedCity,
@@ -49,7 +49,7 @@ class CreateRunClubDetailsFields extends StatelessWidget {
         ),
         gapH16,
         // TODO: replace free-text area field with a validated dropdown of known
-        // neighbourhoods per city (see indian_city_areas.dart). Add a LabelledString
+        // neighbourhoods per configured city. Add a LabelledString
         // wrapper so CatchDropdownField can hold String values. "Other..." option
         // reveals a text field for custom input. City change resets area selection.
         CatchTextField(

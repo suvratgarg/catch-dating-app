@@ -23,9 +23,14 @@ fun localPropertyOrEnv(name: String): String =
         ?: providers.environmentVariable(name).orNull
         ?: ""
 
+fun googleMapsApiKeyValue(name: String): String =
+    localPropertyOrEnv(name)
+        .removePrefix("keyString:")
+        .trim()
+
 fun googleMapsApiKeyFor(environmentName: String): String =
-    localPropertyOrEnv("GOOGLE_MAPS_ANDROID_API_KEY_$environmentName")
-        .ifBlank { localPropertyOrEnv("GOOGLE_MAPS_ANDROID_API_KEY") }
+    googleMapsApiKeyValue("GOOGLE_MAPS_ANDROID_API_KEY_$environmentName")
+        .ifBlank { googleMapsApiKeyValue("GOOGLE_MAPS_ANDROID_API_KEY") }
 
 val releaseBuildRequested = gradle.startParameter.taskNames.any {
     it.contains("release", ignoreCase = true)
@@ -92,7 +97,7 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders["googleMapsApiKey"] = localPropertyOrEnv(
+        manifestPlaceholders["googleMapsApiKey"] = googleMapsApiKeyValue(
             "GOOGLE_MAPS_ANDROID_API_KEY"
         )
     }

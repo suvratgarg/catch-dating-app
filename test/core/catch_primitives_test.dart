@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/async_value_widget.dart';
@@ -358,14 +358,14 @@ void main() {
   testWidgets('ChipField single select keeps a selected chip selected', (
     tester,
   ) async {
-    Set<IndianCity> selected = {IndianCity.indore};
+    Set<CityOption> selected = {cityOptionByName('indore')!};
 
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => ChipField<IndianCity>(
+          builder: (context, setState) => ChipField<CityOption>(
             label: 'City',
-            values: IndianCity.values,
+            values: defaultCityOptions,
             selected: selected,
             multiSelect: false,
             onChanged: (next) => setState(() => selected = next),
@@ -374,23 +374,23 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text(IndianCity.indore.label));
+    await tester.tap(find.text(cityLabel('indore')));
     await tester.pump();
 
-    expect(selected, {IndianCity.indore});
+    expect(selected, {cityOptionByName('indore')!});
   });
 
   testWidgets(
     'ChipField optional single select clears a selected chip when enabled',
     (tester) async {
-      Set<IndianCity> selected = {IndianCity.indore};
+      Set<CityOption> selected = {cityOptionByName('indore')!};
 
       await tester.pumpWidget(
         _wrap(
           StatefulBuilder(
-            builder: (context, setState) => ChipField<IndianCity>(
+            builder: (context, setState) => ChipField<CityOption>(
               label: 'City',
-              values: IndianCity.values,
+              values: defaultCityOptions,
               selected: selected,
               multiSelect: false,
               isOptional: true,
@@ -401,7 +401,7 @@ void main() {
         ),
       );
 
-      await tester.tap(find.text(IndianCity.indore.label));
+      await tester.tap(find.text(cityLabel('indore')));
       await tester.pump();
 
       expect(selected, isEmpty);
@@ -413,9 +413,9 @@ void main() {
     (tester) async {
       await tester.pumpWidget(
         _wrap(
-          ChipField<IndianCity>(
+          ChipField<CityOption>(
             label: 'City',
-            values: IndianCity.values,
+            values: defaultCityOptions,
             selected: const {},
             multiSelect: false,
             onChanged: (_) {},
@@ -427,7 +427,7 @@ void main() {
         find.byWidgetPredicate(
           (widget) =>
               widget is CatchChip &&
-              widget.label == IndianCity.values.first.label,
+              widget.label == defaultCityOptions.first.label,
         ),
       );
       expect(firstChip.active, isFalse);
@@ -439,10 +439,10 @@ void main() {
   ) async {
     await tester.pumpWidget(
       _wrap(
-        ChipField<IndianCity>(
+        ChipField<CityOption>(
           label: 'Cities',
-          values: IndianCity.values.take(2).toList(),
-          selected: {IndianCity.mumbai},
+          values: defaultCityOptions.take(2).toList(),
+          selected: {cityOptionByName('mumbai')!},
           multiSelect: true,
           onChanged: (_) {},
         ),
@@ -451,14 +451,12 @@ void main() {
 
     final selectedChip = tester.widget<CatchChip>(
       find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchChip && widget.label == IndianCity.mumbai.label,
+        (widget) => widget is CatchChip && widget.label == cityLabel('mumbai'),
       ),
     );
     final unselectedChip = tester.widget<CatchChip>(
       find.byWidgetPredicate(
-        (widget) =>
-            widget is CatchChip && widget.label == IndianCity.delhi.label,
+        (widget) => widget is CatchChip && widget.label == cityLabel('delhi'),
       ),
     );
 
@@ -472,14 +470,14 @@ void main() {
   testWidgets('ChipField required multi select keeps the last chip selected', (
     tester,
   ) async {
-    Set<IndianCity> selected = {IndianCity.mumbai};
+    Set<CityOption> selected = {cityOptionByName('mumbai')!};
 
     await tester.pumpWidget(
       _wrap(
         StatefulBuilder(
-          builder: (context, setState) => ChipField<IndianCity>(
+          builder: (context, setState) => ChipField<CityOption>(
             label: 'Cities',
-            values: IndianCity.values.take(2).toList(),
+            values: defaultCityOptions.take(2).toList(),
             selected: selected,
             multiSelect: true,
             onChanged: (next) => setState(() => selected = next),
@@ -488,10 +486,10 @@ void main() {
       ),
     );
 
-    await tester.tap(find.text(IndianCity.mumbai.label));
+    await tester.tap(find.text(cityLabel('mumbai')));
     await tester.pump();
 
-    expect(selected, {IndianCity.mumbai});
+    expect(selected, {cityOptionByName('mumbai')!});
   });
 
   testWidgets('CatchBadge renders status tones and uppercase option', (
@@ -794,15 +792,15 @@ void main() {
     tester,
   ) async {
     final formKey = GlobalKey<FormState>();
-    IndianCity? selected;
+    CityOption? selected;
 
     await tester.pumpWidget(
       _wrap(
         Form(
           key: formKey,
-          child: CatchDropdownField<IndianCity>(
+          child: CatchDropdownField<CityOption>(
             label: 'City',
-            values: IndianCity.values,
+            values: defaultCityOptions,
             value: selected,
             validator: (value) => value == null ? 'Please select a city' : null,
             onChanged: (value) => selected = value,
@@ -820,7 +818,7 @@ void main() {
     await tester.tap(find.text('Mumbai').hitTestable());
     await pumpFeatureUi(tester);
 
-    expect(selected, IndianCity.mumbai);
+    expect(selected, cityOptionByName('mumbai')!);
     expect(formKey.currentState!.validate(), isTrue);
   });
 }

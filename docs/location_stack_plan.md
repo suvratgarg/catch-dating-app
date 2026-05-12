@@ -1,6 +1,12 @@
-# Location Stack Audit and Implementation Plan
+---
+doc_id: location_stack
+version: 1.1.0
+updated: 2026-05-12
+owner: recursive_audit_loop
+status: active
+---
 
-Last updated: 2026-05-09
+# Location Stack
 
 ## Product Policy
 
@@ -41,9 +47,10 @@ The app currently uses:
 - New run documents now store non-null starting coordinates.
 - Existing coordinate-less legacy runs remain readable so old data does not
   crash map/detail screens.
-- Run detail location taps now open external walking directions through Google
-  Maps on all platforms.
-- Payment confirmation directions share the same run-directions URL helper.
+- Run detail location taps now open an in-app run location preview; the preview
+  has an explicit Google Maps directions CTA.
+- Payment confirmation directions share the same Google Maps directions URL
+  helper.
 - `flutter_map` has been removed from `pubspec.yaml`; map rendering now goes
   through Google Maps SDK for Flutter.
 - The location picker now supports Google Places-backed search, with
@@ -60,6 +67,11 @@ The app currently uses:
   legacy `latitude`/`longitude` fields from existing `publicProfiles` docs.
 - `latlong2.LatLng` has been removed from app-facing code and the dependency
   graph; SDK-specific coordinate types now stay at Google Maps adapter edges.
+- `tool/validate_google_maps_config.mjs` validates dev/staging/prod local Maps
+  SDK config for iOS and Android without printing secrets. `tool/flutter_with_env.sh`
+  runs that validation before native run/build commands.
+- Native iOS and Android key loaders defensively trim the accidental `keyString:`
+  wrapper so local key copy/paste mistakes fail less mysteriously.
 
 ## Google Maps Usage Tiers
 
@@ -89,7 +101,8 @@ References:
 - Use Google Places API (New) through callable Functions for meeting-point
   autocomplete and place details.
 - Continue using external Google Maps URLs for turn-by-turn directions instead
-  of building route rendering into Catch.
+  of building route rendering into Catch. In-app map previews should show the
+  destination; routing belongs in Google Maps.
 - Set API quotas and billing alerts before enabling any paid map provider.
 
 ## Google Cloud Setup Required
@@ -171,8 +184,38 @@ References:
 
 ### Phase 5: Maps Productionization
 
-- Choose the production map provider.
-- Move tile/API keys into environment-specific config.
+- Keep Google Maps as the production map provider unless product requirements
+  force a provider change.
+- Keep Google Maps SDK keys in environment-specific native config, with
+  `tool/validate_google_maps_config.mjs` as the local guardrail.
 - Add budget alerts, quota limits, and release checklist items.
-- Add widget tests for disabled network tiles and integration QA for real map
+- Add widget tests for disabled map base tiles and integration QA for real map
   rendering on device.
+
+## Current Maps And Demo-Data Readiness
+
+The retired transient maps/demo tracker has been folded into this document and
+`docs/demo_data_seeding.md`.
+
+Completed:
+
+- Dashboard map view, create-run pin picker, run-detail location preview, and
+  payment-confirmation directions all use the Google Maps stack.
+- Native iOS/Android Maps config is validated by
+  `tool/validate_google_maps_config.mjs`, and `tool/flutter_with_env.sh` runs
+  that validation before native run/build commands.
+- Active source/config no longer depends on `flutter_map`, OpenStreetMap, or
+  `latlong2` app-facing coordinate types.
+- Seeded runs use curated venue coordinates and validation rejects missing or
+  drifted active run coordinates.
+- Demo ops validation reports upcoming mapped runs and check-in-window
+  signed-up runs.
+- Active app models now store city/location as string ids backed by Firestore
+  city config plus `city_catalog.dart` fallbacks.
+
+Still open:
+
+- Run on simulator/phone and capture proof that the map renders. Current
+  blocker is local Xcode platform support for the target iOS runtime.
+- Keep improving check-in-specific demo data so each anchor demo account can
+  reliably test a location-gated run.

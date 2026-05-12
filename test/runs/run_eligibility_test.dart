@@ -117,10 +117,7 @@ void main() {
     '#18 eligibilityFor returns RunFull when at capacity (user meets all criteria)',
     () {
       final user = buildUser();
-      final run = buildRun(
-        capacityLimit: 2,
-        bookedCount: 2,
-      );
+      final run = buildRun(capacityLimit: 2, bookedCount: 2);
       expect(run.eligibilityFor(user), isA<RunFull>());
     },
   );

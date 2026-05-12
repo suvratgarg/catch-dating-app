@@ -1,7 +1,6 @@
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -413,7 +412,7 @@ void main() {
           .read(createRunClubControllerProvider.notifier)
           .submit(
             name: 'New Name',
-            location: IndianCity.indore,
+            location: 'indore',
             area: 'Vijay Nagar',
             description: 'Updated description',
             existingRunClub: existingClub,
@@ -497,7 +496,7 @@ void main() {
             .read(createRunClubControllerProvider.notifier)
             .submit(
               name: 'New Name',
-              location: IndianCity.mumbai,
+              location: 'mumbai',
               area: 'Bandra',
               description: 'Updated description',
               existingRunClub: buildRunClub(hostUserId: 'host-1'),

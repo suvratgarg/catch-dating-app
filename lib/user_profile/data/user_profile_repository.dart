@@ -2,7 +2,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -81,15 +80,12 @@ class UserProfileRepository {
     required String uid,
     required double latitude,
     required double longitude,
-    IndianCity? city,
+    String? city,
   }) {
+    final cityPatch = city == null ? null : {'city': city};
     return updateUserProfile(
       uid: uid,
-      fields: {
-        'latitude': latitude,
-        'longitude': longitude,
-        if (city != null) 'city': city.name,
-      },
+      fields: {'latitude': latitude, 'longitude': longitude, ...?cityPatch},
     );
   }
 

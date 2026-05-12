@@ -73,6 +73,28 @@ The app has multiple contracts for the same Firestore documents:
 - Live Firestore documents in dev/staging/prod.
 - Client repository mutation methods.
 
+## Firestore Type Generation
+
+`tool/generate_firestore_types.dart` generates
+`functions/src/shared/firestore.ts` from Dart domain models plus
+`tool/firestore_ts_overlay.json`.
+
+Use this workflow whenever a Dart Firestore model, server-only overlay field, or
+Functions document interface changes:
+
+```bash
+dart tool/generate_firestore_types.dart
+npm --prefix functions run build
+```
+
+CI also runs the generator and fails if `functions/src/shared/firestore.ts`
+differs from the committed output. Do not hand-edit the generated TypeScript
+file. Add server-only fields or interfaces to `tool/firestore_ts_overlay.json`
+instead.
+
+The old standalone Firestore type-sync explainer was removed during the docs
+consolidation pass; this tracker now owns that workflow.
+
 ## 2026-05-07 Relationship Rules And Deletion Slice
 
 - Added callable-owned `leaveRunWaitlist` and removed the last direct client

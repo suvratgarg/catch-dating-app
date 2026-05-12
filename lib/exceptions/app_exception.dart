@@ -93,3 +93,17 @@ class DocumentNotFoundException extends AppException {
   const DocumentNotFoundException(String path)
     : super('not-found', 'Document not found: $path');
 }
+
+// ── Storage ──────────────────────────────────────────────────────────────────
+
+class StorageException extends AppException {
+  const StorageException(String message, {Object? cause, StackTrace? stackTrace})
+    : super('storage-error', message, cause: cause, stackTrace: stackTrace);
+}
+
+// ── External Actions ─────────────────────────────────────────────────────────
+
+class ExternalActionException extends AppException {
+  const ExternalActionException(String message, {Object? cause, StackTrace? stackTrace})
+    : super('external-action-error', message, cause: cause, stackTrace: stackTrace);
+}

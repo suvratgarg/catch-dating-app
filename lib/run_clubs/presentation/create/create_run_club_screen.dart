@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_flow_header.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
@@ -40,7 +40,7 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
   final _emailController = TextEditingController();
 
   int _currentStep = 0;
-  IndianCity? _selectedCity;
+  String? _selectedCity;
   PickedRunClubCover? _coverImage;
   bool _checkedDraft = false;
   bool _restoredDraft = false;
@@ -267,9 +267,9 @@ class _CreateRunClubScreenState extends ConsumerState<CreateRunClubScreen> {
                   RunClubBasicsStep(
                     formKey: _basicsFormKey,
                     nameController: _nameController,
-                    selectedCity: _selectedCity,
+                    selectedCity: cityOptionByName(_selectedCity),
                     onCityChanged: (city) => setState(() {
-                      _selectedCity = city;
+                      _selectedCity = city?.name;
                     }),
                     areaController: _areaController,
                     coverImageBytes: _coverImage?.bytes,

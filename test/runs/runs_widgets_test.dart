@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
@@ -20,6 +21,7 @@ import 'package:catch_dating_app/runs/presentation/widgets/when_where_card.dart'
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import 'runs_test_helpers.dart';
 
@@ -212,6 +214,42 @@ void main() {
       expect(
         find.text('Look for the Catch demo pacer near the entrance.'),
         findsOneWidget,
+      );
+    });
+
+    testWidgets('run location map keeps directions as an explicit action', (
+      tester,
+    ) async {
+      Uri? openedUri;
+      LaunchMode? openedMode;
+      final run = buildRun(
+        meetingPoint: 'Race Course Road main gate',
+        startingPointLat: 22.7196,
+        startingPointLng: 75.8577,
+      );
+
+      await pumpRunsTestApp(
+        tester,
+        RunLocationMapScreen(run: run, enableNetworkTiles: false),
+        overrides: [
+          externalUrlLauncherProvider.overrideWithValue((
+            uri, {
+            mode = LaunchMode.platformDefault,
+          }) async {
+            openedUri = uri;
+            openedMode = mode;
+            return true;
+          }),
+        ],
+      );
+
+      await tester.tap(find.text('Get directions'));
+      await tester.pump();
+
+      expect(openedMode, LaunchMode.externalApplication);
+      expect(
+        openedUri.toString(),
+        'https://www.google.com/maps/dir/?api=1&destination=22.7196%2C75.8577&travelmode=walking',
       );
     });
 

@@ -140,7 +140,7 @@ final class WatchRunClubsByLocationProvider
     with $FutureModifier<List<RunClub>>, $StreamProvider<List<RunClub>> {
   WatchRunClubsByLocationProvider._({
     required WatchRunClubsByLocationFamily super.from,
-    required IndianCity super.argument,
+    required String super.argument,
   }) : super(
          retry: null,
          name: r'watchRunClubsByLocationProvider',
@@ -167,7 +167,7 @@ final class WatchRunClubsByLocationProvider
 
   @override
   Stream<List<RunClub>> create(Ref ref) {
-    final argument = this.argument as IndianCity;
+    final argument = this.argument as String;
     return watchRunClubsByLocation(ref, argument);
   }
 
@@ -184,10 +184,10 @@ final class WatchRunClubsByLocationProvider
 }
 
 String _$watchRunClubsByLocationHash() =>
-    r'4289743ce4e3be250c770f8c1ef60cc59463ff57';
+    r'6795e813526e50b9341ade467ca6d6ca639f75fd';
 
 final class WatchRunClubsByLocationFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<List<RunClub>>, IndianCity> {
+    with $FunctionalFamilyOverride<Stream<List<RunClub>>, String> {
   WatchRunClubsByLocationFamily._()
     : super(
         retry: null,
@@ -197,7 +197,7 @@ final class WatchRunClubsByLocationFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchRunClubsByLocationProvider call(IndianCity location) =>
+  WatchRunClubsByLocationProvider call(String location) =>
       WatchRunClubsByLocationProvider._(argument: location, from: this);
 
   @override
@@ -218,7 +218,7 @@ final class WatchRunClubsByLocationSortedByRatingProvider
     with $FutureModifier<List<RunClub>>, $StreamProvider<List<RunClub>> {
   WatchRunClubsByLocationSortedByRatingProvider._({
     required WatchRunClubsByLocationSortedByRatingFamily super.from,
-    required IndianCity super.argument,
+    required String super.argument,
   }) : super(
          retry: null,
          name: r'watchRunClubsByLocationSortedByRatingProvider',
@@ -246,7 +246,7 @@ final class WatchRunClubsByLocationSortedByRatingProvider
 
   @override
   Stream<List<RunClub>> create(Ref ref) {
-    final argument = this.argument as IndianCity;
+    final argument = this.argument as String;
     return watchRunClubsByLocationSortedByRating(ref, argument);
   }
 
@@ -263,10 +263,10 @@ final class WatchRunClubsByLocationSortedByRatingProvider
 }
 
 String _$watchRunClubsByLocationSortedByRatingHash() =>
-    r'8d42ebd4f2b00408cc85d416b3628436bfc62819';
+    r'f9ad37e9287799546717ebacc0eef21dc29f4c9d';
 
 final class WatchRunClubsByLocationSortedByRatingFamily extends $Family
-    with $FunctionalFamilyOverride<Stream<List<RunClub>>, IndianCity> {
+    with $FunctionalFamilyOverride<Stream<List<RunClub>>, String> {
   WatchRunClubsByLocationSortedByRatingFamily._()
     : super(
         retry: null,
@@ -276,7 +276,7 @@ final class WatchRunClubsByLocationSortedByRatingFamily extends $Family
         isAutoDispose: true,
       );
 
-  WatchRunClubsByLocationSortedByRatingProvider call(IndianCity location) =>
+  WatchRunClubsByLocationSortedByRatingProvider call(String location) =>
       WatchRunClubsByLocationSortedByRatingProvider._(
         argument: location,
         from: this,

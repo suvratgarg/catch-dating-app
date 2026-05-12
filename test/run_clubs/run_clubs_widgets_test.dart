@@ -5,7 +5,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -103,7 +102,7 @@ void main() {
         ProviderScope(
           overrides: [
             watchRunClubsByLocationProvider(
-              IndianCity.mumbai,
+              'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
             runClubsListViewModelProvider.overrideWithValue(
               const AsyncData(
@@ -132,7 +131,7 @@ void main() {
       final container = ProviderContainer(
         overrides: [
           watchRunClubsByLocationProvider(
-            IndianCity.mumbai,
+            'mumbai',
           ).overrideWith((ref) => Stream.value([sourceClub])),
           runClubsListViewModelProvider.overrideWithValue(
             const AsyncData(
@@ -303,7 +302,7 @@ void main() {
     ) async {
       final club = buildRunClub(
         name: 'Night Pacers',
-        location: IndianCity.indore,
+        location: 'indore',
         tags: const ['social', 'Indore'],
         rating: 4.8,
         nextRunLabel: 'Race Course Road Main Gate',
@@ -884,7 +883,7 @@ void main() {
             cityListProvider.overrideWith((ref) async => _testCities),
             deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             watchRunClubsByLocationProvider(
-              IndianCity.mumbai,
+              'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
             runClubsListViewModelProvider.overrideWithValue(
               const AsyncLoading(),
@@ -909,7 +908,7 @@ void main() {
           ProviderScope(
             overrides: [
               watchRunClubsByLocationProvider(
-                IndianCity.mumbai,
+                'mumbai',
               ).overrideWith((ref) => throw StateError('watched clubs stream')),
               runClubsListViewModelProvider.overrideWith(
                 (ref) => throw StateError('watched clubs view model'),
@@ -940,7 +939,7 @@ void main() {
               cityListProvider.overrideWith((ref) async => _testCities),
               deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
               watchRunClubsByLocationProvider(
-                IndianCity.mumbai,
+                'mumbai',
               ).overrideWith((ref) => Stream.value(const [])),
               runClubsListViewModelProvider.overrideWithValue(
                 const AsyncData(
@@ -971,7 +970,7 @@ void main() {
             cityListProvider.overrideWith((ref) async => _testCities),
             deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
             watchRunClubsByLocationProvider(
-              IndianCity.mumbai,
+              'mumbai',
             ).overrideWith((ref) => Stream.value(const [])),
             runClubsListViewModelProvider.overrideWithValue(
               AsyncError(StateError('boom'), StackTrace.empty),
@@ -996,7 +995,7 @@ void main() {
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
           watchRunClubsByLocationProvider(
-            IndianCity.mumbai,
+            'mumbai',
           ).overrideWith((ref) => Stream.value([buildRunClub(id: 'club-err')])),
           runClubsListViewModelProvider.overrideWithValue(
             AsyncData(
@@ -1286,7 +1285,7 @@ void main() {
       final club = buildRunClub(
         name: 'Morning Miles',
         area: 'Palasia',
-        location: IndianCity.indore,
+        location: 'indore',
         description: 'Indore morning loops.',
       );
 

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -135,7 +136,7 @@ class ActivitySection extends ConsumerWidget {
               icon: Icons.notifications_none_rounded,
               title: 'No new activity',
               message:
-                  'New catches, messages, and run reminders will collect here.',
+                  'New catches, bookings, and run reminders will collect here.',
               iconStyle: CatchEmptyStateIconStyle.plain,
               iconSize: 34,
               titleStyle: CatchTextStyles.titleL(context),
@@ -167,12 +168,15 @@ class ActivitySection extends ConsumerWidget {
     List<ActivityNotification> notifications,
     BuildContext context,
   ) async {
+    final container = ProviderScope.containerOf(context, listen: false);
     try {
       await ref
           .read(activityControllerProvider.notifier)
           .markAllRead(notifications: notifications, uid: uid);
-    } catch (error, stack) {
-      debugPrint('[ERROR] ActivitySection markAllRead: $error\n$stack');
+    } catch (error, stackTrace) {
+      container
+          .read(errorLoggerProvider)
+          .logError(error, stackTrace, reason: 'ActivitySection._markAllRead');
       if (context.mounted) {
         showCatchErrorSnackBar(context, error);
       }

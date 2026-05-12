@@ -1,7 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -199,7 +198,7 @@ final class _VisualReviewUserProfileRepository
     required String uid,
     required double latitude,
     required double longitude,
-    IndianCity? city,
+    String? city,
   }) async {}
 
   @override
@@ -332,7 +331,7 @@ RunClub _club() {
     id: 'club-1',
     name: 'Bandra Striders',
     description: 'Morning runners who like easy city loops.',
-    location: IndianCity.mumbai,
+    location: 'mumbai',
     area: 'Bandra',
     hostUserId: 'host-1',
     hostName: 'Priya',

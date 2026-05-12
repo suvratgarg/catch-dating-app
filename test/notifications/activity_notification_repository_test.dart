@@ -44,6 +44,21 @@ void main() {
       },
     );
 
+    test('watchActivity filters chat message notifications', () async {
+      final match = _notification(id: 'match');
+      final message = _notification(
+        id: 'message',
+        type: ActivityNotificationType.message,
+      );
+      await _seedNotification(firestore, match);
+      await _seedNotification(firestore, message);
+
+      await expectLater(
+        repository.watchActivity(uid: 'runner-1'),
+        emits([match]),
+      );
+    });
+
     test('markAllRead updates only unread notification docs', () async {
       final unread = _notification(id: 'unread');
       final readAt = DateTime(2026, 5, 2);
@@ -122,13 +137,14 @@ class _FakeActivityNotificationRepository
 ActivityNotification _notification({
   required String id,
   String uid = 'runner-1',
+  ActivityNotificationType type = ActivityNotificationType.match,
   DateTime? createdAt,
   DateTime? readAt,
 }) {
   return ActivityNotification(
     id: id,
     uid: uid,
-    type: ActivityNotificationType.match,
+    type: type,
     title: "It's a catch",
     body: 'You and Runner Two matched. Say hi!',
     createdAt: createdAt ?? DateTime(2026, 5, 1, 10),

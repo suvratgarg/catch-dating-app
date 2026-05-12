@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -22,9 +22,13 @@ class ProfileEditController extends _$ProfileEditController {
     final uid = requireSignedInUid(ref, action: 'save profile edits');
     final nextSave = _pendingSave
         .catchError((Object error, StackTrace stack) {
-          debugPrint(
-            '[ERROR] ProfileEditController previous save: $error\n$stack',
-          );
+          ref
+              .read(errorLoggerProvider)
+              .logError(
+                error,
+                stack,
+                reason: 'ProfileEditController previous save',
+              );
         })
         .then((_) {
           return ref
@@ -32,7 +36,9 @@ class ProfileEditController extends _$ProfileEditController {
               .updateUserProfile(uid: uid, fields: fields);
         });
     _pendingSave = nextSave.catchError((Object error, StackTrace stack) {
-      debugPrint('[ERROR] ProfileEditController.saveFields: $error\n$stack');
+      ref
+          .read(errorLoggerProvider)
+          .logError(error, stack, reason: 'ProfileEditController.saveFields');
     });
     return nextSave;
   }

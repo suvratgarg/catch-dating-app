@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart'
@@ -34,9 +35,10 @@ void navigateToMessageRoute(GoRouter router, Map<String, Object?> data) {
 }
 
 class FcmService {
-  FcmService(this._db);
+  FcmService(this._db, this._errorLogger);
 
   final FirebaseFirestore _db;
+  final ErrorLogger _errorLogger;
   Future<void>? _initialization;
   String? _initializedUid;
   StreamSubscription<String>? _tokenRefreshSubscription;
@@ -144,13 +146,21 @@ class FcmService {
     return FirebaseMessaging.instance.getAPNSToken();
   }
 
-  Future<void> _saveToken(String uid, String token) =>
-      _db.collection('users').doc(uid).update({'fcmToken': token});
+  Future<void> _saveToken(String uid, String token) async {
+    try {
+      await _db.collection('users').doc(uid).update({'fcmToken': token});
+    } catch (e, st) {
+      _errorLogger.logError(e, st, reason: 'FcmService._saveToken');
+    }
+  }
 }
 
 @Riverpod(keepAlive: true)
 FcmService fcmService(Ref ref) {
-  final service = FcmService(ref.watch(firebaseFirestoreProvider));
+  final service = FcmService(
+    ref.watch(firebaseFirestoreProvider),
+    ref.watch(errorLoggerProvider),
+  );
   ref.onDispose(() => unawaited(service.reset()));
   return service;
 }

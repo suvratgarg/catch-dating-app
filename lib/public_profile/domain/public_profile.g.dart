@@ -22,7 +22,7 @@ _PublicProfile _$PublicProfileFromJson(
           ?.map((e) => e as String)
           .toList() ??
       const [],
-  city: $enumDecodeNullable(_$IndianCityEnumMap, json['city']),
+  city: json['city'] as String?,
   height: (json['height'] as num?)?.toInt(),
   occupation: json['occupation'] as String?,
   company: json['company'] as String?,
@@ -65,7 +65,7 @@ Map<String, dynamic> _$PublicProfileToJson(
   'gender': _$GenderEnumMap[instance.gender]!,
   'photoUrls': instance.photoUrls,
   'photoThumbnailUrls': instance.photoThumbnailUrls,
-  'city': _$IndianCityEnumMap[instance.city],
+  'city': instance.city,
   'height': instance.height,
   'occupation': instance.occupation,
   'company': instance.company,
@@ -93,18 +93,6 @@ const _$GenderEnumMap = {
   Gender.woman: 'woman',
   Gender.nonBinary: 'nonBinary',
   Gender.other: 'other',
-};
-
-const _$IndianCityEnumMap = {
-  IndianCity.mumbai: 'mumbai',
-  IndianCity.delhi: 'delhi',
-  IndianCity.bangalore: 'bangalore',
-  IndianCity.hyderabad: 'hyderabad',
-  IndianCity.chennai: 'chennai',
-  IndianCity.kolkata: 'kolkata',
-  IndianCity.pune: 'pune',
-  IndianCity.ahmedabad: 'ahmedabad',
-  IndianCity.indore: 'indore',
 };
 
 const _$EducationLevelEnumMap = {

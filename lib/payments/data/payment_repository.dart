@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/payments/data/payment_callable_dtos.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/env/env.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -135,7 +136,9 @@ class PaymentRepository {
   /// Cloud Function, which validates the run is free and checks capacity.
   Future<void> bookFreeRun({required String runId}) async {
     try {
-      await _functions.httpsCallable('signUpForFreeRun').call({'runId': runId});
+      await _functions
+          .httpsCallable('signUpForFreeRun')
+          .call(RunBookingCallableRequest(runId: runId).toJson());
     } on FirebaseFunctionsException catch (error) {
       throw _normalizeRunBookingError(
         error,
@@ -160,11 +163,15 @@ class PaymentRepository {
 
     try {
       // Step 4: Verify payment signature server-side and sign user up.
-      await _functions.httpsCallable('verifyRazorpayPayment').call({
-        'paymentId': paymentId,
-        'orderId': orderId,
-        'signature': signature,
-      });
+      await _functions
+          .httpsCallable('verifyRazorpayPayment')
+          .call(
+            VerifyRazorpayPaymentCallableRequest(
+              paymentId: paymentId,
+              orderId: orderId,
+              signature: signature,
+            ).toJson(),
+          );
       completer.complete(
         PaymentConfirmationData(
           paymentId: paymentId,
@@ -194,13 +201,15 @@ class PaymentRepository {
     _razorpay?.clear();
   }
 
-  Future<HttpsCallableResult<Map<String, dynamic>>> _createOrder({
+  Future<HttpsCallableResult<Object?>> _createOrder({
     required String runId,
   }) async {
     try {
       return await _functions
           .httpsCallable('createRazorpayOrder')
-          .call<Map<String, dynamic>>({'runId': runId});
+          .call<Object?>(
+            CreateRazorpayOrderCallableRequest(runId: runId).toJson(),
+          );
     } on FirebaseFunctionsException catch (error) {
       throw PaymentFailedException(
         error.message ?? 'Unable to start the payment.',
@@ -208,23 +217,12 @@ class PaymentRepository {
     }
   }
 
-  ({String orderId, int amountInPaise, String currency}) _parseOrderResponse(
-    Map<String, dynamic> data,
-  ) {
-    final orderId = data['orderId'] as String?;
-    final amount = (data['amount'] as num?)?.toInt();
-    final currency = data['currency'] as String?;
-
-    if (orderId == null ||
-        orderId.isEmpty ||
-        amount == null ||
-        amount <= 0 ||
-        currency == null ||
-        currency.isEmpty) {
+  RazorpayOrderCallableResponse _parseOrderResponse(Object? data) {
+    try {
+      return RazorpayOrderCallableResponse.fromCallableData(data);
+    } on RazorpayOrderCallableResponseFormatException {
       throw const PaymentVerificationFailedException();
     }
-
-    return (orderId: orderId, amountInPaise: amount, currency: currency);
   }
 
   Completer<PaymentConfirmationData>? _takeCompleter() {
@@ -240,8 +238,9 @@ class PaymentRepository {
   }) {
     return switch (error) {
       AppException e => e,
-      FirebaseFunctionsException e =>
-        PaymentFailedException(e.message ?? fallbackMessage),
+      FirebaseFunctionsException e => PaymentFailedException(
+        e.message ?? fallbackMessage,
+      ),
       _ => PaymentFailedException(error.toString()),
     };
   }

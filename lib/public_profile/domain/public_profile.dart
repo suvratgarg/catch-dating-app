@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,7 +16,7 @@ abstract class PublicProfile with _$PublicProfile {
     @Default([]) List<String> photoThumbnailUrls,
 
     // Location
-    @JsonKey(unknownEnumValue: null) IndianCity? city,
+    String? city,
 
     // Background
     int? height,

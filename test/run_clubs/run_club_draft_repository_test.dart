@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_draft_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_draft.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +10,7 @@ void main() {
 
     setUp(() {
       SharedPreferences.setMockInitialValues({});
-      repository = RunClubDraftRepository();
+      repository = RunClubDraftRepository(ErrorLogger());
     });
 
     test('returns null when no draft exists', () async {
@@ -23,7 +23,7 @@ void main() {
         name: 'Sunset Striders',
         area: 'Bandra',
         description: 'Easy social club.',
-        location: IndianCity.mumbai,
+        location: 'mumbai',
         instagramHandle: '@sunsetstriders',
       );
 
@@ -32,7 +32,7 @@ void main() {
       final loaded = await repository.loadDraft(userId: 'host-1');
       expect(loaded, isNotNull);
       expect(loaded!.name, 'Sunset Striders');
-      expect(loaded.location, IndianCity.mumbai);
+      expect(loaded.location, 'mumbai');
       expect(loaded.instagramHandle, '@sunsetstriders');
     });
 

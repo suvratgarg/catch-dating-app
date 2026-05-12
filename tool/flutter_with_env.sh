@@ -70,6 +70,49 @@ elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" && $has_flavo
   esac
 fi
 
+maps_platform=""
+if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
+  case "${flutter_args[1]}" in
+    apk|appbundle)
+      maps_platform="android"
+      ;;
+    ipa|ios)
+      maps_platform="ios"
+      ;;
+  esac
+elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
+  target_device=""
+  for ((i = 0; i < ${#flutter_args[@]}; i++)); do
+    case "${flutter_args[$i]}" in
+      -d|--device-id)
+        if (( i + 1 < ${#flutter_args[@]} )); then
+          target_device="${flutter_args[$((i + 1))]}"
+        fi
+        ;;
+      --device-id=*)
+        target_device="${flutter_args[$i]#--device-id=}"
+        ;;
+    esac
+  done
+
+  case "$target_device" in
+    chrome|edge|web-server)
+      ;;
+    *iPhone*|*iPad*|ios|IOS)
+      maps_platform="ios"
+      ;;
+    *android*|*Android*|emulator*|*)
+      maps_platform="all"
+      ;;
+  esac
+fi
+
+if [[ -n "$maps_platform" ]]; then
+  node "$repo_root/tool/validate_google_maps_config.mjs" \
+    --env "$environment" \
+    --platform "$maps_platform"
+fi
+
 extra_dart_defines=()
 if [[ -n "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" ]]; then
   extra_dart_defines+=(

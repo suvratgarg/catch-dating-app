@@ -1,4 +1,4 @@
-import 'package:catch_dating_app/core/indian_city.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -70,7 +70,7 @@ void main() {
 
     test('keeps city on the hero overlay and relationship goal in details', () {
       final profile = buildPublicProfile().copyWith(
-        city: IndianCity.indore,
+        city: 'indore',
         relationshipGoal: RelationshipGoal.casual,
       );
 
@@ -78,7 +78,7 @@ void main() {
 
       expect(content.attributes.map((fact) => fact.text), ['Something casual']);
       expect(
-        content.attributes.any((fact) => fact.text == IndianCity.indore.label),
+        content.attributes.any((fact) => fact.text == cityLabel('indore')),
         isFalse,
       );
     });

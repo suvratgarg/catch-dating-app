@@ -9,18 +9,8 @@ import {RunClubDoc} from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireDoc, validateCallable} from "../shared/validation";
 
-const IndianCitySchema = z.enum([
-  "mumbai",
-  "delhi",
-  "bangalore",
-  "hyderabad",
-  "chennai",
-  "kolkata",
-  "pune",
-  "ahmedabad",
-  "indore",
-]);
-
+const CityNameSchema = z.string().trim().min(1).max(80)
+  .regex(/^[a-z0-9-]+$/);
 const nullableString = z.string().trim().nullable().optional();
 
 const UpdateRunClubSchema = z.object({
@@ -28,7 +18,7 @@ const UpdateRunClubSchema = z.object({
   fields: z.object({
     name: z.string().trim().min(1).max(120).optional(),
     description: z.string().trim().min(1).max(2000).optional(),
-    location: IndianCitySchema.optional(),
+    location: CityNameSchema.optional(),
     area: z.string().trim().min(1).max(120).optional(),
     hostName: z.string().trim().min(1).max(120).optional(),
     hostAvatarUrl: nullableString,

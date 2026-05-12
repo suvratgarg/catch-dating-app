@@ -1,8 +1,8 @@
 {
-  "version": "2.3.34",
-  "updated": "2026-05-09",
+  "version": "2.4.0",
+  "updated": "2026-05-12",
   "owner": "recursive_audit_loop",
-  "read_policy": "Use this file for active backlog, next actions, scanner counts, and stable debt ids. Do not reread archived markdown history unless a debt id points there.",
+  "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Do not reread archived markdown history unless a debt id points there.",
   "scanner_snapshot": {
     "updated": "2026-05-08",
     "command": "bash tool/widget_cleanup_scan.sh",
@@ -62,6 +62,58 @@
     ]
   },
   "pending": [
+    {
+      "id": "ACTION-CARDINALITY-001",
+      "title": "Inventory primary actions by cardinality and scope",
+      "status": "in_progress",
+      "area": "product_architecture,presentation,functions",
+      "priority": "high",
+      "rules": [
+        "ACTION-CARDINALITY-001",
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001"
+      ],
+      "summary": "Define every primary user action as not allowed, singleton, unbounded, or domain-bounded. Initial policy and audit are in docs/action_cardinality_policy.md. Next pass should turn that table into a maintained action inventory, then audit rapid duplicate taps and unbounded collection display behavior.",
+      "paths": [
+        "docs/action_cardinality_policy.md",
+        "docs/audit_registry/rules.json",
+        "lib/runs/presentation/widgets/run_detail_cta.dart",
+        "lib/dashboard/presentation/widgets/run_arrival_action_card.dart",
+        "lib/run_clubs/presentation/list/run_clubs_list_view_model.dart",
+        "lib/swipes/presentation/swipe_screen.dart",
+        "lib/chats/presentation/chat_screen.dart",
+        "functions/src/index.ts"
+      ]
+    },
+    {
+      "id": "CALLABLE-DTO-001",
+      "title": "Introduce typed Dart DTOs for callable Function boundaries",
+      "status": "in_progress",
+      "area": "repositories,functions",
+      "priority": "high",
+      "rules": [
+        "CONTROLLER-BOUNDARY-001",
+        "PROVIDER-SEAM-001",
+        "FIRESTORE-RULES-TEST-001",
+        "CODEGEN-001"
+      ],
+      "summary": "Replace high-friction ad hoc callable maps and response casts with feature-local Dart DTOs. Runs, payments, and Places now have Dart DTOs; keep backend Zod schemas as the server-side source of validation truth, avoid broad generated model churn, and continue reviewing run club/profile callable boundaries before closing this item.",
+      "paths": [
+        "lib/runs/data/run_repository.dart",
+        "lib/runs/data/run_callable_dtos.dart",
+        "lib/payments/data/payment_repository.dart",
+        "lib/payments/data/payment_callable_dtos.dart",
+        "test/runs/run_repository_test.dart",
+        "test/payments/payment_repository_test.dart",
+        "lib/locations/data/places_callable_dtos.dart",
+        "test/locations/places_repository_test.dart",
+        "functions/src/runs/mutateRun.ts",
+        "functions/src/payments/createRazorpayOrder.ts",
+        "functions/src/payments/verifyRazorpayPayment.ts",
+        "lib/locations/data/places_repository.dart",
+        "functions/src/places/placeAutocomplete.ts"
+      ]
+    },
     {
       "id": "PROFILE-001",
       "title": "Fix profile tab and preview tab blank rendering",

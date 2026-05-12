@@ -18,12 +18,14 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 // ── Entry point ───────────────────────────────────────────────────────────────
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await _lockDeviceOrientation();
   await _initializeFirebaseServices();
 
   final errorLogger = ErrorLogger();
@@ -59,6 +61,12 @@ Future<void> main() async {
       child: const MyApp(),
     ),
   );
+}
+
+Future<void> _lockDeviceOrientation() {
+  return SystemChrome.setPreferredOrientations(const [
+    DeviceOrientation.portraitUp,
+  ]);
 }
 
 // ── Global error handlers ─────────────────────────────────────────────────────

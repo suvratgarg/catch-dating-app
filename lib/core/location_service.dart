@@ -1,5 +1,5 @@
+import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -26,14 +26,16 @@ class LocationInitializer extends _$LocationInitializer {
     final location = await ref.read(deviceLocationProvider.future);
     if (location == null) return;
 
-    final nearest = IndianCity.nearestCity(location);
+    final nearest = await ref
+        .read(cityRepositoryProvider)
+        .nearestCity(location.latitude, location.longitude);
     await ref
         .read(userProfileRepositoryProvider)
         .updateDetectedLocation(
           uid: userProfile.uid,
           latitude: location.latitude,
           longitude: location.longitude,
-          city: userProfile.city == null ? nearest : null,
+          city: userProfile.city == null ? nearest?.name : null,
         );
   }
 }

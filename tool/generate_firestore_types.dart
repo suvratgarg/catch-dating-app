@@ -103,7 +103,7 @@ final _modelConfigs = <_ModelConfig>[
 
 /// Extra Dart files that define enums used across models but don't have a
 /// corresponding top-level TS interface.
-final _extraEnumSources = <String>['lib/core/indian_city.dart'];
+final _extraEnumSources = <String>[];
 
 void main() {
   final allEnums = <String, List<String>>{};

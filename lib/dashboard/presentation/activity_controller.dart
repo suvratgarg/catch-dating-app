@@ -1,4 +1,3 @@
-import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -28,17 +27,5 @@ class ActivityController extends _$ActivityController {
       uid: uid,
       notifications: notifications,
     );
-
-    final matchRepository = ref.read(matchRepositoryProvider);
-    final matchIds = <String>{
-      for (final notification in notifications)
-        if (notification.isUnread &&
-            notification.type == ActivityNotificationType.message &&
-            notification.matchId != null)
-          notification.matchId!,
-    };
-    for (final matchId in matchIds) {
-      await matchRepository.resetUnread(matchId: matchId, uid: uid);
-    }
   }
 }

@@ -24,10 +24,13 @@ final class AppAttestProviderFactory: NSObject, AppCheckProviderFactory {
     #endif
 
     application.registerForRemoteNotifications()
-    if let mapsApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsApiKey") as? String,
-       !mapsApiKey.isEmpty,
-       !mapsApiKey.hasPrefix("$(") {
-      GMSServices.provideAPIKey(mapsApiKey)
+    if let rawMapsApiKey = Bundle.main.object(forInfoDictionaryKey: "GoogleMapsApiKey") as? String {
+      let mapsApiKey = rawMapsApiKey
+        .replacingOccurrences(of: "keyString:", with: "")
+        .trimmingCharacters(in: .whitespacesAndNewlines)
+      if !mapsApiKey.isEmpty, !mapsApiKey.hasPrefix("$(") {
+        GMSServices.provideAPIKey(mapsApiKey)
+      }
     }
 
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)

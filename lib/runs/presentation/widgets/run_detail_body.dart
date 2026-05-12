@@ -1,9 +1,10 @@
 import 'dart:async';
 
-import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -11,7 +12,6 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
-import 'package:catch_dating_app/runs/presentation/run_location_links.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_hero_app_bar.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_overview_section.dart';
@@ -110,10 +110,9 @@ class RunDetailBody extends ConsumerWidget {
                 RunDetailOverviewSection(
                   run: run,
                   onLocationTap: run.hasExactStartingPoint
-                      ? () => unawaited(
-                          ref
-                              .read(externalLinkControllerProvider)
-                              .openExternal(directionsUriForRun(run)),
+                      ? () => context.pushNamed(
+                          Routes.runLocationMapScreen.name,
+                          pathParameters: {'runId': run.id},
                         )
                       : null,
                 ),
@@ -193,12 +192,22 @@ Future<void> _shareRun(
       subject: run.title,
       origin: origin,
     );
-  } on Object catch (error, stack) {
-    debugPrint('[ERROR] RunDetailBody share failed: $error\n$stack');
-    if (!context.mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Could not open share sheet.')),
+  } on Object catch (error, stackTrace) {
+    final actionError = ExternalActionException(
+      'Failed to share run',
+      cause: error,
+      stackTrace: stackTrace,
     );
+
+    if (context.mounted) {
+      ProviderScope.containerOf(context, listen: false)
+          .read(errorLoggerProvider)
+          .logError(actionError, stackTrace, reason: 'RunDetailBody._shareRun');
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open share sheet.')),
+      );
+    }
   }
 }
 

@@ -12,25 +12,15 @@ import {
   runClubMembershipId,
 } from "../shared/relationshipDocuments";
 
-const IndianCitySchema = z.enum([
-  "mumbai",
-  "delhi",
-  "bangalore",
-  "hyderabad",
-  "chennai",
-  "kolkata",
-  "pune",
-  "ahmedabad",
-  "indore",
-]);
-
+const CityNameSchema = z.string().trim().min(1).max(80)
+  .regex(/^[a-z0-9-]+$/);
 const nullableString = z.string().trim().nullable().optional();
 
 const CreateRunClubSchema = z.object({
   clubId: z.string().min(1).optional(),
   name: z.string().trim().min(1).max(120),
   description: z.string().trim().min(1).max(2000),
-  location: IndianCitySchema,
+  location: CityNameSchema,
   area: z.string().trim().min(1).max(120),
   imageUrl: nullableString,
   instagramHandle: nullableString,

@@ -15,9 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$CityData {
 
-/// Machine name — matches the [IndianCity] enum value for existing
-/// cities (e.g. `'mumbai'`, `'delhi'`). New cities use lowercase
-/// kebab-case (e.g. `'jaipur'`, `'noida'`).
+/// Machine name, e.g. `'mumbai'`, `'delhi'`, or lowercase kebab-case for
+/// newer city regions.
  String get name;/// Human-readable label (e.g. `'Mumbai'`, `'New Delhi'`).
  String get label;/// Latitude for GPS-based nearest-city detection.
  double get latitude;/// Longitude for GPS-based nearest-city detection.
@@ -221,9 +220,8 @@ class _CityData implements CityData {
   const _CityData({required this.name, required this.label, required this.latitude, required this.longitude});
   factory _CityData.fromJson(Map<String, dynamic> json) => _$CityDataFromJson(json);
 
-/// Machine name — matches the [IndianCity] enum value for existing
-/// cities (e.g. `'mumbai'`, `'delhi'`). New cities use lowercase
-/// kebab-case (e.g. `'jaipur'`, `'noida'`).
+/// Machine name, e.g. `'mumbai'`, `'delhi'`, or lowercase kebab-case for
+/// newer city regions.
 @override final  String name;
 /// Human-readable label (e.g. `'Mumbai'`, `'New Delhi'`).
 @override final  String label;

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/indian_city.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -62,7 +61,7 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             watchRunClubsByLocationProvider(
-              IndianCity.mumbai,
+              'mumbai',
             ).overrideWith((ref) => Stream.value([club])),
             uidProvider.overrideWith((ref) => Stream.value(user.uid)),
             watchActiveRunClubMembershipsForUserProvider(
@@ -186,7 +185,7 @@ RunClub _buildClub({String id = 'club-1', String hostUserId = 'host-1'}) {
     id: id,
     name: 'Stride Social',
     description: 'Morning runners who like easy city loops.',
-    location: IndianCity.mumbai,
+    location: 'mumbai',
     area: 'Bandra',
     hostUserId: hostUserId,
     hostName: 'Host',

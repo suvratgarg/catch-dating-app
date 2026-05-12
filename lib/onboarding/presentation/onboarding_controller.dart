@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
@@ -379,9 +380,13 @@ class OnboardingController extends _$OnboardingController {
             ),
           )
           .catchError((Object error, StackTrace stack) {
-            debugPrint(
-              '[ERROR] OnboardingController._saveDraft: $error\n$stack',
-            );
+            ref
+                .read(errorLoggerProvider)
+                .logError(
+                  error,
+                  stack,
+                  reason: 'OnboardingController._saveDraft',
+                );
           }),
     );
   }
@@ -395,9 +400,13 @@ class OnboardingController extends _$OnboardingController {
           .read(onboardingDraftRepositoryProvider)
           .deleteDraft(uid: uid)
           .catchError((Object error, StackTrace stack) {
-            debugPrint(
-              '[ERROR] OnboardingController._deleteDraft: $error\n$stack',
-            );
+            ref
+                .read(errorLoggerProvider)
+                .logError(
+                  error,
+                  stack,
+                  reason: 'OnboardingController._deleteDraft',
+                );
           }),
     );
   }

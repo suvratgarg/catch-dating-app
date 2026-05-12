@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/runs/data/run_callable_dtos.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -193,17 +193,18 @@ class RunRepository {
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> createRun({required Run run}) => withFirestoreErrorContext(
-    () => _functions.httpsCallable('createRun').call(_runCreatePayload(run)),
+    () => _functions
+        .httpsCallable('createRun')
+        .call(CreateRunCallableRequest.fromRun(run).toJson()),
     collection: _collectionPath,
     action: 'create run',
   );
 
   Future<void> updateRunDetails({required Run run}) =>
       withFirestoreErrorContext(
-        () => _functions.httpsCallable('updateRun').call({
-          'runId': run.id,
-          'fields': _runUpdatePayload(run),
-        }),
+        () => _functions
+            .httpsCallable('updateRun')
+            .call(UpdateRunCallableRequest.fromRun(run).toJson()),
         collection: _collectionPath,
         action: 'update run',
       );
@@ -213,24 +214,27 @@ class RunRepository {
   /// booking projections.
   Future<void> cancelSignUpViaFunction({required String runId}) =>
       withFirestoreErrorContext(
-        () =>
-            _functions.httpsCallable('cancelRunSignUp').call({'runId': runId}),
+        () => _functions
+            .httpsCallable('cancelRunSignUp')
+            .call(RunIdCallableRequest(runId).toJson()),
         collection: _collectionPath,
         action: 'cancel sign-up',
       );
 
   Future<void> joinWaitlistViaFunction({required String runId}) =>
       withFirestoreErrorContext(
-        () =>
-            _functions.httpsCallable('joinRunWaitlist').call({'runId': runId}),
+        () => _functions
+            .httpsCallable('joinRunWaitlist')
+            .call(RunIdCallableRequest(runId).toJson()),
         collection: _collectionPath,
         action: 'join waitlist',
       );
 
   Future<void> leaveWaitlist({required String runId, required String userId}) =>
       withFirestoreErrorContext(
-        () =>
-            _functions.httpsCallable('leaveRunWaitlist').call({'runId': runId}),
+        () => _functions
+            .httpsCallable('leaveRunWaitlist')
+            .call(RunIdCallableRequest(runId).toJson()),
         collection: _collectionPath,
         action: 'leave waitlist',
       );
@@ -243,11 +247,17 @@ class RunRepository {
     required String userId,
   }) => withFirestoreErrorContext(
     () async {
-      final result = await _functions.httpsCallable('markRunAttendance').call({
-        'runId': runId,
-        'userId': userId,
-      });
-      return (result.data as Map<String, dynamic>)['attended'] as bool;
+      final result = await _functions
+          .httpsCallable('markRunAttendance')
+          .call(
+            MarkRunAttendanceCallableRequest(
+              runId: runId,
+              userId: userId,
+            ).toJson(),
+          );
+      return MarkRunAttendanceCallableResponse.fromCallableData(
+        result.data,
+      ).attended;
     },
     collection: _collectionPath,
     action: 'mark attendance',
@@ -264,11 +274,15 @@ class RunRepository {
     required double? latitude,
     required double? longitude,
   }) => withFirestoreErrorContext(
-    () => _functions.httpsCallable('selfCheckInAttendance').call({
-      'runId': runId,
-      'latitude': ?latitude,
-      'longitude': ?longitude,
-    }),
+    () => _functions
+        .httpsCallable('selfCheckInAttendance')
+        .call(
+          SelfCheckInAttendanceCallableRequest(
+            runId: runId,
+            latitude: latitude,
+            longitude: longitude,
+          ).toJson(),
+        ),
     collection: _collectionPath,
     action: 'self check-in',
   );
@@ -280,37 +294,6 @@ Iterable<List<T>> _chunks<T>(List<T> values, int size) sync* {
     yield values.sublist(start, end);
   }
 }
-
-Map<String, Object?> _runCreatePayload(Run run) => {
-  'runId': run.id,
-  'runClubId': run.runClubId,
-  ..._runMutableDetailsPayload(run),
-  'capacityLimit': run.capacityLimit,
-  'priceInPaise': run.priceInPaise,
-  'constraints': _constraintsPayload(run.constraints),
-};
-
-Map<String, Object?> _runUpdatePayload(Run run) =>
-    _runMutableDetailsPayload(run);
-
-Map<String, Object?> _runMutableDetailsPayload(Run run) => {
-  'startTimeMillis': run.startTime.millisecondsSinceEpoch,
-  'endTimeMillis': run.endTime.millisecondsSinceEpoch,
-  'meetingPoint': run.meetingPoint,
-  'startingPointLat': run.startingPointLat,
-  'startingPointLng': run.startingPointLng,
-  'locationDetails': run.locationDetails,
-  'distanceKm': run.distanceKm,
-  'pace': run.pace.name,
-  'description': run.description,
-};
-
-Map<String, Object?> _constraintsPayload(RunConstraints constraints) => {
-  'minAge': constraints.minAge,
-  'maxAge': constraints.maxAge,
-  'maxMen': constraints.maxMen,
-  'maxWomen': constraints.maxWomen,
-};
 
 @riverpod
 RunRepository runRepository(Ref ref) => RunRepository(

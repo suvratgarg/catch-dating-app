@@ -90,6 +90,9 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             mapToolbarEnabled: false,
             zoomControlsEnabled: false,
             compassEnabled: false,
+            mapType: widget.loadMapTiles
+                ? gmaps.MapType.normal
+                : gmaps.MapType.none,
             onMapCreated: (controller) => _mapController = controller,
             onTap: (point) => _setSelectedPoint(point.toLocationCoordinate()),
           ),

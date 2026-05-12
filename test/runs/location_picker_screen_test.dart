@@ -51,6 +51,7 @@ void main() {
       final googleMap = tester.widget<gmaps.GoogleMap>(
         find.byType(gmaps.GoogleMap),
       );
+      expect(googleMap.mapType, gmaps.MapType.none);
       const selectedPoint = LocationCoordinate(19.11, 72.91);
       googleMap.onTap?.call(
         gmaps.LatLng(selectedPoint.latitude, selectedPoint.longitude),

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -69,7 +70,7 @@ class DashboardFull extends ConsumerWidget {
           key: scrollViewKey,
           slivers: [
             ...DashboardSliverHeader(
-              eyebrow: dayCity(user.city?.label).toUpperCase(),
+              eyebrow: dayCity(cityLabel(user.city)).toUpperCase(),
               title: '${greeting()}, $firstName',
               avatar: Tooltip(
                 message: 'Open profile',

@@ -1,6 +1,6 @@
 {
-  "version": "2.5.4",
-  "updated": "2026-05-07",
+  "version": "3.0.0",
+  "updated": "2026-05-12",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -26,15 +26,14 @@
       ]
     },
     "docs/widget_cleanup_todo.md": {
-      "purpose": "Short human-readable widget cleanup status pointer, including stream lifecycle and branded error UI queue summaries.",
+      "purpose": "Short human-readable widget cleanup pointer. Active state lives in backlog.json; detailed history lives in the archive.",
       "read_when": [
         "User asks what is next in widget cleanup",
-        "Need current pending queue in prose form",
-        "Need a quick summary of stream lifecycle or branded error UI debt"
+        "Need the pointer to active scanner/backlog sources"
       ],
       "skip_when": [
         "Use backlog.json for machine-readable current state",
-        "Use archived history only for old detailed findings"
+        "Use archived history only when an old stable id points there"
       ]
     },
     "docs/widget_catalog.md": {
@@ -84,6 +83,18 @@
         "Pure visual primitive work"
       ]
     },
+    "docs/action_cardinality_policy.md": {
+      "purpose": "Product and engineering policy for not-allowed, singleton, unbounded, and domain-bounded user actions.",
+      "read_when": [
+        "Adding or changing a user-visible action",
+        "Changing a callable or repository mutation",
+        "Auditing whether a UI supports zero, one, or many records",
+        "Deciding whether a product limit is real or just a UI shortcut"
+      ],
+      "skip_when": [
+        "The task is purely visual and does not add, remove, enable, disable, or change an action"
+      ]
+    },
     "docs/sliver_layout_guide.md": {
       "purpose": "Sliver-native layout guide and Catch-specific scroll contracts, including the scroll-away title plus pinned bottom-row header rule.",
       "read_when": [
@@ -92,15 +103,6 @@
       ],
       "skip_when": [
         "No scroll/sliver behavior is involved; use SLIVER-001 summary instead"
-      ]
-    },
-    "docs/architecture-audit.md": {
-      "purpose": "Historical state-management/provider audit snapshot.",
-      "read_when": [
-        "Need historical provider inventory or architecture rationale"
-      ],
-      "skip_when": [
-        "Current controller rules are enough; prefer controller_patterns.md"
       ]
     },
     "docs/error-handling-audit.md": {
@@ -114,22 +116,13 @@
         "No error behavior is touched"
       ]
     },
-    "docs/pre_launch_audit_2026_05_04.md": {
-      "purpose": "Dated launch-readiness risk snapshot.",
-      "read_when": [
-        "Prioritizing launch blockers",
-        "Revalidating product/security/ops risks"
-      ],
-      "skip_when": [
-        "Assuming current status without re-verification"
-      ]
-    },
     "docs/firestore_functions_data_contract_tracker.md": {
-      "purpose": "Firestore rules, Cloud Functions boundaries, schema drift, data-contract tracker, and Firestore rules emulator-test workflow.",
+      "purpose": "Firestore rules, Cloud Functions boundaries, schema drift, data-contract tracker, Firestore type-generation workflow, and Firestore rules emulator-test workflow.",
       "read_when": [
         "Changing Firestore rules",
         "Changing Functions mutation boundaries",
         "Changing shared data contracts",
+        "Changing Dart-to-TypeScript Firestore type generation",
         "Running or diagnosing Firestore rules tests"
       ],
       "skip_when": [
@@ -159,36 +152,6 @@
       ],
       "skip_when": [
         "No Firestore relationship, migration, or deletion contract is touched"
-      ]
-    },
-    "docs/firestore_type_sync_2026_05_05.md": {
-      "purpose": "Dart-to-TypeScript Firestore type generation workflow.",
-      "read_when": [
-        "Changing domain models used by Functions",
-        "Regenerating Firestore TypeScript interfaces"
-      ],
-      "skip_when": [
-        "No schema/type contract changes"
-      ]
-    },
-    "docs/deploy_runbook_2026_05_04.md": {
-      "purpose": "May 2026 relationship-doc deployment sequence, prerequisites, smoke tests, and Remote Config force-update timing.",
-      "read_when": [
-        "Deploying Firebase/Functions/rules/storage changes",
-        "Rolling out relationship-document schema changes",
-        "Planning Remote Config minimum-build gates"
-      ],
-      "skip_when": [
-        "Not deploying"
-      ]
-    },
-    "docs/one_crore_compensation_bar_2026_05_05.md": {
-      "purpose": "Dated quality assessment snapshot.",
-      "read_when": [
-        "User asks about quality rating or compensation-bar assessment"
-      ],
-      "skip_when": [
-        "Current verification has not been refreshed"
       ]
     },
     "docs/audit_registry/README.md": {
@@ -229,6 +192,42 @@
       ],
       "skip_when": [
         "The relevant doc was already identified by a stable debt id"
+      ]
+    },
+    "docs/release_operations.md": {
+      "purpose": "Consolidated CI, release, deploy, environment, smoke-test, and release-evidence runbook.",
+      "read_when": [
+        "Changing GitHub Actions release gates",
+        "Deploying Firebase/Functions/rules/storage changes",
+        "Preparing TestFlight or production release evidence",
+        "Checking environment setup or deploy order"
+      ],
+      "skip_when": [
+        "No CI, deploy, release, or environment behavior is touched"
+      ]
+    },
+    "docs/location_stack_plan.md": {
+      "purpose": "Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and map/demo readiness source of truth.",
+      "read_when": [
+        "Changing location permissions",
+        "Changing Google Maps or Places usage",
+        "Changing run coordinates, check-in fences, or directions",
+        "Verifying map readiness for demo data"
+      ],
+      "skip_when": [
+        "No location, map, or coordinate behavior is touched"
+      ]
+    },
+    "docs/demo_data_seeding.md": {
+      "purpose": "Demo data seeding, warm accounts, manual matching, reset/cleanup, demo ops, and validation workflow.",
+      "read_when": [
+        "Changing seed data generation",
+        "Warming a beta/demo account",
+        "Resetting synthetic demo state",
+        "Validating seeded run/match/check-in data"
+      ],
+      "skip_when": [
+        "No demo data, demo ops, or synthetic state is touched"
       ]
     }
   }

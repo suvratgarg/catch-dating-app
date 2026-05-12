@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
@@ -58,7 +59,7 @@ class NameOverlay extends StatelessWidget {
               ),
               gapW4,
               Text(
-                profile.city!.label,
+                cityLabel(profile.city),
                 style: CatchTextStyles.labelL(
                   context,
                   color: palette.textSecondary,
