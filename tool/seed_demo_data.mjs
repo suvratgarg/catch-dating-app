@@ -1297,6 +1297,11 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
   let docs = seed.docs.filter((doc) =>
     isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds)
   );
+  const existingTargetFilter = await filterAppendDocsForExistingTargets(
+    firestore,
+    docs
+  );
+  docs = existingTargetFilter.docs;
   docs = await normalizeAppendParticipationsForCapacity(firestore, docs);
   const aggregateUpdates = buildAppendAggregateUpdates(docs);
   const mergedPaths = new Set([...existingPaths, ...docs.map((doc) => doc.path)]);
@@ -1317,6 +1322,8 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
       newAnchorIds,
       existingPathCount: existingPaths.size,
       finalPathCount: mergedPaths.size,
+      skippedMissingTargetCount: existingTargetFilter.skippedPaths.length,
+      skippedMissingTargetPaths: existingTargetFilter.skippedPaths,
     },
   };
 }
@@ -1353,6 +1360,85 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
     return newAnchorSet.has(parts[1]);
   }
   return false;
+}
+
+async function filterAppendDocsForExistingTargets(firestore, docs) {
+  const runIds = new Set();
+  const clubIds = new Set();
+
+  for (const doc of docs) {
+    collectString(doc.data.runId, runIds);
+    collectString(doc.data.runClubId, clubIds);
+    collectString(doc.data.clubId, clubIds);
+    if (Array.isArray(doc.data.runIds)) {
+      for (const runId of doc.data.runIds) collectString(runId, runIds);
+    }
+  }
+
+  const [existingRunIds, existingClubIds] = await Promise.all([
+    existingDocumentIds(firestore, "runs", runIds),
+    existingDocumentIds(firestore, "runClubs", clubIds),
+  ]);
+
+  const skippedPaths = [];
+  let kept = docs.filter((doc) => {
+    const hasExistingTargets = docTargetsExist(doc, {
+      existingRunIds,
+      existingClubIds,
+    });
+    if (!hasExistingTargets) skippedPaths.push(doc.path);
+    return hasExistingTargets;
+  });
+
+  const keptMatchIds = new Set(
+    kept
+      .filter((doc) => {
+        const parts = doc.path.split("/");
+        return parts[0] === "matches" && parts.length === 2;
+      })
+      .map((doc) => doc.path.split("/")[1])
+  );
+
+  kept = kept.filter((doc) => {
+    const parts = doc.path.split("/");
+    const isMessage = parts[0] === "matches" && parts[2] === "messages";
+    if (!isMessage || keptMatchIds.has(parts[1])) return true;
+    skippedPaths.push(doc.path);
+    return false;
+  });
+
+  return {docs: kept, skippedPaths};
+}
+
+async function existingDocumentIds(firestore, collection, ids) {
+  const existing = new Set();
+  await Promise.all([...ids].map(async (id) => {
+    const snap = await firestore.collection(collection).doc(id).get();
+    if (snap.exists) existing.add(id);
+  }));
+  return existing;
+}
+
+function docTargetsExist(doc, {existingRunIds, existingClubIds}) {
+  if (!stringTargetExists(doc.data.runId, existingRunIds)) return false;
+  if (!stringTargetExists(doc.data.runClubId, existingClubIds)) return false;
+  if (!stringTargetExists(doc.data.clubId, existingClubIds)) return false;
+  if (Array.isArray(doc.data.runIds)) {
+    return doc.data.runIds.every((runId) =>
+      stringTargetExists(runId, existingRunIds)
+    );
+  }
+  return true;
+}
+
+function collectString(value, target) {
+  if (typeof value === "string" && value.length > 0) target.add(value);
+}
+
+function stringTargetExists(value, existingIds) {
+  return typeof value !== "string" ||
+    value.length === 0 ||
+    existingIds.has(value);
 }
 
 async function normalizeAppendParticipationsForCapacity(firestore, docs) {

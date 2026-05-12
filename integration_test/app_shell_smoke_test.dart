@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/location_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
@@ -20,27 +21,40 @@ import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/matches/presentation/chats_list_view_model.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
+import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
+import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
+import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
+import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
+import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
 import 'package:catch_dating_app/runs/presentation/run_check_in_location_service.dart';
+import 'package:catch_dating_app/safety/data/safety_repository.dart';
+import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
+import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart' show TextButton, TextField;
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:integration_test/integration_test.dart';
 
 import '../test/onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
@@ -99,6 +113,61 @@ void main() {
       expect(find.text('Sign in to join'), findsOneWidget);
     },
   );
+
+  testWidgets('club detail joins through the membership action', (
+    tester,
+  ) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        runClubsRepository: runClubsRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Join club'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(runClubsRepository.joinedClubId, club.id);
+  });
+
+  testWidgets('club detail leaves through the membership action', (
+    tester,
+  ) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        runClubsRepository: runClubsRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Leave club'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(runClubsRepository.leftClubId, club.id);
+  });
 
   testWidgets('club schedule opens a run detail route with booking CTA', (
     tester,
@@ -171,12 +240,195 @@ void main() {
     await pumpFeatureUi(tester);
 
     await tester.tap(find.text('Join run — 19 spots left'));
+    await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
     expect(paymentRepository.bookFreeRunCalled, isTrue);
     expect(paymentRepository.bookedFreeRunId, run.id);
-    expect(find.text('Booking confirmed'), findsOneWidget);
+    expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
     expect(find.text("You're in."), findsOneWidget);
+  });
+
+  testWidgets('run detail books a paid run and opens payment confirmation', (
+    tester,
+  ) async {
+    final user = run_helpers.buildUser(
+      uid: 'runner-1',
+      name: 'Suvrat Garg',
+      email: 'suvrat@example.com',
+      phoneNumber: '+919876543210',
+    );
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final run = run_helpers.buildRun(
+      id: 'paid-run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      meetingPoint: 'Carter Road Amphitheatre',
+      bookedCount: 1,
+      priceInPaise: 29900,
+    );
+    final paymentRepository = run_helpers.FakePaymentRepository()
+      ..processPaymentResult = PaymentConfirmationData(
+        paymentId: 'pay_integration_123',
+        orderId: 'order_integration_123',
+        amountInPaise: run.priceInPaise,
+        runId: run.id,
+      );
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        clubRuns: {
+          club.id: [run],
+        },
+        paymentRepository: paymentRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Carter Road Amphitheatre'));
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Book run'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(paymentRepository.processPaymentCalled, isTrue);
+    expect(paymentRepository.lastProcessPaymentCall?.runId, run.id);
+    expect(paymentRepository.lastProcessPaymentCall?.userName, user.name);
+    expect(paymentRepository.lastProcessPaymentCall?.userEmail, user.email);
+    expect(
+      paymentRepository.lastProcessPaymentCall?.userContact,
+      user.phoneNumber,
+    );
+    expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
+    expect(find.text('Payment ID'), findsOneWidget);
+    expect(find.text('pay_integration_123'), findsOneWidget);
+    expect(find.byKey(PaymentConfirmationKeys.backHome), findsOneWidget);
+  });
+
+  testWidgets('run detail cancels an existing booking', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final run = run_helpers.buildRun(
+      id: 'run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      meetingPoint: 'Carter Road Amphitheatre',
+      bookedCount: 1,
+    );
+    final runRepository = run_helpers.FakeRunRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        signedUpRuns: [run],
+        runRepository: runRepository,
+      ),
+    );
+
+    await tester.tap(find.byKey(NextRunHero.cardKey));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Cancel booking'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(runRepository.cancelledRunId, run.id);
+    expect(find.text('Booking cancelled.'), findsOneWidget);
+  });
+
+  testWidgets('run detail joins a waitlist for a full run', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final run = run_helpers.buildRun(
+      id: 'run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      meetingPoint: 'Carter Road Amphitheatre',
+      capacityLimit: 20,
+      bookedCount: 20,
+    );
+    final runRepository = run_helpers.FakeRunRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        clubRuns: {
+          club.id: [run],
+        },
+        runRepository: runRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Carter Road Amphitheatre'));
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Join waitlist'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(runRepository.joinedWaitlistRunId, run.id);
+  });
+
+  testWidgets('host creates a run from club detail', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(
+      id: 'club-1',
+      name: 'Stride Social',
+      hostUserId: user.uid,
+      hostName: user.name,
+    );
+    final runRepository = run_helpers.FakeRunRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        runClubsRepository: club_helpers.FakeRunClubsRepository(),
+        runRepository: runRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await tester.scrollUntilVisible(find.text('Add run'), 240);
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Add run'));
+    await pumpFeatureUi(tester);
+
+    await _submitValidRun(tester);
+
+    expect(runRepository.createdRun, isNotNull);
+    expect(runRepository.createdRun?.runClubId, club.id);
+    expect(runRepository.createdRun?.meetingPoint, 'Bandra Fort');
+    expect(runRepository.createdRun?.startingPointLat, 19.12345);
+    expect(runRepository.createdRun?.startingPointLng, 72.98765);
+    expect(runRepository.createdRun?.distanceKm, 7.5);
+    expect(runRepository.createdRun?.capacityLimit, 18);
+    expect(runRepository.createdRun?.priceInPaise, 24950);
+    expect(find.text('RUN CREATED'), findsOneWidget);
+    expect(find.text('Your run is live.'), findsOneWidget);
   });
 
   testWidgets('matches list opens chat and resets unread state', (
@@ -199,6 +451,7 @@ void main() {
       name: 'Taylor',
     );
     final conversationRepository = _FakeConversationRepository();
+    final safetyRepository = _FakeSafetyRepository();
 
     await _pumpCatchApp(
       tester,
@@ -208,6 +461,7 @@ void main() {
         matches: [match],
         publicProfiles: [profile],
         conversationRepository: conversationRepository,
+        safetyRepository: safetyRepository,
       ),
     );
 
@@ -223,6 +477,42 @@ void main() {
       conversationRepository.markReadCalls,
       contains(('match-1', user.uid)),
     );
+
+    await tester.enterText(find.byType(TextField), '  See you there  ');
+    await tester.tap(find.byTooltip('Send message'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(
+      conversationRepository.sentTextMessages,
+      contains(
+        _SentTextMessage(
+          conversationId: match.id,
+          senderId: user.uid,
+          text: 'See you there',
+        ),
+      ),
+    );
+
+    await tester.tap(find.byTooltip('Chat actions'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Report'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(safetyRepository.reportedUserId, profile.uid);
+    expect(safetyRepository.reportContextId, match.id);
+    expect(find.text('Report submitted for Taylor.'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Chat actions'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Block'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Block'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(safetyRepository.blockedUserId, profile.uid);
   });
 
   testWidgets('dashboard next-run card opens run detail', (tester) async {
@@ -252,6 +542,358 @@ void main() {
 
     expect(find.text('Carter Road Amphitheatre'), findsWidgets);
     expect(find.text('Cancel booking'), findsOneWidget);
+  });
+
+  testWidgets('dashboard recommended run opens run detail', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final nextRun = run_helpers.buildRun(
+      id: 'run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().add(const Duration(hours: 3)),
+      bookedCount: 1,
+    );
+    final recommendedRun = run_helpers.buildRun(
+      id: 'recommended-run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().add(const Duration(days: 2, hours: 3)),
+      meetingPoint: 'Joggers Park Gate',
+      bookedCount: 3,
+    );
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        signedUpRuns: [nextRun],
+        recommendedRuns: [recommendedRun],
+      ),
+    );
+
+    final recommendedTitle = find.text(recommendedRun.title);
+    for (var i = 0; i < 5; i += 1) {
+      if (recommendedTitle.hitTestable().evaluate().isNotEmpty) break;
+      await tester.dragFrom(const Offset(200, 700), const Offset(0, -240));
+      await pumpFeatureUi(tester);
+    }
+    await tester.tap(recommendedTitle.hitTestable());
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Joggers Park Gate'), findsWidgets);
+    expect(find.text('Join run — 17 spots left'), findsOneWidget);
+  });
+
+  testWidgets('catches tab opens the swipe deck for an attended run', (
+    tester,
+  ) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final attendedRun = run_helpers.buildRun(
+      id: 'attended-run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().subtract(const Duration(hours: 11)),
+      endTime: DateTime.now().subtract(const Duration(hours: 10)),
+      meetingPoint: 'Bandstand Steps',
+      checkedInCount: 2,
+    );
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        attendedRuns: [attendedRun],
+      ),
+    );
+
+    await _openTab(tester, 'Catches');
+    await tester.tap(find.text('Start catching'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Discover'), findsOneWidget);
+    expect(find.text('No more runners'), findsOneWidget);
+    expect(find.text('Join more runs to meet new people'), findsOneWidget);
+  });
+
+  testWidgets('settings opens payment history from profile', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(uid: user.uid, user: user),
+    );
+
+    await _openTab(tester, 'Profile');
+    await tester.tap(find.byTooltip('Settings'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('ACCOUNT'), findsOneWidget);
+    expect(find.text('NOTIFICATIONS'), findsOneWidget);
+
+    await tester.tap(find.byKey(SettingsKeys.paymentHistoryRow));
+    await pumpFeatureUi(tester);
+    expect(find.text('Payment history'), findsOneWidget);
+    expect(find.text('No payments yet'), findsOneWidget);
+  });
+
+  testWidgets('settings opens review history from profile', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(uid: user.uid, user: user),
+    );
+
+    await _openTab(tester, 'Profile');
+    await tester.tap(find.byTooltip('Settings'));
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.byKey(SettingsKeys.reviewHistoryRow));
+    await pumpFeatureUi(tester);
+    expect(find.text('Review history'), findsOneWidget);
+    expect(find.text('No reviews yet'), findsOneWidget);
+  });
+
+  testWidgets('attended run detail submits a review', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final run = run_helpers.buildRun(
+      id: 'review-run-1',
+      runClubId: club.id,
+      startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+      meetingPoint: 'Carter Road Amphitheatre',
+      bookedCount: 1,
+    );
+    final reviewsRepository = _FakeReviewsRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        clubs: [club],
+        joinedClubIds: {club.id},
+        clubRuns: {
+          club.id: [run],
+        },
+        attendedRuns: [run],
+        reviewsRepository: reviewsRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Clubs');
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.text('Carter Road Amphitheatre'));
+    await pumpFeatureUi(tester);
+    await tester.scrollUntilVisible(
+      find.byKey(ReviewKeys.writeReviewButton),
+      300,
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(ReviewKeys.writeReviewButton));
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.byKey(ReviewKeys.ratingStar(4)));
+    await tester.enterText(find.byType(TextField), '  Friendly crew.  ');
+    await tester.tap(find.byKey(ReviewKeys.submitReviewButton));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(reviewsRepository.addedReview?.runClubId, club.id);
+    expect(reviewsRepository.addedReview?.runId, run.id);
+    expect(reviewsRepository.addedReview?.reviewerUserId, user.uid);
+    expect(reviewsRepository.addedReview?.reviewerName, user.name);
+    expect(reviewsRepository.addedReview?.rating, 4);
+    expect(reviewsRepository.addedReview?.comment, 'Friendly crew.');
+  });
+
+  testWidgets('review history edits and deletes an existing review', (
+    tester,
+  ) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final run = run_helpers.buildRun(
+      id: 'review-run-1',
+      runClubId: 'club-1',
+      meetingPoint: 'Carter Road Amphitheatre',
+    );
+    final review = run_helpers.buildReview(
+      id: '${run.id}~${user.uid}',
+      runClubId: run.runClubId,
+      runId: run.id,
+      reviewerUserId: user.uid,
+      reviewerName: user.name,
+      rating: 3,
+      comment: 'Good route.',
+    );
+    final reviewsRepository = _FakeReviewsRepository(reviewsByUser: [review]);
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        signedUpRuns: [run],
+        reviewsByUser: [review],
+        reviewsRepository: reviewsRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Profile');
+    await tester.tap(find.byTooltip('Settings'));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(SettingsKeys.reviewHistoryRow));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Good route.'), findsOneWidget);
+
+    await tester.tap(find.byKey(ReviewKeys.editReviewButton(review.id)));
+    await pumpFeatureUi(tester);
+    await tester.enterText(find.byType(TextField), '  Even better now.  ');
+    await tester.tap(find.byKey(ReviewKeys.ratingStar(5)));
+    await tester.tap(find.byKey(ReviewKeys.submitReviewButton));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(reviewsRepository.updatedReview?.id, review.id);
+    expect(reviewsRepository.updatedReview?.rating, 5);
+    expect(reviewsRepository.updatedReview?.comment, 'Even better now.');
+
+    await tester.tap(find.byKey(ReviewKeys.editReviewButton(review.id)));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(ReviewKeys.deleteReviewButton));
+    await pumpFeatureUi(tester);
+    await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(reviewsRepository.deletedReviewId, review.id);
+  });
+
+  testWidgets('settings signs out through auth controller', (tester) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final authRepository = _FakeAuthRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        authRepository: authRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Profile');
+    await tester.tap(find.byTooltip('Settings'));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Settings'), findsOneWidget);
+    expect(find.text('ACCOUNT'), findsOneWidget);
+    expect(find.text('NOTIFICATIONS'), findsOneWidget);
+    await tester.tap(find.byKey(SettingsKeys.signOutRow));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(authRepository.signOutCallCount, 1);
+  });
+
+  testWidgets(
+    'settings updates notification preferences and unblocks account',
+    (tester) async {
+      final user = run_helpers
+          .buildUser(uid: 'runner-1', name: 'Suvrat Garg')
+          .copyWith(prefsWeeklyDigest: false);
+      final userProfileRepository = _FakeUserProfileRepository();
+      final safetyRepository = _FakeSafetyRepository(
+        blockedUsers: [
+          BlockedUser(
+            uid: 'blocked-1',
+            source: 'chat',
+            createdAt: DateTime(2026, 5, 1),
+          ),
+        ],
+      );
+      final blockedProfile = run_helpers.buildPublicProfile(
+        uid: 'blocked-1',
+        name: 'Riya',
+      );
+
+      await _pumpCatchApp(
+        tester,
+        overrides: _appOverrides(
+          uid: user.uid,
+          user: user,
+          userProfileRepository: userProfileRepository,
+          safetyRepository: safetyRepository,
+          publicProfiles: [blockedProfile],
+        ),
+      );
+
+      await _openTab(tester, 'Profile');
+      await tester.tap(find.byTooltip('Settings'));
+      await pumpFeatureUi(tester);
+      await tester.scrollUntilVisible(
+        find.byKey(SettingsKeys.weeklyDigestSwitch),
+        240,
+      );
+      await pumpFeatureUi(tester);
+      await tester.tap(find.byKey(SettingsKeys.weeklyDigestSwitch));
+      await flushTestEventQueue();
+      await pumpFeatureUi(tester);
+
+      expect(userProfileRepository.updatedUid, user.uid);
+      expect(userProfileRepository.updatedFields, {'prefsWeeklyDigest': true});
+
+      await tester.scrollUntilVisible(find.text('Riya'), 240);
+      await pumpFeatureUi(tester);
+      await tester.tap(find.byKey(SettingsKeys.unblockButton('blocked-1')));
+      await flushTestEventQueue();
+      await pumpFeatureUi(tester);
+
+      expect(safetyRepository.unblockedUserId, 'blocked-1');
+      expect(find.text('Account unblocked.'), findsOneWidget);
+    },
+  );
+
+  testWidgets('settings requests account deletion after confirmation', (
+    tester,
+  ) async {
+    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final safetyRepository = _FakeSafetyRepository();
+
+    await _pumpCatchApp(
+      tester,
+      overrides: _appOverrides(
+        uid: user.uid,
+        user: user,
+        safetyRepository: safetyRepository,
+      ),
+    );
+
+    await _openTab(tester, 'Profile');
+    await tester.tap(find.byTooltip('Settings'));
+    await pumpFeatureUi(tester);
+    await tester.scrollUntilVisible(
+      find.byKey(SettingsKeys.deleteAccountRow),
+      320,
+    );
+    await pumpFeatureUi(tester);
+    await tester.tap(find.byKey(SettingsKeys.deleteAccountRow));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Delete account?'), findsOneWidget);
+
+    await tester.tap(find.widgetWithText(TextButton, 'Delete'));
+    await flushTestEventQueue();
+    await pumpFeatureUi(tester);
+
+    expect(safetyRepository.requestDeletionCallCount, 1);
   });
 
   testWidgets('incomplete profiles resume onboarding before app shell', (
@@ -342,6 +984,101 @@ Future<void> _pumpCatchApp(
   await pumpFeatureUi(tester);
 }
 
+Future<void> _submitValidRun(WidgetTester tester) async {
+  await _fillCreateRunBasicsStep(tester);
+  await _tapCatchButton(tester, 'Next');
+
+  await _enterCreateRunText(
+    tester,
+    CreateRunFormKeys.meetingPoint,
+    'Bandra Fort',
+  );
+  await _pickCreateRunMapPoint(tester);
+  await _enterCreateRunText(
+    tester,
+    CreateRunFormKeys.locationDetails,
+    'Meet at the gate',
+  );
+  await _tapCatchButton(tester, 'Next');
+
+  await _pickFutureRunDate(tester);
+  await _acceptInitialRunTime(tester);
+  await _tapCatchButton(tester, 'Next');
+
+  await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '21');
+  await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '35');
+  await _enterCreateRunText(tester, CreateRunFormKeys.maxMen, '9');
+  await _enterCreateRunText(tester, CreateRunFormKeys.maxWomen, '9');
+  await _tapCatchButton(tester, 'Schedule run');
+}
+
+Future<void> _fillCreateRunBasicsStep(WidgetTester tester) async {
+  await _enterCreateRunText(tester, CreateRunFormKeys.distance, '7.5');
+  await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
+  await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
+  await tester.tap(find.text('MODERATE'));
+  await _enterCreateRunText(
+    tester,
+    CreateRunFormKeys.description,
+    'Social pacing with a coffee stop.',
+  );
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _pickCreateRunMapPoint(WidgetTester tester) async {
+  await tester.tap(find.byKey(CreateRunFormKeys.mapPicker));
+  await pumpFeatureUi(tester);
+
+  final googleMap = tester.widget<gmaps.GoogleMap>(
+    find.byType(gmaps.GoogleMap),
+  );
+  const selectedPoint = LocationCoordinate(19.12345, 72.98765);
+  googleMap.onTap?.call(
+    gmaps.LatLng(selectedPoint.latitude, selectedPoint.longitude),
+  );
+  await tester.pump();
+  await tester.tap(find.text('Confirm'));
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _pickFutureRunDate(WidgetTester tester) async {
+  await tester.tap(find.byKey(CreateRunFormKeys.datePicker));
+  await pumpFeatureUi(tester);
+  await tester.tap(find.byTooltip('Next month'));
+  await pumpFeatureUi(tester);
+  await tester.tap(find.text('1').hitTestable());
+  await pumpFeatureUi(tester);
+  await tester.tap(find.text('OK'));
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _acceptInitialRunTime(WidgetTester tester) async {
+  await tester.tap(find.byKey(CreateRunFormKeys.timePicker));
+  await pumpFeatureUi(tester);
+  await tester.tap(find.text('OK'));
+  await pumpFeatureUi(tester);
+}
+
+Future<void> _enterCreateRunText(
+  WidgetTester tester,
+  Key fieldKey,
+  String text,
+) async {
+  await tester.enterText(
+    find.descendant(of: find.byKey(fieldKey), matching: find.byType(TextField)),
+    text,
+  );
+}
+
+Future<void> _tapCatchButton(WidgetTester tester, String label) async {
+  tester.binding.focusManager.primaryFocus?.unfocus();
+  await tester.pump();
+  final buttonFinder = find.widgetWithText(CatchButton, label);
+  await tester.ensureVisible(buttonFinder);
+  await tester.tap(buttonFinder);
+  await pumpFeatureUi(tester);
+}
+
 List<Object> _appOverrides({
   required String? uid,
   required UserProfile? user,
@@ -349,11 +1086,22 @@ List<Object> _appOverrides({
   Set<String> joinedClubIds = const {},
   List<Run> signedUpRuns = const [],
   List<Run> attendedRuns = const [],
+  List<Run> recommendedRuns = const [],
   Map<String, List<Run>> clubRuns = const {},
+  Map<String, List<Review>> clubReviews = const {},
+  Map<String, List<Review>> runReviews = const {},
+  List<Review> reviewsByUser = const [],
+  bool canCreateRunClub = false,
   List<Match> matches = const [],
   List<PublicProfile> publicProfiles = const [],
   ConversationRepository? conversationRepository,
   PaymentRepository? paymentRepository,
+  RunRepository? runRepository,
+  RunClubsRepository? runClubsRepository,
+  AuthRepository? authRepository,
+  SafetyRepository? safetyRepository,
+  UserProfileRepository? userProfileRepository,
+  ReviewsRepository? reviewsRepository,
 }) {
   final joinedClubs = clubs
       .where((club) => joinedClubIds.contains(club.id))
@@ -361,6 +1109,7 @@ List<Object> _appOverrides({
   final knownRunsById = <String, Run>{
     for (final run in signedUpRuns) run.id: run,
     for (final run in attendedRuns) run.id: run,
+    for (final run in recommendedRuns) run.id: run,
     for (final run in clubRuns.values.expand((runs) => runs)) run.id: run,
   };
   final knownRunClubIds = knownRunsById.values
@@ -402,19 +1151,42 @@ List<Object> _appOverrides({
     onboardingDraftRepositoryProvider.overrideWithValue(
       onboarding_helpers.FakeOnboardingDraftRepository(),
     ),
+    authRepositoryProvider.overrideWithValue(
+      authRepository ?? _FakeAuthRepository(),
+    ),
+    userProfileRepositoryProvider.overrideWithValue(
+      userProfileRepository ?? _FakeUserProfileRepository(),
+    ),
     uidProvider.overrideWith((ref) => Stream.value(uid)),
     watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
     watchRunClubsByLocationProvider(
       _mumbai.name,
     ).overrideWith((ref) => Stream.value(clubs)),
+    reviewsRepositoryProvider.overrideWithValue(
+      reviewsRepository ??
+          _FakeReviewsRepository(
+            clubReviews: clubReviews,
+            runReviews: runReviews,
+            reviewsByUser: reviewsByUser,
+          ),
+    ),
+    runClubsRepositoryProvider.overrideWithValue(
+      runClubsRepository ?? club_helpers.FakeRunClubsRepository(),
+    ),
+    swipeCandidateRepositoryProvider.overrideWithValue(
+      const _FakeSwipeCandidateRepository(),
+    ),
+    safetyRepositoryProvider.overrideWithValue(
+      safetyRepository ?? _FakeSafetyRepository(),
+    ),
     for (final club in clubs) ...[
       watchRunClubProvider(club.id).overrideWith((ref) => Stream.value(club)),
       watchRunsForClubProvider(
         club.id,
       ).overrideWithValue(AsyncData<List<Run>>(clubRuns[club.id] ?? const [])),
-      watchReviewsForClubProvider(
-        club.id,
-      ).overrideWithValue(const AsyncData([])),
+      watchReviewsForClubProvider(club.id).overrideWithValue(
+        AsyncData<List<Review>>(clubReviews[club.id] ?? const []),
+      ),
       if (uid != null)
         watchRunClubMembershipProvider(club.id, uid).overrideWith(
           (ref) => Stream.value(
@@ -437,7 +1209,9 @@ List<Object> _appOverrides({
       ).overrideWith((ref) async => _clubById(clubs, runClubId)),
     for (final run in knownRunsById.values) ...[
       watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
-      watchReviewsForRunProvider(run.id).overrideWithValue(const AsyncData([])),
+      watchReviewsForRunProvider(run.id).overrideWithValue(
+        AsyncData<List<Review>>(runReviews[run.id] ?? const []),
+      ),
       if (uid != null) ...[
         watchSavedRunProvider(
           uid,
@@ -458,8 +1232,11 @@ List<Object> _appOverrides({
         ),
       ),
     ),
-    canCreateRunClubProvider.overrideWithValue(const AsyncData(false)),
-    runRepositoryProvider.overrideWithValue(run_helpers.FakeRunRepository()),
+    canCreateRunClubProvider.overrideWithValue(AsyncData(canCreateRunClub)),
+    runRepositoryProvider.overrideWithValue(
+      runRepository ?? run_helpers.FakeRunRepository(),
+    ),
+    runDraftRepositoryProvider.overrideWithValue(_FakeRunDraftRepository()),
     paymentRepositoryProvider.overrideWithValue(
       paymentRepository ?? run_helpers.FakePaymentRepository(),
     ),
@@ -482,10 +1259,16 @@ List<Object> _appOverrides({
           userId: uid,
           followedClubIds: joinedClubIds.toList(growable: false),
         ),
-      ).overrideWithValue(const AsyncData<List<Run>>([])),
+      ).overrideWithValue(AsyncData<List<Run>>(recommendedRuns)),
       watchActivityNotificationsProvider(
         uid,
       ).overrideWithValue(const AsyncData([])),
+      watchPaymentsForUserProvider(
+        uid,
+      ).overrideWith((ref) => Stream.value(const [])),
+      watchReviewsByUserProvider(
+        uid,
+      ).overrideWith((ref) => Stream.value(reviewsByUser)),
       watchActiveRunClubMembershipsForUserProvider(uid).overrideWith(
         (ref) => Stream.value([
           for (final clubId in joinedClubIds)
@@ -583,6 +1366,129 @@ class _NoopAnalyticsReporter implements AnalyticsReporter {
   Future<void> setUserId(String? userId) async {}
 }
 
+class _FakeAuthRepository implements AuthRepository {
+  int signOutCallCount = 0;
+
+  @override
+  Future<void> signOut() async {
+    signOutCallCount += 1;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FakeUserProfileRepository implements UserProfileRepository {
+  String? updatedUid;
+  Map<String, dynamic>? updatedFields;
+
+  @override
+  Future<void> updateUserProfile({
+    required String uid,
+    required Map<String, dynamic> fields,
+    String action = 'update profile',
+  }) async {
+    updatedUid = uid;
+    updatedFields = Map<String, dynamic>.from(fields);
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FakeReviewsRepository implements ReviewsRepository {
+  _FakeReviewsRepository({
+    this.clubReviews = const {},
+    this.runReviews = const {},
+    this.reviewsByUser = const [],
+  });
+
+  final Map<String, List<Review>> clubReviews;
+  final Map<String, List<Review>> runReviews;
+  final List<Review> reviewsByUser;
+  Review? addedReview;
+  Review? updatedReview;
+  String? deletedReviewId;
+
+  @override
+  Stream<List<Review>> watchReviewsForClub(String runClubId) {
+    return Stream.value(clubReviews[runClubId] ?? const []);
+  }
+
+  @override
+  Stream<List<Review>> watchReviewsForRun(String runId) {
+    return Stream.value(runReviews[runId] ?? const []);
+  }
+
+  @override
+  Stream<List<Review>> watchReviewsByUser(String reviewerUserId) {
+    return Stream.value(reviewsByUser);
+  }
+
+  @override
+  Stream<Review?> watchUserReviewForRun({
+    required String runId,
+    required String reviewerUserId,
+  }) {
+    for (final review in runReviews[runId] ?? const <Review>[]) {
+      if (review.reviewerUserId == reviewerUserId) {
+        return Stream.value(review);
+      }
+    }
+    return Stream.value(null);
+  }
+
+  @override
+  Future<void> addReview(Review review) async {
+    addedReview = review;
+  }
+
+  @override
+  Future<void> updateReview(Review review) async {
+    updatedReview = review;
+  }
+
+  @override
+  Future<void> deleteReview(String reviewId) async {
+    deletedReviewId = reviewId;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _FakeRunDraftRepository implements RunDraftRepository {
+  @override
+  Future<List<RunDraft>> loadDrafts({
+    required String runClubId,
+    required String userId,
+  }) async {
+    return const [];
+  }
+
+  @override
+  Future<void> saveDraft({
+    required String userId,
+    required RunDraft draft,
+  }) async {}
+
+  @override
+  Future<void> deleteDraft({
+    required String runClubId,
+    required String userId,
+    required String draftId,
+  }) async {}
+
+  @override
+  Future<void> deleteAllDrafts({
+    required String runClubId,
+    required String userId,
+  }) async {}
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
 class _NoopCelebrationEffectsController extends CelebrationEffectsController {
   const _NoopCelebrationEffectsController();
 
@@ -592,6 +1498,7 @@ class _NoopCelebrationEffectsController extends CelebrationEffectsController {
 
 class _FakeConversationRepository implements ConversationRepository {
   final List<(String conversationId, String uid)> markReadCalls = [];
+  final List<_SentTextMessage> sentTextMessages = [];
 
   @override
   Stream<List<ChatMessage>> watchMessages({required String conversationId}) =>
@@ -605,7 +1512,15 @@ class _FakeConversationRepository implements ConversationRepository {
     required String conversationId,
     required String senderId,
     required String text,
-  }) async {}
+  }) async {
+    sentTextMessages.add(
+      _SentTextMessage(
+        conversationId: conversationId,
+        senderId: senderId,
+        text: text,
+      ),
+    );
+  }
 
   @override
   Future<void> sendImageMessage({
@@ -622,4 +1537,100 @@ class _FakeConversationRepository implements ConversationRepository {
   }) async {
     markReadCalls.add((conversationId, uid));
   }
+}
+
+class _FakeSwipeCandidateRepository implements SwipeCandidateRepository {
+  const _FakeSwipeCandidateRepository();
+
+  @override
+  Future<List<PublicProfile>> fetchCandidates({
+    required String runId,
+    required UserProfile currentUser,
+  }) async {
+    return const [];
+  }
+}
+
+class _FakeSafetyRepository implements SafetyRepository {
+  _FakeSafetyRepository({this.blockedUsers = const []});
+
+  final List<BlockedUser> blockedUsers;
+  String? blockedUserId;
+  String? blockSource;
+  String? unblockedUserId;
+  String? reportedUserId;
+  String? reportSource;
+  String? reportContextId;
+  String? reportReasonCode;
+  int requestDeletionCallCount = 0;
+
+  @override
+  Stream<List<BlockedUser>> watchBlockedUsers({required String uid}) {
+    return Stream.value(blockedUsers);
+  }
+
+  @override
+  Future<Set<String>> fetchBlockedUserIds({required String uid}) async {
+    return const {};
+  }
+
+  @override
+  Future<void> blockUser({
+    required String targetUserId,
+    String source = 'profile',
+  }) async {
+    blockedUserId = targetUserId;
+    blockSource = source;
+  }
+
+  @override
+  Future<void> unblockUser({required String targetUserId}) async {
+    unblockedUserId = targetUserId;
+  }
+
+  @override
+  Future<void> reportUser({
+    required String targetUserId,
+    String source = 'profile',
+    String? reasonCode,
+    String? contextId,
+    String? notes,
+  }) async {
+    reportedUserId = targetUserId;
+    reportSource = source;
+    reportContextId = contextId;
+    reportReasonCode = reasonCode;
+  }
+
+  @override
+  Future<void> requestAccountDeletion() async {
+    requestDeletionCallCount += 1;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+class _SentTextMessage {
+  const _SentTextMessage({
+    required this.conversationId,
+    required this.senderId,
+    required this.text,
+  });
+
+  final String conversationId;
+  final String senderId;
+  final String text;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is _SentTextMessage &&
+          runtimeType == other.runtimeType &&
+          conversationId == other.conversationId &&
+          senderId == other.senderId &&
+          text == other.text;
+
+  @override
+  int get hashCode => Object.hash(conversationId, senderId, text);
 }

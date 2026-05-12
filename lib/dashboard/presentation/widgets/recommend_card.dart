@@ -4,13 +4,17 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 class RecommendCard extends StatelessWidget {
   const RecommendCard({
     super.key,
+    required this.runClubId,
+    required this.runId,
     required this.club,
     required this.dist,
     required this.when,
@@ -18,11 +22,15 @@ class RecommendCard extends StatelessWidget {
 
   factory RecommendCard.fromRun({Key? key, required Run run}) => RecommendCard(
     key: key,
+    runClubId: run.runClubId,
+    runId: run.id,
     club: run.title,
     dist: '${run.distanceKm.toStringAsFixed(0)}K',
     when: DateFormat('EEE d MMM').format(run.startTime),
   );
 
+  final String runClubId;
+  final String runId;
   final String club;
   final String dist;
   final String when;
@@ -31,6 +39,10 @@ class RecommendCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     return CatchSurface(
+      onTap: () => context.pushNamed(
+        Routes.runDetailScreen.name,
+        pathParameters: {'runClubId': runClubId, 'runId': runId},
+      ),
       width: 180,
       radius: CatchRadius.md,
       borderColor: t.line,
