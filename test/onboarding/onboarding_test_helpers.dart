@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
@@ -54,15 +56,22 @@ class FakeAuthRepository extends Fake implements AuthRepository {
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
     required void Function(String verificationId, int? resendToken) codeSent,
-    required void Function(FirebaseAuthException e) verificationFailed,
+    required void Function(AppException e) verificationFailed,
     required void Function(PhoneAuthCredential credential)
     verificationCompleted,
   }) async {
+    const context = BackendErrorContext(
+      service: BackendService.auth,
+      action: 'send verification code',
+      resource: 'phone_auth',
+    );
     verifyPhoneNumberCallCount += 1;
     verifiedPhoneNumber = phoneNumber;
     await onVerifyPhoneNumber?.call(
       verificationCompleted: verificationCompleted,
-      verificationFailed: verificationFailed,
+      verificationFailed: (error) {
+        verificationFailed(normalizeBackendError(error, context: context));
+      },
       codeSent: codeSent,
       codeAutoRetrievalTimeout: (_) {},
     );
@@ -127,6 +136,7 @@ class FakeOnboardingUserProfileRepository extends Fake
   Future<void> updateUserProfile({
     required String uid,
     required Map<String, dynamic> fields,
+    String action = 'update profile',
   }) async {
     final updated = Map<String, dynamic>.from(fields);
     if (updated.containsKey('profileComplete')) {

@@ -441,7 +441,7 @@
         "ERROR-CATALOG-001",
         "DESIGN-PRIMITIVES-001"
       ],
-      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, and `appErrorMessage` / `appErrorTitle`. `CatchErrorText` has been deleted rather than retained as a compatibility layer. `docs/error-handling-audit.md` owns the app error catalogue, the rule for when to add sealed `AppException` subclasses, naming conventions, and an Error 101 guide. First-batch and hard-migration coverage includes Dashboard, Profile, Run Clubs list/detail, Chats list/thread messages, Catches hub, swipe queue load failures, payments, routing wrappers, run detail, run map, attendance, filters, and run recap. `tool/widget_cleanup_scan.sh` now reports zero raw app-facing error surface candidates. Keep this queue on watch for regressions, and handle likely future catalogue candidates as touched: image upload/storage, reusable validation, external action, and location failures.",
+      "summary": "The canonical branded app-facing error primitive family now exists: `CatchErrorState`, `CatchErrorScaffold`, `CatchSliverErrorState`, `CatchInlineErrorState`, `showCatchErrorSnackBar`, and `appErrorMessage` / `appErrorTitle`. The 2026-05-12 backend error hard migration added `BackendErrorContext`, `withBackendErrorContext`, `withBackendErrorStream`, `normalizeBackendError`, `backendErrorMessage`, `backend_operation_failed` analytics, and `tool/backend_error_candidates.dart`; deleted the Firestore/Auth/run-booking-specific message wrappers; and migrated Auth, Firestore, Functions, Storage, FCM, local cache, location, external share/link, payments, and repository/controller boundaries. `docs/error-handling-audit.md` is now the active source of truth. Keep `dart tool/backend_error_candidates.dart --json` at `mustMigrate=0`.",
       "paths": [
         "lib/core/widgets/catch_framework_error_view.dart",
         "lib/core/widgets/catch_error_state.dart",
@@ -560,6 +560,33 @@
         "docs/widget_catalog.md",
         "docs/widget_cleanup_todo.md"
       ]
+    },
+    {
+      "id": "SCREEN-SPACING-SYSTEM-001",
+      "title": "Unify top-level tab header and first-content spacing",
+      "status": "identified",
+      "area": "core,dashboard,matches,run_clubs,swipes,user_profile,image_uploads,runs",
+      "priority": "high",
+      "rules": [
+        "DESIGN-PRIMITIVES-001",
+        "DESIGN-TOKENS-001",
+        "SLIVER-001",
+        "WIDGET-CATALOG-001"
+      ],
+      "summary": "Screenshots on 2026-05-12 showed repeated spacing drift between title/subtitle, pinned search/tab controls, and first content on Chats, Clubs, Home, Catches, and Profile. Keep long-title composability through explicit CatchSliverHeader height contracts, but centralize the shared title padding, subtitle-to-control gap, pinned search/filter row padding, tabbar-to-content gap, and control-to-first-card gap instead of tuning each screen separately. Fold the 2026-05-12 scanner follow-ups into this queue when in scope: raw TextField candidate in location picker and tappable/semantics candidates in photo slot/location picker.",
+      "paths": [
+        "lib/core/widgets/catch_top_bar.dart",
+        "lib/matches/presentation/widgets/chats_sliver_header.dart",
+        "lib/matches/presentation/widgets/chat_conversations_list.dart",
+        "lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart",
+        "lib/dashboard/presentation/widgets/dashboard_sliver_header.dart",
+        "lib/user_profile/presentation/widgets/profile_sliver_header.dart",
+        "lib/swipes/presentation/swipe_hub_screen.dart",
+        "lib/image_uploads/presentation/widgets/photo_slot.dart",
+        "lib/runs/presentation/location_picker_screen.dart",
+        "docs/ui_layout_spacing.md",
+        "docs/widget_catalog.md"
+      ]
     }
   ],
   "next_up": [
@@ -570,7 +597,8 @@
     "FIRESTORE-RULES-SIMPLIFICATION-001",
     "DELETE-METHODOLOGY-QUEUE",
     "MIGRATION-VALIDATION-001",
-    "PROFILE-001"
+    "PROFILE-001",
+    "SCREEN-SPACING-SYSTEM-001"
   ],
   "completed": [
     {

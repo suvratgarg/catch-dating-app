@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -24,10 +26,16 @@ class ProfileEditController extends _$ProfileEditController {
         .catchError((Object error, StackTrace stack) {
           ref
               .read(errorLoggerProvider)
-              .logError(
-                error,
-                stack,
-                reason: 'ProfileEditController previous save',
+              .logAppException(
+                normalizeBackendError(
+                  error,
+                  stackTrace: stack,
+                  context: const BackendErrorContext(
+                    service: BackendService.local,
+                    action: 'save queued profile edits',
+                    resource: 'profile_edit_controller',
+                  ),
+                ),
               );
         })
         .then((_) {
@@ -38,7 +46,17 @@ class ProfileEditController extends _$ProfileEditController {
     _pendingSave = nextSave.catchError((Object error, StackTrace stack) {
       ref
           .read(errorLoggerProvider)
-          .logError(error, stack, reason: 'ProfileEditController.saveFields');
+          .logAppException(
+            normalizeBackendError(
+              error,
+              stackTrace: stack,
+              context: const BackendErrorContext(
+                service: BackendService.local,
+                action: 'save profile edits',
+                resource: 'profile_edit_controller',
+              ),
+            ),
+          );
     });
     return nextSave;
   }

@@ -118,6 +118,38 @@ After a backend deploy, smoke test:
 - Payment history, review prompt, notifications.
 - Demo-data validation for the affected environment when demo tooling changed.
 
+## Automated Integration Test Backlog
+
+Feature-flow integration tests should cover the same user journeys as the
+manual smoke checklist, with Firebase, payment, notification, location, and
+image-picker side effects replaced unless the test is explicitly device or
+emulator backed.
+
+- Auth and onboarding: phone entry, OTP continuation, profile-step resume,
+  required-field validation, photo/running preference completion, and redirect
+  to the authenticated shell.
+- Routing and app shell: unauthenticated redirects, authenticated redirects,
+  five-tab navigation, top-level route back behavior, FCM/deep-link chat routes,
+  and inactive-tab stream gating.
+- Dashboard: empty state, booked-run state, activity tab, next-run CTA,
+  swipe-window CTA, and recommended-run navigation.
+- Run clubs: city selection, search, joined/discover partitioning, club detail,
+  create club, edit club, join, leave, and host-only affordances.
+- Runs: create run, run detail, free booking, paid booking handoff, waitlist,
+  cancellation, self check-in, host attendance, map view, and location picker.
+- Catches and swipes: eligible attended-run list, swipe deck, empty candidate
+  states, like/pass decisions, match creation result, and run recap.
+- Chats: matches list, search, chat route hydration, message send, unread reset,
+  block/report, and push/FCM route handling.
+- Payments and reviews: payment confirmation, payment history, review prompt,
+  create/update/delete review, and post-run review visibility.
+- Profile and settings: inline profile edits, photo upload replacement,
+  public-profile projection, notification preferences, sign out, and account
+  deletion/anonymization entry points.
+- Platform/device flows: App Check, real phone auth, push permission/token
+  registration, image upload, real map rendering, Razorpay checkout, analytics
+  DebugView, and Crashlytics visibility.
+
 ## Human Release Evidence
 
 These still require human confirmation outside repository checks:

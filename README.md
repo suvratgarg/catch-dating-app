@@ -99,22 +99,33 @@ interacts with a connected physical phone and another watches logs:
    before calling the issue fixed. When finished, detach or quit the session so
    there is no orphaned `flutter run` process.
 
-Physical iPhone debug runs require a Firebase App Check debug token when App
-Check enforcement is enabled. Do not commit raw debug tokens. Keep the token in
-your shell environment and let `tool/flutter_with_env.sh` pass it through.
+Physical iPhone debug runs use the real Apple App Attest provider by default.
+That avoids repeated Firebase debug-token registration during normal phone
+debug loops. Do not commit raw debug tokens. Keep a debug token only as an
+ignored `.env.local` fallback for simulator/CI runs or explicit debug-provider
+testing.
 
-**If the app prints a new debug token** (e.g. after reinstalling the app or
-on a new device):
+**If you intentionally force the debug provider** and the app prints a new
+debug token:
 
 1. Register the token in Firebase Console under
    **App Check > Catch Dev iOS > Manage debug tokens**
-2. Export it locally before running the app:
+2. Save it locally before running the app:
 
-The shell wrapper respects the `FIREBASE_APP_CHECK_DEBUG_TOKEN` env var:
+The shell wrapper automatically loads `.env.local` and respects an already
+exported `FIREBASE_APP_CHECK_DEBUG_TOKEN` env var:
 
 ```bash
-export FIREBASE_APP_CHECK_DEBUG_TOKEN=some_other_token
-./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
+printf 'FIREBASE_APP_CHECK_DEBUG_TOKEN=%s\n' 'some_other_token' > .env.local
+USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=true ./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
+```
+
+Mobile debug-provider runs now fail fast when no token is configured. If you
+are intentionally minting a first-time token to register in Firebase Console,
+opt in explicitly for that one run:
+
+```bash
+ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN=1 USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=true ./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E
 ```
 
 For auth-specific phone debugging, opt into verbose masked OTP-flow logs only

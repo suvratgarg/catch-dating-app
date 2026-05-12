@@ -11,9 +11,7 @@ import 'package:catch_dating_app/image_uploads/presentation/photo_upload_control
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_inline_editors.dart';
-import 'package:catch_dating_app/user_profile/presentation/widgets/profile_prompt_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -346,6 +344,21 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         placeholder: 'Why I run',
       ),
     ];
+    final bio = _textEntry(
+      context: context,
+      icon: Icons.format_quote_rounded,
+      label: 'Bio',
+      value: user.bio.isNotEmpty
+          ? user.bio
+          : 'Add a bio to tell runners about yourself',
+      currentValue: user.bio,
+      fieldName: 'bio',
+      isAddAffordance: user.bio.isEmpty,
+      maxLines: 4,
+      minLines: 3,
+      keyboardType: TextInputType.multiline,
+      validator: validateOptionalBio,
+    );
 
     return widget.builder(context, [
       PhotoGrid(
@@ -363,29 +376,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       ),
       gapH14,
       SectionHeader(title: 'Bio'),
-      ProfilePromptCard(
-        eyebrow: 'On a perfect run',
-        text: user.bio.isNotEmpty
-            ? user.bio
-            : 'Add a bio to tell runners about yourself',
-        isPrompt: user.bio.isEmpty,
-        onTap: () => _toggleField('bio'),
-      ),
-      ProfileInlineAnimatedBody(
-        isExpanded: _isExpanded('bio'),
-        child: Padding(
-          padding: const EdgeInsets.only(top: CatchSpacing.s2),
-          child: ProfileInlineTextEditor(
-            key: const ValueKey('inline-bio-editor'),
-            label: 'Bio',
-            currentValue: user.bio,
-            fieldName: 'bio',
-            maxLines: 4,
-            onSaved: _collapseField,
-            onCancel: _collapseField,
-          ),
-        ),
-      ),
+      ProfileInfoSection(entries: [bio], grouped: true),
       gapH20,
       SectionHeader(title: 'About'),
       ProfileInfoSection(entries: basics, grouped: true),
@@ -421,6 +412,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     TextInputType? keyboardType,
     TextCapitalization textCapitalization = TextCapitalization.sentences,
     Iterable<String>? autofillHints,
+    int maxLines = 1,
+    int? minLines,
     FormFieldValidator<String>? validator,
     Object? Function(String value)? toFieldValue,
   }) {
@@ -437,6 +430,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         isExpanded: _isExpanded(fieldName),
         isAddAffordance: isAddAffordance,
         onTap: () => _toggleField(fieldName),
+        maxLines: maxLines,
+        minLines: minLines,
         keyboardType: keyboardType,
         textCapitalization: textCapitalization,
         autofillHints: autofillHints,

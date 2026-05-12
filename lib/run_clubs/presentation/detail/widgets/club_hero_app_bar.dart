@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -194,10 +195,16 @@ Future<void> shareRunClub(
     if (context.mounted) {
       ProviderScope.containerOf(context, listen: false)
           .read(errorLoggerProvider)
-          .logError(
-            actionError,
-            stackTrace,
-            reason: 'ClubHeroAppBar.shareRunClub',
+          .logAppException(
+            normalizeBackendError(
+              actionError,
+              stackTrace: stackTrace,
+              context: const BackendErrorContext(
+                service: BackendService.external,
+                action: 'share run club',
+                resource: 'share_sheet',
+              ),
+            ),
           );
 
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,6 +1,6 @@
 ---
 doc_id: location_stack
-version: 1.1.0
+version: 1.1.1
 updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
@@ -68,8 +68,12 @@ The app currently uses:
 - `latlong2.LatLng` has been removed from app-facing code and the dependency
   graph; SDK-specific coordinate types now stay at Google Maps adapter edges.
 - `tool/validate_google_maps_config.mjs` validates dev/staging/prod local Maps
-  SDK config for iOS and Android without printing secrets. `tool/flutter_with_env.sh`
-  runs that validation before native run/build commands.
+  SDK config for iOS and Android without printing secrets. It can also validate
+  the server-side `GOOGLE_MAPS_PLACES_API_KEY` Secret Manager value with
+  `--include-places-secret`, including rejecting accidental `keyString:`
+  wrappers and making a small Places Autocomplete probe.
+  `tool/flutter_with_env.sh` runs native key validation before native run/build
+  commands.
 - Native iOS and Android key loaders defensively trim the accidental `keyString:`
   wrapper so local key copy/paste mistakes fail less mysteriously.
 
@@ -133,6 +137,10 @@ References:
    - Do not put this key in Flutter, Android, or iOS config.
    - Store it as a Firebase Functions secret:
      `firebase functions:secrets:set GOOGLE_MAPS_PLACES_API_KEY`.
+   - Store only the raw `AIza...` key. Do not paste a plist-style
+     `keyString:` wrapper.
+   - Validate the deployed project before debugging the app:
+     `node tool/validate_google_maps_config.mjs --env dev --platform ios --include-places-secret`.
 6. Set conservative quotas before TestFlight:
    - Maps SDK daily map-load quota per project.
    - Places Autocomplete request quota.
@@ -186,8 +194,10 @@ References:
 
 - Keep Google Maps as the production map provider unless product requirements
   force a provider change.
-- Keep Google Maps SDK keys in environment-specific native config, with
-  `tool/validate_google_maps_config.mjs` as the local guardrail.
+- Keep Google Maps SDK keys in environment-specific native config, and validate
+  the server-side Places secret with
+  `tool/validate_google_maps_config.mjs --include-places-secret` before
+  TestFlight or device QA.
 - Add budget alerts, quota limits, and release checklist items.
 - Add widget tests for disabled map base tiles and integration QA for real map
   rendering on device.
@@ -203,7 +213,9 @@ Completed:
   payment-confirmation directions all use the Google Maps stack.
 - Native iOS/Android Maps config is validated by
   `tool/validate_google_maps_config.mjs`, and `tool/flutter_with_env.sh` runs
-  that validation before native run/build commands.
+  that validation before native run/build commands. Places secret validation is
+  opt-in with `--include-places-secret` because it requires `gcloud` access to
+  Secret Manager and a live Google Places probe.
 - Active source/config no longer depends on `flutter_map`, OpenStreetMap, or
   `latlong2` app-facing coordinate types.
 - Seeded runs use curated venue coordinates and validation rejects missing or

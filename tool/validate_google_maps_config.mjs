@@ -1,10 +1,12 @@
 #!/usr/bin/env node
+import {spawnSync} from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "..");
+const placesSecretName = "GOOGLE_MAPS_PLACES_API_KEY";
 
 const args = parseArgs(process.argv.slice(2));
 const envs = args.env ? [args.env] : ["dev", "staging", "prod"];
@@ -17,6 +19,10 @@ for (const platform of platforms) {
   else errors.push(`Unsupported platform: ${platform}`);
 }
 
+if (args.includePlacesSecret) {
+  await validatePlacesSecrets(envs, args.project);
+}
+
 if (errors.length > 0) {
   console.error("Google Maps config validation failed:");
   for (const error of errors) console.error(`- ${error}`);
@@ -25,15 +31,24 @@ if (errors.length > 0) {
 
 console.log(
   `Google Maps config validation passed for ${platforms.join(", ")} ` +
-    `(${envs.join(", ")}).`
+    `(${envs.join(", ")})${args.includePlacesSecret ? " with Places secret" : ""}.`
 );
 
 function parseArgs(argv) {
-  const parsed = {env: null, platform: "all"};
+  const parsed = {
+    env: null,
+    includePlacesSecret: false,
+    platform: "all",
+    project: null,
+  };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === "--env") parsed.env = requireValue(argv, ++i, arg);
-    else if (arg === "--platform") {
+    else if (arg === "--include-places-secret") {
+      parsed.includePlacesSecret = true;
+    } else if (arg === "--project") {
+      parsed.project = requireValue(argv, ++i, arg);
+    } else if (arg === "--platform") {
       parsed.platform = requireValue(argv, ++i, arg);
     } else if (arg === "--help" || arg === "-h") {
       printHelp();
@@ -87,6 +102,135 @@ function validateAndroid(targetEnvs) {
   }
 }
 
+async function validatePlacesSecrets(targetEnvs, projectOverride) {
+  for (const env of targetEnvs) {
+    const projectId = projectOverride ?? firebaseProjectForEnv(env);
+    if (!projectId) {
+      errors.push(
+        `Missing Firebase project for ${env}; pass --project or configure .firebaserc.`
+      );
+      continue;
+    }
+
+    const value = readSecretValue({
+      env,
+      projectId,
+      secretName: placesSecretName,
+    });
+    const errorCountBeforeValueCheck = errors.length;
+    validateApiKey({
+      label: `${env} ${placesSecretName}`,
+      value,
+      source: `Secret Manager project ${projectId}`,
+    });
+    if (!value || errors.length > errorCountBeforeValueCheck) continue;
+
+    await validatePlacesEndpoint({
+      env,
+      projectId,
+      secretName: placesSecretName,
+      apiKey: value,
+    });
+  }
+}
+
+function firebaseProjectForEnv(env) {
+  const filePath = path.join(repoRoot, ".firebaserc");
+  if (!fs.existsSync(filePath)) return null;
+  try {
+    const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+    return data?.projects?.[env] ?? null;
+  } catch {
+    errors.push(".firebaserc is not valid JSON.");
+    return null;
+  }
+}
+
+function readSecretValue({env, projectId, secretName}) {
+  const result = spawnSync(
+    "gcloud",
+    [
+      "secrets",
+      "versions",
+      "access",
+      "latest",
+      `--secret=${secretName}`,
+      `--project=${projectId}`,
+    ],
+    {encoding: "utf8"}
+  );
+
+  if (result.error) {
+    errors.push(
+      `Could not read ${env} ${secretName}: ${result.error.message}.`
+    );
+    return "";
+  }
+  if (result.status !== 0) {
+    errors.push(
+      `Could not read ${env} ${secretName} from Secret Manager. ` +
+        `Run gcloud auth login or check project ${projectId}.`
+    );
+    return "";
+  }
+  return result.stdout.trim();
+}
+
+async function validatePlacesEndpoint({env, projectId, secretName, apiKey}) {
+  let response;
+  try {
+    response = await fetch(
+      "https://places.googleapis.com/v1/places:autocomplete",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Goog-Api-Key": apiKey,
+          "X-Goog-FieldMask": [
+            "suggestions.placePrediction.placeId",
+            "suggestions.placePrediction.text.text",
+          ].join(","),
+        },
+        body: JSON.stringify({
+          input: "Neighbour",
+          includedRegionCodes: ["in"],
+          regionCode: "in",
+          languageCode: "en-IN",
+          locationBias: {
+            circle: {
+              center: {latitude: 22.726506, longitude: 75.900464},
+              radius: 50000,
+            },
+          },
+        }),
+      }
+    );
+  } catch (error) {
+    errors.push(
+      `Could not reach Google Places for ${env} ${secretName} in ${projectId}: ` +
+        error.message
+    );
+    return;
+  }
+
+  if (response.ok) return;
+
+  const message = await extractPlacesErrorMessage(response);
+  errors.push(
+    `${env} ${secretName} in ${projectId} failed Google Places validation: ` +
+      `${response.status}${message ? ` ${message}` : ""}.`
+  );
+}
+
+async function extractPlacesErrorMessage(response) {
+  try {
+    const json = await response.json();
+    return json?.error?.message ?? "";
+  } catch {
+    return "";
+  }
+}
+
 function readKeyValueFile(filePath, label) {
   if (!fs.existsSync(filePath)) {
     errors.push(`Missing ${label}: ${path.relative(repoRoot, filePath)}`);
@@ -100,7 +244,10 @@ function readKeyValueFile(filePath, label) {
     }
     const equals = trimmed.indexOf("=");
     if (equals === -1) continue;
-    values.set(trimmed.slice(0, equals).trim(), trimmed.slice(equals + 1).trim());
+    values.set(
+      trimmed.slice(0, equals).trim(),
+      trimmed.slice(equals + 1).trim()
+    );
   }
   return values;
 }
@@ -127,6 +274,10 @@ function printHelp() {
 Options:
   --env <dev|staging|prod>       Validate one environment. Defaults to all.
   --platform <ios|android|all>   Validate one platform. Defaults to all.
+  --include-places-secret        Also validate GOOGLE_MAPS_PLACES_API_KEY
+                                 from Secret Manager via gcloud.
+  --project <project-id>         Override the Firebase project used for the
+                                 Places secret check.
 
 The validator never prints API key values. It checks that local ignored config
 files contain raw Google Maps API keys, not placeholders or keyString wrappers.`);

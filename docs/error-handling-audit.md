@@ -1,25 +1,88 @@
 ---
 doc_id: error_handling_audit
-version: 2.3.1
-updated: 2026-05-06
+version: 2.4.0
+updated: 2026-05-12
 owner: recursive_audit_loop
-status: snapshot
+status: active
 ---
 
 # Catch Dating App — Error Handling Architecture Audit
 
-> Audit snapshot. Re-verify counts and remediation status before treating this
-> file as current. Use `docs/README.md` for the docs ownership map and keep new
-> durable error-handling decisions in this document rather than creating parallel
-> trackers.
+> Active source of truth. Use `docs/README.md` for the docs ownership map and
+> keep new durable error-handling decisions in this document rather than
+> creating parallel trackers.
 
 ## Read Policy
 
-Use this as an error-handling snapshot and remediation map. Re-run focused
-searches/tests before treating counts as current. Stamp files reviewed against
-this doc in the audit registry rather than copying findings into new trackers.
+Use this as the backend error-management source of truth, migration checklist,
+error catalogue, and remediation map. Re-run
+`dart tool/backend_error_candidates.dart` before backend error work. Stamp files
+reviewed against this doc in the audit registry rather than copying findings
+into new trackers.
 
 ## Current State of Truth
+
+### 2026-05-12: Backend Error Management Hard Migration
+
+Catch now has one backend error API for expected app-facing failures:
+
+- `BackendErrorContext` records non-PII service/action/resource metadata.
+- `withBackendErrorContext` wraps async operations.
+- `withBackendErrorStream` wraps realtime/listener streams.
+- `normalizeBackendError` maps raw Firebase, plugin, timeout, and unexpected
+  failures into `AppException`.
+- `backendErrorMessage` and `appErrorMessage` are the UI-facing message
+  facades.
+- `AsyncErrorLogger` emits generic backend-operation telemetry through
+  `AppAnalytics.logBackendOperationFailed`.
+- `tool/backend_error_candidates.dart` is the scanner for future migration
+  drift.
+
+The old Firestore-specific API was removed from production code:
+
+- `lib/core/firestore_error_util.dart` deleted.
+- `lib/core/firestore_error_message.dart` deleted.
+- `lib/auth/presentation/auth_error_message.dart` deleted.
+- `lib/runs/presentation/run_booking_error_message.dart` deleted.
+- `FirestoreWriteException` replaced by `BackendOperationException`.
+- `firestore_write_failed` analytics replaced by `backend_operation_failed`.
+
+Current scanner proof:
+
+```sh
+dart tool/backend_error_candidates.dart --json
+```
+
+Latest result: `mustMigrate=0`, `review=153`, `migrated=136`.
+
+`review` candidates are intentionally broad. They include direct
+`.httpsCallable`, `.snapshots`, `.get`, `.set`, `.update`, `.delete`, and raw
+Firebase exception references so future work can verify each backend boundary is
+still wrapped. The key invariant is that `mustMigrate` remains zero.
+
+#### Backend Error Migration Checklist
+
+Single source of truth for this hard migration:
+
+| Area | Locations | Status |
+|---|---|---|
+| Core catalogue | `lib/exceptions/app_exception.dart` | Migrated: backend context, severity, retry policy, `ValidationException`, `BackendOperationException`, storage/external metadata |
+| Core wrappers | `lib/core/backend_error_util.dart`, `lib/core/backend_error_message.dart` | Migrated: futures, streams, Auth, Firestore, Functions, Storage, Remote Config, App Check, Messaging, timeout, and unexpected mappings |
+| UI facade | `lib/core/app_error_message.dart`, `lib/core/widgets/mutation_error_util.dart` | Migrated: screens and mutation banners route through `appErrorMessage` / `backendErrorMessage` |
+| Logging/reporting | `lib/exceptions/error_logger.dart`, `lib/analytics/app_analytics.dart`, `lib/main.dart` | Migrated: backend failures carry context into logs and analytics |
+| Candidate scanner | `tool/backend_error_candidates.dart` | Added: repeatable candidate scan with `mustMigrate`, `review`, and `migrated` buckets |
+| Auth | `lib/auth/data/auth_repository.dart`, `lib/auth/presentation/auth_controller.dart`, `lib/auth/presentation/phone_page.dart`, `lib/auth/presentation/otp_page.dart` | Migrated |
+| Firestore reads/streams/writes | `user_profile`, `public_profile`, `runs`, `run_participation`, `saved_run`, `run_clubs`, `run_club_membership`, `reviews`, `matches`, `chats`, `swipes`, `safety`, `payments`, `notifications`, `onboarding` repositories | Migrated |
+| Callable Functions | Profile edits, run/run-club/review/safety/payment/places callables | Migrated with `BackendService.functions`; payments and run booking retain domain-specific mappers |
+| Firebase Storage | `lib/image_uploads/data/image_upload_repository.dart` | Migrated |
+| FCM / local fallback | `lib/core/fcm_service.dart`, `lib/core/data/city_repository.dart` | Migrated/logged with backend context |
+| Local/plugin side effects | Draft repositories, device location, external links/share, profile/photo controllers, share action call sites | Migrated/logged with backend context |
+| Intentional review-only raw Firebase checks | `lib/core/backend_error_util.dart`, `lib/core/backend_error_message.dart`, `lib/core/app_error_message.dart`, `lib/force_update/presentation/force_update_diagnostics.dart`, `lib/matches/data/match_repository.dart`, `lib/main.dart` bootstrap handlers, test fakes | Allowed: mapper/title/dev-diagnostic/bootstrap/not-found-swallow/test seams |
+
+Future error-management work should update this checklist instead of creating a
+parallel tracker. If the scanner reports a new `mustMigrate` item, fix it in
+the same pass unless it is explicitly documented here as an intentional
+exception.
 
 ### 2026-05-06: Error Catalogue Decision
 
@@ -133,7 +196,9 @@ findings from the first audit were:
 
 - **11 of 16 repositories** originally had zero error handling — raw `FirebaseException` propagated unchecked to the UI. Now down to ~3 after the 2026-05-03 remediation pass.
 - **`AppException` subclasses were invisible in production** — `logAppException` only called `debugPrint` (no-op in release). No Crashlytics or Analytics events for business-impacting errors like payment failures.
-- **`logFirestoreWriteFailed` analytics event** was defined but had zero call sites — Firestore write failures were invisible in dashboards.
+- **Firestore-only analytics** had zero effective coverage — backend failures
+  outside Firestore were invisible in dashboards before the generic
+  `backend_operation_failed` event.
 - **6+ distinct UI error display patterns** existed across the app — `ErrorBanner`, `CatchErrorBanner`, direct `SnackBar` with hardcoded strings, raw `e.toString()`, `listenForMutationErrorSnackbar`, `AsyncValueWidget`.
 - **5+ locations silently swallowed errors** without logging — `DeviceLocation`, `RunDraftRepository`, `OnboardingController`, `PhotoUploadController`, `ProfileEditSheet`.
 - **Web platform had zero error reporting** — `Crashlytics` returned `null` on web with no fallback.
@@ -142,7 +207,10 @@ findings from the first audit were:
 The 2026-05-03 remediation pass addressed the highest-impact gaps: exception
 hierarchy expansion, repository write wrapping, UI consolidation, dead code
 removal, and provider codegen consistency. The 2026-05-06 pass added the
-branded app-facing error primitives and formalized this catalogue.
+branded app-facing error primitives and formalized this catalogue. The
+2026-05-12 hard migration replaced the Firestore-only wrapper with a backend
+operation API that covers Auth, Firestore, Functions, Storage, Messaging, Remote
+Config, App Check, local cache, and external plugin actions.
 
 ---
 
@@ -158,10 +226,10 @@ Layer 1: Origin
   Framework build/layout failures throw through FlutterError
 
 Layer 2: Capture (Repository)
-  withFirestoreErrorContext catches FirebaseException
-  Maps to typed AppException (PermissionException, NetworkException, etc.)
+  withBackendErrorContext / withBackendErrorStream catch backend failures
+  normalizeBackendError maps raw Firebase/plugin errors to AppException
   Re-throws as AppException
-  Feature repositories may normalize non-Firestore failures, e.g. payments
+  Feature repositories can add domain-specific mappers, e.g. payments/booking
 
 Layer 3: Propagation (Controller / Provider)
   AppException propagates through Riverpod AsyncValue or Mutation state
@@ -175,7 +243,7 @@ Layer 4: Display (UI)
 
 Layer 5: Telemetry
   AsyncErrorLogger (ProviderObserver) → ErrorLogger
-  AppException → warning log; FirestoreWriteException may fire analytics
+  AppException → structured log with optional backend_operation_failed analytics
   Unexpected errors → ErrorLogger error/fatal path and Crashlytics when enabled
 ```
 
@@ -183,20 +251,23 @@ Layer 5: Telemetry
 
 ## Exception Hierarchy
 
-### Current state (after 2026-05-06 remediation)
+### Current state (after 2026-05-12 migration)
 
 ```
 AppException (sealed)
 ├── SignInRequiredException          // Auth required for action
 ├── NetworkException                  // connection-failed / timeout / too-many-requests
 ├── PermissionException               // permission-denied
+├── ValidationException               // user-correctable input/backend validation
 ├── PaymentCancelledException         // User cancelled Razorpay
 ├── PaymentFailedException            // Razorpay payment failed
 ├── PaymentVerificationFailedException // Signature verification failed
 ├── PaidBookingUnsupportedException   // Platform doesn't support paid bookings
 ├── RunBookingFailedException         // Cloud Function booking failed
-├── FirestoreWriteException           // Generic Firestore write failure
-└── DocumentNotFoundException         // Doc doesn't exist
+├── BackendOperationException         // Generic normalized backend failure
+├── DocumentNotFoundException         // Resource doesn't exist
+├── StorageException                  // Firebase Storage upload/download failure
+└── ExternalActionException           // Share, URL launcher, plugin side effect
 ```
 
 **File:** `lib/exceptions/app_exception.dart`
@@ -206,14 +277,18 @@ AppException (sealed)
 | Property | Purpose | Example |
 |----------|---------|---------|
 | `code` | Machine-readable identifier | `'permission-denied'`, `'timeout'` |
-| `message` | Human-readable description | `'create run on runs failed: [permission-denied] ...'` |
+| `message` | User-facing description | `'The request timed out. Please try again.'` |
+| `debugMessage` | Developer diagnostic, hidden from normal release UI | `'cloud_firestore/permission-denied: rules denied write'` |
 | `cause` | Original error for debugging | The original `FirebaseException` |
+| `context` | Non-PII backend operation metadata | `service=functions`, `action=create run`, `resource=runs` |
+| `severity` | Reporting severity | `info`, `warning`, `error`, `fatal` |
+| `retryable` | Whether retry UI/telemetry should treat it as retryable | `true` for network/timeouts |
 
 `toString()` returns `message` so exceptions display cleanly without the "Exception:" prefix.
 
 ### How Firebase exceptions map to domain exceptions
 
-This mapping happens in `lib/core/firestore_error_util.dart:_mapFirebaseException()`:
+This mapping happens in `lib/core/backend_error_util.dart`.
 
 | FirebaseException.code | AppException |
 |------------------------|--------------|
@@ -223,24 +298,19 @@ This mapping happens in `lib/core/firestore_error_util.dart:_mapFirebaseExceptio
 | `deadline-exceeded` | `NetworkException('timeout')` |
 | `resource-exhausted` | `NetworkException('too-many-requests')` |
 | `not-found` | `DocumentNotFoundException` |
-| Any other code | `FirestoreWriteException` (preserves original code) |
+| Any other code | `BackendOperationException` (preserves original code) |
 
-The same mapping exists for `FirebaseFunctionsException` in `_mapFunctionsException()`.
+The same common mapping is used across Firestore and Functions. Auth, Storage,
+Remote Config, App Check, Messaging, payment, and run-booking paths add
+service-specific copy and domain mappers where needed.
 
 ### What's missing from the hierarchy
 
-- No `ValidationException` for reusable domain/product validation errors.
-  Local `ArgumentError` / `StateError` is still acceptable for developer
-  misuse, constructor invariants, and private helper preconditions.
-- No `StorageException` / `ImageUploadException` for Firebase Storage upload
-  failures. This is a good candidate because image upload failures are
-  user-facing and need consistent retry/copy.
-- No `ExternalActionException` for URL launches, share sheets, store launches,
-  and other plugin side effects. Add this only when a touched flow needs
-  user-facing retry/analytics beyond a simple snackbar.
 - No dedicated `TimeoutException` subclass. Current policy is to keep timeout
   under `NetworkException('timeout')` unless a timeout has product behavior
   that differs from other connectivity failures.
+- No dedicated `LocationException`. Location remains optional and is currently
+  normalized/logged under `BackendService.external`.
 
 ---
 
@@ -255,21 +325,21 @@ pass.
 | `SignInRequiredException` | `sign-in-required` | User must be signed in before an action can proceed. | Auth/session guard, Firebase unauthenticated codes | Inline banner, snackbar, or auth context title |
 | `NetworkException` | `connection-failed`, `timeout`, `too-many-requests` | Connectivity, deadline, or rate-limit failure. | Firestore / Functions mapping | Branded retry surface, stale/offline banner when cached data exists |
 | `PermissionException` | `permission-denied` | User is not allowed to perform the action. | Firestore / Functions security failure | Branded error surface or inline mutation error |
+| `ValidationException` | Firebase/Auth validation code or `validation-failed` | User-correctable invalid input. | Auth mapper or reusable validation boundary | Inline form/banner copy |
 | `PaymentCancelledException` | `payment-cancelled` | User cancelled checkout. | Razorpay callback | Usually non-fatal snackbar or inline payment state |
 | `PaymentFailedException` | `payment-failed` | Razorpay returned a failed payment. | Razorpay callback | Payment screen inline error / snackbar |
 | `PaymentVerificationFailedException` | `payment-verification-failed` | Backend could not verify payment signature/status. | Payment verification function | Payment screen error with support-oriented copy |
 | `PaidBookingUnsupportedException` | `paid-booking-unsupported` | Paid bookings are unavailable on this platform. | Payment repository platform guard | Payment or booking action error |
 | `RunBookingFailedException` | `run-booking-failed` | Booking Cloud Function rejected or failed the run signup. | Run booking/payment flow | Run detail/dashboard action error |
-| `FirestoreWriteException` | Firebase code or `unexpected` | Generic data write failure after context wrapping. | `withFirestoreErrorContext` | Error mapper plus analytics/logging |
+| `BackendOperationException` | Firebase code or `unexpected` | Generic normalized backend failure after context wrapping. | `withBackendErrorContext`, `withBackendErrorStream`, `normalizeBackendError` | Error mapper plus analytics/logging |
 | `DocumentNotFoundException` | `not-found` | Expected document no longer exists. | Firestore not-found mapping or missing document guard | Not-found state, not a generic crash |
+| `StorageException` | Firebase Storage code or `storage-error` | Upload/download failed. | Firebase Storage mapper | Inline upload/profile/run-club error |
+| `ExternalActionException` | `external-action-error` | URL/share/plugin action failed. | External action seams | Snackbar or inline action failure |
 
 ### Candidate Catalogue Additions
 
 | Candidate | Add When | Avoid When |
 |-----------|----------|------------|
-| `ValidationException` | The same user-correctable validation failure crosses controller/repository/widget boundaries or needs shared copy/tests. | The error is a private precondition or developer misuse; keep `ArgumentError` / `StateError`. |
-| `ImageUploadException` or `StorageException` | Upload failures need retry, analytics, or consistent profile/run-club copy. | A local picker cancellation or non-persistent image choice can be handled as a simple no-op. |
-| `ExternalActionException` | URL/share/store/plugin side effects need consistent error UI and test seams. | The action has no retry path and a simple `showCatchErrorSnackBar` is enough. |
 | `LocationException` | Location failures become user-facing and require explicit retry/permission copy. | Location is optional and failure should silently fall back to manual city selection after logging. |
 
 ---
@@ -310,44 +380,59 @@ pass.
 
 Only **1 of ~40 write methods** originally used `withFirestoreErrorContext`. After remediation, **all Firestore write methods are now wrapped** (~25 methods across 9 repositories).
 
-### After remediation (2026-05-03)
+### After hard migration (2026-05-12)
 
-| Repository | Methods Wrapped |
-|------------|----------------|
-| UserProfileRepository | `setUserProfile`, `updateUserProfile`, `updatePhotoUrls`, `setProfileComplete`, `saveRun`, `unsaveRun` (6) |
-| RunRepository | `createRun`, `signUpForRun`, `cancelSignUpViaFunction`, `joinWaitlistViaFunction`, `leaveWaitlist`, `markAttendance` (6) |
-| ReviewsRepository | `addReview`, `updateReview`, `deleteReview` (3) |
-| RunClubsRepository | `joinClub` (existing), `leaveClub` (new) (2) |
-| ChatRepository | `sendMessage` (1) |
-| **Total** | **~18 methods** |
+| Boundary | Coverage |
+|------------|----------|
+| Auth | Auth streams, phone verification, OTP credential sign-in, credential sign-in, and sign-out are wrapped with `BackendService.auth`. |
+| Firestore repositories | Reads, streams, writes, edge-doc mutations, and query helpers across user profile, public profile, runs, run participation, saved runs, run clubs, run club membership, reviews, matches, chats, swipes, safety, payments, notifications, and onboarding drafts are wrapped. |
+| Callable Functions | Profile update, run/run-club/review/safety/payment/places callables are wrapped with `BackendService.functions`; payments and run booking keep domain-specific mappers. |
+| Firebase Storage | Profile photo and run-club cover uploads are wrapped with `BackendService.storage`. |
+| Messaging/config/local side effects | FCM token persistence, city config fallback, local draft parsing, location, links, share, and controller-owned side effects normalize/log errors with `BackendErrorContext`. |
 
-### Remaining unwrapped
+### Remaining review-only candidates
 
-| Repository | Methods | Reason |
-|------------|---------|--------|
-| SwipeRepository | `recordSwipe` | Subcollection write, lower risk |
-| OnboardingDraftRepository | `saveDraft`, `deleteDraft` | Best-effort, non-critical |
-| ImageUploadRepository | `upload`, `uploadUserPhoto`, `uploadRunClubCover` | Firebase Storage (not Firestore), different exception types |
-| MatchRepository | `resetUnread` | Already has targeted `not-found` handling |
+`tool/backend_error_candidates.dart` intentionally reports direct Firebase
+calls even when they are already inside `withBackendErrorContext` or
+`withBackendErrorStream`. The invariant is `mustMigrate=0`; `review` entries
+must be inspected when touched and should stay documented here when they are
+intentional.
 
-### The `withFirestoreErrorContext` pattern
+### The `withBackendErrorContext` pattern
 
-Every Firestore write should follow this pattern:
+Every backend operation should follow one of these patterns:
 
 ```dart
 Future<void> doSomething({required String uid}) =>
-    withFirestoreErrorContext(
+    withBackendErrorContext(
       () => _db.collection('items').doc(uid).set(data),
-      collection: 'items',
-      action: 'create item',
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'create item',
+        resource: 'items',
+      ),
     );
+```
+
+```dart
+Stream<Item?> watchItem(String id) => withBackendErrorStream(
+  () => _items.doc(id).snapshots().map((doc) => doc.data()),
+  context: const BackendErrorContext(
+    service: BackendService.firestore,
+    action: 'watch item',
+    resource: 'items',
+  ),
+);
 ```
 
 What it handles automatically:
 1. `FirebaseException` → typed `AppException` mapping
-2. `FirebaseFunctionsException` → same treatment (Cloud Functions)
+2. `FirebaseFunctionsException` and `FirebaseAuthException` → service-aware
+   backend mapping
 3. `AppException` → re-thrown as-is (no double-wrapping)
-4. Unexpected errors → `FirestoreWriteException(code: 'unexpected')` with `cause`
+4. Timeout and plugin-side failures → retry-aware app exceptions
+5. Unexpected errors → `BackendOperationException(code: 'unexpected')` with
+   context and cause
 
 ---
 
@@ -461,18 +546,14 @@ Raw error (any type)
   → appErrorMessage(error, context: ...)
     → CatchErrorState / ErrorBanner / showCatchErrorSnackBar
 
-Auth-specific:
-  → authErrorMessage(error)            // Maps FirebaseAuthException codes → String
-  → appErrorMessage(..., context: auth)
-
-Firestore/data-specific:
-  → firestoreErrorMessage(error)       // Maps FirebaseException/AppException/StateError → String
+Backend-specific:
+  → backendErrorMessage(error)         // Normalizes Firebase/Auth/Storage/Functions/etc.
+  → appErrorMessage(..., context: ...)
 ```
 
 `lib/core/app_error_message.dart` is the UI facade. It delegates to
-`firestoreErrorMessage` and `authErrorMessage`, while adding context-specific
-titles. In debug mode, `firestoreErrorMessage` can append Firestore diagnostic
-details for developer diagnosis.
+`backendErrorMessage` while adding context-specific titles. In debug mode,
+`backendErrorMessage` can append non-PII diagnostics for developer diagnosis.
 
 ---
 
@@ -485,7 +566,7 @@ Error thrown
   │
   ├─→ AsyncErrorLogger (ProviderObserver, watches ALL Riverpod providers)
   │     ├─ AppException? → ErrorLogger.logAppException(level: warn)
-  │     ├─ FirestoreWriteException? → optional firestore_write_failed analytics
+  │     ├─ BackendOperationException? → optional backend_operation_failed analytics
   │     └─ Other? → ErrorLogger.logError() → Crashlytics (release + production)
   │
   ├─→ FlutterError.onError (main.dart)
@@ -502,7 +583,7 @@ Error thrown
 | Destination | What | When |
 |-------------|------|------|
 | **Crashlytics** | Unexpected errors (non-AppException) | `kReleaseMode && isProduction && !useFirebaseEmulators && !kIsWeb` |
-| **Analytics** | `firestore_write_failed` event | Via `AsyncErrorLogger` when a `FirestoreWriteException` includes collection/action context |
+| **Analytics** | `backend_operation_failed` event | Via `AsyncErrorLogger` when an `AppException` includes backend context |
 | **Console (debugPrint)** | Structured local logs, AppExceptions, unexpected errors | Debug/local visibility path |
 | **Web** | Console fallback | `ConsoleCrashReporter` fallback when Crashlytics is unavailable |
 
@@ -559,7 +640,7 @@ These locations catch and discard errors without any logging. They represent inv
 | # | Gap | Impact | Status |
 |---|-----|--------|--------|
 | G6 | AppExceptions not logged to Crashlytics | Payment failures, permission errors invisible in production | ✅ Fixed (logAppException now at WARN level + analytics callback) |
-| G7 | `logFirestoreWriteFailed` never called | Zero analytics for Firestore failures | ✅ Fixed (AsyncErrorLogger fires analytics for FirestoreWriteException) |
+| G7 | Firestore-only backend telemetry | Non-Firestore backend failures were not consistently measurable | ✅ Fixed (`AsyncErrorLogger` fires `backend_operation_failed` for contextual backend exceptions) |
 | G8 | Web has no error reporting | Web users' errors completely invisible | ✅ Fixed (ConsoleCrashReporter fallback) |
 | G9 | No structured logging | Can't filter/search logs, can't measure error frequency | ✅ Fixed (LogLevel enum + structured log() method) |
 
@@ -568,7 +649,7 @@ These locations catch and discard errors without any logging. They represent inv
 | # | Gap | Impact | Status |
 |---|-----|--------|--------|
 | G10 | 4 manual providers vs 66 codegen | Inconsistent override APIs, missing generated helpers | ✅ Fixed |
-| G11 | `withFirestoreErrorContext` in 1 of ~40 methods | Most Firestore failures propagated as raw FirebaseException | ✅ Mostly fixed (~18 methods now wrapped) |
+| G11 | Firestore-only wrapper coverage | Auth, Storage, Functions, Messaging, and local/plugin side effects had inconsistent mapping | ✅ Fixed (`withBackendErrorContext`, `withBackendErrorStream`, and `normalizeBackendError` are the single backend API) |
 | G12 | `onboardingControllerProvider` never disposed | PII (phone, name, DOB) held in memory for app lifetime | ✅ Fixed |
 
 ---
@@ -579,13 +660,14 @@ These locations catch and discard errors without any logging. They represent inv
 
 | Fix | Files | Tests |
 |-----|-------|-------|
-| Raw `e.toString()` → `firestoreErrorMessage()` | `run_detail_screen.dart`, test updated | 450 pass |
+| Raw `e.toString()` → app error messages | `run_detail_screen.dart`, test updated | 450 pass |
 | Merge `ErrorBanner` + `CatchErrorBanner` | `error_banner.dart` rewritten, 3 call sites, `catch_error_banner.dart` deleted | 450 pass |
 | Delete `showSnackbarOnError` dead code | `async_error_logger.dart` deleted | 450 pass |
 | Convert 4 manual providers to codegen | `match_repository.dart`, `safety_repository.dart`, `app_analytics.dart` + 3 `.g.dart` | 450 pass |
 | Dispose `onboardingControllerProvider` after completion | `onboarding_controller.dart` | 450 pass |
 | Expand exception hierarchy | `app_exception.dart` — added `NetworkException`, `PermissionException`, `cause` property | 450 pass |
-| Wrap repository write methods | 5 repos, ~18 methods wrapped with `withFirestoreErrorContext` | 450 pass |
+| Wrap repository write methods | 5 repos, ~18 methods wrapped with the original Firestore helper | 450 pass |
+| Backend error hard migration | All Firebase backend services and plugin/local side-effect boundaries use the unified backend error API | 101 focused tests pass |
 
 ### All items completed (2026-05-03)
 
@@ -593,7 +675,7 @@ These locations catch and discard errors without any logging. They represent inv
 |----------|-----|--------|
 | 🔴 High | `requireSignedInUid` → throw `SignInRequiredException` | ✅ Done |
 | 🔴 High | Fix silent error swallowing (6 locations) | ✅ Done |
-| 🟡 Medium | Wire `logFirestoreWriteFailed` analytics | ✅ Done |
+| 🟡 Medium | Wire backend failure analytics | ✅ Done |
 | 🟡 Medium | `ConsoleCrashReporter` web fallback | ✅ Done |
 | 🟡 Medium | Structured logging with `LogLevel` enum | ✅ Done |
 | 🟢 Lower | Set Crashlytics user ID | ✅ Done |
@@ -608,13 +690,13 @@ These locations catch and discard errors without any logging. They represent inv
 | Concern | File |
 |---------|------|
 | Exception types | `lib/exceptions/app_exception.dart` |
-| Error wrapping utility | `lib/core/firestore_error_util.dart` |
-| User-facing error messages | `lib/core/firestore_error_message.dart` |
+| Error wrapping utility | `lib/core/backend_error_util.dart` |
+| User-facing backend messages | `lib/core/backend_error_message.dart` |
 | UI-facing title/message facade | `lib/core/app_error_message.dart` |
-| Auth error messages | `lib/auth/presentation/auth_error_message.dart` |
 | Central error logger | `lib/exceptions/error_logger.dart` |
 | Provider error observer | `lib/exceptions/error_logger.dart:150` (AsyncErrorLogger) |
-| Analytics error events | `lib/analytics/app_analytics.dart:112` (logFirestoreWriteFailed) |
+| Analytics error events | `lib/analytics/app_analytics.dart` (`logBackendOperationFailed`) |
+| Migration scanner | `tool/backend_error_candidates.dart` |
 | Branded error surfaces | `lib/core/widgets/catch_error_state.dart` |
 | Branded error snackbar | `lib/core/widgets/catch_error_snackbar.dart` |
 | Error banner widget | `lib/core/widgets/error_banner.dart` |
@@ -628,12 +710,12 @@ These locations catch and discard errors without any logging. They represent inv
 Throwing an error:
   In shared product failure → throw an AppException subclass
   In private validation/preconditions → throw ArgumentError/StateError
-  In repository → throw through withFirestoreErrorContext (auto-maps to AppException)
+  In repository → throw through withBackendErrorContext / withBackendErrorStream
   In controller → throw AppException or let repository errors propagate through Mutation/AsyncValue
   In widget → never throw; show error state
 
 Catching an error:
-  In repository → use withFirestoreErrorContext (automatic)
+  In repository → use withBackendErrorContext / withBackendErrorStream (automatic)
   In controller → catch only when adding domain context; otherwise let AppException pass
   In UI → AsyncValueWidget/AsyncValueSliverWidget or Mutation.hasError check
   Globally → AsyncErrorLogger (ProviderObserver) catches everything

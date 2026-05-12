@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
-import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -144,15 +144,19 @@ class _OtpPageState extends ConsumerState<OtpPage> {
           if (verifyMutation.hasError) ...[
             gapH16,
             ErrorBanner(
-              message: authErrorMessage(
+              message: appErrorMessage(
                 (verifyMutation as MutationError).error,
+                context: AppErrorContext.auth,
               ),
             ),
           ],
           if (sendMutation.hasError) ...[
             gapH16,
             ErrorBanner(
-              message: authErrorMessage((sendMutation as MutationError).error),
+              message: appErrorMessage(
+                (sendMutation as MutationError).error,
+                context: AppErrorContext.auth,
+              ),
             ),
           ],
           gapH24,

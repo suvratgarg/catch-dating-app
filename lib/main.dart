@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/firebase_options.dart';
 import 'package:catch_dating_app/force_update/domain/app_version_config.dart';
@@ -44,16 +45,18 @@ Future<void> main() async {
       observers: [
         AsyncErrorLogger(
           errorLogger,
-          onFirestoreWriteFailed:
+          onBackendOperationFailed:
               ({
-                required String collection,
-                required String action,
+                required BackendErrorContext context,
                 required String errorCode,
+                required bool retryable,
+                required AppErrorSeverity severity,
               }) {
-                analytics.logFirestoreWriteFailed(
-                  collection: collection,
-                  action: action,
+                analytics.logBackendOperationFailed(
+                  context: context,
                   errorCode: errorCode,
+                  retryable: retryable,
+                  severity: severity,
                 );
               },
         ),
@@ -73,6 +76,7 @@ Future<void> _lockDeviceOrientation() {
 
 Future<void> _initializeFirebaseServices() async {
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await _activateFirebaseAppCheck();
 
   // Enable offline persistence explicitly — defaults differ by platform
   // (mobile: enabled, web: disabled). Setting it ensures consistent behavior.
@@ -80,7 +84,6 @@ Future<void> _initializeFirebaseServices() async {
     persistenceEnabled: true,
   );
 
-  await _activateFirebaseAppCheck();
   await _initializeRemoteConfig();
 
   if (AppConfig.supportsPushMessagingOnCurrentPlatform) {
@@ -117,17 +120,23 @@ Future<void> _initializeRemoteConfig() async {
 Future<void> _activateFirebaseAppCheck() async {
   final debugToken = AppConfig.firebaseAppCheckDebugToken.trim();
   final debugTokenOrNull = debugToken.isEmpty ? null : debugToken;
-  final useDebugProvider = kDebugMode || AppConfig.useFirebaseEmulators;
+  final useDebugProvider =
+      AppConfig.useFirebaseAppCheckDebugProvider ||
+      AppConfig.useFirebaseEmulators;
+  final useWebDebugProvider = kDebugMode || useDebugProvider;
+  final useAndroidDebugProvider = kDebugMode || useDebugProvider;
+  final useAppleDebugProvider = useDebugProvider;
 
   debugPrint('── App Check init ──');
   debugPrint('  kDebugMode: $kDebugMode');
   debugPrint('  debugToken configured: ${debugToken.isNotEmpty}');
-  debugPrint('  useDebugProvider: $useDebugProvider');
+  debugPrint('  forceDebugProvider: $useDebugProvider');
+  debugPrint('  useAppleDebugProvider: $useAppleDebugProvider');
 
   if (kIsWeb) {
     final siteKey = AppConfig.firebaseAppCheckWebRecaptchaEnterpriseSiteKey
         .trim();
-    if (useDebugProvider) {
+    if (useWebDebugProvider) {
       debugPrint(
         debugToken.isEmpty
             ? 'WARNING: Debug provider active but no FIREBASE_APP_CHECK_DEBUG_TOKEN set.'
@@ -151,7 +160,8 @@ Future<void> _activateFirebaseAppCheck() async {
     return;
   }
 
-  if (useDebugProvider && debugToken.isEmpty) {
+  if ((useAndroidDebugProvider || useAppleDebugProvider) &&
+      debugToken.isEmpty) {
     debugPrint(
       'WARNING: Debug App Check provider active on iOS/Android but no '
       'FIREBASE_APP_CHECK_DEBUG_TOKEN env var is set. A random token will be '
@@ -162,13 +172,16 @@ Future<void> _activateFirebaseAppCheck() async {
   }
 
   await FirebaseAppCheck.instance.activate(
-    providerAndroid: useDebugProvider
+    providerAndroid: useAndroidDebugProvider
         ? AndroidDebugProvider(debugToken: debugTokenOrNull)
         : const AndroidPlayIntegrityProvider(),
-    providerApple: useDebugProvider
+    providerApple: useAppleDebugProvider
         ? AppleDebugProvider(debugToken: debugTokenOrNull)
         : const AppleAppAttestProvider(),
   );
+  if (useDebugProvider) {
+    await FirebaseAppCheck.instance.getToken(true);
+  }
 }
 
 /// Hooks into Flutter's error reporting pipeline so uncaught errors are

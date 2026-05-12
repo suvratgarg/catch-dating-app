@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_dtos.dart';
@@ -134,18 +135,19 @@ class PaymentRepository {
 
   /// Signs the current user up for a free run via the [signUpForFreeRun]
   /// Cloud Function, which validates the run is free and checks capacity.
-  Future<void> bookFreeRun({required String runId}) async {
-    try {
-      await _functions
-          .httpsCallable('signUpForFreeRun')
-          .call(RunBookingCallableRequest(runId: runId).toJson());
-    } on FirebaseFunctionsException catch (error) {
-      throw _normalizeRunBookingError(
-        error,
-        fallbackMessage: 'Unable to book this run right now.',
-      );
-    }
-  }
+  Future<void> bookFreeRun({required String runId}) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('signUpForFreeRun')
+        .call(RunBookingCallableRequest(runId: runId).toJson()),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'book a run',
+      resource: 'runs',
+    ),
+    mapper: _runBookingErrorMapper(
+      fallbackMessage: 'Unable to book this run right now.',
+    ),
+  );
 
   // ── Razorpay callbacks ────────────────────────────────────────────────────
 
@@ -163,15 +165,25 @@ class PaymentRepository {
 
     try {
       // Step 4: Verify payment signature server-side and sign user up.
-      await _functions
-          .httpsCallable('verifyRazorpayPayment')
-          .call(
-            VerifyRazorpayPaymentCallableRequest(
-              paymentId: paymentId,
-              orderId: orderId,
-              signature: signature,
-            ).toJson(),
-          );
+      await withBackendErrorContext(
+        () => _functions
+            .httpsCallable('verifyRazorpayPayment')
+            .call(
+              VerifyRazorpayPaymentCallableRequest(
+                paymentId: paymentId,
+                orderId: orderId,
+                signature: signature,
+              ).toJson(),
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'verify payment',
+          resource: 'payments',
+        ),
+        mapper: _paymentErrorMapper(
+          fallbackMessage: 'Unable to complete the payment verification.',
+        ),
+      );
       completer.complete(
         PaymentConfirmationData(
           paymentId: paymentId,
@@ -201,21 +213,22 @@ class PaymentRepository {
     _razorpay?.clear();
   }
 
-  Future<HttpsCallableResult<Object?>> _createOrder({
-    required String runId,
-  }) async {
-    try {
-      return await _functions
-          .httpsCallable('createRazorpayOrder')
-          .call<Object?>(
-            CreateRazorpayOrderCallableRequest(runId: runId).toJson(),
-          );
-    } on FirebaseFunctionsException catch (error) {
-      throw PaymentFailedException(
-        error.message ?? 'Unable to start the payment.',
+  Future<HttpsCallableResult<Object?>> _createOrder({required String runId}) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable('createRazorpayOrder')
+            .call<Object?>(
+              CreateRazorpayOrderCallableRequest(runId: runId).toJson(),
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'create payment order',
+          resource: 'payments',
+        ),
+        mapper: _paymentErrorMapper(
+          fallbackMessage: 'Unable to start the payment.',
+        ),
       );
-    }
-  }
 
   RazorpayOrderCallableResponse _parseOrderResponse(Object? data) {
     try {
@@ -236,45 +249,88 @@ class PaymentRepository {
     required String fallbackMessage,
     StackTrace? stackTrace,
   }) {
-    return switch (error) {
-      AppException e => e,
-      FirebaseFunctionsException e => PaymentFailedException(
-        e.message ?? fallbackMessage,
+    return normalizeBackendError(
+      error,
+      stackTrace: stackTrace,
+      context: const BackendErrorContext(
+        service: BackendService.payments,
+        action: 'process payment',
+        resource: 'payments',
       ),
-      _ => PaymentFailedException(error.toString()),
-    };
-  }
-
-  AppException _normalizeRunBookingError(
-    Object error, {
-    required String fallbackMessage,
-  }) {
-    if (error is AppException) {
-      return error;
-    }
-    if (error is FirebaseFunctionsException) {
-      if (error.code == 'unauthenticated') {
-        return const SignInRequiredException('book a run');
-      }
-
-      final message = error.message;
-      return RunBookingFailedException(
-        message == null || message.isEmpty ? fallbackMessage : message,
-      );
-    }
-    return RunBookingFailedException(fallbackMessage);
+      mapper: _paymentErrorMapper(fallbackMessage: fallbackMessage),
+    );
   }
 
   AppException _mapCheckoutFailure(PaymentFailureResponse response) {
     if (response.code == Razorpay.PAYMENT_CANCELLED) {
-      return const PaymentCancelledException();
+      return const PaymentCancelledException(
+        context: BackendErrorContext(
+          service: BackendService.payments,
+          action: 'checkout',
+          resource: 'payments',
+        ),
+      );
     }
 
     final message = response.message;
     return PaymentFailedException(
       message == null || message.isEmpty ? 'Unknown payment error.' : message,
+      context: const BackendErrorContext(
+        service: BackendService.payments,
+        action: 'checkout',
+        resource: 'payments',
+      ),
     );
   }
+}
+
+BackendErrorMapper _paymentErrorMapper({required String fallbackMessage}) {
+  return (error, stackTrace, context) {
+    if (error is FirebaseFunctionsException) {
+      return PaymentFailedException(
+        error.message == null || error.message!.isEmpty
+            ? fallbackMessage
+            : error.message!,
+        debugMessage: '${error.plugin}/${error.code}: ${error.message}',
+        cause: error,
+        stackTrace: stackTrace,
+        context: context,
+      );
+    }
+    return PaymentFailedException(
+      error.toString().isEmpty ? fallbackMessage : error.toString(),
+      debugMessage: '${error.runtimeType}: $error',
+      cause: error,
+      stackTrace: stackTrace,
+      context: context,
+    );
+  };
+}
+
+BackendErrorMapper _runBookingErrorMapper({required String fallbackMessage}) {
+  return (error, stackTrace, context) {
+    if (error is FirebaseFunctionsException) {
+      if (error.code == 'unauthenticated') {
+        return SignInRequiredException(
+          'book a run',
+          debugMessage: '${error.plugin}/${error.code}: ${error.message}',
+          cause: error,
+          stackTrace: stackTrace,
+          context: context,
+        );
+      }
+
+      final message = error.message;
+      return RunBookingFailedException(
+        message == null || message.isEmpty ? fallbackMessage : message,
+        debugMessage: '${error.plugin}/${error.code}: ${error.message}',
+        cause: error,
+        stackTrace: stackTrace,
+        context: context,
+      );
+    }
+    return null;
+  };
 }
 
 @Riverpod(keepAlive: true)

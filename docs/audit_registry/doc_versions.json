@@ -57,29 +57,29 @@
   },
   "error_handling_audit": {
     "path": "docs/error-handling-audit.md",
-    "version": "2.3.1",
-    "updated": "2026-05-06",
-    "status": "snapshot",
-    "read_policy": "Use as the current error-handling snapshot, error 101 guide, app error catalogue, naming convention, and branded error surface guidance; re-verify counts before treating scanner totals as current."
+    "version": "2.4.0",
+    "updated": "2026-05-12",
+    "status": "active",
+    "read_policy": "Use as the current backend error-management source of truth, migration checklist, app error catalogue, naming convention, and branded error surface guidance; refresh with dart tool/backend_error_candidates.dart before new backend error work."
   },
   "firestore_contract_tracker": {
     "path": "docs/firestore_functions_data_contract_tracker.md",
-    "version": "2.3.0",
+    "version": "2.3.1",
     "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, Firestore type generation, data-contract work, or Firestore rules test execution."
   },
   "backend_operation_catalog": {
     "path": "docs/backend_operation_catalog.md",
-    "version": "1.1.18",
-    "updated": "2026-05-08",
+    "version": "1.2.0",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before changing repository writes, callable interfaces, trigger-owned projections, server-only collections, Firestore rules for write paths, or notification fan-out."
   },
   "firestore_relationship_documents_migration": {
     "path": "docs/firestore_relationship_documents_migration.md",
-    "version": "1.0.14",
-    "updated": "2026-05-08",
+    "version": "1.1.0",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before changing relationship arrays, edge/action documents, match-scoped messages, relationship migration tooling, beta reset strategy, or deletion/anonymization cleanup."
   },
@@ -113,8 +113,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.48",
-    "updated": "2026-05-08",
+    "version": "2.5.55",
+    "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },
@@ -134,7 +134,7 @@
   },
   "location_stack": {
     "path": "docs/location_stack_plan.md",
-    "version": "1.1.0",
+    "version": "1.1.1",
     "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before changing location permissions, Maps SDK/Places, run coordinates, check-in geofencing, map navigation, or map/demo readiness."

@@ -1,7 +1,6 @@
-import 'package:catch_dating_app/auth/presentation/auth_error_message.dart';
-import 'package:catch_dating_app/core/firestore_error_message.dart';
+import 'package:catch_dating_app/core/backend_error_message.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 enum AppErrorContext {
   generic,
@@ -18,10 +17,7 @@ String appErrorMessage(
   Object error, {
   AppErrorContext context = AppErrorContext.generic,
 }) {
-  if (error is FirebaseAuthException || context == AppErrorContext.auth) {
-    return authErrorMessage(error);
-  }
-  return firestoreErrorMessage(error);
+  return backendErrorMessage(error);
 }
 
 String appErrorTitle(
@@ -61,7 +57,6 @@ bool _isNetworkError(Object error) {
 
 bool _isAuthError(Object error) =>
     error is SignInRequiredException ||
-    error is FirebaseAuthException ||
     (error is FirebaseException && error.code == 'unauthenticated');
 
 bool _isPermissionError(Object error) =>

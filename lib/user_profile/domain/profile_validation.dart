@@ -6,6 +6,7 @@ const maximumPreferredMatchAge = 99;
 const minimumHeightCm = 120;
 const maximumHeightCm = 220;
 const defaultHeightCm = 170;
+const maximumBioLength = 2000;
 
 int calculateAge(DateTime dateOfBirth, {DateTime? today}) {
   final currentDate = today ?? DateTime.now();
@@ -59,6 +60,12 @@ String? validateOptionalEmail(String? value) {
   if (email.isEmpty) return null;
   final valid = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$').hasMatch(email);
   return valid ? null : 'Enter a valid email';
+}
+
+String? validateOptionalBio(String? value) {
+  final bio = (value ?? '').trim();
+  if (bio.length <= maximumBioLength) return null;
+  return 'Bio must be $maximumBioLength characters or fewer';
 }
 
 String normalizeInstagramHandle(String value) {

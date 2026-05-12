@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/runs/domain/run_draft.dart';
 import 'package:collection/collection.dart';
@@ -52,10 +54,16 @@ class RunDraftRepository {
       fresh.sort((a, b) => b.savedAt.compareTo(a.savedAt));
       return fresh;
     } catch (error, stackTrace) {
-      _errorLogger.logError(
-        error,
-        stackTrace,
-        reason: 'RunDraftRepository.loadDrafts',
+      _errorLogger.logAppException(
+        normalizeBackendError(
+          error,
+          stackTrace: stackTrace,
+          context: const BackendErrorContext(
+            service: BackendService.local,
+            action: 'load run drafts',
+            resource: 'shared_preferences',
+          ),
+        ),
       );
       return [];
     }

@@ -1,4 +1,6 @@
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_draft.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -39,10 +41,16 @@ class RunClubDraftRepository {
       }
       return draft;
     } catch (error, stackTrace) {
-      _errorLogger.logError(
-        error,
-        stackTrace,
-        reason: 'RunClubDraftRepository.loadDraft',
+      _errorLogger.logAppException(
+        normalizeBackendError(
+          error,
+          stackTrace: stackTrace,
+          context: const BackendErrorContext(
+            service: BackendService.local,
+            action: 'load run club draft',
+            resource: 'shared_preferences',
+          ),
+        ),
       );
       return null;
     }

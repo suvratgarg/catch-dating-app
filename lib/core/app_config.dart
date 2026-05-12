@@ -81,6 +81,11 @@ class AppConfig {
     defaultValue: '',
   );
 
+  static const bool useFirebaseAppCheckDebugProvider = bool.fromEnvironment(
+    'USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER',
+    defaultValue: false,
+  );
+
   static const bool verboseAuthDebugLogs = bool.fromEnvironment(
     'VERBOSE_AUTH_DEBUG_LOGS',
     defaultValue: false,

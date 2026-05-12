@@ -18,7 +18,7 @@ Device/build status:
 - App run command to use first: `./tool/flutter_with_env.sh dev run -d 00008120-001A152E3EEB401E`.
 - App launched successfully through Flutter debug on the physical iPhone.
 - Flutter VM service: `http://127.0.0.1:65055/_na85vwnQGw=/`
-- Firebase App Check debug token printed during launch: `97E611C8-0BB6-4C7F-B475-B704B2C30DB1`
+- Firebase App Check debug token printed during launch: `[redacted debug token]`
 
 Initial plan:
 - [x] Confirm repo context and prior design-fidelity audit.

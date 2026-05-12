@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -11,7 +12,6 @@ import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
-import 'package:catch_dating_app/runs/presentation/run_booking_error_message.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/run_joined_celebration_screen.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -75,8 +75,9 @@ class RunDetailCta extends ConsumerWidget {
       children: [
         if (errorMutation.hasError)
           ErrorBanner(
-            message: runBookingErrorMessage(
+            message: appErrorMessage(
               (errorMutation as MutationError).error,
+              context: AppErrorContext.run,
             ),
           ),
         switch (status) {

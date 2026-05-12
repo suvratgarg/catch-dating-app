@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
@@ -202,7 +203,17 @@ Future<void> _shareRun(
     if (context.mounted) {
       ProviderScope.containerOf(context, listen: false)
           .read(errorLoggerProvider)
-          .logError(actionError, stackTrace, reason: 'RunDetailBody._shareRun');
+          .logAppException(
+            normalizeBackendError(
+              actionError,
+              stackTrace: stackTrace,
+              context: const BackendErrorContext(
+                service: BackendService.external,
+                action: 'share run',
+                resource: 'share_sheet',
+              ),
+            ),
+          );
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Could not open share sheet.')),

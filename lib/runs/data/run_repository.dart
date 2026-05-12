@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/runs/data/run_callable_dtos.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
@@ -40,19 +41,40 @@ class RunRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Future<Run?> fetchRun(String id) async {
-    final doc = await _runRef(id).get();
-    return doc.exists ? doc.data() : null;
-  }
+  Future<Run?> fetchRun(String id) => withBackendErrorContext(
+    () async {
+      final doc = await _runRef(id).get();
+      return doc.exists ? doc.data() : null;
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch run',
+      resource: _collectionPath,
+    ),
+  );
 
-  Stream<Run?> watchRun(String id) =>
-      _runRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null);
+  Stream<Run?> watchRun(String id) => withBackendErrorStream(
+    () => _runRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch run',
+      resource: _collectionPath,
+    ),
+  );
 
-  Stream<List<Run>> watchRunsForClub({required String runClubId}) => _runsRef
-      .where('runClubId', isEqualTo: runClubId)
-      .orderBy('startTime')
-      .snapshots()
-      .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<Run>> watchRunsForClub({required String runClubId}) =>
+      withBackendErrorStream(
+        () => _runsRef
+            .where('runClubId', isEqualTo: runClubId)
+            .orderBy('startTime')
+            .snapshots()
+            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch club runs',
+          resource: _collectionPath,
+        ),
+      );
 
   Stream<List<Run>> watchAttendedRuns({required String uid}) =>
       _watchRunsForParticipationStatuses(
@@ -171,72 +193,101 @@ class RunRepository {
       },
     );
 
-    return controller.stream;
+    return withBackendErrorStream(
+      () => controller.stream,
+      context: const BackendErrorContext(
+        service: BackendService.firestore,
+        action: 'watch runs by participation',
+        resource: _collectionPath,
+      ),
+    );
   }
 
   /// Generates a new unique Firestore document ID for a run without writing it.
   String generateId() => _runsRef.doc().id;
 
   /// Fetches upcoming runs from the given club IDs (max 10 clubs, limit 10 runs).
-  Future<List<Run>> fetchUpcomingRunsForClubs(List<String> runClubIds) async {
-    if (runClubIds.isEmpty) return [];
-    final now = Timestamp.now();
-    final snap = await _runsRef
-        .where('runClubId', whereIn: runClubIds.take(10).toList())
-        .where('startTime', isGreaterThan: now)
-        .orderBy('startTime')
-        .limit(10)
-        .get();
-    return snap.docs.map((d) => d.data()).toList();
-  }
+  Future<List<Run>> fetchUpcomingRunsForClubs(List<String> runClubIds) =>
+      withBackendErrorContext(
+        () async {
+          if (runClubIds.isEmpty) return [];
+          final now = Timestamp.now();
+          final snap = await _runsRef
+              .where('runClubId', whereIn: runClubIds.take(10).toList())
+              .where('startTime', isGreaterThan: now)
+              .orderBy('startTime')
+              .limit(10)
+              .get();
+          return snap.docs.map((d) => d.data()).toList();
+        },
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'fetch recommended runs',
+          resource: _collectionPath,
+        ),
+      );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> createRun({required Run run}) => withFirestoreErrorContext(
+  Future<void> createRun({required Run run}) => withBackendErrorContext(
     () => _functions
         .httpsCallable('createRun')
         .call(CreateRunCallableRequest.fromRun(run).toJson()),
-    collection: _collectionPath,
-    action: 'create run',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create run',
+      resource: _collectionPath,
+    ),
   );
 
-  Future<void> updateRunDetails({required Run run}) =>
-      withFirestoreErrorContext(
-        () => _functions
-            .httpsCallable('updateRun')
-            .call(UpdateRunCallableRequest.fromRun(run).toJson()),
-        collection: _collectionPath,
-        action: 'update run',
-      );
+  Future<void> updateRunDetails({required Run run}) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('updateRun')
+        .call(UpdateRunCallableRequest.fromRun(run).toJson()),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'update run',
+      resource: _collectionPath,
+    ),
+  );
 
   /// Cancels the current user's sign-up via the [cancelRunSignUp] Cloud
   /// Function, which atomically updates their participation edge and aggregate
   /// booking projections.
   Future<void> cancelSignUpViaFunction({required String runId}) =>
-      withFirestoreErrorContext(
+      withBackendErrorContext(
         () => _functions
             .httpsCallable('cancelRunSignUp')
             .call(RunIdCallableRequest(runId).toJson()),
-        collection: _collectionPath,
-        action: 'cancel sign-up',
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'cancel sign-up',
+          resource: _collectionPath,
+        ),
       );
 
   Future<void> joinWaitlistViaFunction({required String runId}) =>
-      withFirestoreErrorContext(
+      withBackendErrorContext(
         () => _functions
             .httpsCallable('joinRunWaitlist')
             .call(RunIdCallableRequest(runId).toJson()),
-        collection: _collectionPath,
-        action: 'join waitlist',
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'join waitlist',
+          resource: _collectionPath,
+        ),
       );
 
   Future<void> leaveWaitlist({required String runId, required String userId}) =>
-      withFirestoreErrorContext(
+      withBackendErrorContext(
         () => _functions
             .httpsCallable('leaveRunWaitlist')
             .call(RunIdCallableRequest(runId).toJson()),
-        collection: _collectionPath,
-        action: 'leave waitlist',
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'leave waitlist',
+          resource: _collectionPath,
+        ),
       );
 
   /// Toggles attendance for a single user via the [markRunAttendance] Cloud
@@ -245,7 +296,7 @@ class RunRepository {
   Future<bool> markAttendance({
     required String runId,
     required String userId,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () async {
       final result = await _functions
           .httpsCallable('markRunAttendance')
@@ -259,8 +310,11 @@ class RunRepository {
         result.data,
       ).attended;
     },
-    collection: _collectionPath,
-    action: 'mark attendance',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'mark attendance',
+      resource: _collectionPath,
+    ),
   );
 
   /// Self-check-in for a signed-up participant via the
@@ -273,7 +327,7 @@ class RunRepository {
     required String runId,
     required double? latitude,
     required double? longitude,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('selfCheckInAttendance')
         .call(
@@ -283,8 +337,11 @@ class RunRepository {
             longitude: longitude,
           ).toJson(),
         ),
-    collection: _collectionPath,
-    action: 'self check-in',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'self check-in',
+      resource: _collectionPath,
+    ),
   );
 }
 

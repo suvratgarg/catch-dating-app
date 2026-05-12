@@ -1,8 +1,10 @@
 import 'dart:math';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -37,7 +39,17 @@ class CityRepository {
     } catch (e, st) {
       // Fall through to defaults — network errors or missing indexes
       // should not prevent the city picker from rendering.
-      _errorLogger.logError(e, st, reason: 'CityRepository.fetchCities');
+      _errorLogger.logAppException(
+        normalizeBackendError(
+          e,
+          stackTrace: st,
+          context: const BackendErrorContext(
+            service: BackendService.firestore,
+            action: 'fetch city config',
+            resource: 'config/cities',
+          ),
+        ),
+      );
     }
 
     return _defaultCities;

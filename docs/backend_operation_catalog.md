@@ -1,7 +1,7 @@
 ---
 doc_id: backend_operation_catalog
-version: 1.1.18
-updated: 2026-05-08
+version: 1.2.0
+updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -28,6 +28,25 @@ machine-readable ownership contract and this document as the human map.
 - Storage writes count as backend-surface operations. If a Storage upload also
   changes Firestore, the Firestore write owner must be documented separately.
 
+## Boundary Decision Guide
+
+Use direct client edge writes only when the write is the user's own narrow
+source-of-truth action and Firestore rules can prove the full invariant from
+the path, authenticated UID, allowlisted fields, and small cross-doc checks.
+Good examples are saved runs, outgoing swipes, and match-scoped chat messages.
+
+Keep callables when the server must decide whether the mutation is valid across
+multiple documents, hidden safety state, capacity, schedule conflicts, payment
+state, role/host authority, rate limits, or account lifecycle. Good examples
+are run-club membership, run creation, booking, waitlist, attendance, reviews,
+payments, safety actions, and account deletion.
+
+Use Firestore triggers for projections and side effects after a canonical edge
+or entity write exists. Triggers must either recompute from source documents or
+use an idempotency receipt when retrying an increment-like update could double
+count. Parent relationship projections such as `memberCount` and `nextRunAt`
+should be repairable from edge/source documents.
+
 ## Interface Types
 
 | Interface | Meaning | Primary enforcement |
@@ -48,6 +67,7 @@ machine-readable ownership contract and this document as the human map.
 | P1 | `RATE_LIMITS` declared several callable limits that were not applied at the handlers: `verifyRazorpayPayment`, `cancelRunSignUp`, `joinRunWaitlist`, `blockUser`, `unblockUser`, and `requestAccountDeletion`. `updateUserProfile` also had no configured limit. | Fixed. All listed handlers now call `checkRateLimit`; `updateUserProfile` is 60/minute to allow brisk field-by-field editing without leaving profile writes unbounded. |
 | P2 | The machine-readable contract records operations by collection, but not the Dart initiator method for every operation. | This doc fills the human map; a later tooling pass can validate Dart initiators automatically. |
 | P2 | Notification fan-out now has a durable backend-owned in-app timeline for match, message, new club run, run signup, waitlist-promotion, upcoming run reminder, run schedule/location updates, and run cancellation events. | Implemented; keep adding new categories through the same Functions-owned interface. |
+| P1 | Edge documents were the source of truth, but run-club parent projections relied only on callable updates or batch repair tools. | Fixed. `syncRunClubMemberStats` recomputes `memberCount` from active membership edges, and `syncRunClubNextRun` recomputes `nextRunAt` / `nextRunLabel` from active future run documents. Run callables also refresh the next-run projection before returning. |
 
 ## Cloud Functions Inventory
 
@@ -56,16 +76,18 @@ machine-readable ownership contract and this document as the human map.
 | `updateUserProfile` | Callable | `UserProfileRepository.updateUserProfile` | `users/{uid}` | Validates profile patches with Zod; owns complex profile edits after initial create; rate-limited at 60/minute. |
 | `syncPublicProfile` | Firestore trigger on `users/{uid}` writes | Backend | `publicProfiles/{uid}` set/delete | Sole owner of public profile projection. Uses `displayName`, then first name, then legacy fallback; projects `photoThumbnailUrls` alongside `photoUrls` for tiny avatar surfaces. |
 | `generateProfilePhotoThumbnail` | Storage trigger on `users/{uid}/photos/{fileName}` finalize | Backend | Storage `users/{uid}/photoThumbnails/{fileName}`, `users/{uid}.photoThumbnailUrls` | Generates 160px JPEG thumbnails for avatar-scale surfaces. Dashboard/run-detail hype avatars must use these thumbnail URLs, not full profile photos. Existing beta data can be backfilled with `npm run backfill:profile-thumbnails -- --apply` after setting `FIREBASE_STORAGE_BUCKET`; `catchdates-dev` and prod/default were backfilled on 2026-05-08. Staging had no users. Prod still has skipped demo placeholder URLs plus one empty source object that cannot be thumbnailed until the source photo is replaced. |
-| `createRunClub` | Callable | `RunClubsRepository.createRunClub` | `runClubs/{clubId}`, `runClubMemberships/{clubId_uid}`, `runClubHostClaims/{uid}` | Server derives host identity from authenticated user; the membership edge is the source of truth and `memberCount` is the only parent aggregate. `runClubHostClaims/{uid}` enforces the current product rule that a user can host at most one run club. |
+| `createRunClub` | Callable | `RunClubsRepository.createRunClub` | `runClubs/{clubId}`, `runClubMemberships/{clubId_uid}`, `runClubHostClaims/{uid}` | Server derives host identity from authenticated user; initializes lifecycle fields as active/unarchived; the membership edge is the source of truth and `memberCount` is the parent aggregate. `runClubHostClaims/{uid}` enforces the current product rule that a user can host at most one run club. |
 | `updateRunClub` | Callable | `RunClubsRepository.updateRunClub` | `runClubs/{clubId}` descriptive fields | Host-only profile edit seam. Direct client updates to `runClubs/{clubId}` are denied so Zod owns field validation and aggregate/projection fields stay backend-owned. |
-| `joinRunClub` | Callable | `RunClubsRepository.joinClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.memberCount` | Multi-doc membership mutation; does not mirror membership into user or club arrays. |
-| `leaveRunClub` | Callable | `RunClubsRepository.leaveClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.memberCount` | Rejects host leaving their own club; does not mirror membership into user or club arrays. |
+| `joinRunClub` | Callable | `RunClubsRepository.joinClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.memberCount` | Multi-doc membership mutation; does not mirror membership into user or club arrays. `syncRunClubMemberStats` repairs the parent count from active membership edges after any membership write. |
+| `leaveRunClub` | Callable | `RunClubsRepository.leaveClub` | `runClubMemberships/{clubId_uid}`, `runClubs/{clubId}.memberCount` | Rejects host leaving their own club; does not mirror membership into user or club arrays. `syncRunClubMemberStats` repairs the parent count from active membership edges after any membership write. |
+| `syncRunClubMemberStats` | Firestore trigger on `runClubMemberships/{membershipId}` write | Backend | `runClubs/{clubId}.memberCount` | Recomputes active membership count from edge documents. This makes duplicate trigger delivery safe and repairs stale callable-era or manually drifted parent projections. |
 | `archiveRunClub` | Callable | Backend-ready; host UI queued | `runClubs/{clubId}.status/archived/archivedAt/archiveReason` | Host-only archive seam for clubs with history. Prevent browse/search usage once client filters are added; hard delete is reserved for unused clubs. |
 | `deleteRunClub` | Callable | Backend-ready; host/admin UI queued | `runClubs/{clubId}` delete, host `runClubMemberships/{clubId_uid}` delete, `runClubHostClaims/{uid}` delete | Host-only hard delete for never-used clubs. Rejects clubs with runs, payments, reviews, or non-host members; releases the one-club host claim only after the hard delete is allowed. |
-| `createRun` | Callable | `RunRepository.createRun` | `runs/{runId}`, `notifications/{uid}/items/{notificationId}`, FCM to active club members with run-reminder pushes enabled | Host authority is verified server-side from the run club; initializes run lifecycle as `active` plus participation count projections to zero; new-run notification fan-out is best-effort after the run document commits. |
-| `updateRun` | Callable | `RunRepository.updateRunDetails` | `runs/{runId}`, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants for schedule/location changes | Host-editable schedule/descriptive fields only. Descriptive-only edits do not notify participants; schedule/location changes produce deterministic `runUpdated_${runId}` items. Cancelled runs cannot be edited. |
-| `cancelRun` | Callable | Backend-ready; host UI and cancellation policy are queued | `runs/{runId}.status/cancelledAt/cancellationReason`, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants | Host-only cancellation seam. Marks the canonical run as cancelled and fans out deterministic `runCancelled_${runId}` activity. Refund/payment policy and host UI are intentionally not exposed yet. |
-| `deleteRun` | Callable | Backend-ready; host/admin UI queued | `runs/{runId}` delete | Host-only hard delete for unused runs. Rejects runs with participations, payments, or reviews; use `cancelRun` for runs with history. |
+| `createRun` | Callable | `RunRepository.createRun` | `runs/{runId}`, `runClubs/{clubId}.nextRunAt/nextRunLabel`, `notifications/{uid}/items/{notificationId}`, FCM to active club members with run-reminder pushes enabled | Host authority is verified server-side from the run club; initializes run lifecycle as `active` plus participation count projections to zero; refreshes the club next-run projection before returning; new-run notification fan-out is best-effort after the run document commits. |
+| `updateRun` | Callable | `RunRepository.updateRunDetails` | `runs/{runId}`, `runClubs/{clubId}.nextRunAt/nextRunLabel`, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants for schedule/location changes | Host-editable schedule/descriptive fields only. Descriptive-only edits do not notify participants; schedule/location changes produce deterministic `runUpdated_${runId}` items. Cancelled runs cannot be edited. |
+| `cancelRun` | Callable | Backend-ready; host UI and cancellation policy are queued | `runs/{runId}.status/cancelledAt/cancellationReason`, `runClubs/{clubId}.nextRunAt/nextRunLabel`, `notifications/{uid}/items/{notificationId}`, FCM to signed-up/waitlisted participants | Host-only cancellation seam. Marks the canonical run as cancelled, refreshes the club next-run projection, and fans out deterministic `runCancelled_${runId}` activity. Refund/payment policy and host UI are intentionally not exposed yet. |
+| `deleteRun` | Callable | Backend-ready; host/admin UI queued | `runs/{runId}` delete, `runClubs/{clubId}.nextRunAt/nextRunLabel` refresh | Host-only hard delete for unused runs. Rejects runs with participations, payments, or reviews; use `cancelRun` for runs with history. |
+| `syncRunClubNextRun` | Firestore trigger on `runs/{runId}` write | Backend | `runClubs/{clubId}.nextRunAt`, `nextRunLabel` | Recomputes the earliest future active run for affected clubs from `runs`. This keeps club list/detail projections in sync after create, update, cancellation, deletion, retries, or repair tooling. |
 | `signUpForFreeRun` | Callable | `PaymentRepository.bookFreeRun` | `runParticipations/{runId_uid}`, `runs/{runId}.bookedCount`, `runs/{runId}.waitlistedCount`, `runs/{runId}.genderCounts`, `notifications/{uid}/items/{notificationId}` | Delegates core booking to `signUpUserForRun`; writes an in-app booking confirmation or waitlist-promotion activity item. |
 | `createRazorpayOrder` | Callable | `PaymentRepository.processPayment` | Razorpay order only | Uses trusted run price and server-side secrets; rejects cancelled runs before creating an order. |
 | `verifyRazorpayPayment` | Callable | Razorpay success callback in `PaymentRepository` | `payments/{paymentId}`, `runParticipations/{runId_uid}`, run count/gender projections, `notifications/{uid}/items/{notificationId}` | Rate-limited before signature validation or Razorpay fetch; verifies signature, books paid run, and writes an in-app booking confirmation. |
@@ -112,8 +134,9 @@ machine-readable ownership contract and this document as the human map.
 | `runClubHostClaims/{uid}` | `createRunClub` callable | Server-only host lock; direct client reads/writes denied. |
 | `runClubs/{clubId}` writes | Run-club create/update/archive/delete callables plus review-stat trigger | Direct client writes denied. |
 | `users/{uid}.deleted`, `deletedAt` | Account deletion callable | Direct client writes denied. |
-| `runClubs/{clubId}.memberCount` | Run-club membership callables | Direct client writes denied. |
+| `runClubs/{clubId}.memberCount` | Run-club membership callables plus `syncRunClubMemberStats` repair trigger | Direct client writes denied. |
 | `runClubs/{clubId}.rating`, `reviewCount` | `syncRunClubReviewStats` trigger | Direct client writes denied. |
+| `runClubs/{clubId}.nextRunAt`, `nextRunLabel` | Run callables plus `syncRunClubNextRun` projection trigger | Direct client writes denied. |
 | `runClubs/{clubId}.status`, `archived`, `archivedAt`, `archiveReason` | `archiveRunClub` callable | Direct client writes denied. |
 | `runs/{runId}.bookedCount`, `waitlistedCount`, `checkedInCount`, `genderCounts` | Booking, waitlist, attendance, payment callables | Direct client writes denied. |
 | `runs/{runId}.status`, `cancelledAt`, `cancellationReason` | `createRun` / `cancelRun` / `deleteRun` callables | Direct client writes denied. |

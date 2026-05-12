@@ -1,5 +1,7 @@
 import 'dart:ui';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -27,8 +29,15 @@ class ExternalShareController {
     String? subject,
     Rect? origin,
   }) {
-    return _share(
-      ShareParams(text: text, subject: subject, sharePositionOrigin: origin),
+    return withBackendErrorContext(
+      () => _share(
+        ShareParams(text: text, subject: subject, sharePositionOrigin: origin),
+      ),
+      context: const BackendErrorContext(
+        service: BackendService.external,
+        action: 'share text',
+        resource: 'share_sheet',
+      ),
     );
   }
 }

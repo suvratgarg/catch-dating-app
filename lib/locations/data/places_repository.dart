@@ -1,4 +1,6 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/locations/data/places_callable_dtos.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -40,12 +42,21 @@ class FirebasePlacesRepository implements PlacesRepository {
       sessionToken: sessionToken,
       bias: bias,
     );
-    final result = await _functions
-        .httpsCallable('placesAutocomplete')
-        .call<Object?>(payload.toJson());
-    return PlacesAutocompleteCallableResponse.fromCallableData(
-      result.data,
-    ).predictions;
+    return withBackendErrorContext(
+      () async {
+        final result = await _functions
+            .httpsCallable('placesAutocomplete')
+            .call<Object?>(payload.toJson());
+        return PlacesAutocompleteCallableResponse.fromCallableData(
+          result.data,
+        ).predictions;
+      },
+      context: const BackendErrorContext(
+        service: BackendService.functions,
+        action: 'load place suggestions',
+        resource: 'places',
+      ),
+    );
   }
 
   @override
@@ -57,9 +68,18 @@ class FirebasePlacesRepository implements PlacesRepository {
       placeId: placeId,
       sessionToken: sessionToken,
     );
-    final result = await _functions
-        .httpsCallable('placeDetails')
-        .call<Object?>(payload.toJson());
-    return PlaceDetailsCallableResponse.fromCallableData(result.data).place;
+    return withBackendErrorContext(
+      () async {
+        final result = await _functions
+            .httpsCallable('placeDetails')
+            .call<Object?>(payload.toJson());
+        return PlaceDetailsCallableResponse.fromCallableData(result.data).place;
+      },
+      context: const BackendErrorContext(
+        service: BackendService.functions,
+        action: 'load place details',
+        resource: 'places',
+      ),
+    );
   }
 }

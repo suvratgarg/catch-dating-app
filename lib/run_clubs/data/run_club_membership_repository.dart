@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -25,27 +27,48 @@ class RunClubMembershipRepository {
 
   Stream<List<RunClubMembership>> watchActiveMembershipsForUser({
     required String uid,
-  }) => _membershipsRef
-      .where('uid', isEqualTo: uid)
-      .where('status', isEqualTo: RunClubMembershipStatus.active.name)
-      .snapshots()
-      .map((snap) => snap.docs.map((doc) => doc.data()).toList());
+  }) => withBackendErrorStream(
+    () => _membershipsRef
+        .where('uid', isEqualTo: uid)
+        .where('status', isEqualTo: RunClubMembershipStatus.active.name)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch user club memberships',
+      resource: _collectionPath,
+    ),
+  );
 
   Stream<List<RunClubMembership>> watchActiveMembershipsForClub({
     required String clubId,
-  }) => _membershipsRef
-      .where('clubId', isEqualTo: clubId)
-      .where('status', isEqualTo: RunClubMembershipStatus.active.name)
-      .snapshots()
-      .map((snap) => snap.docs.map((doc) => doc.data()).toList());
+  }) => withBackendErrorStream(
+    () => _membershipsRef
+        .where('clubId', isEqualTo: clubId)
+        .where('status', isEqualTo: RunClubMembershipStatus.active.name)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch club memberships',
+      resource: _collectionPath,
+    ),
+  );
 
   Stream<RunClubMembership?> watchMembership({
     required String clubId,
     required String uid,
-  }) => _membershipsRef
-      .doc(runClubMembershipId(clubId: clubId, uid: uid))
-      .snapshots()
-      .map((doc) => doc.exists ? doc.data() : null);
+  }) => withBackendErrorStream(
+    () => _membershipsRef
+        .doc(runClubMembershipId(clubId: clubId, uid: uid))
+        .snapshots()
+        .map((doc) => doc.exists ? doc.data() : null),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch club membership',
+      resource: _collectionPath,
+    ),
+  );
 }
 
 @Riverpod(keepAlive: true)

@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/app_config.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -109,10 +109,14 @@ class AuthController extends _$AuthController {
 
     return completer.future.timeout(
       const Duration(seconds: 60),
-      onTimeout: () => throw FirebaseAuthException(
-        code: 'timeout',
-        message:
-            'The verification request timed out. Please check your connection and try again.',
+      onTimeout: () => throw const NetworkException(
+        'timeout',
+        'The verification request timed out. Please check your connection and try again.',
+        context: BackendErrorContext(
+          service: BackendService.auth,
+          action: 'send verification code',
+          resource: 'phone_auth',
+        ),
       ),
     );
   }

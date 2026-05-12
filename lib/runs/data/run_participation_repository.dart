@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/domain/run_participation_roster.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -26,34 +28,62 @@ class RunParticipationRepository {
 
   Stream<List<RunParticipation>> watchParticipationsForUser({
     required String uid,
-  }) => _participationsRef
-      .where('uid', isEqualTo: uid)
-      .snapshots()
-      .map((snap) => snap.docs.map((doc) => doc.data()).toList());
+  }) => withBackendErrorStream(
+    () => _participationsRef
+        .where('uid', isEqualTo: uid)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch user participations',
+      resource: _collectionPath,
+    ),
+  );
 
   Stream<List<RunParticipation>> watchParticipationsForRun({
     required String runId,
-  }) => _participationsRef
-      .where('runId', isEqualTo: runId)
-      .snapshots()
-      .map((snap) => snap.docs.map((doc) => doc.data()).toList());
+  }) => withBackendErrorStream(
+    () => _participationsRef
+        .where('runId', isEqualTo: runId)
+        .snapshots()
+        .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch run participations',
+      resource: _collectionPath,
+    ),
+  );
 
   Future<List<RunParticipation>> fetchParticipationsForRun({
     required String runId,
-  }) async {
-    final snap = await _participationsRef
-        .where('runId', isEqualTo: runId)
-        .get();
-    return snap.docs.map((doc) => doc.data()).toList();
-  }
+  }) => withBackendErrorContext(
+    () async {
+      final snap = await _participationsRef
+          .where('runId', isEqualTo: runId)
+          .get();
+      return snap.docs.map((doc) => doc.data()).toList();
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch run participations',
+      resource: _collectionPath,
+    ),
+  );
 
   Stream<RunParticipation?> watchParticipation({
     required String runId,
     required String uid,
-  }) => _participationsRef
-      .doc(runParticipationId(runId: runId, uid: uid))
-      .snapshots()
-      .map((doc) => doc.exists ? doc.data() : null);
+  }) => withBackendErrorStream(
+    () => _participationsRef
+        .doc(runParticipationId(runId: runId, uid: uid))
+        .snapshots()
+        .map((doc) => doc.exists ? doc.data() : null),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch run participation',
+      resource: _collectionPath,
+    ),
+  );
 }
 
 @Riverpod(keepAlive: true)

@@ -1,3 +1,5 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:geolocator/geolocator.dart';
@@ -32,7 +34,17 @@ class DeviceLocation extends _$DeviceLocation {
     } catch (error, stackTrace) {
       ref
           .read(errorLoggerProvider)
-          .logError(error, stackTrace, reason: 'DeviceLocation.build');
+          .logAppException(
+            normalizeBackendError(
+              error,
+              stackTrace: stackTrace,
+              context: const BackendErrorContext(
+                service: BackendService.external,
+                action: 'read device location',
+                resource: 'device_location',
+              ),
+            ),
+          );
       return null;
     }
   }

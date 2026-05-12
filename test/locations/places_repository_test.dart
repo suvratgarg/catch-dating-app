@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -126,7 +127,19 @@ void main() {
           placeId: 'india-gate',
           sessionToken: 'places-session-2',
         ),
-        throwsStateError,
+        throwsA(
+          isA<BackendOperationException>()
+              .having(
+                (error) => error.context?.service,
+                'service',
+                BackendService.functions,
+              )
+              .having(
+                (error) => error.context?.action,
+                'action',
+                'load place details',
+              ),
+        ),
       );
     });
   });

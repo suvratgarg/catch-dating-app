@@ -12,6 +12,7 @@ import 'package:catch_dating_app/core/widgets/catch_framework_error_view.dart';
 import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_otp_code_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
+import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/core/widgets/catch_step_progress.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
@@ -820,6 +821,41 @@ void main() {
 
     expect(selected, cityOptionByName('mumbai')!);
     expect(formKey.currentState!.validate(), isTrue);
+  });
+
+  testWidgets('CatchSelectMenu uses normal menu corners for pill triggers', (
+    tester,
+  ) async {
+    CityOption? selected = cityOptionByName('ahmedabad');
+
+    await tester.pumpWidget(
+      _wrap(
+        SizedBox(
+          width: 240,
+          child: CatchSelectMenu<CityOption>(
+            values: defaultCityOptions,
+            value: selected,
+            itemLabel: (city) => city.label,
+            prefixIcon: const Icon(Icons.location_on_outlined),
+            shape: CatchSelectMenuShape.pill,
+            onChanged: (value) => selected = value,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byIcon(Icons.expand_more_rounded));
+    await pumpFeatureUi(tester);
+
+    expect(find.byType(MenuItemButton), findsWidgets);
+    expect(
+      tester.widgetList<Material>(find.byType(Material)).any((material) {
+        final shape = material.shape;
+        return shape is RoundedRectangleBorder &&
+            shape.borderRadius == BorderRadius.circular(CatchRadius.sm);
+      }),
+      isTrue,
+    );
   });
 }
 

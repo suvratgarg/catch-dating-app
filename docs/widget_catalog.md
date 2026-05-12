@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.48
-updated: 2026-05-08
+version: 2.5.55
+updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,68 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.55
+
+- `CatchCelebrationScreen` is now a consistent white-on-orange celebration
+  surface. Detail cards, note cards, dividers, icons, close affordances, and
+  hero checkmarks use white/white-alpha content instead of the older dark ink
+  treatment. Keep celebration CTAs as explicit action controls on the orange
+  surface, but do not reintroduce dark text inside celebration content panels.
+
+### 2.5.54
+
+- `CatchSelectMenu` separates trigger radius from popup radius. Pill triggers
+  may stay pill-shaped, but opened menus must use normal rounded panel corners
+  so first/last rows are not clipped by a giant pill radius. This fixes the Run
+  Clubs city picker dropdown and applies to future dropdowns that use the
+  shared select primitive.
+
+### 2.5.53
+
+- `StepperFooter` blends into the create-run page background instead of using
+  a separate surface band and top divider. Its draft and primary actions share
+  the row width directly; do not reintroduce `Spacer` between the actions,
+  because it can starve the primary button lane and cause label overflow.
+
+### 2.5.52
+
+- `ProfileInlineEditableText` supports multiline row-owned editing. Bio edits
+  directly in the `ProfileInfoTile` value slot with a multiline `EditableText`;
+  the inline drawer below the row is reserved for validation/save feedback and
+  `Cancel`/`Done`, not a second boxed text field.
+- Compact `CatchButton` labels scale down inside tight non-full-width action
+  rows so inline editor actions do not produce right-edge overflow on narrow
+  devices.
+
+### 2.5.51
+
+- `UpcomingRunsHero` no longer renders one pagination dot per booked run. Its
+  carousel affordance is a fixed-width progress rail, while the in-card
+  `N/total` pill remains the exact position indicator. Keep unbounded dashboard
+  run counts out of width-growing rows.
+
+### 2.5.50
+
+- Chats tab header title is `Chats`, not `Your catches`, so it no longer wraps
+  or conflicts with the separate Catches tab. The shared `CatchSliverHeader`
+  keeps explicit long-title support through `wrappedTitleHeight`; short-title
+  screens should use `twoLineTitleHeight`.
+- `CatchSliverHeader` now exposes shared search-row spacing constants for the
+  control top padding and the gap to first content. Use these before adding
+  local search/list spacing math.
+- `ChatListTile` unread state is row-level: warm surface tint, primary border,
+  avatar ring, stronger text, and a visible unread-count pill by the timestamp.
+  Do not rely on a tiny avatar badge as the primary unread signal.
+
+### 2.5.49
+
+- Edit Profile bio now uses the same row-owned inline disclosure contract as
+  other profile fields. `ProfileInlineTextEntryEditor` supports multiline
+  row-owned editing for long text such as Bio.
+- The signed-in Bio edit flow no longer uses `ProfilePromptCard` or the
+  standalone `ProfileInlineTextEditor`; keep prompt-style bio presentation in
+  read-only profile-card widgets.
 
 ### 2.5.48
 
@@ -118,8 +180,8 @@ feature section here only when auditing that feature's widget surface.
   position while adding only cursor, selection, validation, and a text-width
   underline.
 - `ProfileInlineTextEntryEditor` now uses that inline editable value instead
-  of embedding a boxed text-field primitive in the row. Keep `CatchTextField`
-  for standalone form/prompt-card text entry, including Bio.
+  of embedding a boxed text-field primitive in the row. Long text row variants
+  such as Bio now use the same row-owned editable value contract.
 - The scroll-away Profile title header now owns only the Settings action. Review
   history, payment history, and sign out moved to `SettingsScreen` Account rows.
 
@@ -132,8 +194,8 @@ feature section here only when auditing that feature's widget surface.
 - Profile inline editors now share one internal panel for save errors,
   vertical padding, and `Cancel`/`Done` actions. Field-specific editors should
   provide only their controls and draft-state logic.
-- Bio editing uses `ProfileInlineAnimatedBody` too, so prompt-card edits follow
-  the same drawer motion contract as grouped profile rows.
+- Bio editing uses `ProfileInlineAnimatedBody` too, so edits follow the same
+  drawer motion contract as grouped profile rows.
 - Removed stale catalog references to the deleted profile bottom-sheet editor
   classes. Normal profile field editing is inline; future exceptions should be
   explicit route/dialog flows, not a resurrected generic field sheet.
@@ -176,8 +238,8 @@ feature section here only when auditing that feature's widget surface.
   row in an `InkWell`, so the embedded field can receive focus.
 - Added `ProfileInlineTextEntryEditor`, which renders text Profile rows with a
   compact label-less `CatchTextField` in the value position and keeps
-  error/actions below the row. `ProfileInlineTextEditor` remains for non-row
-  text surfaces such as the Bio prompt card.
+  error/actions below the row. This was superseded by 2.5.49 for long text,
+  which uses the same row contract with a multiline body editor.
 
 ### 2.5.33
 
@@ -514,8 +576,8 @@ feature section here only when auditing that feature's widget surface.
 
 ### 2.4.7
 
-- `ProfilePromptCard` now uses the same label/value typography hierarchy as
-  the rest of Edit Profile instead of oversized prompt-card title text.
+- The old signed-in profile prompt card used the same label/value typography
+  hierarchy as Edit Profile before being retired from the edit flow in 2.5.49.
 
 ### 2.4.6
 
@@ -860,6 +922,7 @@ Generated 2026-05-06.
 |---|---|---|
 | `CatchTextField` | `lib/core/widgets/catch_text_field.dart:12` | Canonical text input. Wraps `FormField<String>` + `TextField` in a token-driven shell with label, helper/error copy, prefix/suffix icons, clear button, stable single-line control heights, initial-value syncing, and theming via `CatchTextFieldSize`, `CatchTextFieldShape`, and `CatchTextFieldTone` enums. |
 | `CatchButton` | `lib/core/widgets/catch_button.dart:13` | Canonical button. Supports `primary`, `secondary`, `ghost`, `danger`, and `light` variants; `sm`, `md`, `lg` sizes; loading state with animated dots; hover/press feedback; optional leading icons; and `isInteractive: false` for button-looking labels inside an already tappable parent. Use `light` for solid-white pill CTAs so foreground/background colors stay paired across light and dark themes. |
+| `CatchSelectMenu<T>` | `lib/core/widgets/catch_select_menu.dart:9` | Token-driven menu-anchor select primitive. Supports compact/md heights, rounded or pill triggers, optional prefix icons, disabled/error states, and a separately rounded popup panel so pill triggers do not clip opened menu rows. |
 | `CatchDropdownField<T>` | `lib/core/widgets/catch_dropdown_field.dart:8` | Token-driven single-select dropdown for `Labelled` enum-like values. Wraps `FormField<T>` + `DropdownButton<T>` with focus-ring styling and label decoration. |
 
 ### StatelessWidget
@@ -873,7 +936,7 @@ Generated 2026-05-06.
 | `CatchRangeSlider` | `lib/core/widgets/catch_range_slider.dart:7` | Canonical range slider. Wraps `RangeSlider` in the shared tickless slider theme so age/pace sliders keep discrete values without rendering dashed tick marks. Supports optional min/max endpoint labels for fixed slider bounds. |
 | `CatchTopBar` | `lib/core/widgets/catch_top_bar.dart:11` | Canonical top-bar. Renders a surface-fill bar with an optional back button (auto-detected from `Navigator.canPop`), title, leading widget, and action slots. Also supports a `bottom` `PreferredSizeWidget` (e.g., `TabBar`). Implements `PreferredSizeWidget` for use as an `AppBar`. |
 | `CatchTopBarTabBar` | `lib/core/widgets/catch_top_bar.dart:132` | Catch-styled `TabBar` for use inside `CatchTopBar.bottom` or sticky sliver headers. Uses `primary` indicator color and `labelL` text styles, implements `PreferredSizeWidget`, and accepts an optional explicit `TabController` for sliver-native tab rows that are not inside a `DefaultTabController`. |
-| `CatchSliverHeader` | `lib/core/widgets/catch_top_bar.dart:290` | Shared sliver header primitive. Builds a scroll-away title and optional pinned bottom row; the title translates upward as it collapses so sticky search/filter/tab rows do not visually cover it. Used by Run Clubs, Chats, and Profile. |
+| `CatchSliverHeader` | `lib/core/widgets/catch_top_bar.dart:290` | Shared sliver header primitive. Builds a scroll-away title and optional pinned bottom row; the title translates upward as it collapses so sticky search/filter/tab rows do not visually cover it. Use `twoLineTitleHeight` for short title/subtitle headers, `wrappedTitleHeight` only when long titles need the extra space, and the shared search-row spacing constants before adding feature-local search/list gap math. Used by Run Clubs, Chats, and Profile. |
 | `CatchTopBarMenuAction<T>` | `lib/core/widgets/catch_top_bar.dart:156` | Overflow menu action for `CatchTopBar`. Renders a `PopupMenuButton<T>` wrapped in an `IconBtn`. |
 | `CatchTopBarIconAction` | `lib/core/widgets/catch_top_bar.dart:189` | Icon-only action button for `CatchTopBar` actions. Renders a tooltip-wrapped `IconBtn`. |
 | `CatchTopBarTextAction` | `lib/core/widgets/catch_top_bar.dart:222` | Text action button for `CatchTopBar` (e.g., "Save", "Done"). Delegates to `CatchTextButton` so top-bar text actions share the same token-driven text-action primitive as dialogs and inline retry links. |
@@ -948,8 +1011,8 @@ Generated 2026-05-06.
 | `ActivitySliverBody` | `lib/dashboard/presentation/widgets/activity_section.dart:19` | Sliver adapter for the Home Activity tab. Applies the tab body inset and renders `ActivitySection` as the tab-owned notifications/update timeline. |
 | `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:53` | Timeline-style activity feed for backend-owned match, message, club-update, run-signup, waitlist-promotion, run-update, run-cancellation, and run-reminder notification items plus local derived reminders only until the backend reminder exists. Uses a branded inline error state with retry and delegates "Mark all read" to `ActivityController`. |
 | `CatchesCallout` | `lib/dashboard/presentation/widgets/catches_callout.dart:11` | Dashboard card promoting the active catch window — shows the run name, remaining time, roster count, and a "Start catching" CTA. |
-| `UpcomingRunsHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:10` | Horizontal pager for all booked upcoming runs, rendered soonest-first. Delegates tap behavior to the route owner so Home can open a dashboard-owned run detail route and preserve back navigation to Home. |
-| `NextRunHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:95` | Hero card for one booked upcoming run with location, time, projected confirmed-runner count, and optional run-position pill. The runner hype row uses shared `RunHypeAvatarStack` so tiny circles use blurred profile thumbnails when available and deterministic obscured placeholders otherwise; never feed this row full-size profile photos. |
+| `UpcomingRunsHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:10` | Horizontal pager for all booked upcoming runs, rendered soonest-first. Delegates tap behavior to the route owner so Home can open a dashboard-owned run detail route and preserve back navigation to Home. Its page affordance is a fixed-width progress rail, not one dot per run, so it remains bounded for unbounded upcoming-run counts. |
+| `NextRunHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:133` | Hero card for one booked upcoming run with location, time, projected confirmed-runner count, and optional run-position pill. The runner hype row uses shared `RunHypeAvatarStack` so tiny circles use blurred profile thumbnails when available and deterministic obscured placeholders otherwise; never feed this row full-size profile photos. |
 | `Recommendations` | `lib/dashboard/presentation/widgets/recommendations.dart:7` | Horizontal rail of `RecommendCard` widgets for recommended runs. |
 | `RecommendCard` | `lib/dashboard/presentation/widgets/recommend_card.dart:11` | Compact recommended-run card with club name, location, date, and price. |
 | `StrideCard` | `lib/dashboard/presentation/widgets/stride_card.dart:8` | Dashboard card showing stride (weekly run count) stats with bar columns and a "Keep it up" message. |
@@ -1044,7 +1107,7 @@ Generated 2026-05-06.
 | `ChatsListScreen` | `lib/matches/presentation/matches_list_screen.dart:11` | "Chats" tab. Gates screen-owned streams while the retained tab branch is inactive, then renders the chat conversations list with a sliver header whose badge reports unique matches/people, not live active users. |
 | `ChatsList` | `lib/matches/presentation/widgets/chats_list.dart:13` | Sliver body for chat conversations fed from `ChatsListViewModel`. Uses a padded skeleton loading sliver, empty/error states, and delegates populated data to `ChatsListBody`. |
 | `MatchCelebrationDialog` | `lib/matches/presentation/widgets/match_celebration_dialog.dart:41` | Compatibility-named full-screen match celebration route. Uses `CatchCelebrationScreen` with match haptics, then routes the primary action into `ChatScreen` or dismisses back to swiping. |
-| `ChatListTile` | `lib/matches/presentation/chat_list_tile.dart:9` | Single conversation row in the inbox. Receives a `ChatThreadPreview`, renders one full-width `CatchSurface` row with `PersonAvatar`, latest preview text, timestamp, and aggregated unread badge, then routes to `ChatScreen`. |
+| `ChatListTile` | `lib/matches/presentation/chat_list_tile.dart:9` | Single conversation row in the inbox. Receives a `ChatThreadPreview`, renders one full-width `CatchSurface` row with `PersonAvatar`, latest preview text, timestamp, and row-level unread treatment: warm tint, primary border/accent, avatar ring, stronger text, and a visible unread-count pill near the timestamp. Routes to `ChatScreen`. |
 | `ChatNewMatchesRail` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:10` | Horizontal rail of no-message `ChatThreadPreview` matches at the top of the chats list. |
 | `_NewMatchAvatar` | `lib/matches/presentation/widgets/chat_new_matches_rail.dart:31` | Single new-match avatar in the rail — circular photo with name. |
 | `ChatSearchField` | `lib/matches/presentation/widgets/chat_search_field.dart:6` | Search text field for filtering chats list. |
@@ -1121,20 +1184,18 @@ Generated 2026-05-06.
 | `PreviewTab` | `lib/user_profile/presentation/widgets/preview_tab.dart:5` | Preview tab showing how the user's profile looks to others by rendering the shared swipe `ProfileCard`, with owner-provided scroll and leading-overscroll callbacks when mounted inside ProfileScreen. |
 | `ProfileInfoSection` | `lib/user_profile/presentation/widgets/profile_info_section.dart:24` | Grouped section of `ProfileInfoTile` rows with a section header. |
 | `ProfileInfoTile` | `lib/user_profile/presentation/widgets/profile_info_tile.dart:6` | Single profile info row with icon, label, value or in-row value editor, and animated expanded chevron. Row-owned edits expand inline rather than opening a field sheet; expanded editor values get a little more vertical breathing room than closed text values. |
-| `ProfilePromptCard` | `lib/user_profile/presentation/widgets/profile_prompt_card.dart:6` | Editable profile prompt card used by the signed-in profile bio section. Keeps its text hierarchy aligned with profile info rows: subdued body label plus body value/placeholder text. |
 | `_ProfileUnavailableBody` | `lib/user_profile/presentation/profile_screen.dart:103` | Missing-profile state. Prevents the profile route from rendering a blank body when the signed-in user profile is unavailable. |
 | `_PreviewTabSliverBody` | `lib/user_profile/presentation/profile_screen.dart:120` | Sliver-native preview body. Gives the shared `ProfileCard` bounded remaining viewport height inside the profile route's preview tab scroll view, passes a dedicated card scroll controller, applies `profileTabBodyPadding` inside the filled child so the card inset persists when the card scrolls back to top, and bridges card leading overscroll to the outer Profile header. |
 | `_ProfileTitle` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:25` | Scroll-away Profile title row with one Settings action. Account actions live inside Settings, not in a second header overflow menu. |
 | `_ProfileTabBar` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:55` | Pinned Edit/Preview tab bar surface for the sliver-native profile route. The route-level `SafeArea` keeps it below device cutouts without adding an expanded-header gap. |
 | `_SettingsButton` | `lib/user_profile/presentation/widgets/profile_sliver_header.dart:82` | Settings gear button in the scroll-away profile title header. |
-| `ProfileInlineEditableText` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:105` | Row-value editable text primitive built on `EditableText`. Preserves the closed row value style/position and signals focus with cursor, selection, and a text-width underline instead of a boxed field. |
+| `ProfileInlineEditableText` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:105` | Row-value editable text primitive built on `EditableText`. Preserves the closed row value style/position, supports multiline row-owned editing for Bio, and signals focus with cursor, selection, and a text-width underline instead of a boxed field. |
 
 ### StatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `ProfileInlineTextEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:221` | Standalone inline text editor used by the Bio prompt card. Owns local text field state, saves through `ProfileEditController`, and uses the shared inline editor panel for errors/actions. |
-| `ProfileInlineTextEntryEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:328` | Row-owned text editor that turns the `ProfileInfoTile` value into `ProfileInlineEditableText` and keeps validation plus trailing `Cancel`/`Done` actions in the shared inline panel. |
+| `ProfileInlineTextEntryEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:221` | Row-owned text editor that turns `ProfileInfoTile` values into `ProfileInlineEditableText`, including multiline Bio editing in the row value slot, and keeps validation plus trailing `Cancel`/`Done` actions in the shared inline panel. |
 | `ProfileInlineHeightEditor` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:473` | Inline bounded height editor using `CatchNumberStepper` and the shared inline editor panel. |
 | `ProfileInlineSingleChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:533` | Row-owned nullable single-choice editor. Selected value renders in the row slot, available alternatives render below, and `Cancel`/`Done` owns commit/discard. |
 | `ProfileInlineMultiChoiceEntryEditor<T>` | `lib/user_profile/presentation/widgets/profile_inline_editors.dart:656` | Row-owned multi-choice editor. Selected chips stay in the row slot with check icons, available alternatives render below, and optional fields allow deselecting row chips. |
@@ -1323,7 +1384,7 @@ Generated 2026-05-06.
 | `RunDetailsStep` | `lib/runs/presentation/widgets/run_details_step.dart:9` | "Details" form step — distance, pace, price, capacity, and vibe tags. |
 | `EligibilityStep` | `lib/runs/presentation/widgets/eligibility_step.dart:9` | "Eligibility" form step — gender, age, and experience requirements. |
 | `StepProgressBar` | `lib/runs/presentation/widgets/step_progress_bar.dart:4` | Horizontal step indicator showing current step out of total. |
-| `StepperFooter` | `lib/runs/presentation/widgets/stepper_footer.dart:5` | Footer with Back/Next buttons for the create-run stepper. |
+| `StepperFooter` | `lib/runs/presentation/widgets/stepper_footer.dart:5` | Create-run bottom action footer. Blends into the page background with no top divider, renders draft as a ghost action, and gives the primary action a full-width lane so labels such as `Schedule run` scale within the available width instead of overflowing. |
 | `WhenWhereCard` | `lib/runs/presentation/widgets/when_where_card.dart:8` | Card showing when/where info. The location row is tappable and shows a chevron only when both exact coordinates and an `onLocationTap` callback are present; address-only runs render static text. |
 | `RunStatsGrid` | `lib/runs/presentation/widgets/run_stats_grid.dart:8` | Grid of stat cells (distance, pace, elevation, etc.) for run detail. |
 | `RunStatCell` | `lib/runs/presentation/widgets/run_stats_grid.dart:39` | Single stat cell with value + label. |

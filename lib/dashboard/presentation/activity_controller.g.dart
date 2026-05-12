@@ -54,7 +54,7 @@ final class ActivityControllerProvider
 }
 
 String _$activityControllerHash() =>
-    r'd382c00a43cc179cf2408d5bd3dede04e6b3e578';
+    r'60191f0796ce4fc6fc7f92f838bb195781c17702';
 
 /// **Pattern A: Action controller + static Mutations**
 ///

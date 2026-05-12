@@ -33,9 +33,12 @@ abstract class RunClubDetailViewModel with _$RunClubDetailViewModel {
 /// **Pattern D: View-model provider**
 ///
 /// Watches the club, runs, reviews, user profile, and auth streams and
-/// combines them into a single [RunClubDetailViewModel]. Each input is
-/// individually checked so the combined result is [AsyncError] if any input
-/// fails or [AsyncLoading] if any input is still loading.
+/// combines them into a single [RunClubDetailViewModel].
+///
+/// Club, runs, and auth identity are blocking because they control the main
+/// route and schedule. Reviews, profile, and membership state are secondary;
+/// they hydrate the detail screen when available without hiding newly-created
+/// runs behind the route's placeholder body.
 @riverpod
 AsyncValue<RunClubDetailViewModel?> runClubDetailViewModel(
   Ref ref,
@@ -73,20 +76,11 @@ AsyncValue<RunClubDetailViewModel?> buildRunClubDetailViewModel({
   final uid = uidAsync.asData?.value;
   final isAuthenticated = uid != null;
 
-  // Always block on core data needed for all users.
+  // Always block on core data needed for the route and schedule.
   if (clubAsync.isLoading || runsAsync.isLoading || uidAsync.isLoading) {
     return const AsyncLoading();
   }
-  // For authenticated users, also block on reviews + user profile.
-  if (isAuthenticated) {
-    if (reviewsAsync.isLoading ||
-        userProfileAsync.isLoading ||
-        membershipAsync.isLoading) {
-      return const AsyncLoading();
-    }
-  }
 
-  // Club, runs, and uid errors are always fatal.
   if (clubAsync.hasError) {
     return AsyncError(
       clubAsync.error!,
@@ -104,28 +98,6 @@ AsyncValue<RunClubDetailViewModel?> buildRunClubDetailViewModel({
       uidAsync.error!,
       uidAsync.stackTrace ?? StackTrace.current,
     );
-  }
-
-  // Reviews and userProfile errors only fatal for authenticated users.
-  if (isAuthenticated) {
-    if (reviewsAsync.hasError) {
-      return AsyncError(
-        reviewsAsync.error!,
-        reviewsAsync.stackTrace ?? StackTrace.current,
-      );
-    }
-    if (userProfileAsync.hasError) {
-      return AsyncError(
-        userProfileAsync.error!,
-        userProfileAsync.stackTrace ?? StackTrace.current,
-      );
-    }
-    if (membershipAsync.hasError) {
-      return AsyncError(
-        membershipAsync.error!,
-        membershipAsync.stackTrace ?? StackTrace.current,
-      );
-    }
   }
 
   final runClub = clubAsync.asData?.value;

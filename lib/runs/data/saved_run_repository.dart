@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/runs/domain/saved_run.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -30,35 +31,55 @@ class SavedRunRepository {
   }) => _db.collection(_collectionPath).doc(savedRunId(uid: uid, runId: runId));
 
   Stream<List<SavedRun>> watchSavedRunsForUser({required String uid}) =>
-      _savedRunsRef
-          .where('uid', isEqualTo: uid)
-          .snapshots()
-          .map((snap) => snap.docs.map((doc) => doc.data()).toList());
+      withBackendErrorStream(
+        () => _savedRunsRef
+            .where('uid', isEqualTo: uid)
+            .snapshots()
+            .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch saved runs',
+          resource: _collectionPath,
+        ),
+      );
 
   Stream<SavedRun?> watchSavedRun({
     required String uid,
     required String runId,
-  }) => _savedRunsRef
-      .doc(savedRunId(uid: uid, runId: runId))
-      .snapshots()
-      .map((snap) => snap.data());
+  }) => withBackendErrorStream(
+    () => _savedRunsRef
+        .doc(savedRunId(uid: uid, runId: runId))
+        .snapshots()
+        .map((snap) => snap.data()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch saved run',
+      resource: _collectionPath,
+    ),
+  );
 
   Future<void> saveRun({required String uid, required String runId}) =>
-      withFirestoreErrorContext(
+      withBackendErrorContext(
         () => _rawSavedRunRef(uid: uid, runId: runId).set({
           'uid': uid,
           'runId': runId,
           'savedAt': FieldValue.serverTimestamp(),
         }),
-        collection: _collectionPath,
-        action: 'save run',
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'save run',
+          resource: _collectionPath,
+        ),
       );
 
   Future<void> unsaveRun({required String uid, required String runId}) =>
-      withFirestoreErrorContext(
+      withBackendErrorContext(
         () => _rawSavedRunRef(uid: uid, runId: runId).delete(),
-        collection: _collectionPath,
-        action: 'unsave run',
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'unsave run',
+          resource: _collectionPath,
+        ),
       );
 }
 

@@ -19,6 +19,8 @@ export {
   placesAutocomplete,
 } from "./places/placeAutocomplete";
 export {createRunClub} from "./runClubs/createRunClub";
+export {syncRunClubMemberStats} from "./runClubs/syncRunClubMemberStats";
+export {syncRunClubNextRun} from "./runClubs/syncRunClubNextRun";
 export {
   joinRunClub,
   leaveRunClub,

@@ -1,8 +1,9 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -30,32 +31,70 @@ class RunClubsRepository {
 
   // ── Read ───────────────────────────────────────────────────────────────────
 
-  Stream<RunClub?> watchRunClub(String id) =>
-      _runClubRef(id).snapshots().map((doc) => doc.exists ? doc.data() : null);
+  Stream<RunClub?> watchRunClub(String id) => withBackendErrorStream(
+    () => _runClubRef(
+      id,
+    ).snapshots().map((doc) => doc.exists ? doc.data() : null),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch club',
+      resource: _collectionPath,
+    ),
+  );
 
-  Future<RunClub?> fetchRunClub(String id) async {
-    final doc = await _runClubRef(id).get();
-    return doc.exists ? doc.data() : null;
-  }
+  Future<RunClub?> fetchRunClub(String id) => withBackendErrorContext(
+    () async {
+      final doc = await _runClubRef(id).get();
+      return doc.exists ? doc.data() : null;
+    },
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'fetch club',
+      resource: _collectionPath,
+    ),
+  );
 
-  Stream<List<RunClub>> watchRunClubsByLocation(String location) => _runClubsRef
-      .where('location', isEqualTo: location)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<RunClub>> watchRunClubsByLocation(String location) =>
+      withBackendErrorStream(
+        () => _runClubsRef
+            .where('location', isEqualTo: location)
+            .orderBy('createdAt', descending: true)
+            .snapshots()
+            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch clubs by location',
+          resource: _collectionPath,
+        ),
+      );
 
   Stream<List<RunClub>> watchRunClubsByLocationSortedByRating(
     String location,
-  ) => _runClubsRef
-      .where('location', isEqualTo: location)
-      .orderBy('rating', descending: true)
-      .snapshots()
-      .map((snap) => snap.docs.map((d) => d.data()).toList());
+  ) => withBackendErrorStream(
+    () => _runClubsRef
+        .where('location', isEqualTo: location)
+        .orderBy('rating', descending: true)
+        .snapshots()
+        .map((snap) => snap.docs.map((d) => d.data()).toList()),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch clubs by rating',
+      resource: _collectionPath,
+    ),
+  );
 
-  Stream<List<RunClub>> watchRunClubsHostedBy(String uid) => _runClubsRef
-      .where('hostUserId', isEqualTo: uid)
-      .snapshots()
-      .map((snap) => snap.docs.map((d) => d.data()).toList());
+  Stream<List<RunClub>> watchRunClubsHostedBy(String uid) =>
+      withBackendErrorStream(
+        () => _runClubsRef
+            .where('hostUserId', isEqualTo: uid)
+            .snapshots()
+            .map((snap) => snap.docs.map((d) => d.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch hosted clubs',
+          resource: _collectionPath,
+        ),
+      );
 
   // ── Write ──────────────────────────────────────────────────────────────────
 
@@ -71,7 +110,7 @@ class RunClubsRepository {
     String? instagramHandle,
     String? phoneNumber,
     String? email,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () async {
       final data = <String, dynamic>{
         'name': name,
@@ -91,8 +130,11 @@ class RunClubsRepository {
           .call<Map<String, dynamic>>(data);
       return result.data['clubId'] as String;
     },
-    collection: _collectionPath,
-    action: 'create club',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create club',
+      resource: _collectionPath,
+    ),
   );
 
   /// Updates only the fields present in [fields] via the `updateRunClub`
@@ -100,13 +142,16 @@ class RunClubsRepository {
   Future<void> updateRunClub({
     required String clubId,
     required Map<String, dynamic> fields,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () => _functions.httpsCallable('updateRunClub').call({
       'clubId': clubId,
       'fields': fields,
     }),
-    collection: _collectionPath,
-    action: 'update club',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'update club',
+      resource: _collectionPath,
+    ),
   );
 
   // ── Members ────────────────────────────────────────────────────────────────
@@ -116,30 +161,39 @@ class RunClubsRepository {
   /// Membership touches both `runClubs/{clubId}` and `users/{uid}`, so the
   /// server owns this mutation and Firestore rules can keep membership fields
   /// read-only to direct client writes.
-  Future<void> joinClub(String clubId) => withFirestoreErrorContext(
+  Future<void> joinClub(String clubId) => withBackendErrorContext(
     () => _functions.httpsCallable('joinRunClub').call({'clubId': clubId}),
-    collection: _collectionPath,
-    action: 'join',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'join club',
+      resource: _collectionPath,
+    ),
   );
 
   /// Removes the signed-in user from [clubId] via the `leaveRunClub` callable.
-  Future<void> leaveClub(String clubId) => withFirestoreErrorContext(
+  Future<void> leaveClub(String clubId) => withBackendErrorContext(
     () => _functions.httpsCallable('leaveRunClub').call({'clubId': clubId}),
-    collection: _collectionPath,
-    action: 'leave',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'leave club',
+      resource: _collectionPath,
+    ),
   );
 
   /// Updates the signed-in user's per-club push notification opt-in.
   Future<void> setClubPushNotifications({
     required String clubId,
     required bool enabled,
-  }) => withFirestoreErrorContext(
+  }) => withBackendErrorContext(
     () => _functions.httpsCallable('setRunClubNotificationPreference').call({
       'clubId': clubId,
       'enabled': enabled,
     }),
-    collection: _collectionPath,
-    action: 'update club notifications',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'update club notifications',
+      resource: _collectionPath,
+    ),
   );
 }
 

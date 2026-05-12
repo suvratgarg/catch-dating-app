@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -59,7 +61,14 @@ class FcmService {
     }
 
     _initializedUid = uid;
-    final initialization = _initialize(uid: uid, router: router);
+    final initialization = withBackendErrorContext(
+      () => _initialize(uid: uid, router: router),
+      context: const BackendErrorContext(
+        service: BackendService.messaging,
+        action: 'initialize push notifications',
+        resource: 'push_notifications',
+      ),
+    );
     _initialization = initialization;
 
     try {
@@ -150,7 +159,17 @@ class FcmService {
     try {
       await _db.collection('users').doc(uid).update({'fcmToken': token});
     } catch (e, st) {
-      _errorLogger.logError(e, st, reason: 'FcmService._saveToken');
+      _errorLogger.logAppException(
+        normalizeBackendError(
+          e,
+          stackTrace: st,
+          context: const BackendErrorContext(
+            service: BackendService.firestore,
+            action: 'save push token',
+            resource: 'users',
+          ),
+        ),
+      );
     }
   }
 }

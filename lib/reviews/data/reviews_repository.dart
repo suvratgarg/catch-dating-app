@@ -1,6 +1,7 @@
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
-import 'package:catch_dating_app/core/firestore_error_util.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -27,32 +28,63 @@ class ReviewsRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Stream<List<Review>> watchReviewsForClub(String runClubId) => _reviewsRef
-      .where('runClubId', isEqualTo: runClubId)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((s) => s.docs.map((d) => d.data()).toList());
+  Stream<List<Review>> watchReviewsForClub(String runClubId) =>
+      withBackendErrorStream(
+        () => _reviewsRef
+            .where('runClubId', isEqualTo: runClubId)
+            .orderBy('createdAt', descending: true)
+            .snapshots()
+            .map((s) => s.docs.map((d) => d.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch club reviews',
+          resource: _collectionPath,
+        ),
+      );
 
-  Stream<List<Review>> watchReviewsForRun(String runId) => _reviewsRef
-      .where('runId', isEqualTo: runId)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((s) => s.docs.map((d) => d.data()).toList());
+  Stream<List<Review>> watchReviewsForRun(String runId) =>
+      withBackendErrorStream(
+        () => _reviewsRef
+            .where('runId', isEqualTo: runId)
+            .orderBy('createdAt', descending: true)
+            .snapshots()
+            .map((s) => s.docs.map((d) => d.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch run reviews',
+          resource: _collectionPath,
+        ),
+      );
 
-  Stream<List<Review>> watchReviewsByUser(String reviewerUserId) => _reviewsRef
-      .where('reviewerUserId', isEqualTo: reviewerUserId)
-      .orderBy('createdAt', descending: true)
-      .snapshots()
-      .map((s) => s.docs.map((d) => d.data()).toList());
+  Stream<List<Review>> watchReviewsByUser(String reviewerUserId) =>
+      withBackendErrorStream(
+        () => _reviewsRef
+            .where('reviewerUserId', isEqualTo: reviewerUserId)
+            .orderBy('createdAt', descending: true)
+            .snapshots()
+            .map((s) => s.docs.map((d) => d.data()).toList()),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch user reviews',
+          resource: _collectionPath,
+        ),
+      );
 
   /// Watches the review this user wrote for a specific run (null if none).
   Stream<Review?> watchUserReviewForRun({
     required String runId,
     required String reviewerUserId,
-  }) => _reviewRefForRunUser(
-    runId: runId,
-    reviewerUserId: reviewerUserId,
-  ).snapshots().map((s) => s.exists ? s.data() : null);
+  }) => withBackendErrorStream(
+    () => _reviewRefForRunUser(
+      runId: runId,
+      reviewerUserId: reviewerUserId,
+    ).snapshots().map((s) => s.exists ? s.data() : null),
+    context: const BackendErrorContext(
+      service: BackendService.firestore,
+      action: 'watch user run review',
+      resource: _collectionPath,
+    ),
+  );
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
@@ -66,34 +98,43 @@ class ReviewsRepository {
       );
     }
 
-    return withFirestoreErrorContext(
+    return withBackendErrorContext(
       () => _functions.httpsCallable('createRunReview').call({
         'runClubId': review.runClubId,
         'runId': runId,
         'rating': review.rating,
         'comment': review.comment,
       }),
-      collection: _collectionPath,
-      action: 'add review',
+      context: const BackendErrorContext(
+        service: BackendService.functions,
+        action: 'add review',
+        resource: _collectionPath,
+      ),
     );
   }
 
-  Future<void> updateReview(Review review) => withFirestoreErrorContext(
+  Future<void> updateReview(Review review) => withBackendErrorContext(
     () => _functions.httpsCallable('updateRunReview').call({
       'reviewId': review.id,
       'rating': review.rating,
       'comment': review.comment,
     }),
-    collection: _collectionPath,
-    action: 'update review',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'update review',
+      resource: _collectionPath,
+    ),
   );
 
-  Future<void> deleteReview(String reviewId) => withFirestoreErrorContext(
+  Future<void> deleteReview(String reviewId) => withBackendErrorContext(
     () => _functions.httpsCallable('deleteRunReview').call({
       'reviewId': reviewId,
     }),
-    collection: _collectionPath,
-    action: 'delete review',
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'delete review',
+      resource: _collectionPath,
+    ),
   );
 
   DocumentReference<Review> _reviewRefForRunUser({

@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_contract_tracker
-version: 2.2.18
-updated: 2026-05-08
+version: 2.3.1
+updated: 2026-05-12
 owner: recursive_audit_loop
 status: active
 ---
@@ -128,6 +128,29 @@ Firestore rules drift, callable validation drift, live data migrations, or
 operation ownership drift.
 
 ## Recent Contract Notes
+
+### 2026-05-12: Edge-Owned Run-Club Projection Slice
+
+- Added `syncRunClubMemberStats`, a Firestore trigger on
+  `runClubMemberships/{membershipId}` writes. It recomputes
+  `runClubs/{clubId}.memberCount` from active membership edge documents so
+  duplicate trigger delivery and stale callable-era parent projections are
+  corrected from the source of truth.
+- Added `syncRunClubNextRun`, a Firestore trigger on `runs/{runId}` writes.
+  It recomputes `runClubs/{clubId}.nextRunAt` and `nextRunLabel` from active
+  future runs. `createRun`, `updateRun`, `cancelRun`, and `deleteRun` also
+  refresh this projection after their transaction commits so manual UI flows do
+  not wait on eventual trigger delivery.
+- `createRunClub` now initializes lifecycle fields (`status`, `archived`,
+  `archivedAt`, `archiveReason`) so newly created clubs match the generated
+  Dart/Functions schema contract.
+- Updated `firestore.indexes.json` with the run projection query index:
+  `runs(runClubId ASC, status ASC, startTime ASC)`.
+- Decision retained: membership, booking, waitlist, attendance, payments,
+  reviews, run lifecycle, and club lifecycle remain callable-owned because
+  they enforce multi-document product invariants. Direct client edge writes are
+  still reserved for narrow owner-scoped actions such as swipes, saved runs,
+  and chat messages.
 
 ### 2026-05-08: Chat Thread Preview And Match Run History Slice
 

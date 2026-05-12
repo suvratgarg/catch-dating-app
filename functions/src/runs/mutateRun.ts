@@ -25,6 +25,8 @@ import {
   releaseUserRunScheduleInTransaction,
   replaceRunClubScheduleInTransaction,
 } from "./scheduleConflicts";
+import {refreshRunClubNextRun as defaultRefreshRunClubNextRun} from
+  "../runClubs/syncRunClubNextRun";
 
 const PaceSchema = z.enum(["easy", "moderate", "fast", "competitive"]);
 const nullableString = z.string().trim().max(1000).nullable().optional();
@@ -100,6 +102,13 @@ interface RunMutationDeps {
     uid: string,
     action: string
   ) => Promise<void>;
+  refreshRunClubNextRun?: (
+    runClubId: string,
+    deps?: {
+      firestore: () => FirebaseFirestore.Firestore;
+      nowTimestamp: () => FirebaseFirestore.Timestamp;
+    }
+  ) => Promise<void>;
 }
 
 type ParsedRunConstraints = {
@@ -133,6 +142,7 @@ const defaultDeps: RunMutationDeps = {
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
+  refreshRunClubNextRun: defaultRefreshRunClubNextRun,
 };
 
 /**
@@ -197,6 +207,10 @@ export async function createRunHandler(
   });
 
   if (createdRun) {
+    await deps.refreshRunClubNextRun?.(data.runClubId, {
+      firestore: deps.firestore,
+      nowTimestamp: () => admin.firestore.Timestamp.now(),
+    });
     await notifyClubMembersForNewRun({
       db,
       deps,
@@ -229,6 +243,7 @@ export async function updateRunHandler(
   const runRef = db.collection("runs").doc(data.runId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   let updatedRun: RunDoc | null = null;
+  let affectedRunClubId: string | null = null;
   let shouldNotifyParticipants = false;
 
   await db.runTransaction(async (tx) => {
@@ -279,6 +294,7 @@ export async function updateRunHandler(
     }
     tx.update(runRef, patch);
     updatedRun = {...run, ...patch};
+    affectedRunClubId = run.runClubId;
     shouldNotifyParticipants = hasScheduleOrLocationChange(data.fields);
   });
 
@@ -289,6 +305,12 @@ export async function updateRunHandler(
       runId: data.runId,
       run: updatedRun,
       type: "runUpdated",
+    });
+  }
+  if (affectedRunClubId) {
+    await deps.refreshRunClubNextRun?.(affectedRunClubId, {
+      firestore: deps.firestore,
+      nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
   }
 
@@ -317,6 +339,7 @@ export async function cancelRunHandler(
   const runRef = db.collection("runs").doc(data.runId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
   let cancelledRun: RunDoc | null = null;
+  let affectedRunClubId: string | null = null;
   let shouldNotifyParticipants = false;
 
   await db.runTransaction(async (tx) => {
@@ -342,6 +365,7 @@ export async function cancelRunHandler(
 
     if (run.status === "cancelled") {
       cancelledRun = run;
+      affectedRunClubId = run.runClubId;
       return;
     }
 
@@ -372,6 +396,7 @@ export async function cancelRunHandler(
       cancelledAt: run.cancelledAt,
       cancellationReason: data.reason ?? null,
     };
+    affectedRunClubId = run.runClubId;
     shouldNotifyParticipants = true;
   });
 
@@ -382,6 +407,12 @@ export async function cancelRunHandler(
       runId: data.runId,
       run: cancelledRun,
       type: "runCancelled",
+    });
+  }
+  if (affectedRunClubId) {
+    await deps.refreshRunClubNextRun?.(affectedRunClubId, {
+      firestore: deps.firestore,
+      nowTimestamp: () => admin.firestore.Timestamp.now(),
     });
   }
 
@@ -408,6 +439,7 @@ export async function deleteRunHandler(
 
   const runRef = db.collection("runs").doc(data.runId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
+  let deletedRunClubId: string | null = null;
 
   await db.runTransaction(async (tx) => {
     const runSnap = await tx.get(runRef);
@@ -450,6 +482,7 @@ export async function deleteRunHandler(
     }
 
     tx.delete(runRef);
+    deletedRunClubId = run.runClubId;
     releaseRunClubScheduleInTransaction(tx, db, {
       runClubId: run.runClubId,
       runId: data.runId,
@@ -457,6 +490,13 @@ export async function deleteRunHandler(
       endTimeMillis: run.endTime.toMillis(),
     });
   });
+
+  if (deletedRunClubId) {
+    await deps.refreshRunClubNextRun?.(deletedRunClubId, {
+      firestore: deps.firestore,
+      nowTimestamp: () => admin.firestore.Timestamp.now(),
+    });
+  }
 
   return {deleted: true};
 }

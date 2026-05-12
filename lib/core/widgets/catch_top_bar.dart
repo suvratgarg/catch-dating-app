@@ -299,6 +299,8 @@ class CatchSliverHeader {
   /// Pinned search header height for one compact search field plus the
   /// vertical padding used by simple search-only headers.
   static const double compactSearchBottomHeight = 68;
+  static const double searchControlTopPadding = CatchSpacing.s2;
+  static const double contentAfterSearchGap = CatchSpacing.s3;
 
   final Widget title;
   final Widget? bottom;

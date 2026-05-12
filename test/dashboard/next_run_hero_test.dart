@@ -112,6 +112,69 @@ void main() {
     await tester.tap(find.text('Monday Evening Run'));
     expect(tappedRun?.id, 'second');
   });
+
+  testWidgets('UpcomingRunsHero uses bounded progress for many booked runs', (
+    tester,
+  ) async {
+    final runs = [
+      for (var i = 0; i < 36; i++)
+        _run(id: 'run-$i', start: DateTime(2026, 5, 13 + i, 18)),
+    ];
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          for (final run in runs)
+            runHypeAvatarsProvider(
+              RunHypeAvatarQuery(
+                runId: run.id,
+                viewerInterestedInGenders: const [Gender.woman],
+              ),
+            ).overrideWith(
+              (ref) async => [
+                PersonAvatarItem(
+                  name: run.id,
+                  imageUrl: 'https://thumb.test/${run.id}.jpg',
+                ),
+              ],
+            ),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.dark,
+          home: Scaffold(
+            body: Center(
+              child: SizedBox(
+                width: 390,
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: UpcomingRunsHero(
+                    runs: runs,
+                    viewerInterestedInGenders: const [Gender.woman],
+                    onRunTap: (_) {},
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text('1/36'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    final progressSize = tester.getSize(
+      find.byKey(UpcomingRunsHero.progressIndicatorKey),
+    );
+    expect(progressSize.width, lessThanOrEqualTo(132));
+
+    await tester.drag(find.byType(PageView), const Offset(-500, 0));
+    await tester.pump();
+    await tester.pump(_pageSettlingFrame);
+
+    expect(find.text('2/36'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
 }
 
 Run _run({String id = 'next-run', DateTime? start}) {

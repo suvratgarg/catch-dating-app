@@ -106,9 +106,10 @@
       ]
     },
     "docs/error-handling-audit.md": {
-      "purpose": "Error handling architecture snapshot, Error 101 guide, app error catalogue, remediation map, and branded error surface guidance.",
+      "purpose": "Active backend error-management source of truth, hard-migration checklist, Error 101 guide, app error catalogue, remediation map, and branded error surface guidance.",
       "read_when": [
-        "Changing exceptions, stable error codes, error mapping, logging, or user-facing error rendering",
+        "Changing exceptions, stable error codes, backend error mapping, logging, analytics, or user-facing error rendering",
+        "Adding Firebase/Auth/Storage/Functions/Messaging/Remote Config/App Check operations",
         "Deciding whether a repeated failure deserves a new AppException subclass",
         "Replacing raw AsyncValue error branches"
       ],

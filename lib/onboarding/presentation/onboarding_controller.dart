@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
@@ -382,10 +383,16 @@ class OnboardingController extends _$OnboardingController {
           .catchError((Object error, StackTrace stack) {
             ref
                 .read(errorLoggerProvider)
-                .logError(
-                  error,
-                  stack,
-                  reason: 'OnboardingController._saveDraft',
+                .logAppException(
+                  normalizeBackendError(
+                    error,
+                    stackTrace: stack,
+                    context: const BackendErrorContext(
+                      service: BackendService.local,
+                      action: 'save onboarding draft',
+                      resource: 'onboarding_controller',
+                    ),
+                  ),
                 );
           }),
     );
@@ -402,10 +409,16 @@ class OnboardingController extends _$OnboardingController {
           .catchError((Object error, StackTrace stack) {
             ref
                 .read(errorLoggerProvider)
-                .logError(
-                  error,
-                  stack,
-                  reason: 'OnboardingController._deleteDraft',
+                .logAppException(
+                  normalizeBackendError(
+                    error,
+                    stackTrace: stack,
+                    context: const BackendErrorContext(
+                      service: BackendService.local,
+                      action: 'delete onboarding draft',
+                      resource: 'onboarding_controller',
+                    ),
+                  ),
                 );
           }),
     );

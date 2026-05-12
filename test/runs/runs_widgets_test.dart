@@ -379,6 +379,52 @@ void main() {
       expect(footerTapped, isTrue);
     });
 
+    testWidgets(
+      'stepper footer blends into page and keeps actions inside width',
+      (tester) async {
+        tester.view.physicalSize = const Size(320, 640);
+        tester.view.devicePixelRatio = 1;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+
+        await pumpRunsTestApp(
+          tester,
+          Scaffold(
+            body: const SizedBox.expand(),
+            bottomNavigationBar: StepperFooter(
+              isLastStep: true,
+              isLoading: false,
+              onNext: _noop,
+              onSaveDraft: _noop,
+              lastStepLabel: 'Schedule run',
+            ),
+          ),
+        );
+
+        expect(tester.takeException(), isNull);
+        expect(find.text('Save Draft'), findsOneWidget);
+        expect(find.text('Schedule run'), findsOneWidget);
+        expect(
+          find.descendant(
+            of: find.byType(StepperFooter),
+            matching: find.byType(Divider),
+          ),
+          findsNothing,
+        );
+        expect(
+          find.descendant(
+            of: find.byType(StepperFooter),
+            matching: find.byWidgetPredicate(
+              (widget) =>
+                  widget is ColoredBox &&
+                  widget.color == CatchTokens.sunsetLight.bg,
+            ),
+          ),
+          findsOneWidget,
+        );
+      },
+    );
+
     testWidgets('agenda list sorts runs and forwards selected-run taps', (
       tester,
     ) async {

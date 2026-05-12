@@ -122,6 +122,10 @@ void main() {
     await tester.pump();
 
     expect(tester.takeException(), isNull);
+    expect(find.text('Chats'), findsOneWidget);
+    expect(find.text('Messages from your matches'), findsOneWidget);
+    expect(find.text('Your catches'), findsNothing);
+    expect(find.text('0 chats'), findsOneWidget);
 
     await tester.enterText(find.byType(TextField), 'taylor');
     await tester.pump();
@@ -312,7 +316,7 @@ void main() {
     expect(find.text('Latest message'), findsOneWidget);
     expect(find.text('Older message'), findsNothing);
     expect(find.text('3'), findsOneWidget);
-    expect(find.text('2 matches'), findsOneWidget);
+    expect(find.text('2 chats'), findsOneWidget);
     expect(find.text('3 active'), findsNothing);
     expect(find.text('Messages'), findsNothing);
   });

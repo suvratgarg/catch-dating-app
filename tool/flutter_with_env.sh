@@ -26,9 +26,79 @@ if [[ ! -f "$define_file" ]]; then
   exit 1
 fi
 
+load_local_env_file() {
+  local env_file="$1"
+  [[ -f "$env_file" ]] || return 0
+
+  while IFS= read -r line || [[ -n "$line" ]]; do
+    line="${line%$'\r'}"
+    [[ -z "$line" || "$line" == \#* ]] && continue
+
+    if [[ "$line" == export\ * ]]; then
+      line="${line#export }"
+    fi
+
+    [[ "$line" == *=* ]] || continue
+
+    local key="${line%%=*}"
+    local value="${line#*=}"
+
+    if [[ ! "$key" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+      echo "Ignoring invalid env key '$key' in $env_file" >&2
+      continue
+    fi
+
+    if [[ "$value" == \"*\" && "$value" == *\" && ${#value} -ge 2 ]]; then
+      value="${value:1:${#value}-2}"
+    elif [[ "$value" == \'*\' && ${#value} -ge 2 ]]; then
+      value="${value:1:${#value}-2}"
+    fi
+
+    if [[ -z "${!key:-}" ]]; then
+      export "$key=$value"
+    fi
+  done <"$env_file"
+}
+
+extract_target_device() {
+  local i
+  for ((i = 0; i < ${#flutter_args[@]}; i++)); do
+    case "${flutter_args[$i]}" in
+      -d|--device-id)
+        if ((i + 1 < ${#flutter_args[@]})); then
+          echo "${flutter_args[$((i + 1))]}"
+          return 0
+        fi
+        ;;
+      --device-id=*)
+        echo "${flutter_args[$i]#--device-id=}"
+        return 0
+        ;;
+    esac
+  done
+}
+
+is_web_target() {
+  case "$1" in
+    chrome|edge|web-server) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+is_ios_target() {
+  case "$1" in
+    *iPhone*|*iPad*|ios|IOS|0000*) return 0 ;;
+    *) return 1 ;;
+  esac
+}
+
+load_local_env_file "$repo_root/.env.$environment.local"
+load_local_env_file "$repo_root/.env.local"
+
 "$repo_root/tool/use_firebase_environment.sh" "$environment" >/dev/null
 
 flutter_args=("$@")
+target_device="$(extract_target_device)"
 
 has_flavor=0
 for arg in "${flutter_args[@]}"; do
@@ -47,27 +117,9 @@ if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
       ;;
   esac
 elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" && $has_flavor -eq 0 ]]; then
-  target_device=""
-  for ((i = 0; i < ${#flutter_args[@]}; i++)); do
-    case "${flutter_args[$i]}" in
-      -d|--device-id)
-        if (( i + 1 < ${#flutter_args[@]} )); then
-          target_device="${flutter_args[$((i + 1))]}"
-        fi
-        ;;
-      --device-id=*)
-        target_device="${flutter_args[$i]#--device-id=}"
-        ;;
-    esac
-  done
-
-  case "$target_device" in
-    chrome|edge|web-server)
-      ;;
-    *)
+  if ! is_web_target "$target_device"; then
       flutter_args+=("--flavor" "$environment")
-      ;;
-  esac
+  fi
 fi
 
 maps_platform=""
@@ -81,36 +133,80 @@ if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
       ;;
   esac
 elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
-  target_device=""
-  for ((i = 0; i < ${#flutter_args[@]}; i++)); do
-    case "${flutter_args[$i]}" in
-      -d|--device-id)
-        if (( i + 1 < ${#flutter_args[@]} )); then
-          target_device="${flutter_args[$((i + 1))]}"
-        fi
+  if is_web_target "$target_device"; then
+    :
+  elif is_ios_target "$target_device"; then
+    maps_platform="ios"
+  else
+    case "$target_device" in
+      *android*|*Android*|emulator*)
+        maps_platform="android"
         ;;
-      --device-id=*)
-        target_device="${flutter_args[$i]#--device-id=}"
-        ;;
-    esac
-  done
-
-  case "$target_device" in
-    chrome|edge|web-server)
-      ;;
-    *iPhone*|*iPad*|ios|IOS)
-      maps_platform="ios"
-      ;;
-    *android*|*Android*|emulator*|*)
+      *)
       maps_platform="all"
       ;;
-  esac
+    esac
+  fi
 fi
 
 if [[ -n "$maps_platform" ]]; then
   node "$repo_root/tool/validate_google_maps_config.mjs" \
     --env "$environment" \
     --platform "$maps_platform"
+fi
+
+supports_dart_defines=0
+if [[ ${#flutter_args[@]} -ge 1 ]]; then
+  case "${flutter_args[0]}" in
+    run|test|drive)
+      supports_dart_defines=1
+      ;;
+    build)
+      supports_dart_defines=1
+      ;;
+  esac
+fi
+
+is_debug_mobile_run=0
+if [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
+  is_debug_mobile_run=1
+  for arg in "${flutter_args[@]}"; do
+    case "$arg" in
+      --profile|--release)
+        is_debug_mobile_run=0
+        ;;
+    esac
+  done
+  if is_web_target "$target_device"; then
+    is_debug_mobile_run=0
+  fi
+fi
+
+requires_debug_token=0
+if [[ $is_debug_mobile_run -eq 1 ]]; then
+  if [[ "${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER:-}" == "true" ]]; then
+    requires_debug_token=1
+  elif ! is_ios_target "$target_device"; then
+    requires_debug_token=1
+  fi
+fi
+
+if [[ $requires_debug_token -eq 1 &&
+  -z "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" &&
+  "${ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN:-}" != "1" ]]; then
+  cat >&2 <<EOF
+Missing FIREBASE_APP_CHECK_DEBUG_TOKEN for a mobile debug run.
+
+Firebase App Check enforcement rejects random debug tokens. Add a registered
+debug token to .env.local, for example:
+
+  FIREBASE_APP_CHECK_DEBUG_TOKEN=<registered-token>
+
+If you are intentionally minting a one-time token for first setup, rerun with:
+
+  ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN=1 ./tool/flutter_with_env.sh $environment ${flutter_args[*]}
+EOF
+  exit 1
 fi
 
 extra_dart_defines=()
@@ -123,6 +219,15 @@ if [[ -n "${VERBOSE_AUTH_DEBUG_LOGS:-}" ]]; then
   extra_dart_defines+=(
     "--dart-define=VERBOSE_AUTH_DEBUG_LOGS=${VERBOSE_AUTH_DEBUG_LOGS}"
   )
+fi
+if [[ -n "${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER:-}" ]]; then
+  extra_dart_defines+=(
+    "--dart-define=USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER=${USE_FIREBASE_APP_CHECK_DEBUG_PROVIDER}"
+  )
+fi
+
+if [[ $supports_dart_defines -eq 0 ]]; then
+  exec flutter "${flutter_args[@]}"
 fi
 
 if [[ ${#extra_dart_defines[@]} -gt 0 ]]; then
