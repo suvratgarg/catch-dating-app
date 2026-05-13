@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
@@ -229,85 +228,6 @@ void main() {
 
       expect(find.text('No new activity'), findsOneWidget);
     });
-
-    testWidgets('pauses dashboard streams while the Home tab is inactive', (
-      tester,
-    ) async {
-      final activeIndex = ValueNotifier<int>(1);
-      addTearDown(activeIndex.dispose);
-
-      var userListens = 0;
-      var userCancels = 0;
-      var signedUpListens = 0;
-      var signedUpCancels = 0;
-      final userController = StreamController<UserProfile?>.broadcast(
-        onListen: () => userListens += 1,
-        onCancel: () => userCancels += 1,
-      );
-      final signedUpRunsController = StreamController<List<Run>>.broadcast(
-        onListen: () => signedUpListens += 1,
-        onCancel: () => signedUpCancels += 1,
-      );
-      addTearDown(userController.close);
-      addTearDown(signedUpRunsController.close);
-
-      final user = buildUser(uid: 'runner-1');
-
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            watchUserProfileProvider.overrideWith(
-              (ref) => userController.stream,
-            ),
-            _membershipsOverride(user, const []),
-            _activityNotificationsOverride(user),
-            watchSignedUpRunsProvider(
-              user.uid,
-            ).overrideWith((ref) => signedUpRunsController.stream),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: ValueListenableBuilder<int>(
-              valueListenable: activeIndex,
-              builder: (context, index, child) {
-                return AppShellActiveTab(
-                  index: index,
-                  child: const DashboardScreen(),
-                );
-              },
-            ),
-          ),
-        ),
-      );
-      await tester.pump();
-
-      expect(userListens, 0);
-      expect(signedUpListens, 0);
-
-      activeIndex.value = 0;
-      await tester.pump();
-      userController.add(user);
-      await tester.pump();
-      signedUpRunsController.add(const []);
-      await tester.pump();
-
-      expect(userListens, 1);
-      expect(signedUpListens, 1);
-      expect(find.text("Let's find your first run"), findsOneWidget);
-
-      activeIndex.value = 1;
-      await tester.pump();
-      await tester.pump();
-
-      expect(userCancels, 0);
-      expect(signedUpCancels, 1);
-
-      activeIndex.value = 0;
-      await tester.pump();
-
-      expect(userListens, 1);
-      expect(signedUpListens, 2);
-    });
   });
 
   group('DashboardFull', () {
@@ -482,6 +402,12 @@ void main() {
       final recommendedRun = buildRun(
         id: 'recommended-run',
         runClubId: 'club-1',
+        meetingPoint: 'Race Course Road main gate',
+        distanceKm: 12,
+        priceInPaise: 15000,
+        bookedCount: 4,
+        capacityLimit: 12,
+        pace: PaceLevel.moderate,
         startTime: now.add(const Duration(days: 1)),
       );
 
@@ -519,6 +445,18 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.text('Recommended runs'), findsOneWidget);
+      expect(
+        find.text(recommendedRun.title, skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(
+        find.text('Race Course Road main gate', skipOffstage: false),
+        findsOneWidget,
+      );
+      expect(find.text('12 km', skipOffstage: false), findsOneWidget);
+      expect(find.text('₹150', skipOffstage: false), findsOneWidget);
+      expect(find.text('4/12 signed up', skipOffstage: false), findsOneWidget);
+      expect(find.text('From your clubs', skipOffstage: false), findsOneWidget);
     });
 
     testWidgets('scrolls the greeting header away with dashboard content', (
@@ -760,6 +698,7 @@ void main() {
       expect(find.text('Browse runs'), findsOneWidget);
       expect(find.text('Map view'), findsOneWidget);
       expect(find.text('Calendar'), findsOneWidget);
+      expect(find.text('Saved runs'), findsOneWidget);
     });
 
     testWidgets('keeps primary action tiles visually consistent', (
@@ -775,11 +714,14 @@ void main() {
       final browseSize = tester.getSize(_quickActionSurface('Browse runs'));
       final mapSize = tester.getSize(_quickActionSurface('Map view'));
       final calendarSize = tester.getSize(_quickActionSurface('Calendar'));
+      final savedSize = tester.getSize(_quickActionSurface('Saved runs'));
 
       expect(mapSize.height, browseSize.height);
       expect(calendarSize.height, browseSize.height);
+      expect(savedSize.height, browseSize.height);
       expect(mapSize.width, browseSize.width);
       expect(calendarSize.width, browseSize.width);
+      expect(savedSize.width, browseSize.width);
     });
 
     testWidgets('navigates for all primary actions', (tester) async {
@@ -801,6 +743,10 @@ void main() {
           GoRoute(
             path: Routes.calendarScreen.path,
             builder: (_, _) => const Scaffold(body: Text('Calendar screen')),
+          ),
+          GoRoute(
+            path: Routes.savedRunsScreen.path,
+            builder: (_, _) => const Scaffold(body: Text('Saved runs screen')),
           ),
         ],
       );
@@ -830,6 +776,14 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.text('Calendar screen'), findsOneWidget);
+
+      router.go('/');
+      await _pumpDashboardUi(tester);
+
+      await tester.tap(find.text('Saved runs'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Saved runs screen'), findsOneWidget);
     });
   });
 }

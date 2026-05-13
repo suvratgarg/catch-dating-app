@@ -253,6 +253,11 @@ function validateAll(collections, currentReport, {checkScheduleLocks = false} = 
     collections.runParticipations,
     currentReport
   );
+  validateRunClubHostProfileProjections(
+    collections.runClubs,
+    users,
+    currentReport
+  );
   validateSchedulePolicy(collections, currentReport, {checkScheduleLocks});
 }
 
@@ -299,6 +304,16 @@ function validateSyntheticPublicProfileIdentities(publicProfiles, currentReport)
 
     const name = normalizedPublicName(data.name);
     const firstPhoto = Array.isArray(data.photoUrls) ? data.photoUrls[0] : null;
+    const firstThumbnail = Array.isArray(data.photoThumbnailUrls) ?
+      data.photoThumbnailUrls[0] :
+      null;
+    if (typeof firstPhoto === "string" &&
+        firstPhoto.length > 0 &&
+        (typeof firstThumbnail !== "string" || firstThumbnail.length === 0)) {
+      issue(currentReport, "warning", doc.path,
+        "missing-synthetic-public-profile-thumbnail",
+        "Synthetic publicProfiles with photos should include photoThumbnailUrls for tiny avatar surfaces.");
+    }
     if (!name || typeof firstPhoto !== "string" || firstPhoto.length === 0) {
       continue;
     }
@@ -452,6 +467,13 @@ function validateRunParticipation(doc, users, runs, currentReport) {
     issue(currentReport, "error", doc.path, "participation-club-mismatch",
       "runClubId does not match the parent run.");
   }
+  if (data.status === "attended" &&
+      run &&
+      isTimestamp(run.data.startTime) &&
+      run.data.startTime.toMillis() > Date.now()) {
+    issue(currentReport, "error", doc.path, "future-run-attended",
+      "future runs cannot have attended runParticipations.");
+  }
   if (data.uid && !users.has(data.uid)) {
     issue(currentReport, "warning", doc.path, "missing-participation-user",
       `uid references missing users/${data.uid}.`);
@@ -514,9 +536,14 @@ function validateReview(doc, users, clubs, runs, currentReport) {
     }
   }
   const reviewer = users.get(data.reviewerUserId);
-  if (reviewer && reviewer.data.name !== data.reviewerName) {
-    issue(currentReport, "warning", doc.path, "reviewer-name-drift",
-      "reviewerName differs from the current users/{uid}.name.");
+  if (reviewer) {
+    const expectedReviewerName = publicDisplayName(reviewer.data);
+    if (data.reviewerName !== expectedReviewerName) {
+      issue(currentReport, "error", doc.path, "reviewer-name-drift",
+        `reviewerName is ${JSON.stringify(data.reviewerName)}, but users/` +
+        `${data.reviewerUserId} projects to ` +
+        `${JSON.stringify(expectedReviewerName)}.`);
+    }
   }
 }
 
@@ -678,6 +705,47 @@ function validateRunAggregateCounts(runs, runParticipations, currentReport) {
         "genderCounts does not match signedUp/attended runParticipations.");
     }
   }
+}
+
+function validateRunClubHostProfileProjections(runClubs, users, currentReport) {
+  for (const doc of runClubs) {
+    const data = doc.data;
+    if (typeof data.hostUserId !== "string" || data.hostUserId.length === 0) {
+      continue;
+    }
+    const host = users.get(data.hostUserId)?.data;
+    if (!host || host.deleted === true) continue;
+
+    const expectedName = publicDisplayName(host);
+    const expectedAvatarUrl = publicAvatarUrl(host);
+    if (data.hostName !== expectedName) {
+      issue(currentReport, "error", doc.path, "run-club-host-name-drift",
+        `hostName is ${JSON.stringify(data.hostName)}, but users/` +
+        `${data.hostUserId} projects to ${JSON.stringify(expectedName)}.`);
+    }
+    if ((data.hostAvatarUrl ?? null) !== expectedAvatarUrl) {
+      issue(currentReport, "error", doc.path, "run-club-host-avatar-drift",
+        `hostAvatarUrl is ${JSON.stringify(data.hostAvatarUrl ?? null)}, ` +
+        `but users/${data.hostUserId} projects to ` +
+        `${JSON.stringify(expectedAvatarUrl)}.`);
+    }
+  }
+}
+
+function publicDisplayName(user) {
+  const displayName = user.displayName?.trim();
+  if (displayName) return displayName;
+
+  const firstName = user.firstName?.trim();
+  if (firstName) return firstName;
+
+  const legacyName = user.name?.trim();
+  if (!legacyName) return "Runner";
+  return legacyName.split(/\s+/)[0];
+}
+
+function publicAvatarUrl(user) {
+  return user.photoThumbnailUrls?.[0] ?? user.photoUrls?.[0] ?? null;
 }
 
 function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}) {

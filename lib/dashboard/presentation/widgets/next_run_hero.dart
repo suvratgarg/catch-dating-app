@@ -28,31 +28,15 @@ class UpcomingRunsHero extends StatefulWidget {
 }
 
 class _UpcomingRunsHeroState extends State<UpcomingRunsHero> {
-  late final PageController _controller;
   var _index = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = PageController();
-  }
+  var _dragDistance = 0.0;
 
   @override
   void didUpdateWidget(covariant UpcomingRunsHero oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (_index >= widget.runs.length) {
       _index = widget.runs.isEmpty ? 0 : widget.runs.length - 1;
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!mounted || !_controller.hasClients) return;
-        _controller.jumpToPage(_index);
-      });
     }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override
@@ -60,32 +44,31 @@ class _UpcomingRunsHeroState extends State<UpcomingRunsHero> {
     if (widget.runs.isEmpty) return const SizedBox.shrink();
 
     final hasMultipleRuns = widget.runs.length > 1;
+    final run = widget.runs[_index];
 
     return Column(
       children: [
-        SizedBox(
-          height: NextRunHero.cardHeight,
-          child: PageView.builder(
-            controller: _controller,
-            itemCount: widget.runs.length,
-            onPageChanged: (index) => setState(() => _index = index),
-            itemBuilder: (context, index) {
-              final run = widget.runs[index];
-              return Padding(
-                padding: EdgeInsets.only(
-                  right: hasMultipleRuns && index < widget.runs.length - 1
-                      ? CatchSpacing.s2
-                      : 0,
-                ),
-                child: NextRunHero(
-                  nextRun: run,
-                  viewerInterestedInGenders: widget.viewerInterestedInGenders,
-                  runIndex: index,
-                  runCount: widget.runs.length,
-                  onTap: () => widget.onRunTap(run),
-                ),
-              );
-            },
+        GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onHorizontalDragStart: hasMultipleRuns
+              ? (_) => _dragDistance = 0
+              : null,
+          onHorizontalDragUpdate: hasMultipleRuns
+              ? (details) => _dragDistance += details.primaryDelta ?? 0
+              : null,
+          onHorizontalDragEnd: hasMultipleRuns ? _handleDragEnd : null,
+          child: AnimatedSwitcher(
+            duration: CatchMotion.fast,
+            switchInCurve: CatchMotion.standardCurve,
+            switchOutCurve: CatchMotion.standardCurve,
+            child: NextRunHero(
+              key: ValueKey('next-run-hero-card-${run.id}'),
+              nextRun: run,
+              viewerInterestedInGenders: widget.viewerInterestedInGenders,
+              runIndex: _index,
+              runCount: widget.runs.length,
+              onTap: () => widget.onRunTap(run),
+            ),
           ),
         ),
         if (hasMultipleRuns) ...[
@@ -97,6 +80,19 @@ class _UpcomingRunsHeroState extends State<UpcomingRunsHero> {
         ],
       ],
     );
+  }
+
+  void _handleDragEnd(DragEndDetails details) {
+    final velocity = details.primaryVelocity ?? 0;
+    final shouldMoveNext = velocity < -250 || _dragDistance < -48;
+    final shouldMovePrevious = velocity > 250 || _dragDistance > 48;
+
+    if (shouldMoveNext && _index < widget.runs.length - 1) {
+      setState(() => _index += 1);
+    } else if (shouldMovePrevious && _index > 0) {
+      setState(() => _index -= 1);
+    }
+    _dragDistance = 0;
   }
 }
 
@@ -157,7 +153,6 @@ class NextRunHero extends StatelessWidget {
   });
 
   static const cardKey = Key('next-run-hero-card');
-  static const cardHeight = 264.0;
 
   final Run nextRun;
   final List<Gender> viewerInterestedInGenders;
@@ -185,7 +180,6 @@ class NextRunHero extends StatelessWidget {
       key: runCount > 1
           ? ValueKey('next-run-hero-card-${nextRun.id}')
           : cardKey,
-      height: cardHeight,
       padding: EdgeInsets.zero,
       backgroundColor: t.surface,
       borderColor: t.line2,

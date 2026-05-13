@@ -28,7 +28,7 @@ class CatchHorizontalRail extends StatelessWidget {
   final IndexedWidgetBuilder itemBuilder;
   final Widget? trailing;
   final bool showDivider;
-  final double height;
+  final double? height;
   final double spacing;
   final EdgeInsets headerPadding;
   final EdgeInsetsGeometry listPadding;
@@ -52,19 +52,7 @@ class CatchHorizontalRail extends StatelessWidget {
           titleStyle: CatchTextStyles.titleL(context),
           padding: headerPadding,
         ),
-        SizedBox(
-          height: height,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: listPadding,
-            itemCount: itemCount + (trailing != null ? 1 : 0),
-            separatorBuilder: (_, _) => SizedBox(width: spacing),
-            itemBuilder: (context, index) {
-              if (index < itemCount) return itemBuilder(context, index);
-              return trailing!;
-            },
-          ),
-        ),
+        _buildRail(context),
         if (showDivider)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: CatchSpacing.s5),
@@ -72,5 +60,40 @@ class CatchHorizontalRail extends StatelessWidget {
           ),
       ],
     );
+  }
+
+  Widget _buildRail(BuildContext context) {
+    final count = itemCount + (trailing != null ? 1 : 0);
+    if (height == null) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        padding: listPadding,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            for (var index = 0; index < count; index += 1) ...[
+              if (index > 0) SizedBox(width: spacing),
+              _itemAt(context, index),
+            ],
+          ],
+        ),
+      );
+    }
+
+    return SizedBox(
+      height: height,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: listPadding,
+        itemCount: count,
+        separatorBuilder: (_, _) => SizedBox(width: spacing),
+        itemBuilder: _itemAt,
+      ),
+    );
+  }
+
+  Widget _itemAt(BuildContext context, int index) {
+    if (index < itemCount) return itemBuilder(context, index);
+    return trailing!;
   }
 }

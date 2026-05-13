@@ -57,7 +57,7 @@ final class SelectedRunClubCityProvider
 }
 
 String _$selectedRunClubCityHash() =>
-    r'9af3076ff297f9b027eadd19b6db6a2f95cee475';
+    r'53d60204fc0a21ea6374718f8ac66f1d15958fe9';
 
 /// **KeepAlive notifier with internal flag**
 ///
@@ -286,7 +286,7 @@ final class RunClubsListViewModelProvider
 }
 
 String _$runClubsListViewModelHash() =>
-    r'876b482201eb4dcacc8a1ee16651b38fecf61731';
+    r'79241c2c11c80906aadbd16cea32dc3da1ef7065';
 
 /// **Pattern D: View-model provider**
 ///

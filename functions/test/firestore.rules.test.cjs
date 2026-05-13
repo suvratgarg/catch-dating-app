@@ -14,6 +14,7 @@ const {
   getDoc,
   getDocs,
   increment,
+  limit,
   orderBy,
   query,
   serverTimestamp,
@@ -463,7 +464,20 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("allows participants and run hosts to read run participation edges", async () => {
+    it("allows users to query their own missing club membership edge", async () => {
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("runner-1"), "runClubMemberships"),
+            where("clubId", "==", "club-1"),
+            where("uid", "==", "runner-1"),
+            limit(1),
+          ),
+        ),
+      );
+    });
+
+    it("allows participants, hosts, and authenticated roster viewers to read active run participation edges", async () => {
       await seed(["runClubs", "club-1"], runClub());
       await seed(["runs", "run-1"], run());
       await seed(
@@ -477,13 +491,81 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         getDoc(doc(authedDb("host-1"), "runParticipations", "run-1_runner-1")),
       );
-      await assertFails(
+      await assertSucceeds(
         getDoc(doc(authedDb("runner-3"), "runParticipations", "run-1_runner-1")),
       );
       await assertFails(
         setDoc(
           doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1"),
           runParticipation(),
+        ),
+      );
+    });
+
+    it("allows users to query their own missing run participation edge", async () => {
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("runner-1"), "runParticipations"),
+            where("runId", "==", "run-404"),
+            where("uid", "==", "runner-1"),
+          ),
+        ),
+      );
+    });
+
+    it("allows authenticated users to query active run rosters", async () => {
+      await seed(["runClubs", "club-1"], runClub());
+      await seed(["runs", "run-1"], run());
+      await seed(
+        ["runParticipations", "run-1_runner-1"],
+        runParticipation({uid: "runner-1", status: "signedUp"}),
+      );
+      await seed(
+        ["runParticipations", "run-1_runner-2"],
+        runParticipation({
+          uid: "runner-2",
+          status: "waitlisted",
+          signedUpAt: null,
+          waitlistedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+        }),
+      );
+
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("runner-3"), "runParticipations"),
+            where("runId", "==", "run-1"),
+            where("status", "in", ["signedUp", "waitlisted", "attended"]),
+          ),
+        ),
+      );
+    });
+
+    it("keeps cancelled run participation edges private", async () => {
+      await seed(["runClubs", "club-1"], runClub());
+      await seed(["runs", "run-1"], run());
+      await seed(
+        ["runParticipations", "run-1_runner-1"],
+        runParticipation({
+          status: "cancelled",
+          signedUpAt: null,
+          cancelledAt: Timestamp.fromDate(new Date("2026-05-01T11:00:00.000Z")),
+        }),
+      );
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-3"), "runParticipations", "run-1_runner-1")),
+      );
+      await assertFails(
+        getDocs(
+          query(
+            collection(authedDb("runner-3"), "runParticipations"),
+            where("runId", "==", "run-1"),
+          ),
         ),
       );
     });
@@ -528,6 +610,18 @@ describe("firestore.rules", () => {
         updateDoc(doc(authedDb("runner-1"), "savedRuns", "runner-1_run-3"), {
           removedAt: serverTimestamp(),
         }),
+      );
+    });
+
+    it("allows users to query their own missing saved-run edge", async () => {
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("runner-1"), "savedRuns"),
+            where("uid", "==", "runner-1"),
+            where("runId", "==", "run-404"),
+          ),
+        ),
       );
     });
   });

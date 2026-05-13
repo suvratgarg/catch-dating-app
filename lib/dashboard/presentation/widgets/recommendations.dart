@@ -10,15 +10,23 @@ class Recommendations extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CatchHorizontalRail(
-      title: 'Recommended runs',
-      itemCount: runs.length,
-      itemBuilder: (context, i) => RecommendCard.fromRun(run: runs[i]),
-      showDivider: false,
-      height: 146,
-      spacing: 10,
-      headerPadding: EdgeInsets.zero,
-      listPadding: EdgeInsets.zero,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final cardWidth = (constraints.maxWidth * 0.78)
+            .clamp(280.0, 340.0)
+            .toDouble();
+        return CatchHorizontalRail(
+          title: 'Recommended runs',
+          itemCount: runs.length,
+          itemBuilder: (context, i) =>
+              RecommendCard.fromRun(run: runs[i], width: cardWidth),
+          showDivider: false,
+          height: null,
+          spacing: 10,
+          headerPadding: EdgeInsets.zero,
+          listPadding: EdgeInsets.zero,
+        );
+      },
     );
   }
 }

@@ -3,6 +3,7 @@ import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_center.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_view_model.dart';
@@ -53,6 +54,7 @@ void main() {
 
         final viewModel = buildRunMapViewModel(
           signedUpRuns: [signedUpDuplicate],
+          savedRuns: const [],
           recommendedRuns: [laterRecommended, recommendedDuplicate],
           now: now,
         );
@@ -77,6 +79,7 @@ void main() {
 
       final viewModel = buildRunMapViewModel(
         signedUpRuns: [unpinned],
+        savedRuns: const [],
         recommendedRuns: [pinned],
         now: now,
       );
@@ -102,6 +105,7 @@ void main() {
 
       final viewModel = buildRunMapViewModel(
         signedUpRuns: [past, upcoming],
+        savedRuns: const [],
         recommendedRuns: [cancelled],
         now: now,
       );
@@ -163,8 +167,9 @@ void main() {
   });
 
   group('runMapViewModelProvider', () {
-    test('combines profile, signed-up runs, and recommended runs', () async {
+    test('combines profile, signed-up, saved, and recommended runs', () async {
       final repository = FakeRunRepository();
+      final savedRunRepository = FakeSavedRunRepository();
       final user = buildUser(uid: 'runner-1');
       final signedUpRun = buildRun(
         id: 'signed-up',
@@ -179,8 +184,15 @@ void main() {
         startingPointLat: 19.1,
         startingPointLng: 72.9,
       );
+      final savedRun = buildRun(
+        id: 'saved',
+        startTime: DateTime.now().add(const Duration(hours: 12)),
+        startingPointLat: 19.2,
+        startingPointLng: 72.7,
+      );
       repository.signedUpRuns[user.uid] = [signedUpRun];
       repository.recommendedRuns = [recommendedRun];
+      savedRunRepository.savedRunDetails[user.uid] = [savedRun];
 
       final container = ProviderContainer(
         overrides: [
@@ -189,6 +201,7 @@ void main() {
             (ref) => Stream.value([_membership(clubId: 'club-1')]),
           ),
           runRepositoryProvider.overrideWith((ref) => repository),
+          savedRunRepositoryProvider.overrideWithValue(savedRunRepository),
         ],
       );
       addTearDown(container.dispose);
@@ -206,6 +219,9 @@ void main() {
       );
       await container.read(watchSignedUpRunsProvider(user.uid).future);
       await container.read(
+        watchSavedRunDetailsForUserProvider(user.uid).future,
+      );
+      await container.read(
         recommendedRunsProvider(
           RecommendedRunsQuery.fromClubIds(const ['club-1']),
         ).future,
@@ -213,8 +229,12 @@ void main() {
       await container.pump();
 
       final viewModel = subscription.read().requireValue;
-      expect(viewModel.runs.map((run) => run.id), ['signed-up', 'recommended']);
-      expect(viewModel.pinnedRuns.length, 2);
+      expect(viewModel.runs.map((run) => run.id), [
+        'saved',
+        'signed-up',
+        'recommended',
+      ]);
+      expect(viewModel.pinnedRuns.length, 3);
       expect(repository.recommendedClubIds, ['club-1']);
     });
   });

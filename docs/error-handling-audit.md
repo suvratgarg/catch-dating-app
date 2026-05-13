@@ -1,7 +1,7 @@
 ---
 doc_id: error_handling_audit
-version: 2.6.0
-updated: 2026-05-12
+version: 2.6.1
+updated: 2026-05-13
 owner: recursive_audit_loop
 status: active
 ---
@@ -679,8 +679,8 @@ pass.
   dumps in normal app UI. Debug details can appear in debug-mode logs or
   developer-only appended diagnostics.
 - Use `AppErrorContext` names that match user-facing feature domains:
-  `dashboard`, `profile`, `run`, `club`, `chat`, `payments`, `auth`, or
-  `generic`. Add contexts only when title/copy materially improves.
+  `dashboard`, `profile`, `run`, `club`, `chat`, `swipes`, `payments`,
+  `auth`, or `generic`. Add contexts only when title/copy materially improves.
 - If a subclass is added, add at least one mapper/rendering test that proves the
   user-facing copy and title remain stable.
 

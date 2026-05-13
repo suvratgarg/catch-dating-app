@@ -113,18 +113,6 @@ AsyncValue<RunDetailViewModel?> buildRunDetailViewModel({
         reviewsAsync.stackTrace ?? StackTrace.current,
       );
     }
-    if (savedRunAsync.hasError) {
-      return AsyncError(
-        savedRunAsync.error!,
-        savedRunAsync.stackTrace ?? StackTrace.current,
-      );
-    }
-    if (participationAsync.hasError) {
-      return AsyncError(
-        participationAsync.error!,
-        participationAsync.stackTrace ?? StackTrace.current,
-      );
-    }
   }
 
   final run = runAsync.asData?.value;

@@ -7,11 +7,6 @@ import {onMessageCreatedHandler} from "./onMessageCreated";
 type FakeData = Record<string, unknown>;
 type Notification = Parameters<typeof sendFcmNotification>[0];
 
-interface IncrementSentinel {
-  kind: "increment";
-  value: number;
-}
-
 class FakeDocRef {
   constructor(readonly firestore: FakeFirestore, readonly path: string) {}
 
@@ -128,21 +123,11 @@ function setField(target: FakeData, fieldPath: string, value: unknown) {
   }
 
   const finalPart = parts.at(-1) ?? fieldPath;
-  if (isIncrement(value)) {
-    const current = cursor[finalPart];
-    cursor[finalPart] = (typeof current === "number" ? current : 0) +
-      value.value;
-    return;
-  }
   cursor[finalPart] = value;
 }
 
 function isRecord(value: unknown): value is FakeData {
   return typeof value === "object" && value !== null && !Array.isArray(value);
-}
-
-function isIncrement(value: unknown): value is IncrementSentinel {
-  return isRecord(value) && value.kind === "increment";
 }
 
 function event(eventId: string) {
@@ -184,9 +169,6 @@ function harness() {
     deps: {
       firestore: () =>
         firestore as unknown as FirebaseFirestore.Firestore,
-      increment: (value: number) =>
-        ({kind: "increment", value}) as unknown as
-          FirebaseFirestore.FieldValue,
       serverTimestamp: () =>
         ({kind: "serverTimestamp"}) as unknown as FirebaseFirestore.FieldValue,
       sendNotification: async (notification: Notification) => {
@@ -211,7 +193,7 @@ test("onMessageCreatedHandler updates match metadata and notifies recipient",
       lastMessageAt: {seconds: 1, nanoseconds: 0},
       lastMessagePreview: "Hello there",
       lastMessageSenderId: "runner-1",
-      unreadCounts: {"runner-1": 0, "runner-2": 2},
+      unreadCounts: {"runner-1": 0, "runner-2": 1},
       status: "active",
     });
     assert.deepEqual(
@@ -240,7 +222,7 @@ test("onMessageCreatedHandler applies a retried event once", async () => {
 
   assert.deepEqual(
     h.firestore.get("matches/match-1")?.unreadCounts,
-    {"runner-1": 0, "runner-2": 2}
+    {"runner-1": 0, "runner-2": 1}
   );
   assert.equal(h.notifications.length, 1);
 });

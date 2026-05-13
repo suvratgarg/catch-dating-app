@@ -29,6 +29,7 @@ class RunClubsListBody extends ConsumerWidget {
           RunClubDiscoverList(
             clubs: viewModel.allClubs,
             joinedClubIds: viewModel.joinedClubIds,
+            hostedClubIds: viewModel.hostedClubIds,
           ),
         const SliverToBoxAdapter(child: SizedBox(height: CatchSpacing.s6)),
       ],

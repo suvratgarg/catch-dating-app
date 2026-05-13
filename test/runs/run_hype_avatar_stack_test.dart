@@ -99,6 +99,55 @@ void main() {
       ]);
     },
   );
+
+  test(
+    'runHypeAvatars falls back to full photo while thumbnails backfill',
+    () async {
+      final firestore = FakeFirebaseFirestore();
+      final run = buildRun(id: 'run-1');
+      final now = DateTime(2026, 5, 8, 8);
+
+      await firestore
+          .collection('runParticipations')
+          .doc('run-1_runner-1')
+          .set(
+            _participationJson(
+              runId: run.id,
+              uid: 'runner-1',
+              gender: Gender.woman,
+              signedUpAt: now,
+            ),
+          );
+
+      await firestore.collection('publicProfiles').doc('runner-1').set({
+        'name': 'Runner One',
+        'age': 28,
+        'bio': 'Here to run.',
+        'gender': Gender.woman.name,
+        'photoUrls': ['https://full.test/runner-1.jpg'],
+        'photoThumbnailUrls': <String>[],
+        'paceMinSecsPerKm': 300,
+        'paceMaxSecsPerKm': 420,
+      });
+
+      final container = ProviderContainer(
+        overrides: [firebaseFirestoreProvider.overrideWithValue(firestore)],
+      );
+      addTearDown(container.dispose);
+
+      final avatars = await container.read(
+        runHypeAvatarsProvider(
+          const RunHypeAvatarQuery(
+            runId: 'run-1',
+            viewerInterestedInGenders: [Gender.woman],
+          ),
+        ).future,
+      );
+
+      expect(avatars.single.name, 'Runner One');
+      expect(avatars.single.imageUrl, 'https://full.test/runner-1.jpg');
+    },
+  );
 }
 
 Map<String, Object?> _participationJson({

@@ -209,7 +209,9 @@ function profile(overrides: FakeData = {}): FakeData {
   return {
     profileComplete: true,
     name: "Asha Runner",
+    displayName: "Asha Host",
     photoUrls: ["https://example.com/avatar.jpg"],
+    photoThumbnailUrls: ["https://example.com/avatar-thumb.jpg"],
     ...overrides,
   };
 }
@@ -250,8 +252,8 @@ test("createRunClubHandler creates a club and host membership edge",
       location: "mumbai",
       area: "Bandra",
       hostUserId: "host-1",
-      hostName: "Asha Runner",
-      hostAvatarUrl: "https://example.com/avatar.jpg",
+      hostName: "Asha Host",
+      hostAvatarUrl: "https://example.com/avatar-thumb.jpg",
       createdAt: {kind: "serverTimestamp"},
       imageUrl: "https://example.com/cover.jpg",
       tags: [],
@@ -291,7 +293,9 @@ test("createRunClubHandler creates a club and host membership edge",
 );
 
 test("createRunClubHandler can generate the club id server-side", async () => {
-  const h = harness({"users/host-1": profile({photoUrls: []})});
+  const h = harness({
+    "users/host-1": profile({photoUrls: [], photoThumbnailUrls: []}),
+  });
 
   const result = await createRunClubHandler(
     request("host-1", payload({clubId: undefined, imageUrl: undefined})),

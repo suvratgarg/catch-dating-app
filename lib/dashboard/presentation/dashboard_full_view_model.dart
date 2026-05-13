@@ -86,6 +86,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
     data: DashboardSectionModel<List<Run>>.data,
   );
 
+  final signedUpRunIds = signedUpRuns.map((run) => run.id).toSet();
   final recommendationsSection = recommendedRunsAsync.when(
     loading: () => const DashboardSectionModel<List<Run>>.loading(
       'Loading recommended runs...',
@@ -93,7 +94,9 @@ DashboardFullViewModel buildDashboardFullViewModel({
     error: (error, stackTrace) => const DashboardSectionModel<List<Run>>.error(
       'Unable to load recommended runs.',
     ),
-    data: DashboardSectionModel<List<Run>>.data,
+    data: (runs) => DashboardSectionModel<List<Run>>.data(
+      runs.where((run) => !signedUpRunIds.contains(run.id)).toList(),
+    ),
   );
 
   final activeSwipeRun = attendedRunsSection.data == null

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
@@ -90,7 +91,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
         loading: () => const CatchLoadingIndicator(),
         error: (e, _) => CatchErrorState.fromError(
           e,
-          context: AppErrorContext.profile,
+          context: AppErrorContext.swipes,
           onRetry: () => ref.invalidate(
             swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds),
           ),
@@ -160,7 +161,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                     onPass: () => _controller.swipe(CardSwiperDirection.left),
                     onLike: () => _controller.swipe(CardSwiperDirection.right),
                   ),
-                  const SizedBox(height: 24),
+                  gapH24,
                 ],
               ),
       ),

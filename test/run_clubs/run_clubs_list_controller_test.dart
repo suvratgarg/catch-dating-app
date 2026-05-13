@@ -61,6 +61,17 @@ void main() {
       expect(container.read(selectedRunClubCityProvider), _city('delhi'));
     });
 
+    test('autoSelectCityByName uses known profile cities', () {
+      final container = ProviderContainer();
+      addTearDown(container.dispose);
+
+      container
+          .read(selectedRunClubCityProvider.notifier)
+          .autoSelectCityByName('indore');
+
+      expect(container.read(selectedRunClubCityProvider), _city('indore'));
+    });
+
     test('autoSelectCity does not override a manual city choice', () {
       final container = ProviderContainer();
       addTearDown(container.dispose);
@@ -178,6 +189,7 @@ void main() {
           'followed-club',
           'hosted-club',
         });
+        expect(viewModel.hostedClubIds, {'hosted-club'});
       },
     );
 

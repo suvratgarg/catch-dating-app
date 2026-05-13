@@ -54,7 +54,7 @@
       ]
     },
     "FIRESTORE-RULES-TEST-001": {
-      "title": "Run Firestore rules tests under the Firestore emulator",
+      "title": "Run Firebase rules tests under the required emulators",
       "status": "active",
       "introduced_in": {
         "doc_id": "audit_rules",
@@ -62,12 +62,14 @@
       },
       "applies_to": [
         "firestore.rules",
+        "storage.rules",
         "functions/test/firestore.rules.test.cjs",
+        "functions/test/storage.rules.test.cjs",
         "functions/package.json",
         "firebase.json",
         "docs/**"
       ],
-      "instruction": "Do not run the Firestore rules suite as a standalone Node/npm test unless a Firestore emulator is already running on 127.0.0.1:8080. From the repo root, prefer `firebase emulators:exec --only firestore \"npm --prefix functions run test:rules\"`. Treat `connect ECONNREFUSED 127.0.0.1:8080` as an emulator-workflow failure first, not proof that the rules or tests are broken.",
+      "instruction": "Do not run the Firebase rules suite as a standalone Node/npm test unless the required emulators are already running. From the repo root, prefer `firebase emulators:exec --only firestore,storage \"npm --prefix functions run test:rules\"`. Treat `connect ECONNREFUSED 127.0.0.1:8080` or `connect ECONNREFUSED 127.0.0.1:9199` as an emulator-workflow failure first, not proof that the rules or tests are broken.",
       "sunset_when": [
         "A wrapper script or CI-only command makes the emulator requirement impossible to bypass",
         "Functions README and data-contract tracker stay in sync for three rules passes"
@@ -119,6 +121,45 @@
       "instruction": "Theme tokens, typography, app theme, spacing, radius, motion, icon sizes, and compatibility layout helpers should live under lib/core/theme. Do not add new design primitives under generic lib/constants or a parallel top-level lib/theme folder.",
       "sunset_when": [
         "Legacy spacing compatibility usage is either migrated or intentionally documented"
+      ]
+    },
+    "RESPONSIVE-LAYOUT-001": {
+      "title": "Avoid hardcoded widget dimensions for content-sized UI",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "audit_rules",
+        "version": "2.5.0"
+      },
+      "applies_to": [
+        "lib/**/presentation/**",
+        "lib/core/widgets/**",
+        "test/**/*.dart"
+      ],
+      "instruction": "Treat fixed heights and widths on content-bearing widgets as a layout smell. Prefer intrinsic content sizing, flexible constraints, aspect ratios for truly fixed-format media, and min/max constraints only when they preserve responsiveness across screen sizes, text scale, localization, and variable backend content. Fixed dimensions are acceptable for icons, avatars, progress indicators, toolbars, known-format controls, and intentionally bounded visual assets, but cards, tiles, list rows, and sections should not depend on magic-number heights to look correct.",
+      "sunset_when": [
+        "Widget cleanup scans classify fixed dimensions by acceptable fixed-format controls versus content-sized UI",
+        "Dashboard, run-club, chat, profile, and run-detail passes have removed unjustified fixed content-card heights"
+      ]
+    },
+    "DENORMALIZED-DATA-001": {
+      "title": "Keep denormalized projection fields in sync",
+      "status": "active",
+      "introduced_in": {
+        "doc_id": "audit_rules",
+        "version": "2.5.1"
+      },
+      "applies_to": [
+        "functions/src/**",
+        "lib/**/data/**",
+        "lib/**/domain/**",
+        "firestore.rules",
+        "tool/**",
+        "test/**"
+      ],
+      "instruction": "Whenever source-of-truth profile, run, club, membership, participation, match, review, or notification data is denormalized into another document, the write path must identify the source field, projection fields, and sync mechanism. Prefer backend triggers or callable-owned fan-out over client-side best effort. Add tests proving projection updates when the source changes, and add repair/backfill tooling for existing drift when needed.",
+      "sunset_when": [
+        "A projection inventory lists all denormalized fields and their sync owner",
+        "CI or a data audit job checks projection drift for critical collections"
       ]
     },
     "DEBUG-LOOP-001": {

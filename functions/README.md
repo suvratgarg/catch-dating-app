@@ -36,7 +36,7 @@ options when specific functions need higher or lower limits.
 | `syncPublicProfile` | `src/profiles/` | `users/{userId}` onWrite — mirrors public fields + age gate |
 | `onSwipeCreated` | `src/matching/` | `swipes/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
-| `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread counts + FCM |
+| `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
 | `syncRunClubReviewStats` | `src/reviews/` | `reviews/{id}` onWrite — recalculates club rating |
 | `onBlockCreated` | `src/safety/` | `blocks/{id}` onCreate — closes existing matches |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
@@ -190,14 +190,16 @@ reaching Firebase. The same rules tests run in CI on every PR that touches
 `firestore.rules` or the schema/contract files
 (`.github/workflows/firestore-rules-ci.yml`).
 
-Rules tests live at `test/firestore.rules.test.cjs` and use the
-`@firebase/rules-unit-testing` emulator. Add test cases for any new rule
-conditions, especially `diff()` checks and `hasOnly`/`hasAll` shape validation.
+Rules tests live at `test/firestore.rules.test.cjs` and
+`test/storage.rules.test.cjs` and use the `@firebase/rules-unit-testing`
+emulators. Add test cases for any new rule conditions, especially `diff()`
+checks, `hasOnly`/`hasAll` shape validation, and Storage paths that depend on
+Firestore relationship documents.
 
-Run the rules suite through the Firestore emulator wrapper unless you already
-have a Firestore emulator listening on `127.0.0.1:8080`. A direct
-`npm run test:rules` from this directory only works when that emulator is
-already running; `connect ECONNREFUSED 127.0.0.1:8080` means the emulator
+Run the rules suite through the Firestore + Storage emulator wrapper unless you
+already have Firestore on `127.0.0.1:8080` and Storage on `127.0.0.1:9199`.
+A direct `npm run test:rules` from this directory only works when those
+emulators are already running; `connect ECONNREFUSED` means the emulator
 workflow is missing, not necessarily that the rules changed incorrectly.
 
 ## Commands
@@ -205,7 +207,7 @@ workflow is missing, not necessarily that the rules changed incorrectly.
 ```bash
 npm --prefix functions run lint
 npm --prefix functions test
-firebase emulators:exec --only firestore "npm --prefix functions run test:rules"
+firebase emulators:exec --only firestore,storage "npm --prefix functions run test:rules"
 ./tool/firebase_with_env.sh dev deploy --only functions
 ./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions

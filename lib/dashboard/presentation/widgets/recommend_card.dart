@@ -3,7 +3,6 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
@@ -15,25 +14,41 @@ class RecommendCard extends StatelessWidget {
     super.key,
     required this.runClubId,
     required this.runId,
-    required this.club,
-    required this.dist,
-    required this.when,
+    required this.title,
+    required this.whenLabel,
+    required this.locationLabel,
+    required this.distanceLabel,
+    required this.priceLabel,
+    required this.signupLabel,
+    required this.paceLabel,
+    this.width,
   });
 
-  factory RecommendCard.fromRun({Key? key, required Run run}) => RecommendCard(
-    key: key,
-    runClubId: run.runClubId,
-    runId: run.id,
-    club: run.title,
-    dist: '${run.distanceKm.toStringAsFixed(0)}K',
-    when: DateFormat('EEE d MMM').format(run.startTime),
-  );
+  factory RecommendCard.fromRun({Key? key, required Run run, double? width}) =>
+      RecommendCard(
+        key: key,
+        runClubId: run.runClubId,
+        runId: run.id,
+        title: run.title,
+        whenLabel: DateFormat('EEE d MMM · h:mm a').format(run.startTime),
+        locationLabel: run.meetingPoint,
+        distanceLabel: _formatDistance(run.distanceKm),
+        priceLabel: _formatPrice(run.priceInPaise),
+        signupLabel: '${run.signedUpCount}/${run.capacityLimit} signed up',
+        paceLabel: run.pace.label,
+        width: width,
+      );
 
   final String runClubId;
   final String runId;
-  final String club;
-  final String dist;
-  final String when;
+  final String title;
+  final String whenLabel;
+  final String locationLabel;
+  final String distanceLabel;
+  final String priceLabel;
+  final String signupLabel;
+  final String paceLabel;
+  final double? width;
 
   @override
   Widget build(BuildContext context) {
@@ -43,46 +58,116 @@ class RecommendCard extends StatelessWidget {
         Routes.runDetailScreen.name,
         pathParameters: {'runClubId': runClubId, 'runId': runId},
       ),
-      width: 180,
+      width: width,
       radius: CatchRadius.md,
       borderColor: t.line,
       backgroundColor: t.surface,
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            height: 86,
-            child: Stack(
-              fit: StackFit.expand,
+      child: Padding(
+        padding: const EdgeInsets.all(Sizes.p14),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Wrap(
+              spacing: Sizes.p6,
+              runSpacing: Sizes.p6,
               children: [
-                PersonAvatar(size: double.infinity, name: club),
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: CatchBadge(label: dist, tone: CatchBadgeTone.neutral),
+                CatchBadge(label: distanceLabel, tone: CatchBadgeTone.brand),
+                CatchBadge(label: priceLabel, tone: CatchBadgeTone.neutral),
+                CatchBadge(label: paceLabel, tone: CatchBadgeTone.neutral),
+              ],
+            ),
+            gapH12,
+            Text(
+              title,
+              style: CatchTextStyles.titleM(context),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+            gapH8,
+            _RecommendMetaRow(icon: Icons.schedule, label: whenLabel),
+            gapH6,
+            _RecommendMetaRow(
+              icon: Icons.location_on_outlined,
+              label: locationLabel,
+              maxLines: 2,
+            ),
+            gapH14,
+            Row(
+              children: [
+                Expanded(
+                  child: _RecommendMetaRow(
+                    icon: Icons.groups_2_outlined,
+                    label: signupLabel,
+                    emphasize: true,
+                  ),
+                ),
+                gapW8,
+                const CatchBadge(
+                  label: 'From your clubs',
+                  tone: CatchBadgeTone.success,
                 ),
               ],
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(Sizes.p10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  club,
-                  style: CatchTextStyles.labelL(context),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                gapH2,
-                Text(when, style: CatchTextStyles.bodyS(context)),
-              ],
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+}
+
+class _RecommendMetaRow extends StatelessWidget {
+  const _RecommendMetaRow({
+    required this.icon,
+    required this.label,
+    this.maxLines = 1,
+    this.emphasize = false,
+  });
+
+  final IconData icon;
+  final String label;
+  final int maxLines;
+  final bool emphasize;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final style = emphasize
+        ? CatchTextStyles.labelM(context, color: t.ink)
+        : CatchTextStyles.bodyS(context, color: t.ink2);
+
+    return Row(
+      crossAxisAlignment: maxLines == 1
+          ? CrossAxisAlignment.center
+          : CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 16, color: t.ink3),
+        gapW6,
+        Expanded(
+          child: Text(
+            label,
+            style: style,
+            maxLines: maxLines,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+String _formatDistance(double distanceKm) {
+  final rounded = distanceKm.roundToDouble();
+  if ((distanceKm - rounded).abs() < 0.05) {
+    return '${rounded.toInt()} km';
+  }
+  return '${distanceKm.toStringAsFixed(1)} km';
+}
+
+String _formatPrice(int priceInPaise) {
+  if (priceInPaise <= 0) return 'Free';
+  final rupees = priceInPaise / 100;
+  if (rupees == rupees.roundToDouble()) {
+    return '₹${rupees.toInt()}';
+  }
+  return '₹${rupees.toStringAsFixed(2)}';
 }

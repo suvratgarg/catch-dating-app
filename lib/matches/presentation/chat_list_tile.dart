@@ -146,7 +146,7 @@ class _UnreadCountPill extends StatelessWidget {
     final label = count > 99 ? '99+' : '$count';
 
     return Semantics(
-      label: '$label unread messages',
+      label: count == 1 ? 'Unread chat' : '$label unread chats',
       child: CatchBadge(
         label: label,
         tone: CatchBadgeTone.brand,

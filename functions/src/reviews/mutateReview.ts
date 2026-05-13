@@ -16,6 +16,7 @@ import {
   runParticipationId,
 } from "../shared/relationshipDocuments";
 import {requireDoc, validateCallable} from "../shared/validation";
+import {publicDisplayName} from "../shared/profileProjection";
 
 const ReviewRatingSchema = z.number().int().min(1).max(5);
 const ReviewCommentSchema = z.string().trim().max(1000);
@@ -105,7 +106,7 @@ export async function createRunReviewHandler(
       runClubId: data.runClubId,
       runId: data.runId,
       reviewerUserId,
-      reviewerName: publicReviewerName(user),
+      reviewerName: publicDisplayName(user),
       rating: data.rating,
       comment: data.comment,
       createdAt: deps.serverTimestamp?.() ??
@@ -219,10 +220,6 @@ function assertOwnsReview(
       "Only the review author can change this review."
     );
   }
-}
-
-function publicReviewerName(user: UserProfileDoc): string {
-  return user.displayName.trim() || user.firstName.trim() || user.name.trim();
 }
 
 function runReviewId(runId: string, reviewerUserId: string): string {

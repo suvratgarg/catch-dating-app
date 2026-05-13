@@ -15,6 +15,7 @@ class RunParticipationRepository {
   const RunParticipationRepository(this._db);
 
   static const _collectionPath = 'runParticipations';
+  static const _rosterVisibleStatuses = ['signedUp', 'waitlisted', 'attended'];
 
   final FirebaseFirestore _db;
 
@@ -45,6 +46,7 @@ class RunParticipationRepository {
   }) => withBackendErrorStream(
     () => _participationsRef
         .where('runId', isEqualTo: runId)
+        .where('status', whereIn: _rosterVisibleStatuses)
         .snapshots()
         .map((snap) => snap.docs.map((doc) => doc.data()).toList()),
     context: const BackendErrorContext(
@@ -60,6 +62,7 @@ class RunParticipationRepository {
     () async {
       final snap = await _participationsRef
           .where('runId', isEqualTo: runId)
+          .where('status', whereIn: _rosterVisibleStatuses)
           .get();
       return snap.docs.map((doc) => doc.data()).toList();
     },
@@ -75,9 +78,11 @@ class RunParticipationRepository {
     required String uid,
   }) => withBackendErrorStream(
     () => _participationsRef
-        .doc(runParticipationId(runId: runId, uid: uid))
+        .where('runId', isEqualTo: runId)
+        .where('uid', isEqualTo: uid)
+        .limit(1)
         .snapshots()
-        .map((doc) => doc.exists ? doc.data() : null),
+        .map((snap) => snap.docs.isEmpty ? null : snap.docs.first.data()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch run participation',

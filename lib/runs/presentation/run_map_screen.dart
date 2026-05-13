@@ -133,7 +133,8 @@ class _MapEmptyState extends StatelessWidget {
       child: CatchEmptyState(
         icon: Icons.map_outlined,
         title: 'No mapped runs yet',
-        message: 'Join clubs or book runs to see mapped starting points here.',
+        message:
+            'Join clubs, book runs, or save future runs to see starting points here.',
         surface: false,
       ),
     );

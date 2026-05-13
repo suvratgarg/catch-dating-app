@@ -53,20 +53,26 @@ class PublicProfileRepository {
         ),
       );
 
-  /// Batch-fetches profiles by UID. Splits into chunks of 30 to respect
-  /// Firestore's `whereIn` limit.
+  /// Fetches profiles by UID with document reads instead of a document-id query.
+  ///
+  /// Public profile rules depend on the profile document id and block/deletion
+  /// lookups. Individual document reads let Firestore evaluate that rule shape
+  /// without exposing cancelled, deleted, or blocked profiles through queries.
   Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) =>
       withBackendErrorContext(
         () async {
           if (uids.isEmpty) return [];
 
           final profiles = <PublicProfile>[];
-          for (var i = 0; i < uids.length; i += 30) {
-            final chunk = uids.sublist(i, (i + 30).clamp(0, uids.length));
-            final snap = await _publicProfilesRef
-                .where(FieldPath.documentId, whereIn: chunk)
-                .get();
-            profiles.addAll(snap.docs.map((d) => d.data()));
+          final seen = <String>{};
+          for (final uid in uids) {
+            if (!seen.add(uid)) continue;
+
+            final doc = await _publicProfileRef(uid).get();
+            final profile = doc.data();
+            if (doc.exists && profile != null) {
+              profiles.add(profile);
+            }
           }
           return profiles;
         },

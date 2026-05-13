@@ -127,6 +127,7 @@ class RunDetailBody extends ConsumerWidget {
                   userProfile: userProfile,
                   isAuthenticated: isAuthenticated,
                   participation: participation,
+                  now: now,
                 ),
                 const SizedBox(height: 16),
               ],

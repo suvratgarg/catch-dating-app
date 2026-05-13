@@ -35,24 +35,33 @@ class CatchEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final content = Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        _EmptyStateIcon(icon: icon, style: iconStyle, size: iconSize),
-        gapH18,
-        Text(
-          title,
-          style: titleStyle ?? CatchTextStyles.displayM(context),
-          textAlign: TextAlign.center,
-        ),
-        gapH8,
-        Text(
-          message,
-          style: messageStyle ?? CatchTextStyles.bodyM(context, color: t.ink2),
-          textAlign: TextAlign.center,
-        ),
-        if (action != null) ...[gapH18, action!],
-      ],
+    final content = LayoutBuilder(
+      builder: (context, constraints) {
+        final column = Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _EmptyStateIcon(icon: icon, style: iconStyle, size: iconSize),
+            gapH18,
+            Text(
+              title,
+              style: titleStyle ?? CatchTextStyles.displayM(context),
+              textAlign: TextAlign.center,
+            ),
+            gapH8,
+            Text(
+              message,
+              style:
+                  messageStyle ?? CatchTextStyles.bodyM(context, color: t.ink2),
+              textAlign: TextAlign.center,
+            ),
+            if (action != null) ...[gapH18, action!],
+          ],
+        );
+
+        if (!constraints.hasBoundedWidth) return column;
+        return SizedBox(width: constraints.maxWidth, child: column);
+      },
     );
 
     if (!surface) {

@@ -143,6 +143,22 @@ void main() {
       },
     );
 
+    test('does not initialize Razorpay until a paid checkout starts', () {
+      var factoryCalls = 0;
+      final lazyRepository = PaymentRepository(
+        functions,
+        razorpayFactory: () {
+          factoryCalls++;
+          return FakeRazorpay();
+        },
+        isWebOverride: false,
+        targetPlatformOverride: TargetPlatform.iOS,
+      );
+
+      expect(lazyRepository.supportsPaidBookings, isTrue);
+      expect(factoryCalls, 0);
+    });
+
     test('bookFreeRun calls the free-run booking function', () async {
       await repository.bookFreeRun(runId: 'run-1');
 

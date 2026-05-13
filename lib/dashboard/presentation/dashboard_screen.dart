@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -29,7 +28,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  String? _lastVisibleUid;
 
   @override
   void initState() {
@@ -44,30 +42,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_isHomeTabActive) {
-      _invalidateBookedRunsSubscription();
-    }
-  }
-
-  bool get _isHomeTabActive {
-    return isAppShellTabActive(context, appShellHomeTabIndex);
-  }
-
-  void _invalidateBookedRunsSubscription() {
-    final uid = _lastVisibleUid;
-    if (uid == null) return;
-    _lastVisibleUid = null;
-    ref.invalidate(watchSignedUpRunsProvider(uid));
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (!_isHomeTabActive) {
-      return const SizedBox.shrink();
-    }
-
     final userAsync = ref.watch(watchUserProfileProvider);
 
     return userAsync.when(
@@ -78,7 +53,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       ),
       data: (user) {
         if (user == null) {
-          _lastVisibleUid = null;
           return _DashboardTabbedScreen(
             controller: _tabController,
             header: _DashboardHeaderModel.empty(null),
@@ -86,8 +60,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             activitySliver: const _SignedOutActivitySliverBody(),
           );
         }
-
-        _lastVisibleUid = user.uid;
 
         final membershipsAsync = ref.watch(
           watchActiveRunClubMembershipsForUserProvider(user.uid),

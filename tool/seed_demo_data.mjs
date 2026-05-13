@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
-import {fileURLToPath} from "node:url";
+import {fileURLToPath, pathToFileURL} from "node:url";
 import {
   assertScheduleCompliance,
   buildScheduleLockDocs,
@@ -168,111 +168,117 @@ const meetingPointData = {
   ],
 };
 
-const args = parseArgs(process.argv.slice(2));
-if (args.help) {
-  printHelp();
-  process.exit(0);
+if (isMain()) {
+  await main();
 }
 
-if (args.listScenarios) {
-  printScenarios();
-  process.exit(0);
-}
-
-const scenario = scenarios[args.scenario];
-if (!scenario) {
-  throw new Error(`Unknown scenario "${args.scenario}". Use --list-scenarios.`);
-}
-
-const projectId = resolveProjectId(args);
-const isProdTarget = isProductionTarget(args, projectId);
-if (args.apply && isProdTarget && !args.allowProd) {
-  throw new Error(
-    "Refusing to write to prod without --allow-prod. Rerun only if this is intentional."
-  );
-}
-if (args.resetSynthetic && !args.apply) {
-  throw new Error("--reset-synthetic only makes sense with --apply.");
-}
-if (args.deleteOnly && !args.apply) {
-  throw new Error("--delete-only requires --apply.");
-}
-if (args.deleteOnly && !args.resetSynthetic) {
-  throw new Error("--delete-only requires --reset-synthetic.");
-}
-if (args.appendAnchors && args.resetSynthetic) {
-  throw new Error("--append-anchors cannot be combined with --reset-synthetic.");
-}
-if (args.appendAnchors && args.deleteOnly) {
-  throw new Error("--append-anchors cannot be combined with --delete-only.");
-}
-if (args.emulatorHost) {
-  process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
-}
-
-admin.initializeApp({projectId});
-const db = admin.firestore();
-
-const anchorSpecs = loadAnchorSpecs(args);
-const anchorProfiles = await loadAnchorProfiles(db, anchorSpecs);
-const missingPublicProfileIds = await findMissingPublicProfiles(
-  db,
-  anchorProfiles.map((profile) => profile.uid)
-);
-const seed = buildSeed({
-  scenarioName: args.scenario,
-  scenario,
-  seedPrefix: args.seedPrefix,
-  anchorProfiles,
-  now: args.appendAnchors ?
-    await readExistingSeedTime(db, `${args.seedPrefix}_${args.scenario}`) :
-    new Date(),
-  includeScheduleLocks: args.includeScheduleLocks,
-});
-const writePlan = args.appendAnchors ?
-  await createAppendWritePlan({db, seed, anchorProfiles}) :
-  createWritePlan(seed);
-
-if (args.json) {
-  console.log(JSON.stringify(summary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}), null, 2));
-} else {
-  printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds});
-}
-
-if (!args.apply) {
-  if (!args.json) {
-    console.log("\nDry run only. Re-run with --apply to write these documents.");
+export async function main(argv = process.argv.slice(2)) {
+  const args = parseArgs(argv);
+  if (args.help) {
+    printHelp();
+    return;
   }
-  process.exit(0);
-}
 
-const resetReport = args.resetSynthetic ?
-  await resetSyntheticData({
+  if (args.listScenarios) {
+    printScenarios();
+    return;
+  }
+
+  const scenario = scenarios[args.scenario];
+  if (!scenario) {
+    throw new Error(`Unknown scenario "${args.scenario}". Use --list-scenarios.`);
+  }
+
+  const projectId = resolveProjectId(args);
+  const isProdTarget = isProductionTarget(args, projectId);
+  if (args.apply && isProdTarget && !args.allowProd) {
+    throw new Error(
+      "Refusing to write to prod without --allow-prod. Rerun only if this is intentional."
+    );
+  }
+  if (args.resetSynthetic && !args.apply) {
+    throw new Error("--reset-synthetic only makes sense with --apply.");
+  }
+  if (args.deleteOnly && !args.apply) {
+    throw new Error("--delete-only requires --apply.");
+  }
+  if (args.deleteOnly && !args.resetSynthetic) {
+    throw new Error("--delete-only requires --reset-synthetic.");
+  }
+  if (args.appendAnchors && args.resetSynthetic) {
+    throw new Error("--append-anchors cannot be combined with --reset-synthetic.");
+  }
+  if (args.appendAnchors && args.deleteOnly) {
+    throw new Error("--append-anchors cannot be combined with --delete-only.");
+  }
+  if (args.emulatorHost) {
+    process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
+  }
+
+  admin.initializeApp({projectId});
+  const db = admin.firestore();
+
+  const anchorSpecs = loadAnchorSpecs(args);
+  const anchorProfiles = await loadAnchorProfiles(db, anchorSpecs);
+  const missingPublicProfileIds = await findMissingPublicProfiles(
     db,
-    manifestId: seed.manifestId,
+    anchorProfiles.map((profile) => profile.uid)
+  );
+  const seed = buildSeed({
+    scenarioName: args.scenario,
+    scenario,
     seedPrefix: args.seedPrefix,
-    fallbackPaths: writePlan.paths,
-  }) :
-  {deleted: 0, source: "skipped"};
-if (args.deleteOnly) {
+    anchorProfiles,
+    now: args.appendAnchors ?
+      await readExistingSeedTime(db, `${args.seedPrefix}_${args.scenario}`) :
+      new Date(),
+    includeScheduleLocks: args.includeScheduleLocks,
+  });
+  const writePlan = args.appendAnchors ?
+    await createAppendWritePlan({db, seed, anchorProfiles}) :
+    createWritePlan(seed);
+
+  if (args.json) {
+    console.log(JSON.stringify(summary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}), null, 2));
+  } else {
+    printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds});
+  }
+
+  if (!args.apply) {
+    if (!args.json) {
+      console.log("\nDry run only. Re-run with --apply to write these documents.");
+    }
+    return;
+  }
+
+  const resetReport = args.resetSynthetic ?
+    await resetSyntheticData({
+      db,
+      manifestId: seed.manifestId,
+      seedPrefix: args.seedPrefix,
+      fallbackPaths: writePlan.paths,
+    }) :
+    {deleted: 0, source: "skipped"};
+  if (args.deleteOnly) {
+    if (!args.json) {
+      console.log("\nSynthetic seed data deleted.");
+      console.log(`Reset source: ${resetReport.source}`);
+      console.log(`Deleted docs: ${resetReport.deleted}`);
+    }
+    return;
+  }
+  const writeReport = await applyWritePlan({db, docs: writePlan.docs});
+  await db.collection("seedRuns").doc(seed.manifestId).set(
+    writePlan.manifest ?? seed.manifest
+  );
+
   if (!args.json) {
-    console.log("\nSynthetic seed data deleted.");
+    console.log("\nSeed applied.");
     console.log(`Reset source: ${resetReport.source}`);
     console.log(`Deleted docs: ${resetReport.deleted}`);
+    console.log(`Written docs: ${writeReport.written}`);
+    console.log(`Manifest: seedRuns/${seed.manifestId}`);
   }
-  process.exit(0);
-}
-const writeReport = await applyWritePlan({db, docs: writePlan.docs});
-await db.collection("seedRuns").doc(seed.manifestId).set(
-  writePlan.manifest ?? seed.manifest
-);
-
-if (!args.json) {
-  console.log("\nSeed applied.");
-  console.log(`Reset source: ${resetReport.source}`);
-  console.log(`Deleted docs: ${resetReport.deleted}`);
-  console.log(`Written docs: ${writeReport.written}`);
-  console.log(`Manifest: seedRuns/${seed.manifestId}`);
 }
 
 function parseArgs(argv) {
@@ -594,6 +600,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
       const lng = cityMeta.lng + ((((index + 3) % 7) - 3) * 0.008);
       const repetition = Math.floor(index / firstNames.length);
       const photo = profilePhotos[(index + repetition) % profilePhotos.length];
+      const thumbnail = thumbnailUrlForPhoto(photo);
       const userDoc = {
         ...seedMarker,
         name: `${firstName} ${lastName}`,
@@ -608,6 +615,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         bio: bios[index % bios.length],
         instagramHandle: `${firstName.toLowerCase()}runs${index + 1}`,
         photoUrls: [photo],
+        photoThumbnailUrls: thumbnail ? [thumbnail] : [],
         city,
         latitude: lat,
         longitude: lng,
@@ -649,6 +657,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         latitude: lat,
         longitude: lng,
         photoUrls: [photo],
+        photoThumbnailUrls: thumbnail ? [thumbnail] : [],
         source: "synthetic",
         userDoc,
         publicProfileDoc: publicProfileFromUserDoc(userDoc),
@@ -677,7 +686,7 @@ function uniqueSyntheticDisplayName({firstName, lastName, city, usedDisplayNames
   return candidate;
 }
 
-function publicProfileFromUserDoc(userDoc) {
+export function publicProfileFromUserDoc(userDoc) {
   return {
     synthetic: userDoc.synthetic,
     seedPrefix: userDoc.seedPrefix,
@@ -687,6 +696,7 @@ function publicProfileFromUserDoc(userDoc) {
     bio: userDoc.bio,
     gender: userDoc.gender,
     photoUrls: userDoc.photoUrls,
+    photoThumbnailUrls: normalizedPhotoThumbnailUrls(userDoc),
     city: userDoc.city,
     height: userDoc.height,
     occupation: userDoc.occupation,
@@ -705,6 +715,38 @@ function publicProfileFromUserDoc(userDoc) {
     preferredDistances: userDoc.preferredDistances,
     runningReasons: userDoc.runningReasons,
   };
+}
+
+export function thumbnailUrlForPhoto(photoUrl) {
+  if (typeof photoUrl !== "string" || photoUrl.length === 0) return null;
+  try {
+    const url = new URL(photoUrl);
+    if (url.hostname === "images.unsplash.com") {
+      url.searchParams.set("auto", "format");
+      url.searchParams.set("fit", "crop");
+      url.searchParams.set("crop", "faces");
+      url.searchParams.set("w", "160");
+      url.searchParams.set("h", "160");
+      url.searchParams.set("q", "55");
+      return url.toString();
+    }
+  } catch {
+    return photoUrl;
+  }
+  return photoUrl;
+}
+
+function normalizedPhotoThumbnailUrls(userDoc) {
+  if (
+    Array.isArray(userDoc.photoThumbnailUrls) &&
+    userDoc.photoThumbnailUrls.length > 0
+  ) {
+    return userDoc.photoThumbnailUrls;
+  }
+  const photoUrls = Array.isArray(userDoc.photoUrls) ? userDoc.photoUrls : [];
+  return photoUrls
+    .map((photoUrl) => thumbnailUrlForPhoto(photoUrl))
+    .filter((photoUrl) => typeof photoUrl === "string" && photoUrl.length > 0);
 }
 
 function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
@@ -1027,7 +1069,7 @@ function matchDoc({seedMarker, userA, userB, run, now}) {
       lastMessageAt: null,
       lastMessagePreview: null,
       lastMessageSenderId: null,
-      unreadCounts: {[user1Id]: 0, [user2Id]: 1},
+      unreadCounts: {[user1Id]: 0, [user2Id]: 0},
       status: "active",
       blockedBy: null,
       blockedAt: null,
@@ -1048,6 +1090,14 @@ function buildMessages({seedPrefix, seedMarker, match, anchor, target, now}) {
     match.doc.lastMessageAt = admin.firestore.Timestamp.fromDate(sentAt);
     match.doc.lastMessagePreview = snippet.text;
     match.doc.lastMessageSenderId = snippet.sender.uid;
+    const recipientId = snippet.sender.uid === match.doc.user1Id ?
+      match.doc.user2Id :
+      match.doc.user1Id;
+    match.doc.unreadCounts = {
+      ...match.doc.unreadCounts,
+      [snippet.sender.uid]: 0,
+      [recipientId]: 1,
+    };
     return {
       matchId: match.id,
       id,
@@ -1303,6 +1353,11 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
   );
   docs = existingTargetFilter.docs;
   docs = await normalizeAppendParticipationsForCapacity(firestore, docs);
+  const relationshipFilter = await filterAppendDocsForValidRelationships(
+    firestore,
+    docs
+  );
+  docs = relationshipFilter.docs;
   const aggregateUpdates = buildAppendAggregateUpdates(docs);
   const mergedPaths = new Set([...existingPaths, ...docs.map((doc) => doc.path)]);
 
@@ -1324,6 +1379,9 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
       finalPathCount: mergedPaths.size,
       skippedMissingTargetCount: existingTargetFilter.skippedPaths.length,
       skippedMissingTargetPaths: existingTargetFilter.skippedPaths,
+      skippedInvalidRelationshipCount:
+        relationshipFilter.skippedPaths.length,
+      skippedInvalidRelationshipPaths: relationshipFilter.skippedPaths,
     },
   };
 }
@@ -1441,7 +1499,7 @@ function stringTargetExists(value, existingIds) {
     existingIds.has(value);
 }
 
-async function normalizeAppendParticipationsForCapacity(firestore, docs) {
+export async function normalizeAppendParticipationsForCapacity(firestore, docs) {
   const removedPaymentIds = new Set();
   const participationsByRun = groupBy(
     docs.filter((doc) =>
@@ -1458,6 +1516,11 @@ async function normalizeAppendParticipationsForCapacity(firestore, docs) {
 
     let bookedCount = Number.isInteger(run.bookedCount) ? run.bookedCount : 0;
     for (const doc of participationDocs) {
+      if (doc.data.status === "attended" && isFutureRun(run)) {
+        doc.data.status = "signedUp";
+        doc.data.attendedAt = null;
+      }
+
       if (bookedCount < run.capacityLimit) {
         bookedCount += 1;
         continue;
@@ -1477,6 +1540,117 @@ async function normalizeAppendParticipationsForCapacity(firestore, docs) {
     !doc.path.startsWith("payments/") ||
     !removedPaymentIds.has(doc.path.split("/")[1])
   );
+}
+
+function isFutureRun(run, now = new Date()) {
+  return run.startTime?.toDate?.() > now;
+}
+
+export async function filterAppendDocsForValidRelationships(firestore, docs) {
+  const participationCache = new Map();
+  for (const doc of docs) {
+    if (!doc.path.startsWith("runParticipations/")) continue;
+    participationCache.set(doc.path.split("/")[1], doc.data);
+  }
+
+  const skippedPaths = [];
+  let kept = [];
+  const skippedMatchIds = new Set();
+
+  for (const doc of docs) {
+    if (!doc.path.startsWith("swipes/")) {
+      kept.push(doc);
+      continue;
+    }
+
+    const valid = await hasValidSwipeAttendance({
+      firestore,
+      doc,
+      participationCache,
+    });
+    if (valid) {
+      kept.push(doc);
+      continue;
+    }
+
+    skippedPaths.push(doc.path);
+    const matchId = matchIdForSwipe(doc);
+    if (matchId) skippedMatchIds.add(matchId);
+  }
+
+  if (skippedMatchIds.size === 0) {
+    return {docs: kept, skippedPaths};
+  }
+
+  const nextKept = [];
+  for (const doc of kept) {
+    const parts = doc.path.split("/");
+    const isSkippedMatch = parts[0] === "matches" &&
+      skippedMatchIds.has(parts[1]);
+    const isSkippedMatchNotification = parts[0] === "notifications" &&
+      parts[2] === "items" &&
+      skippedMatchIds.has(doc.data.matchId);
+    if (isSkippedMatch || isSkippedMatchNotification) {
+      skippedPaths.push(doc.path);
+      continue;
+    }
+    nextKept.push(doc);
+  }
+
+  kept = nextKept.filter((doc) => {
+    const parts = doc.path.split("/");
+    const isMessage = parts[0] === "matches" && parts[2] === "messages";
+    if (!isMessage || !skippedMatchIds.has(parts[1])) return true;
+    skippedPaths.push(doc.path);
+    return false;
+  });
+
+  return {docs: kept, skippedPaths};
+}
+
+async function hasValidSwipeAttendance({firestore, doc, participationCache}) {
+  const {runId, swiperId, targetId} = doc.data;
+  if (
+    typeof runId !== "string" ||
+    typeof swiperId !== "string" ||
+    typeof targetId !== "string"
+  ) {
+    return false;
+  }
+
+  const [swiperParticipation, targetParticipation] = await Promise.all([
+    effectiveParticipation({firestore, participationCache, runId, uid: swiperId}),
+    effectiveParticipation({firestore, participationCache, runId, uid: targetId}),
+  ]);
+  return swiperParticipation?.status === "attended" &&
+    targetParticipation?.status === "attended";
+}
+
+async function effectiveParticipation({
+  firestore,
+  participationCache,
+  runId,
+  uid,
+}) {
+  const id = `${runId}_${uid}`;
+  if (participationCache.has(id)) return participationCache.get(id);
+  const snap = await firestore.collection("runParticipations").doc(id).get();
+  const data = snap.exists ? snap.data() : null;
+  participationCache.set(id, data);
+  return data;
+}
+
+function matchIdForSwipe(doc) {
+  const {swiperId, targetId, direction} = doc.data;
+  if (
+    direction !== "like" ||
+    typeof swiperId !== "string" ||
+    typeof targetId !== "string" ||
+    swiperId === targetId
+  ) {
+    return null;
+  }
+  return [swiperId, targetId].sort().join("_");
 }
 
 function buildAppendAggregateUpdates(docs) {
@@ -1703,6 +1877,11 @@ function countKeyForPath(docPath) {
   if (/^swipes\/[^/]+\/outgoing\//.test(docPath)) return "swipes";
   if (/^notifications\/[^/]+\/items\//.test(docPath)) return "notifications";
   return docPath.split("/")[0];
+}
+
+function isMain() {
+  return process.argv[1] &&
+    import.meta.url === pathToFileURL(process.argv[1]).href;
 }
 
 function syntheticPublicIdentityDiagnostics(docs) {

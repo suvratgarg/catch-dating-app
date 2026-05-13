@@ -26,6 +26,7 @@ import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_location_map_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
+import 'package:catch_dating_app/runs/presentation/saved_runs_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/run_recap_screen.dart';
@@ -48,6 +49,8 @@ enum Routes {
   onboardingScreen('/onboarding'),
   calendarScreen('/calendar'),
   calendarRunDetailScreen('/calendar/run-clubs/:runClubId/runs/:runId'),
+  savedRunsScreen('/saved-runs'),
+  savedRunDetailScreen('/saved-runs/run-clubs/:runClubId/runs/:runId'),
   filtersScreen('/filters'),
   runMapScreen('/map'),
   dashboardRunDetailScreen('/dashboard/run-clubs/:runClubId/runs/:runId'),
@@ -138,6 +141,19 @@ GoRouter goRouter(Ref ref) {
       GoRoute(
         path: Routes.calendarRunDetailScreen.path,
         name: Routes.calendarRunDetailScreen.name,
+        builder: (context, state) => RunDetailScreen(
+          runClubId: state.pathParameters['runClubId']!,
+          runId: state.pathParameters['runId']!,
+        ),
+      ),
+      GoRoute(
+        path: Routes.savedRunsScreen.path,
+        name: Routes.savedRunsScreen.name,
+        builder: (context, state) => const SavedRunsScreen(),
+      ),
+      GoRoute(
+        path: Routes.savedRunDetailScreen.path,
+        name: Routes.savedRunDetailScreen.name,
         builder: (context, state) => RunDetailScreen(
           runClubId: state.pathParameters['runClubId']!,
           runId: state.pathParameters['runId']!,

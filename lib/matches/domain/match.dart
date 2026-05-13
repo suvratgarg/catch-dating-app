@@ -35,6 +35,16 @@ abstract class Match with _$Match {
   String? get latestRunId => runIds.isEmpty ? null : runIds.last;
 
   bool get isBlocked => status == MatchStatus.blocked;
+
+  bool hasUnreadIncomingFor(String uid) =>
+      !isBlocked &&
+      lastMessagePreview != null &&
+      lastMessageSenderId != null &&
+      lastMessageSenderId != uid &&
+      (unreadCounts[uid] ?? 0) > 0;
+
+  int unreadConversationCountFor(String uid) =>
+      hasUnreadIncomingFor(uid) ? 1 : 0;
 }
 
 Object? _readRunIds(Map json, String key) {

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -18,6 +19,7 @@ abstract class RunClubsListViewModel with _$RunClubsListViewModel {
     required List<RunClub> joinedClubs,
     required List<RunClub> allClubs,
     @Default({}) Set<String> joinedClubIds,
+    @Default({}) Set<String> hostedClubIds,
   }) = _RunClubsListViewModel;
 
   bool get isEmpty => allClubs.isEmpty;
@@ -25,19 +27,23 @@ abstract class RunClubsListViewModel with _$RunClubsListViewModel {
   factory RunClubsListViewModel.partition({
     required List<RunClub> clubs,
     required Set<String> joinedClubIds,
+    Set<String> hostedClubIds = const {},
   }) {
     final joinedClubs = <RunClub>[];
+    final activeClubIds = <String>{};
 
     for (final club in clubs) {
       if (joinedClubIds.contains(club.id)) {
         joinedClubs.add(club);
+        activeClubIds.add(club.id);
       }
     }
 
     return RunClubsListViewModel(
       joinedClubs: List.unmodifiable(joinedClubs),
       allClubs: List.unmodifiable(clubs),
-      joinedClubIds: joinedClubs.map((c) => c.id).toSet(),
+      joinedClubIds: activeClubIds,
+      hostedClubIds: hostedClubIds.intersection(activeClubIds),
     );
   }
 }
@@ -68,6 +74,12 @@ class SelectedRunClubCity extends _$SelectedRunClubCity {
       state = city;
       ref.read(runClubSearchQueryProvider.notifier).clear();
     }
+  }
+
+  void autoSelectCityByName(String? cityName) {
+    final city = cityOptionByName(cityName)?.toCityData();
+    if (city == null) return;
+    autoSelectCity(city);
   }
 }
 
@@ -177,7 +189,11 @@ AsyncValue<RunClubsListViewModel> runClubsListViewModel(Ref ref) {
   final joinedClubIds = {...membershipClubIds, ...hostedClubIds};
 
   return AsyncData(
-    RunClubsListViewModel.partition(clubs: clubs, joinedClubIds: joinedClubIds),
+    RunClubsListViewModel.partition(
+      clubs: clubs,
+      joinedClubIds: joinedClubIds,
+      hostedClubIds: hostedClubIds,
+    ),
   );
 }
 

@@ -6,12 +6,15 @@ import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 
+typedef RunBadgeLabelBuilder = String? Function(Run run);
+
 class RunAgendaList extends StatelessWidget {
   const RunAgendaList({
     super.key,
     required this.runs,
     this.onRunSelected,
     this.badgeLabel,
+    this.badgeLabelBuilder,
     this.today,
     this.preserveInputOrder = false,
   });
@@ -19,6 +22,7 @@ class RunAgendaList extends StatelessWidget {
   final List<Run> runs;
   final ValueChanged<Run>? onRunSelected;
   final String? badgeLabel;
+  final RunBadgeLabelBuilder? badgeLabelBuilder;
   final DateTime? today;
   final bool preserveInputOrder;
 
@@ -30,6 +34,7 @@ class RunAgendaList extends StatelessWidget {
           runs: runs,
           onRunSelected: onRunSelected,
           badgeLabel: badgeLabel,
+          badgeLabelBuilder: badgeLabelBuilder,
           today: today,
           preserveInputOrder: preserveInputOrder,
         ),
@@ -44,6 +49,7 @@ class RunAgendaSliverList extends StatelessWidget {
     required this.runs,
     this.onRunSelected,
     this.badgeLabel,
+    this.badgeLabelBuilder,
     this.today,
     this.preserveInputOrder = false,
   });
@@ -51,6 +57,7 @@ class RunAgendaSliverList extends StatelessWidget {
   final List<Run> runs;
   final ValueChanged<Run>? onRunSelected;
   final String? badgeLabel;
+  final RunBadgeLabelBuilder? badgeLabelBuilder;
   final DateTime? today;
   final bool preserveInputOrder;
 
@@ -83,7 +90,7 @@ class RunAgendaSliverList extends StatelessWidget {
             for (final run in entry.value) ...[
               RunAgendaRunCard(
                 run: run,
-                badgeLabel: badgeLabel,
+                badgeLabel: badgeLabelBuilder?.call(run) ?? badgeLabel,
                 onTap: onRunSelected == null
                     ? null
                     : () => onRunSelected!.call(run),

@@ -57,7 +57,7 @@ reviewers for `prod`.
 - Run `npm --prefix functions run lint`.
 - Run `npm --prefix functions test`.
 - Run Firestore rules tests through the emulator:
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
+  `firebase emulators:exec --only firestore,storage "npm --prefix functions run test:rules"`.
 - Make the beta data strategy explicit: reset demo data or validate migration
   tooling before production users depend on the new schema.
 - Confirm Remote Config force-update values are planned but not raised until a

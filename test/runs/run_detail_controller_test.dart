@@ -187,6 +187,46 @@ void main() {
       expect(result.error, isA<StateError>());
     });
 
+    test('keeps the detail page available when saved state fails', () {
+      final result = buildRunDetailViewModel(
+        runAsync: AsyncData(buildRun()),
+        userProfileAsync: AsyncData(buildUser()),
+        reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: AsyncError(
+          StateError('saved run failed'),
+          StackTrace.empty,
+        ),
+        participationAsync: const AsyncData(null),
+        currentUid: 'runner-1',
+        isAuthenticated: true,
+      );
+
+      expect(result.hasError, isFalse);
+      expect(result.requireValue, isNotNull);
+      expect(result.requireValue!.isSaved, isFalse);
+    });
+
+    test('keeps the detail page available when participation state fails', () {
+      final result = buildRunDetailViewModel(
+        runAsync: AsyncData(buildRun()),
+        userProfileAsync: AsyncData(buildUser()),
+        reviewsAsync: const AsyncData(<Review>[]),
+        runClubAsync: AsyncData(buildRunClub()),
+        savedRunAsync: const AsyncData(null),
+        participationAsync: AsyncError(
+          StateError('participation failed'),
+          StackTrace.empty,
+        ),
+        currentUid: 'runner-1',
+        isAuthenticated: true,
+      );
+
+      expect(result.hasError, isFalse);
+      expect(result.requireValue, isNotNull);
+      expect(result.requireValue!.participation, isNull);
+    });
+
     test(
       'provider wires together the run, user, and reviews streams',
       () async {

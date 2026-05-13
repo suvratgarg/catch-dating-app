@@ -1,12 +1,14 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -33,6 +35,13 @@ class FakeSwipeCandidateRepository extends Fake
     required String runId,
     required currentUser,
   }) async => const [];
+}
+
+class HangingUserProfileRepository extends Fake
+    implements UserProfileRepository {
+  @override
+  Future<UserProfile?> fetchUserProfile({required String? uid}) =>
+      Completer<UserProfile?>().future;
 }
 
 void main() {
@@ -88,6 +97,7 @@ void main() {
         authRepository.currentUserValue = TestUser(uid: 'runner-1');
         final container = ProviderContainer(
           overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
             ),
@@ -134,6 +144,7 @@ void main() {
         swipeRepository.recordCompleter = Completer<void>();
         final container = ProviderContainer(
           overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
             watchUserProfileProvider.overrideWith(
               (ref) => Stream.value(buildUser(uid: 'runner-1')),
             ),
@@ -179,5 +190,42 @@ void main() {
         );
       },
     );
+
+    test('surfaces a retryable timeout instead of loading forever', () async {
+      final container = ProviderContainer(
+        overrides: [
+          swipeQueueLoadTimeoutProvider.overrideWithValue(
+            const Duration(milliseconds: 1),
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          userProfileRepositoryProvider.overrideWithValue(
+            HangingUserProfileRepository(),
+          ),
+          swipeCandidateRepositoryProvider.overrideWith(
+            (ref) => candidateRepository,
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final sub = container.listen(
+        swipeQueueProvider('run-1'),
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(sub.close);
+
+      await Future<void>.delayed(const Duration(milliseconds: 5));
+      await container.pump();
+
+      final state = container.read(swipeQueueProvider('run-1'));
+      expect(state.hasError, isTrue);
+      expect(
+        state.error,
+        isA<BackendOperationException>()
+            .having((e) => e.code, 'code', 'swipe-candidates-timeout')
+            .having((e) => e.retryable, 'retryable', isTrue),
+      );
+    });
   });
 }

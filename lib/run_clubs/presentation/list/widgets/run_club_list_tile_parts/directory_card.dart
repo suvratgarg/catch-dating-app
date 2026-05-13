@@ -4,11 +4,13 @@ class _DirectoryCard extends StatelessWidget {
   const _DirectoryCard({
     required this.club,
     required this.isJoined,
+    required this.isHost,
     this.onTap,
   });
 
   final RunClub club;
   final bool isJoined;
+  final bool isHost;
   final VoidCallback? onTap;
 
   @override
@@ -118,7 +120,11 @@ class _DirectoryCard extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 10),
-                      _MembershipButton(clubId: club.id, isJoined: isJoined),
+                      _MembershipButton(
+                        clubId: club.id,
+                        isJoined: isJoined,
+                        isHost: isHost,
+                      ),
                     ],
                   ),
                 ],
@@ -142,14 +148,33 @@ List<String> _visibleTags(RunClub club) {
 }
 
 class _MembershipButton extends StatelessWidget {
-  const _MembershipButton({required this.clubId, required this.isJoined});
+  const _MembershipButton({
+    required this.clubId,
+    required this.isJoined,
+    required this.isHost,
+  });
 
   final String clubId;
   final bool isJoined;
+  final bool isHost;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+
+    if (isHost) {
+      return CatchButton(
+        label: 'Host',
+        onPressed: null,
+        variant: CatchButtonVariant.secondary,
+        size: CatchButtonSize.sm,
+        icon: Icon(Icons.shield_rounded, size: 16, color: t.primary),
+        isInteractive: false,
+        backgroundColor: t.primary.withValues(alpha: 0.10),
+        foregroundColor: t.primary,
+        borderColor: t.primary.withValues(alpha: 0.22),
+      );
+    }
 
     if (isJoined) {
       return CatchButton(

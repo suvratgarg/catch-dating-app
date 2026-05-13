@@ -57,6 +57,28 @@ void main() {
       expect(descriptor.retryable, isTrue);
     });
 
+    test('uses catches copy for swipe load failures', () {
+      const error = BackendOperationException(
+        code: 'swipe-candidates-timeout',
+        message: 'Swipe profiles are taking too long to load.',
+        context: BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'load swipe candidates',
+          resource: 'swipe_candidates',
+        ),
+        retryable: true,
+      );
+
+      final descriptor = appErrorDescriptor(
+        error,
+        context: AppErrorContext.swipes,
+      );
+
+      expect(descriptor.title, 'Catches unavailable');
+      expect(descriptor.retryLabel, 'Reload catches');
+      expect(descriptor.retryable, isTrue);
+    });
+
     test('describes storage and external action failures', () {
       final upload = appErrorDescriptor(
         const StorageException(

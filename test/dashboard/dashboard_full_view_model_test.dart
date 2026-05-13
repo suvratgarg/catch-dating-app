@@ -136,6 +136,19 @@ void main() {
       );
     });
 
+    test('removes already booked runs from recommendations', () {
+      final booked = buildRun(id: 'booked');
+      final unbooked = buildRun(id: 'recommended');
+
+      final viewModel = buildDashboardFullViewModel(
+        signedUpRuns: [booked],
+        attendedRunsAsync: const AsyncData<List<Run>>([]),
+        recommendedRunsAsync: AsyncData<List<Run>>([booked, unbooked]),
+      );
+
+      expect(viewModel.recommendationsSection.data, [unbooked]);
+    });
+
     test('selects self check-in during the run check-in window', () {
       final now = DateTime(2026, 4, 23, 8, 55);
       final run = buildRun(

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
@@ -21,37 +22,52 @@ class RunDetailOverviewSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final description = run.description.trim();
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(run.title, style: CatchTextStyles.displayL(context)),
-        const SizedBox(height: 6),
+        gapH6,
         Row(
           children: [
             VibeTag(label: run.pace.label, active: true),
-            const SizedBox(width: 6),
+            gapW6,
             Text(
               run.shortDateLabel,
               style: CatchTextStyles.bodyS(context, color: t.ink2),
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        gapH20,
         RunStatsGrid(run: run),
-        const SizedBox(height: 20),
+        gapH20,
         WhenWhereCard(run: run, onLocationTap: onLocationTap),
-        if (run.description.isNotEmpty) ...[
-          const SizedBox(height: 16),
-          Text(
-            run.description,
-            style: CatchTextStyles.bodyM(context, color: t.ink2),
-          ),
+        if (description.isNotEmpty) ...[
+          gapH20,
+          _RunDescription(description: description),
         ],
-        if (run.hasRequirements) ...[
-          const SizedBox(height: 20),
-          RequirementsRow(run: run),
-        ],
+        if (run.hasRequirements) ...[gapH20, RequirementsRow(run: run)],
+      ],
+    );
+  }
+}
+
+class _RunDescription extends StatelessWidget {
+  const _RunDescription({required this.description});
+
+  final String description;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('About this run', style: CatchTextStyles.titleM(context)),
+        gapH8,
+        Text(description, style: CatchTextStyles.bodyM(context, color: t.ink2)),
       ],
     );
   }

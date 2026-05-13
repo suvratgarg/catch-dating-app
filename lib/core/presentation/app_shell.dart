@@ -113,7 +113,6 @@ class _AppShellNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final selectedIndex = navigationShell.currentIndex;
     void onDestinationSelected(int index) => navigationShell.goBranch(
       index,
@@ -121,6 +120,7 @@ class _AppShellNavigationBar extends StatelessWidget {
     );
 
     if (prefersCupertinoControls()) {
+      final t = CatchTokens.of(context);
       return CupertinoTabBar(
         key: AppShellKeys.navigationBar,
         currentIndex: selectedIndex,
@@ -146,11 +146,11 @@ class _AppShellNavigationBar extends StatelessWidget {
             label: 'Catches',
           ),
           BottomNavigationBarItem(
-            icon: _NavigationBadge(
+            icon: AppShellNavigationBadge(
               count: unreadCount,
               child: const Icon(CupertinoIcons.chat_bubble_2),
             ),
-            activeIcon: _NavigationBadge(
+            activeIcon: AppShellNavigationBadge(
               count: unreadCount,
               child: const Icon(CupertinoIcons.chat_bubble_2_fill),
             ),
@@ -191,13 +191,13 @@ class _AppShellNavigationBar extends StatelessWidget {
         // 3 — Chats
         NavigationDestination(
           icon: unreadCount > 0
-              ? _NavigationBadge(
+              ? AppShellNavigationBadge(
                   count: unreadCount,
                   child: const Icon(Icons.chat_bubble_outline_rounded),
                 )
               : const Icon(Icons.chat_bubble_outline_rounded),
           selectedIcon: unreadCount > 0
-              ? _NavigationBadge(
+              ? AppShellNavigationBadge(
                   count: unreadCount,
                   child: const Icon(Icons.chat_bubble_rounded),
                 )
@@ -215,8 +215,13 @@ class _AppShellNavigationBar extends StatelessWidget {
   }
 }
 
-class _NavigationBadge extends StatelessWidget {
-  const _NavigationBadge({required this.count, required this.child});
+@visibleForTesting
+class AppShellNavigationBadge extends StatelessWidget {
+  const AppShellNavigationBadge({
+    super.key,
+    required this.count,
+    required this.child,
+  });
 
   final int count;
   final Widget child;
@@ -228,32 +233,44 @@ class _NavigationBadge extends StatelessWidget {
     final t = CatchTokens.of(context);
     final label = count > 99 ? '99+' : '$count';
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        child,
-        Positioned(
-          top: -6,
-          right: -10,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: t.primary,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-              border: Border.all(color: t.surface, width: 1.5),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-              child: Text(
-                label,
-                style: CatchTextStyles.labelS(
-                  context,
-                  color: t.primaryInk,
-                ).copyWith(fontSize: 10),
+    return SizedBox(
+      width: 38,
+      height: 30,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Align(alignment: Alignment.bottomCenter, child: child),
+          Positioned(
+            top: 0,
+            right: 1,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: t.primary,
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
+                border: Border.all(color: t.surface, width: 1.5),
+              ),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 1,
+                  ),
+                  child: Center(
+                    child: Text(
+                      label,
+                      style: CatchTextStyles.labelS(
+                        context,
+                        color: t.primaryInk,
+                      ).copyWith(fontSize: 10, height: 1),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

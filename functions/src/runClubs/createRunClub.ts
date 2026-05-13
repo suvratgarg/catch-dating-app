@@ -11,6 +11,7 @@ import {
   activeRunClubMembershipPatch,
   runClubMembershipId,
 } from "../shared/relationshipDocuments";
+import {publicAvatarUrl, publicDisplayName} from "../shared/profileProjection";
 
 const CityNameSchema = z.string().trim().min(1).max(80)
   .regex(/^[a-z0-9-]+$/);
@@ -121,8 +122,8 @@ export async function createRunClubHandler(
       location: data.location,
       area: data.area,
       hostUserId,
-      hostName: user.name,
-      hostAvatarUrl: user.photoUrls[0] ?? null,
+      hostName: publicDisplayName(user),
+      hostAvatarUrl: publicAvatarUrl(user),
       createdAt: deps.serverTimestamp(),
       imageUrl: data.imageUrl ?? null,
       tags: [],

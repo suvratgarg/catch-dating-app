@@ -66,7 +66,7 @@ final class RunHypeAvatarsProvider
   }
 }
 
-String _$runHypeAvatarsHash() => r'3439047d7850a3c0eb241411bed3ea7f0a708454';
+String _$runHypeAvatarsHash() => r'6b51b40c5ba7bb72edc2566b633241fb29ebea58';
 
 final class RunHypeAvatarsFamily extends $Family
     with

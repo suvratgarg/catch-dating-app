@@ -202,3 +202,76 @@ final class WatchSavedRunFamily extends $Family
   @override
   String toString() => r'watchSavedRunProvider';
 }
+
+@ProviderFor(watchSavedRunDetailsForUser)
+final watchSavedRunDetailsForUserProvider =
+    WatchSavedRunDetailsForUserFamily._();
+
+final class WatchSavedRunDetailsForUserProvider
+    extends
+        $FunctionalProvider<AsyncValue<List<Run>>, List<Run>, Stream<List<Run>>>
+    with $FutureModifier<List<Run>>, $StreamProvider<List<Run>> {
+  WatchSavedRunDetailsForUserProvider._({
+    required WatchSavedRunDetailsForUserFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchSavedRunDetailsForUserProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchSavedRunDetailsForUserHash();
+
+  @override
+  String toString() {
+    return r'watchSavedRunDetailsForUserProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<List<Run>> $createElement($ProviderPointer pointer) =>
+      $StreamProviderElement(pointer);
+
+  @override
+  Stream<List<Run>> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchSavedRunDetailsForUser(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchSavedRunDetailsForUserProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchSavedRunDetailsForUserHash() =>
+    r'ad36c90feb2ba3b4850415e68146fba38d1536dd';
+
+final class WatchSavedRunDetailsForUserFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<List<Run>>, String> {
+  WatchSavedRunDetailsForUserFamily._()
+    : super(
+        retry: null,
+        name: r'watchSavedRunDetailsForUserProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchSavedRunDetailsForUserProvider call(String uid) =>
+      WatchSavedRunDetailsForUserProvider._(argument: uid, from: this);
+
+  @override
+  String toString() => r'watchSavedRunDetailsForUserProvider';
+}
