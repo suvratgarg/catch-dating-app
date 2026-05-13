@@ -1,8 +1,10 @@
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -50,5 +52,95 @@ void main() {
 
     expect(labelRect.top, greaterThanOrEqualTo(boxRect.top));
     expect(labelRect.right, lessThanOrEqualTo(boxRect.right));
+  });
+
+  test('app notice controller dedupes notices by key', () {
+    final container = ProviderContainer();
+    addTearDown(container.dispose);
+
+    final controller = container.read(appNoticeControllerProvider.notifier);
+    controller.show(
+      const AppNotice(
+        id: 'match.first',
+        title: 'First match',
+        dedupeKey: 'match',
+      ),
+    );
+    controller.show(
+      const AppNotice(
+        id: 'match.second',
+        title: 'Second match',
+        dedupeKey: 'match',
+      ),
+    );
+
+    final notices = container.read(appNoticeControllerProvider).notices;
+    expect(notices, hasLength(1));
+    expect(notices.single.title, 'Second match');
+  });
+
+  testWidgets('persistent app notices render below the safe area', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: MediaQuery(
+            data: const MediaQueryData(
+              size: Size(393, 852),
+              padding: EdgeInsets.only(top: 59),
+            ),
+            child: const Scaffold(
+              body: CatchNoticeHost(
+                persistentNotices: [AppNotice.offline()],
+                child: SizedBox.expand(),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final notice = find.byKey(
+      const ValueKey('app_notice.connectivity.offline'),
+    );
+    expect(notice, findsOneWidget);
+    expect(find.byType(MaterialBanner), findsNothing);
+    expect(tester.getTopLeft(notice).dy, greaterThanOrEqualTo(59 + 12));
+  });
+
+  testWidgets('ephemeral app notices dismiss after their duration', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: const Scaffold(body: CatchNoticeHost(child: SizedBox.expand())),
+        ),
+      ),
+    );
+
+    final context = tester.element(find.byType(CatchNoticeHost));
+    ProviderScope.containerOf(context)
+        .read(appNoticeControllerProvider.notifier)
+        .show(
+          const AppNotice(
+            id: 'match.created',
+            title: 'New match',
+            message: 'You matched with Ananya.',
+            tone: CatchNoticeTone.event,
+            duration: Duration(milliseconds: 20),
+          ),
+        );
+
+    await tester.pump();
+    expect(find.text('New match'), findsOneWidget);
+
+    final autoDismissDelay = const Duration(milliseconds: 25);
+    await tester.pump(autoDismissDelay);
+    await tester.pump();
+    expect(find.text('New match'), findsNothing);
   });
 }

@@ -155,7 +155,7 @@ void main() {
     expect(selected, 'edit');
   });
 
-  testWidgets('CatchSliverHeader scrolls title up beneath pinned bottom', (
+  testWidgets('CatchSliverHeader naturally sizes title above pinned bottom', (
     tester,
   ) async {
     await tester.pumpWidget(
@@ -166,11 +166,12 @@ void main() {
             builder: (context) => CustomScrollView(
               slivers: [
                 ...const CatchSliverHeader(
-                  titleHeight: 112,
                   bottomHeight: 48,
                   title: Padding(
+                    key: ValueKey('natural-sliver-title'),
                     padding: EdgeInsets.all(16),
                     child: Column(
+                      mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text('Sticky title'),
@@ -180,6 +181,7 @@ void main() {
                     ),
                   ),
                   bottom: ColoredBox(
+                    key: ValueKey('pinned-sliver-bottom'),
                     color: Colors.white,
                     child: Center(child: Text('Pinned bottom')),
                   ),
@@ -195,7 +197,15 @@ void main() {
 
     expect(tester.takeException(), isNull);
     final initialTitleTop = tester.getTopLeft(find.text('Sticky title')).dy;
-    final initialBottomTop = tester.getTopLeft(find.text('Pinned bottom')).dy;
+    final initialBottomTop = tester
+        .getTopLeft(find.byKey(const ValueKey('pinned-sliver-bottom')))
+        .dy;
+    final initialTitleBottom = tester
+        .getBottomLeft(find.byKey(const ValueKey('natural-sliver-title')))
+        .dy;
+
+    expect(initialBottomTop, greaterThanOrEqualTo(initialTitleBottom));
+    expect(initialBottomTop - initialTitleBottom, lessThanOrEqualTo(1));
 
     await tester.drag(find.byType(CustomScrollView), const Offset(0, -48));
     await tester.pump();
@@ -206,7 +216,7 @@ void main() {
       lessThan(initialTitleTop),
     );
     expect(
-      tester.getTopLeft(find.text('Pinned bottom')).dy,
+      tester.getTopLeft(find.byKey(const ValueKey('pinned-sliver-bottom'))).dy,
       lessThan(initialBottomTop),
     );
 

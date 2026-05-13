@@ -12,6 +12,7 @@ class ProfileCard extends StatelessWidget {
     this.horizontalOffsetPercentage = 0,
     this.scrollController,
     this.onLeadingOverscroll,
+    this.bottomPadding = 24,
   });
 
   final PublicProfile profile;
@@ -21,6 +22,7 @@ class ProfileCard extends StatelessWidget {
   final int horizontalOffsetPercentage;
   final ScrollController? scrollController;
   final ValueChanged<double>? onLeadingOverscroll;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +34,8 @@ class ProfileCard extends StatelessWidget {
 
     return Semantics(
       label: 'Profile of ${profile.name}, ${profile.age}',
-      hint: 'Swipe left to pass, right to like. Tap to view full profile.',
+      hint:
+          'Swipe left to pass, right to like. Scroll to read the full profile.',
       child: DecoratedBox(
         decoration: BoxDecoration(
           color: palette.background,
@@ -56,6 +59,7 @@ class ProfileCard extends StatelessWidget {
                   cardHeight: constraints.maxHeight,
                   scrollController: scrollController,
                   onLeadingOverscroll: onLeadingOverscroll,
+                  bottomPadding: bottomPadding,
                 ),
                 Positioned(
                   top: 48,

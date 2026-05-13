@@ -93,6 +93,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             final viewModel = ref.watch(
               dashboardFullViewModelProvider(
                 signedUpRuns: signedUpRuns,
+                user: user,
                 uid: user.uid,
                 followedClubIds: followedClubIds,
               ),
@@ -220,7 +221,7 @@ class _DashboardHeaderModel {
   final Widget avatar;
 
   factory _DashboardHeaderModel.empty(UserProfile? user) {
-    final firstName = user?.name.split(' ').first ?? '';
+    final firstName = user?.greetingDisplayName ?? '';
     return _DashboardHeaderModel(
       eyebrow: 'WELCOME TO CATCH',
       title: "Let's find your first run",
@@ -233,7 +234,7 @@ class _DashboardHeaderModel {
   }
 
   factory _DashboardHeaderModel.full(BuildContext context, UserProfile user) {
-    final firstName = user.name.split(' ').first;
+    final firstName = user.greetingDisplayName;
     final t = CatchTokens.of(context);
     return _DashboardHeaderModel(
       eyebrow: DashboardFull.dayCity(cityLabel(user.city)).toUpperCase(),
@@ -249,7 +250,7 @@ class _DashboardHeaderModel {
             customBorder: const CircleBorder(),
             child: PersonAvatar(
               size: 42,
-              name: user.name,
+              name: user.publicDisplayName,
               imageUrl: user.primaryPhotoThumbnailUrl,
               borderWidth: 2,
               borderColor: t.primary,

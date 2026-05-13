@@ -13,7 +13,6 @@ class ProfileSliverHeader {
   List<Widget> buildSlivers(BuildContext context) {
     final header = CatchSliverHeader(
       title: const _ProfileTitle(),
-      titleHeight: 104,
       bottomHeight: 48,
       bottom: _ProfileTabBar(controller: controller),
     );

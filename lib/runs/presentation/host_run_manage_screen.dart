@@ -1,20 +1,87 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
-import 'package:catch_dating_app/core/widgets/stat_column.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
+import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation_roster.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class HostRunManageRouteScreen extends ConsumerWidget {
+  const HostRunManageRouteScreen({
+    super.key,
+    required this.runClubId,
+    required this.runId,
+  });
+
+  final String runClubId;
+  final String runId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final uidAsync = ref.watch(uidProvider);
+    final runClubAsync = ref.watch(fetchRunClubProvider(runClubId));
+    final runAsync = ref.watch(watchRunProvider(runId));
+
+    final loading =
+        uidAsync.isLoading || runClubAsync.isLoading || runAsync.isLoading;
+    if (loading) {
+      return Scaffold(
+        backgroundColor: CatchTokens.of(context).bg,
+        body: const SafeArea(child: Center(child: CatchLoadingIndicator())),
+      );
+    }
+
+    final error = uidAsync.error ?? runClubAsync.error ?? runAsync.error;
+    if (error != null) {
+      return CatchErrorScaffold.fromError(
+        error,
+        context: AppErrorContext.run,
+        onRetry: () {
+          ref.invalidate(fetchRunClubProvider(runClubId));
+          ref.invalidate(watchRunProvider(runId));
+        },
+      );
+    }
+
+    final uid = uidAsync.asData?.value;
+    final runClub = runClubAsync.asData?.value;
+    final run = runAsync.asData?.value;
+    if (runClub == null || run == null) {
+      return const CatchErrorScaffold(
+        title: 'Run not found',
+        message: 'This hosted run is no longer available.',
+      );
+    }
+
+    if (uid == null || runClub.hostUserId != uid) {
+      return const CatchErrorScaffold(
+        title: 'Action unavailable',
+        message: 'You can manage only runs that you host.',
+        icon: Icons.block_rounded,
+      );
+    }
+
+    return HostRunManageScreen(
+      runClub: runClub,
+      run: run,
+      onBackToSuccess: () => Navigator.of(context).maybePop(),
+    );
+  }
+}
 
 class HostRunManageScreen extends ConsumerWidget {
   const HostRunManageScreen({
@@ -58,7 +125,7 @@ class HostRunManageScreen extends ConsumerWidget {
                     color: t.ink,
                   ),
                 ),
-                const SizedBox(width: 12),
+                gapW12,
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -77,17 +144,17 @@ class HostRunManageScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 18),
+            gapH18,
             if (run.isFull) ...[
               CatchSurface(
-                padding: const EdgeInsets.all(14),
+                padding: const EdgeInsets.all(CatchSpacing.s4),
                 backgroundColor: t.ink,
                 borderWidth: 0,
                 radius: CatchRadius.lg,
                 child: Row(
                   children: [
                     Icon(Icons.lock_rounded, color: t.surface, size: 18),
-                    const SizedBox(width: 10),
+                    gapW10,
                     Text(
                       'FULL',
                       style: CatchTextStyles.titleM(context, color: t.surface),
@@ -95,7 +162,7 @@ class HostRunManageScreen extends ConsumerWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 12),
+              gapH12,
             ],
             Row(
               children: [
@@ -104,13 +171,13 @@ class HostRunManageScreen extends ConsumerWidget {
                   value: '$bookedCount/${run.capacityLimit}',
                   label: 'Booked',
                 ),
-                const SizedBox(width: 8),
+                gapW8,
                 _HostRunStatCard(
                   icon: Icons.access_time_rounded,
                   value: '$waitlistCount',
                   label: 'Waitlist',
                 ),
-                const SizedBox(width: 8),
+                gapW8,
                 _HostRunStatCard(
                   icon: Icons.currency_rupee_rounded,
                   value: revenueRupees > 0 ? '₹$revenueRupees' : '-',
@@ -118,11 +185,15 @@ class HostRunManageScreen extends ConsumerWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 20),
+            gapH20,
             _HostRunSummaryCard(runClub: runClub, run: run),
-            const SizedBox(height: 20),
-            Text('Roster', style: CatchTextStyles.titleL(context)),
-            const SizedBox(height: 10),
+            gapH20,
+            _HostRosterHeader(
+              icon: Icons.groups_2_outlined,
+              title: 'Roster',
+              count: bookedCount,
+            ),
+            gapH10,
             _HostRunRosterSection(
               rosterAsync: rosterAsync,
               runId: run.id,
@@ -131,9 +202,13 @@ class HostRunManageScreen extends ConsumerWidget {
               loadingText: 'Loading bookings...',
               trailingLabel: run.isFree ? 'FREE' : 'PAID',
             ),
-            const SizedBox(height: 20),
-            Text('Waitlist', style: CatchTextStyles.titleL(context)),
-            const SizedBox(height: 10),
+            gapH20,
+            _HostRosterHeader(
+              icon: Icons.pending_actions_outlined,
+              title: 'Waitlist',
+              count: waitlistCount,
+            ),
+            gapH10,
             _HostRunRosterSection(
               rosterAsync: rosterAsync,
               runId: run.id,
@@ -166,10 +241,30 @@ class _HostRunStatCard extends StatelessWidget {
 
     return Expanded(
       child: CatchSurface(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 12),
+        padding: const EdgeInsets.all(CatchSpacing.s4),
         borderColor: t.line,
         radius: CatchRadius.lg,
-        child: StatColumn(icon: icon, value: value, label: label),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: t.primary, size: 18),
+            gapH10,
+            Text(
+              value,
+              style: CatchTextStyles.titleM(context),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            gapH2,
+            Text(
+              label,
+              style: CatchTextStyles.bodyS(context, color: t.ink3),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -187,7 +282,10 @@ class _HostRunSummaryCard extends StatelessWidget {
     final price = run.isFree ? 'Free' : '₹${run.priceInPaise ~/ 100}';
 
     return CatchSurface(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s4,
+        vertical: CatchSpacing.s3,
+      ),
       borderColor: t.line,
       radius: CatchRadius.lg,
       child: Column(
@@ -242,10 +340,10 @@ class _HostRunSummaryRow extends StatelessWidget {
         Row(
           children: [
             Icon(icon, color: t.ink2, size: 18),
-            const SizedBox(width: 10),
+            gapW10,
             Text(label, style: CatchTextStyles.bodyS(context, color: t.ink2)),
-            const Spacer(),
-            Flexible(
+            gapW16,
+            Expanded(
               child: Text(
                 value,
                 style: CatchTextStyles.labelL(context),
@@ -255,11 +353,37 @@ class _HostRunSummaryRow extends StatelessWidget {
             ),
           ],
         ),
-        if (showDivider) ...[
-          const SizedBox(height: 12),
-          Divider(color: t.line, height: 1),
-          const SizedBox(height: 12),
-        ],
+        if (showDivider) ...[gapH12, Divider(color: t.line, height: 1), gapH12],
+      ],
+    );
+  }
+}
+
+class _HostRosterHeader extends StatelessWidget {
+  const _HostRosterHeader({
+    required this.icon,
+    required this.title,
+    required this.count,
+  });
+
+  final IconData icon;
+  final String title;
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: t.ink2),
+        gapW8,
+        Text(title, style: CatchTextStyles.titleM(context)),
+        const Spacer(),
+        CatchBadge(
+          label: '$count',
+          tone: count == 0 ? CatchBadgeTone.neutral : CatchBadgeTone.brand,
+        ),
       ],
     );
   }
@@ -312,7 +436,7 @@ class _HostRunRosterLoading extends StatelessWidget {
     final t = CatchTokens.of(context);
 
     return CatchSurface(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       borderColor: t.line,
       radius: CatchRadius.lg,
       child: Row(
@@ -322,7 +446,7 @@ class _HostRunRosterLoading extends StatelessWidget {
             height: 18,
             child: CircularProgressIndicator(strokeWidth: 2, color: t.primary),
           ),
-          const SizedBox(width: 12),
+          gapW12,
           Text(text, style: CatchTextStyles.bodyS(context, color: t.ink2)),
         ],
       ),
@@ -358,7 +482,13 @@ class _HostRunUserList extends ConsumerWidget {
               message: 'New sign-ups will appear here.',
               surface: false,
               iconStyle: CatchEmptyStateIconStyle.plain,
-              padding: const EdgeInsets.all(16),
+              iconSize: 36,
+              padding: const EdgeInsets.symmetric(
+                horizontal: CatchSpacing.s4,
+                vertical: CatchSpacing.s6,
+              ),
+              titleStyle: CatchTextStyles.titleM(context),
+              messageStyle: CatchTextStyles.bodyS(context, color: t.ink2),
             )
           : Column(
               children: [

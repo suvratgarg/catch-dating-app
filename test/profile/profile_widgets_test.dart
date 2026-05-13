@@ -134,7 +134,10 @@ void main() {
         tester.getTopRight(find.byTooltip('Settings')).dx,
         lessThanOrEqualTo(370),
       );
-      expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThan(190));
+      final profileTitleBottom = tester.getBottomLeft(find.text('Profile')).dy;
+      final tabsTop = tester.getTopLeft(find.byType(TabBar)).dy;
+      expect(tabsTop, greaterThan(profileTitleBottom));
+      expect(tabsTop - profileTitleBottom, lessThanOrEqualTo(24));
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -260));
       await pumpFeatureUi(tester);

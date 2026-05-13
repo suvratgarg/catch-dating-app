@@ -393,17 +393,8 @@ class CatchSliverHeader {
   const CatchSliverHeader({
     required this.title,
     this.bottom,
-    this.titleHeight = 80,
     this.bottomHeight = 52,
   });
-
-  /// Two-line feature title height for `displayL + bodyS` headers with `s4`
-  /// top padding, `s2` bottom padding, and one `s1` line gap.
-  static const double twoLineTitleHeight = 96;
-
-  /// Taller feature title height for headers whose display title can wrap
-  /// beside a trailing badge/action before the pinned row starts.
-  static const double wrappedTitleHeight = 148;
 
   /// Pinned search header height for one compact search field plus the
   /// vertical padding used by simple search-only headers.
@@ -413,15 +404,11 @@ class CatchSliverHeader {
 
   final Widget title;
   final Widget? bottom;
-  final double titleHeight;
   final double bottomHeight;
 
   List<Widget> buildSlivers(BuildContext context) {
     return [
-      SliverPersistentHeader(
-        pinned: false,
-        delegate: _CollapsibleHeaderDelegate(child: title, height: titleHeight),
-      ),
+      SliverToBoxAdapter(child: title),
       if (bottom != null)
         SliverPersistentHeader(
           pinned: true,
@@ -429,50 +416,6 @@ class CatchSliverHeader {
         ),
     ];
   }
-}
-
-class _CollapsibleHeaderDelegate extends SliverPersistentHeaderDelegate {
-  const _CollapsibleHeaderDelegate({required this.child, required this.height});
-
-  final Widget child;
-  final double height;
-
-  @override
-  double get minExtent => 0;
-
-  @override
-  double get maxExtent => height;
-
-  @override
-  Widget build(
-    BuildContext context,
-    double shrinkOffset,
-    bool overlapsContent,
-  ) {
-    return LayoutBuilder(
-      builder: (context, constraints) => ClipRect(
-        child: OverflowBox(
-          alignment: Alignment.topCenter,
-          minWidth: constraints.maxWidth,
-          maxWidth: constraints.maxWidth,
-          minHeight: height,
-          maxHeight: height,
-          child: Transform.translate(
-            offset: Offset(0, -shrinkOffset),
-            child: SizedBox(
-              width: constraints.maxWidth,
-              height: height,
-              child: child,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  @override
-  bool shouldRebuild(covariant _CollapsibleHeaderDelegate old) =>
-      child != old.child || height != old.height;
 }
 
 class _PinnedHeaderDelegate extends SliverPersistentHeaderDelegate {

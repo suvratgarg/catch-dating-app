@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
@@ -33,6 +34,19 @@ DashboardRecommendationsQuery _recommendationsQueryFor(
 ) => DashboardRecommendationsQuery(
   userId: uid,
   followedClubIds: followedClubIds,
+);
+
+const _noRecommendationCandidates =
+    AsyncData<List<DashboardRunRecommendationCandidate>>([]);
+
+DashboardRunRecommendationCandidate _recommendationCandidate(
+  Run run, {
+  String clubName = 'Stride Social',
+  String? clubLocation = 'mumbai',
+}) => DashboardRunRecommendationCandidate(
+  run: run,
+  clubName: clubName,
+  clubLocation: clubLocation,
 );
 
 RunClubMembership _membership({
@@ -156,7 +170,11 @@ void main() {
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1');
+      final user = buildUser(
+        uid: 'runner-1',
+        name: 'Manan Sethi',
+        displayName: 'Subrath',
+      );
       final nextRun = buildRun(
         bookedCount: 1,
         startTime: DateTime.now().add(const Duration(hours: 3)),
@@ -174,7 +192,7 @@ void main() {
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            ).overrideWithValue(_noRecommendationCandidates),
             _membershipsOverride(user, joinedClubIds),
             _activityNotificationsOverride(user),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
@@ -195,6 +213,9 @@ void main() {
 
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
       expect(find.textContaining('NEXT RUN'), findsOneWidget);
+      expect(find.text('${DashboardFull.greeting()}, Subrath'), findsOneWidget);
+      expect(find.text('${DashboardFull.greeting()}, Manan'), findsNothing);
+      expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThanOrEqualTo(88));
     });
 
     testWidgets('uses native Dashboard and Activity tabs', (tester) async {
@@ -245,7 +266,7 @@ void main() {
             ).overrideWithValue(const AsyncLoading<List<Run>>()),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            ).overrideWithValue(_noRecommendationCandidates),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             runCheckInLocationServiceProvider.overrideWithValue(
@@ -283,7 +304,9 @@ void main() {
             ),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWith((ref) async => const []),
+            ).overrideWith(
+              (ref) async => const <DashboardRunRecommendationCandidate>[],
+            ),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -316,7 +339,9 @@ void main() {
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(const AsyncLoading<List<Run>>()),
+            ).overrideWithValue(
+              const AsyncLoading<List<DashboardRunRecommendationCandidate>>(),
+            ),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -356,7 +381,10 @@ void main() {
               dashboardRecommendedRunsProvider(
                 _recommendationsQueryFor(user.uid, joinedClubIds),
               ).overrideWithValue(
-                AsyncError<List<Run>>(Exception('boom'), StackTrace.empty),
+                AsyncError<List<DashboardRunRecommendationCandidate>>(
+                  Exception('boom'),
+                  StackTrace.empty,
+                ),
               ),
               ..._dashboardHostOverrides(user),
             ],
@@ -419,7 +447,14 @@ void main() {
             ).overrideWithValue(AsyncData<List<Run>>([swipeRun])),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(AsyncData<List<Run>>([recommendedRun])),
+            ).overrideWithValue(
+              AsyncData<List<DashboardRunRecommendationCandidate>>([
+                _recommendationCandidate(
+                  recommendedRun,
+                  clubName: 'Bandra Run Club',
+                ),
+              ]),
+            ),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp(
@@ -455,8 +490,9 @@ void main() {
       );
       expect(find.text('12 km', skipOffstage: false), findsOneWidget);
       expect(find.text('₹150', skipOffstage: false), findsOneWidget);
+      expect(find.text('Bandra Run Club', skipOffstage: false), findsOneWidget);
       expect(find.text('4/12 signed up', skipOffstage: false), findsOneWidget);
-      expect(find.text('From your clubs', skipOffstage: false), findsOneWidget);
+      expect(find.text('Fits your pace', skipOffstage: false), findsOneWidget);
     });
 
     testWidgets('scrolls the greeting header away with dashboard content', (
@@ -468,7 +504,11 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final joinedClubIds = ['club-1'];
-      final user = buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+      final user = buildUser(
+        uid: 'runner-1',
+        name: 'Manan Sethi',
+        displayName: 'Subrath',
+      );
       final nextRun = buildRun(
         id: 'next-run',
         bookedCount: 1,
@@ -483,7 +523,7 @@ void main() {
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            ).overrideWithValue(_noRecommendationCandidates),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             runCheckInLocationServiceProvider.overrideWithValue(
@@ -504,8 +544,9 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      final greetingFinder = find.text('${DashboardFull.greeting()}, Suvrat');
+      final greetingFinder = find.text('${DashboardFull.greeting()}, Subrath');
       expect(greetingFinder, findsOneWidget);
+      expect(find.text('${DashboardFull.greeting()}, Manan'), findsNothing);
 
       await tester.drag(
         find.byKey(DashboardFull.scrollViewKey),
@@ -556,7 +597,7 @@ void main() {
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, joinedClubIds),
-            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            ).overrideWithValue(_noRecommendationCandidates),
             ..._dashboardHostOverrides(user),
           ],
           child: MaterialApp.router(
@@ -604,7 +645,7 @@ void main() {
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, const []),
-            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            ).overrideWithValue(_noRecommendationCandidates),
             runRepositoryProvider.overrideWithValue(FakeRunRepository()),
             uidProvider.overrideWithValue(AsyncData<String?>(user.uid)),
             runCheckInLocationServiceProvider.overrideWithValue(
@@ -639,7 +680,7 @@ void main() {
       expect(find.text('Checked in.'), findsOneWidget);
     });
 
-    testWidgets('shows host attendance as the first dashboard content card', (
+    testWidgets('shows host attendance inside the consolidated host rail', (
       tester,
     ) async {
       final now = DateTime.now();
@@ -659,7 +700,7 @@ void main() {
             ).overrideWithValue(const AsyncData<List<Run>>([])),
             dashboardRecommendedRunsProvider(
               _recommendationsQueryFor(user.uid, const []),
-            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            ).overrideWithValue(_noRecommendationCandidates),
             ..._dashboardHostOverrides(
               user,
               hostedClubId: 'club-host',
@@ -679,9 +720,71 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
+      expect(find.text('Host tools'), findsOneWidget);
+      expect(find.text('1 run'), findsOneWidget);
       expect(find.text('HOST TOOLS'), findsOneWidget);
-      expect(find.text('Take Attendance'), findsOneWidget);
+      expect(find.text('ATTENDANCE OPEN'), findsOneWidget);
+      expect(find.text('Attendance'), findsOneWidget);
+      expect(find.text('Manage'), findsOneWidget);
+      expect(find.text('Take Attendance'), findsNothing);
       expect(find.textContaining('NEXT RUN'), findsNothing);
+    });
+
+    testWidgets('shows a scrollable host tools rail for upcoming hosted runs', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final user = buildUser(uid: 'host-1');
+      final hostedRuns = [
+        buildRun(
+          id: 'hosted-run-1',
+          runClubId: 'club-host',
+          startTime: now.add(const Duration(hours: 3)),
+          bookedCount: 2,
+        ),
+        buildRun(
+          id: 'hosted-run-2',
+          runClubId: 'club-host',
+          startTime: now.add(const Duration(hours: 5)),
+          bookedCount: 7,
+          waitlistedCount: 1,
+        ),
+      ];
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchAttendedRunsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            dashboardRecommendedRunsProvider(
+              _recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(_noRecommendationCandidates),
+            ..._dashboardHostOverrides(
+              user,
+              hostedClubId: 'club-host',
+              hostedRuns: hostedRuns,
+            ),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: DashboardFull(
+              user: user,
+              followedClubIds: const [],
+              signedUpRuns: const [],
+            ),
+          ),
+        ),
+      );
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Host tools'), findsOneWidget);
+      expect(find.text('2 runs'), findsOneWidget);
+      expect(find.text('HOST TOOLS'), findsNWidgets(2));
+      expect(find.text('Manage'), findsNWidgets(2));
+      expect(find.text('Opens later'), findsNWidgets(2));
+      expect(find.text('2/20'), findsOneWidget);
+      expect(find.text('7/20'), findsOneWidget);
     });
   });
 
@@ -784,6 +887,82 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.text('Saved runs screen'), findsOneWidget);
+    });
+
+    testWidgets('host tools rail opens the selected hosted run', (
+      tester,
+    ) async {
+      final run = buildRun(id: 'hosted-run', runClubId: 'club-host');
+      final tool = DashboardHostRunTool(
+        run: run,
+        attendanceState: DashboardHostAttendanceState.opensLater,
+      );
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => Scaffold(body: HostToolsRail(tools: [tool])),
+          ),
+          GoRoute(
+            path: Routes.hostRunManageScreen.path,
+            name: Routes.hostRunManageScreen.name,
+            builder: (_, state) => Scaffold(
+              body: Text(
+                'Manage ${state.pathParameters['runClubId']} ${state.pathParameters['runId']}',
+              ),
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      );
+      await _pumpDashboardUi(tester);
+
+      await tester.tap(find.text('Manage'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Manage club-host hosted-run'), findsOneWidget);
+    });
+
+    testWidgets('host tools rail opens attendance only when the window is open', (
+      tester,
+    ) async {
+      final run = buildRun(id: 'hosted-run', runClubId: 'club-host');
+      final tool = DashboardHostRunTool(
+        run: run,
+        attendanceState: DashboardHostAttendanceState.open,
+      );
+      final router = GoRouter(
+        initialLocation: '/',
+        routes: [
+          GoRoute(
+            path: '/',
+            builder: (_, _) => Scaffold(body: HostToolsRail(tools: [tool])),
+          ),
+          GoRoute(
+            path: Routes.attendanceSheet.path,
+            name: Routes.attendanceSheet.name,
+            builder: (_, state) => Scaffold(
+              body: Text(
+                'Attendance ${state.pathParameters['runClubId']} ${state.pathParameters['runId']}',
+              ),
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp.router(theme: AppTheme.light, routerConfig: router),
+      );
+      await _pumpDashboardUi(tester);
+
+      await tester.tap(find.text('Attendance'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Attendance club-host hosted-run'), findsOneWidget);
     });
   });
 }

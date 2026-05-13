@@ -39,7 +39,7 @@ class DashboardEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final firstName = user?.name.split(' ').first ?? '';
+    final firstName = user?.greetingDisplayName ?? '';
     final photoUrl = user?.photoUrls.firstOrNull;
 
     return Scaffold(

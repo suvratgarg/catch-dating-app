@@ -10,7 +10,6 @@ class DashboardSliverHeader extends CatchSliverHeader {
     required String title,
     required Widget avatar,
     TabController? controller,
-    super.titleHeight = defaultTitleHeight,
   }) : super(
          title: _DashboardHeaderContent(
            eyebrow: eyebrow,
@@ -20,8 +19,6 @@ class DashboardSliverHeader extends CatchSliverHeader {
          bottomHeight: 48,
          bottom: controller == null ? null : _DashboardTabBar(controller),
        );
-
-  static const double defaultTitleHeight = 104;
 }
 
 class _DashboardTabBar extends StatelessWidget {

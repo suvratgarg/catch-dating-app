@@ -1,12 +1,12 @@
 import 'package:catch_dating_app/core/widgets/catch_horizontal_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommend_card.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
 
 class Recommendations extends StatelessWidget {
-  const Recommendations({super.key, required this.runs});
+  const Recommendations({super.key, required this.recommendations});
 
-  final List<Run> runs;
+  final List<DashboardRunRecommendation> recommendations;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +17,11 @@ class Recommendations extends StatelessWidget {
             .toDouble();
         return CatchHorizontalRail(
           title: 'Recommended runs',
-          itemCount: runs.length,
-          itemBuilder: (context, i) =>
-              RecommendCard.fromRun(run: runs[i], width: cardWidth),
+          itemCount: recommendations.length,
+          itemBuilder: (context, i) => RecommendCard.fromRecommendation(
+            recommendation: recommendations[i],
+            width: cardWidth,
+          ),
           showDivider: false,
           height: null,
           spacing: 10,

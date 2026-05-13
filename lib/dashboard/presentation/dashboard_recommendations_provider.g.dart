@@ -26,11 +26,13 @@ final dashboardRecommendedRunsProvider = DashboardRecommendedRunsFamily._();
 final class DashboardRecommendedRunsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<Run>>,
-          List<Run>,
-          FutureOr<List<Run>>
+          AsyncValue<List<DashboardRunRecommendationCandidate>>,
+          List<DashboardRunRecommendationCandidate>,
+          FutureOr<List<DashboardRunRecommendationCandidate>>
         >
-    with $FutureModifier<List<Run>>, $FutureProvider<List<Run>> {
+    with
+        $FutureModifier<List<DashboardRunRecommendationCandidate>>,
+        $FutureProvider<List<DashboardRunRecommendationCandidate>> {
   /// **Pattern D: View-model provider**
   ///
   /// Keeps dashboard recommendation fetching behind generated Riverpod so this
@@ -59,11 +61,11 @@ final class DashboardRecommendedRunsProvider
 
   @$internal
   @override
-  $FutureProviderElement<List<Run>> $createElement($ProviderPointer pointer) =>
-      $FutureProviderElement(pointer);
+  $FutureProviderElement<List<DashboardRunRecommendationCandidate>>
+  $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<Run>> create(Ref ref) {
+  FutureOr<List<DashboardRunRecommendationCandidate>> create(Ref ref) {
     final argument = this.argument as DashboardRecommendationsQuery;
     return dashboardRecommendedRuns(ref, argument);
   }
@@ -81,7 +83,7 @@ final class DashboardRecommendedRunsProvider
 }
 
 String _$dashboardRecommendedRunsHash() =>
-    r'ba808f70e087535dc8860ed6237c091f4b7c5da5';
+    r'8f31526218cfe316cf4157172253f8fca3e31352';
 
 /// **Pattern D: View-model provider**
 ///
@@ -92,7 +94,7 @@ String _$dashboardRecommendedRunsHash() =>
 final class DashboardRecommendedRunsFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<List<Run>>,
+          FutureOr<List<DashboardRunRecommendationCandidate>>,
           DashboardRecommendationsQuery
         > {
   DashboardRecommendedRunsFamily._()

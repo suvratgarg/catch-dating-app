@@ -842,6 +842,41 @@ void main() {
     );
   });
 
+  testWidgets('CatchTextField compact pill centers hint and icon vertically', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      _wrap(
+        const Center(
+          child: SizedBox(
+            width: 320,
+            child: CatchTextField(
+              label: 'Search',
+              showLabel: false,
+              hintText: 'Search by name',
+              size: CatchTextFieldSize.compact,
+              shape: CatchTextFieldShape.pill,
+              prefixIcon: Icon(Icons.search_rounded, size: 18),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final fieldRect = tester.getRect(find.byType(TextField));
+    final hintRect = tester.getRect(find.text('Search by name'));
+    final iconRect = tester.getRect(find.byIcon(Icons.search_rounded));
+
+    expect(
+      (hintRect.center.dy - fieldRect.center.dy).abs(),
+      lessThanOrEqualTo(2),
+    );
+    expect(
+      (iconRect.center.dy - fieldRect.center.dy).abs(),
+      lessThanOrEqualTo(2),
+    );
+  });
+
   testWidgets('CatchDropdownField validates and reports selection changes', (
     tester,
   ) async {

@@ -31,6 +31,7 @@ final class DashboardFullViewModelProvider
     required DashboardFullViewModelFamily super.from,
     required ({
       List<Run> signedUpRuns,
+      UserProfile user,
       String uid,
       List<String> followedClubIds,
     })
@@ -65,12 +66,14 @@ final class DashboardFullViewModelProvider
         this.argument
             as ({
               List<Run> signedUpRuns,
+              UserProfile user,
               String uid,
               List<String> followedClubIds,
             });
     return dashboardFullViewModel(
       ref,
       signedUpRuns: argument.signedUpRuns,
+      user: argument.user,
       uid: argument.uid,
       followedClubIds: argument.followedClubIds,
     );
@@ -97,7 +100,7 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'ce7342f73c379184f0df9c6ac7eb02ebeb441352';
+    r'fc873ef717c5891da3467504eaaf76b5d86aa018';
 
 /// Combines signed-up runs, attended runs, and recommended runs into a single
 /// [DashboardFullViewModel] for the dashboard screen.
@@ -106,7 +109,12 @@ final class DashboardFullViewModelFamily extends $Family
     with
         $FunctionalFamilyOverride<
           DashboardFullViewModel,
-          ({List<Run> signedUpRuns, String uid, List<String> followedClubIds})
+          ({
+            List<Run> signedUpRuns,
+            UserProfile user,
+            String uid,
+            List<String> followedClubIds,
+          })
         > {
   DashboardFullViewModelFamily._()
     : super(
@@ -122,11 +130,13 @@ final class DashboardFullViewModelFamily extends $Family
 
   DashboardFullViewModelProvider call({
     required List<Run> signedUpRuns,
+    required UserProfile user,
     required String uid,
     required List<String> followedClubIds,
   }) => DashboardFullViewModelProvider._(
     argument: (
       signedUpRuns: signedUpRuns,
+      user: user,
       uid: uid,
       followedClubIds: followedClubIds,
     ),

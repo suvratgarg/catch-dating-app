@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -81,16 +82,12 @@ class AppShell extends ConsumerWidget {
     });
 
     return Scaffold(
-      body: Column(
-        children: [
-          if (isOffline) const _ConnectivityBanner(),
-          Expanded(
-            child: AppShellActiveTab(
-              index: navigationShell.currentIndex,
-              child: navigationShell,
-            ),
-          ),
-        ],
+      body: CatchNoticeHost(
+        persistentNotices: [if (isOffline) const AppNotice.offline()],
+        child: AppShellActiveTab(
+          index: navigationShell.currentIndex,
+          child: navigationShell,
+        ),
       ),
       bottomNavigationBar: isAuthenticated
           ? _AppShellNavigationBar(
@@ -271,26 +268,6 @@ class AppShellNavigationBadge extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ConnectivityBanner extends StatelessWidget {
-  const _ConnectivityBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return MaterialBanner(
-      key: AppShellKeys.offlineBanner,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      backgroundColor: t.primarySoft,
-      leading: Icon(Icons.cloud_off_rounded, color: t.primary, size: 20),
-      content: Text(
-        "You're offline. Content may not be up to date.",
-        style: CatchTextStyles.bodyS(context, color: t.ink),
-      ),
-      actions: const [SizedBox.shrink()],
     );
   }
 }
