@@ -1559,6 +1559,7 @@ List<Object> _appOverrides({
     for (final run in recommendedRuns) run.id: run,
     for (final run in clubRuns.values.expand((runs) => runs)) run.id: run,
   };
+  final clubsById = {for (final club in clubs) club.id: club};
   final knownRunClubIds = knownRunsById.values
       .map((run) => run.runClubId)
       .toSet();
@@ -1725,7 +1726,16 @@ List<Object> _appOverrides({
           userId: uid,
           followedClubIds: joinedClubIds.toList(growable: false),
         ),
-      ).overrideWithValue(AsyncData<List<Run>>(recommendedRuns)),
+      ).overrideWithValue(
+        AsyncData<List<DashboardRunRecommendationCandidate>>([
+          for (final run in recommendedRuns)
+            DashboardRunRecommendationCandidate(
+              run: run,
+              clubName: clubsById[run.runClubId]?.name ?? 'Run club',
+              clubLocation: clubsById[run.runClubId]?.location,
+            ),
+        ]),
+      ),
       watchActivityNotificationsProvider(
         uid,
       ).overrideWithValue(const AsyncData([])),
