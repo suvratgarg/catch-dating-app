@@ -179,8 +179,18 @@ Future<void> _activateFirebaseAppCheck() async {
         ? AppleDebugProvider(debugToken: debugTokenOrNull)
         : const AppleAppAttestProvider(),
   );
-  if (useDebugProvider) {
-    await FirebaseAppCheck.instance.getToken(true);
+  if (useDebugProvider && !useAppleDebugProvider) {
+    unawaited(_warmUpFirebaseAppCheckDebugToken());
+  }
+}
+
+Future<void> _warmUpFirebaseAppCheckDebugToken() async {
+  try {
+    await FirebaseAppCheck.instance
+        .getToken(true)
+        .timeout(const Duration(seconds: 8));
+  } catch (error) {
+    debugPrint('Firebase App Check debug token warmup failed: $error');
   }
 }
 

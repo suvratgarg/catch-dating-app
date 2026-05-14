@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -135,7 +134,10 @@ void main() {
         tester.getTopRight(find.byTooltip('Settings')).dx,
         lessThanOrEqualTo(370),
       );
-      expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThan(190));
+      final profileTitleBottom = tester.getBottomLeft(find.text('Profile')).dy;
+      final tabsTop = tester.getTopLeft(find.byType(TabBar)).dy;
+      expect(tabsTop, greaterThan(profileTitleBottom));
+      expect(tabsTop - profileTitleBottom, lessThanOrEqualTo(24));
 
       await tester.drag(find.byType(CustomScrollView), const Offset(0, -260));
       await pumpFeatureUi(tester);
@@ -230,32 +232,6 @@ void main() {
     expect(find.text('Edit').hitTestable(), findsOneWidget);
     expect(tester.getTopLeft(find.byType(TabBar)).dy, greaterThanOrEqualTo(0));
   });
-
-  testWidgets(
-    'ProfileScreen does not subscribe to profile streams while inactive',
-    (tester) async {
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            watchUserProfileProvider.overrideWith(
-              (ref) => throw StateError('watched user profile'),
-            ),
-          ],
-          child: AppShellActiveTab(
-            index: appShellHomeTabIndex,
-            child: MaterialApp(
-              theme: AppTheme.light,
-              home: const ProfileScreen(),
-            ),
-          ),
-        ),
-      );
-      await tester.pump();
-
-      expect(tester.takeException(), isNull);
-      expect(find.text('Profile'), findsNothing);
-    },
-  );
 
   testWidgets('Profile preview card can scroll back to the top', (
     tester,
@@ -733,6 +709,33 @@ void main() {
     );
     expect(field.keyboardType, TextInputType.emailAddress);
     expect(field.autofillHints, contains(AutofillHints.email));
+  });
+
+  testWidgets('inline email edit keeps row geometry stable and actions close', (
+    tester,
+  ) async {
+    final user = buildUser(name: 'Suvrat Garg', email: 'runner@example.com');
+    await _pumpProfileTab(tester, user);
+
+    final emailTile = _profileInfoTile('Email');
+    await _dragProfileTabUntilVisible(tester, emailTile);
+    final chevron = find.byKey(const ValueKey('profile-info-Email-chevron'));
+    final collapsedChevronCenter = tester.getCenter(chevron);
+    final collapsedTileHeight = tester.getSize(emailTile).height;
+
+    await tester.tap(emailTile);
+    await _pumpProfileSheet(tester);
+
+    final expandedChevronCenter = tester.getCenter(chevron);
+    final expandedTileHeight = tester.getSize(emailTile).height;
+    final editableBottom = tester.getBottomLeft(
+      find.byType(ProfileInlineEditableText),
+    );
+    final doneTop = tester.getTopLeft(find.widgetWithText(CatchButton, 'Done'));
+
+    expect(expandedChevronCenter.dx, closeTo(collapsedChevronCenter.dx, 0.1));
+    expect(expandedTileHeight - collapsedTileHeight, lessThanOrEqualTo(8));
+    expect(doneTop.dy - editableBottom.dy, lessThanOrEqualTo(18));
   });
 
   testWidgets('height inline edit uses bounded plus-minus controls', (

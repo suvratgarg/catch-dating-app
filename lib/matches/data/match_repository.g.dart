@@ -252,7 +252,7 @@ final class TotalUnreadCountProvider extends $FunctionalProvider<int, int, int>
   }
 }
 
-String _$totalUnreadCountHash() => r'17e5b5e2078d4cb459629e822f2feb138877040e';
+String _$totalUnreadCountHash() => r'89d0ae380b7974a1d6be1903fd6123ce3c97f8cf';
 
 final class TotalUnreadCountFamily extends $Family
     with $FunctionalFamilyOverride<int, String> {

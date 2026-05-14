@@ -519,14 +519,9 @@ void main() {
 
       expect(find.text("Who's running"), findsOneWidget);
       expect(find.text('0/20'), findsOneWidget);
-      expect(
-        find.text('No one has booked yet — be the first!'),
-        findsOneWidget,
-      );
-      expect(
-        find.text('Swiping unlocks for 24 hours after the run finishes.'),
-        findsOneWidget,
-      );
+      expect(find.text('No runners yet'), findsOneWidget);
+      expect(find.text('Be the first to book this run.'), findsOneWidget);
+      expect(find.textContaining('Swiping unlocks'), findsNothing);
     });
 
     testWidgets(

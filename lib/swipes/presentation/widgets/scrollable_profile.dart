@@ -20,6 +20,7 @@ class ScrollableProfile extends ConsumerWidget {
     required this.cardHeight,
     this.scrollController,
     this.onLeadingOverscroll,
+    this.bottomPadding = 24,
   });
 
   static const scrollViewKey = ValueKey('scrollable-profile-scroll-view');
@@ -28,6 +29,7 @@ class ScrollableProfile extends ConsumerWidget {
   final double cardHeight;
   final ScrollController? scrollController;
   final ValueChanged<double>? onLeadingOverscroll;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -74,7 +76,7 @@ class ScrollableProfile extends ConsumerWidget {
                 ProfileLifestyleSection(items: content.lifestyle),
               for (final photoUrl in remainingPhotoUrls)
                 _InsetProfilePhoto(url: photoUrl, height: cardHeight * 0.75),
-              const SizedBox(height: 24),
+              SizedBox(height: bottomPadding),
             ],
           ),
         ),

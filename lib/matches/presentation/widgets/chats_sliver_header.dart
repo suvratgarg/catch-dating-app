@@ -12,7 +12,6 @@ class ChatsSliverHeader extends CatchSliverHeader {
     : super(
         title: _TitleRow(count: count),
         bottom: showSearchField ? const _SearchRow() : null,
-        titleHeight: CatchSliverHeader.twoLineTitleHeight,
         bottomHeight:
             CatchTextField.compactControlHeight +
             CatchSliverHeader.searchControlTopPadding +

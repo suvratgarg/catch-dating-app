@@ -23,13 +23,7 @@ class PaymentRepository {
     TargetPlatform? targetPlatformOverride,
   }) : _razorpayFactory = razorpayFactory ?? Razorpay.new,
        _isWebOverride = isWebOverride,
-       _targetPlatformOverride = targetPlatformOverride {
-    if (supportsPaidBookings) {
-      _razorpay = _razorpayFactory();
-      _razorpay!.on(Razorpay.EVENT_PAYMENT_SUCCESS, _onSuccess);
-      _razorpay!.on(Razorpay.EVENT_PAYMENT_ERROR, _onError);
-    }
-  }
+       _targetPlatformOverride = targetPlatformOverride;
 
   final FirebaseFunctions _functions;
   final RazorpayFactory _razorpayFactory;
@@ -70,9 +64,10 @@ class PaymentRepository {
     required String userEmail,
     required String userContact,
   }) async {
-    if (!supportsPaidBookings || _razorpay == null) {
+    if (!supportsPaidBookings) {
       throw const PaidBookingUnsupportedException();
     }
+    final razorpay = _ensureRazorpay();
 
     if (_completer != null && !_completer!.isCompleted) {
       throw const PaymentFailedException(
@@ -91,7 +86,7 @@ class PaymentRepository {
     _pendingAmountInPaise = order.amountInPaise;
 
     try {
-      _razorpay!.open({
+      razorpay.open({
         'key': Env.razorpayKeyId,
         'order_id': order.orderId,
         'amount': order.amountInPaise,
@@ -209,8 +204,20 @@ class PaymentRepository {
     completer.completeError(_mapCheckoutFailure(response));
   }
 
+  Razorpay _ensureRazorpay() {
+    final existing = _razorpay;
+    if (existing != null) return existing;
+
+    final razorpay = _razorpayFactory();
+    razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _onSuccess);
+    razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _onError);
+    _razorpay = razorpay;
+    return razorpay;
+  }
+
   void dispose() {
     _razorpay?.clear();
+    _razorpay = null;
   }
 
   Future<HttpsCallableResult<Object?>> _createOrder({required String runId}) =>

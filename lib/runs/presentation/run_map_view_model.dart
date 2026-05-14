@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -26,6 +27,7 @@ class RunMapViewModel {
 
 RunMapViewModel buildRunMapViewModel({
   required List<Run> signedUpRuns,
+  List<Run> savedRuns = const <Run>[],
   required List<Run> recommendedRuns,
   DateTime? now,
 }) {
@@ -33,6 +35,7 @@ RunMapViewModel buildRunMapViewModel({
   final byId = <String, Run>{};
   for (final run in [
     ...recommendedRuns,
+    ...savedRuns,
     ...signedUpRuns,
   ].where((run) => isUpcomingMapRun(run, effectiveNow))) {
     byId[run.id] = run;
@@ -77,6 +80,7 @@ AsyncValue<RunMapViewModel> runMapViewModel(Ref ref) {
   }
 
   final signedUpAsync = ref.watch(watchSignedUpRunsProvider(user.uid));
+  final savedAsync = ref.watch(watchSavedRunDetailsForUserProvider(user.uid));
   final membershipsAsync = ref.watch(
     watchActiveRunClubMembershipsForUserProvider(user.uid),
   );
@@ -90,6 +94,7 @@ AsyncValue<RunMapViewModel> runMapViewModel(Ref ref) {
   );
 
   if (signedUpAsync.isLoading ||
+      savedAsync.isLoading ||
       membershipsAsync.isLoading ||
       recommendedAsync.isLoading) {
     return const AsyncLoading();
@@ -98,6 +103,12 @@ AsyncValue<RunMapViewModel> runMapViewModel(Ref ref) {
     return AsyncError(
       signedUpAsync.error!,
       signedUpAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+  if (savedAsync.hasError) {
+    return AsyncError(
+      savedAsync.error!,
+      savedAsync.stackTrace ?? StackTrace.current,
     );
   }
   if (membershipsAsync.hasError) {
@@ -116,6 +127,7 @@ AsyncValue<RunMapViewModel> runMapViewModel(Ref ref) {
   return AsyncData(
     buildRunMapViewModel(
       signedUpRuns: signedUpAsync.asData?.value ?? const <Run>[],
+      savedRuns: savedAsync.asData?.value ?? const <Run>[],
       recommendedRuns: recommendedAsync.asData?.value ?? const <Run>[],
     ),
   );

@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
@@ -81,16 +82,12 @@ class AppShell extends ConsumerWidget {
     });
 
     return Scaffold(
-      body: Column(
-        children: [
-          if (isOffline) const _ConnectivityBanner(),
-          Expanded(
-            child: AppShellActiveTab(
-              index: navigationShell.currentIndex,
-              child: navigationShell,
-            ),
-          ),
-        ],
+      body: CatchNoticeHost(
+        persistentNotices: [if (isOffline) const AppNotice.offline()],
+        child: AppShellActiveTab(
+          index: navigationShell.currentIndex,
+          child: navigationShell,
+        ),
       ),
       bottomNavigationBar: isAuthenticated
           ? _AppShellNavigationBar(
@@ -113,7 +110,6 @@ class _AppShellNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
     final selectedIndex = navigationShell.currentIndex;
     void onDestinationSelected(int index) => navigationShell.goBranch(
       index,
@@ -121,6 +117,7 @@ class _AppShellNavigationBar extends StatelessWidget {
     );
 
     if (prefersCupertinoControls()) {
+      final t = CatchTokens.of(context);
       return CupertinoTabBar(
         key: AppShellKeys.navigationBar,
         currentIndex: selectedIndex,
@@ -146,11 +143,11 @@ class _AppShellNavigationBar extends StatelessWidget {
             label: 'Catches',
           ),
           BottomNavigationBarItem(
-            icon: _NavigationBadge(
+            icon: AppShellNavigationBadge(
               count: unreadCount,
               child: const Icon(CupertinoIcons.chat_bubble_2),
             ),
-            activeIcon: _NavigationBadge(
+            activeIcon: AppShellNavigationBadge(
               count: unreadCount,
               child: const Icon(CupertinoIcons.chat_bubble_2_fill),
             ),
@@ -191,13 +188,13 @@ class _AppShellNavigationBar extends StatelessWidget {
         // 3 — Chats
         NavigationDestination(
           icon: unreadCount > 0
-              ? _NavigationBadge(
+              ? AppShellNavigationBadge(
                   count: unreadCount,
                   child: const Icon(Icons.chat_bubble_outline_rounded),
                 )
               : const Icon(Icons.chat_bubble_outline_rounded),
           selectedIcon: unreadCount > 0
-              ? _NavigationBadge(
+              ? AppShellNavigationBadge(
                   count: unreadCount,
                   child: const Icon(Icons.chat_bubble_rounded),
                 )
@@ -215,8 +212,13 @@ class _AppShellNavigationBar extends StatelessWidget {
   }
 }
 
-class _NavigationBadge extends StatelessWidget {
-  const _NavigationBadge({required this.count, required this.child});
+@visibleForTesting
+class AppShellNavigationBadge extends StatelessWidget {
+  const AppShellNavigationBadge({
+    super.key,
+    required this.count,
+    required this.child,
+  });
 
   final int count;
   final Widget child;
@@ -228,52 +230,44 @@ class _NavigationBadge extends StatelessWidget {
     final t = CatchTokens.of(context);
     final label = count > 99 ? '99+' : '$count';
 
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        child,
-        Positioned(
-          top: -6,
-          right: -10,
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: t.primary,
-              borderRadius: BorderRadius.circular(CatchRadius.pill),
-              border: Border.all(color: t.surface, width: 1.5),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
-              child: Text(
-                label,
-                style: CatchTextStyles.labelS(
-                  context,
-                  color: t.primaryInk,
-                ).copyWith(fontSize: 10),
+    return SizedBox(
+      width: 38,
+      height: 30,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Align(alignment: Alignment.bottomCenter, child: child),
+          Positioned(
+            top: 0,
+            right: 1,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: t.primary,
+                borderRadius: BorderRadius.circular(CatchRadius.pill),
+                border: Border.all(color: t.surface, width: 1.5),
+              ),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minWidth: 17, minHeight: 17),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 4,
+                    vertical: 1,
+                  ),
+                  child: Center(
+                    child: Text(
+                      label,
+                      style: CatchTextStyles.labelS(
+                        context,
+                        color: t.primaryInk,
+                      ).copyWith(fontSize: 10, height: 1),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ConnectivityBanner extends StatelessWidget {
-  const _ConnectivityBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return MaterialBanner(
-      key: AppShellKeys.offlineBanner,
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      backgroundColor: t.primarySoft,
-      leading: Icon(Icons.cloud_off_rounded, color: t.primary, size: 20),
-      content: Text(
-        "You're offline. Content may not be up to date.",
-        style: CatchTextStyles.bodyS(context, color: t.ink),
+        ],
       ),
-      actions: const [SizedBox.shrink()],
     );
   }
 }

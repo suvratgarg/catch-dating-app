@@ -9,8 +9,8 @@ import 'package:go_router/go_router.dart';
 class QuickActions extends StatelessWidget {
   const QuickActions({super.key});
 
-  static const double _tileHeight = 122;
   static const double _iconBoxSize = 36;
+  static const double _tileSpacing = CatchSpacing.s3;
 
   static final _actions = [
     _QuickAction(
@@ -29,6 +29,11 @@ class QuickActions extends StatelessWidget {
       label: 'Calendar',
       route: Routes.calendarScreen.path,
     ),
+    _QuickAction(
+      icon: Icons.bookmark_border_rounded,
+      label: 'Saved runs',
+      route: Routes.savedRunsScreen.path,
+    ),
   ];
 
   void _onTap(BuildContext context, _QuickAction action) {
@@ -42,23 +47,32 @@ class QuickActions extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        for (var i = 0; i < _actions.length; i++) ...[
-          Expanded(
-            child: Opacity(
-              opacity: _actions[i].route == null ? 0.7 : 1,
-              child: _QuickActionTile(
-                action: _actions[i],
-                onTap: _actions[i].route == null
-                    ? null
-                    : () => _onTap(context, _actions[i]),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final columns = constraints.maxWidth >= 520 ? 4 : 2;
+        final tileWidth =
+            (constraints.maxWidth - (_tileSpacing * (columns - 1))) / columns;
+
+        return Wrap(
+          spacing: _tileSpacing,
+          runSpacing: _tileSpacing,
+          children: [
+            for (final action in _actions)
+              SizedBox(
+                width: tileWidth,
+                child: Opacity(
+                  opacity: action.route == null ? 0.7 : 1,
+                  child: _QuickActionTile(
+                    action: action,
+                    onTap: action.route == null
+                        ? null
+                        : () => _onTap(context, action),
+                  ),
+                ),
               ),
-            ),
-          ),
-          if (i < _actions.length - 1) gapW10,
-        ],
-      ],
+          ],
+        );
+      },
     );
   }
 }
@@ -75,7 +89,6 @@ class _QuickActionTile extends StatelessWidget {
 
     return CatchSurface(
       onTap: onTap,
-      height: QuickActions._tileHeight,
       padding: const EdgeInsets.all(CatchSpacing.s4),
       radius: CatchRadius.md,
       borderColor: t.line,

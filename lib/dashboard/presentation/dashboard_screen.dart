@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
@@ -29,7 +28,6 @@ class DashboardScreen extends ConsumerStatefulWidget {
 class _DashboardScreenState extends ConsumerState<DashboardScreen>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  String? _lastVisibleUid;
 
   @override
   void initState() {
@@ -44,30 +42,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (!_isHomeTabActive) {
-      _invalidateBookedRunsSubscription();
-    }
-  }
-
-  bool get _isHomeTabActive {
-    return isAppShellTabActive(context, appShellHomeTabIndex);
-  }
-
-  void _invalidateBookedRunsSubscription() {
-    final uid = _lastVisibleUid;
-    if (uid == null) return;
-    _lastVisibleUid = null;
-    ref.invalidate(watchSignedUpRunsProvider(uid));
-  }
-
-  @override
   Widget build(BuildContext context) {
-    if (!_isHomeTabActive) {
-      return const SizedBox.shrink();
-    }
-
     final userAsync = ref.watch(watchUserProfileProvider);
 
     return userAsync.when(
@@ -78,7 +53,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       ),
       data: (user) {
         if (user == null) {
-          _lastVisibleUid = null;
           return _DashboardTabbedScreen(
             controller: _tabController,
             header: _DashboardHeaderModel.empty(null),
@@ -86,8 +60,6 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             activitySliver: const _SignedOutActivitySliverBody(),
           );
         }
-
-        _lastVisibleUid = user.uid;
 
         final membershipsAsync = ref.watch(
           watchActiveRunClubMembershipsForUserProvider(user.uid),
@@ -121,6 +93,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             final viewModel = ref.watch(
               dashboardFullViewModelProvider(
                 signedUpRuns: signedUpRuns,
+                user: user,
                 uid: user.uid,
                 followedClubIds: followedClubIds,
               ),
@@ -248,7 +221,7 @@ class _DashboardHeaderModel {
   final Widget avatar;
 
   factory _DashboardHeaderModel.empty(UserProfile? user) {
-    final firstName = user?.name.split(' ').first ?? '';
+    final firstName = user?.greetingDisplayName ?? '';
     return _DashboardHeaderModel(
       eyebrow: 'WELCOME TO CATCH',
       title: "Let's find your first run",
@@ -261,7 +234,7 @@ class _DashboardHeaderModel {
   }
 
   factory _DashboardHeaderModel.full(BuildContext context, UserProfile user) {
-    final firstName = user.name.split(' ').first;
+    final firstName = user.greetingDisplayName;
     final t = CatchTokens.of(context);
     return _DashboardHeaderModel(
       eyebrow: DashboardFull.dayCity(cityLabel(user.city)).toUpperCase(),
@@ -277,7 +250,7 @@ class _DashboardHeaderModel {
             customBorder: const CircleBorder(),
             child: PersonAvatar(
               size: 42,
-              name: user.name,
+              name: user.publicDisplayName,
               imageUrl: user.primaryPhotoThumbnailUrl,
               borderWidth: 2,
               borderColor: t.primary,

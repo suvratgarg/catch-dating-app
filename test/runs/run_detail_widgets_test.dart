@@ -400,6 +400,8 @@ void main() {
     });
 
     testWidgets('renders attended and past states', (tester) async {
+      final pastStart = DateTime.now().subtract(const Duration(hours: 2));
+
       await pumpRunsTestApp(
         tester,
         Scaffold(
@@ -407,7 +409,11 @@ void main() {
             mainAxisSize: MainAxisSize.min,
             children: [
               RunDetailCta(
-                run: buildRun(checkedInCount: 1),
+                run: buildRun(
+                  startTime: pastStart,
+                  endTime: pastStart.add(const Duration(hours: 1)),
+                  checkedInCount: 1,
+                ),
                 runClubId: 'club1',
                 isHost: false,
                 userProfile: buildUser(),
@@ -438,6 +444,44 @@ void main() {
 
       expect(find.text('You attended this run'), findsOneWidget);
       expect(find.text('This run has ended'), findsOneWidget);
+    });
+
+    testWidgets('does not show attended state before the run starts', (
+      tester,
+    ) async {
+      final now = DateTime(2026, 5, 13, 19);
+      final futureStart = DateTime(2026, 5, 14, 3, 10);
+
+      await pumpRunsTestApp(
+        tester,
+        Scaffold(
+          bottomNavigationBar: RunDetailCta(
+            run: buildRun(
+              startTime: futureStart,
+              endTime: futureStart.add(const Duration(hours: 1)),
+              bookedCount: 9,
+              checkedInCount: 1,
+            ),
+            runClubId: 'club1',
+            isHost: false,
+            now: now,
+            userProfile: buildUser(),
+            participation: _participation(
+              status: RunParticipationStatus.attended,
+            ),
+          ),
+        ),
+        overrides: [
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+
+      expect(find.text('You attended this run'), findsNothing);
+      expect(find.text('Completed'), findsNothing);
+      expect(find.text('Cancel booking'), findsOneWidget);
     });
 
     testWidgets('renders ineligible reasons for age and gender caps', (
@@ -535,6 +579,48 @@ void main() {
 
       expect(find.text(run.title), findsWidgets);
       expect(find.text('Requirements'), findsOneWidget);
+      expect(find.text('About this run'), findsOneWidget);
+      expect(find.text(run.description), findsOneWidget);
+    });
+
+    testWidgets('does not unlock reviews for stale future attendance data', (
+      tester,
+    ) async {
+      final now = DateTime(2026, 5, 13, 19);
+      final futureStart = DateTime(2026, 5, 14, 3, 10);
+      final run = buildRun(
+        startTime: futureStart,
+        endTime: futureStart.add(const Duration(hours: 1)),
+      );
+
+      await pumpRunsTestApp(
+        tester,
+        RunDetailBody(
+          run: run,
+          userProfile: buildUser(),
+          runClubId: 'club-1',
+          isHost: false,
+          reviews: const [],
+          isAuthenticated: true,
+          isSaved: false,
+          participation: _participation(
+            status: RunParticipationStatus.attended,
+          ),
+          now: now,
+        ),
+        overrides: [
+          runClubsRepositoryProvider.overrideWithValue(
+            FakeRunClubsRepository(),
+          ),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+
+      await _scrollRunDetailUntilVisible(tester, find.text('Reviews'));
+
+      expect(find.text('Reviews'), findsOneWidget);
+      expect(find.text('Write a review'), findsNothing);
+      expect(find.text('Edit your review'), findsNothing);
     });
 
     testWidgets('renders guest roster prompt and sign-in CTA', (tester) async {

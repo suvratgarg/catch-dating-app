@@ -209,6 +209,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
             obscureText: widget.obscureText,
             maxLines: widget.obscureText ? 1 : widget.maxLines,
             minLines: widget.minLines,
+            textAlignVertical: _textAlignVertical,
             onTap: widget.onTap,
             onChanged: (value) {
               state.didChange(value);
@@ -348,7 +349,7 @@ class _CatchTextFieldState extends State<CatchTextField> {
     return switch (widget.size) {
       CatchTextFieldSize.compact => const EdgeInsets.symmetric(
         horizontal: 12,
-        vertical: 8,
+        vertical: 0,
       ),
       CatchTextFieldSize.md => const EdgeInsets.symmetric(
         horizontal: 14,
@@ -379,5 +380,10 @@ class _CatchTextFieldState extends State<CatchTextField> {
       CatchTextFieldSize.compact => CatchTextField.compactControlHeight,
       CatchTextFieldSize.md => CatchTextField.mdControlHeight,
     };
+  }
+
+  TextAlignVertical? get _textAlignVertical {
+    if (widget.maxLines != 1 || widget.minLines != null) return null;
+    return TextAlignVertical.center;
   }
 }

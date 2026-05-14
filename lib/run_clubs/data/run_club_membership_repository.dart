@@ -60,9 +60,11 @@ class RunClubMembershipRepository {
     required String uid,
   }) => withBackendErrorStream(
     () => _membershipsRef
-        .doc(runClubMembershipId(clubId: clubId, uid: uid))
+        .where('clubId', isEqualTo: clubId)
+        .where('uid', isEqualTo: uid)
+        .limit(1)
         .snapshots()
-        .map((doc) => doc.exists ? doc.data() : null),
+        .map((snap) => snap.docs.isEmpty ? null : snap.docs.first.data()),
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'watch club membership',

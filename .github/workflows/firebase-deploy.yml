@@ -79,7 +79,7 @@ jobs:
         run: npm --prefix functions test
 
       - name: Firestore rules tests
-        run: firebase emulators:exec --only firestore "npm --prefix functions run test:rules"
+        run: firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 
       - name: Deploy selected Firebase targets
         run: ./tool/firebase_with_env.sh "${{ inputs.environment }}" deploy --only "${{ inputs.targets }}" --non-interactive

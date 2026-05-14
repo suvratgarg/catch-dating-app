@@ -138,7 +138,7 @@ ChatThreadPreview _previewForMatch(Ref ref, Match match, String uid) {
     photoUrl: photoUrl,
     previewText: previewText,
     timestamp: match.lastMessageAt ?? match.createdAt,
-    unreadCount: match.unreadCounts[uid] ?? 0,
+    unreadCount: match.unreadConversationCountFor(uid),
     hasConversation: hasConversation,
     runIds: match.runIds,
   );

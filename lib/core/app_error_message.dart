@@ -12,6 +12,7 @@ enum AppErrorContext {
   run,
   club,
   chat,
+  swipes,
   payments,
   auth,
 }
@@ -131,6 +132,7 @@ String _contextTitle(AppErrorContext context) {
     AppErrorContext.run => 'Run unavailable',
     AppErrorContext.club => 'Club unavailable',
     AppErrorContext.chat => 'Messages unavailable',
+    AppErrorContext.swipes => 'Catches unavailable',
     AppErrorContext.payments => 'Payments unavailable',
     AppErrorContext.auth => 'Sign in problem',
     AppErrorContext.generic => 'Something went wrong',
@@ -180,6 +182,7 @@ String _retryLabelFor(AppException? appException, AppErrorContext context) {
     AppErrorContext.profile => 'Reload profile',
     AppErrorContext.run => 'Reload run',
     AppErrorContext.club => 'Reload club',
+    AppErrorContext.swipes => 'Reload catches',
     AppErrorContext.payments => 'Reload payments',
     _ => 'Try again',
   };
@@ -225,6 +228,7 @@ String _notFoundTitle(AppErrorContext context) {
     AppErrorContext.run => 'Run not found',
     AppErrorContext.club => 'Club not found',
     AppErrorContext.chat => 'Chat not found',
+    AppErrorContext.swipes => 'Catches not found',
     AppErrorContext.payments => 'Payment not found',
     _ => 'Not found',
   };

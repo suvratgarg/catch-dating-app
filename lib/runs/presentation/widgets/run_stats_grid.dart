@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -54,19 +55,25 @@ class RunStatCell extends StatelessWidget {
     return Expanded(
       child: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.baseline,
-            textBaseline: TextBaseline.alphabetic,
-            children: [
-              Text(value, style: CatchTextStyles.mono(context)),
-              if (unit.isNotEmpty) ...[
-                const SizedBox(width: 2),
-                Text(unit, style: CatchTextStyles.mono(context, color: t.ink2)),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.baseline,
+              textBaseline: TextBaseline.alphabetic,
+              children: [
+                Text(value, style: CatchTextStyles.mono(context)),
+                if (unit.isNotEmpty) ...[
+                  gapW2,
+                  Text(
+                    unit,
+                    style: CatchTextStyles.mono(context, color: t.ink2),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-          const SizedBox(height: 2),
+          gapH2,
           Text(
             label,
             style: CatchTextStyles.bodyS(context, color: t.ink3),

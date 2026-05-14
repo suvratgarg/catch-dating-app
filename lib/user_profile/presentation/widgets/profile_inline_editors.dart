@@ -85,7 +85,9 @@ class _InlineEditorPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasEditorContent = children.isNotEmpty || saveError != null;
     return _InlineEditorPadding(
+      compact: !hasEditorContent,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -143,7 +145,7 @@ class ProfileInlineEditableText extends StatelessWidget {
     final lineHeight =
         textScaler.scale(valueStyle.fontSize ?? 18) *
         (valueStyle.height ?? 1.2);
-    final editableHeight = (lineHeight * lineCount) + CatchSpacing.s2;
+    final editableHeight = (lineHeight * lineCount) + Sizes.p3;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -932,18 +934,19 @@ class _InlineEditorActions extends StatelessWidget {
 }
 
 class _InlineEditorPadding extends StatelessWidget {
-  const _InlineEditorPadding({required this.child});
+  const _InlineEditorPadding({required this.child, required this.compact});
 
   final Widget child;
+  final bool compact;
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(
-        top: CatchSpacing.s2,
+      padding: EdgeInsets.only(
+        top: compact ? 0 : CatchSpacing.s2,
         left: CatchSpacing.s10,
         right: CatchSpacing.s2,
-        bottom: CatchSpacing.s5,
+        bottom: compact ? CatchSpacing.s3 : CatchSpacing.s5,
       ),
       child: child,
     );

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
@@ -38,7 +39,7 @@ class DashboardEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final firstName = user?.name.split(' ').first ?? '';
+    final firstName = user?.greetingDisplayName ?? '';
     final photoUrl = user?.photoUrls.firstOrNull;
 
     return Scaffold(
@@ -80,6 +81,8 @@ class DashboardEmptySliverBody extends StatelessWidget {
       sliver: SliverList(
         delegate: SliverChildListDelegate([
           const EmptyHeroCard(),
+          gapH20,
+          const QuickActions(),
           gapH20,
           Text('How Catch works', style: CatchTextStyles.titleL(context)),
           gapH10,

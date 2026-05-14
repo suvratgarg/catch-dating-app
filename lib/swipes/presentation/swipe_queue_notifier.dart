@@ -1,12 +1,28 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'swipe_queue_notifier.g.dart';
+
+const _swipeQueueLoadContext = BackendErrorContext(
+  service: BackendService.firestore,
+  action: 'load swipe candidates',
+  resource: 'swipe_candidates',
+);
+
+@visibleForTesting
+final swipeQueueLoadTimeoutProvider = Provider<Duration>(
+  (ref) => const Duration(seconds: 12),
+);
 
 /// **Pattern C: Async state controller**
 ///
@@ -31,11 +47,26 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
     String runId, {
     Set<String> vibeIds = const {},
   }) async {
-    final currentUser = await ref.watch(watchUserProfileProvider.future);
+    final timeout = ref.watch(swipeQueueLoadTimeoutProvider);
+    final currentUserId = await _loadStep(
+      ref.watch(uidProvider.future),
+      timeout,
+    );
+    if (currentUserId == null) return [];
+
+    final currentUser = await _loadStep(
+      ref
+          .read(userProfileRepositoryProvider)
+          .fetchUserProfile(uid: currentUserId),
+      timeout,
+    );
     if (currentUser == null) return [];
-    final candidates = await ref
-        .read(swipeCandidateRepositoryProvider)
-        .fetchCandidates(runId: runId, currentUser: currentUser);
+    final candidates = await _loadStep(
+      ref
+          .read(swipeCandidateRepositoryProvider)
+          .fetchCandidates(runId: runId, currentUser: currentUser),
+      timeout,
+    );
     if (vibeIds.isEmpty) return candidates;
 
     final vibeProfiles = <PublicProfile>[];
@@ -88,4 +119,17 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
       _recordingSwipe = false;
     }
   }
+}
+
+Future<T> _loadStep<T>(Future<T> future, Duration timeout) =>
+    future.timeout(timeout, onTimeout: _swipeQueueLoadTimedOut);
+
+Never _swipeQueueLoadTimedOut() {
+  throw const BackendOperationException(
+    code: 'swipe-candidates-timeout',
+    message:
+        'Swipe profiles are taking too long to load. Please check your connection and try again.',
+    context: _swipeQueueLoadContext,
+    retryable: true,
+  );
 }

@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -27,9 +28,10 @@ void main() {
 
       expect(find.text('Pick starting point'), findsOneWidget);
       expect(
-        find.text('Tap on the map to set the starting point'),
+        find.text('Tap on the map to set the starting point.'),
         findsOneWidget,
       );
+      expect(find.byType(CatchTextField), findsOneWidget);
       expect(
         tester
             .widget<CatchTopBarTextAction>(
@@ -58,7 +60,11 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('19.110000, 72.910000'), findsOneWidget);
+      expect(
+        find.text('Starting point selected. Tap elsewhere to adjust.'),
+        findsOneWidget,
+      );
+      expect(find.text('19.110000, 72.910000'), findsNothing);
       expect(
         tester
             .widget<CatchTopBarTextAction>(
@@ -104,7 +110,11 @@ void main() {
         await tester.tap(find.text('Open'));
         await pumpFeatureUi(tester);
 
-        expect(find.text('19.076000, 72.877700'), findsOneWidget);
+        expect(
+          find.text('Starting point selected. Tap elsewhere to adjust.'),
+          findsOneWidget,
+        );
+        expect(find.text('19.076000, 72.877700'), findsNothing);
         expect(
           tester
               .widget<CatchTopBarTextAction>(
@@ -162,7 +172,11 @@ void main() {
       await tester.tap(find.text('Cubbon Park'));
       await tester.pump();
 
-      expect(find.text('12.976300, 77.592900'), findsOneWidget);
+      expect(
+        find.text('Starting point selected. Tap elsewhere to adjust.'),
+        findsOneWidget,
+      );
+      expect(find.text('12.976300, 77.592900'), findsNothing);
       expect(
         tester
             .widget<CatchTopBarTextAction>(

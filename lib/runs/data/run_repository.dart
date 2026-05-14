@@ -206,19 +206,33 @@ class RunRepository {
   /// Generates a new unique Firestore document ID for a run without writing it.
   String generateId() => _runsRef.doc().id;
 
-  /// Fetches upcoming runs from the given club IDs (max 10 clubs, limit 10 runs).
+  /// Fetches upcoming runs from the given club IDs.
   Future<List<Run>> fetchUpcomingRunsForClubs(List<String> runClubIds) =>
       withBackendErrorContext(
         () async {
-          if (runClubIds.isEmpty) return [];
-          final now = Timestamp.now();
-          final snap = await _runsRef
-              .where('runClubId', whereIn: runClubIds.take(10).toList())
-              .where('startTime', isGreaterThan: now)
-              .orderBy('startTime')
-              .limit(10)
-              .get();
-          return snap.docs.map((d) => d.data()).toList();
+          final uniqueClubIds = runClubIds.toSet().toList()..sort();
+          if (uniqueClubIds.isEmpty) return [];
+          final nowDateTime = DateTime.now();
+          final now = Timestamp.fromDate(nowDateTime);
+          final runs = <Run>[];
+          for (final chunk in _chunks(uniqueClubIds, 10)) {
+            final snap = await _runsRef
+                .where('runClubId', whereIn: chunk)
+                .where('startTime', isGreaterThan: now)
+                .orderBy('startTime')
+                .limit(10)
+                .get();
+            runs.addAll(
+              snap.docs
+                  .map((doc) => doc.data())
+                  .where(
+                    (run) =>
+                        !run.isCancelled && run.startTime.isAfter(nowDateTime),
+                  ),
+            );
+          }
+          runs.sort((a, b) => a.startTime.compareTo(b.startTime));
+          return runs.take(30).toList(growable: false);
         },
         context: const BackendErrorContext(
           service: BackendService.firestore,

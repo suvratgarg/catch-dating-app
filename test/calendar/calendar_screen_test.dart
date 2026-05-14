@@ -41,10 +41,10 @@ void main() {
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('No booked runs yet'), findsNothing);
+      expect(find.text('No planned runs yet'), findsNothing);
     });
 
-    testWidgets('shows the empty calendar when the user has no booked runs', (
+    testWidgets('shows the empty calendar when the user has no planned runs', (
       tester,
     ) async {
       await _pumpCalendar(
@@ -56,16 +56,16 @@ void main() {
         ],
       );
 
-      expect(find.text('No booked runs yet'), findsOneWidget);
+      expect(find.text('No planned runs yet'), findsOneWidget);
       expect(
-        find.text('Runs you book will show up here by day and time.'),
+        find.text('Runs you book or save will show up here by day and time.'),
         findsOneWidget,
       );
-      expect(find.text('Booked'), findsOneWidget);
+      expect(find.text('Planned'), findsOneWidget);
       expect(find.text('None'), findsOneWidget);
     });
 
-    testWidgets('shows an error state when booked runs fail to load', (
+    testWidgets('shows an error state when planned runs fail to load', (
       tester,
     ) async {
       await _pumpCalendar(
@@ -79,10 +79,10 @@ void main() {
 
       expect(find.text('Calendar unavailable'), findsOneWidget);
       expect(
-        find.text('Your booked runs could not be loaded.'),
+        find.text('Your planned runs could not be loaded.'),
         findsOneWidget,
       );
-      expect(find.text('No booked runs yet'), findsNothing);
+      expect(find.text('No planned runs yet'), findsNothing);
     });
 
     testWidgets('renders agenda stats and booked run details', (tester) async {
@@ -128,7 +128,7 @@ void main() {
       );
 
       expect(find.text(_monthYearLabel(firstRunStart)), findsOneWidget);
-      expect(find.text('Booked'), findsOneWidget);
+      expect(find.text('Planned'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
       expect(find.text('Distance'), findsOneWidget);
       expect(find.text('13 km'), findsOneWidget);
@@ -147,6 +147,59 @@ void main() {
       expect(find.text('Juhu Beach Gate'), findsOneWidget);
       expect(find.text('5km · Easy · 1/20'), findsOneWidget);
       expect(find.text('8km · Moderate · 2/12'), findsOneWidget);
+    });
+
+    testWidgets('includes future saved runs as planned calendar rows', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final signedUpRun = buildRun(
+        id: 'signed-up-run',
+        startTime: now.add(const Duration(days: 2)),
+        meetingPoint: 'Booked Promenade',
+        distanceKm: 5,
+        bookedCount: 1,
+      );
+      final savedFutureRun = buildRun(
+        id: 'saved-future-run',
+        startTime: now.add(const Duration(days: 1)),
+        meetingPoint: 'Saved Start',
+        distanceKm: 8,
+        bookedCount: 3,
+      );
+      final savedPastRun = buildRun(
+        id: 'saved-past-run',
+        startTime: now.subtract(const Duration(days: 1)),
+        meetingPoint: 'Old Saved Start',
+        distanceKm: 10,
+      );
+
+      await _pumpCalendar(
+        tester,
+        savedRuns: [savedFutureRun, savedPastRun],
+        overrides: [
+          watchSignedUpRunsProvider(
+            'runner-1',
+          ).overrideWithValue(AsyncData<List<Run>>([signedUpRun])),
+        ],
+      );
+
+      expect(find.text('Planned'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
+      expect(find.text('13 km'), findsOneWidget);
+      expect(find.text('Old Saved Start'), findsNothing);
+
+      await tester.scrollUntilVisible(
+        find.text('Saved Start'),
+        180,
+        scrollable: find.byType(Scrollable),
+      );
+      await tester.pump();
+
+      expect(find.text('Saved Start'), findsOneWidget);
+      expect(find.text('Booked Promenade'), findsOneWidget);
+      expect(find.text('SAVED'), findsOneWidget);
+      expect(find.text('JOINED'), findsOneWidget);
     });
 
     testWidgets('anchors calendar summary to the next upcoming run', (
@@ -333,6 +386,9 @@ void main() {
               watchSignedUpRunsProvider(
                 user.uid,
               ).overrideWithValue(AsyncData<List<Run>>([run])),
+              watchSavedRunDetailsForUserProvider(
+                user.uid,
+              ).overrideWithValue(const AsyncData<List<Run>>([])),
               watchRunProvider(run.id).overrideWithValue(AsyncData(run)),
               watchSavedRunProvider(
                 user.uid,
@@ -394,11 +450,15 @@ void main() {
 Future<void> _pumpCalendar(
   WidgetTester tester, {
   required Iterable overrides,
+  List<Run> savedRuns = const [],
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        watchSavedRunDetailsForUserProvider(
+          'runner-1',
+        ).overrideWithValue(AsyncData<List<Run>>(savedRuns)),
         ...overrides,
       ],
       child: MaterialApp(theme: AppTheme.light, home: const CalendarScreen()),

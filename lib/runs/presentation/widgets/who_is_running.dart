@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -101,11 +102,13 @@ class _WhoIsRunningContent extends ConsumerWidget {
             ),
           ],
         ),
-        const SizedBox(height: 12),
+        gapH12,
         if (total == 0)
-          Text(
-            'No one has booked yet — be the first!',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          _EmptyRosterMessage(
+            title: run.isUpcoming ? 'No runners yet' : 'No runners booked',
+            message: run.isUpcoming
+                ? 'Be the first to book this run.'
+                : 'This run did not have any booked runners.',
           )
         else ...[
           RunHypeAvatarStack(
@@ -117,26 +120,63 @@ class _WhoIsRunningContent extends ConsumerWidget {
             obscured: true,
             showOverflowCount: true,
           ),
-          const SizedBox(height: 12),
-        ],
-        if (run.isUpcoming) ...[
-          _SwipeWindowBanner(
-            icon: Icons.lock_outline_rounded,
-            message: 'Swiping unlocks for 24 hours after the run finishes.',
-          ),
-        ] else if (hasActiveSwipeWindow) ...[
-          _SwipeWindowBanner(
-            icon: Icons.favorite_rounded,
-            message:
-                'The swipe window is open for 24 hours after the run finishes.',
-          ),
-        ] else ...[
-          _SwipeWindowBanner(
-            icon: Icons.schedule_rounded,
-            message: 'The swipe window for this run has closed.',
-          ),
+          gapH12,
+          if (run.isUpcoming)
+            _SwipeWindowBanner(
+              icon: Icons.lock_outline_rounded,
+              message: 'Swiping unlocks for 24 hours after the run finishes.',
+            )
+          else if (hasActiveSwipeWindow)
+            _SwipeWindowBanner(
+              icon: Icons.favorite_rounded,
+              message:
+                  'The swipe window is open for 24 hours after the run finishes.',
+            )
+          else
+            _SwipeWindowBanner(
+              icon: Icons.schedule_rounded,
+              message: 'The swipe window for this run has closed.',
+            ),
         ],
       ],
+    );
+  }
+}
+
+class _EmptyRosterMessage extends StatelessWidget {
+  const _EmptyRosterMessage({required this.title, required this.message});
+
+  final String title;
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      tone: CatchSurfaceTone.raised,
+      radius: CatchRadius.md,
+      borderColor: t.line,
+      child: Row(
+        children: [
+          Icon(Icons.groups_2_outlined, size: 20, color: t.ink3),
+          gapW12,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: CatchTextStyles.titleS(context)),
+                gapH4,
+                Text(
+                  message,
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -159,7 +199,7 @@ class _SwipeWindowBanner extends StatelessWidget {
       child: Row(
         children: [
           Icon(icon, size: 16, color: t.primary),
-          const SizedBox(width: 8),
+          gapW8,
           Expanded(
             child: Text(
               message,

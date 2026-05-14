@@ -25,14 +25,12 @@ interface MessageCreatedEvent {
 
 interface MessageCreatedDeps {
   firestore: () => FirebaseFirestore.Firestore;
-  increment: (value: number) => FirebaseFirestore.FieldValue;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   sendNotification: typeof sendFcmNotification;
 }
 
 const defaultDeps: MessageCreatedDeps = {
   firestore: () => admin.firestore(),
-  increment: (value) => admin.firestore.FieldValue.increment(value),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
 };
@@ -96,7 +94,8 @@ export async function onMessageCreatedHandler(
       lastMessageAt: messageSentAt,
       lastMessagePreview: buildMessagePreview(message),
       lastMessageSenderId: message.senderId,
-      [`unreadCounts.${recipientId}`]: deps.increment(1),
+      [`unreadCounts.${message.senderId}`]: 0,
+      [`unreadCounts.${recipientId}`]: 1,
     });
 
     tx.create(receiptRef, {

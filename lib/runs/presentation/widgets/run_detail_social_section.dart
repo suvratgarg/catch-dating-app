@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -18,6 +19,7 @@ class RunDetailSocialSection extends StatelessWidget {
     required this.userProfile,
     required this.isAuthenticated,
     required this.participation,
+    this.now,
   });
 
   final Run run;
@@ -26,12 +28,17 @@ class RunDetailSocialSection extends StatelessWidget {
   final UserProfile? userProfile;
   final bool isAuthenticated;
   final RunParticipation? participation;
+  final DateTime? now;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final profile = userProfile;
     final canShowMemberContext = isAuthenticated && profile != null;
+    final reviewAccessStarted = !run.endTime.isAfter(now ?? DateTime.now());
+    final hasReviewAccess =
+        participation?.status == RunParticipationStatus.attended &&
+        reviewAccessStarted;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -40,19 +47,19 @@ class RunDetailSocialSection extends StatelessWidget {
           WhoIsRunning(run: run, userProfile: profile)
         else
           const _GuestWhoIsRunning(),
-        const SizedBox(height: 24),
-        Divider(color: t.line, height: 1),
-        const SizedBox(height: 24),
-        if (canShowMemberContext)
+        if (canShowMemberContext) ...[
+          gapH24,
+          Divider(color: t.line, height: 1),
+          gapH24,
           RunReviewsSection(
             runClubId: runClubId,
             runId: run.id,
             reviews: reviews,
             currentUid: profile.uid,
             userProfile: profile,
-            hasAttended:
-                participation?.status == RunParticipationStatus.attended,
+            hasAttended: hasReviewAccess,
           ),
+        ],
       ],
     );
   }
@@ -74,11 +81,11 @@ class _GuestWhoIsRunning extends StatelessWidget {
           Row(
             children: [
               Icon(Icons.lock_outline_rounded, size: 16, color: t.ink3),
-              const SizedBox(width: 8),
+              gapW8,
               Text("Who's running", style: CatchTextStyles.titleL(context)),
             ],
           ),
-          const SizedBox(height: 8),
+          gapH8,
           Text(
             'Sign in to see who has booked this run.',
             style: CatchTextStyles.bodyS(context, color: t.ink2),

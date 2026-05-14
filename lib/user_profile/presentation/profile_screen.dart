@@ -1,5 +1,4 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
@@ -56,9 +55,6 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    if (!isAppShellTabActive(context, appShellProfileTabIndex)) {
-      return Scaffold(backgroundColor: t.bg);
-    }
 
     final userProfileAsync = ref.watch(watchUserProfileProvider);
     final uploadState = ref.watch(photoUploadControllerProvider);

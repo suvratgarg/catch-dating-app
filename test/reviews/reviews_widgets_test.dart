@@ -47,6 +47,31 @@ void main() {
     expect(repository.addedReview?.comment, 'Friendly crew.');
   });
 
+  testWidgets('empty reviews state is centered across the section width', (
+    tester,
+  ) async {
+    final repository = _FakeReviewsRepository();
+    final user = buildUser(uid: 'runner-1', name: 'Asha');
+    final container = _reviewsContainer(repository);
+    addTearDown(container.dispose);
+
+    await _pumpReviewsSection(
+      tester,
+      container: container,
+      user: user,
+      reviews: const [],
+    );
+
+    final sectionCenter = tester.getCenter(find.byType(RunReviewsSection)).dx;
+    final iconCenter = tester
+        .getCenter(find.byIcon(Icons.rate_review_outlined))
+        .dx;
+    final titleCenter = tester.getCenter(find.text('No reviews yet')).dx;
+
+    expect(iconCenter, closeTo(sectionCenter, 1));
+    expect(titleCenter, closeTo(sectionCenter, 1));
+  });
+
   testWidgets('own review can be edited and deleted from the sheet', (
     tester,
   ) async {

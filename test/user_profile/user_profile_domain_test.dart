@@ -64,9 +64,12 @@ void main() {
 
     expect(structured.accountDisplayName, 'Suvrat Garg');
     expect(structured.publicDisplayName, 'S.');
+    expect(structured.greetingDisplayName, 'S.');
     expect(publicProfileFromUserProfile(structured).name, 'S.');
     expect(firstNameFallback.publicDisplayName, 'Suvrat');
+    expect(firstNameFallback.greetingDisplayName, 'Suvrat');
     expect(legacy.publicDisplayName, 'Asha');
+    expect(legacy.greetingDisplayName, 'Asha');
   });
 
   test('public profile projection does not expose exact coordinates', () {

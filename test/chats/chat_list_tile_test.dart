@@ -79,7 +79,7 @@ void main() {
               photoUrl: null,
               previewText: 'See you at the run',
               timestamp: match.createdAt,
-              unreadCount: 2,
+              unreadCount: 1,
               hasConversation: true,
               runIds: match.runIds,
             ),
@@ -101,12 +101,11 @@ void main() {
     expect(surface.borderColor, tokens.primary.withValues(alpha: 0.36));
     expect(avatar.borderWidth, 2);
     expect(avatar.borderColor, tokens.primary);
-    expect(find.text('2'), findsOneWidget);
+    expect(find.text('1'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) =>
-            widget is Semantics &&
-            widget.properties.label == '2 unread messages',
+            widget is Semantics && widget.properties.label == 'Unread chat',
       ),
       findsOneWidget,
     );

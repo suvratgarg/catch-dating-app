@@ -459,8 +459,17 @@ Treat this tooling as product infrastructure:
   is disposable even when real testers chat inside it.
 - **Profile preservation:** never overwrite real `users/{uid}` or
   `publicProfiles/{uid}` from demo tooling.
+- **Thumbnail-complete synthetic profiles:** seeded synthetic users and
+  `publicProfiles` must include `photoThumbnailUrls` derived from their profile
+  photos. Run detail and dashboard hype avatars intentionally prefer thumbnail
+  imagery for blurred tiny social-proof circles; missing thumbnails degrade
+  back to deterministic color placeholders or full-photo compatibility paths.
 - **Edge-first counts:** when tooling writes relationship edges, recompute parent
   aggregate projections instead of hand-tuning counts.
+- **Relationship invariants:** swipes and swipe-derived matches must be backed
+  by attended `runParticipations` for both users on the same run. Append mode
+  filters out relationship docs that fail this check instead of creating invalid
+  demo state.
 - **Architecture signal:** if a demo command has to duplicate complicated product
   logic, that is evidence the production mutation should probably move behind a
   callable/repository seam.
@@ -602,6 +611,14 @@ Validate the result:
 node tool/validate_firestore_data.mjs --env dev
 ```
 
+If validation reports future runs with `attended` participation edges, repair
+those stale edges before testing run detail or swipe flows:
+
+```bash
+node tool/repair_future_run_attendance.mjs --env dev --apply
+node tool/validate_firestore_data.mjs --env dev
+```
+
 For staging:
 
 ```bash
@@ -672,6 +689,13 @@ Append mode reads the existing seed manifest, compares the current anchor file
 against `anchorUserIds`, and writes only docs related to newly added anchors plus
 run/club aggregate updates. It does not delete or recreate existing testers'
 notification docs.
+
+Append mode also validates relationship docs after target filtering and capacity
+normalization. Any generated swipe, swipe-created match, match message, or match
+notification is skipped unless the effective appended/existing
+`runParticipations/{runId_uid}` documents show both users attended that run.
+This keeps the seeded Catches data aligned with the same rule enforced by the
+app and by `tool/validate_firestore_data.mjs`.
 
 ## Reset Without Re-Seeding
 

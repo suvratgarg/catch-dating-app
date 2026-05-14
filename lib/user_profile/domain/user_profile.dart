@@ -264,6 +264,9 @@ abstract class UserProfile with _$UserProfile {
     return legacyName.split(RegExp(r'\s+')).first;
   }
 
+  String get greetingDisplayName =>
+      publicDisplayName.trim().split(RegExp(r'\s+')).first;
+
   /// Tiny first-photo URL for avatar-scale UI. Falls back to the full photo
   /// until the backend thumbnail generation queue has backfilled old profiles.
   String? get primaryPhotoThumbnailUrl {

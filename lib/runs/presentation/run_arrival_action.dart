@@ -75,15 +75,23 @@ bool _isSelfCheckInOpen({
 }
 
 bool isHostAttendanceOpen({required Run run, required DateTime now}) {
-  final startsAt = run.startTime.subtract(
+  final startsAt = hostAttendanceWindowStartsAt(run);
+  final endsAt = hostAttendanceWindowEndsAt(run);
+  return now.isAfter(startsAt) && now.isBefore(endsAt);
+}
+
+DateTime hostAttendanceWindowStartsAt(Run run) {
+  return run.startTime.subtract(
     const Duration(
       minutes: CatchBusinessRules.runHostAttendanceWindowBeforeMinutes,
     ),
   );
-  final endsAt = run.endTime.add(
+}
+
+DateTime hostAttendanceWindowEndsAt(Run run) {
+  return run.endTime.add(
     const Duration(
       hours: CatchBusinessRules.runHostAttendanceWindowAfterRunHours,
     ),
   );
-  return now.isAfter(startsAt) && now.isBefore(endsAt);
 }

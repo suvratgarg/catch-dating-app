@@ -55,12 +55,19 @@ void main() {
   testWidgets(
     'ProfileCard renders polished missing-photo state in light mode',
     (tester) async {
+      final semantics = tester.ensureSemantics();
+
       await tester.pumpWidget(_profileCardHarness(theme: AppTheme.light));
       await tester.pump();
 
       expect(find.text('Photo coming soon'), findsOneWidget);
       expect(find.text('ON A PERFECT RUN'), findsOneWidget);
       expect(find.text('Something casual'), findsOneWidget);
+      expect(
+        tester.getSemantics(find.byType(ProfileCard)).hint,
+        'Swipe left to pass, right to like. Scroll to read the full profile.',
+      );
+      semantics.dispose();
       expect(tester.takeException(), isNull);
     },
   );

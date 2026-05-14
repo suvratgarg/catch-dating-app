@@ -10,10 +10,12 @@ class RunClubDiscoverList extends StatelessWidget {
     super.key,
     required this.clubs,
     required this.joinedClubIds,
+    required this.hostedClubIds,
   });
 
   final List<RunClub> clubs;
   final Set<String> joinedClubIds;
+  final Set<String> hostedClubIds;
 
   @override
   Widget build(BuildContext context) {
@@ -45,6 +47,7 @@ class RunClubDiscoverList extends StatelessWidget {
                 club: club,
                 variant: RunClubListTileVariant.directory,
                 isJoined: joinedClubIds.contains(club.id),
+                isHost: hostedClubIds.contains(club.id),
               );
             }, childCount: clubs.isEmpty ? 0 : clubs.length * 2 - 1),
           ),

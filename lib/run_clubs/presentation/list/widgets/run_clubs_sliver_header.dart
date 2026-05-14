@@ -17,7 +17,6 @@ class RunClubsSliverHeader extends CatchSliverHeader {
     : super(
         title: const _TitleRow(),
         bottom: _SearchRow(showSearchField: showSearchField),
-        titleHeight: CatchSliverHeader.twoLineTitleHeight,
         bottomHeight:
             CatchTextField.compactControlHeight +
             (showSearchField ? CatchSpacing.s4 : CatchSpacing.s2),

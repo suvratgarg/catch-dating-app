@@ -50,6 +50,7 @@ void main() {
       find.byKey(NextRunHero.cardKey),
     );
 
+    expect(surface.height, isNull);
     expect(surface.backgroundColor, CatchTokens.sunsetDark.surface);
     expect(surface.borderColor, CatchTokens.sunsetDark.line2);
     expect(find.textContaining('NEXT RUN'), findsOneWidget);
@@ -102,7 +103,10 @@ void main() {
     expect(find.text('Sunday Morning Run'), findsOneWidget);
     expect(find.text('1/2'), findsOneWidget);
 
-    await tester.drag(find.byType(PageView), const Offset(-500, 0));
+    await tester.drag(
+      _surfaceKey('next-run-hero-card-first'),
+      const Offset(-500, 0),
+    );
     await tester.pump();
     await tester.pump(_pageSettlingFrame);
 
@@ -168,7 +172,10 @@ void main() {
     );
     expect(progressSize.width, lessThanOrEqualTo(132));
 
-    await tester.drag(find.byType(PageView), const Offset(-500, 0));
+    await tester.drag(
+      _surfaceKey('next-run-hero-card-run-0'),
+      const Offset(-500, 0),
+    );
     await tester.pump();
     await tester.pump(_pageSettlingFrame);
 
@@ -176,6 +183,10 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 }
+
+Finder _surfaceKey(String key) => find.byWidgetPredicate(
+  (widget) => widget is CatchSurface && widget.key == ValueKey(key),
+);
 
 Run _run({String id = 'next-run', DateTime? start}) {
   start ??= DateTime(2026, 5, 7, 6);

@@ -23,9 +23,11 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_s
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/runs/presentation/attendance_sheet_screen.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
+import 'package:catch_dating_app/runs/presentation/host_run_manage_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_location_map_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
+import 'package:catch_dating_app/runs/presentation/saved_runs_screen.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/run_recap_screen.dart';
@@ -48,9 +50,12 @@ enum Routes {
   onboardingScreen('/onboarding'),
   calendarScreen('/calendar'),
   calendarRunDetailScreen('/calendar/run-clubs/:runClubId/runs/:runId'),
+  savedRunsScreen('/saved-runs'),
+  savedRunDetailScreen('/saved-runs/run-clubs/:runClubId/runs/:runId'),
   filtersScreen('/filters'),
   runMapScreen('/map'),
   dashboardRunDetailScreen('/dashboard/run-clubs/:runClubId/runs/:runId'),
+  hostRunManageScreen('/dashboard/run-clubs/:runClubId/runs/:runId/manage'),
   runLocationMapScreen('/runs/:runId/location'),
   // Home / Dashboard branch (index 0)
   dashboardScreen('/'),
@@ -144,6 +149,19 @@ GoRouter goRouter(Ref ref) {
         ),
       ),
       GoRoute(
+        path: Routes.savedRunsScreen.path,
+        name: Routes.savedRunsScreen.name,
+        builder: (context, state) => const SavedRunsScreen(),
+      ),
+      GoRoute(
+        path: Routes.savedRunDetailScreen.path,
+        name: Routes.savedRunDetailScreen.name,
+        builder: (context, state) => RunDetailScreen(
+          runClubId: state.pathParameters['runClubId']!,
+          runId: state.pathParameters['runId']!,
+        ),
+      ),
+      GoRoute(
         path: Routes.filtersScreen.path,
         name: Routes.filtersScreen.name,
         builder: (context, state) => const FiltersScreen(),
@@ -163,6 +181,14 @@ GoRouter goRouter(Ref ref) {
         path: Routes.dashboardRunDetailScreen.path,
         name: Routes.dashboardRunDetailScreen.name,
         builder: (context, state) => RunDetailScreen(
+          runClubId: state.pathParameters['runClubId']!,
+          runId: state.pathParameters['runId']!,
+        ),
+      ),
+      GoRoute(
+        path: Routes.hostRunManageScreen.path,
+        name: Routes.hostRunManageScreen.name,
+        builder: (context, state) => HostRunManageRouteScreen(
           runClubId: state.pathParameters['runClubId']!,
           runId: state.pathParameters['runId']!,
         ),

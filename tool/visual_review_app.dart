@@ -51,7 +51,8 @@ void main() {
     createdAt: DateTime.now().subtract(const Duration(hours: 3)),
     lastMessageAt: DateTime.now().subtract(const Duration(minutes: 18)),
     lastMessagePreview: 'Coffee after the next 10K?',
-    unreadCounts: const {'runner-1': 2},
+    lastMessageSenderId: 'runner-2',
+    unreadCounts: const {'runner-1': 1},
   );
   final user = _visualReviewUser();
   final publicProfiles = _publicProfiles();

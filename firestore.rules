@@ -466,7 +466,7 @@ service cloud.firestore {
       allow read: if isAuthed()
         && (
           resource.data.uid == request.auth.uid
-          || resource.data.status == 'attended'
+          || resource.data.status in ['signedUp', 'waitlisted', 'attended']
           || isRunHostForRun(resource.data.runId)
         );
       allow write: if false;

@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
+import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
@@ -30,57 +31,70 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final uid = ref.watch(uidProvider).asData?.value;
-    final runsAsync = uid == null
+    final signedUpRunsAsync = uid == null
         ? const AsyncData(<Run>[])
         : ref.watch(watchSignedUpRunsProvider(uid));
+    final savedRunsAsync = uid == null
+        ? const AsyncData(<Run>[])
+        : ref.watch(watchSavedRunDetailsForUserProvider(uid));
 
     return Scaffold(
       backgroundColor: t.bg,
       appBar: const CatchTopBar(title: 'Calendar'),
       body: SafeArea(
-        child: runsAsync.when(
-          loading: () => const CatchLoadingIndicator(),
-          error: (_, _) => _CalendarMessage(
-            title: 'Calendar unavailable',
-            body: 'Your booked runs could not be loaded.',
-          ),
-          data: (runs) {
-            final summary = _CalendarRunSummary.from(runs, now: DateTime.now());
+        child: Builder(
+          builder: (context) {
+            if (signedUpRunsAsync.isLoading || savedRunsAsync.isLoading) {
+              return const CatchLoadingIndicator();
+            }
+            if (signedUpRunsAsync.hasError || savedRunsAsync.hasError) {
+              return const _CalendarMessage(
+                title: 'Calendar unavailable',
+                body: 'Your planned runs could not be loaded.',
+              );
+            }
 
-            return Builder(
-              builder: (context) => CustomScrollView(
-                slivers: [
-                  SliverToBoxAdapter(
-                    child: _CalendarHeader(
-                      mode: _mode,
-                      onModeChanged: (mode) => setState(() => _mode = mode),
-                      summary: summary,
-                    ),
+            final signedUpRuns =
+                signedUpRunsAsync.asData?.value ?? const <Run>[];
+            final savedRuns = savedRunsAsync.asData?.value ?? const <Run>[];
+            final summary = _CalendarRunSummary.from(
+              signedUpRuns: signedUpRuns,
+              savedRuns: savedRuns,
+              now: DateTime.now(),
+            );
+
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: _CalendarHeader(
+                    mode: _mode,
+                    onModeChanged: (mode) => setState(() => _mode = mode),
+                    summary: summary,
                   ),
-                  if (runs.isEmpty)
-                    const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: _CalendarMessage(
-                        title: 'No booked runs yet',
-                        body:
-                            'Runs you book will show up here by day and time.',
-                      ),
-                    )
-                  else if (_mode == CalendarViewMode.agenda)
-                    RunAgendaSliverList(
-                      runs: summary.agendaRuns,
-                      badgeLabel: 'JOINED',
-                      today: summary.today,
-                      preserveInputOrder: true,
-                      onRunSelected: (run) => _openRunDetail(context, run),
-                    )
-                  else
-                    _TimelineSliverList(
-                      runs: summary.agendaRuns,
-                      onRunSelected: (run) => _openRunDetail(context, run),
+                ),
+                if (summary.runs.isEmpty)
+                  const SliverFillRemaining(
+                    child: _CalendarMessage(
+                      title: 'No planned runs yet',
+                      body:
+                          'Runs you book or save will show up here by day and time.',
                     ),
-                ],
-              ),
+                  )
+                else if (_mode == CalendarViewMode.agenda)
+                  RunAgendaSliverList(
+                    runs: summary.agendaRuns,
+                    badgeLabelBuilder: (run) =>
+                        summary.isSavedOnly(run) ? 'SAVED' : 'JOINED',
+                    today: summary.today,
+                    preserveInputOrder: true,
+                    onRunSelected: (run) => _openRunDetail(context, run),
+                  )
+                else
+                  _TimelineSliverList(
+                    runs: summary.agendaRuns,
+                    onRunSelected: (run) => _openRunDetail(context, run),
+                  ),
+              ],
             );
           },
         ),
@@ -161,7 +175,7 @@ class _CalendarHeader extends StatelessWidget {
               children: [
                 Expanded(
                   child: StatColumn(
-                    label: 'Booked',
+                    label: 'Planned',
                     value: '${summary.runs.length}',
                   ),
                 ),
@@ -421,6 +435,7 @@ class _CalendarRunSummary {
   const _CalendarRunSummary({
     required this.runs,
     required this.agendaRuns,
+    required this.savedOnlyRunIds,
     required this.today,
     required this.anchorDate,
     required this.totalDistance,
@@ -429,13 +444,33 @@ class _CalendarRunSummary {
 
   final List<Run> runs;
   final List<Run> agendaRuns;
+  final Set<String> savedOnlyRunIds;
   final DateTime today;
   final DateTime anchorDate;
   final double totalDistance;
   final Run? nextRun;
 
-  static _CalendarRunSummary from(List<Run> runs, {required DateTime now}) {
-    final sorted = [...runs]
+  bool isSavedOnly(Run run) => savedOnlyRunIds.contains(run.id);
+
+  static _CalendarRunSummary from({
+    required List<Run> signedUpRuns,
+    List<Run> savedRuns = const <Run>[],
+    required DateTime now,
+  }) {
+    final signedUpIds = signedUpRuns.map((run) => run.id).toSet();
+    final savedOnlyRunIds = <String>{};
+    final byId = <String, Run>{};
+
+    for (final run in savedRuns) {
+      if (run.isCancelled || !run.startTime.isAfter(now)) continue;
+      byId[run.id] = run;
+      if (!signedUpIds.contains(run.id)) savedOnlyRunIds.add(run.id);
+    }
+    for (final run in signedUpRuns) {
+      byId[run.id] = run;
+    }
+
+    final sorted = byId.values.toList()
       ..sort((a, b) => a.startTime.compareTo(b.startTime));
     final today = DateUtils.dateOnly(now);
     final totalDistance = sorted.fold<double>(
@@ -461,6 +496,7 @@ class _CalendarRunSummary {
     return _CalendarRunSummary(
       runs: sorted,
       agendaRuns: [...upcoming, ...latestPastFirst],
+      savedOnlyRunIds: savedOnlyRunIds,
       today: today,
       anchorDate: anchorDate,
       totalDistance: totalDistance,

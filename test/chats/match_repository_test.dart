@@ -28,6 +28,7 @@ Match _buildMatch({
   DateTime? createdAt,
   DateTime? lastMessageAt,
   String? lastMessagePreview,
+  String? lastMessageSenderId,
   MatchStatus status = MatchStatus.active,
   Map<String, int> unreadCounts = const {},
 }) {
@@ -39,6 +40,7 @@ Match _buildMatch({
     createdAt: createdAt ?? DateTime(2025, 1, 1, 7),
     lastMessageAt: lastMessageAt,
     lastMessagePreview: lastMessagePreview,
+    lastMessageSenderId: lastMessageSenderId,
     status: status,
     unreadCounts: unreadCounts,
   );
@@ -145,26 +147,46 @@ void main() {
     expect(value, match);
   });
 
-  test('totalUnreadCount sums unread counts across matches', () async {
-    final fakeRepository = _FakeMatchRepository();
-    fakeRepository.matchesByUser['runner-1'] = [
-      _buildMatch(id: 'match-1', unreadCounts: const {'runner-1': 2}),
-      _buildMatch(id: 'match-2', unreadCounts: const {'runner-1': 3}),
-    ];
-    final container = ProviderContainer(
-      overrides: [matchRepositoryProvider.overrideWithValue(fakeRepository)],
-    );
-    addTearDown(container.dispose);
-    final subscription = container.listen<AsyncValue<List<Match>>>(
-      watchMatchesForUserProvider('runner-1'),
-      (_, _) {},
-    );
-    addTearDown(subscription.close);
+  test(
+    'totalUnreadCount counts unread conversations, not unread messages',
+    () async {
+      final fakeRepository = _FakeMatchRepository();
+      fakeRepository.matchesByUser['runner-1'] = [
+        _buildMatch(
+          id: 'match-1',
+          lastMessagePreview: 'Incoming one',
+          lastMessageSenderId: 'runner-2',
+          unreadCounts: const {'runner-1': 2},
+        ),
+      _buildMatch(
+        id: 'match-2',
+        user2Id: 'runner-3',
+        lastMessagePreview: 'Incoming two',
+        lastMessageSenderId: 'runner-3',
+        unreadCounts: const {'runner-1': 3},
+      ),
+        _buildMatch(
+          id: 'own-message',
+          lastMessagePreview: 'Sent by me',
+          lastMessageSenderId: 'runner-1',
+          unreadCounts: const {'runner-1': 5},
+        ),
+      ];
+      final container = ProviderContainer(
+        overrides: [matchRepositoryProvider.overrideWithValue(fakeRepository)],
+      );
+      addTearDown(container.dispose);
+      final subscription = container.listen<AsyncValue<List<Match>>>(
+        watchMatchesForUserProvider('runner-1'),
+        (_, _) {},
+      );
+      addTearDown(subscription.close);
 
-    await container.read(watchMatchesForUserProvider('runner-1').future);
+      await container.read(watchMatchesForUserProvider('runner-1').future);
 
-    expect(container.read(totalUnreadCountProvider('runner-1')), 5);
-  });
+      expect(container.read(totalUnreadCountProvider('runner-1')), 2);
+    },
+  );
 
   test('Match reads legacy runId documents into runIds', () {
     final match = Match.fromJson({
@@ -187,6 +209,7 @@ void main() {
         createdAt: DateTime(2025, 1, 1, 7),
         lastMessageAt: DateTime(2025, 1, 1, 8),
         lastMessagePreview: 'Older message',
+        lastMessageSenderId: 'runner-2',
         unreadCounts: const {'runner-1': 1},
       ),
       _buildMatch(
@@ -195,6 +218,7 @@ void main() {
         createdAt: DateTime(2025, 1, 2, 7),
         lastMessageAt: DateTime(2025, 1, 2, 8),
         lastMessagePreview: 'Newer message',
+        lastMessageSenderId: 'runner-2',
         unreadCounts: const {'runner-1': 2},
       ),
     ], 'runner-1');
@@ -202,10 +226,30 @@ void main() {
     expect(collapsed, hasLength(1));
     expect(collapsed.single.id, 'newer');
     expect(collapsed.single.lastMessagePreview, 'Newer message');
-    expect(collapsed.single.unreadCounts['runner-1'], 3);
+    expect(collapsed.single.unreadCounts['runner-1'], 1);
     expect(collapsed.single.runIds, const ['run-1', 'run-2']);
     expect(collapsed.single.latestRunId, 'run-2');
   });
+
+  test(
+    'collapseMatchesByOtherUser ignores stale unread values on own sent messages',
+    () {
+      final collapsed = collapseMatchesByOtherUser([
+        _buildMatch(
+          id: 'self-sent',
+          createdAt: DateTime(2025, 1, 2, 7),
+          lastMessageAt: DateTime(2025, 1, 2, 8),
+          lastMessagePreview: 'Sent by me',
+          lastMessageSenderId: 'runner-1',
+          unreadCounts: const {'runner-1': 3},
+        ),
+      ], 'runner-1');
+
+      expect(collapsed, hasLength(1));
+      expect(collapsed.single.unreadCounts['runner-1'], 0);
+      expect(collapsed.single.unreadConversationCountFor('runner-1'), 0);
+    },
+  );
 
   test(
     'matchStreamProvider auto-disposes route listeners when unwatched',

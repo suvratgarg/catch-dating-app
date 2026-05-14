@@ -157,9 +157,8 @@ List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
     final selected = conversationMatches.isNotEmpty
         ? conversationMatches.first
         : bucket.first;
-    final totalUnread = bucket.fold<int>(
-      0,
-      (total, match) => total + (match.unreadCounts[uid] ?? 0),
+    final hasUnreadIncoming = bucket.any(
+      (match) => match.hasUnreadIncomingFor(uid),
     );
 
     final mergedRunIds = <String>[];
@@ -171,7 +170,7 @@ List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
 
     return selected.copyWith(
       runIds: mergedRunIds,
-      unreadCounts: {...selected.unreadCounts, uid: totalUnread},
+      unreadCounts: {...selected.unreadCounts, uid: hasUnreadIncoming ? 1 : 0},
     );
   }).toList();
 }
@@ -196,5 +195,5 @@ int totalUnreadCount(Ref ref, String uid) {
       ref.watch(watchMatchesForUserProvider(uid)).asData?.value ?? [];
   return collapseMatchesByOtherUser(matches, uid)
       .where((match) => !match.isBlocked)
-      .fold(0, (total, m) => total + (m.unreadCounts[uid] ?? 0));
+      .fold(0, (total, match) => total + match.unreadConversationCountFor(uid));
 }

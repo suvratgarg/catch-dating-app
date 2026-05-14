@@ -1,7 +1,10 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -57,8 +60,6 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Scaffold(
       appBar: CatchTopBar(
         title: 'Pick starting point',
@@ -113,21 +114,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             bottom: 16,
             left: 16,
             right: 16,
-            child: CatchSurface(
-              padding: const EdgeInsets.all(12),
-              elevation: CatchSurfaceElevation.overlay,
-              borderColor: t.line,
-              child: _selected == null
-                  ? const Text(
-                      'Tap on the map to set the starting point',
-                      textAlign: TextAlign.center,
-                    )
-                  : Text(
-                      '${_selected!.latitude.toStringAsFixed(6)}, '
-                      '${_selected!.longitude.toStringAsFixed(6)}',
-                      textAlign: TextAlign.center,
-                    ),
-            ),
+            child: _SelectedPointStatusCard(hasSelection: _selected != null),
           ),
         ],
       ),
@@ -245,86 +232,125 @@ class _PlaceSearchPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
-    return CatchSurface(
-      padding: EdgeInsets.zero,
-      elevation: CatchSurfaceElevation.overlay,
-      borderColor: t.line,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SizedBox(
-            height: 52,
-            child: TextField(
-              controller: controller,
-              onChanged: onChanged,
-              textInputAction: TextInputAction.search,
-              textCapitalization: TextCapitalization.words,
-              decoration: InputDecoration(
-                border: InputBorder.none,
-                hintText: 'Search for a meeting point',
-                prefixIcon: const Icon(Icons.search_rounded),
-                suffixIcon: searching
-                    ? const Padding(
-                        padding: EdgeInsets.all(14),
-                        child: SizedBox.square(
-                          dimension: 18,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                      )
-                    : controller.text.isEmpty
-                    ? null
-                    : IconButton(
-                        icon: const Icon(Icons.close_rounded),
-                        onPressed: () {
-                          controller.clear();
-                          onChanged('');
-                        },
-                      ),
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
-                ),
-              ),
-            ),
-          ),
-          if (errorText != null)
-            _SearchStatusRow(
-              icon: Icons.error_outline_rounded,
-              text: errorText!,
-              color: t.danger,
-            )
-          else if (suggestions.isNotEmpty)
-            ConstrainedBox(
-              constraints: const BoxConstraints(maxHeight: 260),
-              child: ListView.separated(
-                shrinkWrap: true,
-                padding: EdgeInsets.zero,
-                itemCount: suggestions.length,
-                separatorBuilder: (_, _) => Divider(height: 1, color: t.line),
-                itemBuilder: (context, index) {
-                  final suggestion = suggestions[index];
-                  return ListTile(
-                    dense: true,
-                    leading: const Icon(Icons.place_outlined),
-                    title: Text(
-                      suggestion.mainText.isNotEmpty
-                          ? suggestion.mainText
-                          : suggestion.description,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: suggestion.secondaryText.isEmpty
-                        ? null
-                        : Text(
-                            suggestion.secondaryText,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        CatchTextField(
+          label: 'Search for a meeting point',
+          showLabel: false,
+          controller: controller,
+          onChanged: onChanged,
+          textInputAction: TextInputAction.search,
+          textCapitalization: TextCapitalization.words,
+          hintText: 'Search for a meeting point',
+          size: CatchTextFieldSize.compact,
+          shape: CatchTextFieldShape.pill,
+          tone: CatchTextFieldTone.raised,
+          prefixIcon: const Icon(Icons.search_rounded, size: 18),
+          suffixIcon: searching
+              ? const Padding(
+                  padding: EdgeInsets.all(CatchSpacing.s3),
+                  child: SizedBox.square(
+                    dimension: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  ),
+                )
+              : null,
+          showClearButton: !searching,
+        ),
+        if (errorText != null || suggestions.isNotEmpty) ...[
+          gapH8,
+          CatchSurface(
+            padding: EdgeInsets.zero,
+            elevation: CatchSurfaceElevation.overlay,
+            borderColor: t.line,
+            child: errorText != null
+                ? _SearchStatusRow(
+                    icon: Icons.error_outline_rounded,
+                    text: errorText!,
+                    color: t.danger,
+                  )
+                : ConstrainedBox(
+                    constraints: const BoxConstraints(maxHeight: 260),
+                    child: ListView.separated(
+                      shrinkWrap: true,
+                      padding: EdgeInsets.zero,
+                      itemCount: suggestions.length,
+                      separatorBuilder: (_, _) =>
+                          Divider(height: 1, color: t.line),
+                      itemBuilder: (context, index) {
+                        final suggestion = suggestions[index];
+                        return ListTile(
+                          dense: true,
+                          leading: const Icon(Icons.place_outlined),
+                          title: Text(
+                            suggestion.mainText.isNotEmpty
+                                ? suggestion.mainText
+                                : suggestion.description,
+                            style: CatchTextStyles.labelM(context),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                    onTap: () => onSuggestionSelected(suggestion),
-                  );
-                },
+                          subtitle: suggestion.secondaryText.isEmpty
+                              ? null
+                              : Text(
+                                  suggestion.secondaryText,
+                                  style: CatchTextStyles.bodyS(
+                                    context,
+                                    color: t.ink2,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                          onTap: () => onSuggestionSelected(suggestion),
+                        );
+                      },
+                    ),
+                  ),
+          ),
+        ],
+      ],
+    );
+  }
+}
+
+class _SelectedPointStatusCard extends StatelessWidget {
+  const _SelectedPointStatusCard({required this.hasSelection});
+
+  final bool hasSelection;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      elevation: CatchSurfaceElevation.overlay,
+      borderColor: t.line,
+      radius: CatchRadius.pill,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            hasSelection
+                ? Icons.check_circle_outline_rounded
+                : Icons.touch_app_rounded,
+            size: 18,
+            color: hasSelection ? t.success : t.ink2,
+          ),
+          gapW8,
+          Flexible(
+            child: Text(
+              hasSelection
+                  ? 'Starting point selected. Tap elsewhere to adjust.'
+                  : 'Tap on the map to set the starting point.',
+              style: CatchTextStyles.bodyS(
+                context,
+                color: hasSelection ? t.ink : t.ink2,
               ),
+              textAlign: TextAlign.center,
             ),
+          ),
         ],
       ),
     );
@@ -345,13 +371,16 @@ class _SearchStatusRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+      padding: const EdgeInsets.all(CatchSpacing.s4),
       child: Row(
         children: [
           Icon(icon, color: color, size: 18),
-          const SizedBox(width: 8),
+          gapW8,
           Expanded(
-            child: Text(text, style: TextStyle(color: color, fontSize: 13)),
+            child: Text(
+              text,
+              style: CatchTextStyles.bodyS(context, color: color),
+            ),
           ),
         ],
       ),

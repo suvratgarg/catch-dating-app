@@ -443,6 +443,7 @@ class FakeSavedRunRepository extends Fake implements SavedRunRepository {
   String? savedRunId;
   String? unsavedUid;
   String? unsavedRunId;
+  final Map<String, List<Run>> savedRunDetails = {};
 
   @override
   Future<void> saveRun({required String uid, required String runId}) async {
@@ -455,4 +456,8 @@ class FakeSavedRunRepository extends Fake implements SavedRunRepository {
     unsavedUid = uid;
     unsavedRunId = runId;
   }
+
+  @override
+  Stream<List<Run>> watchSavedRunDetailsForUser({required String uid}) =>
+      Stream.value(savedRunDetails[uid] ?? const []);
 }

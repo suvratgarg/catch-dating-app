@@ -12,6 +12,37 @@ service firebase.storage {
         && request.resource.size < 8 * 1024 * 1024;
     }
 
+    function canAccessMatch(matchId) {
+      let matchData = firestore.get(
+        /databases/(default)/documents/matches/$(matchId)
+      ).data;
+      return matchData.user1Id == request.auth.uid
+        || matchData.user2Id == request.auth.uid
+        || (
+          matchData.keys().hasAny(['participantIds'])
+          &&
+          matchData.participantIds is list
+          && matchData.participantIds.hasAny([request.auth.uid])
+        );
+    }
+
+    function canWriteMatchImage(matchId) {
+      let matchData = firestore.get(
+        /databases/(default)/documents/matches/$(matchId)
+      ).data;
+      return matchData.status == 'active'
+        && (
+          matchData.user1Id == request.auth.uid
+          || matchData.user2Id == request.auth.uid
+          || (
+            matchData.keys().hasAny(['participantIds'])
+            &&
+            matchData.participantIds is list
+            && matchData.participantIds.hasAny([request.auth.uid])
+          )
+        );
+    }
+
     match /users/{uid}/photos/{fileName} {
       allow read: if isSignedIn();
       allow write: if isSignedIn()
@@ -25,15 +56,10 @@ service firebase.storage {
     }
 
     match /matches/{matchId}/images/{fileName} {
-      allow read: if isSignedIn()
-        && firestore.get(
-          /databases/(default)/documents/matches/$(matchId)
-        ).data.participantIds.hasAny([request.auth.uid]);
+      allow read: if isSignedIn() && canAccessMatch(matchId);
       allow write: if isSignedIn()
         && isImage()
-        && firestore.get(
-          /databases/(default)/documents/matches/$(matchId)
-        ).data.participantIds.hasAny([request.auth.uid]);
+        && canWriteMatchImage(matchId);
     }
 
     match /runClubs/{clubId}/{fileName} {

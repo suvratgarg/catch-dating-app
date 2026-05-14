@@ -5,7 +5,6 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
@@ -178,18 +177,21 @@ void main() {
               buildRunClub(id: 'discover-1'),
             ],
             joinedClubIds: {'joined-1'},
+            hostedClubIds: {'joined-1'},
           ),
         ),
       ]);
 
       expect(find.text('Your clubs'), findsOneWidget);
       expect(find.text('Discover'), findsOneWidget);
+      expect(_catchButtonWithLabel('Host'), findsOneWidget);
     });
 
     testWidgets(
       'RunClubsHeader updates search query and clears it when the city changes',
       (tester) async {
         final container = ProviderContainer(
+          retry: (_, _) => null,
           overrides: [
             cityListProvider.overrideWith((ref) async => _testCities),
             deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
@@ -335,6 +337,24 @@ void main() {
       expect(find.text('INDORE'), findsNothing);
       expect(find.text('NEXT: RACE COURSE ROAD MAIN GATE'), findsOneWidget);
       expect(find.text('4.8'), findsOneWidget);
+    });
+
+    testWidgets('RunClubListTile labels hosted clubs distinctly from joined', (
+      tester,
+    ) async {
+      await pumpTestApp(
+        tester,
+        RunClubListTile(
+          club: buildRunClub(name: 'Host Club'),
+          variant: RunClubListTileVariant.directory,
+          isJoined: true,
+          isHost: true,
+        ),
+      );
+
+      expect(_catchButtonWithLabel('Host'), findsOneWidget);
+      expect(find.text('Joined'), findsNothing);
+      expect(find.text('Join'), findsNothing);
     });
 
     testWidgets(
@@ -902,35 +922,6 @@ void main() {
     });
 
     testWidgets(
-      'RunClubsListScreen does not subscribe to club streams while inactive',
-      (tester) async {
-        await tester.pumpWidget(
-          ProviderScope(
-            overrides: [
-              watchRunClubsByLocationProvider(
-                'mumbai',
-              ).overrideWith((ref) => throw StateError('watched clubs stream')),
-              runClubsListViewModelProvider.overrideWith(
-                (ref) => throw StateError('watched clubs view model'),
-              ),
-            ],
-            child: AppShellActiveTab(
-              index: appShellHomeTabIndex,
-              child: MaterialApp(
-                theme: AppTheme.light,
-                home: const RunClubsListScreen(),
-              ),
-            ),
-          ),
-        );
-        await tester.pump();
-
-        expect(tester.takeException(), isNull);
-        expect(find.text('Run clubs'), findsNothing);
-      },
-    );
-
-    testWidgets(
       'RunClubsListScreen hides search when the selected city is empty',
       (tester) async {
         await tester.pumpWidget(
@@ -991,6 +982,7 @@ void main() {
       tester,
     ) async {
       final container = ProviderContainer(
+        retry: (_, _) => null,
         overrides: [
           cityListProvider.overrideWith((ref) async => _testCities),
           deviceLocationProvider.overrideWith(_NoDeviceLocation.new),
@@ -1424,4 +1416,10 @@ void main() {
       },
     );
   });
+}
+
+Finder _catchButtonWithLabel(String label) {
+  return find.byWidgetPredicate(
+    (widget) => widget is CatchButton && widget.label == label,
+  );
 }

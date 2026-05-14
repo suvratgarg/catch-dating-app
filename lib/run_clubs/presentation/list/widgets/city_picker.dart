@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/widgets/catch_select_menu.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -20,6 +21,7 @@ class _CityPickerState extends ConsumerState<CityPicker> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      _tryAutoSelectFromProfile();
       _tryAutoSelectFromGps();
     });
   }
@@ -31,6 +33,9 @@ class _CityPickerState extends ConsumerState<CityPicker> {
 
     ref.listen(deviceLocationProvider, (_, next) {
       next.whenData((_) => _tryAutoSelectFromGps());
+    });
+    ref.listen(watchUserProfileProvider, (_, next) {
+      next.whenData((_) => _tryAutoSelectFromProfile());
     });
 
     return citiesAsync.when(
@@ -63,6 +68,13 @@ class _CityPickerState extends ConsumerState<CityPicker> {
       size: CatchSelectMenuSize.compact,
       shape: CatchSelectMenuShape.pill,
     );
+  }
+
+  void _tryAutoSelectFromProfile() {
+    final cityName = ref.read(watchUserProfileProvider).asData?.value?.city;
+    ref
+        .read(selectedRunClubCityProvider.notifier)
+        .autoSelectCityByName(cityName);
   }
 
   Future<void> _tryAutoSelectFromGps() async {

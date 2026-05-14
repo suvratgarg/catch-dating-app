@@ -21,9 +21,7 @@ class RunClubsList extends ConsumerWidget {
     final query = ref.watch(runClubSearchQueryProvider).trim();
     final sourceClubCount =
         ref
-            .watch(
-              watchRunClubsByLocationProvider(city.name),
-            )
+            .watch(watchRunClubsByLocationProvider(city.name))
             .asData
             ?.value
             .length ??
@@ -47,15 +45,12 @@ class RunClubsList extends ConsumerWidget {
         context: AppErrorContext.club,
         onRetry: () {
           ref.invalidate(runClubsListViewModelProvider);
-          ref.invalidate(
-            watchRunClubsByLocationProvider(city.name),
-          );
+          ref.invalidate(watchRunClubsByLocationProvider(city.name));
         },
       ),
       AsyncData(:final value) =>
         value.isEmpty
             ? SliverFillRemaining(
-                hasScrollBody: false,
                 child: isSearchEmpty
                     ? const RunClubsEmptyState.noSearchResults()
                     : const RunClubsEmptyState(),
