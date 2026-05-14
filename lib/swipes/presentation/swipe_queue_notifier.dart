@@ -77,7 +77,11 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
     return [...vibeProfiles, ...rest];
   }
 
-  Future<void> swipe(SwipeDirection direction) async {
+  Future<void> swipe(
+    SwipeDirection direction, {
+    ProfileReactionTarget? reactionTarget,
+    String? comment,
+  }) async {
     if (_recordingSwipe) return;
 
     final profiles = state.value;
@@ -90,6 +94,11 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
 
     if (currentUserId == null) return;
 
+    final normalizedComment = normalizeSwipeReactionComment(comment);
+    final effectiveReactionTarget = direction == SwipeDirection.like
+        ? reactionTarget
+        : null;
+
     _recordingSwipe = true;
     try {
       await ref
@@ -100,6 +109,13 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
               targetId: target.uid,
               runId: runId,
               direction: direction,
+              reactionTargetId: effectiveReactionTarget?.id,
+              reactionTargetType: effectiveReactionTarget?.type,
+              reactionTargetLabel: effectiveReactionTarget?.label,
+              reactionTargetPreview: effectiveReactionTarget?.preview,
+              comment: direction == SwipeDirection.like
+                  ? normalizedComment
+                  : null,
               createdAt: DateTime.now(),
             ),
           );

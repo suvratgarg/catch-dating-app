@@ -6,7 +6,18 @@ const maximumPreferredMatchAge = 99;
 const minimumHeightCm = 120;
 const maximumHeightCm = 220;
 const defaultHeightCm = 170;
-const maximumBioLength = 2000;
+const maximumProfilePromptAnswerLength = 300;
+const maximumPhotoPromptCaptionLength = 140;
+const maximumConsecutivePromptNewlines = 2;
+@Deprecated('Use maximumProfilePromptAnswerLength.')
+const maximumBioLength = maximumProfilePromptAnswerLength;
+@Deprecated('Use maximumConsecutivePromptNewlines.')
+const maximumConsecutiveBioNewlines = maximumConsecutivePromptNewlines;
+
+final RegExp _stackedPromptNewlinePattern = RegExp(r'\n[ \t]*\n[ \t]*\n+');
+final RegExp _stackedPromptNewlineCollapsePattern = RegExp(
+  r'\n[ \t]*\n(?:[ \t]*\n)+',
+);
 
 int calculateAge(DateTime dateOfBirth, {DateTime? today}) {
   final currentDate = today ?? DateTime.now();
@@ -63,10 +74,45 @@ String? validateOptionalEmail(String? value) {
 }
 
 String? validateOptionalBio(String? value) {
-  final bio = (value ?? '').trim();
-  if (bio.length <= maximumBioLength) return null;
-  return 'Bio must be $maximumBioLength characters or fewer';
+  return validateOptionalProfilePromptAnswer(value);
 }
+
+String? validateOptionalProfilePromptAnswer(String? value) {
+  final answer = collapseStackedPromptBlankLines(value ?? '').trim();
+  if (answer.length > maximumProfilePromptAnswerLength) {
+    return 'Prompt must be $maximumProfilePromptAnswerLength characters or fewer';
+  }
+  return null;
+}
+
+String? validateOptionalPhotoPromptCaption(String? value) {
+  final caption = collapseStackedPromptBlankLines(value ?? '').trim();
+  if (caption.length > maximumPhotoPromptCaptionLength) {
+    return 'Caption must be $maximumPhotoPromptCaptionLength characters or fewer';
+  }
+  return null;
+}
+
+String normalizeBioLineEndings(String value) =>
+    normalizePromptLineEndings(value);
+
+String normalizePromptLineEndings(String value) =>
+    value.replaceAll('\r\n', '\n').replaceAll('\r', '\n');
+
+String collapseStackedBioBlankLines(String value) {
+  return collapseStackedPromptBlankLines(value);
+}
+
+String collapseStackedPromptBlankLines(String value) {
+  return normalizePromptLineEndings(
+    value,
+  ).replaceAll(_stackedPromptNewlineCollapsePattern, '\n\n');
+}
+
+bool hasStackedBioBlankLines(String value) => hasStackedPromptBlankLines(value);
+
+bool hasStackedPromptBlankLines(String value) =>
+    _stackedPromptNewlinePattern.hasMatch(normalizePromptLineEndings(value));
 
 String normalizeInstagramHandle(String value) {
   final trimmed = value.trim();

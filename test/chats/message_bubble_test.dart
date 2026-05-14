@@ -22,7 +22,7 @@ void main() {
     );
 
     expect(find.text('Morning run?'), findsOneWidget);
-    expect(find.text('09:05'), findsOneWidget);
+    expect(find.text('9:05 AM'), findsOneWidget);
   });
 
   testWidgets('message list gives multi-line bubbles enough height', (
@@ -70,11 +70,13 @@ void main() {
 
     await tester.pump();
 
-    final firstTimestampBottom = tester.getBottomLeft(find.text('14:48')).dy;
+    final firstTimestampBottom = tester.getBottomLeft(find.text('2:48 PM')).dy;
     final secondMessageTop = tester
         .getTopLeft(find.text('Definitely. I liked the last 2 km push.'))
         .dy;
-    final secondTimestampBottom = tester.getBottomRight(find.text('14:55')).dy;
+    final secondTimestampBottom = tester
+        .getBottomRight(find.text('2:55 PM'))
+        .dy;
     final thirdMessageTop = tester
         .getTopLeft(find.text('Coffee after the weekend run?'))
         .dy;

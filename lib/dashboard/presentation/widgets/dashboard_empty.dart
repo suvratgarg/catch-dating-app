@@ -2,16 +2,12 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
-import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
 class DashboardEmpty extends StatelessWidget {
-  const DashboardEmpty({super.key, required this.user});
-
-  final UserProfile? user;
+  const DashboardEmpty({super.key});
 
   static const _steps = [
     (
@@ -39,8 +35,6 @@ class DashboardEmpty extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final firstName = user?.greetingDisplayName ?? '';
-    final photoUrl = user?.photoUrls.firstOrNull;
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -50,11 +44,6 @@ class DashboardEmpty extends StatelessWidget {
             ...DashboardSliverHeader(
               eyebrow: 'WELCOME TO CATCH',
               title: "Let's find your first run",
-              avatar: DashedAvatar(
-                size: 42,
-                imageUrl: photoUrl,
-                name: firstName,
-              ),
             ).buildSlivers(context),
             const DashboardEmptySliverBody(),
           ],

@@ -8,11 +8,11 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_view_model.dart';
 import 'package:catch_dating_app/runs/presentation/run_location_links.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_pins_map.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,18 +32,23 @@ class RunLocationMapRouteScreen extends ConsumerWidget {
     final vmAsync = ref.watch(runDetailViewModelProvider(runId));
 
     return vmAsync.when(
-      loading: () => const Scaffold(body: CatchLoadingIndicator()),
-      error: (error, _) => CatchErrorScaffold.fromError(
-        error,
-        context: AppErrorContext.run,
-        onRetry: () => ref.invalidate(runDetailViewModelProvider(runId)),
+      loading: () =>
+          const _ChromelessMapScaffold(child: CatchLoadingIndicator()),
+      error: (error, _) => _ChromelessMapScaffold(
+        child: CatchErrorState.fromError(
+          error,
+          context: AppErrorContext.run,
+          onRetry: () => ref.invalidate(runDetailViewModelProvider(runId)),
+        ),
       ),
       data: (vm) {
         final run = vm?.run;
         if (run == null) {
-          return const CatchErrorScaffold(
-            title: 'Run not found',
-            message: 'This run is no longer available.',
+          return const _ChromelessMapScaffold(
+            child: CatchErrorState(
+              title: 'Run not found',
+              message: 'This run is no longer available.',
+            ),
           );
         }
         return RunLocationMapScreen(
@@ -70,10 +75,11 @@ class RunLocationMapScreen extends ConsumerWidget {
     final t = CatchTokens.of(context);
 
     if (!run.hasExactStartingPoint) {
-      return CatchErrorScaffold(
-        title: 'Location unavailable',
-        message: 'This run does not have an exact pinned starting point yet.',
-        backgroundColor: t.bg,
+      return const _ChromelessMapScaffold(
+        child: CatchErrorState(
+          title: 'Location unavailable',
+          message: 'This run does not have an exact pinned starting point yet.',
+        ),
       );
     }
 
@@ -84,7 +90,6 @@ class RunLocationMapScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Run location'),
       body: Stack(
         children: [
           Positioned.fill(
@@ -168,6 +173,26 @@ class RunLocationMapScreen extends ConsumerWidget {
               ),
             ),
           ),
+          const MapOverlayControls(),
+        ],
+      ),
+    );
+  }
+}
+
+class _ChromelessMapScaffold extends StatelessWidget {
+  const _ChromelessMapScaffold({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: CatchTokens.of(context).bg,
+      body: Stack(
+        children: [
+          Positioned.fill(child: SafeArea(child: child)),
+          const MapOverlayControls(),
         ],
       ),
     );

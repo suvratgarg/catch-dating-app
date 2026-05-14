@@ -93,7 +93,7 @@ final class SwipeQueueNotifierProvider
 }
 
 String _$swipeQueueNotifierHash() =>
-    r'94bc5b19cb2e85dd5a84392c000d58f04d9edbb4';
+    r'9455f5c72f45f61c3327de406d25177c12c130d5';
 
 /// **Pattern C: Async state controller**
 ///

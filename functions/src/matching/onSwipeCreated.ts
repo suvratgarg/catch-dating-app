@@ -90,6 +90,11 @@ export async function onSwipeCreatedHandler(
   try {
     // create() throws if the document already exists.
     await matchRef.create(matchDoc);
+    await writeReactionCommentMessages(
+      matchRef,
+      [reverseSwipe, swipeData],
+      deps
+    );
     logger.info("Match created", {
       matchId,
       user1Id: id1,
@@ -103,10 +108,60 @@ export async function onSwipeCreatedHandler(
       if (sharedRunIds.length > 0) {
         await matchRef.update({runIds: deps.arrayUnion(...sharedRunIds)});
       }
+      await writeReactionCommentMessages(
+        matchRef,
+        [reverseSwipe, swipeData],
+        deps
+      );
       return;
     }
     throw e;
   }
+}
+
+/**
+ * Writes swipe comments as deterministic starter messages after a match.
+ * @param {FirebaseFirestore.DocumentReference} matchRef Match document ref.
+ * @param {SwipeDoc[]} swipes Reciprocal swipe documents to inspect.
+ * @param {SwipeCreatedDeps} deps Injectable Firestore helpers.
+ * @return {Promise<void>} Resolves when all comment messages are written.
+ */
+async function writeReactionCommentMessages(
+  matchRef: FirebaseFirestore.DocumentReference,
+  swipes: SwipeDoc[],
+  deps: SwipeCreatedDeps
+): Promise<void> {
+  const writes: Promise<unknown>[] = [];
+  for (const swipe of swipes) {
+    const text = buildReactionCommentText(swipe);
+    if (!text) continue;
+    const messageId = `profileReaction_${swipe.swiperId}_${swipe.targetId}`;
+    writes.push(
+      matchRef.collection("messages").doc(messageId).set({
+        senderId: swipe.swiperId,
+        text,
+        sentAt: deps.serverTimestamp(),
+      })
+    );
+  }
+  await Promise.all(writes);
+}
+
+/**
+ * Builds a chat-safe message from a profile-section reaction comment.
+ * @param {SwipeDoc} swipe Swipe document that may contain reaction context.
+ * @return {string | null} Message text, or null when there is no comment.
+ */
+function buildReactionCommentText(swipe: SwipeDoc): string | null {
+  const comment = swipe.comment?.trim();
+  if (!comment) return null;
+
+  const label = swipe.reactionTargetLabel?.trim();
+  const preview = swipe.reactionTargetPreview?.trim();
+  if (!label && !preview) return comment;
+
+  const context = [label, preview].filter(Boolean).join(": ");
+  return `${comment}\n\nAbout ${context}`;
 }
 
 export const onSwipeCreated = onDocumentCreated(

@@ -7,6 +7,7 @@ import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_p
 import 'package:catch_dating_app/onboarding/presentation/pages/instagram_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/profile_prompts_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       OnboardingStep.genderInterest => const GenderInterestPage(),
       OnboardingStep.instagram => const InstagramPage(),
       OnboardingStep.photos => const PhotosPage(),
+      OnboardingStep.prompts => const ProfilePromptsPage(),
       OnboardingStep.runningPrefs => const RunningPrefsPage(),
     };
   }

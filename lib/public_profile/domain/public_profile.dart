@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -10,10 +11,11 @@ abstract class PublicProfile with _$PublicProfile {
     @JsonKey(includeToJson: false) required String uid,
     required String name,
     required int age,
-    required String bio,
     required Gender gender,
+    @Default([]) List<ProfilePromptAnswer> profilePrompts,
     @Default([]) List<String> photoUrls,
     @Default([]) List<String> photoThumbnailUrls,
+    @Default([]) List<PhotoPromptAnswer> photoPrompts,
 
     // Location
     String? city,
@@ -41,10 +43,11 @@ abstract class PublicProfile with _$PublicProfile {
     @Default(420) int paceMaxSecsPerKm,
     @Default([]) List<PreferredDistance> preferredDistances,
     @Default([]) List<RunReason> runningReasons,
+    @Default([]) List<PreferredRunTime> preferredRunTimes,
   }) = _PublicProfile;
 
   factory PublicProfile.fromJson(Map<String, dynamic> json) =>
-      _$PublicProfileFromJson(json);
+      _$PublicProfileFromJson(_migratePromptJson(json));
 }
 
 /// Builds a [PublicProfile] from a [UserProfile], projecting only the fields
@@ -56,10 +59,11 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   uid: user.uid,
   name: user.publicDisplayName,
   age: user.age,
-  bio: user.bio,
   gender: user.gender,
+  profilePrompts: user.profilePrompts,
   photoUrls: user.photoUrls,
   photoThumbnailUrls: user.photoThumbnailUrls,
+  photoPrompts: user.photoPrompts,
   city: user.city,
   height: user.height,
   occupation: user.occupation,
@@ -77,7 +81,27 @@ PublicProfile publicProfileFromUserProfile(UserProfile user) => PublicProfile(
   paceMaxSecsPerKm: user.paceMaxSecsPerKm,
   preferredDistances: user.preferredDistances,
   runningReasons: user.runningReasons,
+  preferredRunTimes: user.preferredRunTimes,
 );
+
+Map<String, dynamic> _migratePromptJson(Map<String, dynamic> json) {
+  final migrated = Map<String, dynamic>.from(json);
+  final legacyBio = migrated['bio'];
+  final hasStructuredPrompts =
+      migrated['profilePrompts'] is List &&
+      (migrated['profilePrompts'] as List).isNotEmpty;
+
+  if (!hasStructuredPrompts &&
+      legacyBio is String &&
+      legacyBio.trim().isNotEmpty) {
+    migrated['profilePrompts'] = profilePromptsToJson(
+      normalizeProfilePromptAnswers(const [], legacyBio: legacyBio),
+    );
+  }
+
+  migrated.remove('bio');
+  return migrated;
+}
 
 extension PublicProfilePhotos on PublicProfile {
   /// Tiny first-photo URL for avatar-scale UI. Falls back to the full photo

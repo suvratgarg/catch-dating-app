@@ -1,16 +1,20 @@
 import 'package:catch_dating_app/core/domain/city_data.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
+import 'package:catch_dating_app/run_clubs/presentation/run_club_name_lookup.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_center.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_view_model.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_tiles.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../run_clubs/run_clubs_test_helpers.dart' as club_test;
 import 'runs_test_helpers.dart';
 
 RunClubMembership _membership({
@@ -116,54 +120,44 @@ void main() {
   });
 
   group('resolveRunMapInitialCenter', () {
-    test('prefers device location over selected city and run pins', () {
+    const selectedCity = CityData(
+      name: 'mumbai',
+      label: 'Mumbai',
+      latitude: 19.076,
+      longitude: 72.8777,
+    );
+
+    test('uses device location while the city is auto-selected', () {
       final center = resolveRunMapInitialCenter(
         deviceLocation: const LocationCoordinate(22.7, 75.8),
-        selectedCity: const CityData(
-          name: 'mumbai',
-          label: 'Mumbai',
-          latitude: 19.076,
-          longitude: 72.8777,
-        ),
-        pinnedRuns: [
-          buildRun(startingPointLat: 23.0225, startingPointLng: 72.5714),
-        ],
+        selectedCity: selectedCity,
+        selectedCityWasUserSelected: false,
       );
 
       expect(center.latitude, 22.7);
       expect(center.longitude, 75.8);
     });
 
-    test('falls back to the selected city before run pins', () {
+    test('uses selected city when device location is unavailable', () {
       final center = resolveRunMapInitialCenter(
-        selectedCity: const CityData(
-          name: 'indore',
-          label: 'Indore',
-          latitude: 22.7196,
-          longitude: 75.8577,
-        ),
-        pinnedRuns: [
-          buildRun(startingPointLat: 23.0225, startingPointLng: 72.5714),
-        ],
+        selectedCity: selectedCity,
+        selectedCityWasUserSelected: false,
       );
 
-      expect(center.latitude, 22.7196);
-      expect(center.longitude, 75.8577);
+      expect(center.latitude, 19.076);
+      expect(center.longitude, 72.8777);
     });
 
-    test(
-      'uses the first pin only when location and selected city are absent',
-      () {
-        final center = resolveRunMapInitialCenter(
-          pinnedRuns: [
-            buildRun(startingPointLat: 23.0225, startingPointLng: 72.5714),
-          ],
-        );
+    test('uses selected city when the user overrides the city', () {
+      final center = resolveRunMapInitialCenter(
+        deviceLocation: const LocationCoordinate(22.7, 75.8),
+        selectedCity: selectedCity,
+        selectedCityWasUserSelected: true,
+      );
 
-        expect(center.latitude, 23.0225);
-        expect(center.longitude, 72.5714);
-      },
-    );
+      expect(center.latitude, 19.076);
+      expect(center.longitude, 72.8777);
+    });
   });
 
   group('runMapViewModelProvider', () {
@@ -201,6 +195,11 @@ void main() {
             (ref) => Stream.value([_membership(clubId: 'club-1')]),
           ),
           runRepositoryProvider.overrideWith((ref) => repository),
+          runClubsRepositoryProvider.overrideWith(
+            (ref) =>
+                club_test.FakeRunClubsRepository()
+                  ..clubsById['club-1'] = buildRunClub(id: 'club-1'),
+          ),
           savedRunRepositoryProvider.overrideWithValue(savedRunRepository),
         ],
       );
@@ -226,6 +225,11 @@ void main() {
           RecommendedRunsQuery.fromClubIds(const ['club-1']),
         ).future,
       );
+      await container.read(
+        runClubNameLookupProvider(
+          RunClubNameLookupQuery(const ['club-1']),
+        ).future,
+      );
       await container.pump();
 
       final viewModel = subscription.read().requireValue;
@@ -234,6 +238,14 @@ void main() {
         'signed-up',
         'recommended',
       ]);
+      expect(viewModel.effectiveItems.map((item) => item.status), [
+        RunTileStatus.saved,
+        RunTileStatus.joined,
+        RunTileStatus.recommended,
+      ]);
+      expect(viewModel.effectiveItems.map((item) => item.clubName).toSet(), {
+        'Stride Social',
+      });
       expect(viewModel.pinnedRuns.length, 3);
       expect(repository.recommendedClubIds, ['club-1']);
     });

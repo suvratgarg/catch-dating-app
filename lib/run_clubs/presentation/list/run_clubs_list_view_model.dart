@@ -5,6 +5,7 @@ import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.d
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -62,6 +63,9 @@ class SelectedRunClubCity extends _$SelectedRunClubCity {
 
   void setCity(CityData city) {
     _userSelected = true;
+    ref
+        .read(selectedRunClubCityWasUserSelectedProvider.notifier)
+        .markSelected();
     if (state != city) {
       state = city;
       ref.read(runClubSearchQueryProvider.notifier).clear();
@@ -81,6 +85,18 @@ class SelectedRunClubCity extends _$SelectedRunClubCity {
     if (city == null) return;
     autoSelectCity(city);
   }
+}
+
+final selectedRunClubCityWasUserSelectedProvider =
+    NotifierProvider<SelectedRunClubCityWasUserSelected, bool>(
+      SelectedRunClubCityWasUserSelected.new,
+    );
+
+class SelectedRunClubCityWasUserSelected extends Notifier<bool> {
+  @override
+  bool build() => false;
+
+  void markSelected() => state = true;
 }
 
 final _mumbaiDefault = CityData(

@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/person_avatar.dart';
@@ -16,7 +17,7 @@ class ChatListTile extends StatelessWidget {
   String _formatTime(DateTime? dt) {
     if (dt == null) return '';
     final now = DateTime.now();
-    if (now.difference(dt).inDays == 0) return DateFormat.jm().format(dt);
+    if (now.difference(dt).inDays == 0) return AppTimeFormatters.time(dt);
     if (now.difference(dt).inDays < 7) return DateFormat.E().format(dt);
     return DateFormat.MMMd().format(dt);
   }

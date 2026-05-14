@@ -98,13 +98,14 @@ function userProfile(overrides = {}) {
     lastName: "One",
     displayName: "Runner",
     email: "",
-    bio: "",
+    profilePrompts: [],
     instagramHandle: null,
     phoneNumber: "+919999999999",
     dateOfBirth: Timestamp.fromDate(new Date("1998-01-01T00:00:00.000Z")),
     gender: "woman",
     profileComplete: true,
     photoUrls: [],
+    photoPrompts: [],
     city: "mumbai",
     latitude: null,
     longitude: null,
@@ -947,6 +948,61 @@ describe("firestore.rules", () => {
           swipe(),
         ),
       );
+      await seed(["publicProfiles", "runner-2-reaction"], {name: "Runner R"});
+      await seed(
+        ["runParticipations", "run-1_runner-2-reaction"],
+        runParticipation({
+          uid: "runner-2-reaction",
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await assertSucceeds(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "swipes",
+            "runner-1",
+            "outgoing",
+            "runner-2-reaction",
+          ),
+          swipe({
+            targetId: "runner-2-reaction",
+            reactionTargetId: "profile-prompt-perfectRun",
+            reactionTargetType: "profilePrompt",
+            reactionTargetLabel: "A perfect run with me looks like...",
+            reactionTargetPreview: "Always up for a sunrise run.",
+            comment: "Same here.",
+          }),
+        ),
+      );
+      await seed(["publicProfiles", "runner-2-compatibility"], {name: "Runner C"});
+      await seed(
+        ["runParticipations", "run-1_runner-2-compatibility"],
+        runParticipation({
+          uid: "runner-2-compatibility",
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await assertSucceeds(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "swipes",
+            "runner-1",
+            "outgoing",
+            "runner-2-compatibility",
+          ),
+          swipe({
+            targetId: "runner-2-compatibility",
+            reactionTargetId: "compatibility",
+            reactionTargetType: "compatibility",
+            reactionTargetLabel: "Why you might click",
+            reactionTargetPreview: "Your pace ranges overlap.",
+          }),
+        ),
+      );
     });
 
     it("denies malformed swipe payloads", async () => {
@@ -983,6 +1039,12 @@ describe("firestore.rules", () => {
       await assertFails(setDoc(swipeRef, swipe({targetId: "runner-3"})));
       await assertFails(setDoc(swipeRef, swipe({direction: "superlike"})));
       await assertFails(setDoc(swipeRef, swipe({runId: 123})));
+      await assertFails(
+        setDoc(swipeRef, swipe({reactionTargetType: "superlike"})),
+      );
+      await assertFails(
+        setDoc(swipeRef, swipe({direction: "pass", comment: "Nope."})),
+      );
       await assertFails(setDoc(swipeRef, {...swipe(), extraField: true}));
     });
 

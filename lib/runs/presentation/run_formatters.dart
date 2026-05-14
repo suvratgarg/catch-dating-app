@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:intl/intl.dart';
 
@@ -5,7 +6,6 @@ class RunFormatters {
   static final _month = DateFormat('MMM');
   static final _weekdayShort = DateFormat('E');
   static final _weekdayLong = DateFormat('EEEE');
-  static final _time = DateFormat('HH:mm');
   static final _shortDateFmt = DateFormat('E, d MMM');
   static final _longDateFmt = DateFormat('EEEE, d MMM');
 
@@ -14,14 +14,13 @@ class RunFormatters {
   static String shortWeekday(DateTime dateTime) =>
       _weekdayShort.format(dateTime);
 
-  static String longWeekday(DateTime dateTime) =>
-      _weekdayLong.format(dateTime);
+  static String longWeekday(DateTime dateTime) => _weekdayLong.format(dateTime);
 
   static String shortDate(DateTime dateTime) => _shortDateFmt.format(dateTime);
 
   static String longDate(DateTime dateTime) => _longDateFmt.format(dateTime);
 
-  static String time(DateTime dateTime) => _time.format(dateTime);
+  static String time(DateTime dateTime) => AppTimeFormatters.time(dateTime);
 
   static String timeRange(
     DateTime startTime,

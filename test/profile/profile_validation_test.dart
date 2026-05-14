@@ -56,10 +56,29 @@ void main() {
       expect(validateOptionalEmail('not-an-email'), 'Enter a valid email');
       expect(validateOptionalEmail('runner@example.com'), isNull);
       expect(validateOptionalEmail(''), isNull);
-      expect(validateOptionalBio('a' * maximumBioLength), isNull);
       expect(
-        validateOptionalBio('a' * (maximumBioLength + 1)),
-        'Bio must be $maximumBioLength characters or fewer',
+        validateOptionalProfilePromptAnswer(
+          'a' * maximumProfilePromptAnswerLength,
+        ),
+        isNull,
+      );
+      expect(validateOptionalProfilePromptAnswer('first\n\nsecond'), isNull);
+      expect(
+        validateOptionalProfilePromptAnswer(
+          'a' * (maximumProfilePromptAnswerLength + 1),
+        ),
+        'Prompt must be $maximumProfilePromptAnswerLength characters or fewer',
+      );
+      expect(validateOptionalProfilePromptAnswer('first\n\n\nsecond'), isNull);
+      expect(
+        collapseStackedPromptBlankLines('first\r\n\r\n\r\nsecond\n \n \nthird'),
+        'first\n\nsecond\n\nthird',
+      );
+      expect(
+        validateOptionalPhotoPromptCaption(
+          'a' * (maximumPhotoPromptCaptionLength + 1),
+        ),
+        'Caption must be $maximumPhotoPromptCaptionLength characters or fewer',
       );
     });
 

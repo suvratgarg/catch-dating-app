@@ -86,7 +86,7 @@ class PhotosPage extends ConsumerWidget {
             onPressed: canContinue
                 ? () => ref
                       .read(onboardingControllerProvider.notifier)
-                      .goToStepAndSaveDraft(OnboardingStep.runningPrefs)
+                      .goToStepAndSaveDraft(OnboardingStep.prompts)
                 : null,
             fullWidth: true,
             size: CatchButtonSize.lg,

@@ -24,6 +24,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
   RangeValues _paceRange = const RangeValues(300, 420); // secs/km
   final Set<PreferredDistance> _distances = {};
   final Set<RunReason> _reasons = {};
+  final Set<PreferredRunTime> _runTimes = {};
   bool _didSeedFromProfile = false;
 
   void _submit() {
@@ -35,6 +36,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
             paceMaxSecsPerKm: _paceRange.end.round(),
             preferredDistances: _distances.toList(),
             runningReasons: _reasons.toList(),
+            preferredRunTimes: _runTimes.toList(),
           );
     });
   }
@@ -57,6 +59,9 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
       _reasons
         ..clear()
         ..addAll(userProfile.runningReasons);
+      _runTimes
+        ..clear()
+        ..addAll(userProfile.preferredRunTimes);
     }
 
     return SingleChildScrollView(
@@ -137,6 +142,24 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
               OnboardingController.completeMutation.reset(ref);
               setState(() {
                 _reasons
+                  ..clear()
+                  ..addAll(next);
+              });
+            },
+          ),
+          const SizedBox(height: 28),
+
+          // ── Time of day ───────────────────────────────────────────────────
+          ChipField<PreferredRunTime>(
+            label: 'Favorite run times',
+            isOptional: true,
+            values: PreferredRunTime.values,
+            selected: _runTimes,
+            multiSelect: true,
+            onChanged: (next) {
+              OnboardingController.completeMutation.reset(ref);
+              setState(() {
+                _runTimes
                   ..clear()
                   ..addAll(next);
               });

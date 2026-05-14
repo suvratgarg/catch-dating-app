@@ -75,7 +75,7 @@ void main() {
       expect(find.text('Select a date'), findsOneWidget);
       expect(find.text('23/04/2026'), findsOneWidget);
       expect(find.text('Pin exact starting point on map'), findsOneWidget);
-      expect(find.text('19.07600, 72.87770'), findsOneWidget);
+      expect(find.text('Starting point pinned'), findsOneWidget);
       expect(find.text('75 min'), findsOneWidget);
 
       await tester.tap(find.text('Select a date'));
@@ -132,7 +132,7 @@ void main() {
         expect(find.text('5.5'), findsOneWidget);
         expect(find.text('Pace level'), findsOneWidget);
         expect(find.text('3/20'), findsOneWidget);
-        expect(find.text('06:30 – 07:45'), findsOneWidget);
+        expect(find.text('6:30 AM – 7:45 AM'), findsOneWidget);
         expect(find.text('Wednesday, 23 Apr'), findsOneWidget);
         expect(find.text('Bandra Fort'), findsNWidgets(2));
         expect(find.text('Meet by the parking lot'), findsOneWidget);
@@ -208,7 +208,8 @@ void main() {
         RunLocationMapScreen(run: run, enableNetworkTiles: false),
       );
 
-      expect(find.text('Run location'), findsOneWidget);
+      expect(find.text('Run location'), findsNothing);
+      expect(find.byTooltip('Back'), findsOneWidget);
       expect(find.byIcon(Icons.location_on_rounded), findsOneWidget);
       expect(find.text('Race Course Road main gate'), findsOneWidget);
       expect(
@@ -289,7 +290,7 @@ void main() {
 
     testWidgets('when step renders schedule validation text', (tester) async {
       final dateController = TextEditingController(text: '23/04/2026');
-      final startTimeController = TextEditingController(text: '06:30');
+      final startTimeController = TextEditingController(text: '6:30 AM');
       addTearDown(dateController.dispose);
       addTearDown(startTimeController.dispose);
 
@@ -359,8 +360,8 @@ void main() {
       );
 
       expect(find.text('TODAY'), findsOneWidget);
-      expect(find.text('08:00'), findsOneWidget);
-      expect(find.text('7km · Easy · 2/20'), findsOneWidget);
+      expect(find.text('8:00 AM'), findsOneWidget);
+      expect(find.text('7km · Easy · 2/20 spots'), findsOneWidget);
       expect(find.text('VIEW'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
       expect(find.text('Schedule run'), findsNothing);
@@ -371,7 +372,7 @@ void main() {
         findsOneWidget,
       );
 
-      await tester.tap(find.text('7km · Easy · 2/20'));
+      await tester.tap(find.text('7km · Easy · 2/20 spots'));
       await tester.tap(find.text('Next'));
       await tester.pump();
 
@@ -467,6 +468,34 @@ void main() {
       await tester.pump();
 
       expect(tappedRunId, 'run-sooner');
+    });
+
+    testWidgets('agenda list renders provided club names by default', (
+      tester,
+    ) async {
+      final now = DateTime(2026, 5, 5);
+      final run = buildRun(
+        id: 'run-with-club',
+        startTime: DateTime(now.year, now.month, now.day, 8),
+        meetingPoint: 'Global surface start',
+      );
+
+      await pumpRunsTestApp(
+        tester,
+        Scaffold(
+          body: SizedBox(
+            height: 300,
+            child: RunAgendaList(
+              runs: [run],
+              today: now,
+              clubNameBuilder: (_) => 'Stride Social',
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Global surface start'), findsOneWidget);
+      expect(find.text('Stride Social'), findsOneWidget);
     });
 
     testWidgets('run photo header repaints when the token mode changes', (

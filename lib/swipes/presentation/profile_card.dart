@@ -1,8 +1,10 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/scrollable_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_stamp.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 
 class ProfileCard extends StatelessWidget {
@@ -13,9 +15,14 @@ class ProfileCard extends StatelessWidget {
     this.scrollController,
     this.onLeadingOverscroll,
     this.bottomPadding = 24,
+    this.onReact,
+    this.viewerProfile,
+    this.sharedRunTitle,
   });
 
   final PublicProfile profile;
+  final UserProfile? viewerProfile;
+  final String? sharedRunTitle;
 
   /// Horizontal drag progress from CardSwiper (-100 to 100).
   /// Positive = dragging right (like), negative = dragging left (nope).
@@ -23,6 +30,7 @@ class ProfileCard extends StatelessWidget {
   final ScrollController? scrollController;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
+  final ProfileReactionCallback? onReact;
 
   @override
   Widget build(BuildContext context) {
@@ -60,6 +68,9 @@ class ProfileCard extends StatelessWidget {
                   scrollController: scrollController,
                   onLeadingOverscroll: onLeadingOverscroll,
                   bottomPadding: bottomPadding,
+                  onReact: onReact,
+                  viewerProfile: viewerProfile,
+                  sharedRunTitle: sharedRunTitle,
                 ),
                 Positioned(
                   top: 48,

@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -11,6 +12,8 @@ import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/scrollable_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_screen.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/preview_tab.dart';
@@ -89,6 +92,20 @@ Future<void> _dragProfileTabUntilVisible(
     find.byKey(ProfileTab.scrollViewKey),
     const Offset(0, -300),
   );
+  await tester.ensureVisible(finder);
+  await tester.pump();
+}
+
+Future<void> _dragProfileTabUntilTappable(
+  WidgetTester tester,
+  Finder finder,
+) async {
+  await _dragProfileTabUntilVisible(tester, finder);
+  await tester.drag(
+    find.byKey(ProfileTab.scrollViewKey),
+    const Offset(0, -260),
+  );
+  await tester.pump();
 }
 
 Finder _profileInfoTile(String label) => find.byWidgetPredicate(
@@ -98,6 +115,10 @@ Finder _profileInfoTile(String label) => find.byWidgetPredicate(
 Finder _catchChip(String label) => find.byWidgetPredicate(
   (widget) => widget is CatchChip && widget.label == label,
 );
+
+final _perfectRunPromptTitle = profilePromptDefinition(
+  profilePromptPerfectRunId,
+).title;
 
 void main() {
   testWidgets(
@@ -411,7 +432,8 @@ void main() {
 
     expect(tester.takeException(), isNull);
     expect(find.byType(PhotoGrid), findsOneWidget);
-    expect(_profileInfoTile('Bio'), findsOneWidget);
+    expect(find.text('Profile strength'), findsOneWidget);
+    expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
   });
 
   testWidgets(
@@ -440,7 +462,7 @@ void main() {
       expect(find.text('Name'), findsNothing);
       expect(dobTile.onTap, isNull);
       expect(genderTile.onTap, isNull);
-      expect(_profileInfoTile('Bio'), findsOneWidget);
+      expect(_profileInfoTile(_perfectRunPromptTitle), findsOneWidget);
 
       final instagramTile = tester.widget<ProfileInfoTile>(
         _profileInfoTile('Instagram'),
@@ -469,7 +491,7 @@ void main() {
     expect(
       find.descendant(
         of: displayNameTile,
-        matching: find.byType(ProfileInlineEditableText),
+        matching: find.byType(ProfileInlineTextValue),
       ),
       findsOneWidget,
     );
@@ -505,7 +527,7 @@ void main() {
     expect(find.byType(CatchTextField), findsNothing);
   });
 
-  testWidgets('inline editable text underline follows scaled text width', (
+  testWidgets('inline text value underline follows scaled text width', (
     tester,
   ) async {
     final controller = TextEditingController(text: '+919131404263');
@@ -526,10 +548,12 @@ void main() {
                 body: Center(
                   child: SizedBox(
                     width: 340,
-                    child: ProfileInlineEditableText(
+                    child: ProfileInlineTextValue(
                       label: 'Phone',
+                      displayValue: controller.text,
                       controller: controller,
                       focusNode: focusNode,
+                      isEditing: true,
                       enabled: true,
                       keyboardType: TextInputType.phone,
                     ),
@@ -543,7 +567,7 @@ void main() {
     );
     await tester.pump();
 
-    final context = tester.element(find.byType(ProfileInlineEditableText));
+    final context = tester.element(find.byType(ProfileInlineTextValue));
     final t = CatchTokens.of(context);
     final style = CatchTextStyles.bodyL(context, color: t.ink);
     final painter = TextPainter(
@@ -553,11 +577,64 @@ void main() {
       maxLines: 1,
     )..layout();
     final underline = find.descendant(
-      of: find.byType(ProfileInlineEditableText),
-      matching: find.byType(AnimatedContainer),
+      of: find.byType(ProfileInlineTextValue),
+      matching: find.byKey(const ValueKey('profile-inline-underline')),
     );
 
     expect(tester.getSize(underline).width, closeTo(painter.width, 0.1));
+  });
+
+  testWidgets('multiline text underline follows the widest rendered line', (
+    tester,
+  ) async {
+    final controller = TextEditingController(
+      text: 'This is the widest prompt line\nshort',
+    );
+    final focusNode = FocusNode();
+    addTearDown(controller.dispose);
+    addTearDown(focusNode.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: Center(
+            child: SizedBox(
+              width: 300,
+              child: ProfileInlineTextValue(
+                label: _perfectRunPromptTitle,
+                displayValue: '',
+                controller: controller,
+                focusNode: focusNode,
+                isEditing: true,
+                enabled: true,
+                maxLines: null,
+                maxLength: maximumProfilePromptAnswerLength,
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+
+    final context = tester.element(find.byType(ProfileInlineTextValue));
+    final t = CatchTokens.of(context);
+    final style = CatchTextStyles.bodyL(context, color: t.ink);
+    final painter = TextPainter(
+      text: TextSpan(text: controller.text, style: style),
+      textDirection: TextDirection.ltr,
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: null,
+    )..layout(maxWidth: 300);
+    final lineWidths = painter.computeLineMetrics().map((line) => line.width);
+    final expectedWidth = lineWidths.reduce(math.max);
+    final underline = find.descendant(
+      of: find.byType(ProfileInlineTextValue),
+      matching: find.byKey(const ValueKey('profile-inline-underline')),
+    );
+
+    expect(tester.getSize(underline).width, closeTo(expectedWidth, 0.1));
   });
 
   testWidgets('profile inline drawers animate open and closed', (tester) async {
@@ -572,7 +649,7 @@ void main() {
     expect(find.byType(ProfileInlineAnimatedBody), findsWidgets);
     expect(find.byTooltip('Increase height'), findsOneWidget);
 
-    await tester.tap(heightTile);
+    await tester.tap(find.byTooltip('Collapse Height'));
     await tester.pump();
 
     expect(find.byTooltip('Increase height'), findsOneWidget);
@@ -600,21 +677,29 @@ void main() {
     await _pumpProfileTab(tester, user);
 
     // Scroll to and tap the pace range row.
-    await _dragProfileTabUntilVisible(tester, find.text('Pace range'));
-    await tester.tap(find.text('Pace range'));
+    final paceTile = _profileInfoTile('Pace range');
+    await _dragProfileTabUntilTappable(tester, paceTile);
+    await tester.tap(paceTile);
     await _pumpProfileSheet(tester);
 
     // Inline editor is open with the shared range slider and Done button.
+    expect(
+      find.descendant(of: paceTile, matching: find.byType(AnimatedSwitcher)),
+      findsNothing,
+    );
     expect(find.byType(CatchRangeSlider), findsOneWidget);
     expect(find.byType(RangeSlider), findsOneWidget);
-    expect(find.text('5:00 - 7:00 /km'), findsNothing);
-    expect(find.text('4:00/km'), findsOneWidget);
-    expect(find.text('9:00/km'), findsOneWidget);
+    expect(find.text('5:00/km - 7:00/km'), findsOneWidget);
     final catchRangeSlider = tester.widget<CatchRangeSlider>(
       find.byType(CatchRangeSlider),
     );
-    expect(catchRangeSlider.minLabel, '4:00/km');
-    expect(catchRangeSlider.maxLabel, '9:00/km');
+    expect(catchRangeSlider.minLabel, isNull);
+    expect(catchRangeSlider.maxLabel, isNull);
+    final rangeSlider = tester.widget<RangeSlider>(find.byType(RangeSlider));
+    expect(rangeSlider.labels, isNull);
+    rangeSlider.onChanged!(const RangeValues(270, 540));
+    await tester.pump();
+    expect(find.text('4:30/km - 9:00/km'), findsOneWidget);
     expect(
       tester
           .widget<SliderTheme>(
@@ -654,42 +739,110 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('bio edit uses the profile row-owned multiline inline editor', (
+  testWidgets('prompt edit uses the stable profile row-owned text primitive', (
     tester,
   ) async {
     final repository = FakeProfileEditUserProfileRepository();
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final bioTile = _profileInfoTile('Bio');
-    await tester.tap(bioTile);
+    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
+    await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
 
     expect(
       find.descendant(
-        of: bioTile,
-        matching: find.byType(ProfileInlineEditableText),
+        of: promptTile,
+        matching: find.byType(ProfileInlineTextValue),
       ),
       findsOneWidget,
     );
-    final bioField = tester.widget<ProfileInlineEditableText>(
+    expect(
+      find.descendant(of: promptTile, matching: find.byType(AnimatedSwitcher)),
+      findsNothing,
+    );
+    final promptField = tester.widget<ProfileInlineTextValue>(
       find.descendant(
-        of: bioTile,
-        matching: find.byType(ProfileInlineEditableText),
+        of: promptTile,
+        matching: find.byType(ProfileInlineTextValue),
       ),
     );
-    expect(bioField.maxLines, 4);
-    expect(bioField.minLines, 3);
+    expect(promptField.maxLines, isNull);
+    expect(promptField.minLines, isNull);
+    expect(promptField.maxLength, maximumProfilePromptAnswerLength);
+    expect(promptField.showCounter, isTrue);
 
     await tester.enterText(
-      find.descendant(of: bioTile, matching: find.byType(EditableText)),
+      find.descendant(of: promptTile, matching: find.byType(EditableText)),
       ' Updated bio ',
     );
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
     await _pumpProfileSheet(tester);
 
-    expect(repository.updatedFields, {'bio': 'Updated bio'});
-    expect(find.byType(ProfileInlineEditableText), findsNothing);
+    expect(repository.updatedFields?['profilePrompts'], [
+      containsPair('answer', 'Updated bio'),
+    ]);
+    expect(find.byType(EditableText), findsNothing);
+  });
+
+  testWidgets('prompt edit keeps the row anchored with a tight underline', (
+    tester,
+  ) async {
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpProfileTab(tester, user);
+
+    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
+    final chevron = find.byKey(
+      ValueKey('profile-info-$_perfectRunPromptTitle-chevron'),
+    );
+    final collapsedTileTop = tester.getTopLeft(promptTile).dy;
+    final collapsedChevronCenter = tester.getCenter(chevron);
+
+    await tester.tap(promptTile);
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 80));
+
+    expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
+    expect(
+      tester.getCenter(chevron).dx,
+      closeTo(collapsedChevronCenter.dx, 0.1),
+    );
+    expect(
+      tester.getCenter(chevron).dy,
+      closeTo(collapsedChevronCenter.dy, 0.1),
+    );
+    final midRotation = tester
+        .widget<RotationTransition>(
+          find.descendant(
+            of: chevron,
+            matching: find.byType(RotationTransition),
+          ),
+        )
+        .turns
+        .value;
+    expect(midRotation, lessThan(0));
+    expect(midRotation, greaterThan(-0.25));
+
+    await _pumpProfileSheet(tester);
+
+    final editableText = find.descendant(
+      of: promptTile,
+      matching: find.byType(EditableText),
+    );
+    final underline = find.descendant(
+      of: promptTile,
+      matching: find.byKey(const ValueKey('profile-inline-underline')),
+    );
+
+    expect(tester.getTopLeft(promptTile).dy, closeTo(collapsedTileTop, 0.1));
+    expect(
+      tester.getCenter(chevron).dy,
+      closeTo(collapsedChevronCenter.dy, 0.1),
+    );
+    expect(
+      tester.getTopLeft(underline).dy - tester.getBottomLeft(editableText).dy,
+      closeTo(2, 0.1),
+    );
   });
 
   testWidgets('inline email edit uses the email keyboard', (tester) async {
@@ -704,8 +857,11 @@ void main() {
     await _pumpProfileSheet(tester);
 
     expect(find.byType(CatchTextField), findsNothing);
-    final field = tester.widget<ProfileInlineEditableText>(
-      find.byType(ProfileInlineEditableText),
+    final field = tester.widget<ProfileInlineTextValue>(
+      find.descendant(
+        of: emailTile,
+        matching: find.byType(ProfileInlineTextValue),
+      ),
     );
     expect(field.keyboardType, TextInputType.emailAddress);
     expect(field.autofillHints, contains(AutofillHints.email));
@@ -729,7 +885,10 @@ void main() {
     final expandedChevronCenter = tester.getCenter(chevron);
     final expandedTileHeight = tester.getSize(emailTile).height;
     final editableBottom = tester.getBottomLeft(
-      find.byType(ProfileInlineEditableText),
+      find.descendant(
+        of: emailTile,
+        matching: find.byType(ProfileInlineTextValue),
+      ),
     );
     final doneTop = tester.getTopLeft(find.widgetWithText(CatchButton, 'Done'));
 
@@ -752,11 +911,17 @@ void main() {
     await _pumpProfileSheet(tester);
 
     expect(find.byType(CatchTextField), findsNothing);
-    expect(find.text('172 cm'), findsAtLeastNWidgets(1));
+    expect(find.text('172 cm'), findsOneWidget);
     expect(find.text('120-220 cm'), findsNothing);
     expect(find.byTooltip('Decrease height'), findsOneWidget);
     expect(find.byTooltip('Increase height'), findsOneWidget);
     expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
+
+    await tester.tap(find.byTooltip('Increase height'));
+    await tester.pump();
+
+    expect(find.text('172 cm'), findsNothing);
+    expect(find.text('173 cm'), findsOneWidget);
 
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
     await _pumpProfileSheet(tester);
@@ -802,41 +967,97 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final bioTile = _profileInfoTile('Bio');
-    await tester.tap(bioTile);
+    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
+    await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
     await tester.enterText(
-      find.descendant(of: bioTile, matching: find.byType(EditableText)),
+      find.descendant(of: promptTile, matching: find.byType(EditableText)),
       'Updated bio',
     );
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
     await _pumpProfileSheet(tester);
 
-    expect(repository.updatedFields, {'bio': 'Updated bio'});
-    expect(find.byType(ProfileInlineEditableText), findsOneWidget);
+    expect(repository.updatedFields?['profilePrompts'], [
+      containsPair('answer', 'Updated bio'),
+    ]);
+    expect(find.byType(EditableText), findsOneWidget);
     expect(find.textContaining('Save failed'), findsOneWidget);
   });
 
-  testWidgets('bio edit validates against callable length limit', (
+  testWidgets('prompt edit limits input to the callable length limit', (
     tester,
   ) async {
     final repository = FakeProfileEditUserProfileRepository();
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final bioTile = _profileInfoTile('Bio');
-    await tester.tap(bioTile);
+    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
+    await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
     await tester.enterText(
-      find.descendant(of: bioTile, matching: find.byType(EditableText)),
-      'a' * 2001,
+      find.descendant(of: promptTile, matching: find.byType(EditableText)),
+      'a' * (maximumProfilePromptAnswerLength + 1),
     );
+    await tester.pump();
+    final editableText = tester.widget<EditableText>(
+      find.descendant(of: promptTile, matching: find.byType(EditableText)),
+    );
+
+    expect(
+      editableText.controller.text.length,
+      maximumProfilePromptAnswerLength,
+    );
+    final counter = find.text(
+      '$maximumProfilePromptAnswerLength / $maximumProfilePromptAnswerLength',
+    );
+    expect(counter, findsOneWidget);
+    expect(
+      tester.getCenter(counter).dy,
+      closeTo(tester.getCenter(find.widgetWithText(CatchButton, 'Done')).dy, 1),
+    );
+
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _pumpProfileSheet(tester);
+
+    expect(repository.updatedFields?['profilePrompts'], [
+      containsPair('answer', 'a' * maximumProfilePromptAnswerLength),
+    ]);
+    expect(
+      find.text(
+        'Prompt must be $maximumProfilePromptAnswerLength characters or fewer',
+      ),
+      findsNothing,
+    );
+    expect(find.byType(EditableText), findsNothing);
+  });
+
+  testWidgets('prompt edit collapses repeated empty lines while typing', (
+    tester,
+  ) async {
+    final repository = FakeProfileEditUserProfileRepository();
+    final user = buildUser(name: 'Suvrat Garg');
+    await _pumpEditableProfileTab(tester, user, repository);
+
+    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
+    await tester.tap(promptTile);
+    await _pumpProfileSheet(tester);
+    await tester.enterText(
+      find.descendant(of: promptTile, matching: find.byType(EditableText)),
+      'first\n\n\nsecond\n \n \nthird',
+    );
     await tester.pump();
 
-    expect(repository.updatedFields, isNull);
-    expect(find.text('Bio must be 2000 characters or fewer'), findsOneWidget);
-    expect(find.byType(ProfileInlineEditableText), findsOneWidget);
+    final editableText = tester.widget<EditableText>(
+      find.descendant(of: promptTile, matching: find.byType(EditableText)),
+    );
+    expect(editableText.controller.text, 'first\n\nsecond\n\nthird');
+
+    await tester.tap(find.widgetWithText(CatchButton, 'Done'));
+    await _pumpProfileSheet(tester);
+
+    expect(repository.updatedFields?['profilePrompts'], [
+      containsPair('answer', 'first\n\nsecond\n\nthird'),
+    ]);
   });
 
   testWidgets('text edit waits for save before closing', (tester) async {
@@ -845,18 +1066,20 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    final bioTile = _profileInfoTile('Bio');
-    await tester.tap(bioTile);
+    final promptTile = _profileInfoTile(_perfectRunPromptTitle);
+    await tester.tap(promptTile);
     await _pumpProfileSheet(tester);
     await tester.enterText(
-      find.descendant(of: bioTile, matching: find.byType(EditableText)),
+      find.descendant(of: promptTile, matching: find.byType(EditableText)),
       'Updated bio',
     );
     await tester.tap(find.widgetWithText(CatchButton, 'Done'));
     await tester.pump();
 
-    expect(repository.updatedFields, {'bio': 'Updated bio'});
-    expect(find.byType(ProfileInlineEditableText), findsOneWidget);
+    expect(repository.updatedFields?['profilePrompts'], [
+      containsPair('answer', 'Updated bio'),
+    ]);
+    expect(find.byType(EditableText), findsOneWidget);
     expect(
       tester.widget<CatchButton>(find.byType(CatchButton)).isLoading,
       isTrue,
@@ -865,7 +1088,7 @@ void main() {
     repository.updateCompleter!.complete();
     await _pumpProfileSheet(tester);
 
-    expect(find.byType(ProfileInlineEditableText), findsNothing);
+    expect(find.byType(EditableText), findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -919,7 +1142,7 @@ void main() {
     await _pumpEditableProfileTab(tester, user, repository);
 
     final childrenTile = _profileInfoTile('Children');
-    await _dragProfileTabUntilVisible(tester, childrenTile);
+    await _dragProfileTabUntilTappable(tester, childrenTile);
     await tester.tap(childrenTile);
     await _pumpProfileSheet(tester);
 
@@ -1192,8 +1415,9 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpEditableProfileTab(tester, user, repository);
 
-    await _dragProfileTabUntilVisible(tester, find.text('Pace range'));
-    await tester.tap(find.text('Pace range'));
+    final paceTile = _profileInfoTile('Pace range');
+    await _dragProfileTabUntilTappable(tester, paceTile);
+    await tester.tap(paceTile);
     await _pumpProfileSheet(tester);
 
     tester.widget<RangeSlider>(find.byType(RangeSlider)).onChanged!(

@@ -13,9 +13,9 @@ on:
           - staging
           - prod
       targets:
-        description: Comma-separated Firebase deploy targets.
+        description: Comma-separated Firebase deploy targets. Known targets deploy in the safe order functions, indexes, rules, storage, hosting.
         required: true
-        default: firestore:rules,firestore:indexes,storage,functions
+        default: functions,firestore:indexes,firestore:rules,storage
         type: string
 
 concurrency:
@@ -27,7 +27,7 @@ jobs:
     name: Deploy ${{ inputs.environment }}
     runs-on: ubuntu-latest
     environment: ${{ inputs.environment }}
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
@@ -81,5 +81,5 @@ jobs:
       - name: Firestore rules tests
         run: firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
 
-      - name: Deploy selected Firebase targets
-        run: ./tool/firebase_with_env.sh "${{ inputs.environment }}" deploy --only "${{ inputs.targets }}" --non-interactive
+      - name: Deploy selected Firebase targets in safe order
+        run: ./tool/deploy_firebase_targets.sh "${{ inputs.environment }}" "${{ inputs.targets }}"

@@ -103,6 +103,7 @@ void main() {
       expect(find.text('pay_XYZ789'), findsOneWidget);
       expect(find.text('Order ID'), findsOneWidget);
       expect(find.text('order-3'), findsOneWidget);
+      expect(find.text('10 Feb 2025 · 12:00 AM'), findsWidgets);
     });
 
     testWidgets('detail sheet shows Get help button for sign-up failures', (

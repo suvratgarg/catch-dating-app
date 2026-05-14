@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -15,8 +17,6 @@ class NameOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final palette = ProfileCardPalette.of(context);
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
@@ -28,10 +28,7 @@ class NameOverlay extends StatelessWidget {
               child: Text(
                 profile.name,
                 overflow: TextOverflow.ellipsis,
-                style: CatchTextStyles.displayL(
-                  context,
-                  color: palette.textPrimary,
-                ),
+                style: CatchTextStyles.displayL(context, color: Colors.white),
               ),
             ),
             gapW8,
@@ -41,7 +38,7 @@ class NameOverlay extends StatelessWidget {
                 '${profile.age}',
                 style: CatchTextStyles.displayS(
                   context,
-                  color: palette.textPrimary.withValues(alpha: 0.92),
+                  color: Colors.white.withValues(alpha: 0.92),
                 ),
               ),
             ),
@@ -55,20 +52,79 @@ class NameOverlay extends StatelessWidget {
               Icon(
                 Icons.location_on_outlined,
                 size: 16,
-                color: palette.textSecondary,
+                color: Colors.white.withValues(alpha: 0.86),
               ),
               gapW4,
               Text(
                 cityLabel(profile.city),
                 style: CatchTextStyles.labelL(
                   context,
-                  color: palette.textSecondary,
+                  color: Colors.white.withValues(alpha: 0.86),
                 ),
               ),
             ],
           ),
         ],
+        gapH14,
+        Wrap(
+          spacing: CatchSpacing.s2,
+          runSpacing: CatchSpacing.s2,
+          children: [
+            if (profile.relationshipGoal case final goal?)
+              _HeroSignalChip(
+                icon: Icons.favorite_border_rounded,
+                label: goal.label,
+              ),
+            _HeroSignalChip(
+              icon: Icons.speed_rounded,
+              label: formatPaceRange(
+                profile.paceMinSecsPerKm,
+                profile.paceMaxSecsPerKm,
+              ),
+            ),
+          ],
+        ),
       ],
+    );
+  }
+}
+
+class _HeroSignalChip extends StatelessWidget {
+  const _HeroSignalChip({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: Colors.black.withValues(alpha: 0.32),
+        borderRadius: BorderRadius.circular(CatchRadius.pill),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.20)),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: Colors.white.withValues(alpha: 0.90), size: 15),
+            gapW6,
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 210),
+              child: Text(
+                label,
+                style: CatchTextStyles.labelL(
+                  context,
+                  color: Colors.white.withValues(alpha: 0.96),
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

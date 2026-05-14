@@ -100,7 +100,12 @@ function completeUser(overrides: FakeData = {}): FakeData {
     firstName: "Asha",
     displayName: "Asha Host",
     dateOfBirth: timestamp(new Date("1996-01-01T00:00:00.000Z")),
-    bio: "Morning runner",
+    profilePrompts: [{
+      promptId: "perfectRun",
+      prompt: "A perfect run with me looks like...",
+      answer: "Morning runner",
+    }],
+    photoPrompts: [],
     gender: "woman",
     photoUrls: ["https://example.test/full.jpg"],
     photoThumbnailUrls: ["https://example.test/thumb.jpg"],

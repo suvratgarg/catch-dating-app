@@ -2,21 +2,17 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/dashed_avatar.dart';
-import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
 class DashboardScreen extends ConsumerStatefulWidget {
   const DashboardScreen({super.key});
@@ -55,7 +51,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
         if (user == null) {
           return _DashboardTabbedScreen(
             controller: _tabController,
-            header: _DashboardHeaderModel.empty(null),
+            header: _DashboardHeaderModel.empty(),
             dashboardSliver: const DashboardEmptySliverBody(),
             activitySliver: const _SignedOutActivitySliverBody(),
           );
@@ -105,7 +101,7 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             return _DashboardTabbedScreen(
               controller: _tabController,
               header: showEmptyDashboard
-                  ? _DashboardHeaderModel.empty(user)
+                  ? _DashboardHeaderModel.empty()
                   : _DashboardHeaderModel.full(context, user),
               dashboardSliver: showEmptyDashboard
                   ? const DashboardEmptySliverBody()
@@ -148,7 +144,6 @@ class _DashboardTabbedScreen extends StatelessWidget {
               final headerSlivers = DashboardSliverHeader(
                 eyebrow: header.eyebrow,
                 title: header.title,
-                avatar: header.avatar,
                 controller: controller,
               ).buildSlivers(context);
               final collapsibleSlivers = headerSlivers.take(
@@ -210,54 +205,23 @@ class _DashboardTabScrollView extends StatelessWidget {
 }
 
 class _DashboardHeaderModel {
-  const _DashboardHeaderModel({
-    required this.eyebrow,
-    required this.title,
-    required this.avatar,
-  });
+  const _DashboardHeaderModel({required this.eyebrow, required this.title});
 
   final String eyebrow;
   final String title;
-  final Widget avatar;
 
-  factory _DashboardHeaderModel.empty(UserProfile? user) {
-    final firstName = user?.greetingDisplayName ?? '';
+  factory _DashboardHeaderModel.empty() {
     return _DashboardHeaderModel(
       eyebrow: 'WELCOME TO CATCH',
       title: "Let's find your first run",
-      avatar: DashedAvatar(
-        size: 42,
-        imageUrl: user?.primaryPhotoThumbnailUrl,
-        name: firstName,
-      ),
     );
   }
 
   factory _DashboardHeaderModel.full(BuildContext context, UserProfile user) {
     final firstName = user.greetingDisplayName;
-    final t = CatchTokens.of(context);
     return _DashboardHeaderModel(
       eyebrow: DashboardFull.dayCity(cityLabel(user.city)).toUpperCase(),
       title: '${DashboardFull.greeting()}, $firstName',
-      avatar: Tooltip(
-        message: 'Open profile',
-        child: Semantics(
-          button: true,
-          label: 'Open profile',
-          child: InkResponse(
-            onTap: () => context.goNamed(Routes.profileScreen.name),
-            radius: 26,
-            customBorder: const CircleBorder(),
-            child: PersonAvatar(
-              size: 42,
-              name: user.publicDisplayName,
-              imageUrl: user.primaryPhotoThumbnailUrl,
-              borderWidth: 2,
-              borderColor: t.primary,
-            ),
-          ),
-        ),
-      ),
     );
   }
 }

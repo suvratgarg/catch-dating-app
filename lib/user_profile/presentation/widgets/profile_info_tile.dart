@@ -4,7 +4,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 
 const _tilePadding = EdgeInsets.symmetric(vertical: CatchSpacing.s3);
-const _profileInlineAnimationOffset = Offset(0, -0.04);
 const _profileInfoTrailingWidth = 40.0;
 
 class ProfileInfoTile extends StatelessWidget {
@@ -15,6 +14,8 @@ class ProfileInfoTile extends StatelessWidget {
     required this.value,
     this.onTap,
     this.valueEditor,
+    this.valueContent,
+    this.animateValueContent = true,
     this.isAddAffordance = false,
     this.isExpanded = false,
   });
@@ -24,6 +25,8 @@ class ProfileInfoTile extends StatelessWidget {
   final String value;
   final VoidCallback? onTap;
   final Widget? valueEditor;
+  final Widget? valueContent;
+  final bool animateValueContent;
   final bool isAddAffordance;
   final bool isExpanded;
 
@@ -31,7 +34,7 @@ class ProfileInfoTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final onTap = this.onTap;
-    final valueContent = valueEditor != null
+    final defaultValueContent = valueEditor != null
         ? KeyedSubtree(
             key: ValueKey('profile-info-$label-editor'),
             child: valueEditor!,
@@ -44,8 +47,19 @@ class ProfileInfoTile extends StatelessWidget {
               color: isAddAffordance ? t.ink3 : null,
             ),
           );
+    final valueSlot = valueContent ?? defaultValueContent;
+    final valueArea = animateValueContent
+        ? AnimatedSwitcher(
+            duration: CatchMotion.fast,
+            switchInCurve: CatchMotion.standardCurve,
+            switchOutCurve: CatchMotion.standardCurve,
+            transitionBuilder: _profileInlineTransition,
+            child: valueSlot,
+          )
+        : valueSlot;
 
     final row = Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Icon(icon, color: t.ink2),
         gapW16,
@@ -55,13 +69,7 @@ class ProfileInfoTile extends StatelessWidget {
             children: [
               Text(label, style: CatchTextStyles.bodyS(context)),
               gapH4,
-              AnimatedSwitcher(
-                duration: CatchMotion.fast,
-                switchInCurve: CatchMotion.standardCurve,
-                switchOutCurve: CatchMotion.standardCurve,
-                transitionBuilder: _profileInlineTransition,
-                child: valueContent,
-              ),
+              valueArea,
             ],
           ),
         ),
@@ -70,7 +78,7 @@ class ProfileInfoTile extends StatelessWidget {
             key: ValueKey('profile-info-$label-chevron'),
             label: label,
             isExpanded: isExpanded,
-            isInteractive: valueEditor != null,
+            isInteractive: isExpanded,
             onTap: onTap,
           ),
       ],
@@ -82,16 +90,8 @@ class ProfileInfoTile extends StatelessWidget {
       child: row,
     );
 
-    final tilePadding = valueEditor == null
-        ? _tilePadding
-        : const EdgeInsets.only(top: CatchSpacing.s3, bottom: CatchSpacing.s2);
-
-    if (valueEditor != null) {
-      return Padding(padding: tilePadding, child: animatedRow);
-    }
-
     if (onTap == null) {
-      return Padding(padding: tilePadding, child: animatedRow);
+      return Padding(padding: _tilePadding, child: animatedRow);
     }
 
     return Semantics(
@@ -99,9 +99,9 @@ class ProfileInfoTile extends StatelessWidget {
       label: '$label: $value',
       expanded: isExpanded,
       child: InkWell(
-        onTap: onTap,
+        onTap: isExpanded ? null : onTap,
         borderRadius: BorderRadius.circular(CatchRadius.sm),
-        child: Padding(padding: tilePadding, child: animatedRow),
+        child: Padding(padding: _tilePadding, child: animatedRow),
       ),
     );
   }
@@ -134,25 +134,22 @@ class _ProfileInfoChevron extends StatelessWidget {
       ),
     );
 
-    return SizedBox(
-      width: _profileInfoTrailingWidth,
-      height: _profileInfoTrailingWidth,
-      child: isInteractive
-          ? Semantics(
-              button: true,
-              label: tooltip,
-              child: Tooltip(
-                message: tooltip,
-                child: InkResponse(
-                  onTap: onTap,
-                  radius: CatchSpacing.s5,
-                  child: chevron,
-                ),
-              ),
-            )
-          : IgnorePointer(
-              child: Tooltip(message: tooltip, child: chevron),
-            ),
+    return Semantics(
+      button: true,
+      enabled: isInteractive,
+      label: tooltip,
+      child: Tooltip(
+        message: tooltip,
+        child: SizedBox(
+          width: _profileInfoTrailingWidth,
+          height: _profileInfoTrailingWidth,
+          child: InkResponse(
+            onTap: isInteractive ? onTap : null,
+            radius: CatchSpacing.s5,
+            child: chevron,
+          ),
+        ),
+      ),
     );
   }
 }
@@ -227,16 +224,7 @@ Widget _profileInlineTransition(Widget child, Animation<double> animation) {
     reverseCurve: CatchMotion.standardCurve,
   );
 
-  return FadeTransition(
-    opacity: curved,
-    child: SlideTransition(
-      position: Tween<Offset>(
-        begin: _profileInlineAnimationOffset,
-        end: Offset.zero,
-      ).animate(curved),
-      child: child,
-    ),
-  );
+  return FadeTransition(opacity: curved, child: child);
 }
 
 Widget _profileInlineBodyTransition(Widget child, Animation<double> animation) {

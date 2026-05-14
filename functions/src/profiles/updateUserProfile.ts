@@ -47,6 +47,13 @@ const ChildrenSchema = z.enum([
   "wantSomeday",
   "dontWant",
 ]);
+const PreferredRunTimeSchema = z.enum([
+  "earlyMorning",
+  "morning",
+  "afternoon",
+  "evening",
+  "night",
+]);
 const SexualOrientationSchema = z.enum([
   "straight",
   "gay",
@@ -59,19 +66,31 @@ const SexualOrientationSchema = z.enum([
 const optionalString = z.string().trim().nullable();
 const positiveInt = z.number().int().positive();
 const nonNegativeMillis = z.number().int().nonnegative();
+const ProfilePromptAnswerSchema = z.object({
+  promptId: z.string().trim().min(1).max(80),
+  prompt: z.string().trim().min(1).max(140),
+  answer: z.string().max(300),
+}).strict();
+const PhotoPromptAnswerSchema = z.object({
+  photoIndex: z.number().int().min(0).max(5),
+  promptId: z.string().trim().min(1).max(80),
+  prompt: z.string().trim().min(1).max(140),
+  caption: z.string().max(140),
+}).strict();
 
 const UserProfilePatchSchema = z.object({
   name: z.string().trim().min(1).max(120).optional(),
   displayName: z.string().trim().min(1).max(80).optional(),
   email: z.string().trim().max(320).optional(),
-  bio: z.string().max(2000).optional(),
   instagramHandle: optionalString.optional(),
+  profilePrompts: z.array(ProfilePromptAnswerSchema).max(3).optional(),
   phoneNumber: z.string().trim().min(1).max(32).optional(),
   dateOfBirth: nonNegativeMillis.optional(),
   gender: GenderSchema.optional(),
   sexualOrientation: SexualOrientationSchema.nullable().optional(),
   profileComplete: z.boolean().optional(),
   photoUrls: z.array(z.string().url()).max(12).optional(),
+  photoPrompts: z.array(PhotoPromptAnswerSchema).max(6).optional(),
   city: CityNameSchema.nullable().optional(),
   latitude: z.number().min(-90).max(90).nullable().optional(),
   longitude: z.number().min(-180).max(180).nullable().optional(),
@@ -94,6 +113,7 @@ const UserProfilePatchSchema = z.object({
   paceMaxSecsPerKm: positiveInt.optional(),
   preferredDistances: z.array(z.string()).max(12).optional(),
   runningReasons: z.array(z.string()).max(12).optional(),
+  preferredRunTimes: z.array(PreferredRunTimeSchema).max(8).optional(),
   prefsNewCatches: z.boolean().optional(),
   prefsMessages: z.boolean().optional(),
   prefsRunReminders: z.boolean().optional(),
@@ -178,10 +198,42 @@ function toFirestorePatch(
   deps: UpdateUserProfileDeps
 ): Record<string, unknown> {
   const updateFields: Record<string, unknown> = {...fields};
+  if (fields.profilePrompts !== undefined) {
+    updateFields.profilePrompts = fields.profilePrompts
+      .map((prompt) => ({
+        ...prompt,
+        promptId: prompt.promptId.trim(),
+        prompt: prompt.prompt.trim(),
+        answer: collapseStackedPromptBlankLines(prompt.answer).trim(),
+      }))
+      .filter((prompt) => prompt.answer.length > 0);
+  }
+  if (fields.photoPrompts !== undefined) {
+    updateFields.photoPrompts = fields.photoPrompts
+      .map((prompt) => ({
+        ...prompt,
+        promptId: prompt.promptId.trim(),
+        prompt: prompt.prompt.trim(),
+        caption: collapseStackedPromptBlankLines(prompt.caption).trim(),
+      }))
+      .filter((prompt) => prompt.caption.length > 0);
+  }
   if (fields.dateOfBirth !== undefined) {
     updateFields.dateOfBirth = deps.timestampFromMillis(fields.dateOfBirth);
   }
   return updateFields;
+}
+
+/**
+ * Collapses excessive blank lines in prompt text.
+ * @param {string} value Raw prompt text.
+ * @return {string} Prompt text with at most one empty line in a row.
+ */
+function collapseStackedPromptBlankLines(value: string): string {
+  return value
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\n[ \t]*\n(?:[ \t]*\n)+/g, "\n\n");
 }
 
 export const updateUserProfile = onCall(

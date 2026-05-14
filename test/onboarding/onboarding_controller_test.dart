@@ -383,6 +383,7 @@ void main() {
               paceMaxSecsPerKm: 360,
               preferredDistances: const [PreferredDistance.tenK],
               runningReasons: const [RunReason.community],
+              preferredRunTimes: const [PreferredRunTime.morning],
             ),
         throwsA(isA<DocumentNotFoundException>()),
       );
@@ -422,6 +423,10 @@ void main() {
             paceMaxSecsPerKm: 355,
             preferredDistances: const [PreferredDistance.tenK],
             runningReasons: const [RunReason.community, RunReason.social],
+            preferredRunTimes: const [
+              PreferredRunTime.morning,
+              PreferredRunTime.evening,
+            ],
           );
 
       expect(userProfileRepository.lastSavedUser, isNotNull);
@@ -433,6 +438,10 @@ void main() {
       expect(userProfileRepository.lastSavedUser!.runningReasons, const [
         RunReason.community,
         RunReason.social,
+      ]);
+      expect(userProfileRepository.lastSavedUser!.preferredRunTimes, const [
+        PreferredRunTime.morning,
+        PreferredRunTime.evening,
       ]);
       expect(userProfileRepository.lastSavedUser!.profileComplete, isTrue);
     });

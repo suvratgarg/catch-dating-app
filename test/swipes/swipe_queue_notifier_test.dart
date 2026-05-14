@@ -137,6 +137,60 @@ void main() {
       },
     );
 
+    test('records reaction target and comment for a section like', () async {
+      authRepository.currentUserValue = TestUser(uid: 'runner-1');
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+          ),
+          authRepositoryProvider.overrideWithValue(authRepository),
+          swipeRepositoryProvider.overrideWith((ref) => swipeRepository),
+          swipeCandidateRepositoryProvider.overrideWith(
+            (ref) => candidateRepository,
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final sub = container.listen(
+        swipeQueueProvider('run-9'),
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(sub.close);
+      await container.pump();
+
+      final notifier = container.read(swipeQueueProvider('run-9').notifier);
+      notifier.state = AsyncData([buildPublicProfile(uid: 'runner-2')]);
+
+      await notifier.swipe(
+        SwipeDirection.like,
+        reactionTarget: const ProfileReactionTarget(
+          id: 'profile-prompt-perfectRun',
+          type: SwipeReactionTargetType.profilePrompt,
+          label: 'A perfect run with me looks like...',
+          preview: 'Always up for a sunrise run.',
+        ),
+        comment: '  This sounds fun.  ',
+      );
+
+      expect(
+        swipeRepository.recordedSwipe?.reactionTargetId,
+        'profile-prompt-perfectRun',
+      );
+      expect(
+        swipeRepository.recordedSwipe?.reactionTargetType,
+        SwipeReactionTargetType.profilePrompt,
+      );
+      expect(
+        swipeRepository.recordedSwipe?.reactionTargetLabel,
+        'A perfect run with me looks like...',
+      );
+      expect(swipeRepository.recordedSwipe?.comment, 'This sounds fun.');
+    });
+
     test(
       'ignores duplicate swipe attempts while a swipe write is pending',
       () async {

@@ -13,6 +13,7 @@ import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -99,6 +100,8 @@ UserProfile buildUser({
   String? lastName,
   String displayName = '',
   String email = 'runner@example.com',
+  String bio = 'Here for the run.',
+  List<ProfilePromptAnswer>? profilePrompts,
   Gender gender = Gender.man,
   DateTime? dateOfBirth,
   String phoneNumber = '+910000000000',
@@ -114,7 +117,9 @@ UserProfile buildUser({
         lastName ?? (nameParts.length > 1 ? nameParts.skip(1).join(' ') : ''),
     displayName: displayName,
     dateOfBirth: dateOfBirth ?? DateTime(1995, 6, 15),
-    bio: 'Here for the run.',
+    profilePrompts:
+        profilePrompts ??
+        normalizeProfilePromptAnswers(const [], legacyBio: bio),
     gender: gender,
     phoneNumber: phoneNumber,
     profileComplete: true,
@@ -173,6 +178,7 @@ PublicProfile buildPublicProfile({
   String name = 'Runner',
   int age = 30,
   String bio = 'Always up for a sunrise run.',
+  List<ProfilePromptAnswer>? profilePrompts,
   Gender gender = Gender.man,
   List<String> photoUrls = const [],
 }) {
@@ -180,7 +186,9 @@ PublicProfile buildPublicProfile({
     uid: uid,
     name: name,
     age: age,
-    bio: bio,
+    profilePrompts:
+        profilePrompts ??
+        normalizeProfilePromptAnswers(const [], legacyBio: bio),
     gender: gender,
     photoUrls: photoUrls,
   );

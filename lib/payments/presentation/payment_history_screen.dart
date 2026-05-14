@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_bottom_sheet.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -17,7 +18,6 @@ import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:intl/intl.dart';
 
 class PaymentHistoryScreen extends ConsumerWidget {
   const PaymentHistoryScreen({super.key});
@@ -102,8 +102,6 @@ class _PaymentTile extends ConsumerWidget {
 
   final Payment payment;
 
-  static final _dateFormat = DateFormat('d MMM yyyy · HH:mm');
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
@@ -134,7 +132,7 @@ class _PaymentTile extends ConsumerWidget {
                       Text(runTitle, style: CatchTextStyles.bodyM(context)),
                       gapH4,
                       Text(
-                        _dateFormat.format(payment.createdAt),
+                        AppTimeFormatters.dateTime(payment.createdAt),
                         style: CatchTextStyles.bodyS(context, color: t.ink2),
                       ),
                       if (statusPresentation.detail case final detail?) ...[
@@ -224,7 +222,7 @@ class _PaymentTile extends ConsumerWidget {
                   gapH12,
                   DetailRow(
                     label: 'Date',
-                    value: _dateFormat.format(payment.createdAt),
+                    value: AppTimeFormatters.dateTime(payment.createdAt),
                   ),
                   if (statusPresentation.detail case final detail?) ...[
                     gapH12,

@@ -18,11 +18,11 @@ void main() {
     test('formats times and time ranges', () {
       final endTime = DateTime(2025, 4, 23, 7, 45);
 
-      expect(RunFormatters.time(dateTime), '06:30');
-      expect(RunFormatters.timeRange(dateTime, endTime), '06:30 – 07:45');
+      expect(RunFormatters.time(dateTime), '6:30 AM');
+      expect(RunFormatters.timeRange(dateTime, endTime), '6:30 AM – 7:45 AM');
       expect(
         RunFormatters.timeRange(dateTime, endTime, separator: ' to '),
-        '06:30 to 07:45',
+        '6:30 AM to 7:45 AM',
       );
     });
 
@@ -49,8 +49,8 @@ void main() {
 
       expect(run.shortDateLabel, 'Wed, 23 Apr');
       expect(run.longDateLabel, 'Wednesday, 23 Apr');
-      expect(run.timeRangeLabel, '06:30 – 07:45');
-      expect(run.compactTimeRangeLabel, '06:30–07:45');
+      expect(run.timeRangeLabel, '6:30 AM – 7:45 AM');
+      expect(run.compactTimeRangeLabel, '6:30 AM–7:45 AM');
       expect(run.distanceLabel, '5.5km');
       expect(run.distanceValueLabel, '5.5');
       expect(run.spotsLabel, '2/20');

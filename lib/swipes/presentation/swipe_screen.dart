@@ -139,9 +139,24 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                                     final profile = profiles[index];
                                     return ProfileCard(
                                       profile: profile,
+                                      viewerProfile: currentUser,
+                                      sharedRunTitle:
+                                          runAsync.asData?.value?.title,
                                       horizontalOffsetPercentage:
                                           horizontalOffsetPercentage,
                                       bottomPadding: 140,
+                                      onReact: (target, comment) => ref
+                                          .read(
+                                            swipeQueueProvider(
+                                              widget.runId,
+                                              vibeIds: widget.vibeIds,
+                                            ).notifier,
+                                          )
+                                          .swipe(
+                                            SwipeDirection.like,
+                                            reactionTarget: target,
+                                            comment: comment,
+                                          ),
                                     );
                                   },
                             ),

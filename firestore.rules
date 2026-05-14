@@ -128,11 +128,12 @@ service cloud.firestore {
     function hasValidUserShape(data) {
       return data.keys().hasOnly([
           // Core
-          'name', 'firstName', 'lastName', 'displayName', 'email', 'bio',
+          'name', 'firstName', 'lastName', 'displayName', 'email',
+          'profilePrompts',
           'instagramHandle', 'phoneNumber', 'dateOfBirth',
           'gender', 'sexualOrientation', 'profileComplete',
           // Photos
-          'photoUrls', 'photoThumbnailUrls',
+          'photoUrls', 'photoThumbnailUrls', 'photoPrompts',
           // Location
           'city',
           'latitude',
@@ -149,7 +150,7 @@ service cloud.firestore {
           'drinking', 'smoking', 'workout', 'diet', 'children',
           // Running
           'paceMinSecsPerKm', 'paceMaxSecsPerKm',
-          'preferredDistances', 'runningReasons',
+          'preferredDistances', 'runningReasons', 'preferredRunTimes',
           // Notification / discovery preferences
           'prefsNewCatches', 'prefsMessages', 'prefsRunReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
@@ -162,8 +163,8 @@ service cloud.firestore {
           'deletedAt'
         ])
         && data.keys().hasAll([
-          'name', 'displayName', 'email', 'bio', 'phoneNumber', 'dateOfBirth',
-          'gender', 'profileComplete',
+          'name', 'displayName', 'email', 'phoneNumber', 'dateOfBirth',
+          'gender', 'profileComplete', 'profilePrompts',
           'photoUrls',
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
           'languages', 'paceMinSecsPerKm', 'paceMaxSecsPerKm',
@@ -180,7 +181,7 @@ service cloud.firestore {
         && data.displayName.size() <= 80
         && data.displayName.matches('.*\\S.*')
         && data.email is string
-        && data.bio is string
+        && data.profilePrompts is list
         && optionalString(data, 'instagramHandle')
         && data.phoneNumber is string
         && data.dateOfBirth is timestamp
@@ -194,6 +195,7 @@ service cloud.firestore {
         // Photos
         && data.photoUrls is list
         && optionalList(data, 'photoThumbnailUrls')
+        && optionalList(data, 'photoPrompts')
         // Location
         && (!hasField(data, 'city') || data.city == null || isValidCity(data.city))
         && optionalNumber(data, 'latitude')
@@ -243,6 +245,7 @@ service cloud.firestore {
         && data.paceMaxSecsPerKm > 0
         && data.preferredDistances is list
         && data.runningReasons is list
+        && optionalList(data, 'preferredRunTimes')
         // Notification / discovery preferences
         && data.prefsNewCatches is bool
         && data.prefsMessages is bool
@@ -429,6 +432,11 @@ service cloud.firestore {
     }
 
     // ── Swipes helper ─────────────────────────────────────────────────────────
+    function optionalSwipeText(data, field, maxSize) {
+      return !hasField(data, field)
+        || (data[field] is string && data[field].size() <= maxSize);
+    }
+
     function hasValidSwipeCreate(userId, targetId) {
       return isAuthed()
         && request.auth.uid == userId
@@ -438,6 +446,11 @@ service cloud.firestore {
           'targetId',
           'runId',
           'direction',
+          'reactionTargetId',
+          'reactionTargetType',
+          'reactionTargetLabel',
+          'reactionTargetPreview',
+          'comment',
           'createdAt'
         ])
         && request.resource.data.keys().hasAll([
@@ -451,6 +464,36 @@ service cloud.firestore {
         && request.resource.data.targetId == targetId
         && request.resource.data.runId is string
         && request.resource.data.direction in ['like', 'pass']
+        && optionalSwipeText(request.resource.data, 'reactionTargetId', 80)
+        && optionalSwipeText(request.resource.data, 'reactionTargetLabel', 80)
+        && optionalSwipeText(
+          request.resource.data,
+          'reactionTargetPreview',
+          240
+        )
+        && optionalSwipeText(request.resource.data, 'comment', 240)
+        && (
+          !hasField(request.resource.data, 'reactionTargetType')
+          || request.resource.data.reactionTargetType in [
+            'heroPhoto',
+            'photo',
+            'profilePrompt',
+            'compatibility',
+            'running',
+            'details',
+            'lifestyle'
+          ]
+        )
+        && (
+          request.resource.data.direction == 'like'
+          || (
+            !hasField(request.resource.data, 'reactionTargetId')
+            && !hasField(request.resource.data, 'reactionTargetType')
+            && !hasField(request.resource.data, 'reactionTargetLabel')
+            && !hasField(request.resource.data, 'reactionTargetPreview')
+            && !hasField(request.resource.data, 'comment')
+          )
+        )
         && request.resource.data.createdAt is timestamp
         && !isDeletedUser(userId)
         && !isDeletedUser(targetId)

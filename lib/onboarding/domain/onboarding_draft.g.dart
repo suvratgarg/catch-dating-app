@@ -25,6 +25,13 @@ _OnboardingDraft _$OnboardingDraftFromJson(Map<String, dynamic> json) =>
               .toList() ??
           const [],
       instagramHandle: json['instagramHandle'] as String?,
+      profilePrompts:
+          (json['profilePrompts'] as List<dynamic>?)
+              ?.map(
+                (e) => ProfilePromptAnswer.fromJson(e as Map<String, dynamic>),
+              )
+              .toList() ??
+          const [],
     );
 
 Map<String, dynamic> _$OnboardingDraftToJson(_OnboardingDraft instance) =>
@@ -44,6 +51,7 @@ Map<String, dynamic> _$OnboardingDraftToJson(_OnboardingDraft instance) =>
           .map((e) => _$GenderEnumMap[e]!)
           .toList(),
       'instagramHandle': instance.instagramHandle,
+      'profilePrompts': instance.profilePrompts.map((e) => e.toJson()).toList(),
     };
 
 Value? _$JsonConverterFromJson<Json, Value>(

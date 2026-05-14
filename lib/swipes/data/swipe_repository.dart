@@ -36,13 +36,31 @@ class SwipeRepository {
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> recordSwipe({required Swipe swipe}) => withBackendErrorContext(
-    () => _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
-      'swiperId': swipe.swiperId,
-      'targetId': swipe.targetId,
-      'runId': swipe.runId,
-      'direction': swipe.direction.name,
-      'createdAt': FieldValue.serverTimestamp(),
-    }),
+    () {
+      final comment = normalizeSwipeReactionComment(swipe.comment);
+      final reactionFields = <String, Object?>{
+        if (swipe.reactionTargetId != null)
+          'reactionTargetId': swipe.reactionTargetId,
+        if (swipe.reactionTargetType != null)
+          'reactionTargetType': swipe.reactionTargetType!.name,
+        if (swipe.reactionTargetLabel != null)
+          'reactionTargetLabel': swipe.reactionTargetLabel,
+        if (swipe.reactionTargetPreview != null)
+          'reactionTargetPreview': swipe.reactionTargetPreview,
+      };
+      if (comment != null) {
+        reactionFields['comment'] = comment;
+      }
+
+      return _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
+        'swiperId': swipe.swiperId,
+        'targetId': swipe.targetId,
+        'runId': swipe.runId,
+        'direction': swipe.direction.name,
+        ...reactionFields,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+    },
     context: const BackendErrorContext(
       service: BackendService.firestore,
       action: 'record swipe',

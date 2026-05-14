@@ -17,7 +17,7 @@ import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/run_focus_rail.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -529,7 +529,12 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byKey(NextRunHero.cardKey));
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(RunFocusRail.railKey),
+        matching: find.text('View run'),
+      ),
+    );
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Cancel booking'));
     await flushTestEventQueue();
@@ -729,7 +734,12 @@ void main() {
       ),
     );
 
-    await tester.tap(find.byKey(NextRunHero.cardKey));
+    await tester.tap(
+      find.descendant(
+        of: find.byKey(RunFocusRail.railKey),
+        matching: find.text('View run'),
+      ),
+    );
     await pumpFeatureUi(tester);
 
     expect(find.text('Carter Road Amphitheatre'), findsWidgets);

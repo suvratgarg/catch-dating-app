@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -21,6 +22,7 @@ abstract class OnboardingDraft with _$OnboardingDraft {
     Gender? gender,
     @Default([]) List<Gender> interestedInGenders,
     String? instagramHandle,
+    @Default([]) List<ProfilePromptAnswer> profilePrompts,
   }) = _OnboardingDraft;
 
   factory OnboardingDraft.fromJson(Map<String, dynamic> json) =>

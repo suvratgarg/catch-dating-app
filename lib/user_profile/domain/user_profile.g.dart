@@ -19,14 +19,23 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
   phoneNumber: json['phoneNumber'] as String,
   profileComplete: json['profileComplete'] as bool,
   email: json['email'] as String? ?? '',
-  bio: json['bio'] as String? ?? '',
   instagramHandle: json['instagramHandle'] as String?,
+  profilePrompts:
+      (json['profilePrompts'] as List<dynamic>?)
+          ?.map((e) => ProfilePromptAnswer.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   photoUrls:
       (json['photoUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
   photoThumbnailUrls:
       (json['photoThumbnailUrls'] as List<dynamic>?)
           ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  photoPrompts:
+      (json['photoPrompts'] as List<dynamic>?)
+          ?.map((e) => PhotoPromptAnswer.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
   city: json['city'] as String?,
@@ -71,6 +80,11 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
           ?.map((e) => $enumDecode(_$RunReasonEnumMap, e))
           .toList() ??
       const [],
+  preferredRunTimes:
+      (json['preferredRunTimes'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$PreferredRunTimeEnumMap, e))
+          .toList() ??
+      const [],
   prefsNewCatches: json['prefsNewCatches'] as bool? ?? true,
   prefsMessages: json['prefsMessages'] as bool? ?? true,
   prefsRunReminders: json['prefsRunReminders'] as bool? ?? true,
@@ -92,10 +106,11 @@ Map<String, dynamic> _$UserProfileToJson(
   'phoneNumber': instance.phoneNumber,
   'profileComplete': instance.profileComplete,
   'email': instance.email,
-  'bio': instance.bio,
   'instagramHandle': instance.instagramHandle,
+  'profilePrompts': instance.profilePrompts.map((e) => e.toJson()).toList(),
   'photoUrls': instance.photoUrls,
   'photoThumbnailUrls': instance.photoThumbnailUrls,
+  'photoPrompts': instance.photoPrompts.map((e) => e.toJson()).toList(),
   'city': instance.city,
   'latitude': instance.latitude,
   'longitude': instance.longitude,
@@ -123,6 +138,9 @@ Map<String, dynamic> _$UserProfileToJson(
       .toList(),
   'runningReasons': instance.runningReasons
       .map((e) => _$RunReasonEnumMap[e]!)
+      .toList(),
+  'preferredRunTimes': instance.preferredRunTimes
+      .map((e) => _$PreferredRunTimeEnumMap[e]!)
       .toList(),
   'prefsNewCatches': instance.prefsNewCatches,
   'prefsMessages': instance.prefsMessages,
@@ -234,4 +252,12 @@ const _$RunReasonEnumMap = {
   RunReason.weightLoss: 'weightLoss',
   RunReason.raceTraining: 'raceTraining',
   RunReason.social: 'social',
+};
+
+const _$PreferredRunTimeEnumMap = {
+  PreferredRunTime.earlyMorning: 'earlyMorning',
+  PreferredRunTime.morning: 'morning',
+  PreferredRunTime.afternoon: 'afternoon',
+  PreferredRunTime.evening: 'evening',
+  PreferredRunTime.night: 'night',
 };

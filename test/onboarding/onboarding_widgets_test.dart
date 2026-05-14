@@ -8,6 +8,7 @@ import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/gender_interest_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/name_dob_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/photos_page.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/running_prefs_page.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -57,7 +58,7 @@ void main() {
         await pumpOnboardingUi(tester);
 
         expect(find.text('Gender'), findsOneWidget);
-        expect(find.text('2/5'), findsOneWidget);
+        expect(find.text('2/6'), findsOneWidget);
         await tester.tap(find.byTooltip('Back'));
         await pumpOnboardingUi(tester);
 
@@ -66,7 +67,7 @@ void main() {
           OnboardingStep.nameDob,
         );
         expect(find.text('Your name'), findsOneWidget);
-        expect(find.text('1/5'), findsOneWidget);
+        expect(find.text('1/6'), findsOneWidget);
       },
     );
   });
@@ -249,5 +250,32 @@ void main() {
         );
       },
     );
+  });
+
+  group('RunningPrefsPage', () {
+    testWidgets('shows favorite run-time preferences', (tester) async {
+      final container = createOnboardingTestContainer(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(
+              buildUser(
+                uid: 'runner-1',
+              ).copyWith(preferredRunTimes: const [PreferredRunTime.morning]),
+            ),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await pumpOnboardingPage(
+        tester,
+        container: container,
+        child: const RunningPrefsPage(),
+      );
+
+      expect(find.text('Favorite run times'), findsOneWidget);
+      expect(find.text('Morning'), findsOneWidget);
+      expect(find.text('Evening'), findsOneWidget);
+    });
   });
 }

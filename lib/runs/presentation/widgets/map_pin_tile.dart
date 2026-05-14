@@ -35,8 +35,7 @@ class MapPinTile extends StatelessWidget {
           Expanded(
             child: Text(
               hasPin
-                  ? '${startingPoint!.latitude.toStringAsFixed(5)}, '
-                        '${startingPoint!.longitude.toStringAsFixed(5)}'
+                  ? 'Starting point pinned'
                   : 'Pin exact starting point on map',
               style: hasPin
                   ? CatchTextStyles.bodyM(context, color: t.primary)

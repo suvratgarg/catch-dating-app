@@ -12,14 +12,23 @@ _PublicProfile _$PublicProfileFromJson(
   uid: json['uid'] as String,
   name: json['name'] as String,
   age: (json['age'] as num).toInt(),
-  bio: json['bio'] as String,
   gender: $enumDecode(_$GenderEnumMap, json['gender']),
+  profilePrompts:
+      (json['profilePrompts'] as List<dynamic>?)
+          ?.map((e) => ProfilePromptAnswer.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   photoUrls:
       (json['photoUrls'] as List<dynamic>?)?.map((e) => e as String).toList() ??
       const [],
   photoThumbnailUrls:
       (json['photoThumbnailUrls'] as List<dynamic>?)
           ?.map((e) => e as String)
+          .toList() ??
+      const [],
+  photoPrompts:
+      (json['photoPrompts'] as List<dynamic>?)
+          ?.map((e) => PhotoPromptAnswer.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
   city: json['city'] as String?,
@@ -54,6 +63,11 @@ _PublicProfile _$PublicProfileFromJson(
           ?.map((e) => $enumDecode(_$RunReasonEnumMap, e))
           .toList() ??
       const [],
+  preferredRunTimes:
+      (json['preferredRunTimes'] as List<dynamic>?)
+          ?.map((e) => $enumDecode(_$PreferredRunTimeEnumMap, e))
+          .toList() ??
+      const [],
 );
 
 Map<String, dynamic> _$PublicProfileToJson(
@@ -61,10 +75,11 @@ Map<String, dynamic> _$PublicProfileToJson(
 ) => <String, dynamic>{
   'name': instance.name,
   'age': instance.age,
-  'bio': instance.bio,
   'gender': _$GenderEnumMap[instance.gender]!,
+  'profilePrompts': instance.profilePrompts.map((e) => e.toJson()).toList(),
   'photoUrls': instance.photoUrls,
   'photoThumbnailUrls': instance.photoThumbnailUrls,
+  'photoPrompts': instance.photoPrompts.map((e) => e.toJson()).toList(),
   'city': instance.city,
   'height': instance.height,
   'occupation': instance.occupation,
@@ -85,6 +100,9 @@ Map<String, dynamic> _$PublicProfileToJson(
       .toList(),
   'runningReasons': instance.runningReasons
       .map((e) => _$RunReasonEnumMap[e]!)
+      .toList(),
+  'preferredRunTimes': instance.preferredRunTimes
+      .map((e) => _$PreferredRunTimeEnumMap[e]!)
       .toList(),
 };
 
@@ -189,4 +207,12 @@ const _$RunReasonEnumMap = {
   RunReason.weightLoss: 'weightLoss',
   RunReason.raceTraining: 'raceTraining',
   RunReason.social: 'social',
+};
+
+const _$PreferredRunTimeEnumMap = {
+  PreferredRunTime.earlyMorning: 'earlyMorning',
+  PreferredRunTime.morning: 'morning',
+  PreferredRunTime.afternoon: 'afternoon',
+  PreferredRunTime.evening: 'evening',
+  PreferredRunTime.night: 'night',
 };

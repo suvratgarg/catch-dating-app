@@ -118,6 +118,17 @@ test("updateUserProfileHandler validates and applies profile patches",
           displayName: "Runner R.",
           dateOfBirth: 946684800000,
           gender: "woman",
+          profilePrompts: [{
+            promptId: "perfectRun",
+            prompt: "A perfect run with me looks like...",
+            answer: "first\n\n\nsecond",
+          }],
+          photoPrompts: [{
+            photoIndex: 0,
+            promptId: "proofIRun",
+            prompt: "Proof I actually run",
+            caption: "finish\n\n\nline",
+          }],
           photoUrls: ["https://example.test/profile.jpg"],
           paceMinSecsPerKm: 300,
           prefsWeeklyDigest: true,
@@ -132,6 +143,17 @@ test("updateUserProfileHandler validates and applies profile patches",
       profileComplete: false,
       dateOfBirth: {kind: "timestamp", millis: 946684800000},
       gender: "woman",
+      profilePrompts: [{
+        promptId: "perfectRun",
+        prompt: "A perfect run with me looks like...",
+        answer: "first\n\nsecond",
+      }],
+      photoPrompts: [{
+        photoIndex: 0,
+        promptId: "proofIRun",
+        prompt: "Proof I actually run",
+        caption: "finish\n\nline",
+      }],
       photoUrls: ["https://example.test/profile.jpg"],
       paceMinSecsPerKm: 300,
       prefsWeeklyDigest: true,
@@ -159,6 +181,21 @@ test("updateUserProfileHandler rejects invalid payloads", async () => {
   await assert.rejects(
     updateUserProfileHandler(
       request("runner-1", {fields: {displayName: "   "}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {
+        fields: {
+          profilePrompts: [{
+            promptId: "perfectRun",
+            prompt: "A perfect run with me looks like...",
+            answer: "x".repeat(301),
+          }],
+        },
+      }),
       h.deps
     ),
     (error) => assertHttpsCode(error, "invalid-argument")

@@ -5,25 +5,28 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
+import 'package:catch_dating_app/runs/presentation/run_map_view_model.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class RunMapSheet extends StatelessWidget {
   const RunMapSheet({
     super.key,
-    required this.runs,
+    required this.items,
     required this.selectedRun,
     required this.onRunSelected,
   });
 
-  final List<Run> runs;
+  final List<RunMapItem> items;
   final Run? selectedRun;
   final ValueChanged<Run> onRunSelected;
 
   @override
   Widget build(BuildContext context) {
-    final highlightedRun = selectedRun ?? runs.first;
+    final highlightedItem =
+        _selectedItem(items, selectedRun?.id) ?? items.first;
+    final highlightedRun = highlightedItem.run;
 
     return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p14),
@@ -33,30 +36,53 @@ class RunMapSheet extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text('Nearby runs', style: CatchTextStyles.labelM(context)),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Nearby runs',
+                  style: CatchTextStyles.labelM(context),
+                ),
+              ),
+              Text(
+                '${items.length}',
+                style: CatchTextStyles.labelM(
+                  context,
+                  color: CatchTokens.of(context).primary,
+                ),
+              ),
+            ],
+          ),
           gapH10,
-          SizedBox(
-            height: 152,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: runs.length,
-              separatorBuilder: (_, _) => gapW10,
-              itemBuilder: (context, index) {
-                final run = runs[index];
-                final selected = run.id == highlightedRun.id;
-                return _RunMapChip(
-                  run: run,
-                  selected: selected,
-                  onTap: () => onRunSelected(run),
-                );
-              },
-            ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              final cardWidth = (constraints.maxWidth * 0.58)
+                  .clamp(190.0, 260.0)
+                  .toDouble();
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    for (var index = 0; index < items.length; index += 1) ...[
+                      if (index > 0) gapW10,
+                      RunMapTile(
+                        data: items[index].tileData,
+                        selected: items[index].run.id == highlightedRun.id,
+                        width: cardWidth,
+                        onTap: () => onRunSelected(items[index].run),
+                      ),
+                    ],
+                  ],
+                ),
+              );
+            },
           ),
           gapH12,
           CatchButton(
             label: 'View run',
             onPressed: () => context.pushNamed(
-              Routes.runDetailScreen.name,
+              Routes.dashboardRunDetailScreen.name,
               pathParameters: {
                 'runClubId': highlightedRun.runClubId,
                 'runId': highlightedRun.id,
@@ -70,59 +96,10 @@ class RunMapSheet extends StatelessWidget {
   }
 }
 
-class _RunMapChip extends StatelessWidget {
-  const _RunMapChip({
-    required this.run,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final Run run;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Semantics(
-      button: true,
-      selected: selected,
-      label: '${run.meetingPoint} run',
-      child: CatchSurface(
-        width: 180,
-        padding: const EdgeInsets.all(CatchSpacing.s3),
-        tone: selected ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
-        radius: CatchRadius.md,
-        borderColor: selected ? t.primary : t.line,
-        onTap: onTap,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              run.meetingPoint,
-              style: CatchTextStyles.labelL(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            gapH6,
-            Text(
-              '${run.shortDateLabel} · ${run.compactTimeRangeLabel}',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
-            ),
-            gapH4,
-            Text(
-              '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label}',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
-            ),
-            if (run.startingPointLat == null || run.startingPointLng == null)
-              Text(
-                'No exact pin',
-                style: CatchTextStyles.bodyS(context, color: t.primary),
-              ),
-          ],
-        ),
-      ),
-    );
+RunMapItem? _selectedItem(List<RunMapItem> items, String? selectedRunId) {
+  if (selectedRunId == null) return null;
+  for (final item in items) {
+    if (item.run.id == selectedRunId) return item;
   }
+  return null;
 }

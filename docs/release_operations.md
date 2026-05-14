@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.0.0
-updated: 2026-05-12
+version: 1.1.0
+updated: 2026-05-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -31,7 +31,8 @@ The current workflows are:
 | `.github/workflows/functions-ci.yml` | Functions lint/test plus Firestore contract check on Node 24. |
 | `.github/workflows/firestore-rules-ci.yml` | Firestore contract check plus emulator-backed rules tests. |
 | `.github/workflows/app-build-matrix.yml` | Dev web, Android debug APK, and iOS simulator build gates. |
-| `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. |
+| `.github/workflows/firebase-dev-deploy.yml` | Automatic dev Firebase deploy after `main` is green. |
+| `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. Keep staging/prod explicit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
@@ -46,6 +47,26 @@ Firebase workflows need one service-account JSON secret per environment:
 
 Use GitHub Environments named `dev`, `staging`, and `prod`. Require manual
 reviewers for `prod`.
+
+## CD Policy
+
+Firebase CD is intentionally asymmetric by environment:
+
+- `dev` deploys automatically from `main` after the required CI/build workflows
+  for that exact commit pass.
+- `staging` deploys only through the manual `Firebase Deploy` workflow.
+- `prod` deploys only through the manual `Firebase Deploy` workflow and should
+  require GitHub Environment reviewer approval.
+
+The automatic dev deploy is a backend deploy, not a store release. It deploys
+Functions, Firestore indexes, Firestore rules, and Storage rules in the safe
+order. Mobile app binaries, TestFlight, Play internal testing, Hosting, and
+observability evidence remain separate release steps unless explicitly added to
+the selected manual deploy targets.
+
+If the automatic dev deploy fails, fix the branch with a new PR rather than
+rerunning deploys against a stale commit. Use the manual `Firebase Deploy`
+workflow for intentional redeploys or environment-specific recovery.
 
 ## Pre-Deploy Checklist
 
@@ -92,10 +113,9 @@ block older app builds after the compatible build is available.
 Typical commands:
 
 ```bash
-./tool/firebase_with_env.sh dev deploy --only functions
-./tool/firebase_with_env.sh dev deploy --only firestore:indexes
-./tool/firebase_with_env.sh dev deploy --only firestore:rules
-./tool/firebase_with_env.sh dev deploy --only storage
+./tool/deploy_firebase_targets.sh dev functions,firestore:indexes,firestore:rules,storage
+./tool/deploy_firebase_targets.sh staging functions,firestore:indexes,firestore:rules,storage
+./tool/deploy_firebase_targets.sh prod functions,firestore:indexes,firestore:rules,storage
 ```
 
 After production Functions deploys, sync callable invokers if needed:

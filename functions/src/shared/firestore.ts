@@ -82,6 +82,13 @@ export type PaymentStatus = "pending" | "completed" | "failed" | "refunded";
 
 export type PreferredDistance = "fiveK" | "tenK" | "halfMarathon" | "marathon";
 
+export type PreferredRunTime =
+  | "earlyMorning"
+  | "morning"
+  | "afternoon"
+  | "evening"
+  | "night";
+
 export type RelationshipGoal =
   | "relationship"
   | "casual"
@@ -127,6 +134,15 @@ export type SmokingHabit = "never" | "occasionally" | "often";
 
 export type SwipeDirection = "like" | "pass";
 
+export type SwipeReactionTargetType =
+  | "heroPhoto"
+  | "photo"
+  | "profilePrompt"
+  | "compatibility"
+  | "running"
+  | "details"
+  | "lifestyle";
+
 export type WorkoutFrequency = "never" | "sometimes" | "often" | "everyday";
 
 // ── Document interfaces ──────────────────────────────────────────────────
@@ -148,10 +164,11 @@ export interface UserProfileDoc {
   profileComplete: boolean;
   /** Optional profile/contact field */
   email: string;
-  bio: string;
   instagramHandle?: string | null;
+  profilePrompts: ProfilePromptAnswer[];
   photoUrls: string[];
   photoThumbnailUrls: string[];
+  photoPrompts: PhotoPromptAnswer[];
   city?: string | null;
   latitude?: number | null;
   longitude?: number | null;
@@ -174,6 +191,7 @@ export interface UserProfileDoc {
   paceMaxSecsPerKm: number;
   preferredDistances: PreferredDistance[];
   runningReasons: RunReason[];
+  preferredRunTimes: PreferredRunTime[];
   prefsNewCatches: boolean;
   prefsMessages: boolean;
   prefsRunReminders: boolean;
@@ -197,10 +215,11 @@ export interface UserProfileDoc {
 export interface PublicProfileDoc {
   name: string;
   age: number;
-  bio: string;
   gender: Gender;
+  profilePrompts: ProfilePromptAnswer[];
   photoUrls: string[];
   photoThumbnailUrls: string[];
+  photoPrompts: PhotoPromptAnswer[];
   city?: string | null;
   height?: number | null;
   occupation?: string | null;
@@ -217,6 +236,7 @@ export interface PublicProfileDoc {
   paceMaxSecsPerKm: number;
   preferredDistances: PreferredDistance[];
   runningReasons: RunReason[];
+  preferredRunTimes: PreferredRunTime[];
   languages?: Language[];
 }
 
@@ -380,6 +400,11 @@ export interface SwipeDoc {
   targetId: string;
   runId: string;
   direction: SwipeDirection;
+  reactionTargetId?: string | null;
+  reactionTargetType?: SwipeReactionTargetType | null;
+  reactionTargetLabel?: string | null;
+  reactionTargetPreview?: string | null;
+  comment?: string | null;
   createdAt: FirebaseFirestore.Timestamp;
 }
 
@@ -459,7 +484,29 @@ export interface ReviewDoc {
   updatedAt?: FirebaseFirestore.Timestamp | null;
 }
 
-// ── Server-only interfaces (no Dart model) ────────────────────────────────
+// ── Extra interfaces (no top-level Dart model) ────────────────────────────
+
+/**
+ * embedded profile prompt answer
+ * Stored inside users/{uid}.profilePrompts and
+ * publicProfiles/{uid}.profilePrompts.
+ */
+export interface ProfilePromptAnswer {
+  promptId: string;
+  prompt: string;
+  answer: string;
+}
+
+/**
+ * embedded photo prompt answer
+ * Stored inside users/{uid}.photoPrompts and publicProfiles/{uid}.photoPrompts.
+ */
+export interface PhotoPromptAnswer {
+  photoIndex: number;
+  promptId: string;
+  prompt: string;
+  caption: string;
+}
 
 /**
  * /blocks/{blockerUserId}__{blockedUserId}

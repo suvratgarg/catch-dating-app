@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
+import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/saved_runs_screen.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../run_clubs/run_clubs_test_helpers.dart' as club_test;
 import 'runs_test_helpers.dart';
 
 void main() {
@@ -49,8 +51,10 @@ void main() {
         savedRuns: [past, future],
         child: const SavedRunsScreen(),
       );
+      await tester.pump();
 
       expect(find.text('Runs you saved'), findsOneWidget);
+      expect(find.text('Stride Social'), findsAtLeastNWidgets(1));
       expect(find.text('SAVED'), findsOneWidget);
       expect(find.text('PAST'), findsOneWidget);
       expect(
@@ -113,6 +117,11 @@ Future<void> _pumpSavedRuns(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        runClubsRepositoryProvider.overrideWith(
+          (ref) =>
+              club_test.FakeRunClubsRepository()
+                ..clubsById['club-1'] = buildRunClub(id: 'club-1'),
+        ),
         watchSavedRunDetailsForUserProvider(
           'runner-1',
         ).overrideWithValue(AsyncData<List<Run>>(savedRuns)),

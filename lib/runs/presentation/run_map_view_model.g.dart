@@ -70,4 +70,4 @@ final class RunMapViewModelProvider
   }
 }
 
-String _$runMapViewModelHash() => r'4c86d591f1afda6f1d55d36e883e25a984c5956e';
+String _$runMapViewModelHash() => r'fc8303cf79d1e3f574185232e42d917a2b2f0ae8';

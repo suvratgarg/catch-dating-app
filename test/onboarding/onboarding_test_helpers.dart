@@ -8,6 +8,7 @@ import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dar
 import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -153,6 +154,16 @@ class FakeOnboardingUserProfileRepository extends Fake
             .toList(),
         runningReasons: (updated['runningReasons'] as List)
             .map((e) => RunReason.values.firstWhere((r) => r.name == e))
+            .toList(),
+        preferredRunTimes: (updated['preferredRunTimes'] as List)
+            .map((e) => PreferredRunTime.values.firstWhere((t) => t.name == e))
+            .toList(),
+        profilePrompts: (updated['profilePrompts'] as List)
+            .map(
+              (e) => ProfilePromptAnswer.fromJson(
+                Map<String, dynamic>.from(e as Map),
+              ),
+            )
             .toList(),
         profileComplete: updated['profileComplete'] as bool,
       );

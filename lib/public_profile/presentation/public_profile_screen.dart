@@ -9,6 +9,8 @@ import 'package:catch_dating_app/public_profile/data/public_profile_repository.d
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -97,6 +99,7 @@ class PublicProfileScreen extends ConsumerWidget {
     final reportMutation = ref.watch(
       PublicProfileController.reportUserMutation,
     );
+    final currentUser = ref.watch(watchUserProfileProvider).asData?.value;
     final submitting = blockMutation.isPending || reportMutation.isPending;
     final t = CatchTokens.of(context);
 
@@ -161,7 +164,11 @@ class PublicProfileScreen extends ConsumerWidget {
           body: profileAsync.when(
             loading: () => profile == null
                 ? const CatchLoadingIndicator()
-                : _ProfileBody(profile: profile, submitting: submitting),
+                : _ProfileBody(
+                    profile: profile,
+                    submitting: submitting,
+                    viewerProfile: currentUser,
+                  ),
             error: (_, _) => Center(
               child: Padding(
                 padding: const EdgeInsets.all(CatchSpacing.s6),
@@ -188,6 +195,7 @@ class PublicProfileScreen extends ConsumerWidget {
               return _ProfileBody(
                 profile: loadedProfile,
                 submitting: submitting,
+                viewerProfile: currentUser,
               );
             },
           ),
@@ -198,10 +206,15 @@ class PublicProfileScreen extends ConsumerWidget {
 }
 
 class _ProfileBody extends StatelessWidget {
-  const _ProfileBody({required this.profile, required this.submitting});
+  const _ProfileBody({
+    required this.profile,
+    required this.submitting,
+    this.viewerProfile,
+  });
 
   final PublicProfile profile;
   final bool submitting;
+  final UserProfile? viewerProfile;
 
   @override
   Widget build(BuildContext context) {
@@ -209,7 +222,12 @@ class _ProfileBody extends StatelessWidget {
       children: [
         Padding(
           padding: const EdgeInsets.all(CatchSpacing.s4),
-          child: ProfileCard(profile: profile),
+          child: ProfileCard(
+            profile: profile,
+            viewerProfile: viewerProfile?.uid == profile.uid
+                ? null
+                : viewerProfile,
+          ),
         ),
         if (submitting)
           const Positioned.fill(

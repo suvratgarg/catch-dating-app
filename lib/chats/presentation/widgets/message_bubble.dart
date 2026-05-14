@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:flutter/material.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -23,7 +24,7 @@ class MessageBubble extends StatelessWidget {
     final sentAt = this.sentAt;
     final timeStr = sentAt == null
         ? 'Sending...'
-        : '${sentAt.hour.toString().padLeft(2, '0')}:${sentAt.minute.toString().padLeft(2, '0')}';
+        : AppTimeFormatters.time(sentAt);
 
     return Padding(
       padding: const EdgeInsets.only(bottom: CatchSpacing.s2),

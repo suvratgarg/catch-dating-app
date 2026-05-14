@@ -199,7 +199,6 @@ UserProfile _buildUser({required String uid}) {
     email: '$uid@example.com',
     name: 'Runner $uid',
     dateOfBirth: DateTime(1995, 6, 15),
-    bio: 'Here for the runs.',
     gender: Gender.man,
     phoneNumber: '+10000000000',
     profileComplete: true,

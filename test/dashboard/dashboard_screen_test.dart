@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -8,8 +9,11 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendation
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/run_focus_rail.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
+import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
+import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -24,7 +28,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
+import '../run_clubs/run_clubs_test_helpers.dart' as club_test;
 import '../runs/runs_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
@@ -213,6 +219,7 @@ void main() {
 
       expect(find.byType(DashboardFullSliverBody), findsOneWidget);
       expect(find.textContaining('NEXT RUN'), findsOneWidget);
+      expect(find.text('Stride Social'), findsOneWidget);
       expect(find.text('${DashboardFull.greeting()}, Subrath'), findsOneWidget);
       expect(find.text('${DashboardFull.greeting()}, Manan'), findsNothing);
       expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThanOrEqualTo(88));
@@ -470,8 +477,10 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.textContaining('NEXT RUN'), findsOneWidget);
-      expect(find.textContaining('SWIPE WINDOW CLOSING'), findsOneWidget);
+      expect(find.text('Run Focus'), findsOneWidget);
+      expect(find.textContaining('AFTER THE RUN'), findsOneWidget);
+      expect(find.text('Start catching'), findsOneWidget);
+      expect(find.byKey(RunFocusRail.pageIndicatorKey), findsOneWidget);
 
       await tester.drag(
         find.byKey(DashboardFull.scrollViewKey),
@@ -488,7 +497,7 @@ void main() {
         find.text('Race Course Road main gate', skipOffstage: false),
         findsOneWidget,
       );
-      expect(find.text('12 km', skipOffstage: false), findsOneWidget);
+      expect(find.text('12km', skipOffstage: false), findsOneWidget);
       expect(find.text('₹150', skipOffstage: false), findsOneWidget);
       expect(find.text('Bandra Run Club', skipOffstage: false), findsOneWidget);
       expect(find.text('4/12 signed up', skipOffstage: false), findsOneWidget);
@@ -557,7 +566,7 @@ void main() {
       expect(greetingFinder, findsNothing);
     });
 
-    testWidgets('profile avatar uses thumbnail URL and opens Profile tab', (
+    testWidgets('does not render a profile shortcut in the dashboard header', (
       tester,
     ) async {
       final joinedClubIds = ['club-1'];
@@ -569,24 +578,6 @@ void main() {
         id: 'next-run',
         bookedCount: 1,
         startTime: DateTime.now().add(const Duration(hours: 3)),
-      );
-      final router = GoRouter(
-        initialLocation: '/',
-        routes: [
-          GoRoute(
-            path: '/',
-            builder: (_, _) => DashboardFull(
-              user: user,
-              followedClubIds: joinedClubIds,
-              signedUpRuns: [nextRun],
-            ),
-          ),
-          GoRoute(
-            path: Routes.profileScreen.path,
-            name: Routes.profileScreen.name,
-            builder: (_, _) => const Scaffold(body: Text('Profile tab')),
-          ),
-        ],
       );
 
       await tester.pumpWidget(
@@ -600,30 +591,21 @@ void main() {
             ).overrideWithValue(_noRecommendationCandidates),
             ..._dashboardHostOverrides(user),
           ],
-          child: MaterialApp.router(
+          child: MaterialApp(
             theme: AppTheme.light,
-            routerConfig: router,
+            home: DashboardFull(
+              user: user,
+              followedClubIds: joinedClubIds,
+              signedUpRuns: [nextRun],
+            ),
           ),
         ),
       );
 
       await _pumpDashboardUi(tester);
 
-      expect(
-        find.byWidgetPredicate(
-          (widget) =>
-              widget is Image &&
-              widget.image is NetworkImage &&
-              (widget.image as NetworkImage).url ==
-                  'https://example.test/profile-thumb.jpg',
-        ),
-        findsOneWidget,
-      );
-
-      await tester.tap(find.byKey(DashboardFull.profileAvatarButtonKey));
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Profile tab'), findsOneWidget);
+      expect(find.byTooltip('Open profile'), findsNothing);
+      expect(find.bySemanticsLabel('Open profile'), findsNothing);
     });
 
     testWidgets('shows self check-in as the first dashboard content card', (
@@ -666,18 +648,185 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
+      expect(find.text('Run Focus'), findsOneWidget);
       expect(find.text('CHECK-IN OPEN'), findsOneWidget);
       expect(find.text('Check in'), findsOneWidget);
-      expect(
-        tester.getTopLeft(find.text('CHECK-IN OPEN')).dy,
-        lessThan(tester.getTopLeft(find.textContaining('NEXT RUN')).dy),
-      );
+      expect(find.text('Directions'), findsOneWidget);
+      expect(find.textContaining('NEXT RUN'), findsNothing);
 
       await tester.tap(find.text('Check in'));
       await _pumpDashboardUi(tester);
 
       expect(find.text('CHECKED IN'), findsOneWidget);
       expect(find.text('Checked in.'), findsOneWidget);
+    });
+
+    testWidgets('run focus directions opens the run location externally', (
+      tester,
+    ) async {
+      Uri? launchedUri;
+      final user = buildUser(uid: 'runner-1');
+      final run = buildRun(
+        id: 'directions-run',
+        bookedCount: 1,
+        startTime: DateTime.now().add(const Duration(hours: 3)),
+        startingPointLat: 22.725848,
+        startingPointLng: 75.897401,
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchAttendedRunsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            dashboardRecommendedRunsProvider(
+              _recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(_noRecommendationCandidates),
+            externalUrlLauncherProvider.overrideWithValue((
+              uri, {
+              LaunchMode mode = LaunchMode.platformDefault,
+            }) async {
+              launchedUri = uri;
+              return true;
+            }),
+            ..._dashboardHostOverrides(user),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: DashboardFull(
+              user: user,
+              followedClubIds: const [],
+              signedUpRuns: [run],
+            ),
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+
+      await tester.tap(find.text('Directions'));
+      await tester.pump();
+
+      expect(launchedUri?.host, 'www.google.com');
+      expect(launchedUri?.path, '/maps/dir/');
+      expect(
+        launchedUri?.queryParameters['destination'],
+        '22.725848,75.897401',
+      );
+    });
+
+    testWidgets(
+      'run focus uses full-width snapping cards with stacked actions',
+      (tester) async {
+        final user = buildUser(uid: 'runner-1');
+        final firstRun = buildRun(
+          id: 'run-focus-first',
+          bookedCount: 1,
+          startTime: DateTime(2026, 5, 28, 9, 10),
+        );
+        final secondRun = buildRun(
+          id: 'run-focus-second',
+          bookedCount: 1,
+          startTime: DateTime(2026, 5, 29, 9, 10),
+        );
+
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              watchAttendedRunsProvider(
+                user.uid,
+              ).overrideWithValue(const AsyncData<List<Run>>([])),
+              dashboardRecommendedRunsProvider(
+                _recommendationsQueryFor(user.uid, const []),
+              ).overrideWithValue(_noRecommendationCandidates),
+              ..._dashboardHostOverrides(user),
+            ],
+            child: MaterialApp(
+              theme: AppTheme.light,
+              home: DashboardFull(
+                user: user,
+                followedClubIds: const [],
+                signedUpRuns: [firstRun, secondRun],
+              ),
+            ),
+          ),
+        );
+
+        await _pumpDashboardUi(tester);
+
+        expect(find.text('Thursday Morning Run'), findsOneWidget);
+        expect(find.text('Friday Morning Run'), findsNothing);
+        expect(find.byKey(RunFocusRail.pageIndicatorKey), findsOneWidget);
+
+        final railWidth = tester
+            .getSize(find.byKey(RunFocusRail.railKey))
+            .width;
+        final cardWidth = tester
+            .getSize(_runFocusCardSurface('Thursday Morning Run'))
+            .width;
+        expect(cardWidth, railWidth);
+        expect(
+          tester.getTopLeft(find.text('Directions')).dy,
+          greaterThan(tester.getTopLeft(find.text('View run')).dy),
+        );
+
+        await tester.drag(
+          find.text('Thursday Morning Run'),
+          const Offset(-420, 0),
+        );
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 250));
+
+        expect(find.text('Thursday Morning Run'), findsNothing);
+        expect(find.text('Friday Morning Run'), findsOneWidget);
+      },
+    );
+
+    testWidgets('run focus combines catching and review for an attended run', (
+      tester,
+    ) async {
+      final now = DateTime.now();
+      final user = buildUser(uid: 'runner-1');
+      final attendedRun = buildRun(
+        id: 'attended-run',
+        checkedInCount: 2,
+        startTime: now.subtract(const Duration(hours: 4)),
+        endTime: now.subtract(const Duration(hours: 2)),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchAttendedRunsProvider(
+              user.uid,
+            ).overrideWithValue(AsyncData<List<Run>>([attendedRun])),
+            watchReviewsByUserProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Review>>([])),
+            dashboardRecommendedRunsProvider(
+              _recommendationsQueryFor(user.uid, const []),
+            ).overrideWithValue(_noRecommendationCandidates),
+            ..._dashboardHostOverrides(user),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: DashboardFull(
+              user: user,
+              followedClubIds: const [],
+              signedUpRuns: const [],
+            ),
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Run Focus'), findsOneWidget);
+      expect(find.textContaining('AFTER THE RUN'), findsOneWidget);
+      expect(find.text('Start catching'), findsOneWidget);
+      expect(find.text('Write review'), findsOneWidget);
+      expect(find.text('Review your run'), findsNothing);
     });
 
     testWidgets('shows host attendance inside the consolidated host rail', (
@@ -798,7 +947,7 @@ void main() {
       );
 
       expect(find.text('Soon'), findsNothing);
-      expect(find.text('Browse runs'), findsOneWidget);
+      expect(find.text('Browse runs'), findsNothing);
       expect(find.text('Map view'), findsOneWidget);
       expect(find.text('Calendar'), findsOneWidget);
       expect(find.text('Saved runs'), findsOneWidget);
@@ -814,17 +963,14 @@ void main() {
         ),
       );
 
-      final browseSize = tester.getSize(_quickActionSurface('Browse runs'));
       final mapSize = tester.getSize(_quickActionSurface('Map view'));
       final calendarSize = tester.getSize(_quickActionSurface('Calendar'));
       final savedSize = tester.getSize(_quickActionSurface('Saved runs'));
 
-      expect(mapSize.height, browseSize.height);
-      expect(calendarSize.height, browseSize.height);
-      expect(savedSize.height, browseSize.height);
-      expect(mapSize.width, browseSize.width);
-      expect(calendarSize.width, browseSize.width);
-      expect(savedSize.width, browseSize.width);
+      expect(calendarSize.height, mapSize.height);
+      expect(savedSize.height, mapSize.height);
+      expect(calendarSize.width, mapSize.width);
+      expect(savedSize.width, mapSize.width);
     });
 
     testWidgets('navigates for all primary actions', (tester) async {
@@ -834,10 +980,6 @@ void main() {
           GoRoute(
             path: '/',
             builder: (_, _) => const Scaffold(body: QuickActions()),
-          ),
-          GoRoute(
-            path: Routes.runClubsListScreen.path,
-            builder: (_, _) => const Scaffold(body: Text('Clubs screen')),
           ),
           GoRoute(
             path: Routes.runMapScreen.path,
@@ -863,14 +1005,6 @@ void main() {
       await _pumpDashboardUi(tester);
 
       expect(find.text('Map screen'), findsOneWidget);
-
-      router.go('/');
-      await _pumpDashboardUi(tester);
-
-      await tester.tap(find.text('Browse runs'));
-      await _pumpDashboardUi(tester);
-
-      expect(find.text('Clubs screen'), findsOneWidget);
 
       router.go('/');
       await _pumpDashboardUi(tester);
@@ -987,6 +1121,13 @@ Finder _quickActionSurface(String label) {
   );
 }
 
+Finder _runFocusCardSurface(String title) {
+  return find.ancestor(
+    of: find.text(title),
+    matching: find.byType(CatchSurface),
+  );
+}
+
 List _dashboardHostOverrides(
   UserProfile user, {
   String hostedClubId = 'club-host',
@@ -997,6 +1138,14 @@ List _dashboardHostOverrides(
       : [buildRunClub(id: hostedClubId, hostUserId: user.uid)];
 
   return [
+    runClubsRepositoryProvider.overrideWith(
+      (ref) => club_test.FakeRunClubsRepository()
+        ..clubsById['club-1'] = buildRunClub(id: 'club-1')
+        ..clubsById[hostedClubId] = buildRunClub(
+          id: hostedClubId,
+          hostUserId: user.uid,
+        ),
+    ),
     watchRunClubsHostedByProvider(
       user.uid,
     ).overrideWithValue(AsyncData(hostedClubs)),

@@ -19,6 +19,27 @@
 
   "extraInterfaces": [
     {
+      "name": "ProfilePromptAnswer",
+      "collectionPath": "embedded profile prompt answer",
+      "comment": "Stored inside users/{uid}.profilePrompts and publicProfiles/{uid}.profilePrompts.",
+      "fields": [
+        { "name": "promptId", "tsType": "string" },
+        { "name": "prompt", "tsType": "string" },
+        { "name": "answer", "tsType": "string" }
+      ]
+    },
+    {
+      "name": "PhotoPromptAnswer",
+      "collectionPath": "embedded photo prompt answer",
+      "comment": "Stored inside users/{uid}.photoPrompts and publicProfiles/{uid}.photoPrompts.",
+      "fields": [
+        { "name": "photoIndex", "tsType": "number" },
+        { "name": "promptId", "tsType": "string" },
+        { "name": "prompt", "tsType": "string" },
+        { "name": "caption", "tsType": "string" }
+      ]
+    },
+    {
       "name": "BlockDoc",
       "collectionPath": "/blocks/{blockerUserId}__{blockedUserId}",
       "comment": "Server-enforced safety edge. Either direction blocks shared dating surfaces.",

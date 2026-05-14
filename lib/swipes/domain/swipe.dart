@@ -7,6 +7,45 @@ part 'swipe.g.dart';
 
 enum SwipeDirection { like, pass }
 
+enum SwipeReactionTargetType {
+  heroPhoto,
+  photo,
+  profilePrompt,
+  compatibility,
+  running,
+  details,
+  lifestyle,
+}
+
+const maxSwipeReactionCommentLength = 240;
+
+String? normalizeSwipeReactionComment(String? comment) {
+  final trimmed = comment?.trim();
+  if (trimmed == null || trimmed.isEmpty) return null;
+  if (trimmed.length > maxSwipeReactionCommentLength) {
+    throw ArgumentError.value(
+      comment,
+      'comment',
+      'Reaction comments must be $maxSwipeReactionCommentLength characters or fewer.',
+    );
+  }
+  return trimmed;
+}
+
+class ProfileReactionTarget {
+  const ProfileReactionTarget({
+    required this.id,
+    required this.type,
+    required this.label,
+    required this.preview,
+  });
+
+  final String id;
+  final SwipeReactionTargetType type;
+  final String label;
+  final String preview;
+}
+
 @freezed
 abstract class Swipe with _$Swipe {
   const factory Swipe({
@@ -14,6 +53,12 @@ abstract class Swipe with _$Swipe {
     required String targetId,
     required String runId,
     required SwipeDirection direction,
+    String? reactionTargetId,
+    @JsonKey(unknownEnumValue: null)
+    SwipeReactionTargetType? reactionTargetType,
+    String? reactionTargetLabel,
+    String? reactionTargetPreview,
+    String? comment,
     @TimestampConverter() required DateTime createdAt,
   }) = _Swipe;
 

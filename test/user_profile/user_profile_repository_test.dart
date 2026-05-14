@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -57,8 +58,11 @@ void main() {
             uid: 'runner-42',
             name: 'Asha',
             photoUrls: const ['https://img.example/1.jpg'],
+            profilePrompts: normalizeProfilePromptAnswers(
+              const [],
+              legacyBio: 'Long runs, coffee, and easy Sunday plans.',
+            ),
           ).copyWith(
-            bio: 'Long runs, coffee, and easy Sunday plans.',
             occupation: 'Product Designer',
             company: 'Catch',
             relationshipGoal: RelationshipGoal.relationship,
@@ -91,10 +95,7 @@ void main() {
 
       await repository.updateUserProfile(
         uid: 'runner-42',
-        fields: {
-          'name': 'Asha',
-          'dateOfBirth': timestamp,
-        },
+        fields: {'name': 'Asha', 'dateOfBirth': timestamp},
       );
 
       final callable =

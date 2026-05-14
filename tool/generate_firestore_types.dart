@@ -649,7 +649,7 @@ void _writeExtraInterfaces(StringBuffer buf, Map<String, dynamic> overlay) {
   if (extraInterfaces.isEmpty) return;
 
   buf.writeln(
-    '// ── Server-only interfaces (no Dart model) ────────────────────────────────',
+    '// ── Extra interfaces (no top-level Dart model) ────────────────────────────',
   );
   buf.writeln();
 

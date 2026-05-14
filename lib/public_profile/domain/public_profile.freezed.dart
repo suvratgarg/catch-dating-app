@@ -15,12 +15,12 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PublicProfile {
 
-@JsonKey(includeToJson: false) String get uid; String get name; int get age; String get bio; Gender get gender; List<String> get photoUrls; List<String> get photoThumbnailUrls;// Location
+@JsonKey(includeToJson: false) String get uid; String get name; int get age; Gender get gender; List<ProfilePromptAnswer> get profilePrompts; List<String> get photoUrls; List<String> get photoThumbnailUrls; List<PhotoPromptAnswer> get photoPrompts;// Location
  String? get city;// Background
  int? get height; String? get occupation; String? get company;@JsonKey(unknownEnumValue: null) EducationLevel? get education;@JsonKey(unknownEnumValue: null) Religion? get religion; List<Language> get languages;// Intentions
 @JsonKey(unknownEnumValue: null) RelationshipGoal? get relationshipGoal;// Lifestyle
 @JsonKey(unknownEnumValue: null) DrinkingHabit? get drinking;@JsonKey(unknownEnumValue: null) SmokingHabit? get smoking;@JsonKey(unknownEnumValue: null) WorkoutFrequency? get workout;@JsonKey(unknownEnumValue: null) DietaryPreference? get diet;@JsonKey(unknownEnumValue: null) ChildrenStatus? get children;// Running identity
- int get paceMinSecsPerKm; int get paceMaxSecsPerKm; List<PreferredDistance> get preferredDistances; List<RunReason> get runningReasons;
+ int get paceMinSecsPerKm; int get paceMaxSecsPerKm; List<PreferredDistance> get preferredDistances; List<RunReason> get runningReasons; List<PreferredRunTime> get preferredRunTimes;
 /// Create a copy of PublicProfile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -33,16 +33,16 @@ $PublicProfileCopyWith<PublicProfile> get copyWith => _$PublicProfileCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PublicProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.age, age) || other.age == age)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.photoUrls, photoUrls)&&const DeepCollectionEquality().equals(other.photoThumbnailUrls, photoThumbnailUrls)&&(identical(other.city, city) || other.city == city)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other.languages, languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.paceMinSecsPerKm, paceMinSecsPerKm) || other.paceMinSecsPerKm == paceMinSecsPerKm)&&(identical(other.paceMaxSecsPerKm, paceMaxSecsPerKm) || other.paceMaxSecsPerKm == paceMaxSecsPerKm)&&const DeepCollectionEquality().equals(other.preferredDistances, preferredDistances)&&const DeepCollectionEquality().equals(other.runningReasons, runningReasons));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PublicProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.age, age) || other.age == age)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other.profilePrompts, profilePrompts)&&const DeepCollectionEquality().equals(other.photoUrls, photoUrls)&&const DeepCollectionEquality().equals(other.photoThumbnailUrls, photoThumbnailUrls)&&const DeepCollectionEquality().equals(other.photoPrompts, photoPrompts)&&(identical(other.city, city) || other.city == city)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other.languages, languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.paceMinSecsPerKm, paceMinSecsPerKm) || other.paceMinSecsPerKm == paceMinSecsPerKm)&&(identical(other.paceMaxSecsPerKm, paceMaxSecsPerKm) || other.paceMaxSecsPerKm == paceMaxSecsPerKm)&&const DeepCollectionEquality().equals(other.preferredDistances, preferredDistances)&&const DeepCollectionEquality().equals(other.runningReasons, runningReasons)&&const DeepCollectionEquality().equals(other.preferredRunTimes, preferredRunTimes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,uid,name,age,bio,gender,const DeepCollectionEquality().hash(photoUrls),const DeepCollectionEquality().hash(photoThumbnailUrls),city,height,occupation,company,education,religion,const DeepCollectionEquality().hash(languages),relationshipGoal,drinking,smoking,workout,diet,children,paceMinSecsPerKm,paceMaxSecsPerKm,const DeepCollectionEquality().hash(preferredDistances),const DeepCollectionEquality().hash(runningReasons)]);
+int get hashCode => Object.hashAll([runtimeType,uid,name,age,gender,const DeepCollectionEquality().hash(profilePrompts),const DeepCollectionEquality().hash(photoUrls),const DeepCollectionEquality().hash(photoThumbnailUrls),const DeepCollectionEquality().hash(photoPrompts),city,height,occupation,company,education,religion,const DeepCollectionEquality().hash(languages),relationshipGoal,drinking,smoking,workout,diet,children,paceMinSecsPerKm,paceMaxSecsPerKm,const DeepCollectionEquality().hash(preferredDistances),const DeepCollectionEquality().hash(runningReasons),const DeepCollectionEquality().hash(preferredRunTimes)]);
 
 @override
 String toString() {
-  return 'PublicProfile(uid: $uid, name: $name, age: $age, bio: $bio, gender: $gender, photoUrls: $photoUrls, photoThumbnailUrls: $photoThumbnailUrls, city: $city, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, paceMinSecsPerKm: $paceMinSecsPerKm, paceMaxSecsPerKm: $paceMaxSecsPerKm, preferredDistances: $preferredDistances, runningReasons: $runningReasons)';
+  return 'PublicProfile(uid: $uid, name: $name, age: $age, gender: $gender, profilePrompts: $profilePrompts, photoUrls: $photoUrls, photoThumbnailUrls: $photoThumbnailUrls, photoPrompts: $photoPrompts, city: $city, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, paceMinSecsPerKm: $paceMinSecsPerKm, paceMaxSecsPerKm: $paceMaxSecsPerKm, preferredDistances: $preferredDistances, runningReasons: $runningReasons, preferredRunTimes: $preferredRunTimes)';
 }
 
 
@@ -53,7 +53,7 @@ abstract mixin class $PublicProfileCopyWith<$Res>  {
   factory $PublicProfileCopyWith(PublicProfile value, $Res Function(PublicProfile) _then) = _$PublicProfileCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String uid, String name, int age, String bio, Gender gender, List<String> photoUrls, List<String> photoThumbnailUrls, String? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, int paceMinSecsPerKm, int paceMaxSecsPerKm, List<PreferredDistance> preferredDistances, List<RunReason> runningReasons
+@JsonKey(includeToJson: false) String uid, String name, int age, Gender gender, List<ProfilePromptAnswer> profilePrompts, List<String> photoUrls, List<String> photoThumbnailUrls, List<PhotoPromptAnswer> photoPrompts, String? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, int paceMinSecsPerKm, int paceMaxSecsPerKm, List<PreferredDistance> preferredDistances, List<RunReason> runningReasons, List<PreferredRunTime> preferredRunTimes
 });
 
 
@@ -70,16 +70,17 @@ class _$PublicProfileCopyWithImpl<$Res>
 
 /// Create a copy of PublicProfile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? name = null,Object? age = null,Object? bio = null,Object? gender = null,Object? photoUrls = null,Object? photoThumbnailUrls = null,Object? city = freezed,Object? height = freezed,Object? occupation = freezed,Object? company = freezed,Object? education = freezed,Object? religion = freezed,Object? languages = null,Object? relationshipGoal = freezed,Object? drinking = freezed,Object? smoking = freezed,Object? workout = freezed,Object? diet = freezed,Object? children = freezed,Object? paceMinSecsPerKm = null,Object? paceMaxSecsPerKm = null,Object? preferredDistances = null,Object? runningReasons = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? uid = null,Object? name = null,Object? age = null,Object? gender = null,Object? profilePrompts = null,Object? photoUrls = null,Object? photoThumbnailUrls = null,Object? photoPrompts = null,Object? city = freezed,Object? height = freezed,Object? occupation = freezed,Object? company = freezed,Object? education = freezed,Object? religion = freezed,Object? languages = null,Object? relationshipGoal = freezed,Object? drinking = freezed,Object? smoking = freezed,Object? workout = freezed,Object? diet = freezed,Object? children = freezed,Object? paceMinSecsPerKm = null,Object? paceMaxSecsPerKm = null,Object? preferredDistances = null,Object? runningReasons = null,Object? preferredRunTimes = null,}) {
   return _then(_self.copyWith(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
-as int,bio: null == bio ? _self.bio : bio // ignore: cast_nullable_to_non_nullable
-as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as Gender,photoUrls: null == photoUrls ? _self.photoUrls : photoUrls // ignore: cast_nullable_to_non_nullable
+as int,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
+as Gender,profilePrompts: null == profilePrompts ? _self.profilePrompts : profilePrompts // ignore: cast_nullable_to_non_nullable
+as List<ProfilePromptAnswer>,photoUrls: null == photoUrls ? _self.photoUrls : photoUrls // ignore: cast_nullable_to_non_nullable
 as List<String>,photoThumbnailUrls: null == photoThumbnailUrls ? _self.photoThumbnailUrls : photoThumbnailUrls // ignore: cast_nullable_to_non_nullable
-as List<String>,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as List<String>,photoPrompts: null == photoPrompts ? _self.photoPrompts : photoPrompts // ignore: cast_nullable_to_non_nullable
+as List<PhotoPromptAnswer>,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String?,height: freezed == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
 as int?,occupation: freezed == occupation ? _self.occupation : occupation // ignore: cast_nullable_to_non_nullable
 as String?,company: freezed == company ? _self.company : company // ignore: cast_nullable_to_non_nullable
@@ -96,7 +97,8 @@ as ChildrenStatus?,paceMinSecsPerKm: null == paceMinSecsPerKm ? _self.paceMinSec
 as int,paceMaxSecsPerKm: null == paceMaxSecsPerKm ? _self.paceMaxSecsPerKm : paceMaxSecsPerKm // ignore: cast_nullable_to_non_nullable
 as int,preferredDistances: null == preferredDistances ? _self.preferredDistances : preferredDistances // ignore: cast_nullable_to_non_nullable
 as List<PreferredDistance>,runningReasons: null == runningReasons ? _self.runningReasons : runningReasons // ignore: cast_nullable_to_non_nullable
-as List<RunReason>,
+as List<RunReason>,preferredRunTimes: null == preferredRunTimes ? _self.preferredRunTimes : preferredRunTimes // ignore: cast_nullable_to_non_nullable
+as List<PreferredRunTime>,
   ));
 }
 
@@ -181,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<String> photoUrls,  List<String> photoThumbnailUrls,  List<PhotoPromptAnswer> photoPrompts,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons,  List<PreferredRunTime> preferredRunTimes)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PublicProfile() when $default != null:
-return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.photoUrls,_that.photoThumbnailUrls,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons);case _:
+return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts,_that.photoUrls,_that.photoThumbnailUrls,_that.photoPrompts,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons,_that.preferredRunTimes);case _:
   return orElse();
 
 }
@@ -202,10 +204,10 @@ return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.phot
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<String> photoUrls,  List<String> photoThumbnailUrls,  List<PhotoPromptAnswer> photoPrompts,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons,  List<PreferredRunTime> preferredRunTimes)  $default,) {final _that = this;
 switch (_that) {
 case _PublicProfile():
-return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.photoUrls,_that.photoThumbnailUrls,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons);case _:
+return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts,_that.photoUrls,_that.photoThumbnailUrls,_that.photoPrompts,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons,_that.preferredRunTimes);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -222,10 +224,10 @@ return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.phot
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  String bio,  Gender gender,  List<String> photoUrls,  List<String> photoThumbnailUrls,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String uid,  String name,  int age,  Gender gender,  List<ProfilePromptAnswer> profilePrompts,  List<String> photoUrls,  List<String> photoThumbnailUrls,  List<PhotoPromptAnswer> photoPrompts,  String? city,  int? height,  String? occupation,  String? company, @JsonKey(unknownEnumValue: null)  EducationLevel? education, @JsonKey(unknownEnumValue: null)  Religion? religion,  List<Language> languages, @JsonKey(unknownEnumValue: null)  RelationshipGoal? relationshipGoal, @JsonKey(unknownEnumValue: null)  DrinkingHabit? drinking, @JsonKey(unknownEnumValue: null)  SmokingHabit? smoking, @JsonKey(unknownEnumValue: null)  WorkoutFrequency? workout, @JsonKey(unknownEnumValue: null)  DietaryPreference? diet, @JsonKey(unknownEnumValue: null)  ChildrenStatus? children,  int paceMinSecsPerKm,  int paceMaxSecsPerKm,  List<PreferredDistance> preferredDistances,  List<RunReason> runningReasons,  List<PreferredRunTime> preferredRunTimes)?  $default,) {final _that = this;
 switch (_that) {
 case _PublicProfile() when $default != null:
-return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.photoUrls,_that.photoThumbnailUrls,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons);case _:
+return $default(_that.uid,_that.name,_that.age,_that.gender,_that.profilePrompts,_that.photoUrls,_that.photoThumbnailUrls,_that.photoPrompts,_that.city,_that.height,_that.occupation,_that.company,_that.education,_that.religion,_that.languages,_that.relationshipGoal,_that.drinking,_that.smoking,_that.workout,_that.diet,_that.children,_that.paceMinSecsPerKm,_that.paceMaxSecsPerKm,_that.preferredDistances,_that.runningReasons,_that.preferredRunTimes);case _:
   return null;
 
 }
@@ -237,14 +239,20 @@ return $default(_that.uid,_that.name,_that.age,_that.bio,_that.gender,_that.phot
 @JsonSerializable()
 
 class _PublicProfile implements PublicProfile {
-  const _PublicProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, required this.age, required this.bio, required this.gender, final  List<String> photoUrls = const [], final  List<String> photoThumbnailUrls = const [], this.city, this.height, this.occupation, this.company, @JsonKey(unknownEnumValue: null) this.education, @JsonKey(unknownEnumValue: null) this.religion, final  List<Language> languages = const [], @JsonKey(unknownEnumValue: null) this.relationshipGoal, @JsonKey(unknownEnumValue: null) this.drinking, @JsonKey(unknownEnumValue: null) this.smoking, @JsonKey(unknownEnumValue: null) this.workout, @JsonKey(unknownEnumValue: null) this.diet, @JsonKey(unknownEnumValue: null) this.children, this.paceMinSecsPerKm = 300, this.paceMaxSecsPerKm = 420, final  List<PreferredDistance> preferredDistances = const [], final  List<RunReason> runningReasons = const []}): _photoUrls = photoUrls,_photoThumbnailUrls = photoThumbnailUrls,_languages = languages,_preferredDistances = preferredDistances,_runningReasons = runningReasons;
+  const _PublicProfile({@JsonKey(includeToJson: false) required this.uid, required this.name, required this.age, required this.gender, final  List<ProfilePromptAnswer> profilePrompts = const [], final  List<String> photoUrls = const [], final  List<String> photoThumbnailUrls = const [], final  List<PhotoPromptAnswer> photoPrompts = const [], this.city, this.height, this.occupation, this.company, @JsonKey(unknownEnumValue: null) this.education, @JsonKey(unknownEnumValue: null) this.religion, final  List<Language> languages = const [], @JsonKey(unknownEnumValue: null) this.relationshipGoal, @JsonKey(unknownEnumValue: null) this.drinking, @JsonKey(unknownEnumValue: null) this.smoking, @JsonKey(unknownEnumValue: null) this.workout, @JsonKey(unknownEnumValue: null) this.diet, @JsonKey(unknownEnumValue: null) this.children, this.paceMinSecsPerKm = 300, this.paceMaxSecsPerKm = 420, final  List<PreferredDistance> preferredDistances = const [], final  List<RunReason> runningReasons = const [], final  List<PreferredRunTime> preferredRunTimes = const []}): _profilePrompts = profilePrompts,_photoUrls = photoUrls,_photoThumbnailUrls = photoThumbnailUrls,_photoPrompts = photoPrompts,_languages = languages,_preferredDistances = preferredDistances,_runningReasons = runningReasons,_preferredRunTimes = preferredRunTimes;
   factory _PublicProfile.fromJson(Map<String, dynamic> json) => _$PublicProfileFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String uid;
 @override final  String name;
 @override final  int age;
-@override final  String bio;
 @override final  Gender gender;
+ final  List<ProfilePromptAnswer> _profilePrompts;
+@override@JsonKey() List<ProfilePromptAnswer> get profilePrompts {
+  if (_profilePrompts is EqualUnmodifiableListView) return _profilePrompts;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_profilePrompts);
+}
+
  final  List<String> _photoUrls;
 @override@JsonKey() List<String> get photoUrls {
   if (_photoUrls is EqualUnmodifiableListView) return _photoUrls;
@@ -257,6 +265,13 @@ class _PublicProfile implements PublicProfile {
   if (_photoThumbnailUrls is EqualUnmodifiableListView) return _photoThumbnailUrls;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_photoThumbnailUrls);
+}
+
+ final  List<PhotoPromptAnswer> _photoPrompts;
+@override@JsonKey() List<PhotoPromptAnswer> get photoPrompts {
+  if (_photoPrompts is EqualUnmodifiableListView) return _photoPrompts;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_photoPrompts);
 }
 
 // Location
@@ -299,6 +314,13 @@ class _PublicProfile implements PublicProfile {
   return EqualUnmodifiableListView(_runningReasons);
 }
 
+ final  List<PreferredRunTime> _preferredRunTimes;
+@override@JsonKey() List<PreferredRunTime> get preferredRunTimes {
+  if (_preferredRunTimes is EqualUnmodifiableListView) return _preferredRunTimes;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_preferredRunTimes);
+}
+
 
 /// Create a copy of PublicProfile
 /// with the given fields replaced by the non-null parameter values.
@@ -313,16 +335,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PublicProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.age, age) || other.age == age)&&(identical(other.bio, bio) || other.bio == bio)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other._photoUrls, _photoUrls)&&const DeepCollectionEquality().equals(other._photoThumbnailUrls, _photoThumbnailUrls)&&(identical(other.city, city) || other.city == city)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other._languages, _languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.paceMinSecsPerKm, paceMinSecsPerKm) || other.paceMinSecsPerKm == paceMinSecsPerKm)&&(identical(other.paceMaxSecsPerKm, paceMaxSecsPerKm) || other.paceMaxSecsPerKm == paceMaxSecsPerKm)&&const DeepCollectionEquality().equals(other._preferredDistances, _preferredDistances)&&const DeepCollectionEquality().equals(other._runningReasons, _runningReasons));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PublicProfile&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.name, name) || other.name == name)&&(identical(other.age, age) || other.age == age)&&(identical(other.gender, gender) || other.gender == gender)&&const DeepCollectionEquality().equals(other._profilePrompts, _profilePrompts)&&const DeepCollectionEquality().equals(other._photoUrls, _photoUrls)&&const DeepCollectionEquality().equals(other._photoThumbnailUrls, _photoThumbnailUrls)&&const DeepCollectionEquality().equals(other._photoPrompts, _photoPrompts)&&(identical(other.city, city) || other.city == city)&&(identical(other.height, height) || other.height == height)&&(identical(other.occupation, occupation) || other.occupation == occupation)&&(identical(other.company, company) || other.company == company)&&(identical(other.education, education) || other.education == education)&&(identical(other.religion, religion) || other.religion == religion)&&const DeepCollectionEquality().equals(other._languages, _languages)&&(identical(other.relationshipGoal, relationshipGoal) || other.relationshipGoal == relationshipGoal)&&(identical(other.drinking, drinking) || other.drinking == drinking)&&(identical(other.smoking, smoking) || other.smoking == smoking)&&(identical(other.workout, workout) || other.workout == workout)&&(identical(other.diet, diet) || other.diet == diet)&&(identical(other.children, children) || other.children == children)&&(identical(other.paceMinSecsPerKm, paceMinSecsPerKm) || other.paceMinSecsPerKm == paceMinSecsPerKm)&&(identical(other.paceMaxSecsPerKm, paceMaxSecsPerKm) || other.paceMaxSecsPerKm == paceMaxSecsPerKm)&&const DeepCollectionEquality().equals(other._preferredDistances, _preferredDistances)&&const DeepCollectionEquality().equals(other._runningReasons, _runningReasons)&&const DeepCollectionEquality().equals(other._preferredRunTimes, _preferredRunTimes));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,uid,name,age,bio,gender,const DeepCollectionEquality().hash(_photoUrls),const DeepCollectionEquality().hash(_photoThumbnailUrls),city,height,occupation,company,education,religion,const DeepCollectionEquality().hash(_languages),relationshipGoal,drinking,smoking,workout,diet,children,paceMinSecsPerKm,paceMaxSecsPerKm,const DeepCollectionEquality().hash(_preferredDistances),const DeepCollectionEquality().hash(_runningReasons)]);
+int get hashCode => Object.hashAll([runtimeType,uid,name,age,gender,const DeepCollectionEquality().hash(_profilePrompts),const DeepCollectionEquality().hash(_photoUrls),const DeepCollectionEquality().hash(_photoThumbnailUrls),const DeepCollectionEquality().hash(_photoPrompts),city,height,occupation,company,education,religion,const DeepCollectionEquality().hash(_languages),relationshipGoal,drinking,smoking,workout,diet,children,paceMinSecsPerKm,paceMaxSecsPerKm,const DeepCollectionEquality().hash(_preferredDistances),const DeepCollectionEquality().hash(_runningReasons),const DeepCollectionEquality().hash(_preferredRunTimes)]);
 
 @override
 String toString() {
-  return 'PublicProfile(uid: $uid, name: $name, age: $age, bio: $bio, gender: $gender, photoUrls: $photoUrls, photoThumbnailUrls: $photoThumbnailUrls, city: $city, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, paceMinSecsPerKm: $paceMinSecsPerKm, paceMaxSecsPerKm: $paceMaxSecsPerKm, preferredDistances: $preferredDistances, runningReasons: $runningReasons)';
+  return 'PublicProfile(uid: $uid, name: $name, age: $age, gender: $gender, profilePrompts: $profilePrompts, photoUrls: $photoUrls, photoThumbnailUrls: $photoThumbnailUrls, photoPrompts: $photoPrompts, city: $city, height: $height, occupation: $occupation, company: $company, education: $education, religion: $religion, languages: $languages, relationshipGoal: $relationshipGoal, drinking: $drinking, smoking: $smoking, workout: $workout, diet: $diet, children: $children, paceMinSecsPerKm: $paceMinSecsPerKm, paceMaxSecsPerKm: $paceMaxSecsPerKm, preferredDistances: $preferredDistances, runningReasons: $runningReasons, preferredRunTimes: $preferredRunTimes)';
 }
 
 
@@ -333,7 +355,7 @@ abstract mixin class _$PublicProfileCopyWith<$Res> implements $PublicProfileCopy
   factory _$PublicProfileCopyWith(_PublicProfile value, $Res Function(_PublicProfile) _then) = __$PublicProfileCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String uid, String name, int age, String bio, Gender gender, List<String> photoUrls, List<String> photoThumbnailUrls, String? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, int paceMinSecsPerKm, int paceMaxSecsPerKm, List<PreferredDistance> preferredDistances, List<RunReason> runningReasons
+@JsonKey(includeToJson: false) String uid, String name, int age, Gender gender, List<ProfilePromptAnswer> profilePrompts, List<String> photoUrls, List<String> photoThumbnailUrls, List<PhotoPromptAnswer> photoPrompts, String? city, int? height, String? occupation, String? company,@JsonKey(unknownEnumValue: null) EducationLevel? education,@JsonKey(unknownEnumValue: null) Religion? religion, List<Language> languages,@JsonKey(unknownEnumValue: null) RelationshipGoal? relationshipGoal,@JsonKey(unknownEnumValue: null) DrinkingHabit? drinking,@JsonKey(unknownEnumValue: null) SmokingHabit? smoking,@JsonKey(unknownEnumValue: null) WorkoutFrequency? workout,@JsonKey(unknownEnumValue: null) DietaryPreference? diet,@JsonKey(unknownEnumValue: null) ChildrenStatus? children, int paceMinSecsPerKm, int paceMaxSecsPerKm, List<PreferredDistance> preferredDistances, List<RunReason> runningReasons, List<PreferredRunTime> preferredRunTimes
 });
 
 
@@ -350,16 +372,17 @@ class __$PublicProfileCopyWithImpl<$Res>
 
 /// Create a copy of PublicProfile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? name = null,Object? age = null,Object? bio = null,Object? gender = null,Object? photoUrls = null,Object? photoThumbnailUrls = null,Object? city = freezed,Object? height = freezed,Object? occupation = freezed,Object? company = freezed,Object? education = freezed,Object? religion = freezed,Object? languages = null,Object? relationshipGoal = freezed,Object? drinking = freezed,Object? smoking = freezed,Object? workout = freezed,Object? diet = freezed,Object? children = freezed,Object? paceMinSecsPerKm = null,Object? paceMaxSecsPerKm = null,Object? preferredDistances = null,Object? runningReasons = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? uid = null,Object? name = null,Object? age = null,Object? gender = null,Object? profilePrompts = null,Object? photoUrls = null,Object? photoThumbnailUrls = null,Object? photoPrompts = null,Object? city = freezed,Object? height = freezed,Object? occupation = freezed,Object? company = freezed,Object? education = freezed,Object? religion = freezed,Object? languages = null,Object? relationshipGoal = freezed,Object? drinking = freezed,Object? smoking = freezed,Object? workout = freezed,Object? diet = freezed,Object? children = freezed,Object? paceMinSecsPerKm = null,Object? paceMaxSecsPerKm = null,Object? preferredDistances = null,Object? runningReasons = null,Object? preferredRunTimes = null,}) {
   return _then(_PublicProfile(
 uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,age: null == age ? _self.age : age // ignore: cast_nullable_to_non_nullable
-as int,bio: null == bio ? _self.bio : bio // ignore: cast_nullable_to_non_nullable
-as String,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
-as Gender,photoUrls: null == photoUrls ? _self._photoUrls : photoUrls // ignore: cast_nullable_to_non_nullable
+as int,gender: null == gender ? _self.gender : gender // ignore: cast_nullable_to_non_nullable
+as Gender,profilePrompts: null == profilePrompts ? _self._profilePrompts : profilePrompts // ignore: cast_nullable_to_non_nullable
+as List<ProfilePromptAnswer>,photoUrls: null == photoUrls ? _self._photoUrls : photoUrls // ignore: cast_nullable_to_non_nullable
 as List<String>,photoThumbnailUrls: null == photoThumbnailUrls ? _self._photoThumbnailUrls : photoThumbnailUrls // ignore: cast_nullable_to_non_nullable
-as List<String>,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
+as List<String>,photoPrompts: null == photoPrompts ? _self._photoPrompts : photoPrompts // ignore: cast_nullable_to_non_nullable
+as List<PhotoPromptAnswer>,city: freezed == city ? _self.city : city // ignore: cast_nullable_to_non_nullable
 as String?,height: freezed == height ? _self.height : height // ignore: cast_nullable_to_non_nullable
 as int?,occupation: freezed == occupation ? _self.occupation : occupation // ignore: cast_nullable_to_non_nullable
 as String?,company: freezed == company ? _self.company : company // ignore: cast_nullable_to_non_nullable
@@ -376,7 +399,8 @@ as ChildrenStatus?,paceMinSecsPerKm: null == paceMinSecsPerKm ? _self.paceMinSec
 as int,paceMaxSecsPerKm: null == paceMaxSecsPerKm ? _self.paceMaxSecsPerKm : paceMaxSecsPerKm // ignore: cast_nullable_to_non_nullable
 as int,preferredDistances: null == preferredDistances ? _self._preferredDistances : preferredDistances // ignore: cast_nullable_to_non_nullable
 as List<PreferredDistance>,runningReasons: null == runningReasons ? _self._runningReasons : runningReasons // ignore: cast_nullable_to_non_nullable
-as List<RunReason>,
+as List<RunReason>,preferredRunTimes: null == preferredRunTimes ? _self._preferredRunTimes : preferredRunTimes // ignore: cast_nullable_to_non_nullable
+as List<PreferredRunTime>,
   ));
 }
 
