@@ -74,7 +74,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                 ),
                 if (summary.runs.isEmpty)
                   const SliverFillRemaining(
-                    hasScrollBody: false,
                     child: _CalendarMessage(
                       title: 'No planned runs yet',
                       body:
