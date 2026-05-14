@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
@@ -12,6 +14,7 @@ class RunPinsMap extends StatefulWidget {
     required this.initialCenter,
     this.initialZoom = 12.5,
     this.selectedRunId,
+    this.selectedRunCenter,
     this.enableNetworkTiles = true,
     this.markerIcon = Icons.directions_run_rounded,
     this.onRunSelected,
@@ -21,6 +24,7 @@ class RunPinsMap extends StatefulWidget {
   final LocationCoordinate initialCenter;
   final double initialZoom;
   final String? selectedRunId;
+  final LocationCoordinate? selectedRunCenter;
   final bool enableNetworkTiles;
   final IconData markerIcon;
   final ValueChanged<Run>? onRunSelected;
@@ -36,7 +40,7 @@ class _RunPinsMapState extends State<RunPinsMap> {
   @override
   void initState() {
     super.initState();
-    _lastAppliedCenter = widget.initialCenter;
+    _lastAppliedCenter = _effectiveCameraCenter;
   }
 
   @override
@@ -48,13 +52,12 @@ class _RunPinsMapState extends State<RunPinsMap> {
   @override
   void didUpdateWidget(covariant RunPinsMap oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (_samePoint(_lastAppliedCenter, widget.initialCenter)) return;
-    _lastAppliedCenter = widget.initialCenter;
+    final nextCenter = _effectiveCameraCenter;
+    if (_samePoint(_lastAppliedCenter, nextCenter)) return;
+    _lastAppliedCenter = nextCenter;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      _mapController?.animateCamera(
-        gmaps.CameraUpdate.newLatLng(widget.initialCenter.toGoogleMapsLatLng()),
-      );
+      _moveCameraTo(nextCenter, animate: true);
     });
   }
 
@@ -101,9 +104,26 @@ class _RunPinsMapState extends State<RunPinsMap> {
       mapToolbarEnabled: false,
       zoomControlsEnabled: false,
       compassEnabled: false,
-      onMapCreated: (controller) => _mapController = controller,
+      onMapCreated: (controller) {
+        _mapController = controller;
+        _moveCameraTo(_lastAppliedCenter, animate: false);
+      },
     );
   }
+
+  void _moveCameraTo(LocationCoordinate center, {required bool animate}) {
+    final controller = _mapController;
+    if (controller == null) return;
+    final update = gmaps.CameraUpdate.newLatLng(center.toGoogleMapsLatLng());
+    if (animate) {
+      unawaited(controller.animateCamera(update));
+    } else {
+      unawaited(controller.moveCamera(update));
+    }
+  }
+
+  LocationCoordinate get _effectiveCameraCenter =>
+      widget.selectedRunCenter ?? widget.initialCenter;
 }
 
 class _RunPinsMapPlaceholder extends StatelessWidget {

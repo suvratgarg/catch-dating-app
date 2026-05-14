@@ -132,6 +132,9 @@ Object? _callableValue(Object? value) {
   if (value is Iterable) {
     return value.map(_callableValue).toList();
   }
+  if (value is Map) {
+    return value.map((key, child) => MapEntry(key, _callableValue(child)));
+  }
   return value;
 }
 

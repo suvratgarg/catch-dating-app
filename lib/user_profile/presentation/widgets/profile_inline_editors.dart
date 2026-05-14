@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
@@ -6,7 +8,6 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart'
     show CatchMotion, CatchRadius, CatchSpacing, CatchTokens;
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_chip.dart';
-import 'package:catch_dating_app/core/widgets/catch_number_stepper.dart';
 import 'package:catch_dating_app/core/widgets/catch_range_slider.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
@@ -14,6 +15,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/presentation/profile_edit_controller.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_tile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 typedef ProfileInlineSaveCallback = VoidCallback;
@@ -74,6 +76,8 @@ class _InlineEditorPanel extends StatelessWidget {
     required this.onCancel,
     required this.onSubmit,
     this.saveError,
+    this.actionLeading,
+    this.contentActionGap = CatchSpacing.s3,
     this.children = const [],
   });
 
@@ -81,6 +85,8 @@ class _InlineEditorPanel extends StatelessWidget {
   final VoidCallback onCancel;
   final VoidCallback onSubmit;
   final Widget? saveError;
+  final Widget? actionLeading;
+  final double contentActionGap;
   final List<Widget> children;
 
   @override
@@ -93,11 +99,12 @@ class _InlineEditorPanel extends StatelessWidget {
         children: [
           if (saveError != null) ...[saveError!, gapH12],
           ...children,
-          if (children.isNotEmpty) gapH12,
+          if (children.isNotEmpty) SizedBox(height: contentActionGap),
           _InlineEditorActions(
             isSaving: isSaving,
             onCancel: onCancel,
             onSubmit: onSubmit,
+            leading: actionLeading,
           ),
         ],
       ),
@@ -105,33 +112,112 @@ class _InlineEditorPanel extends StatelessWidget {
   }
 }
 
-class ProfileInlineEditableText extends StatelessWidget {
-  const ProfileInlineEditableText({
+class ProfileInlineFieldScaffold extends StatelessWidget {
+  const ProfileInlineFieldScaffold({
+    super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.isExpanded,
+    required this.onTap,
+    required this.isSaving,
+    required this.onCancel,
+    required this.onSubmit,
+    this.valueContent,
+    this.animateValueContent = true,
+    this.isAddAffordance = false,
+    this.saveError,
+    this.actionLeading,
+    this.contentActionGap = CatchSpacing.s3,
+    this.editorChildren = const [],
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final bool isExpanded;
+  final VoidCallback onTap;
+  final bool isSaving;
+  final VoidCallback onCancel;
+  final VoidCallback onSubmit;
+  final Widget? valueContent;
+  final bool animateValueContent;
+  final bool isAddAffordance;
+  final Widget? saveError;
+  final Widget? actionLeading;
+  final double contentActionGap;
+  final List<Widget> editorChildren;
+
+  @override
+  Widget build(BuildContext context) {
+    return ProfileInlineDisclosure(
+      isExpanded: isExpanded,
+      header: ProfileInfoTile(
+        icon: icon,
+        label: label,
+        value: value,
+        onTap: isSaving ? null : onTap,
+        isExpanded: isExpanded,
+        isAddAffordance: isAddAffordance,
+        animateValueContent: animateValueContent,
+        valueContent: valueContent,
+      ),
+      body: _InlineEditorPanel(
+        saveError: saveError,
+        actionLeading: actionLeading,
+        contentActionGap: contentActionGap,
+        isSaving: isSaving,
+        onCancel: onCancel,
+        onSubmit: onSubmit,
+        children: editorChildren,
+      ),
+    );
+  }
+}
+
+class ProfileInlineTextValue extends StatelessWidget {
+  const ProfileInlineTextValue({
     super.key,
     required this.label,
+    required this.displayValue,
     required this.controller,
     required this.focusNode,
+    required this.isEditing,
     required this.enabled,
+    this.placeholder,
+    this.isAddAffordance = false,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.textInputAction,
     this.maxLines = 1,
     this.minLines,
+    this.maxLength,
+    this.showCounter = false,
+    this.collapseStackedBlankLines = false,
     this.autofillHints,
     this.onSubmitted,
   });
 
   static const double _minimumUnderlineWidth = 28;
+  static const double _underlineGap = 2;
+  static const double _underlineHeight = 1.5;
 
   final String label;
+  final String displayValue;
+  final String? placeholder;
   final TextEditingController controller;
   final FocusNode focusNode;
+  final bool isEditing;
   final bool enabled;
+  final bool isAddAffordance;
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
   final TextInputAction? textInputAction;
-  final int maxLines;
+  final int? maxLines;
   final int? minLines;
+  final int? maxLength;
+  final bool showCounter;
+  final bool collapseStackedBlankLines;
   final Iterable<String>? autofillHints;
   final ValueChanged<String>? onSubmitted;
 
@@ -140,75 +226,128 @@ class ProfileInlineEditableText extends StatelessWidget {
     final t = CatchTokens.of(context);
     final direction = Directionality.of(context);
     final textScaler = MediaQuery.textScalerOf(context);
-    final valueStyle = CatchTextStyles.bodyL(context, color: t.ink);
-    final lineCount = minLines ?? maxLines;
+    final valueStyle = CatchTextStyles.bodyL(
+      context,
+      color: isAddAffordance && !isEditing ? t.ink3 : t.ink,
+    );
     final lineHeight =
         textScaler.scale(valueStyle.fontSize ?? 18) *
         (valueStyle.height ?? 1.2);
-    final editableHeight = (lineHeight * lineCount) + Sizes.p3;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         return AnimatedBuilder(
           animation: controller,
           builder: (context, _) {
-            final textWidth = _measureTextWidth(
-              text: controller.text,
+            if (!isEditing) {
+              return Text(
+                isAddAffordance ? '+ $displayValue' : displayValue,
+                key: ValueKey(
+                  'profile-inline-display-$label-$displayValue-$isAddAffordance',
+                ),
+                style: valueStyle,
+              );
+            }
+
+            final inputText = controller.text;
+            final hintText = placeholder ?? displayValue;
+            final measuredText = inputText.isEmpty ? hintText : inputText;
+            final textMetrics = _measureInlineText(
+              text: measuredText,
               style: valueStyle,
               direction: direction,
               textScaler: textScaler,
+              maxWidth: constraints.maxWidth,
+              maxLines: maxLines,
             );
-            final underlineWidth = textWidth
+            final visibleLineCount = math.max(
+              minLines ?? 1,
+              textMetrics.lineCount,
+            );
+            final editableTextHeight = lineHeight * visibleLineCount;
+            final editableHeight =
+                editableTextHeight + _underlineGap + _underlineHeight;
+            final isMultiline = maxLines != 1 || minLines != null;
+            final underlineTextWidth = isMultiline
+                ? textMetrics.maxLineWidth
+                : textMetrics.width;
+            final underlineWidth = underlineTextWidth
                 .clamp(_minimumUnderlineWidth, constraints.maxWidth)
                 .toDouble();
 
             return SizedBox(
               width: double.infinity,
               height: editableHeight,
-              child: Stack(
-                alignment: Alignment.bottomLeft,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Semantics(
-                    textField: true,
-                    label: label,
-                    child: EditableText(
-                      controller: controller,
-                      focusNode: focusNode,
-                      readOnly: !enabled,
-                      autofocus: true,
-                      maxLines: maxLines,
-                      minLines: minLines,
-                      keyboardType: keyboardType,
-                      textCapitalization: textCapitalization,
-                      textInputAction:
-                          textInputAction ??
-                          (maxLines == 1
-                              ? TextInputAction.done
-                              : TextInputAction.newline),
-                      autofillHints: autofillHints,
-                      onSubmitted: onSubmitted,
-                      style: valueStyle,
-                      cursorColor: t.primary,
-                      backgroundCursorColor: t.primary,
-                      selectionColor: t.primary.withValues(alpha: 0.22),
-                      cursorWidth: 2,
-                      cursorRadius: const Radius.circular(CatchRadius.pill),
+                  SizedBox(
+                    height: editableTextHeight,
+                    child: Stack(
+                      alignment: Alignment.topLeft,
+                      children: [
+                        if (inputText.isEmpty && hintText.isNotEmpty)
+                          IgnorePointer(
+                            child: Text(
+                              hintText,
+                              style: CatchTextStyles.bodyL(
+                                context,
+                                color: t.ink3,
+                              ),
+                            ),
+                          ),
+                        Semantics(
+                          textField: true,
+                          label: label,
+                          child: EditableText(
+                            controller: controller,
+                            focusNode: focusNode,
+                            readOnly: !enabled,
+                            autofocus: true,
+                            maxLines: maxLines,
+                            minLines: minLines,
+                            keyboardType: keyboardType,
+                            textCapitalization: textCapitalization,
+                            textInputAction:
+                                textInputAction ??
+                                (maxLines == 1
+                                    ? TextInputAction.done
+                                    : TextInputAction.newline),
+                            autofillHints: autofillHints,
+                            inputFormatters: [
+                              if (collapseStackedBlankLines)
+                                const _StackedBlankLinesFormatter(),
+                              if (maxLength != null)
+                                LengthLimitingTextInputFormatter(maxLength),
+                            ],
+                            onSubmitted: onSubmitted,
+                            style: valueStyle,
+                            strutStyle: StrutStyle.fromTextStyle(
+                              valueStyle,
+                              forceStrutHeight: true,
+                            ),
+                            cursorColor: t.primary,
+                            backgroundCursorColor: t.primary,
+                            selectionColor: t.primary.withValues(alpha: 0.22),
+                            cursorWidth: 2,
+                            cursorRadius: const Radius.circular(
+                              CatchRadius.pill,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Positioned(
-                    left: 0,
-                    bottom: 0,
-                    child: AnimatedContainer(
-                      width: underlineWidth,
-                      height: 1.5,
-                      duration: CatchMotion.fast,
-                      curve: CatchMotion.standardCurve,
-                      decoration: BoxDecoration(
-                        color: t.primary.withValues(
-                          alpha: enabled ? 0.9 : 0.35,
-                        ),
-                        borderRadius: BorderRadius.circular(CatchRadius.pill),
-                      ),
+                  const SizedBox(height: _underlineGap),
+                  AnimatedContainer(
+                    key: const ValueKey('profile-inline-underline'),
+                    width: underlineWidth,
+                    height: _underlineHeight,
+                    duration: CatchMotion.fast,
+                    curve: CatchMotion.standardCurve,
+                    decoration: BoxDecoration(
+                      color: t.primary.withValues(alpha: enabled ? 0.9 : 0.35),
+                      borderRadius: BorderRadius.circular(CatchRadius.pill),
                     ),
                   ),
                 ],
@@ -219,21 +358,47 @@ class ProfileInlineEditableText extends StatelessWidget {
       },
     );
   }
+}
 
-  double _measureTextWidth({
-    required String text,
-    required TextStyle style,
-    required TextDirection direction,
-    required TextScaler textScaler,
-  }) {
-    final painter = TextPainter(
-      text: TextSpan(text: text, style: style),
-      textDirection: direction,
-      textScaler: textScaler,
-      maxLines: 1,
-    )..layout();
-    return painter.width;
-  }
+_InlineTextMetrics _measureInlineText({
+  required String text,
+  required TextStyle style,
+  required TextDirection direction,
+  required TextScaler textScaler,
+  required double maxWidth,
+  required int? maxLines,
+}) {
+  final measuredText = text.isEmpty ? ' ' : text;
+  final painter = TextPainter(
+    text: TextSpan(text: measuredText, style: style),
+    textDirection: direction,
+    textScaler: textScaler,
+    maxLines: maxLines,
+  )..layout(maxWidth: maxWidth);
+  final lines = painter.computeLineMetrics();
+  return _InlineTextMetrics(
+    width: text.isEmpty ? 0 : painter.width,
+    lineCount: math.max(1, lines.length),
+    lastLineWidth: lines.isEmpty ? 0 : lines.last.width,
+    maxLineWidth: lines.fold<double>(
+      0,
+      (maxWidth, line) => math.max(maxWidth, line.width),
+    ),
+  );
+}
+
+class _InlineTextMetrics {
+  const _InlineTextMetrics({
+    required this.width,
+    required this.lineCount,
+    required this.lastLineWidth,
+    required this.maxLineWidth,
+  });
+
+  final double width;
+  final int lineCount;
+  final double lastLineWidth;
+  final double maxLineWidth;
 }
 
 class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
@@ -252,6 +417,10 @@ class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
     this.isAddAffordance = false,
     this.maxLines = 1,
     this.minLines,
+    this.maxLength,
+    this.showCounter = false,
+    this.collapseStackedBlankLines = false,
+    this.normalizeInput,
     this.keyboardType,
     this.textCapitalization = TextCapitalization.sentences,
     this.autofillHints,
@@ -267,8 +436,12 @@ class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
   final String fieldName;
   final bool isExpanded;
   final bool isAddAffordance;
-  final int maxLines;
+  final int? maxLines;
   final int? minLines;
+  final int? maxLength;
+  final bool showCounter;
+  final bool collapseStackedBlankLines;
+  final String Function(String value)? normalizeInput;
   final VoidCallback onTap;
   final TextInputType? keyboardType;
   final TextCapitalization textCapitalization;
@@ -321,15 +494,26 @@ class _ProfileInlineTextEntryEditorState
     setState(() => _validationError = null);
   }
 
+  void _cancel() {
+    _controller.text = widget.currentValue;
+    widget.onCancel();
+  }
+
   Future<void> _submit() async {
     if (isSaving) return;
-    final validationError = widget.validator?.call(_controller.text);
+    final normalizedText =
+        widget.normalizeInput?.call(_controller.text) ?? _controller.text;
+    if (normalizedText != _controller.text) {
+      _controller.text = normalizedText;
+    }
+
+    final validationError = widget.validator?.call(normalizedText);
     if (validationError != null) {
       setState(() => _validationError = validationError);
       return;
     }
 
-    final rawValue = _controller.text.trim();
+    final rawValue = normalizedText.trim();
     final Object? fieldValue = widget.toFieldValue != null
         ? widget.toFieldValue!(rawValue)
         : rawValue;
@@ -340,7 +524,7 @@ class _ProfileInlineTextEntryEditorState
         (fieldValue == null && widget.currentValue.trim().isEmpty) ||
         (fieldValue == '' && currentFieldValue == null);
     if (isUnchanged) {
-      widget.onCancel();
+      _cancel();
       return;
     }
 
@@ -350,39 +534,75 @@ class _ProfileInlineTextEntryEditorState
 
   @override
   Widget build(BuildContext context) {
-    return ProfileInlineDisclosure(
+    return ProfileInlineFieldScaffold(
+      icon: widget.icon,
+      label: widget.label,
+      value: widget.value,
       isExpanded: widget.isExpanded,
-      header: ProfileInfoTile(
-        icon: widget.icon,
+      onTap: widget.onTap,
+      isSaving: isSaving,
+      isAddAffordance: widget.isAddAffordance,
+      animateValueContent: false,
+      valueContent: ProfileInlineTextValue(
         label: widget.label,
-        value: widget.value,
-        onTap: isSaving ? null : widget.onTap,
-        isExpanded: widget.isExpanded,
+        displayValue: widget.value,
+        placeholder: widget.isAddAffordance ? widget.value : null,
+        controller: _controller,
+        focusNode: _focusNode,
+        isEditing: widget.isExpanded,
+        enabled: !isSaving,
         isAddAffordance: widget.isAddAffordance,
-        valueEditor: widget.isExpanded
-            ? ProfileInlineEditableText(
-                label: widget.label,
-                controller: _controller,
-                focusNode: _focusNode,
-                enabled: !isSaving,
-                keyboardType: widget.keyboardType,
-                textCapitalization: widget.textCapitalization,
-                maxLines: widget.maxLines,
-                minLines: widget.minLines,
-                autofillHints: widget.autofillHints,
-                onSubmitted: (_) => _submit(),
-              )
-            : null,
+        keyboardType: widget.keyboardType,
+        textCapitalization: widget.textCapitalization,
+        maxLines: widget.maxLines,
+        minLines: widget.minLines,
+        maxLength: widget.maxLength,
+        showCounter: widget.showCounter,
+        collapseStackedBlankLines: widget.collapseStackedBlankLines,
+        autofillHints: widget.autofillHints,
+        onSubmitted: (_) => _submit(),
       ),
-      body: _InlineEditorPanel(
-        saveError: _validationError == null
-            ? buildSaveError()
-            : ErrorBanner(message: _validationError!),
-        isSaving: isSaving,
-        onCancel: widget.onCancel,
-        onSubmit: _submit,
-        children: const [],
-      ),
+      saveError: _validationError == null
+          ? buildSaveError()
+          : ErrorBanner(message: _validationError!),
+      actionLeading: widget.showCounter && widget.maxLength != null
+          ? AnimatedBuilder(
+              animation: _controller,
+              builder: (context, _) => Text(
+                '${_controller.text.length} / ${widget.maxLength}',
+                key: const ValueKey('profile-inline-counter'),
+                style: CatchTextStyles.labelM(context),
+              ),
+            )
+          : null,
+      onCancel: _cancel,
+      onSubmit: _submit,
+    );
+  }
+}
+
+class _StackedBlankLinesFormatter extends TextInputFormatter {
+  const _StackedBlankLinesFormatter();
+
+  @override
+  TextEditingValue formatEditUpdate(
+    TextEditingValue oldValue,
+    TextEditingValue newValue,
+  ) {
+    final collapsed = collapseStackedPromptBlankLines(newValue.text);
+    if (collapsed == newValue.text) return newValue;
+
+    final selectionEnd = newValue.selection.end;
+    final normalizedOffset = selectionEnd < 0
+        ? collapsed.length
+        : collapseStackedPromptBlankLines(
+            newValue.text.substring(0, selectionEnd),
+          ).length;
+    final offset = normalizedOffset.clamp(0, collapsed.length);
+    return TextEditingValue(
+      text: collapsed,
+      selection: TextSelection.collapsed(offset: offset),
+      composing: TextRange.empty,
     );
   }
 }
@@ -390,14 +610,26 @@ class _ProfileInlineTextEntryEditorState
 class ProfileInlineHeightEditor extends ConsumerStatefulWidget {
   const ProfileInlineHeightEditor({
     super.key,
+    required this.icon,
+    required this.label,
+    required this.value,
     required this.currentValue,
+    required this.isExpanded,
+    required this.onTap,
     required this.onSaved,
     required this.onCancel,
+    this.isAddAffordance = false,
   });
 
+  final IconData icon;
+  final String label;
+  final String value;
   final int? currentValue;
+  final bool isExpanded;
+  final VoidCallback onTap;
   final ProfileInlineSaveCallback onSaved;
   final VoidCallback onCancel;
+  final bool isAddAffordance;
 
   @override
   ConsumerState<ProfileInlineHeightEditor> createState() =>
@@ -409,10 +641,24 @@ class _ProfileInlineHeightEditorState
     with _InlineSaveState<ProfileInlineHeightEditor> {
   late int _heightCm = normalizeHeightCm(widget.currentValue);
 
+  @override
+  void didUpdateWidget(covariant ProfileInlineHeightEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.isExpanded) return;
+    if (oldWidget.currentValue != widget.currentValue) {
+      _heightCm = normalizeHeightCm(widget.currentValue);
+    }
+  }
+
+  void _cancel() {
+    setState(() => _heightCm = normalizeHeightCm(widget.currentValue));
+    widget.onCancel();
+  }
+
   Future<void> _submit() async {
     if (isSaving) return;
     if (_heightCm == widget.currentValue) {
-      widget.onCancel();
+      _cancel();
       return;
     }
     final saved = await saveFields({'height': _heightCm});
@@ -421,23 +667,99 @@ class _ProfileInlineHeightEditorState
 
   @override
   Widget build(BuildContext context) {
-    return _InlineEditorPanel(
-      saveError: buildSaveError(),
+    final displayValue = widget.isExpanded ? '$_heightCm cm' : widget.value;
+    return ProfileInlineFieldScaffold(
+      icon: widget.icon,
+      label: widget.label,
+      value: displayValue,
+      isExpanded: widget.isExpanded,
+      onTap: widget.onTap,
       isSaving: isSaving,
-      onCancel: widget.onCancel,
+      isAddAffordance: widget.isAddAffordance,
+      animateValueContent: false,
+      saveError: buildSaveError(),
+      actionLeading: _ProfileHeightStepperControls(
+        value: _heightCm,
+        enabled: !isSaving,
+        onChanged: (value) => setState(() => _heightCm = value),
+      ),
+      onCancel: _cancel,
       onSubmit: _submit,
+    );
+  }
+}
+
+class _ProfileHeightStepperControls extends StatelessWidget {
+  const _ProfileHeightStepperControls({
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final int value;
+  final bool enabled;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final canDecrease = enabled && value > minimumHeightCm;
+    final canIncrease = enabled && value < maximumHeightCm;
+    return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        CatchNumberStepper(
-          value: _heightCm,
-          min: minimumHeightCm,
-          max: maximumHeightCm,
-          enabled: !isSaving,
-          decreaseTooltip: 'Decrease height',
-          increaseTooltip: 'Increase height',
-          formatValue: (value) => '${value.round()} cm',
-          onChanged: (value) => setState(() => _heightCm = value.round()),
+        _ProfileHeightStepButton(
+          tooltip: 'Decrease height',
+          icon: Icons.remove_rounded,
+          enabled: canDecrease,
+          onPressed: () => onChanged(value - 1),
+        ),
+        gapW4,
+        _ProfileHeightStepButton(
+          tooltip: 'Increase height',
+          icon: Icons.add_rounded,
+          enabled: canIncrease,
+          onPressed: () => onChanged(value + 1),
         ),
       ],
+    );
+  }
+}
+
+class _ProfileHeightStepButton extends StatelessWidget {
+  const _ProfileHeightStepButton({
+    required this.tooltip,
+    required this.icon,
+    required this.enabled,
+    required this.onPressed,
+  });
+
+  final String tooltip;
+  final IconData icon;
+  final bool enabled;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Tooltip(
+      message: tooltip,
+      child: Material(
+        color: t.raised,
+        shape: const CircleBorder(),
+        child: InkResponse(
+          onTap: enabled ? onPressed : null,
+          radius: Sizes.p18,
+          customBorder: const CircleBorder(),
+          child: SizedBox.square(
+            dimension: 36,
+            child: Icon(
+              icon,
+              size: 21,
+              color: enabled ? t.ink : t.ink3.withValues(alpha: 0.45),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
@@ -526,40 +848,37 @@ class _ProfileInlineSingleChoiceEntryEditorState<T extends Labelled>
         .where((value) => value != _selected)
         .toList(growable: false);
 
-    return ProfileInlineDisclosure(
+    return ProfileInlineFieldScaffold(
+      icon: widget.icon,
+      label: widget.label,
+      value: widget.value,
       isExpanded: widget.isExpanded,
-      header: ProfileInfoTile(
-        icon: widget.icon,
-        label: widget.label,
-        value: widget.value,
-        onTap: isSaving ? null : widget.onTap,
-        isExpanded: widget.isExpanded,
+      onTap: widget.onTap,
+      isSaving: isSaving,
+      isAddAffordance: widget.isAddAffordance,
+      animateValueContent: false,
+      valueContent: _ProfileSingleChipValueEditor<T>(
+        emptyValue: widget.label,
+        displayValue: widget.value,
+        isEditing: widget.isExpanded,
+        selected: _selected,
+        enabled: !isSaving,
         isAddAffordance: widget.isAddAffordance,
-        valueEditor: widget.isExpanded
-            ? _ProfileSingleChipValueEditor<T>(
-                emptyValue: widget.label,
-                selected: _selected,
-                enabled: !isSaving,
-                allowEmptySelection: widget.allowEmptySelection,
-                onSelectedTap: _toggleSelectedValue,
-              )
-            : null,
+        allowEmptySelection: widget.allowEmptySelection,
+        onSelectedTap: _toggleSelectedValue,
       ),
-      body: _InlineEditorPanel(
-        saveError: buildSaveError(),
-        isSaving: isSaving,
-        onCancel: widget.onCancel,
-        onSubmit: _submit,
-        children: [
-          if (availableValues.isNotEmpty)
-            _ProfileChipOptions<T>(
-              values: availableValues,
-              enabled: !isSaving,
-              selected: const {},
-              onTap: _toggleSelectedValue,
-            ),
-        ],
-      ),
+      saveError: buildSaveError(),
+      onCancel: widget.onCancel,
+      onSubmit: _submit,
+      editorChildren: [
+        if (availableValues.isNotEmpty)
+          _ProfileChipOptions<T>(
+            values: availableValues,
+            enabled: !isSaving,
+            selected: const {},
+            onTap: _toggleSelectedValue,
+          ),
+      ],
     );
   }
 }
@@ -649,39 +968,36 @@ class _ProfileInlineMultiChoiceEntryEditorState<T extends Labelled>
         .where((value) => !_selected.contains(value))
         .toList(growable: false);
 
-    return ProfileInlineDisclosure(
+    return ProfileInlineFieldScaffold(
+      icon: widget.icon,
+      label: widget.label,
+      value: widget.value,
       isExpanded: widget.isExpanded,
-      header: ProfileInfoTile(
-        icon: widget.icon,
-        label: widget.label,
-        value: widget.value,
-        onTap: isSaving ? null : widget.onTap,
-        isExpanded: widget.isExpanded,
+      onTap: widget.onTap,
+      isSaving: isSaving,
+      isAddAffordance: widget.isAddAffordance,
+      animateValueContent: false,
+      valueContent: _ProfileMultiChipValueEditor<T>(
+        emptyValue: widget.label,
+        displayValue: widget.value,
+        isEditing: widget.isExpanded,
+        selected: _selected,
+        enabled: !isSaving,
         isAddAffordance: widget.isAddAffordance,
-        valueEditor: widget.isExpanded
-            ? _ProfileMultiChipValueEditor<T>(
-                emptyValue: widget.label,
-                selected: _selected,
-                enabled: !isSaving,
-                onSelectedTap: _toggleSelectedValue,
-              )
-            : null,
+        onSelectedTap: _toggleSelectedValue,
       ),
-      body: _InlineEditorPanel(
-        saveError: buildSaveError(),
-        isSaving: isSaving,
-        onCancel: widget.onCancel,
-        onSubmit: _submit,
-        children: [
-          if (availableValues.isNotEmpty)
-            _ProfileChipOptions<T>(
-              values: availableValues,
-              enabled: !isSaving,
-              selected: const {},
-              onTap: _toggleSelectedValue,
-            ),
-        ],
-      ),
+      saveError: buildSaveError(),
+      onCancel: widget.onCancel,
+      onSubmit: _submit,
+      editorChildren: [
+        if (availableValues.isNotEmpty)
+          _ProfileChipOptions<T>(
+            values: availableValues,
+            enabled: !isSaving,
+            selected: const {},
+            onTap: _toggleSelectedValue,
+          ),
+      ],
     );
   }
 }
@@ -690,21 +1006,34 @@ class _ProfileSingleChipValueEditor<T extends Labelled>
     extends StatelessWidget {
   const _ProfileSingleChipValueEditor({
     required this.emptyValue,
+    required this.displayValue,
+    required this.isEditing,
     required this.selected,
     required this.enabled,
+    required this.isAddAffordance,
     required this.allowEmptySelection,
     required this.onSelectedTap,
   });
 
   final String emptyValue;
+  final String displayValue;
+  final bool isEditing;
   final T? selected;
   final bool enabled;
+  final bool isAddAffordance;
   final bool allowEmptySelection;
   final ValueChanged<T> onSelectedTap;
 
   @override
   Widget build(BuildContext context) {
     final selected = this.selected;
+    if (!isEditing) {
+      return _ProfileChipPlaceholder(
+        value: displayValue,
+        isAddAffordance: isAddAffordance,
+      );
+    }
+
     if (selected == null) {
       return _ProfileChipPlaceholder(value: emptyValue, isAddAffordance: true);
     }
@@ -724,18 +1053,31 @@ class _ProfileSingleChipValueEditor<T extends Labelled>
 class _ProfileMultiChipValueEditor<T extends Labelled> extends StatelessWidget {
   const _ProfileMultiChipValueEditor({
     required this.emptyValue,
+    required this.displayValue,
+    required this.isEditing,
     required this.selected,
     required this.enabled,
+    required this.isAddAffordance,
     required this.onSelectedTap,
   });
 
   final String emptyValue;
+  final String displayValue;
+  final bool isEditing;
   final Set<T> selected;
   final bool enabled;
+  final bool isAddAffordance;
   final ValueChanged<T> onSelectedTap;
 
   @override
   Widget build(BuildContext context) {
+    if (!isEditing) {
+      return _ProfileChipPlaceholder(
+        value: displayValue,
+        isAddAffordance: isAddAffordance,
+      );
+    }
+
     if (selected.isEmpty) {
       return _ProfileChipPlaceholder(value: emptyValue, isAddAffordance: true);
     }
@@ -813,9 +1155,13 @@ class _ProfileChipOptions<T extends Labelled> extends StatelessWidget {
 class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
   const ProfileInlineRangeEditor({
     super.key,
+    required this.icon,
     required this.title,
+    required this.value,
     required this.currentMin,
     required this.currentMax,
+    required this.isExpanded,
+    required this.onTap,
     required this.sliderMin,
     required this.sliderMax,
     required this.divisions,
@@ -828,9 +1174,13 @@ class ProfileInlineRangeEditor extends ConsumerStatefulWidget {
     this.savedCurrentMax,
   });
 
+  final IconData icon;
   final String title;
+  final String value;
   final int currentMin;
   final int currentMax;
+  final bool isExpanded;
+  final VoidCallback onTap;
   final double sliderMin;
   final double sliderMax;
   final int divisions;
@@ -855,6 +1205,29 @@ class _ProfileInlineRangeEditorState
     widget.currentMax.toDouble(),
   );
 
+  @override
+  void didUpdateWidget(covariant ProfileInlineRangeEditor oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (!widget.isExpanded) return;
+    if (oldWidget.currentMin != widget.currentMin ||
+        oldWidget.currentMax != widget.currentMax) {
+      _range = RangeValues(
+        widget.currentMin.toDouble(),
+        widget.currentMax.toDouble(),
+      );
+    }
+  }
+
+  void _cancel() {
+    setState(() {
+      _range = RangeValues(
+        widget.currentMin.toDouble(),
+        widget.currentMax.toDouble(),
+      );
+    });
+    widget.onCancel();
+  }
+
   Future<void> _submit() async {
     if (isSaving) return;
     final newMin = _range.start.round();
@@ -862,7 +1235,7 @@ class _ProfileInlineRangeEditorState
         widget.saveEndValue?.call(_range.end.round()) ?? _range.end.round();
     if (newMin == widget.currentMin &&
         newMax == (widget.savedCurrentMax ?? widget.currentMax)) {
-      widget.onCancel();
+      _cancel();
       return;
     }
     final saved = await saveFields({
@@ -874,23 +1247,27 @@ class _ProfileInlineRangeEditorState
 
   @override
   Widget build(BuildContext context) {
-    return _InlineEditorPanel(
-      saveError: buildSaveError(),
+    final displayValue = widget.isExpanded
+        ? '${widget.labelText(_range.start)} - ${widget.labelText(_range.end)}'
+        : widget.value;
+    return ProfileInlineFieldScaffold(
+      icon: widget.icon,
+      label: widget.title,
+      value: displayValue,
+      isExpanded: widget.isExpanded,
+      onTap: widget.onTap,
       isSaving: isSaving,
-      onCancel: widget.onCancel,
+      animateValueContent: false,
+      saveError: buildSaveError(),
+      contentActionGap: Sizes.p2,
+      onCancel: _cancel,
       onSubmit: _submit,
-      children: [
+      editorChildren: [
         CatchRangeSlider(
           min: widget.sliderMin,
           max: widget.sliderMax,
           divisions: widget.divisions,
           values: _range,
-          minLabel: widget.labelText(widget.sliderMin),
-          maxLabel: widget.labelText(widget.sliderMax),
-          labels: RangeLabels(
-            widget.labelText(_range.start),
-            widget.labelText(_range.end),
-          ),
           onChanged: isSaving
               ? null
               : (values) => setState(() => _range = values),
@@ -905,17 +1282,24 @@ class _InlineEditorActions extends StatelessWidget {
     required this.isSaving,
     required this.onCancel,
     required this.onSubmit,
+    this.leading,
   });
 
   final bool isSaving;
   final VoidCallback onCancel;
   final VoidCallback onSubmit;
+  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
       children: [
+        if (leading != null)
+          Expanded(
+            child: Align(alignment: Alignment.centerLeft, child: leading),
+          )
+        else
+          const Spacer(),
         CatchTextButton(
           label: 'Cancel',
           onPressed: isSaving ? null : onCancel,

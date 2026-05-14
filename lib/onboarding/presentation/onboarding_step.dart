@@ -4,6 +4,7 @@ enum OnboardingStep {
   genderInterest,
   instagram,
   photos,
+  prompts,
   runningPrefs;
 
   static OnboardingStep? fromIndex(int index) {
@@ -22,6 +23,7 @@ extension OnboardingStepX on OnboardingStep {
       OnboardingStep.genderInterest => 'Gender',
       OnboardingStep.instagram => 'Instagram',
       OnboardingStep.photos => 'Photos',
+      OnboardingStep.prompts => 'Prompts',
       OnboardingStep.runningPrefs => 'Running style',
     };
   }

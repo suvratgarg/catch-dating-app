@@ -8,7 +8,7 @@ class DashboardSliverHeader extends CatchSliverHeader {
   DashboardSliverHeader({
     required String eyebrow,
     required String title,
-    required Widget avatar,
+    Widget? avatar,
     TabController? controller,
   }) : super(
          title: _DashboardHeaderContent(
@@ -52,12 +52,12 @@ class _DashboardHeaderContent extends StatelessWidget {
   const _DashboardHeaderContent({
     required this.eyebrow,
     required this.title,
-    required this.avatar,
+    this.avatar,
   });
 
   final String eyebrow;
   final String title;
-  final Widget avatar;
+  final Widget? avatar;
 
   @override
   Widget build(BuildContext context) {
@@ -98,8 +98,10 @@ class _DashboardHeaderContent extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: CatchSpacing.s3),
-            avatar,
+            if (avatar != null) ...[
+              const SizedBox(width: CatchSpacing.s3),
+              avatar!,
+            ],
           ],
         ),
       ),

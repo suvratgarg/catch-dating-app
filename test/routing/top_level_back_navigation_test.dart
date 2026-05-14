@@ -71,7 +71,7 @@ void main() {
       child: const RunMapScreen(enableNetworkTiles: false),
     );
 
-    expect(find.text('Map view'), findsOneWidget);
+    expect(find.text('Map view'), findsNothing);
     expect(find.byTooltip('Back'), findsOneWidget);
 
     await tester.tap(find.byTooltip('Back'));

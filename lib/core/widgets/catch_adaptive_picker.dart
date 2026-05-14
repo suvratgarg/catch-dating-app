@@ -52,7 +52,16 @@ Future<TimeOfDay?> showCatchTimePicker({
   String title = 'Select time',
 }) {
   if (!prefersCupertinoControls()) {
-    return showTimePicker(context: context, initialTime: initialTime);
+    return showTimePicker(
+      context: context,
+      initialTime: initialTime,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: false),
+          child: child!,
+        );
+      },
+    );
   }
 
   var selectedTime = initialTime;
@@ -74,7 +83,7 @@ Future<TimeOfDay?> showCatchTimePicker({
       child: CupertinoDatePicker(
         mode: CupertinoDatePickerMode.time,
         initialDateTime: initialDateTime,
-        use24hFormat: MediaQuery.alwaysUse24HourFormatOf(context),
+        use24hFormat: false,
         onDateTimeChanged: (value) {
           selectedTime = TimeOfDay.fromDateTime(value);
         },

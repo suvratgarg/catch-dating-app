@@ -4,9 +4,11 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/run_clubs/presentation/run_club_name_lookup.dart';
 import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -42,6 +44,12 @@ class SavedRunsScreen extends ConsumerWidget {
 
             final now = DateTime.now();
             final orderedRuns = _orderSavedRuns(runs, now: now);
+            final clubNamesAsync = ref.watch(
+              runClubNameLookupProvider(
+                RunClubNameLookupQuery(orderedRuns.map((run) => run.runClubId)),
+              ),
+            );
+            final clubNames = clubNamesAsync.asData?.value;
 
             return CustomScrollView(
               slivers: [
@@ -59,14 +67,29 @@ class SavedRunsScreen extends ConsumerWidget {
                     ),
                   ),
                 ),
-                RunAgendaSliverList(
-                  runs: orderedRuns,
-                  today: DateUtils.dateOnly(now),
-                  preserveInputOrder: true,
-                  badgeLabelBuilder: (run) =>
-                      run.startTime.isAfter(now) ? 'SAVED' : 'PAST',
-                  onRunSelected: (run) => _openRunDetail(context, run),
-                ),
+                if (clubNames == null)
+                  SliverFillRemaining(
+                    child: clubNamesAsync.hasError
+                        ? const _SavedRunsMessage(
+                            title: 'Saved runs unavailable',
+                            message: 'Run club names could not be loaded.',
+                          )
+                        : const CatchLoadingIndicator(),
+                  )
+                else
+                  RunAgendaSliverList(
+                    runs: orderedRuns,
+                    showClubName: true,
+                    clubNameBuilder: (run) => clubNames[run.runClubId],
+                    today: DateUtils.dateOnly(now),
+                    preserveInputOrder: true,
+                    badgeLabelBuilder: (run) =>
+                        run.startTime.isAfter(now) ? 'SAVED' : 'PAST',
+                    statusBuilder: (run) => run.startTime.isAfter(now)
+                        ? RunTileStatus.saved
+                        : RunTileStatus.past,
+                    onRunSelected: (run) => _openRunDetail(context, run),
+                  ),
               ],
             );
           },

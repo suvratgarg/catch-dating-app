@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
@@ -197,8 +198,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
         }
         _scheduleErrorText = null;
         _selectedStartTime = picked;
-        _startTimeController.text =
-            '${picked.hour.toString().padLeft(2, '0')}:${picked.minute.toString().padLeft(2, '0')}';
+        _startTimeController.text = _formatClockTime(picked);
       });
     }
   }
@@ -416,8 +416,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
           hour: draft.selectedStartHour!,
           minute: draft.selectedStartMinute!,
         );
-        _startTimeController.text =
-            '${draft.selectedStartHour.toString().padLeft(2, '0')}:${draft.selectedStartMinute.toString().padLeft(2, '0')}';
+        _startTimeController.text = _formatClockTime(_selectedStartTime!);
       }
       _durationMinutes = draft.durationMinutes;
 
@@ -520,6 +519,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     2 => 'When is the run?',
     _ => 'Review & rules',
   };
+
+  static String _formatClockTime(TimeOfDay time) {
+    return AppTimeFormatters.clockTime(hour: time.hour, minute: time.minute);
+  }
 
   @override
   Widget build(BuildContext context) {

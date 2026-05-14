@@ -4,10 +4,15 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/format_utils.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_info_section.dart';
@@ -112,6 +117,9 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
   Widget build(BuildContext context) {
     final user = widget.user;
     final uploadState = widget.uploadState;
+    final profileQuality = profileQualitySummary(
+      publicProfileFromUserProfile(user),
+    );
     final basics = [
       _textEntry(
         context: context,
@@ -182,18 +190,21 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         },
       ),
       ProfileInfoEntry(
-        icon: Icons.height_outlined,
-        label: 'Height',
-        value: user.height != null ? '${user.height} cm' : 'Height',
-        onTap: () => _toggleField('height'),
-        isExpanded: _isExpanded('height'),
-        editor: ProfileInlineHeightEditor(
+        builder: (_) => ProfileInlineHeightEditor(
           key: const ValueKey('inline-height-editor'),
+          icon: Icons.height_outlined,
+          label: 'Height',
+          value: user.height != null ? '${user.height} cm' : 'Height',
           currentValue: user.height,
+          isExpanded: _isExpanded('height'),
+          isAddAffordance: user.height == null,
+          onTap: () => _toggleField('height'),
           onSaved: _collapseField,
           onCancel: _collapseField,
         ),
-        isAddAffordance: user.height == null,
+        icon: Icons.height_outlined,
+        label: 'Height',
+        value: user.height != null ? '${user.height} cm' : 'Height',
       ),
     ];
     final background = [
@@ -305,16 +316,15 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     ];
     final running = [
       ProfileInfoEntry(
-        icon: Icons.speed_outlined,
-        label: 'Pace range',
-        value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
-        onTap: () => _toggleField('paceRange'),
-        isExpanded: _isExpanded('paceRange'),
-        editor: ProfileInlineRangeEditor(
+        builder: (_) => ProfileInlineRangeEditor(
           key: const ValueKey('inline-pace-range-editor'),
+          icon: Icons.speed_outlined,
           title: 'Pace range',
+          value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
           currentMin: user.paceMinSecsPerKm,
           currentMax: user.paceMaxSecsPerKm,
+          isExpanded: _isExpanded('paceRange'),
+          onTap: () => _toggleField('paceRange'),
           sliderMin: 240,
           sliderMax: 540,
           divisions: 20,
@@ -324,6 +334,9 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           onSaved: _collapseField,
           onCancel: _collapseField,
         ),
+        icon: Icons.speed_outlined,
+        label: 'Pace range',
+        value: formatPaceRange(user.paceMinSecsPerKm, user.paceMaxSecsPerKm),
       ),
       _multiEnumEntry<PreferredDistance>(
         context: context,
@@ -343,24 +356,41 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         fieldName: 'runningReasons',
         placeholder: 'Why I run',
       ),
+      _multiEnumEntry<PreferredRunTime>(
+        context: context,
+        icon: Icons.wb_twilight_outlined,
+        label: 'Favorite run times',
+        values: PreferredRunTime.values,
+        selected: user.preferredRunTimes,
+        fieldName: 'preferredRunTimes',
+        placeholder: 'Favorite run times',
+      ),
     ];
-    final bio = _textEntry(
-      context: context,
-      icon: Icons.format_quote_rounded,
-      label: 'Bio',
-      value: user.bio.isNotEmpty
-          ? user.bio
-          : 'Add a bio to tell runners about yourself',
-      currentValue: user.bio,
-      fieldName: 'bio',
-      isAddAffordance: user.bio.isEmpty,
-      maxLines: 4,
-      minLines: 3,
-      keyboardType: TextInputType.multiline,
-      validator: validateOptionalBio,
-    );
+    final prompts = defaultProfilePromptIds
+        .map((promptId) {
+          final definition = profilePromptDefinition(promptId);
+          return _profilePromptEntry(
+            context: context,
+            user: user,
+            definition: definition,
+          );
+        })
+        .toList(growable: false);
+    final photoCaptions = user.photoUrls.indexed
+        .map((indexedPhoto) {
+          final index = indexedPhoto.$1;
+          return _photoPromptEntry(
+            context: context,
+            user: user,
+            photoIndex: index,
+            definition: defaultPhotoPromptForIndex(index),
+          );
+        })
+        .toList(growable: false);
 
     return widget.builder(context, [
+      _ProfileQualityGuidanceCard(summary: profileQuality),
+      gapH14,
       PhotoGrid(
         photoUrls: user.photoUrls,
         loadingIndices: uploadState.loadingIndices,
@@ -375,8 +405,13 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         },
       ),
       gapH14,
-      SectionHeader(title: 'Bio'),
-      ProfileInfoSection(entries: [bio], grouped: true),
+      SectionHeader(title: 'Profile prompts'),
+      ProfileInfoSection(entries: prompts, grouped: true),
+      if (photoCaptions.isNotEmpty) ...[
+        gapH20,
+        SectionHeader(title: 'Photo captions'),
+        ProfileInfoSection(entries: photoCaptions, grouped: true),
+      ],
       gapH20,
       SectionHeader(title: 'About'),
       ProfileInfoSection(entries: basics, grouped: true),
@@ -406,32 +441,42 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     required String value,
     required String fieldName,
     String? title,
+    String? expansionKey,
     String? currentValue,
     Object? currentFieldValue,
     bool isAddAffordance = false,
     TextInputType? keyboardType,
     TextCapitalization textCapitalization = TextCapitalization.sentences,
     Iterable<String>? autofillHints,
-    int maxLines = 1,
+    int? maxLines = 1,
     int? minLines,
+    int? maxLength,
+    bool showCounter = false,
+    bool collapseStackedBlankLines = false,
+    String Function(String value)? normalizeInput,
     FormFieldValidator<String>? validator,
     Object? Function(String value)? toFieldValue,
   }) {
     final editorTitle = title ?? label;
+    final editorKey = expansionKey ?? fieldName;
     return ProfileInfoEntry(
       builder: (_) => ProfileInlineTextEntryEditor(
-        key: ValueKey('inline-$fieldName-entry-editor'),
+        key: ValueKey('inline-$editorKey-entry-editor'),
         icon: icon,
         label: label,
         value: value,
         currentValue: currentValue ?? value,
         currentFieldValue: currentFieldValue ?? currentValue ?? value,
         fieldName: fieldName,
-        isExpanded: _isExpanded(fieldName),
+        isExpanded: _isExpanded(editorKey),
         isAddAffordance: isAddAffordance,
-        onTap: () => _toggleField(fieldName),
+        onTap: () => _toggleField(editorKey),
         maxLines: maxLines,
         minLines: minLines,
+        maxLength: maxLength,
+        showCounter: showCounter,
+        collapseStackedBlankLines: collapseStackedBlankLines,
+        normalizeInput: normalizeInput,
         keyboardType: keyboardType,
         textCapitalization: textCapitalization,
         autofillHints: autofillHints,
@@ -444,6 +489,74 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       label: editorTitle,
       value: value,
       isAddAffordance: isAddAffordance,
+    );
+  }
+
+  ProfileInfoEntry _profilePromptEntry({
+    required BuildContext context,
+    required UserProfile user,
+    required ProfilePromptDefinition definition,
+  }) {
+    final answer = profilePromptById(user.profilePrompts, definition.id);
+    final text = answer?.answer ?? '';
+    return _textEntry(
+      context: context,
+      icon: Icons.format_quote_rounded,
+      label: definition.title,
+      value: text.isNotEmpty ? text : definition.placeholder,
+      currentValue: text,
+      fieldName: 'profilePrompts',
+      expansionKey: 'profilePrompt:${definition.id}',
+      isAddAffordance: text.isEmpty,
+      maxLines: null,
+      maxLength: maximumProfilePromptAnswerLength,
+      showCounter: true,
+      collapseStackedBlankLines: true,
+      normalizeInput: normalizeProfilePromptAnswer,
+      keyboardType: TextInputType.multiline,
+      validator: validateOptionalProfilePromptAnswer,
+      toFieldValue: (value) => profilePromptsToJson(
+        replaceProfilePromptAnswer(
+          current: user.profilePrompts,
+          definition: definition,
+          answer: value,
+        ),
+      ),
+    );
+  }
+
+  ProfileInfoEntry _photoPromptEntry({
+    required BuildContext context,
+    required UserProfile user,
+    required int photoIndex,
+    required PhotoPromptDefinition definition,
+  }) {
+    final answer = photoPromptByIndex(user.photoPrompts, photoIndex);
+    final caption = answer?.caption ?? '';
+    return _textEntry(
+      context: context,
+      icon: Icons.photo_camera_outlined,
+      label: definition.title,
+      value: caption.isNotEmpty ? caption : definition.placeholder,
+      currentValue: caption,
+      fieldName: 'photoPrompts',
+      expansionKey: 'photoPrompt:$photoIndex',
+      isAddAffordance: caption.isEmpty,
+      maxLines: 2,
+      maxLength: maximumPhotoPromptCaptionLength,
+      showCounter: true,
+      collapseStackedBlankLines: true,
+      normalizeInput: normalizePhotoPromptCaption,
+      keyboardType: TextInputType.multiline,
+      validator: validateOptionalPhotoPromptCaption,
+      toFieldValue: (value) => photoPromptsToJson(
+        replacePhotoPromptAnswer(
+          current: user.photoPrompts,
+          photoIndex: photoIndex,
+          definition: definition,
+          caption: value,
+        ),
+      ),
     );
   }
 
@@ -514,6 +627,109 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       label: title ?? label,
       value: displayValue,
       isAddAffordance: isEmpty && isAddAffordanceWhenEmpty,
+    );
+  }
+}
+
+class _ProfileQualityGuidanceCard extends StatelessWidget {
+  const _ProfileQualityGuidanceCard({required this.summary});
+
+  final ProfileQualitySummary summary;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final progress = summary.score / 100;
+    final suggestions = summary.suggestions.take(2).toList(growable: false);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  'Profile strength',
+                  style: CatchTextStyles.labelL(context, color: t.ink2),
+                ),
+              ),
+              Text(
+                summary.isStrong ? 'Strong' : '${summary.score}%',
+                style: CatchTextStyles.titleS(context, color: t.ink),
+              ),
+            ],
+          ),
+          gapH10,
+          ClipRRect(
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
+            child: LinearProgressIndicator(
+              minHeight: 7,
+              value: progress,
+              backgroundColor: t.line.withValues(alpha: 0.7),
+              valueColor: AlwaysStoppedAnimation<Color>(
+                summary.isStrong ? t.success : t.primary,
+              ),
+            ),
+          ),
+          gapH10,
+          Text(
+            '${summary.completedItems} of ${summary.totalItems} profile basics complete',
+            style: CatchTextStyles.bodyS(context, color: t.ink2),
+          ),
+          if (suggestions.isNotEmpty) ...[
+            gapH12,
+            for (final suggestion in suggestions.indexed) ...[
+              _ProfileQualitySuggestionRow(suggestion: suggestion.$2),
+              if (suggestion.$1 < suggestions.length - 1) gapH8,
+            ],
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileQualitySuggestionRow extends StatelessWidget {
+  const _ProfileQualitySuggestionRow({required this.suggestion});
+
+  final ProfileQualitySuggestion suggestion;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 2),
+          child: Icon(
+            Icons.add_circle_outline_rounded,
+            size: 16,
+            color: t.primary,
+          ),
+        ),
+        gapW8,
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                suggestion.title,
+                style: CatchTextStyles.labelL(context, color: t.ink),
+              ),
+              gapH2,
+              Text(
+                suggestion.detail,
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }

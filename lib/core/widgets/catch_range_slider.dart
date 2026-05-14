@@ -14,7 +14,6 @@ class CatchRangeSlider extends StatelessWidget {
     this.min = 0,
     this.max = 100,
     this.divisions,
-    this.labels,
     this.minLabel,
     this.maxLabel,
     this.semanticFormatterCallback,
@@ -25,7 +24,6 @@ class CatchRangeSlider extends StatelessWidget {
   final double min;
   final double max;
   final int? divisions;
-  final RangeLabels? labels;
   final String? minLabel;
   final String? maxLabel;
   final SemanticFormatterCallback? semanticFormatterCallback;
@@ -45,7 +43,6 @@ class CatchRangeSlider extends StatelessWidget {
         max: max,
         divisions: divisions,
         values: values,
-        labels: labels,
         semanticFormatterCallback: semanticFormatterCallback,
         onChanged: onChanged,
       ),

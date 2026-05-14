@@ -20,6 +20,7 @@ import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/run_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
 import 'package:flutter/material.dart';
@@ -348,7 +349,13 @@ UserProfile _user() {
     email: 'aarav@example.com',
     name: 'Aarav Mehta',
     dateOfBirth: DateTime(1996, 5, 8),
-    bio: 'Coffee after a steady 10K is the ideal Sunday.',
+    profilePrompts: const [
+      ProfilePromptAnswer(
+        promptId: profilePromptPerfectRunId,
+        prompt: 'A perfect run with me looks like...',
+        answer: 'Coffee after a steady 10K is the ideal Sunday.',
+      ),
+    ],
     gender: Gender.man,
     phoneNumber: '+919876543210',
     profileComplete: true,
@@ -371,8 +378,14 @@ PublicProfile _publicProfile(String uid, String name) {
     uid: uid,
     name: name,
     age: 27,
-    bio: 'Steady miles, good coffee, and Sunday long runs.',
     gender: Gender.woman,
+    profilePrompts: const [
+      ProfilePromptAnswer(
+        promptId: profilePromptPerfectRunId,
+        prompt: 'A perfect run with me looks like...',
+        answer: 'Steady miles, good coffee, and Sunday long runs.',
+      ),
+    ],
   );
 }
 

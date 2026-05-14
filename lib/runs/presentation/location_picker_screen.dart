@@ -9,6 +9,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/locations/data/places_repository.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/locations/presentation/google_maps_coordinate_adapter.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/map_overlay_controls.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
@@ -60,18 +61,9 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
     return Scaffold(
-      appBar: CatchTopBar(
-        title: 'Pick starting point',
-        actions: [
-          CatchTopBarTextAction(
-            label: 'Confirm',
-            onPressed: _selected == null
-                ? null
-                : () => Navigator.of(context).pop(_selected),
-          ),
-        ],
-      ),
       body: Stack(
         children: [
           gmaps.GoogleMap(
@@ -97,11 +89,20 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             onMapCreated: (controller) => _mapController = controller,
             onTap: (point) => _setSelectedPoint(point.toLocationCoordinate()),
           ),
-          Positioned(
-            top: 16,
-            left: 16,
-            right: 16,
-            child: _PlaceSearchPanel(
+          MapOverlayControls(
+            trailing: CatchSurface(
+              tone: CatchSurfaceTone.raised,
+              elevation: CatchSurfaceElevation.overlay,
+              borderColor: t.line,
+              radius: CatchRadius.pill,
+              child: CatchTopBarTextAction(
+                label: 'Confirm',
+                onPressed: _selected == null
+                    ? null
+                    : () => Navigator.of(context).pop(_selected),
+              ),
+            ),
+            below: _PlaceSearchPanel(
               controller: _searchController,
               suggestions: _suggestions,
               searching: _searching,

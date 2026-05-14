@@ -6,17 +6,14 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/person_avatar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/catches_callout.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/next_run_hero.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/review_prompt_card.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/run_arrival_action_card.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/run_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/run_clubs/presentation/run_club_name_lookup.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -34,9 +31,6 @@ class DashboardFull extends ConsumerWidget {
   });
 
   static const scrollViewKey = ValueKey('dashboard-full-scroll-view');
-  static const profileAvatarButtonKey = ValueKey(
-    'dashboard-profile-avatar-button',
-  );
 
   final UserProfile user;
   final List<Run> signedUpRuns;
@@ -76,26 +70,6 @@ class DashboardFull extends ConsumerWidget {
             ...DashboardSliverHeader(
               eyebrow: dayCity(cityLabel(user.city)).toUpperCase(),
               title: '${greeting()}, $firstName',
-              avatar: Tooltip(
-                message: 'Open profile',
-                child: Semantics(
-                  button: true,
-                  label: 'Open profile',
-                  child: InkResponse(
-                    key: profileAvatarButtonKey,
-                    onTap: () => context.goNamed(Routes.profileScreen.name),
-                    radius: 26,
-                    customBorder: const CircleBorder(),
-                    child: PersonAvatar(
-                      size: 42,
-                      name: user.publicDisplayName,
-                      imageUrl: user.primaryPhotoThumbnailUrl,
-                      borderWidth: 2,
-                      borderColor: t.primary,
-                    ),
-                  ),
-                ),
-              ),
             ).buildSlivers(context),
             DashboardFullSliverBody(viewModel: viewModel, user: user),
           ],
@@ -105,7 +79,7 @@ class DashboardFull extends ConsumerWidget {
   }
 }
 
-class DashboardFullSliverBody extends StatelessWidget {
+class DashboardFullSliverBody extends ConsumerWidget {
   const DashboardFullSliverBody({
     super.key,
     required this.viewModel,
@@ -116,7 +90,19 @@ class DashboardFullSliverBody extends StatelessWidget {
   final UserProfile user;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final focusRuns = [
+      ...viewModel.upcomingRuns,
+      if (viewModel.activeSwipeRun != null) viewModel.activeSwipeRun!,
+      if (viewModel.pendingReviewRun != null) viewModel.pendingReviewRun!,
+    ];
+    final clubNamesAsync = ref.watch(
+      runClubNameLookupProvider(
+        RunClubNameLookupQuery(focusRuns.map((run) => run.runClubId)),
+      ),
+    );
+    final clubNames = clubNamesAsync.asData?.value;
+
     return SliverPadding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
@@ -126,30 +112,23 @@ class DashboardFullSliverBody extends StatelessWidget {
       ),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
-          if (viewModel.arrivalAction != null) ...[
-            RunArrivalActionCard(action: viewModel.arrivalAction!),
+          if (focusRuns.isNotEmpty) ...[
+            RunFocusRail(
+              upcomingRuns: viewModel.upcomingRuns,
+              arrivalAction: viewModel.arrivalAction,
+              activeSwipeRun: viewModel.activeSwipeRun,
+              pendingReviewRun: viewModel.pendingReviewRun,
+              reviewer: user,
+              clubNameBuilder: (run) => clubNames?[run.runClubId],
+            ),
             gapH18,
           ],
           if (viewModel.hostRunTools.isNotEmpty) ...[
             HostToolsRail(tools: viewModel.hostRunTools),
             gapH18,
           ],
-          if (viewModel.upcomingRuns.isNotEmpty) ...[
-            UpcomingRunsHero(
-              runs: viewModel.upcomingRuns,
-              viewerInterestedInGenders: user.interestedInGenders,
-              onRunTap: (run) => context.pushNamed(
-                Routes.dashboardRunDetailScreen.name,
-                pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
-              ),
-            ),
-            gapH18,
-          ],
           ..._buildAttendedRunSection(
             attendedRunsSection: viewModel.attendedRunsSection,
-            activeSwipeRun: viewModel.activeSwipeRun,
-            pendingReviewRun: viewModel.pendingReviewRun,
-            user: user,
           ),
           gapH18,
           const QuickActions(),
@@ -163,9 +142,6 @@ class DashboardFullSliverBody extends StatelessWidget {
 
   List<Widget> _buildAttendedRunSection({
     required DashboardSectionModel<List<Run>> attendedRunsSection,
-    required Run? activeSwipeRun,
-    required Run? pendingReviewRun,
-    required UserProfile user,
   }) {
     if (attendedRunsSection.isLoading) {
       return const [
@@ -183,17 +159,7 @@ class DashboardFullSliverBody extends StatelessWidget {
     }
 
     final attendedRuns = attendedRunsSection.data ?? const <Run>[];
-    return [
-      if (activeSwipeRun != null) ...[
-        CatchesCallout(activeRun: activeSwipeRun),
-        gapH14,
-      ],
-      StrideCard(attendedRuns: attendedRuns),
-      if (pendingReviewRun != null) ...[
-        gapH14,
-        ReviewPromptCard(run: pendingReviewRun, reviewer: user),
-      ],
-    ];
+    return [StrideCard(attendedRuns: attendedRuns)];
   }
 
   List<Widget> _buildRecommendedRunsSection({

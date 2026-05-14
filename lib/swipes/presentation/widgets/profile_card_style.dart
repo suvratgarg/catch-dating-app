@@ -35,29 +35,37 @@ class ProfileCardPalette {
   static ProfileCardPalette of(BuildContext context) {
     final t = CatchTokens.of(context);
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final base = isDark ? const Color(0xFF090706) : const Color(0xFF11100E);
-    final surface = isDark ? const Color(0xFF18100D) : const Color(0xFF1C1713);
-    final raised = isDark ? const Color(0xFF241914) : const Color(0xFF2A2019);
+    final base = isDark ? const Color(0xFF120F0C) : const Color(0xFFFFF7EC);
+    final surface = isDark ? const Color(0xFF1B1713) : const Color(0xFFFFFCF7);
+    final raised = isDark ? const Color(0xFF251E19) : const Color(0xFFFFF4E8);
 
     return ProfileCardPalette(
-      background: Color.alphaBlend(t.primary.withValues(alpha: 0.06), base),
+      background: Color.alphaBlend(t.primary.withValues(alpha: 0.04), base),
       surface: surface,
       surfaceRaised: raised,
-      border: Colors.white.withValues(alpha: isDark ? 0.12 : 0.16),
-      textPrimary: const Color(0xFFFFF8F0),
-      textSecondary: const Color(0xFFD8C8B6),
-      textMuted: const Color(0xFF9E8B79),
-      chipFill: Colors.white.withValues(alpha: isDark ? 0.07 : 0.09),
-      chipBorder: Colors.white.withValues(alpha: isDark ? 0.14 : 0.17),
+      border: isDark
+          ? Colors.white.withValues(alpha: 0.11)
+          : const Color(0xFFEADDD0),
+      textPrimary: isDark ? const Color(0xFFFFF8F0) : const Color(0xFF201712),
+      textSecondary: isDark
+          ? const Color(0xFFD8C8B6)
+          : const Color(0xFF665447),
+      textMuted: isDark ? const Color(0xFF9E8B79) : const Color(0xFF9A8777),
+      chipFill: isDark
+          ? Colors.white.withValues(alpha: 0.07)
+          : const Color(0xFFFFF6EC),
+      chipBorder: isDark
+          ? Colors.white.withValues(alpha: 0.14)
+          : const Color(0xFFE7D6C8),
       accent: t.primary,
-      accentSoft: t.primary.withValues(alpha: isDark ? 0.22 : 0.26),
-      shadow: Colors.black.withValues(alpha: isDark ? 0.34 : 0.26),
+      accentSoft: t.primary.withValues(alpha: isDark ? 0.22 : 0.10),
+      shadow: Colors.black.withValues(alpha: isDark ? 0.34 : 0.10),
       photoPlaceholder: LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
         colors: [
-          Color.alphaBlend(t.primary.withValues(alpha: 0.24), raised),
-          Color.alphaBlend(t.accent.withValues(alpha: 0.12), base),
+          Color.alphaBlend(t.primary.withValues(alpha: 0.16), raised),
+          Color.alphaBlend(t.accent.withValues(alpha: 0.08), base),
         ],
       ),
     );

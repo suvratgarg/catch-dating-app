@@ -1,7 +1,12 @@
 import {onDocumentWritten} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {UserProfileDoc, PublicProfileDoc} from "../shared/firestore";
+import {
+  UserProfileDoc,
+  PublicProfileDoc,
+  ProfilePromptAnswer,
+  PhotoPromptAnswer,
+} from "../shared/firestore";
 import {computeAge} from "../shared/dates";
 import {publicAvatarUrl, publicDisplayName} from "../shared/profileProjection";
 
@@ -11,6 +16,11 @@ interface SyncPublicProfileDeps {
 
 const defaultDeps: SyncPublicProfileDeps = {
   firestore: () => admin.firestore(),
+};
+
+const perfectRunPrompt = {
+  promptId: "perfectRun",
+  prompt: "A perfect run with me looks like...",
 };
 
 export const syncPublicProfile = onDocumentWritten(
@@ -67,10 +77,11 @@ export async function syncUserProfileProjectionsHandler(
   const publicProfile: PublicProfileDoc = {
     name: displayName,
     age,
-    bio: user.bio,
+    profilePrompts: normalizeProfilePrompts(user),
     gender: user.gender,
     photoUrls: user.photoUrls ?? [],
     photoThumbnailUrls: user.photoThumbnailUrls ?? [],
+    photoPrompts: normalizePhotoPrompts(user.photoPrompts),
     // Optional fields — omit undefined values so Firestore doesn't store them
     ...(user.city && {city: user.city}),
     ...(user.height !== undefined && {height: user.height}),
@@ -89,6 +100,7 @@ export async function syncUserProfileProjectionsHandler(
     paceMaxSecsPerKm: user.paceMaxSecsPerKm,
     preferredDistances: user.preferredDistances ?? [],
     runningReasons: user.runningReasons ?? [],
+    preferredRunTimes: user.preferredRunTimes ?? [],
   };
 
   logger.info("Syncing public profile", {userId});
@@ -102,6 +114,78 @@ export async function syncUserProfileProjectionsHandler(
       reviewerName: displayName,
     }, deps),
   ]);
+}
+
+/**
+ * Normalizes stored profile prompts and migrates legacy bios into prompt one.
+ * @param {UserProfileDoc} user Private user profile document.
+ * @return {ProfilePromptAnswer[]} Public prompt answers.
+ */
+function normalizeProfilePrompts(
+  user: UserProfileDoc
+): ProfilePromptAnswer[] {
+  const prompts = (user.profilePrompts ?? [])
+    .map((prompt) => ({
+      promptId: prompt.promptId.trim(),
+      prompt: prompt.prompt.trim(),
+      answer: collapseStackedPromptBlankLines(prompt.answer).trim(),
+    }))
+    .filter((prompt) =>
+      prompt.promptId.length > 0 &&
+      prompt.prompt.length > 0 &&
+      prompt.answer.length > 0
+    );
+
+  if (prompts.length > 0) return prompts.slice(0, 3);
+
+  const legacyUser = user as UserProfileDoc & {bio?: string};
+  const legacyBio = collapseStackedPromptBlankLines(
+    legacyUser.bio ?? ""
+  ).trim();
+  if (legacyBio.length === 0) return [];
+
+  return [{
+    ...perfectRunPrompt,
+    answer: legacyBio,
+  }];
+}
+
+/**
+ * Normalizes photo captions into public profile prompt records.
+ * @param {PhotoPromptAnswer[] | undefined} prompts Stored captions.
+ * @return {PhotoPromptAnswer[]} Public photo prompt captions.
+ */
+function normalizePhotoPrompts(
+  prompts: PhotoPromptAnswer[] | undefined
+): PhotoPromptAnswer[] {
+  return (prompts ?? [])
+    .map((prompt) => ({
+      photoIndex: prompt.photoIndex,
+      promptId: prompt.promptId.trim(),
+      prompt: prompt.prompt.trim(),
+      caption: collapseStackedPromptBlankLines(prompt.caption).trim(),
+    }))
+    .filter((prompt) =>
+      Number.isInteger(prompt.photoIndex) &&
+      prompt.photoIndex >= 0 &&
+      prompt.photoIndex < 6 &&
+      prompt.promptId.length > 0 &&
+      prompt.prompt.length > 0 &&
+      prompt.caption.length > 0
+    )
+    .slice(0, 6);
+}
+
+/**
+ * Collapses excessive blank lines in prompt text.
+ * @param {string} value Raw prompt text.
+ * @return {string} Prompt text with at most one empty line in a row.
+ */
+function collapseStackedPromptBlankLines(value: string): string {
+  return value
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/\n[ \t]*\n(?:[ \t]*\n)+/g, "\n\n");
 }
 
 /**

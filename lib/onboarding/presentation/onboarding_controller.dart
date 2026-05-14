@@ -10,6 +10,7 @@ import 'package:catch_dating_app/onboarding/domain/onboarding_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_profile_draft.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/foundation.dart';
@@ -38,6 +39,7 @@ abstract class OnboardingData with _$OnboardingData {
   Gender? get gender => profileDraft.gender;
   List<Gender> get interestedInGenders => profileDraft.interestedInGenders;
   String? get instagramHandle => profileDraft.instagramHandle;
+  List<ProfilePromptAnswer> get profilePrompts => profileDraft.profilePrompts;
 }
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
@@ -58,6 +60,7 @@ class OnboardingController extends _$OnboardingController {
   static const genderInterestStep = OnboardingStep.genderInterest;
   static const instagramStep = OnboardingStep.instagram;
   static const photosStep = OnboardingStep.photos;
+  static const promptsStep = OnboardingStep.prompts;
   static const runningPrefsStep = OnboardingStep.runningPrefs;
 
   static final saveProfileMutation = Mutation<void>();
@@ -106,6 +109,7 @@ class OnboardingController extends _$OnboardingController {
               gender: draft.gender,
               interestedInGenders: draft.interestedInGenders,
               instagramHandle: draft.instagramHandle,
+              profilePrompts: draft.profilePrompts,
             ),
           ),
         );
@@ -190,6 +194,14 @@ class OnboardingController extends _$OnboardingController {
     );
   }
 
+  void setProfilePrompts(List<ProfilePromptAnswer> prompts) {
+    state = state.copyWith(
+      profileDraft: state.profileDraft.copyWith(
+        profilePrompts: normalizeProfilePromptAnswers(prompts),
+      ),
+    );
+  }
+
   void advanceToGenderInterest({
     required String firstName,
     required String lastName,
@@ -214,6 +226,12 @@ class OnboardingController extends _$OnboardingController {
     _saveDraft();
   }
 
+  void advanceToRunningPrefs({required List<ProfilePromptAnswer> prompts}) {
+    setProfilePrompts(prompts);
+    state = state.copyWith(step: OnboardingStep.runningPrefs);
+    _saveDraft();
+  }
+
   Future<void> saveProfile() async {
     final uid = requireSignedInUid(ref, action: 'save profile');
     final draft = _requireProfileDraft();
@@ -235,6 +253,7 @@ class OnboardingController extends _$OnboardingController {
             instagramHandle: (draft.instagramHandle?.trim() ?? '').isEmpty
                 ? null
                 : draft.instagramHandle?.trim(),
+            profilePrompts: draft.profilePrompts,
             profileComplete: false,
           ),
         );
@@ -248,6 +267,7 @@ class OnboardingController extends _$OnboardingController {
     required int paceMaxSecsPerKm,
     required List<PreferredDistance> preferredDistances,
     required List<RunReason> runningReasons,
+    required List<PreferredRunTime> preferredRunTimes,
   }) async {
     final userProfile = ref.read(watchUserProfileProvider).asData?.value;
     if (userProfile == null) {
@@ -264,6 +284,14 @@ class OnboardingController extends _$OnboardingController {
                 .map((e) => e.name)
                 .toList(),
             'runningReasons': runningReasons.map((e) => e.name).toList(),
+            'preferredRunTimes': preferredRunTimes.map((e) => e.name).toList(),
+            'profilePrompts': profilePromptsToJson(
+              normalizeProfilePromptAnswers(
+                state.profilePrompts.isNotEmpty
+                    ? state.profilePrompts
+                    : userProfile.profilePrompts,
+              ),
+            ),
             'profileComplete': true,
           },
         );
@@ -337,13 +365,16 @@ class OnboardingController extends _$OnboardingController {
   }
 
   int _migrateDraftStep(int storedStep, int draftVersion) {
-    if (draftVersion >= 1) return storedStep;
+    if (draftVersion >= 2) return storedStep;
+    if (draftVersion == 1) return storedStep;
     // Legacy draft (version 0) with old 9-step indices:
     //   welcome(0), phone(1), otp(2), nameDob(3), genderInterest(4),
     //   instagram(5), photos(6), runningPrefs(7)
-    // New 6-step indices:
+    // Version 1 removed phone/OTP:
     //   welcome(0), nameDob(1), genderInterest(2), instagram(3),
     //   photos(4), runningPrefs(5)
+    // Version 2 inserts prompts at index 5. Legacy users who were already at
+    // runningPrefs land on prompts so every new completed profile gets prompts.
     if (storedStep <= 0) return 0;
     if (storedStep <= 2) return 0; // phone/otp → welcome (re-enter auth)
     return storedStep - 2;
@@ -369,7 +400,7 @@ class OnboardingController extends _$OnboardingController {
             uid: uid,
             draft: OnboardingDraft(
               step: state.step.index,
-              draftVersion: 1,
+              draftVersion: 2,
               firstName: state.firstName,
               lastName: state.lastName,
               dateOfBirth: state.dateOfBirth,
@@ -378,6 +409,7 @@ class OnboardingController extends _$OnboardingController {
               gender: state.gender,
               interestedInGenders: state.interestedInGenders,
               instagramHandle: state.instagramHandle,
+              profilePrompts: state.profilePrompts,
             ),
           )
           .catchError((Object error, StackTrace stack) {

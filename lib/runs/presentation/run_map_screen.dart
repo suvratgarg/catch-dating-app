@@ -4,10 +4,12 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
+import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_center.dart';
 import 'package:catch_dating_app/runs/presentation/run_map_view_model.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/map_overlay_controls.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_map_sheet.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_pins_map.dart';
 import 'package:flutter/material.dart';
@@ -31,30 +33,33 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
     final viewModelAsync = ref.watch(runMapViewModelProvider);
     final deviceLocation = ref.watch(deviceLocationProvider).asData?.value;
     final selectedCity = ref.watch(selectedRunClubCityProvider);
+    final selectedCityWasUserSelected = ref.watch(
+      selectedRunClubCityWasUserSelectedProvider,
+    );
 
     return Scaffold(
       backgroundColor: t.bg,
-      appBar: const CatchTopBar(title: 'Map view'),
-      body: viewModelAsync.when(
-        loading: () => const CatchLoadingIndicator(),
-        error: (error, _) => CatchErrorState.fromError(
-          error,
-          context: AppErrorContext.run,
-          onRetry: () => ref.invalidate(runMapViewModelProvider),
-        ),
-        data: (viewModel) {
-          final runs = viewModel.runs;
-          final selectedRun = viewModel.selectedRun(_selectedRunId);
-          final mapCenter = resolveRunMapInitialCenter(
-            deviceLocation: deviceLocation,
-            selectedCity: selectedCity,
-            pinnedRuns: viewModel.pinnedRuns,
-          );
+      body: Stack(
+        children: [
+          Positioned.fill(
+            child: viewModelAsync.when(
+              loading: () => const CatchLoadingIndicator(),
+              error: (error, _) => CatchErrorState.fromError(
+                error,
+                context: AppErrorContext.run,
+                onRetry: () => ref.invalidate(runMapViewModelProvider),
+              ),
+              data: (viewModel) {
+                final items = viewModel.effectiveItems;
+                final selectedRun = viewModel.selectedRun(_selectedRunId);
+                final selectedRunCenter = _startingPointFor(selectedRun);
+                final mapCenter = resolveRunMapInitialCenter(
+                  deviceLocation: deviceLocation,
+                  selectedCity: selectedCity,
+                  selectedCityWasUserSelected: selectedCityWasUserSelected,
+                );
 
-          return Column(
-            children: [
-              Expanded(
-                child: viewModel.isEmpty
+                return viewModel.isEmpty
                     ? const _MapEmptyState()
                     : !viewModel.hasPinnedRuns
                     ? Stack(
@@ -65,7 +70,7 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
                             right: CatchSpacing.s5,
                             bottom: CatchSpacing.s5,
                             child: RunMapSheet(
-                              runs: runs,
+                              items: items,
                               selectedRun: selectedRun,
                               onRunSelected: (run) =>
                                   setState(() => _selectedRunId = run.id),
@@ -80,6 +85,7 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
                               runs: viewModel.pinnedRuns,
                               initialCenter: mapCenter,
                               selectedRunId: _selectedRunId,
+                              selectedRunCenter: selectedRunCenter,
                               enableNetworkTiles: widget.enableNetworkTiles,
                               onRunSelected: (run) =>
                                   setState(() => _selectedRunId = run.id),
@@ -90,21 +96,30 @@ class _RunMapScreenState extends ConsumerState<RunMapScreen> {
                             right: CatchSpacing.s5,
                             bottom: CatchSpacing.s5,
                             child: RunMapSheet(
-                              runs: runs,
+                              items: items,
                               selectedRun: selectedRun,
                               onRunSelected: (run) =>
                                   setState(() => _selectedRunId = run.id),
                             ),
                           ),
                         ],
-                      ),
-              ),
-            ],
-          );
-        },
+                      );
+              },
+            ),
+          ),
+          const MapOverlayControls(),
+        ],
       ),
     );
   }
+}
+
+LocationCoordinate? _startingPointFor(Run? run) {
+  if (run == null) return null;
+  return LocationCoordinate.fromNullable(
+    latitude: run.startingPointLat,
+    longitude: run.startingPointLng,
+  );
 }
 
 class _NoPinnedRunsState extends StatelessWidget {

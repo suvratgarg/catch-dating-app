@@ -4,15 +4,16 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
-import 'package:catch_dating_app/core/widgets/catch_segmented_control.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
+import 'package:catch_dating_app/run_clubs/presentation/run_club_name_lookup.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -25,7 +26,9 @@ class CalendarScreen extends ConsumerStatefulWidget {
 }
 
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
-  CalendarViewMode _mode = CalendarViewMode.agenda;
+  final Map<DateTime, GlobalKey> _daySectionKeys = {};
+
+  DateTime? _selectedDate;
 
   @override
   Widget build(BuildContext context) {
@@ -62,38 +65,29 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               savedRuns: savedRuns,
               now: DateTime.now(),
             );
+            final selectedDate = _selectedDate ?? summary.anchorDate;
+            final clubNamesAsync = ref.watch(
+              runClubNameLookupProvider(
+                RunClubNameLookupQuery(
+                  summary.runs.map((run) => run.runClubId),
+                ),
+              ),
+            );
 
             return CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
                   child: _CalendarHeader(
-                    mode: _mode,
-                    onModeChanged: (mode) => setState(() => _mode = mode),
                     summary: summary,
+                    selectedDate: selectedDate,
+                    onDateSelected: _selectDate,
                   ),
                 ),
-                if (summary.runs.isEmpty)
-                  const SliverFillRemaining(
-                    child: _CalendarMessage(
-                      title: 'No planned runs yet',
-                      body:
-                          'Runs you book or save will show up here by day and time.',
-                    ),
-                  )
-                else if (_mode == CalendarViewMode.agenda)
-                  RunAgendaSliverList(
-                    runs: summary.agendaRuns,
-                    badgeLabelBuilder: (run) =>
-                        summary.isSavedOnly(run) ? 'SAVED' : 'JOINED',
-                    today: summary.today,
-                    preserveInputOrder: true,
-                    onRunSelected: (run) => _openRunDetail(context, run),
-                  )
-                else
-                  _TimelineSliverList(
-                    runs: summary.agendaRuns,
-                    onRunSelected: (run) => _openRunDetail(context, run),
-                  ),
+                ..._buildCalendarRunSlivers(
+                  context: context,
+                  summary: summary,
+                  clubNamesAsync: clubNamesAsync,
+                ),
               ],
             );
           },
@@ -105,6 +99,78 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   void _openRunDetail(BuildContext context, Run run) {
     GoRouter.of(context).push(_calendarRunDetailPath(run));
   }
+
+  void _selectDate(DateTime date) {
+    final day = DateUtils.dateOnly(date);
+    setState(() => _selectedDate = day);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final dayContext = _daySectionKeys[day]?.currentContext;
+      if (dayContext == null) return;
+      Scrollable.ensureVisible(
+        dayContext,
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+        alignment: 0.08,
+      );
+    });
+  }
+
+  Key _agendaDayKey(DateTime date) {
+    final day = DateUtils.dateOnly(date);
+    return _daySectionKeys.putIfAbsent(
+      day,
+      () => GlobalKey(debugLabel: 'calendar-agenda-day-${_dateKey(day)}'),
+    );
+  }
+
+  List<Widget> _buildCalendarRunSlivers({
+    required BuildContext context,
+    required _CalendarRunSummary summary,
+    required AsyncValue<Map<String, String>> clubNamesAsync,
+  }) {
+    if (summary.runs.isEmpty) {
+      return const [
+        SliverFillRemaining(
+          child: _CalendarMessage(
+            title: 'No planned runs yet',
+            body: 'Runs you book or save will show up here by day and time.',
+          ),
+        ),
+      ];
+    }
+
+    final clubNames = clubNamesAsync.asData?.value;
+    if (clubNames == null) {
+      return [
+        SliverFillRemaining(
+          child: clubNamesAsync.hasError
+              ? const _CalendarMessage(
+                  title: 'Calendar unavailable',
+                  body: 'Run club names could not be loaded.',
+                )
+              : const CatchLoadingIndicator(),
+        ),
+      ];
+    }
+
+    return [
+      RunAgendaSliverList(
+        runs: summary.agendaRuns,
+        showClubName: true,
+        clubNameBuilder: (run) => clubNames[run.runClubId],
+        badgeLabelBuilder: (run) =>
+            summary.isSavedOnly(run) ? 'SAVED' : 'JOINED',
+        statusBuilder: (run) => summary.isSavedOnly(run)
+            ? RunTileStatus.saved
+            : RunTileStatus.joined,
+        today: summary.today,
+        preserveInputOrder: true,
+        dayKeyBuilder: _agendaDayKey,
+        onRunSelected: (run) => _openRunDetail(context, run),
+      ),
+    ];
+  }
 }
 
 String _calendarRunDetailPath(Run run) {
@@ -113,18 +179,16 @@ String _calendarRunDetailPath(Run run) {
   return '/calendar/run-clubs/$runClubId/runs/$runId';
 }
 
-enum CalendarViewMode { agenda, timeline }
-
 class _CalendarHeader extends StatelessWidget {
   const _CalendarHeader({
-    required this.mode,
-    required this.onModeChanged,
     required this.summary,
+    required this.selectedDate,
+    required this.onDateSelected,
   });
 
-  final CalendarViewMode mode;
-  final ValueChanged<CalendarViewMode> onModeChanged;
   final _CalendarRunSummary summary;
+  final DateTime selectedDate;
+  final ValueChanged<DateTime> onDateSelected;
 
   @override
   Widget build(BuildContext context) {
@@ -138,34 +202,18 @@ class _CalendarHeader extends StatelessWidget {
         CatchSpacing.s3,
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      _monthLabel(summary.anchorDate),
-                      style: CatchTextStyles.labelM(context),
-                    ),
-                    gapH2,
-                    Text('Calendar', style: CatchTextStyles.displayM(context)),
-                  ],
-                ),
-              ),
-              CatchSegmentedControl<CalendarViewMode>(
-                segments: const [
-                  CatchSegment(value: CalendarViewMode.timeline, label: 'Day'),
-                  CatchSegment(value: CalendarViewMode.agenda, label: 'Agenda'),
-                ],
-                selected: mode,
-                onChanged: onModeChanged,
-              ),
-            ],
+          Text(
+            _monthLabel(selectedDate),
+            style: CatchTextStyles.displayM(context),
           ),
           gapH14,
-          _WeekStrip(summary: summary),
+          _WeekStrip(
+            summary: summary,
+            selectedDate: selectedDate,
+            onDateSelected: onDateSelected,
+          ),
           gapH14,
           CatchSurface(
             padding: const EdgeInsets.all(Sizes.p14),
@@ -209,13 +257,19 @@ class _CalendarHeader extends StatelessWidget {
 }
 
 class _WeekStrip extends StatelessWidget {
-  const _WeekStrip({required this.summary});
+  const _WeekStrip({
+    required this.summary,
+    required this.selectedDate,
+    required this.onDateSelected,
+  });
 
   final _CalendarRunSummary summary;
+  final DateTime selectedDate;
+  final ValueChanged<DateTime> onDateSelected;
 
   @override
   Widget build(BuildContext context) {
-    final anchor = summary.anchorDate;
+    final anchor = selectedDate;
     final monday = anchor.subtract(Duration(days: anchor.weekday - 1));
     final runDays = summary.runs
         .map((run) => DateUtils.dateOnly(run.startTime))
@@ -225,12 +279,17 @@ class _WeekStrip extends StatelessWidget {
       children: [
         for (var i = 0; i < 7; i++) ...[
           Expanded(
-            child: _WeekDay(
-              date: monday.add(Duration(days: i)),
-              active: i == anchor.weekday - 1,
-              hasRun: runDays.contains(
-                DateUtils.dateOnly(monday.add(Duration(days: i))),
-              ),
+            child: Builder(
+              builder: (context) {
+                final date = DateUtils.dateOnly(monday.add(Duration(days: i)));
+                return _WeekDay(
+                  key: _calendarWeekDayKey(date),
+                  date: date,
+                  active: DateUtils.isSameDay(date, selectedDate),
+                  hasRun: runDays.contains(date),
+                  onTap: () => onDateSelected(date),
+                );
+              },
             ),
           ),
           if (i < 6) gapW4,
@@ -242,152 +301,68 @@ class _WeekStrip extends StatelessWidget {
 
 class _WeekDay extends StatelessWidget {
   const _WeekDay({
+    super.key,
     required this.date,
     required this.active,
     required this.hasRun,
+    required this.onTap,
   });
 
   final DateTime date;
   final bool active;
   final bool hasRun;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final day = const ['M', 'T', 'W', 'T', 'F', 'S', 'S'][date.weekday - 1];
 
-    return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      decoration: BoxDecoration(
-        color: active ? t.ink : Colors.transparent,
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        children: [
-          Text(
-            day,
-            style: CatchTextStyles.bodyS(
-              context,
-              color: active ? t.surface.withValues(alpha: 0.72) : t.ink3,
-            ),
-          ),
-          gapH2,
-          Text(
-            '${date.day}',
-            style: CatchTextStyles.labelL(
-              context,
-              color: active ? t.surface : t.ink,
-            ),
-          ),
-          gapH4,
-          Container(
-            width: 4,
-            height: 4,
+    return Semantics(
+      button: true,
+      selected: active,
+      label: '$day ${date.day}',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Ink(
+            padding: const EdgeInsets.symmetric(vertical: 8),
             decoration: BoxDecoration(
-              color: hasRun ? t.primary : Colors.transparent,
-              shape: BoxShape.circle,
+              color: active ? t.ink : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
             ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _TimelineSliverList extends StatelessWidget {
-  const _TimelineSliverList({required this.runs, required this.onRunSelected});
-
-  final List<Run> runs;
-  final ValueChanged<Run> onRunSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s2,
-        CatchSpacing.s5,
-        CatchSpacing.s6,
-      ),
-      sliver: SliverList.list(
-        children: [
-          Text('Day timeline', style: CatchTextStyles.labelM(context)),
-          gapH12,
-          for (final run in runs)
-            _TimelineRun(run: run, onTap: () => onRunSelected(run)),
-        ],
-      ),
-    );
-  }
-}
-
-class _TimelineRun extends StatelessWidget {
-  const _TimelineRun({required this.run, required this.onTap});
-
-  final Run run;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return IntrinsicHeight(
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          SizedBox(
-            width: 56,
-            child: Text(
-              RunFormatters.time(run.startTime),
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
-            ),
-          ),
-          Column(
-            children: [
-              Container(
-                width: 10,
-                height: 10,
-                decoration: BoxDecoration(
-                  color: t.primary,
-                  shape: BoxShape.circle,
+            child: Column(
+              children: [
+                Text(
+                  day,
+                  style: CatchTextStyles.bodyS(
+                    context,
+                    color: active ? t.surface.withValues(alpha: 0.72) : t.ink3,
+                  ),
                 ),
-              ),
-              Expanded(child: Container(width: 1, color: t.line)),
-            ],
-          ),
-          gapW12,
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.only(bottom: 14),
-              child: CatchSurface(
-                padding: const EdgeInsets.all(Sizes.p14),
-                backgroundColor: t.primary,
-                radius: CatchRadius.md,
-                borderWidth: 0,
-                onTap: onTap,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      run.meetingPoint,
-                      style: CatchTextStyles.labelL(
-                        context,
-                        color: t.primaryInk,
-                      ),
-                    ),
-                    gapH4,
-                    Text(
-                      '${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label}',
-                      style: CatchTextStyles.bodyS(
-                        context,
-                        color: t.primaryInk.withValues(alpha: 0.84),
-                      ),
-                    ),
-                  ],
+                gapH2,
+                Text(
+                  '${date.day}',
+                  style: CatchTextStyles.labelL(
+                    context,
+                    color: active ? t.surface : t.ink,
+                  ),
                 ),
-              ),
+                gapH4,
+                Container(
+                  width: 4,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: hasRun ? t.primary : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -520,4 +495,15 @@ String _monthName(int month) {
     'November',
     'December',
   ][month - 1];
+}
+
+Key _calendarWeekDayKey(DateTime date) {
+  return ValueKey<String>('calendar-week-day-${_dateKey(date)}');
+}
+
+String _dateKey(DateTime date) {
+  final day = DateUtils.dateOnly(date);
+  final month = day.month.toString().padLeft(2, '0');
+  final dateOfMonth = day.day.toString().padLeft(2, '0');
+  return '${day.year}-$month-$dateOfMonth';
 }

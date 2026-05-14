@@ -83,7 +83,7 @@ final class DashboardRecommendedRunsProvider
 }
 
 String _$dashboardRecommendedRunsHash() =>
-    r'8f31526218cfe316cf4157172253f8fca3e31352';
+    r'67132b8a08386e1938ddbe3abf4927e431854fcb';
 
 /// **Pattern D: View-model provider**
 ///

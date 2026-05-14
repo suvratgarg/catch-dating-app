@@ -1,6 +1,8 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/profile_card_style.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
 import 'package:flutter/material.dart';
 
 class CardPhotoSection extends StatelessWidget {
@@ -9,11 +11,15 @@ class CardPhotoSection extends StatelessWidget {
     required this.url,
     required this.height,
     this.overlayChild,
+    this.reactionTarget,
+    this.onReact,
   });
 
   final String? url;
   final double height;
   final Widget? overlayChild;
+  final ProfileReactionTarget? reactionTarget;
+  final ProfileReactionCallback? onReact;
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +43,33 @@ class CardPhotoSection extends StatelessWidget {
                 gradient: LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  stops: const [0.0, 0.42, 1.0],
+                  stops: const [0.0, 0.50, 1.0],
                   colors: [
-                    Colors.black.withValues(alpha: 0.12),
+                    Colors.black.withValues(alpha: 0.04),
                     Colors.transparent,
-                    Colors.black.withValues(alpha: 0.86),
+                    Colors.black.withValues(alpha: 0.74),
                   ],
                 ),
               ),
             ),
-            Positioned(left: 20, right: 20, bottom: 28, child: overlayChild!),
+            Positioned(
+              left: 20,
+              right: reactionTarget == null || onReact == null ? 20 : 92,
+              bottom: 28,
+              child: overlayChild!,
+            ),
           ],
+          if (reactionTarget != null && onReact != null)
+            Positioned(
+              right: 18,
+              bottom: 24,
+              child: ProfileReactionControls(
+                target: reactionTarget!,
+                onReact: onReact!,
+                style: ProfileReactionControlsStyle.overlay,
+                axis: Axis.vertical,
+              ),
+            ),
         ],
       ),
     );

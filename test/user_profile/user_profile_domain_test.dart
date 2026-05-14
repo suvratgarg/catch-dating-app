@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -80,6 +81,23 @@ void main() {
 
     expect(publicProfileJson.containsKey('latitude'), isFalse);
     expect(publicProfileJson.containsKey('longitude'), isFalse);
+  });
+
+  test('legacy bio JSON is migrated into the perfect-run prompt', () {
+    final user = UserProfile.fromJson({
+      'uid': 'user-1',
+      'name': 'Runner',
+      'dateOfBirth': Timestamp.fromDate(DateTime(1995, 6, 15)),
+      'gender': Gender.man.name,
+      'phoneNumber': '+910000000000',
+      'profileComplete': true,
+      'bio': '  Easy miles and coffee.  ',
+    });
+
+    expect(user.profilePrompts, hasLength(1));
+    expect(user.profilePrompts.single.promptId, profilePromptPerfectRunId);
+    expect(user.profilePrompts.single.answer, 'Easy miles and coffee.');
+    expect(user.toJson().containsKey('bio'), isFalse);
   });
 
   test(

@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.63
+version: 2.5.69
 updated: 2026-05-14
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,62 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.69
+
+- `PreferredRunTime` is now part of `UserProfile` and `PublicProfile`.
+  Onboarding and Edit Profile collect favorite run times alongside pace,
+  distances, and reasons.
+- Shared profile-card insights use preferred run times for morning/evening
+  emotional tags, time-of-day compatibility reasons, and profile-quality
+  scoring.
+
+### 2.5.68
+
+- Shared `ProfileCard` rendering now derives contextual profile insights:
+  confidence signals, emotional running tags, and viewer-aware compatibility
+  reasons. Swipe, Preview, and Public Profile pass viewer/run context into the
+  same card path instead of forking presentation logic.
+- `ProfileMatchSignalsSection` is the first-class "Why you might click" /
+  "Profile signals" block and is individually reactionable through the
+  `compatibility` reaction target type.
+- Edit Profile now shows profile-quality guidance above photos, backed by the
+  same pure profile-insights scoring used by public profile confidence signals.
+
+### 2.5.67
+
+- Run card architecture now uses a surface-specific run tile catalog under
+  `lib/runs/presentation/widgets/run_tiles/`: `RunTileData`,
+  `RunAgendaTile`, `RunRailTile`, `RunHeroTile`, and `RunMapTile`.
+- Calendar, Saved runs, Dashboard recommendations/upcoming hero, Run club
+  schedule, and Map browse cards now render through those tile variants while
+  their providers/view models own club-name and relationship-state lookup.
+- The obsolete generic `RunCard` in `lib/core/widgets/run_card.dart` was
+  removed because it was not used by production surfaces and had a stale
+  one-size-fits-many API.
+
+### 2.5.66
+
+- Map surfaces use chromeless full-screen layouts with floating
+  `MapOverlayControls` instead of a `CatchTopBar`, so map tiles extend to the
+  top corners while back/confirm actions remain available above the map.
+
+### 2.5.65
+
+- `RunPinsMap` accepts a selected run camera target from map-browse screens.
+  Tapping a nearby-run tile now animates the map to that run's exact starting
+  point instead of only changing card and pin selection state.
+
+### 2.5.64
+
+- Map browse centering is now strictly device location unless the user manually
+  selected a city or denied/unavailable location access, then selected city.
+  Run pins never choose the browse-map camera center.
+- Dashboard Map View's `View run` action routes to the dashboard run-detail
+  path, not the Clubs branch route, so it opens details from the top-level map
+  surface without branch mismatch.
+- Map form previews use human state copy (`Starting point pinned`) instead of
+  raw latitude/longitude display.
 
 ### 2.5.63
 
@@ -178,8 +234,9 @@ feature section here only when auditing that feature's widget surface.
 
 - `RunPinsMap` is the shared run-pin map canvas for both the browse map and
   single-run location map. Keep map centering outside the pin widget through
-  `resolveRunMapInitialCenter`: device location wins, selected city is the
-  no-permission fallback, run pins are only a final fallback.
+  `resolveRunMapInitialCenter`: device location wins until the user manually
+  selects a city; selected city is the no-permission/manual-override fallback.
+  Run pins must not choose the browse-map camera center.
 - `RunMapViewModel` filters to upcoming, non-cancelled runs before rendering
   the browse map. Runs without exact coordinates may remain in the sheet, but
   they must not produce pins.
@@ -789,8 +846,8 @@ The user specifically wants this work to proceed incrementally:
    primitives include `CatchSurface`, `CatchButton`, `CatchTextField`,
    `CatchTopBar`, `CatchBottomSheetScaffold`, `CatchEmptyState`,
    `CatchHorizontalRail`, `CatchVerticalSection`, `PersonRow`, `PersonAvatar`,
-   `RunCard`, `SettingsRow`, `CatchSkeleton`, `CatchBadge`, `StatusChip`,
-   `CatchFormFieldLabel`, `ChipField`, `RunAgendaList`,
+   run tile variants, `SettingsRow`, `CatchSkeleton`, `CatchBadge`,
+   `StatusChip`, `CatchFormFieldLabel`, `ChipField`, `RunAgendaList`,
    `RunAgendaSliverList`, `MutationErrorSnackbarListener`, and
    `showConfirmDangerDialog`.
 6. Add a new primitive only when at least one of these is true:
@@ -880,8 +937,8 @@ patterns are discovered.
 - Hiding location/GPS or other product behavior in broad screen shells instead
   of putting it in the widget/controller/provider that actually needs it.
 - Screen files mixing composition with repeated row/sheet/card plumbing.
-- One-off `Container`/`BoxDecoration` card shells where `CatchSurface`,
-  `RunCard`, `PersonRow`, `SettingsRow`, or another existing primitive fits.
+- One-off `Container`/`BoxDecoration` card shells where `CatchSurface`, a run
+  tile variant, `PersonRow`, `SettingsRow`, or another existing primitive fits.
 - Bypassing feature-owned provider/view-model seams to call lower-level
   providers directly.
 - Tests coupled to incidental nested-scroll implementation details instead of
@@ -1067,14 +1124,6 @@ Generated 2026-05-06.
 | `PersonAvatarStack` | `lib/core/widgets/person_avatar.dart:130` | Shared overlapping avatar stack with optional overflow count and obscured rendering. Use this instead of feature-local stacked circular-avatar widgets. |
 | `_GradientPlaceholder` | `lib/core/widgets/person_avatar.dart:162` | Deterministic gradient placeholder for avatars without a photo. Picks from 12 palettes based on a hash of the name. |
 | `ResponsiveBuilder` | `lib/core/responsive/responsive_builder.dart:22` | Thin wrapper around `LayoutBuilder` that maps available width to `ScreenSize` (compact/medium/expanded) and calls the appropriate builder. Falls back gracefully when tablet/desktop builders are absent. |
-| `RunCard` | `lib/core/widgets/run_card.dart:94` | Versatile run card rendered at three densities: `compact` (small row with distance badge), `standard` (vertical card with photo/map header and roster strip), and `hero` (full-bleed card with large photo, title, vibe tags, and roster strip). |
-| `_CompactCard` | `lib/core/widgets/run_card.dart:136` | Compact RunCard variant — distance badge + when/location + price. |
-| `_StandardCard` | `lib/core/widgets/run_card.dart:195` | Standard RunCard variant — photo header, club name, location, time, roster strip with Join CTA. |
-| `_HeroCard` | `lib/core/widgets/run_card.dart:291` | Hero RunCard variant — large photo, club name, vibe tags, location, time, roster strip. |
-| `_PhotoHeader` | `lib/core/widgets/run_card.dart:389` | Map/photo header shared by standard + hero cards. Renders a custom map widget, hero image, or stylized map placeholder. Overlays spot-left badge, dist/pace pill, status chip, and stacked attendee avatars. |
-| `_StackedAvatars` | `lib/core/widgets/run_card.dart:456` | Horizontally stacked circular avatars with overlap and an overflow "+N" bubble. |
-| `_RosterRow` | `lib/core/widgets/run_card.dart:503` | Roster strip at the bottom of standard + hero cards showing "N/M runners" and a "Join →" CTA pill. |
-| `_MapPlaceholder` | `lib/core/widgets/run_card.dart:547` | Stylized faux map painted with `CustomPaint` — land, water, roads, city blocks, a park, and a primary-colored route overlay. |
 | `_ButtonLabel` | `lib/core/widgets/catch_button.dart:141` | Internal label+icon row for `CatchButton`. |
 | `_LoadingDots` | `lib/core/widgets/catch_button.dart:193` | Three animated dots shown during `CatchButton`'s loading state. |
 | `SettingsRow` | `lib/core/widgets/settings_row.dart:25` | Settings-style row with icon, label, optional value, optional trailing widget (e.g., `Switch`), and a danger mode (primary-colored text). Label/value rows allocate separate left and right lanes so the value column right-aligns consistently. |
@@ -1092,16 +1141,16 @@ Generated 2026-05-06.
 |---|---|---|
 | `DashboardScreen` | `lib/dashboard/presentation/dashboard_screen.dart:18` | Home tab. Watches the user's profile, active run-club memberships, and signed-up runs only while Home is active. Owns the Home `TabController`, `NestedScrollView`, collapsible greeting/empty header, pinned `Dashboard`/`Activity` tab row, and native `TabBarView` paging. Invalidates the booked-runs stream when the shell moves away from Home, then reopens it when the user returns. |
 | `DashboardFull` | `lib/dashboard/presentation/widgets/dashboard_full.dart:21` | Standalone full-dashboard wrapper used by focused tests/non-tab embedding. Takes explicit `followedClubIds` from the membership-edge seam and renders the full dashboard header plus `DashboardFullSliverBody`. The header avatar is a Profile-tab button and must use thumbnail-scale profile imagery through `UserProfile.primaryPhotoThumbnailUrl`. |
-| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:108` | Sliver body for the Dashboard tab: first-priority runner self-check-in action card, consolidated host tools rail, upcoming-runs pager, attended-run section (`StrideCard` + `CatchesCallout`), post-run review prompt for the latest attended unreviewed run, `QuickActions`, and recommended runs. Activity is intentionally not rendered here. |
+| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:108` | Sliver body for the Dashboard tab: first-priority runner self-check-in action card, consolidated host tools rail, upcoming-runs pager, attended-run section (`StrideCard` + `CatchesCallout`), post-run review prompt for the latest attended unreviewed run, `QuickActions`, and recommended runs. It joins club names for upcoming booked runs through `runClubNameLookupProvider`; Activity is intentionally not rendered here. |
 | `HostToolsRail` | `lib/dashboard/presentation/widgets/dashboard_full.dart:228` | Horizontally scrollable Dashboard rail for hosted run actions. Each card represents one hosted run and contains both Manage and Attendance CTAs; Attendance is enabled only inside the host attendance window, and the header count badge supports unbounded hosted-run counts. |
 | `ReviewPromptCard` | `lib/dashboard/presentation/widgets/review_prompt_card.dart:11` | Dashboard card shown after a completed attended run that the user has not reviewed. Opens the shared run-scoped `WriteReviewSheet`; it does not own review persistence. |
 | `ActivitySliverBody` | `lib/dashboard/presentation/widgets/activity_section.dart:19` | Sliver adapter for the Home Activity tab. Applies the tab body inset and renders `ActivitySection` as the tab-owned notifications/update timeline. |
 | `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:53` | Timeline-style activity feed for backend-owned match, message, club-update, run-signup, waitlist-promotion, run-update, run-cancellation, and run-reminder notification items plus local derived reminders only until the backend reminder exists. Uses a branded inline error state with retry and delegates "Mark all read" to `ActivityController`. |
 | `CatchesCallout` | `lib/dashboard/presentation/widgets/catches_callout.dart:11` | Dashboard card promoting the active catch window — shows the run name, remaining time, roster count, and a "Start catching" CTA. |
 | `UpcomingRunsHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:10` | Horizontal pager for all booked upcoming runs, rendered soonest-first. Delegates tap behavior to the route owner so Home can open a dashboard-owned run detail route and preserve back navigation to Home. Its page affordance is a fixed-width progress rail, not one dot per run, so it remains bounded for unbounded upcoming-run counts. |
-| `NextRunHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:133` | Hero card for one booked upcoming run with location, time, projected confirmed-runner count, and optional run-position pill. The runner hype row uses shared `RunHypeAvatarStack` so tiny circles use blurred profile thumbnails when available and deterministic obscured placeholders otherwise; never feed this row full-size profile photos. |
+| `NextRunHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:133` | Compatibility wrapper around shared `RunHeroTile` for one booked upcoming run with location, time, distance/pace, projected confirmed-runner count, optional club name, and optional run-position pill. The runner hype row uses shared `RunHypeAvatarStack` so tiny circles use blurred profile thumbnails when available and deterministic obscured placeholders otherwise; never feed this row full-size profile photos. |
 | `Recommendations` | `lib/dashboard/presentation/widgets/recommendations.dart:7` | Intrinsic-height horizontal rail of `RecommendCard` widgets for recommended runs from the user's followed clubs. |
-| `RecommendCard` | `lib/dashboard/presentation/widgets/recommend_card.dart:11` | Recommended-run card without fake imagery; surfaces distance, price, pace, title, date/time, meeting point, signed-up count, and the "From your clubs" reason. |
+| `RecommendCard` | `lib/dashboard/presentation/widgets/recommend_card.dart:11` | Compatibility wrapper around shared `RunRailTile` for dashboard recommended runs. It surfaces distance, price, pace, title, club, date/time, meeting point, signed-up count, and recommendation reason without fake imagery. |
 | `StrideCard` | `lib/dashboard/presentation/widgets/stride_card.dart:8` | Dashboard card showing stride (weekly run count) stats with bar columns and a "Keep it up" message. |
 | `StrideBarColumn` | `lib/dashboard/presentation/widgets/stride_card.dart:105` | Single bar column for the stride card — day label and filled bar. |
 | `QuickActions` | `lib/dashboard/presentation/widgets/quick_actions.dart:8` | Responsive dashboard quick-action grid for Browse runs, Map view, Calendar, and Saved runs. Avoids hardcoded tile heights so labels can wrap without clipping on narrow screens. |
@@ -1146,8 +1195,8 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `SwipeHubScreen` | `lib/swipes/presentation/swipe_hub_screen.dart:22` | "Catches" tab. Gates screen-owned streams while the retained tab branch is inactive, lists edge-backed attended runs with open catch windows, uses leaf widgets to read theme tokens locally, shows a `CatchSurface` intro card with projected checked-in count for the featured run, and lists active runs with `AttendedRunTile` widgets. |
-| `ScrollableProfile` | `lib/swipes/presentation/widgets/scrollable_profile.dart:16` | Full-length scrollable profile card body used on swipe/public/profile-preview surfaces. Keeps the shared rendering path identical across Swipes and Profile Preview, renders the hero photo first, promotes the bio prompt, keeps one canonical `RUN PROFILE` running identity card, then renders detail chips/inset photos/lifestyle. Its internal vertical scroll view is non-primary, can accept an explicit controller when embedded in a sliver route, and can report leading overscroll to a parent route for collapsible-header coordination. |
-| `ProfileCard` | `lib/swipes/presentation/profile_card.dart:7` | The primary public-facing dating card. Wraps `ScrollableProfile` in a dark immersive card shell with themed border/shadow, keeps Swipes and Profile Preview visually identical, and overlays swipe stamps during deck gestures. Accepts an optional scroll controller for owner routes such as Profile Preview and can forward leading overscroll when embedded below a collapsible parent header. |
+| `ScrollableProfile` | `lib/swipes/presentation/widgets/scrollable_profile.dart:16` | Full-length scrollable profile card body used on swipe/public/profile-preview surfaces. Keeps the shared rendering path identical across Swipes, Profile Preview, and Public Profile, renders the hero photo first, then contextual profile insights, profile prompts, one canonical `RUN PROFILE` running identity card, detail chips, inset photos, and lifestyle. Its internal vertical scroll view is non-primary, can accept an explicit controller when embedded in a sliver route, and can report leading overscroll to a parent route for collapsible-header coordination. |
+| `ProfileCard` | `lib/swipes/presentation/profile_card.dart:7` | The primary public-facing dating card. Wraps `ScrollableProfile` in the themed profile-card shell, keeps Swipes, Preview, and Public Profile visually identical, passes optional viewer/run context for compatibility insights, and overlays swipe stamps during deck gestures. Accepts an optional scroll controller for owner routes such as Profile Preview and can forward leading overscroll when embedded below a collapsible parent header. |
 | `RunRecapViewModel` | `lib/swipes/presentation/run_recap_view_model.dart:10` | Recap data seam. Combines the run, current uid, and `runParticipations` to derive checked-in count and the attendee IDs shown in the vibe grid without reading compatibility arrays. |
 | `_VibeTile` | `lib/swipes/presentation/run_recap_screen.dart:236` | Keyed attendee tile on the recap screen. Fetches its public profile, exposes tooltip/semantic selected state, and toggles local recap selection. |
 
@@ -1167,6 +1216,7 @@ Generated 2026-05-06.
 | `ProfileAttributesSection` | `lib/swipes/presentation/widgets/profile_attributes_section.dart:6` | Section of detail chips on the shared profile card. Relationship goal lives here; city stays on the hero overlay, and distance appears here only when current/profile locations are available. |
 | `ProfileSectionCard` | `lib/swipes/presentation/widgets/profile_section_card.dart:8` | Reusable dark section card wrapper for profile detail sections. Uses `ProfileCardPalette` rather than app surface colors so sections stay coherent inside the immersive card. |
 | `ProfileBioSection` | `lib/swipes/presentation/widgets/profile_bio_section.dart:6` | Prominent bio/prompt section on the shared card. Uses `ON A PERFECT RUN` as the prompt label and appears before running stats. |
+| `ProfileMatchSignalsSection` | `lib/swipes/presentation/widgets/profile_match_signals_section.dart:9` | Contextual signals section near the top of the shared profile card. Shows profile confidence pills and viewer-aware "Why you might click" reasons, and exposes the section as one reactionable `compatibility` target. |
 | `ProfileLifestyleSection` | `lib/swipes/presentation/widgets/profile_lifestyle_section.dart:6` | Lifestyle section (occupation, education, drinking, smoking, etc.). |
 | `ProfileInfoChip` | `lib/swipes/presentation/widgets/profile_info_chip.dart:3` | Single info chip on the profile card — icon + label. |
 | `SwipeActionButtons` | `lib/swipes/presentation/widgets/swipe_action_buttons.dart:5` | Pass and Like action buttons at the bottom of the swipe screen with stable keys, tooltips, and semantic labels. |
@@ -1244,7 +1294,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PublicProfileScreen` | `lib/public_profile/presentation/public_profile_screen.dart:16` | Full-screen public profile view. Fetches `PublicProfile` by UID, renders the shared `ProfileCard`, and routes report/block actions through `PublicProfileController` mutations. |
+| `PublicProfileScreen` | `lib/public_profile/presentation/public_profile_screen.dart:16` | Full-screen public profile view. Fetches `PublicProfile` by UID, passes the current viewer profile into the shared `ProfileCard` when viewing someone else, and routes report/block actions through `PublicProfileController` mutations. |
 
 ### StatelessWidget
 
@@ -1262,7 +1312,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `ProfileScreen` | `lib/user_profile/presentation/profile_screen.dart:16` | Profile tab destination. Gates screen-owned streams while the retained tab branch is inactive, owns the route-level top safe area, uses `NestedScrollView` for a scroll-away Profile title header plus pinned `Edit`/`Preview` tab row, and native `TabBarView` paging for smooth horizontal tab swipes. The scroll-away title remains a normal outer sliver; the pinned tab row is wrapped in `SliverOverlapAbsorber`; each tab body starts with `SliverOverlapInjector`. Owns the `TabController` locally because tab selection is route UI state. |
-| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone profile tab content. Wraps the shared profile sections in a `ListView` for isolated/non-sliver usage. Uses `profileTabBodyPadding` for the shared Profile tab inset. `Display name` is the first editable About field and is the only public-facing profile name; onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Optional/profile-detail fields, including Instagram, remain editable. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
+| `ProfileTab` | `lib/user_profile/presentation/widgets/profile_tab.dart:19` | Standalone profile tab content. Wraps the shared profile sections in a `ListView` for isolated/non-sliver usage and shows profile-quality guidance above photos from the public-profile insight scorer. Uses `profileTabBodyPadding` for the shared Profile tab inset. `Display name` is the first editable About field and is the only public-facing profile name; onboarding identity fields such as date of birth and gender are readonly, and last name is not shown publicly. Optional/profile-detail fields, including Instagram, remain editable. Running Details owns pace, distances, reasons, and favorite run times. Discovery-only preferences such as interested-in genders and match age range live in Filters, not Edit Profile. Optional single-choice edit sheets open unselected when the underlying field is empty. |
 | `ProfileTabSliverBody` | `lib/user_profile/presentation/widgets/profile_tab.dart:48` | Sliver-native profile tab body. Reuses the same profile sections as `ProfileTab` but contributes a padded `SliverList` for parent `CustomScrollView` usage. Uses the same `profileTabBodyPadding` as Preview. |
 ### StatelessWidget
 
@@ -1299,7 +1349,7 @@ Generated 2026-05-06.
 | `OnboardingScreen` | `lib/onboarding/presentation/onboarding_screen.dart:16` | Multi-step onboarding flow shell. Manages step navigation via `PageController`, renders the step progress bar, and delegates to individual step pages. |
 | `NameDobPage` | `lib/onboarding/presentation/pages/name_dob_page.dart:11` | Name and date-of-birth entry page — text field + date picker. |
 | `GenderInterestPage` | `lib/onboarding/presentation/pages/gender_interest_page.dart:12` | Gender identity and interest selection page using `ChipField` with semantic chip keys for self-identification vs interested-in selections. |
-| `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:15` | Running preferences page — pace, distance, days, goals, and experience level. Uses `CatchRangeSlider` for the comfortable pace range. |
+| `RunningPrefsPage` | `lib/onboarding/presentation/pages/running_prefs_page.dart:15` | Running preferences page — pace, preferred distances, reasons for running, and favorite run times. Uses `CatchRangeSlider` for the comfortable pace range and `ChipField` for selectable identity/preferences. |
 
 ### ConsumerWidget
 
@@ -1419,7 +1469,7 @@ Generated 2026-05-06.
 | Widget | File | Purpose |
 |---|---|---|
 | `CreateRunScreen` | `lib/runs/presentation/create_run_screen.dart:29` | Multi-step run creation flow (When → Where → Details → Eligibility → Review). Manages `PageController`, draft auto-save/restore, local form controllers, and the create-run mutation. On success transitions to `CreateRunSuccessScreen` or `HostRunManageScreen`. |
-| `RunMapScreen` | `lib/runs/presentation/run_map_screen.dart:14` | Map route wrapper. Watches `RunMapViewModel`, uses device location first and the selected run-club city second for initial centering, owns local selected-run state, and composes shared `RunPinsMap` plus `RunMapSheet`. |
+| `RunMapScreen` | `lib/runs/presentation/run_map_screen.dart:18` | Chromeless map route wrapper. Watches `RunMapViewModel`, centers on device location unless the selected run-club city was manually overridden or location is unavailable, owns local selected-run state, and composes full-screen `RunPinsMap`, floating `MapOverlayControls`, and `RunMapSheet`. |
 
 ### ConsumerWidget
 
@@ -1427,7 +1477,7 @@ Generated 2026-05-06.
 |---|---|---|
 | `HostRunManageRouteScreen` | `lib/runs/presentation/host_run_manage_screen.dart:23` | Route-facing host manage entry used from Dashboard. Loads the run and club by id, gates access to the club host, and delegates the loaded state to `HostRunManageScreen`. |
 | `RunDetailScreen` | `lib/runs/presentation/run_detail_screen.dart:8` | Route-facing run detail entry. Fetches `RunDetailViewModel`, renders scaffolded loading/error/not-found states, and delegates the loaded screen to `RunDetailBody` without nesting scaffolds. |
-| `RunLocationMapRouteScreen` | `lib/runs/presentation/run_location_map_screen.dart:12` | Route-facing single-run map entry. Reuses `RunDetailViewModel` by `runId`, renders branded load/error/not-found states, and delegates mapped runs to `RunLocationMapScreen`. |
+| `RunLocationMapRouteScreen` | `lib/runs/presentation/run_location_map_screen.dart:20` | Route-facing single-run map entry. Reuses `RunDetailViewModel` by `runId`, renders chromeless load/error/not-found states with floating back controls, and delegates mapped runs to `RunLocationMapScreen`. |
 | `RunDetailBody` | `lib/runs/presentation/widgets/run_detail_body.dart:24` | Scrollable run detail body — owns the loaded detail `Scaffold`, composes `RunDetailHeroAppBar`, `RunDetailOverviewSection`, `RunDetailSocialSection`, and the bottom CTA. Passes the viewer's `RunParticipation` edge to social/review and CTA sections so current-viewer state is not inferred from compatibility arrays. Owns run-location navigation and passes it down only when the run has exact coordinates. |
 | `RunDetailCta` | `lib/runs/presentation/widgets/run_detail_cta.dart:21` | Bottom CTA bar for run detail. Owns booking lifecycle actions (book, cancel, waitlist, eligibility, attended/past states) from the current viewer's `RunParticipation` edge, but only treats `attended` as completed once the run has started so stale future attendance data cannot contradict upcoming schedule surfaces. Intentionally omits arrival actions (`Check in`, `Take Attendance`) because those now surface first on Home. Free-run signup opens `RunJoinedCelebrationScreen`; paid signup routes to payment confirmation, which uses the same joined celebration surface. |
 | `AttendanceSheetScreen` | `lib/runs/presentation/attendance_sheet_screen.dart:21` | Host-facing attendance sheet. Watches `AttendanceSheetViewModel`, renders route-level loading/error/not-found states, and delegates attendance body composition to `_AttendanceList`. |
@@ -1436,13 +1486,13 @@ Generated 2026-05-06.
 | `RunHypeAvatarStack` | `lib/runs/presentation/widgets/run_hype_avatar_stack.dart:80` | Shared run social-proof avatar row for Dashboard and Run detail. Provider-owned selection queries recent signed-up/attended `runParticipations`, filters toward viewer interest genders, fetches `publicProfiles`, and passes `PublicProfile.primaryPhotoThumbnailUrl` into blurred avatars so thumbnail URLs are preferred while older full-photo-only profiles still render imagery. |
 | `_AttendanceList` | `lib/runs/presentation/attendance_sheet_screen.dart:71` | Attendance body. Handles empty/profile-loading/profile-error states, mutation error banner, checked-in summary, and the attendee list from `AttendanceSheetViewModel`. |
 | `_AttendeeRow` | `lib/runs/presentation/attendance_sheet_screen.dart:183` | Single attendance row using `CatchSurface`, `PersonRow`, and `CatchBadge`; routes toggle actions through `RunBookingController.markAttendanceMutation`. |
-| `RunPinsMap` | `lib/runs/presentation/widgets/run_pins_map.dart:7` | Shared Flutter map canvas for run pins. Used by both `RunMapScreen` and `RunLocationMapScreen`; renders only runs with exact coordinates and recenters when the route resolves a better initial center such as device location. |
+| `RunPinsMap` | `lib/runs/presentation/widgets/run_pins_map.dart:7` | Shared Flutter map canvas for run pins. Used by both `RunMapScreen` and `RunLocationMapScreen`; renders only runs with exact coordinates, recenters when the route resolves a better initial center such as device location, and gives selected run coordinates precedence when a map-browse tile or pin is tapped. |
 
 ### StatefulWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `LocationPickerScreen` | `lib/runs/presentation/location_picker_screen.dart:8` | Map-based location picker. Lets users long-press or search for a location and returns the selected `LocationCoordinate` + address. |
+| `LocationPickerScreen` | `lib/runs/presentation/location_picker_screen.dart:17` | Chromeless map-based location picker. Lets users tap or search for a location and returns the selected `LocationCoordinate`; keeps `Confirm` and search as floating map controls instead of a top app bar. |
 | `_DraftPickerSheet` | `lib/runs/presentation/widgets/draft_picker_sheet.dart:37` | `CatchBottomSheetScaffold` listing saved run drafts. Users can resume, start fresh, or permanently delete persisted drafts through the create-run draft controller. |
 
 ### StatelessWidget
@@ -1453,7 +1503,7 @@ Generated 2026-05-06.
 | `RunJoinedCelebrationScreen` | `lib/runs/presentation/run_joined_celebration_screen.dart:7` | User run-signup celebration surface shared by free bookings and post-payment confirmation. Shows run details, optional payment details, supplemental payment actions, haptics, and View run / Back home actions. |
 | `RunCheckInCelebrationScreen` | `lib/runs/presentation/run_check_in_celebration_screen.dart:7` | Participant self-check-in celebration surface. Used only after user self-check-in from Home succeeds; host attendance remains a normal operational flow. |
 | `RunCheckInLocationService` | `lib/runs/presentation/run_check_in_location_service.dart:5` | Provider-backed location seam for self-check-in. Production uses Geolocator with high accuracy and a timeout; tests can inject coordinates without invoking platform plugins. |
-| `RunLocationMapScreen` | `lib/runs/presentation/run_location_map_screen.dart:49` | Full-screen single-run map with one pinned exact starting point and a bottom location summary. Reuses `RunPinsMap`; use only when `Run.hasExactStartingPoint` is true. Address-only runs should stay static and show no chevron. |
+| `RunLocationMapScreen` | `lib/runs/presentation/run_location_map_screen.dart:63` | Chromeless full-screen single-run map with one pinned exact starting point, floating back controls, and a bottom location summary. Reuses `RunPinsMap`; use only when `Run.hasExactStartingPoint` is true. Address-only runs should stay static and show no chevron. |
 | `HostRunManageScreen` | `lib/runs/presentation/host_run_manage_screen.dart:86` | Host run management screen — shows run stats, summary, profile-backed roster, and waitlist. Roster/waitlist IDs come from `runParticipations` through `RunParticipationRoster`; count stat fallback uses `Run` projections while the roster stream loads. |
 | `CreateRunStepHeader` | `lib/runs/presentation/widgets/create_run_step_header.dart:7` | Header for the create-run wizard — back action, step title, club name, step count, and progress bar. |
 | `CreateRunFormKeys` | `lib/runs/presentation/create_run_form_keys.dart:3` | Stable semantic keys for create-run form fields so widget tests target fields by purpose rather than layout order. |
@@ -1464,10 +1514,16 @@ Generated 2026-05-06.
 | `_HostRunRosterLoading` | `lib/runs/presentation/host_run_manage_screen.dart:287` | Small `CatchSurface` loading row for host roster/waitlist sections. |
 | `_HostRunUserList` | `lib/runs/presentation/host_run_manage_screen.dart:323` | Profile-backed roster/waitlist list on the host manage screen. Uses `PersonRow`, `CatchBadge`, and `CatchEmptyState`. |
 | `_AttendanceSummaryHeader` | `lib/runs/presentation/attendance_sheet_screen.dart:146` | Header row for host attendance showing checked-in count and the toggle hint. |
-| `SavedRunsScreen` | `lib/runs/presentation/saved_runs_screen.dart:15` | Saved-runs route. Streams the current user's saved run details, orders future saved runs before past saved runs, and opens saved-run detail routes from shared agenda cards. |
-| `RunAgendaList` | `lib/runs/presentation/widgets/run_agenda_list.dart:9` | Box-facing agenda list for runs grouped by day. Sorts by start time by default, with `preserveInputOrder` for callers that precompute semantic order and optional row-specific badges for mixed run states. |
-| `RunAgendaSliverList` | `lib/runs/presentation/widgets/run_agenda_list.dart:41` | Sliver-facing agenda list for runs grouped by day. Sorts by start time by default, with `preserveInputOrder` for sliver-native screens such as Calendar/Saved runs that need semantic ordering. |
-| `RunAgendaRunCard` | `lib/runs/presentation/widgets/run_agenda_list.dart:101` | Tappable agenda card for a run — time, meeting point, distance/pace/projected spots metadata, and optional row badge. |
+| `SavedRunsScreen` | `lib/runs/presentation/saved_runs_screen.dart:15` | Saved-runs route. Streams the current user's saved run details, orders future saved runs before past saved runs, joins club names via `runClubNameLookupProvider`, and opens saved-run detail routes from shared agenda tiles. |
+| `RunTileData` | `lib/runs/presentation/widgets/run_tiles/run_tile_data.dart:10` | Shared display model for run tile variants. Wraps a `Run` plus relationship status, optional club name, recommendation reason, and carousel position label so widgets do not recompute product state. |
+| `RunTileStatusBadge` | `lib/runs/presentation/widgets/run_tiles/run_tile_atoms.dart:6` | Status badge mapper for run tile relationship states (`joined`, `saved`, `recommended`, `hosted`, `past`, etc.) using `CatchBadge` tones and icons. |
+| `RunAgendaTile` | `lib/runs/presentation/widgets/run_tiles/run_agenda_tile.dart:7` | Agenda/list tile for Calendar, Saved runs, and Run club schedules. It is content-sized, can show global club context, and displays time, meeting point, status, distance, pace, and spots. |
+| `RunRailTile` | `lib/runs/presentation/widgets/run_tiles/run_rail_tile.dart:8` | Horizontal discovery/recommendation tile for dashboard rails. Shows status, distance, pace, price, title, club, date/time, meeting point, signup count, and optional recommendation reason. |
+| `RunHeroTile` | `lib/runs/presentation/widgets/run_tiles/run_hero_tile.dart:8` | Dashboard hero tile for booked upcoming runs. Shows next-run countdown, optional carousel position, title, club, time/location/distance metadata, and `RunHypeAvatarStack` social proof. |
+| `RunMapTile` | `lib/runs/presentation/widgets/run_tiles/run_map_tile.dart:8` | Map bottom-sheet tile for mixed nearby runs. Shows relationship status, no-pin state, club, time, location, distance, pace, price, and signup count; tap selects/recenters the map while the sheet button opens detail. |
+| `RunAgendaList` | `lib/runs/presentation/widgets/run_agenda_list.dart:9` | Box-facing agenda list for runs grouped by day. Sorts by start time by default, with `preserveInputOrder` for callers that precompute semantic order plus optional club-name/status builders for global mixed-state surfaces. |
+| `RunAgendaSliverList` | `lib/runs/presentation/widgets/run_agenda_list.dart:46` | Sliver-facing agenda list for runs grouped by day. Sorts by start time by default, with `preserveInputOrder` for sliver-native screens such as Calendar/Saved runs that need semantic ordering. |
+| `RunAgendaRunCard` | `lib/runs/presentation/widgets/run_agenda_list.dart:136` | Backward-compatible wrapper around `RunAgendaTile` for existing agenda tests/callers. New surfaces should pass `RunTileData` to a specific run tile variant where possible. |
 | `WhenStep` | `lib/runs/presentation/widgets/when_step.dart:7` | "When" form step in create run — date + time pickers plus duration selection through `CatchNumberStepper`. |
 | `WhereStep` | `lib/runs/presentation/widgets/where_step.dart:8` | "Where" form step — location picker, address display, and map preview. |
 | `RunDetailsStep` | `lib/runs/presentation/widgets/run_details_step.dart:9` | "Details" form step — distance, pace, price, capacity, and vibe tags. |
@@ -1481,9 +1537,10 @@ Generated 2026-05-06.
 | `RunDetailHeroAppBar` | `lib/runs/presentation/widgets/run_detail_hero_app_bar.dart:7` | Sliver hero app bar for run detail. Owns the photo/map hero, back/share controls, and saved-run icon state. |
 | `RunDetailOverviewSection` | `lib/runs/presentation/widgets/run_detail_overview_section.dart:10` | Static run facts section for the loaded run detail body: title, pace/date, stats, when/where, labeled description, and requirements. |
 | `RunDetailSocialSection` | `lib/runs/presentation/widgets/run_detail_social_section.dart:10` | Social context section for the loaded run detail body: roster, guest lock prompt, divider, and run-scoped reviews for signed-in users. Review writing requires the current viewer's attended `RunParticipation` and a run end time that has passed. |
-| `RunMapSheet` | `lib/runs/presentation/widgets/run_map_sheet.dart:12` | Overlay sheet for map runs. Uses `CatchSurface`, renders horizontal run chips, and routes the highlighted run to detail. |
+| `MapOverlayControls` | `lib/runs/presentation/widgets/map_overlay_controls.dart:5` | Floating safe-area controls for chromeless map surfaces. Provides the rounded back affordance plus optional trailing and below content for map actions such as create-run confirm/search. |
+| `RunMapSheet` | `lib/runs/presentation/widgets/run_map_sheet.dart:12` | Overlay sheet for map runs. Uses `CatchSurface`, renders horizontal `RunMapTile` items from relationship-aware `RunMapItem` data, and routes the highlighted run to the dashboard run-detail path from the top-level map surface. |
 | `RunPhotoHeader` | `lib/runs/presentation/widgets/run_photo_header.dart:6` | Photo/map header for the run detail screen. |
-| `MapPinTile` | `lib/runs/presentation/widgets/map_pin_tile.dart:7` | Route map + pin display tile. |
+| `MapPinTile` | `lib/runs/presentation/widgets/map_pin_tile.dart:7` | Create-run map-pin tile. Shows whether the starting point is pinned without exposing raw coordinates in the form preview. |
 | `PickerTile` | `lib/runs/presentation/widgets/picker_tile.dart:6` | Tappable tile that opens a picker (date, time, etc.) — shows label + selected value. |
 | `RequirementsRow` | `lib/runs/presentation/widgets/requirements_row.dart:7` | Read-only row showing eligibility requirements. |
 | `FieldLabel` | `lib/runs/presentation/widgets/field_label.dart:4` | Styled label for form fields in the create-run flow. |

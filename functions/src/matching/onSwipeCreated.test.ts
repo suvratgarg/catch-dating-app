@@ -43,6 +43,54 @@ test(
   }
 );
 
+test("onSwipeCreatedHandler writes reaction comments to chat", async () => {
+  const created: Record<string, unknown> = {};
+
+  await onSwipeCreatedHandler(
+    {
+      swiperId: "user-b",
+      targetId: "user-a",
+      swipeData: swipe("user-b", "user-a", "run-2", "like", {
+        reactionTargetLabel: "Bio",
+        reactionTargetPreview: "Always up for a sunrise run.",
+        comment: "This sounds like my kind of morning.",
+      }),
+    },
+    deps({
+      docs: {
+        "swipes/user-a/outgoing/user-b": swipe(
+          "user-a",
+          "user-b",
+          "run-1",
+          "like",
+          {
+            reactionTargetLabel: "Main photo",
+            comment: "Great finish-line photo.",
+          }
+        ),
+      },
+      created,
+    })
+  );
+
+  const firstMessagePath =
+    "matches/user-a_user-b/messages/profileReaction_user-a_user-b";
+  const secondMessagePath =
+    "matches/user-a_user-b/messages/profileReaction_user-b_user-a";
+  assert.deepEqual(created[firstMessagePath], {
+    senderId: "user-a",
+    text: "Great finish-line photo.\n\nAbout Main photo",
+    sentAt: "SERVER_TIMESTAMP",
+  });
+  assert.deepEqual(created[secondMessagePath], {
+    senderId: "user-b",
+    text:
+      "This sounds like my kind of morning.\n\n" +
+      "About Bio: Always up for a sunrise run.",
+    sentAt: "SERVER_TIMESTAMP",
+  });
+});
+
 test("onSwipeCreatedHandler appends run ids to an existing match", async () => {
   const created: Record<string, unknown> = {};
   const updated: Record<string, unknown> = {};
@@ -116,7 +164,8 @@ function swipe(
   swiperId: string,
   targetId: string,
   runId: string,
-  direction: "like" | "pass"
+  direction: "like" | "pass",
+  overrides: Partial<SwipeDoc> = {}
 ): SwipeDoc {
   return {
     swiperId,
@@ -124,6 +173,7 @@ function swipe(
     runId,
     direction,
     createdAt: "created-at" as unknown as FirebaseFirestore.Timestamp,
+    ...overrides,
   };
 }
 
@@ -175,6 +225,9 @@ function firestore(
           error.code = 6;
           throw error;
         }
+        created[path] = data;
+      },
+      set: async (data: unknown) => {
         created[path] = data;
       },
       update: async (data: Record<string, unknown>) => {

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -16,6 +17,7 @@ abstract class OnboardingProfileDraft with _$OnboardingProfileDraft {
     Gender? gender,
     @Default([]) List<Gender> interestedInGenders,
     String? instagramHandle,
+    @Default([]) List<ProfilePromptAnswer> profilePrompts,
   }) = _OnboardingProfileDraft;
 
   String get fullName => '$firstName $lastName'.trim();

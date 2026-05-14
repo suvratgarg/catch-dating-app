@@ -49,7 +49,6 @@ Future<void> _seedProfile(
     uid: uid,
     name: name,
     age: 30,
-    bio: 'Runs easy miles.',
     gender: Gender.man,
   );
 

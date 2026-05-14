@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_card_content.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,7 +30,18 @@ void main() {
               'https://img.example/3.jpg',
             ],
           ).copyWith(
-            bio: '  Long runs and filter coffee.  ',
+            profilePrompts: normalizeProfilePromptAnswers(
+              const [],
+              legacyBio: '  Long runs and filter coffee.  ',
+            ),
+            photoPrompts: const [
+              PhotoPromptAnswer(
+                photoIndex: 1,
+                promptId: 'finishLine',
+                prompt: 'After the finish line',
+                caption: '  Filter coffee stop.  ',
+              ),
+            ],
             height: 170,
             occupation: '  Designer  ',
             company: '  Catch  ',
@@ -46,12 +58,19 @@ void main() {
       final content = ProfileCardContent.fromProfile(profile);
 
       expect(content.primaryPhotoUrl, 'https://img.example/1.jpg');
-      expect(content.additionalPhotoUrls, [
+      expect(content.additionalPhotos.map((photo) => photo.url), [
         'https://img.example/2.jpg',
         'https://img.example/3.jpg',
       ]);
-      expect(content.bio, 'Long runs and filter coffee.');
-      expect(content.hasBio, isTrue);
+      expect(
+        content.additionalPhotos.first.prompt?.caption,
+        'Filter coffee stop.',
+      );
+      expect(
+        content.profilePrompts.single.answer,
+        'Long runs and filter coffee.',
+      );
+      expect(content.hasProfilePrompts, isTrue);
       expect(content.attributes.map((fact) => fact.text), [
         '170 cm',
         'Designer at Catch',
@@ -66,9 +85,46 @@ void main() {
         'Vegetarian',
         'Want someday',
       ]);
+      expect(content.insights.quality.score, greaterThan(0));
     });
 
-    test('keeps city on the hero overlay and relationship goal in details', () {
+    test('derives compatibility insights when viewer context is available', () {
+      final viewer = buildUser().copyWith(
+        relationshipGoal: RelationshipGoal.friendship,
+        preferredDistances: const [PreferredDistance.fiveK],
+        runningReasons: const [RunReason.social],
+      );
+      final profile = buildPublicProfile().copyWith(
+        relationshipGoal: RelationshipGoal.friendship,
+        preferredDistances: const [PreferredDistance.fiveK],
+        runningReasons: const [RunReason.social],
+      );
+
+      final content = ProfileCardContent.fromProfile(
+        profile,
+        viewerProfile: viewer,
+        sharedRunTitle: 'Friday Evening Run',
+      );
+
+      expect(
+        content.insights.confidenceSignals.first.label,
+        contains('Met at'),
+      );
+      expect(content.insights.emotionalRunTags.map((tag) => tag.label), [
+        'Social miles',
+        '5K regular',
+      ]);
+      expect(
+        content.insights.compatibilityReasons.map((reason) => reason.label),
+        [
+          'You met at Friday Evening Run',
+          'You both want new friends',
+          'You both run to make friends',
+        ],
+      );
+    });
+
+    test('keeps city and relationship goal out of detail chips', () {
       final profile = buildPublicProfile().copyWith(
         city: 'indore',
         relationshipGoal: RelationshipGoal.casual,
@@ -76,7 +132,10 @@ void main() {
 
       final content = ProfileCardContent.fromProfile(profile);
 
-      expect(content.attributes.map((fact) => fact.text), ['Something casual']);
+      expect(
+        content.attributes.any((fact) => fact.text == 'Something casual'),
+        isFalse,
+      );
       expect(
         content.attributes.any((fact) => fact.text == cityLabel('indore')),
         isFalse,
@@ -85,14 +144,14 @@ void main() {
 
     test('drops blank optional text values', () {
       final profile = buildPublicProfile().copyWith(
-        bio: '   ',
+        profilePrompts: const [],
         occupation: '   ',
         company: '   ',
       );
 
       final content = ProfileCardContent.fromProfile(profile);
 
-      expect(content.hasBio, isFalse);
+      expect(content.hasProfilePrompts, isFalse);
       expect(content.attributes, isEmpty);
     });
   });

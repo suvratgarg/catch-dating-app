@@ -26,7 +26,8 @@ void main() {
         const LocationPickerScreen(loadMapTiles: false),
       );
 
-      expect(find.text('Pick starting point'), findsOneWidget);
+      expect(find.text('Pick starting point'), findsNothing);
+      expect(find.byTooltip('Back'), findsOneWidget);
       expect(
         find.text('Tap on the map to set the starting point.'),
         findsOneWidget,

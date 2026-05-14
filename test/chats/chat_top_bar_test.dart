@@ -71,7 +71,6 @@ final _profile = PublicProfile(
   uid: 'runner-2',
   name: 'Taylor',
   age: 29,
-  bio: 'Runner',
   gender: Gender.woman,
   city: 'mumbai',
 );

@@ -45,6 +45,10 @@ void main() {
 
         expect(container.read(selectedRunClubCityProvider), _city('delhi'));
         expect(container.read(runClubSearchQueryProvider), isEmpty);
+        expect(
+          container.read(selectedRunClubCityWasUserSelectedProvider),
+          true,
+        );
       },
     );
 
@@ -59,6 +63,7 @@ void main() {
           .autoSelectCity(_city('delhi'));
 
       expect(container.read(selectedRunClubCityProvider), _city('delhi'));
+      expect(container.read(selectedRunClubCityWasUserSelectedProvider), false);
     });
 
     test('autoSelectCityByName uses known profile cities', () {

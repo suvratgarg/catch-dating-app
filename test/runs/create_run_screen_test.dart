@@ -175,7 +175,7 @@ void main() {
         expect(find.text('1h 30m'), findsOneWidget);
 
         await _pickTodayDate(tester, today: now);
-        await _pickTimeInInputMode(tester, hour: '00', minute: '01');
+        await _pickTimeInInputMode(tester, hour: '1', minute: '59');
 
         expect(find.text('Choose a start time later than now'), findsOneWidget);
         expect(find.text('Select start time'), findsOneWidget);
@@ -216,7 +216,7 @@ void main() {
       await tester.tap(find.text('Confirm'));
       await _pumpTestAnimation(tester);
 
-      expect(find.text('19.12345, 72.98765'), findsOneWidget);
+      expect(find.text('Starting point pinned'), findsOneWidget);
 
       await tester.tap(find.byTooltip('Back'));
       await _pumpTestAnimation(tester);

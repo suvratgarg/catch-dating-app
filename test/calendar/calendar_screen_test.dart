@@ -13,6 +13,7 @@ import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
+import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +21,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
+import '../run_clubs/run_clubs_test_helpers.dart' as club_test;
 import '../runs/runs_test_helpers.dart';
-import '../test_pump_helpers.dart';
 
 void main() {
   group('CalendarScreen', () {
@@ -127,13 +128,14 @@ void main() {
         ],
       );
 
+      expect(find.text('Calendar'), findsOneWidget);
       expect(find.text(_monthYearLabel(firstRunStart)), findsOneWidget);
       expect(find.text('Planned'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
       expect(find.text('Distance'), findsOneWidget);
       expect(find.text('13 km'), findsOneWidget);
       expect(find.text('Next'), findsOneWidget);
-      expect(find.text('07:15'), findsAtLeastNWidgets(1));
+      expect(find.text('7:15 AM'), findsAtLeastNWidgets(1));
 
       await tester.scrollUntilVisible(
         find.text('Carter Road Promenade'),
@@ -145,8 +147,9 @@ void main() {
       expect(find.text(_agendaDayLabel(firstRunStart, now)), findsOneWidget);
       expect(find.text('Carter Road Promenade'), findsOneWidget);
       expect(find.text('Juhu Beach Gate'), findsOneWidget);
-      expect(find.text('5km · Easy · 1/20'), findsOneWidget);
-      expect(find.text('8km · Moderate · 2/12'), findsOneWidget);
+      expect(find.text('Stride Social'), findsAtLeastNWidgets(1));
+      expect(find.text('5km · Easy · 1/20 spots'), findsOneWidget);
+      expect(find.text('8km · Moderate · 2/12 spots'), findsOneWidget);
     });
 
     testWidgets('includes future saved runs as planned calendar rows', (
@@ -302,7 +305,8 @@ void main() {
         ],
       );
 
-      expect(find.text('Future Run 7'), findsNothing);
+      expect(find.text('Future Run 7'), findsOneWidget);
+      expect(find.text('Future Run 7').hitTestable(), findsNothing);
 
       await tester.scrollUntilVisible(
         find.text('Future Run 7'),
@@ -311,35 +315,49 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Future Run 7'), findsOneWidget);
+      expect(find.text('Future Run 7').hitTestable(), findsOneWidget);
     });
 
-    testWidgets('switches from agenda to day timeline', (tester) async {
-      final run = buildRun(
-        id: 'run-1',
-        startTime: DateTime(2026, 5, 7, 7, 15),
-        meetingPoint: 'Carter Road Promenade',
-        distanceKm: 5,
-        pace: PaceLevel.easy,
+    testWidgets('tapping a week date scrolls to that agenda day', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(390, 560);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final nextWeek = DateUtils.dateOnly(
+        DateTime.now().add(const Duration(days: 7)),
       );
+      final monday = nextWeek.subtract(Duration(days: nextWeek.weekday - 1));
+      final runs = List.generate(
+        7,
+        (index) => buildRun(
+          id: 'week-run-$index',
+          startTime: monday.add(Duration(days: index, hours: 7)),
+          meetingPoint: 'Week Run $index',
+          distanceKm: 5,
+          pace: PaceLevel.easy,
+        ),
+      );
+      final targetDate = DateUtils.dateOnly(runs.last.startTime);
 
       await _pumpCalendar(
         tester,
         overrides: [
           watchSignedUpRunsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Run>>([run])),
+          ).overrideWithValue(AsyncData<List<Run>>(runs)),
         ],
       );
 
-      expect(find.text('Day timeline'), findsNothing);
+      expect(find.text('Week Run 6'), findsOneWidget);
+      expect(find.text('Week Run 6').hitTestable(), findsNothing);
 
-      await tester.tap(find.text('Day'));
-      await pumpFeatureUi(tester);
+      await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
+      await tester.pumpAndSettle();
 
-      expect(find.text('Day timeline'), findsOneWidget);
-      expect(find.text('Carter Road Promenade'), findsOneWidget);
-      expect(find.text('5km · Easy'), findsOneWidget);
+      expect(find.text('Week Run 6').hitTestable(), findsOneWidget);
     });
 
     testWidgets(
@@ -403,6 +421,11 @@ void main() {
                   ),
                 ),
               ),
+              runClubsRepositoryProvider.overrideWith(
+                (ref) =>
+                    club_test.FakeRunClubsRepository()
+                      ..clubsById[runClub.id] = runClub,
+              ),
               fetchRunClubProvider(
                 runClub.id,
               ).overrideWithValue(AsyncData(runClub)),
@@ -456,6 +479,11 @@ Future<void> _pumpCalendar(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+        runClubsRepositoryProvider.overrideWith(
+          (ref) =>
+              club_test.FakeRunClubsRepository()
+                ..clubsById['club-1'] = buildRunClub(id: 'club-1'),
+        ),
         watchSavedRunDetailsForUserProvider(
           'runner-1',
         ).overrideWithValue(AsyncData<List<Run>>(savedRuns)),
@@ -497,8 +525,18 @@ RunParticipation _participation({
   );
 }
 
-String _timeLabel(DateTime date) =>
-    '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+String _timeLabel(DateTime date) => RunFormatters.time(date);
+
+Key _calendarWeekDayKey(DateTime date) {
+  return ValueKey<String>('calendar-week-day-${_dateKey(date)}');
+}
+
+String _dateKey(DateTime date) {
+  final day = DateUtils.dateOnly(date);
+  final month = day.month.toString().padLeft(2, '0');
+  final dateOfMonth = day.day.toString().padLeft(2, '0');
+  return '${day.year}-$month-$dateOfMonth';
+}
 
 String _monthYearLabel(DateTime date) {
   const months = [

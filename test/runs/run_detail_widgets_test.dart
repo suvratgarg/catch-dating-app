@@ -884,7 +884,7 @@ void main() {
       await tester.tap(locationLabel);
       await tester.pumpAndSettle();
 
-      expect(find.text('Run location'), findsOneWidget);
+      expect(find.text('Run location'), findsNothing);
       expect(find.text('Get directions'), findsOneWidget);
     });
   });

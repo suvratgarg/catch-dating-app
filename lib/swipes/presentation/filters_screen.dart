@@ -149,10 +149,6 @@ class _FiltersScreenState extends ConsumerState<FiltersScreen> {
                                   preferredMatchAgeOpenEndedDisplayAge -
                                   minimumProfileAge,
                               values: ageRange,
-                              labels: RangeLabels(
-                                '${ageRange.start.round()}',
-                                formatPreferredMatchAge(ageRange.end.round()),
-                              ),
                               onChanged: (values) =>
                                   setState(() => _ageRange = values),
                             ),

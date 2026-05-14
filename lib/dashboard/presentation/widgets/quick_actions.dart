@@ -14,12 +14,6 @@ class QuickActions extends StatelessWidget {
 
   static final _actions = [
     _QuickAction(
-      icon: Icons.grid_view_rounded,
-      label: 'Browse runs',
-      route: Routes.runClubsListScreen.path,
-      opensRootTab: true,
-    ),
-    _QuickAction(
       icon: Icons.map_outlined,
       label: 'Map view',
       route: Routes.runMapScreen.path,
@@ -38,18 +32,14 @@ class QuickActions extends StatelessWidget {
 
   void _onTap(BuildContext context, _QuickAction action) {
     if (action.route == null) return;
-    if (action.opensRootTab) {
-      context.go(action.route!);
-    } else {
-      context.push(action.route!);
-    }
+    context.push(action.route!);
   }
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 520 ? 4 : 2;
+        final columns = constraints.maxWidth >= 320 ? _actions.length : 2;
         final tileWidth =
             (constraints.maxWidth - (_tileSpacing * (columns - 1))) / columns;
 
@@ -119,15 +109,9 @@ class _QuickActionTile extends StatelessWidget {
 }
 
 class _QuickAction {
-  const _QuickAction({
-    required this.icon,
-    required this.label,
-    this.route,
-    this.opensRootTab = false,
-  });
+  const _QuickAction({required this.icon, required this.label, this.route});
 
   final IconData icon;
   final String label;
   final String? route;
-  final bool opensRootTab;
 }

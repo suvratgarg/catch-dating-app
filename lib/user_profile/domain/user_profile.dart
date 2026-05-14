@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -168,6 +169,18 @@ enum RunReason implements Labelled {
   final String label;
 }
 
+enum PreferredRunTime implements Labelled {
+  earlyMorning('Early morning'),
+  morning('Morning'),
+  afternoon('Afternoon'),
+  evening('Evening'),
+  night('Night');
+
+  const PreferredRunTime(this.label);
+  @override
+  final String label;
+}
+
 // ── Domain model ──────────────────────────────────────────────────────────────
 
 @freezed
@@ -188,12 +201,15 @@ abstract class UserProfile with _$UserProfile {
 
     // Optional profile/contact field. Authentication is phone-only.
     @Default('') String email,
-    @Default('') String bio,
     String? instagramHandle,
+
+    // Personality prompts
+    @Default([]) List<ProfilePromptAnswer> profilePrompts,
 
     // Photos
     @Default([]) List<String> photoUrls,
     @Default([]) List<String> photoThumbnailUrls,
+    @Default([]) List<PhotoPromptAnswer> photoPrompts,
 
     // Location
     String? city,
@@ -229,6 +245,7 @@ abstract class UserProfile with _$UserProfile {
     @Default(420) int paceMaxSecsPerKm,
     @Default([]) List<PreferredDistance> preferredDistances,
     @Default([]) List<RunReason> runningReasons,
+    @Default([]) List<PreferredRunTime> preferredRunTimes,
 
     // Notification / discovery preferences
     @Default(true) bool prefsNewCatches,
@@ -241,7 +258,7 @@ abstract class UserProfile with _$UserProfile {
   }) = _UserProfile;
 
   factory UserProfile.fromJson(Map<String, dynamic> json) =>
-      _$UserProfileFromJson(json);
+      _$UserProfileFromJson(_migratePromptJson(json));
 
   int get age => calculateAge(dateOfBirth);
 
@@ -278,4 +295,23 @@ abstract class UserProfile with _$UserProfile {
     if (photoUrl != null) return photoUrl;
     return null;
   }
+}
+
+Map<String, dynamic> _migratePromptJson(Map<String, dynamic> json) {
+  final migrated = Map<String, dynamic>.from(json);
+  final legacyBio = migrated['bio'];
+  final hasStructuredPrompts =
+      migrated['profilePrompts'] is List &&
+      (migrated['profilePrompts'] as List).isNotEmpty;
+
+  if (!hasStructuredPrompts &&
+      legacyBio is String &&
+      legacyBio.trim().isNotEmpty) {
+    migrated['profilePrompts'] = profilePromptsToJson(
+      normalizeProfilePromptAnswers(const [], legacyBio: legacyBio),
+    );
+  }
+
+  migrated.remove('bio');
+  return migrated;
 }
