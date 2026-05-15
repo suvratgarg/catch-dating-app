@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "logicalName": "profilePhoto",
+  "currentPhase": "design_scoped",
+  "reason": "Profile photos are currently represented by parallel arrays for full URLs, thumbnail URLs, and photo prompt metadata. That shape is easy to render but brittle for deletion, moderation, thumbnail repair, prompt edits, and future per-photo analytics because every consumer must keep indexes aligned.",
+  "currentShape": {
+    "userProfileFields": [
+      "users/{uid}.photoUrls",
+      "users/{uid}.photoThumbnailUrls",
+      "users/{uid}.photoPrompts"
+    ],
+    "publicProfileFields": [
+      "publicProfiles/{uid}.photoUrls",
+      "publicProfiles/{uid}.photoThumbnailUrls",
+      "publicProfiles/{uid}.photoPrompts"
+    ],
+    "storagePathPattern": "profilePhotos/{uid}/photos/{photoIndexOrGeneratedName}",
+    "thumbnailPathPattern": "profilePhotos/{uid}/photos/{photoId}_thumb.jpg"
+  },
+  "candidateShape": {
+    "field": "profilePhotos",
+    "contract": "contracts/embedded/profile_photo.schema.json",
+    "description": "A stable ordered array of photo objects on users/{uid} and projected publicProfiles/{uid}.",
+    "item": {
+      "id": "stable client/server generated photo id, not an array index",
+      "url": "download URL for the full-size display image",
+      "thumbnailUrl": "download URL for tiny avatar and list surfaces",
+      "storagePath": "Firebase Storage object path for the full-size image",
+      "thumbnailStoragePath": "Firebase Storage object path for the thumbnail image",
+      "prompt": {
+        "promptId": "catalog photo prompt id",
+        "prompt": "catalog prompt display text",
+        "caption": "user supplied caption"
+      },
+      "moderation": {
+        "status": "pending | approved | rejected",
+        "reason": "optional machine or reviewer reason",
+        "reviewedAt": "optional timestamp"
+      },
+      "position": "integer sort order",
+      "createdAt": "timestamp",
+      "updatedAt": "timestamp"
+    }
+  },
+  "nonGoalsForFirstMigration": [
+    "Do not change the profile upload UI in the same commit as the storage model migration.",
+    "Do not delete legacy photo arrays until public profile projection, avatar code, and thumbnail generation read the new object shape.",
+    "Do not move Firebase Storage objects until URL and storage-path parity has been verified."
+  ],
+  "phases": [
+    {
+      "id": "design_scoped",
+      "status": "active",
+      "description": "Document the target shape, consumers, risks, and migration gates while keeping live writes on parallel arrays."
+    },
+    {
+      "id": "contract",
+      "status": "pending",
+      "description": "Add JSON Schema definitions for ProfilePhoto and profilePhotos patch operations, then generate Dart and TypeScript types."
+    },
+    {
+      "id": "dual_read",
+      "status": "pending",
+      "description": "Expose a domain getter that builds ProfilePhoto objects from either profilePhotos or the legacy arrays so renderers do not know which storage shape is primary."
+    },
+    {
+      "id": "dual_write",
+      "status": "pending",
+      "description": "Write both profilePhotos and legacy arrays for uploads, deletes, thumbnail repair, and prompt edits."
+    },
+    {
+      "id": "backfill",
+      "status": "pending",
+      "description": "Dry-run-first tooling derives profilePhotos from parallel arrays, validates storage paths where available, and reports index gaps before apply."
+    },
+    {
+      "id": "new_primary",
+      "status": "pending",
+      "description": "Read and project profilePhotos as the canonical shape while retaining legacy arrays as compatibility output."
+    },
+    {
+      "id": "retire_legacy_arrays",
+      "status": "pending",
+      "description": "Remove photoUrls, photoThumbnailUrls, and photoPrompts only after app versions that require the old arrays are no longer supported."
+    }
+  ],
+  "knownConsumers": [
+    "lib/user_profile/presentation/widgets/profile_tab.dart",
+    "lib/public_profile/domain/profile_insights.dart",
+    "functions/src/profiles/generateProfilePhotoThumbnail.ts",
+    "functions/src/shared/profileProjection.ts",
+    "functions/src/profiles/updateUserProfile.ts",
+    "contracts/firestore/users.schema.json",
+    "contracts/firestore/public_profiles.schema.json"
+  ],
+  "guardsRequiredBeforeApply": [
+    "Generated Dart and TypeScript ProfilePhoto types exist.",
+    "Projection parity tests cover profilePhotos -> publicProfiles.",
+    "Thumbnail generation updates the matching ProfilePhoto by id rather than by array index.",
+    "Backfill dry run reports legacy array length mismatches and missing storage paths.",
+    "Profile preview, public profile, and catches surfaces render through the same ProfilePhoto domain getter."
+  ]
+}

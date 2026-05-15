@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/onboarding_drafts.schema.json",
+  "title": "OnboardingDraftDocument",
+  "description": "Owner-private, intentionally extensible onboarding draft stored at onboarding_drafts/{uid}.",
+  "type": "object",
+  "additionalProperties": true,
+  "x-firestore-collection": "onboarding_drafts",
+  "x-firestore-path": "onboarding_drafts/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "authenticated draft owner",
+  "required": ["step"],
+  "properties": {
+    "step": {"type": "integer", "minimum": 0},
+    "draftVersion": {"type": "integer", "minimum": 0},
+    "firstName": {"type": "string", "maxLength": 80},
+    "lastName": {"type": "string", "maxLength": 80},
+    "dateOfBirth": {"$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"},
+    "phoneNumber": {"type": "string", "maxLength": 32},
+    "countryCode": {"type": "string", "maxLength": 8},
+    "gender": {
+      "anyOf": [
+        {"$ref": "../shared/profile_common.schema.json#/definitions/gender"},
+        {"type": "null"}
+      ]
+    },
+    "interestedInGenders": {
+      "type": "array",
+      "items": {"$ref": "../shared/profile_common.schema.json#/definitions/gender"},
+      "uniqueItems": true
+    },
+    "instagramHandle": {"type": ["string", "null"], "maxLength": 80},
+    "profilePrompts": {
+      "type": "array",
+      "items": {"$ref": "../embedded/profile_prompt_answer.schema.json"},
+      "maxItems": 3
+    }
+  }
+}

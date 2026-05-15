@@ -1,0 +1,10 @@
+{
+  "path": {
+    "matchId": "match-1"
+  },
+  "data": {
+    "unreadCounts": {
+      "runner-1": 0
+    }
+  }
+}

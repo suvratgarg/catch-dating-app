@@ -1,0 +1,176 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/public_profiles.schema.json",
+  "title": "PublicProfileDocument",
+  "description": "Backend-owned public profile projection stored at publicProfiles/{uid}. The uid is the document id and is not stored in document data.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "publicProfiles",
+  "x-firestore-path": "publicProfiles/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "syncPublicProfile trigger",
+  "x-source": "users/{uid}",
+  "required": [
+    "name",
+    "age",
+    "gender",
+    "profilePrompts",
+    "photoUrls",
+    "photoThumbnailUrls",
+    "photoPrompts",
+    "paceMinSecsPerKm",
+    "paceMaxSecsPerKm",
+    "preferredDistances",
+    "runningReasons",
+    "preferredRunTimes"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "age": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/age"
+    },
+    "gender": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/gender"
+    },
+    "synthetic": {
+      "type": "boolean",
+      "description": "Internal demo seed marker used for cleanup and diagnostics."
+    },
+    "seedPrefix": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed prefix used for cleanup and diagnostics."
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120,
+      "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+    },
+    "demoOps": {
+      "type": "boolean",
+      "description": "Internal demo-operations marker used for cleanup and diagnostics."
+    },
+    "demoOpsId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180,
+      "description": "Internal demo-operations id used for cleanup and diagnostics."
+    },
+    "demoOpsCommand": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    },
+    "profilePrompts": {
+      "type": "array",
+      "maxItems": 3,
+      "items": {
+        "$ref": "../embedded/profile_prompt_answer.schema.json"
+      }
+    },
+    "photoUrls": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList"
+    },
+    "photoThumbnailUrls": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList"
+    },
+    "photoPrompts": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "../embedded/photo_prompt_answer.schema.json"
+      }
+    },
+    "city": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/citySlug"
+    },
+    "height": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/heightCm"
+    },
+    "occupation": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString"
+    },
+    "company": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/nullableString"
+    },
+    "education": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/educationLevel"
+    },
+    "religion": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/religion"
+    },
+    "languages": {
+      "type": "array",
+      "maxItems": 20,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/profile_common.schema.json#/definitions/language"
+      }
+    },
+    "relationshipGoal": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/relationshipGoal"
+    },
+    "drinking": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/drinkingHabit"
+    },
+    "smoking": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/smokingHabit"
+    },
+    "workout": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/workoutFrequency"
+    },
+    "diet": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/dietaryPreference"
+    },
+    "children": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/childrenStatus"
+    },
+    "paceMinSecsPerKm": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm"
+    },
+    "paceMaxSecsPerKm": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/paceSecsPerKm"
+    },
+    "preferredDistances": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/profile_common.schema.json#/definitions/preferredDistance"
+      }
+    },
+    "runningReasons": {
+      "type": "array",
+      "maxItems": 12,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/profile_common.schema.json#/definitions/runReason"
+      }
+    },
+    "preferredRunTimes": {
+      "type": "array",
+      "maxItems": 8,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "../shared/profile_common.schema.json#/definitions/preferredRunTime"
+      }
+    }
+  },
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "x-legacy-tolerated-fields": ["bio"],
+  "x-hidden-fields": ["phoneNumber", "email", "instagramHandle", "latitude", "longitude", "interestedInGenders", "preferences"]
+}

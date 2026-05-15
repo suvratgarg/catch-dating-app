@@ -2,11 +2,37 @@
 import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
+import {isDeepStrictEqual} from "node:util";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {
   assertScheduleCompliance,
   buildScheduleLockDocs,
 } from "./demo_schedule_policy.mjs";
+import {
+  photoPromptCatalog,
+  profilePromptCatalog,
+} from "./generated/schema_contract_registry.mjs";
+import {
+  assertValidSchemaPayload,
+  validateActivityNotificationDocument,
+  validateChatMessageDocument,
+  validateMatchDocument,
+  validatePaymentDocument,
+  validatePhotoPromptAnswer,
+  validateProfilePromptAnswer,
+  validatePublicProfileDocument,
+  validateReviewDocument,
+  validateRunClubScheduleLockDocument,
+  validateRunClubDocument,
+  validateRunClubMembershipDocument,
+  validateRunDocument,
+  validateRunParticipationDocument,
+  validateSavedRunDocument,
+  validateSeedRunManifestDocument,
+  validateSwipeDocument,
+  validateUserRunScheduleLockDocument,
+  validateUserProfileDocument,
+} from "./generated/schema_contract_validators.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "..");
@@ -18,6 +44,9 @@ const admin = requireFromFunctions("firebase-admin");
 const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
 const MATCH_MESSAGE_LIMIT = 18;
+
+const profilePromptsById = promptsById(profilePromptCatalog);
+const photoPromptsById = promptsById(photoPromptCatalog);
 
 const cityData = {
   mumbai: {label: "Mumbai", lat: 19.076, lng: 72.8777, areas: ["Bandra", "Marine Drive", "Powai"]},
@@ -95,7 +124,7 @@ const companies = [
   "Freelance", "Urban Loop", "Northstar", "Founders Office", "Studio Run",
   "Cloudline", "Stride Labs", "Independent",
 ];
-const bios = [
+const perfectRunAnswers = [
   "Easy kilometres, strong coffee, and plans that start on time.",
   "Training for a faster 10K and always up for post-run breakfast.",
   "I like neighbourhood routes, clean playlists, and low-pressure chats.",
@@ -103,6 +132,82 @@ const bios = [
   "Mostly here for good routes, kind people, and a reason to wake up early.",
   "Race curious, brunch serious, and happiest near a waterfront route.",
 ];
+const afterRunAnswers = [
+  "Ordering coffee before my watch has finished syncing.",
+  "Looking for the best dosa within walking distance.",
+  "Stretching badly and pretending that counts as recovery.",
+  "Saving the route so I can argue it was uphill both ways.",
+  "Asking who wants to make this a weekly thing.",
+  "Finding a shaded bench and a cold lime soda.",
+];
+const greenFlagAnswers = [
+  "I will slow down if someone is having a rough kilometre.",
+  "I remember birthdays, water stops, and playlist requests.",
+  "I can make a plan without turning it into a spreadsheet.",
+  "I am competitive only with my own previous splits.",
+  "I show up on time and bring extra safety pins on race day.",
+  "I know when to talk and when to enjoy a quiet stretch.",
+];
+const photoCaptions = [
+  "Usually happier after kilometre three.",
+  "The smile is real; the pace was suspicious.",
+  "Proof that I occasionally leave the treadmill.",
+  "My favorite kind of post-run light.",
+  "Race day nerves, finish line energy.",
+  "Not pictured: the snack I was thinking about.",
+];
+
+function promptsById(catalog) {
+  return new Map(catalog.prompts.map((prompt) => [prompt.id, prompt]));
+}
+
+function profilePromptAnswer(promptId, answer) {
+  const prompt = profilePromptsById.get(promptId);
+  if (!prompt) throw new Error(`Unknown profile prompt id: ${promptId}`);
+  return {
+    promptId: prompt.id,
+    prompt: prompt.title,
+    answer,
+  };
+}
+
+function photoPromptAnswer(photoIndex, promptId, caption) {
+  const prompt = photoPromptsById.get(promptId);
+  if (!prompt) throw new Error(`Unknown photo prompt id: ${promptId}`);
+  return {
+    photoIndex,
+    promptId: prompt.id,
+    prompt: prompt.title,
+    caption,
+  };
+}
+
+function profilePromptsForIndex(index) {
+  return [
+    profilePromptAnswer(
+      "perfectRun",
+      perfectRunAnswers[index % perfectRunAnswers.length]
+    ),
+    profilePromptAnswer(
+      "afterRun",
+      afterRunAnswers[index % afterRunAnswers.length]
+    ),
+    profilePromptAnswer(
+      "greenFlag",
+      greenFlagAnswers[index % greenFlagAnswers.length]
+    ),
+  ];
+}
+
+function photoPromptsForIndex(index) {
+  return [
+    photoPromptAnswer(
+      0,
+      "proofIRun",
+      photoCaptions[index % photoCaptions.length]
+    ),
+  ];
+}
 const profilePhotos = [
   "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80",
@@ -237,11 +342,12 @@ export async function main(argv = process.argv.slice(2)) {
   const writePlan = args.appendAnchors ?
     await createAppendWritePlan({db, seed, anchorProfiles}) :
     createWritePlan(seed);
+  const schemaValidation = validateSeedDocuments(writePlan);
 
   if (args.json) {
-    console.log(JSON.stringify(summary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}), null, 2));
+    console.log(JSON.stringify(summary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds, schemaValidation}), null, 2));
   } else {
-    printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds});
+    printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds, schemaValidation});
   }
 
   if (!args.apply) {
@@ -601,6 +707,8 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
       const repetition = Math.floor(index / firstNames.length);
       const photo = profilePhotos[(index + repetition) % profilePhotos.length];
       const thumbnail = thumbnailUrlForPhoto(photo);
+      const profilePrompts = profilePromptsForIndex(index);
+      const photoPrompts = photoPromptsForIndex(index);
       const userDoc = {
         ...seedMarker,
         name: `${firstName} ${lastName}`,
@@ -612,10 +720,11 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         phoneNumber: `+919900${String(index + 1).padStart(6, "0")}`,
         profileComplete: true,
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${index + 1}@example.test`,
-        bio: bios[index % bios.length],
+        profilePrompts,
         instagramHandle: `${firstName.toLowerCase()}runs${index + 1}`,
         photoUrls: [photo],
         photoThumbnailUrls: thumbnail ? [thumbnail] : [],
+        photoPrompts,
         city,
         latitude: lat,
         longitude: lng,
@@ -638,6 +747,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         paceMaxSecsPerKm: 375 + (index % 5) * 20,
         preferredDistances: [["fiveK", "tenK"], ["tenK"], ["halfMarathon"], ["fiveK", "halfMarathon"]][index % 4],
         runningReasons: [["fitness", "social"], ["community", "mindfulness"], ["challenge", "raceTraining"]][index % 3],
+        preferredRunTimes: [["morning"], ["evening"], ["earlyMorning"], ["morning", "evening"], ["afternoon"]][index % 5],
         prefsNewCatches: true,
         prefsMessages: true,
         prefsRunReminders: true,
@@ -693,10 +803,15 @@ export function publicProfileFromUserDoc(userDoc) {
     scenario: userDoc.scenario,
     name: userDoc.displayName || userDoc.firstName || firstWord(userDoc.name),
     age: ageFromTimestamp(userDoc.dateOfBirth) ?? 30,
-    bio: userDoc.bio,
     gender: userDoc.gender,
+    profilePrompts: Array.isArray(userDoc.profilePrompts) ?
+      userDoc.profilePrompts :
+      [],
     photoUrls: userDoc.photoUrls,
     photoThumbnailUrls: normalizedPhotoThumbnailUrls(userDoc),
+    photoPrompts: Array.isArray(userDoc.photoPrompts) ?
+      userDoc.photoPrompts :
+      [],
     city: userDoc.city,
     height: userDoc.height,
     occupation: userDoc.occupation,
@@ -714,6 +829,7 @@ export function publicProfileFromUserDoc(userDoc) {
     paceMaxSecsPerKm: userDoc.paceMaxSecsPerKm,
     preferredDistances: userDoc.preferredDistances,
     runningReasons: userDoc.runningReasons,
+    preferredRunTimes: userDoc.preferredRunTimes,
   };
 }
 
@@ -1281,7 +1397,357 @@ function createWritePlan(seed) {
   return {
     docs: seed.docs,
     paths: seed.docs.map((doc) => doc.path),
+    manifest: seed.manifest,
   };
+}
+
+export function validateSeedDocuments(writePlan) {
+  const result = {
+    users: 0,
+    publicProfiles: 0,
+    runClubs: 0,
+    runClubMemberships: 0,
+    runs: 0,
+    runParticipations: 0,
+    runClubScheduleLocks: 0,
+    userRunScheduleLocks: 0,
+    savedRuns: 0,
+    payments: 0,
+    swipes: 0,
+    matches: 0,
+    chatMessages: 0,
+    reviews: 0,
+    activityNotifications: 0,
+    seedManifests: 0,
+    profilePromptAnswers: 0,
+    photoPromptAnswers: 0,
+    projectionPairs: 0,
+  };
+  const userDocsByUid = new Map();
+  const publicDocsByUid = new Map();
+
+  for (const doc of writePlan.docs) {
+    if (isUserProfilePath(doc.path)) {
+      userDocsByUid.set(uidFromProfilePath(doc.path), doc.data);
+      const data = schemaSerializableFirestoreData(doc.data);
+      validatePromptAnswers({
+        path: doc.path,
+        data,
+        result,
+      });
+      assertValidSchemaPayload(
+        validateUserProfileDocument,
+        data,
+        doc.path
+      );
+      result.users += 1;
+    } else if (isPublicProfilePath(doc.path)) {
+      publicDocsByUid.set(uidFromProfilePath(doc.path), doc.data);
+      const data = schemaSerializableFirestoreData(doc.data);
+      validatePromptAnswers({
+        path: doc.path,
+        data,
+        result,
+      });
+      assertValidSchemaPayload(
+        validatePublicProfileDocument,
+        data,
+        doc.path
+      );
+      result.publicProfiles += 1;
+    } else if (isRunClubPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunClubDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runClubs += 1;
+    } else if (isRunClubMembershipPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunClubMembershipDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runClubMemberships += 1;
+    } else if (isRunPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runs += 1;
+    } else if (isRunParticipationPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunParticipationDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runParticipations += 1;
+    } else if (isRunClubScheduleLockPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunClubScheduleLockDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runClubScheduleLocks += 1;
+    } else if (isUserRunScheduleLockPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateUserRunScheduleLockDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.userRunScheduleLocks += 1;
+    } else if (isSavedRunPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateSavedRunDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.savedRuns += 1;
+    } else if (isPaymentPath(doc.path)) {
+      assertValidSchemaPayload(
+        validatePaymentDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.payments += 1;
+    } else if (isSwipePath(doc.path)) {
+      assertValidSchemaPayload(
+        validateSwipeDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.swipes += 1;
+    } else if (isMatchPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateMatchDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.matches += 1;
+    } else if (isChatMessagePath(doc.path)) {
+      assertValidSchemaPayload(
+        validateChatMessageDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.chatMessages += 1;
+    } else if (isReviewPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateReviewDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.reviews += 1;
+    } else if (isActivityNotificationPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateActivityNotificationDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.activityNotifications += 1;
+    }
+  }
+
+  if (writePlan.manifest) {
+    assertValidSchemaPayload(
+      validateSeedRunManifestDocument,
+      schemaSerializableFirestoreData(writePlan.manifest),
+      `seedRuns/${writePlan.manifest.manifestId ?? "<unknown>"}`
+    );
+    result.seedManifests += 1;
+  }
+
+  for (const [uid, userDoc] of userDocsByUid.entries()) {
+    const publicDoc = publicDocsByUid.get(uid);
+    if (!publicDoc) continue;
+    const expected = schemaSerializableFirestoreData(
+      publicProfileFromUserDoc(userDoc)
+    );
+    const actual = schemaSerializableFirestoreData(publicDoc);
+    if (!isDeepStrictEqual(actual, expected)) {
+      throw new Error(
+        `publicProfiles/${uid} projection mismatch for users/${uid}.`
+      );
+    }
+    result.projectionPairs += 1;
+  }
+
+  return result;
+}
+
+export const validateSeedProfileDocuments = validateSeedDocuments;
+
+function validatePromptAnswers({path: docPath, data, result}) {
+  for (const [index, prompt] of (data.profilePrompts ?? []).entries()) {
+    assertKnownProfilePrompt(
+      prompt,
+      `${docPath}.profilePrompts[${index}]`
+    );
+    assertValidSchemaPayload(
+      validateProfilePromptAnswer,
+      prompt,
+      `${docPath}.profilePrompts[${index}]`
+    );
+    result.profilePromptAnswers += 1;
+  }
+  for (const [index, prompt] of (data.photoPrompts ?? []).entries()) {
+    assertKnownPhotoPrompt(
+      prompt,
+      `${docPath}.photoPrompts[${index}]`
+    );
+    assertValidSchemaPayload(
+      validatePhotoPromptAnswer,
+      prompt,
+      `${docPath}.photoPrompts[${index}]`
+    );
+    result.photoPromptAnswers += 1;
+  }
+}
+
+function assertKnownProfilePrompt(prompt, label) {
+  const expected = profilePromptsById.get(prompt.promptId);
+  if (!expected) {
+    throw new Error(`${label} uses unknown profile prompt id: ${prompt.promptId}`);
+  }
+  if (prompt.prompt !== expected.title) {
+    throw new Error(
+      `${label} prompt title mismatch for ${prompt.promptId}: ` +
+      `expected "${expected.title}", got "${prompt.prompt}"`
+    );
+  }
+}
+
+function assertKnownPhotoPrompt(prompt, label) {
+  const expected = photoPromptsById.get(prompt.promptId);
+  if (!expected) {
+    throw new Error(`${label} uses unknown photo prompt id: ${prompt.promptId}`);
+  }
+  if (prompt.prompt !== expected.title) {
+    throw new Error(
+      `${label} prompt title mismatch for ${prompt.promptId}: ` +
+      `expected "${expected.title}", got "${prompt.prompt}"`
+    );
+  }
+}
+
+function isUserProfilePath(docPath) {
+  return /^users\/[^/]+$/.test(docPath);
+}
+
+function isPublicProfilePath(docPath) {
+  return /^publicProfiles\/[^/]+$/.test(docPath);
+}
+
+function isRunClubPath(docPath) {
+  return /^runClubs\/[^/]+$/.test(docPath);
+}
+
+function isRunClubMembershipPath(docPath) {
+  return /^runClubMemberships\/[^/]+$/.test(docPath);
+}
+
+function isRunPath(docPath) {
+  return /^runs\/[^/]+$/.test(docPath);
+}
+
+function isRunParticipationPath(docPath) {
+  return /^runParticipations\/[^/]+$/.test(docPath);
+}
+
+function isRunClubScheduleLockPath(docPath) {
+  return /^runClubScheduleLocks\/[^/]+$/.test(docPath);
+}
+
+function isUserRunScheduleLockPath(docPath) {
+  return /^userRunScheduleLocks\/[^/]+$/.test(docPath);
+}
+
+function isSavedRunPath(docPath) {
+  return /^savedRuns\/[^/]+$/.test(docPath);
+}
+
+function isPaymentPath(docPath) {
+  return /^payments\/[^/]+$/.test(docPath);
+}
+
+function isSwipePath(docPath) {
+  return /^swipes\/[^/]+\/outgoing\/[^/]+$/.test(docPath);
+}
+
+function isMatchPath(docPath) {
+  return /^matches\/[^/]+$/.test(docPath);
+}
+
+function isChatMessagePath(docPath) {
+  return /^matches\/[^/]+\/messages\/[^/]+$/.test(docPath);
+}
+
+function isReviewPath(docPath) {
+  return /^reviews\/[^/]+$/.test(docPath);
+}
+
+function isActivityNotificationPath(docPath) {
+  return /^notifications\/[^/]+\/items\/[^/]+$/.test(docPath);
+}
+
+function uidFromProfilePath(docPath) {
+  return docPath.split("/")[1];
+}
+
+function schemaSerializableFirestoreData(value) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (isFirestoreTimestamp(value)) {
+    return schemaSerializableTimestamp(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => schemaSerializableFirestoreData(item));
+  }
+  if (typeof value === "object") {
+    const result = {};
+    for (const [key, item] of Object.entries(value)) {
+      const serialized = schemaSerializableFirestoreData(item);
+      if (serialized !== undefined) result[key] = serialized;
+    }
+    return result;
+  }
+  return value;
+}
+
+function isFirestoreTimestamp(value) {
+  return value &&
+    typeof value === "object" &&
+    typeof value.toDate === "function" &&
+    typeof value.toMillis === "function";
+}
+
+function schemaSerializableTimestamp(timestamp) {
+  const seconds = firstInteger(
+    timestamp.seconds,
+    timestamp._seconds
+  );
+  const nanoseconds = firstInteger(
+    timestamp.nanoseconds,
+    timestamp._nanoseconds
+  );
+  if (seconds !== null && nanoseconds !== null) {
+    return {_seconds: seconds, _nanoseconds: nanoseconds};
+  }
+
+  const millis = timestamp.toMillis();
+  const fallbackSeconds = Math.floor(millis / 1000);
+  return {
+    _seconds: fallbackSeconds,
+    _nanoseconds: Math.round((millis - fallbackSeconds * 1000) * 1_000_000),
+  };
+}
+
+function firstInteger(...values) {
+  for (const value of values) {
+    if (Number.isInteger(value)) return value;
+  }
+  return null;
 }
 
 async function readExistingSeedTime(firestore, seedId) {
@@ -1762,7 +2228,16 @@ async function applyWritePlan({db: firestore, docs}) {
   return {written};
 }
 
-function printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}) {
+function printSummary({
+  args,
+  projectId,
+  scenario,
+  anchorProfiles,
+  seed,
+  writePlan,
+  missingPublicProfileIds,
+  schemaValidation,
+}) {
   const identityDiagnostics = syntheticPublicIdentityDiagnostics(seed.docs);
   console.log("Catch demo data seed plan");
   console.log(`Project: ${projectId}`);
@@ -1785,6 +2260,15 @@ function printSummary({args, projectId, scenario, anchorProfiles, seed, writePla
     console.log(`- ${collection}: ${count}`);
   }
   console.log(`\nTotal docs to write: ${writePlan.docs.length}`);
+  console.log(
+    `Schema-validated docs: ${schemaValidation.users} users, ` +
+    `${schemaValidation.publicProfiles} public profiles, ` +
+    `${schemaValidation.runClubs} run clubs, ` +
+    `${schemaValidation.runs} runs, ` +
+    `${schemaValidation.runParticipations} participations, ` +
+    `${schemaValidation.swipes} decisions, ` +
+    `${schemaValidation.matches} matches`
+  );
   if (identityDiagnostics.duplicateNamePhotoPairs > 0) {
     console.log(
       `Warning: ${identityDiagnostics.duplicateNamePhotoPairs} duplicate synthetic public name/photo pairs generated.`
@@ -1793,7 +2277,16 @@ function printSummary({args, projectId, scenario, anchorProfiles, seed, writePla
   console.log(`Manifest: seedRuns/${seed.manifestId}`);
 }
 
-function summary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}) {
+function summary({
+  args,
+  projectId,
+  scenario,
+  anchorProfiles,
+  seed,
+  writePlan,
+  missingPublicProfileIds,
+  schemaValidation,
+}) {
   return {
     projectId,
     emulatorHost: args.emulatorHost,
@@ -1810,6 +2303,7 @@ function summary({args, projectId, scenario, anchorProfiles, seed, writePlan, mi
     missingPublicProfileIds,
     syntheticPublicIdentityDiagnostics: syntheticPublicIdentityDiagnostics(seed.docs),
     counts: seed.counts,
+    schemaValidation,
     totalDocsToWrite: writePlan.docs.length,
     manifestPath: `seedRuns/${seed.manifestId}`,
   };

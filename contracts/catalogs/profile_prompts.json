@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "kind": "profilePrompts",
+  "limits": {
+    "maxAnswers": 3,
+    "maxPromptIdLength": 80,
+    "maxPromptTitleLength": 140,
+    "maxAnswerLength": 300
+  },
+  "defaultPromptIds": ["perfectRun", "afterRun", "greenFlag"],
+  "prompts": [
+    {
+      "id": "perfectRun",
+      "title": "A perfect run with me looks like...",
+      "placeholder": "Tell runners what kind of run feels like you."
+    },
+    {
+      "id": "afterRun",
+      "title": "After a run, you can usually find me...",
+      "placeholder": "Coffee, dosa, stretching, playlists..."
+    },
+    {
+      "id": "greenFlag",
+      "title": "My green flag is...",
+      "placeholder": "Share something specific and easy to respond to."
+    },
+    {
+      "id": "getAlongIf",
+      "title": "We'll get along if...",
+      "placeholder": "Name the energy, habits, or humor you like."
+    },
+    {
+      "id": "favoriteRoute",
+      "title": "My favorite running route has...",
+      "placeholder": "Shade, chaos, hills, street food, sunrise..."
+    }
+  ]
+}

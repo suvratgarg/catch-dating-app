@@ -114,23 +114,33 @@ test("updateUserProfileHandler validates and applies profile patches",
     await updateUserProfileHandler(
       request("runner-1", {
         fields: {
-          name: "Runner Updated",
-          displayName: "Runner R.",
+          name: " Runner Updated ",
+          displayName: " Runner R. ",
+          email: " runner@example.com ",
+          instagramHandle: " @runner.one ",
           dateOfBirth: 946684800000,
           gender: "woman",
           profilePrompts: [{
-            promptId: "perfectRun",
-            prompt: "A perfect run with me looks like...",
+            promptId: " perfectRun ",
+            prompt: " A perfect run with me looks like... ",
             answer: "first\n\n\nsecond",
           }],
           photoPrompts: [{
             photoIndex: 0,
-            promptId: "proofIRun",
-            prompt: "Proof I actually run",
+            promptId: " proofIRun ",
+            prompt: " Proof I actually run ",
             caption: "finish\n\n\nline",
           }],
           photoUrls: ["https://example.test/profile.jpg"],
+          city: " indore ",
+          occupation: " Runner ",
+          company: " Catch ",
+          languages: [" english "],
           paceMinSecsPerKm: 300,
+          height: 120,
+          preferredDistances: [" tenK "],
+          runningReasons: [" community "],
+          preferredRunTimes: [" morning "],
           prefsWeeklyDigest: true,
         },
       }),
@@ -140,6 +150,8 @@ test("updateUserProfileHandler validates and applies profile patches",
     assert.deepEqual(h.firestore.get("users/runner-1"), {
       name: "Runner Updated",
       displayName: "Runner R.",
+      email: "runner@example.com",
+      instagramHandle: "runner.one",
       profileComplete: false,
       dateOfBirth: {kind: "timestamp", millis: 946684800000},
       gender: "woman",
@@ -155,7 +167,15 @@ test("updateUserProfileHandler validates and applies profile patches",
         caption: "finish\n\nline",
       }],
       photoUrls: ["https://example.test/profile.jpg"],
+      city: "indore",
+      occupation: "Runner",
+      company: "Catch",
+      languages: ["english"],
       paceMinSecsPerKm: 300,
+      height: 120,
+      preferredDistances: ["tenK"],
+      runningReasons: ["community"],
+      preferredRunTimes: ["morning"],
       prefsWeeklyDigest: true,
     });
   }
@@ -174,6 +194,13 @@ test("updateUserProfileHandler rejects invalid payloads", async () => {
   await assert.rejects(
     updateUserProfileHandler(
       request("runner-1", {fields: {unknownField: true}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {sexualOrientation: "straight"}}),
       h.deps
     ),
     (error) => assertHttpsCode(error, "invalid-argument")
@@ -203,6 +230,55 @@ test("updateUserProfileHandler rejects invalid payloads", async () => {
   await assert.rejects(
     updateUserProfileHandler(
       request("runner-1", {fields: {interestedInGenders: []}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {instagramHandle: "runner!"}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {email: "not-an-email"}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {languages: ["klingon"]}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {preferredDistances: ["ultra"]}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {runningReasons: ["chaos"]}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {height: 119}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {height: 221}}),
       h.deps
     ),
     (error) => assertHttpsCode(error, "invalid-argument")

@@ -1,0 +1,24 @@
+{
+  "runId": "run-1",
+  "runClubId": "club-1",
+  "uid": "runner-1",
+  "status": "signedUp",
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1778720400,
+    "_nanoseconds": 0
+  },
+  "signedUpAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "waitlistedAt": null,
+  "attendedAt": null,
+  "cancelledAt": null,
+  "deletedAt": null,
+  "genderAtSignup": "man",
+  "paymentId": null
+}

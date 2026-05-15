@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/moderation_flags.schema.json",
+  "title": "ModerationFlagDocument",
+  "description": "Canonical moderation ticket stored at moderationFlags/{flagId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "moderationFlags",
+  "x-firestore-path": "moderationFlags/{flagId}",
+  "x-document-id-field": "id",
+  "x-owner": "moderation triggers",
+  "required": ["targetUserId", "flagType", "source", "status", "createdAt"],
+  "properties": {
+    "targetUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "flagType": {
+      "type": "string",
+      "enum": ["explicit_photo", "banned_text", "underage_content"]
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "profile_photo",
+        "club_image",
+        "chat_message",
+        "user_bio",
+        "club_description",
+        "review_comment"
+      ]
+    },
+    "status": {"type": "string", "enum": ["pending", "reviewed", "dismissed"]},
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "reviewedAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "contextId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "context": {"type": "string", "maxLength": 1000},
+    "safeSearchResults": {
+      "type": "object",
+      "additionalProperties": {"type": "string"}
+    }
+  }
+}

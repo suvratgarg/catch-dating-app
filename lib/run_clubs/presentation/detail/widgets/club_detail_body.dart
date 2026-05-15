@@ -6,13 +6,13 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
+import 'package:catch_dating_app/host_tools/presentation/host_club_tools.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_hero_app_bar.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_schedule_section.dart';
-import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/host_stats_bar.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_strip.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -67,7 +67,19 @@ class ClubDetailBody extends StatelessWidget {
           sliver: SliverList.list(
             children: [
               if (isHost) ...[
-                _HostActionPanel(runClub: runClub),
+                HostClubToolsPanel(
+                  runClub: runClub,
+                  onEditClub: () => context.pushNamed(
+                    Routes.editRunClubScreen.name,
+                    pathParameters: {'runClubId': runClub.id},
+                    extra: runClub,
+                  ),
+                  onCreateRun: () => context.pushNamed(
+                    Routes.createRunScreen.name,
+                    pathParameters: {'runClubId': runClub.id},
+                    extra: runClub,
+                  ),
+                ),
                 const SizedBox(height: 16),
               ],
               StatsStrip(club: runClub, upcomingCount: upcoming.length),
@@ -84,7 +96,7 @@ class ClubDetailBody extends StatelessWidget {
                 const SizedBox(height: 20),
               ],
               if (isHost) ...[
-                HostStatsBar(runs: upcoming),
+                HostStatsStrip(runs: upcoming),
                 const SizedBox(height: 20),
               ],
               if (showMembershipControls)
@@ -106,6 +118,7 @@ class ClubDetailBody extends StatelessWidget {
         ),
         ClubScheduleSection(
           runs: upcoming,
+          isHost: isHost,
           onRunSelected: (run) => context.pushNamed(
             Routes.runDetailScreen.name,
             pathParameters: {'runClubId': runClub.id, 'runId': run.id},
@@ -128,63 +141,6 @@ class ClubDetailBody extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-class _HostActionPanel extends StatelessWidget {
-  const _HostActionPanel({required this.runClub});
-
-  final RunClub runClub;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return CatchSurface(
-      borderColor: t.line,
-      padding: const EdgeInsets.all(14),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          SectionHeader(title: 'HOST TOOLS', heavy: true),
-          const SizedBox(height: 4),
-          Text(
-            'Manage this club and publish upcoming runs.',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
-          ),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              CatchButton(
-                label: 'Edit club',
-                onPressed: () => context.pushNamed(
-                  Routes.editRunClubScreen.name,
-                  pathParameters: {'runClubId': runClub.id},
-                  extra: runClub,
-                ),
-                icon: const Icon(Icons.edit_outlined, size: 14),
-                size: CatchButtonSize.sm,
-                variant: CatchButtonVariant.secondary,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: CatchButton(
-                  label: 'Add run',
-                  onPressed: () => context.pushNamed(
-                    Routes.createRunScreen.name,
-                    pathParameters: {'runClubId': runClub.id},
-                    extra: runClub,
-                  ),
-                  icon: const Icon(Icons.add_rounded, size: 14),
-                  size: CatchButtonSize.sm,
-                  fullWidth: true,
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
     );
   }
 }

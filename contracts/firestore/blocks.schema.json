@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/blocks.schema.json",
+  "title": "BlockDocument",
+  "description": "Canonical safety block edge stored at blocks/{blockId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "blocks",
+  "x-firestore-path": "blocks/{blockId}",
+  "x-document-id-field": "id",
+  "x-owner": "safety callables and block trigger",
+  "required": ["blockerUserId", "blockedUserId", "createdAt", "source"],
+  "properties": {
+    "blockerUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "blockedUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "source": {"type": "string", "enum": ["profile", "chat", "match", "support"]},
+    "reasonCode": {"type": "string", "minLength": 1, "maxLength": 80}
+  }
+}

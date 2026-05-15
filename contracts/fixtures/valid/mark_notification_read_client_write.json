@@ -1,0 +1,12 @@
+{
+  "path": {
+    "uid": "runner-1",
+    "notificationId": "notification-1"
+  },
+  "data": {
+    "readAt": {
+      "_seconds": 1778716800,
+      "_nanoseconds": 0
+    }
+  }
+}

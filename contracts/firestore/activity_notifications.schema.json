@@ -1,0 +1,52 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/activity_notifications.schema.json",
+  "title": "ActivityNotificationDocument",
+  "description": "Canonical durable activity notification stored at notifications/{uid}/items/{notificationId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "activity_notifications",
+  "x-firestore-path": "notifications/{uid}/items/{notificationId}",
+  "x-document-id-field": "id",
+  "x-owner": "notification fan-out functions and booking callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": ["uid", "type", "title", "body", "createdAt"],
+  "properties": {
+    "uid": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "type": {
+      "type": "string",
+      "enum": [
+        "message",
+        "match",
+        "runReminder",
+        "runSignup",
+        "waitlistPromotion",
+        "runCancelled",
+        "runUpdated",
+        "clubUpdate"
+      ]
+    },
+    "title": {"type": "string", "minLength": 1, "maxLength": 160},
+    "body": {"type": "string", "minLength": 1, "maxLength": 500},
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "readAt": {"$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"},
+    "matchId": {"type": ["string", "null"], "minLength": 1, "maxLength": 240},
+    "runId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "runClubId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "actorUid": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "actorName": {"type": ["string", "null"], "maxLength": 120},
+    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

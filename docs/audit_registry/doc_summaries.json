@@ -1,6 +1,6 @@
 {
-  "version": "3.0.2",
-  "updated": "2026-05-12",
+  "version": "3.0.3",
+  "updated": "2026-05-15",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -129,6 +129,21 @@
       ],
       "skip_when": [
         "Pure Flutter presentation work"
+      ]
+    },
+    "docs/schema_contract_unification_tracker.md": {
+      "purpose": "Long-horizon contract-first migration plan for Dart/TypeScript schemas, runtime validation, prompt catalogs, seed validation, rules metadata, and future storage-path renames.",
+      "read_when": [
+        "Changing schema-source tooling",
+        "Changing Dart or TypeScript model generation",
+        "Changing callable validation schemas",
+        "Changing prompt catalogs or profile prompts",
+        "Changing seed validation or demo seed document builders",
+        "Planning storage-path migrations such as swipes to profile decisions"
+      ],
+      "skip_when": [
+        "Using current Firestore rules test workflow only; use firestore_functions_data_contract_tracker instead",
+        "Running day-to-day demo ops without changing seeded document shape"
       ]
     },
     "docs/backend_operation_catalog.md": {

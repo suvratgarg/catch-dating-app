@@ -1,0 +1,14 @@
+{
+  "path": {
+    "matchId": "match-1",
+    "messageId": "message-1"
+  },
+  "data": {
+    "senderId": "runner-1",
+    "text": "Coffee after the weekend run?",
+    "sentAt": {
+      "_seconds": 1778716800,
+      "_nanoseconds": 0
+    }
+  }
+}

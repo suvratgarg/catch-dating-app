@@ -1,133 +1,17 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {z} from "zod";
+import {ValidateFunction} from "ajv";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
-
-const CityNameSchema = z.string().trim().min(1).max(80)
-  .regex(/^[a-z0-9-]+$/);
-const GenderSchema = z.enum(["man", "woman", "nonBinary", "other"]);
-const EducationSchema = z.enum([
-  "highSchool",
-  "someCollege",
-  "bachelors",
-  "masters",
-  "phd",
-  "tradeSchool",
-  "other",
-]);
-const ReligionSchema = z.enum([
-  "hindu",
-  "muslim",
-  "christian",
-  "sikh",
-  "jain",
-  "buddhist",
-  "other",
-  "nonReligious",
-]);
-const RelationshipGoalSchema = z.enum([
-  "relationship",
-  "casual",
-  "marriage",
-  "friendship",
-  "unsure",
-]);
-const DrinkingSchema = z.enum(["never", "socially", "often"]);
-const SmokingSchema = z.enum(["never", "occasionally", "often"]);
-const WorkoutSchema = z.enum(["never", "sometimes", "often", "everyday"]);
-const DietSchema = z.enum(["omnivore", "vegetarian", "vegan", "jain", "other"]);
-const ChildrenSchema = z.enum([
-  "dontHave",
-  "haveWantMore",
-  "haveNoMore",
-  "wantSomeday",
-  "dontWant",
-]);
-const PreferredRunTimeSchema = z.enum([
-  "earlyMorning",
-  "morning",
-  "afternoon",
-  "evening",
-  "night",
-]);
-const SexualOrientationSchema = z.enum([
-  "straight",
-  "gay",
-  "bisexual",
-  "pansexual",
-  "asexual",
-  "other",
-]);
-
-const optionalString = z.string().trim().nullable();
-const positiveInt = z.number().int().positive();
-const nonNegativeMillis = z.number().int().nonnegative();
-const ProfilePromptAnswerSchema = z.object({
-  promptId: z.string().trim().min(1).max(80),
-  prompt: z.string().trim().min(1).max(140),
-  answer: z.string().max(300),
-}).strict();
-const PhotoPromptAnswerSchema = z.object({
-  photoIndex: z.number().int().min(0).max(5),
-  promptId: z.string().trim().min(1).max(80),
-  prompt: z.string().trim().min(1).max(140),
-  caption: z.string().max(140),
-}).strict();
-
-const UserProfilePatchSchema = z.object({
-  name: z.string().trim().min(1).max(120).optional(),
-  displayName: z.string().trim().min(1).max(80).optional(),
-  email: z.string().trim().max(320).optional(),
-  instagramHandle: optionalString.optional(),
-  profilePrompts: z.array(ProfilePromptAnswerSchema).max(3).optional(),
-  phoneNumber: z.string().trim().min(1).max(32).optional(),
-  dateOfBirth: nonNegativeMillis.optional(),
-  gender: GenderSchema.optional(),
-  sexualOrientation: SexualOrientationSchema.nullable().optional(),
-  profileComplete: z.boolean().optional(),
-  photoUrls: z.array(z.string().url()).max(12).optional(),
-  photoPrompts: z.array(PhotoPromptAnswerSchema).max(6).optional(),
-  city: CityNameSchema.nullable().optional(),
-  latitude: z.number().min(-90).max(90).nullable().optional(),
-  longitude: z.number().min(-180).max(180).nullable().optional(),
-  interestedInGenders: z.array(GenderSchema).min(1).max(8).optional(),
-  minAgePreference: z.number().int().min(18).max(99).optional(),
-  maxAgePreference: z.number().int().min(18).max(99).optional(),
-  height: z.number().int().min(90).max(260).nullable().optional(),
-  occupation: optionalString.optional(),
-  company: optionalString.optional(),
-  education: EducationSchema.nullable().optional(),
-  religion: ReligionSchema.nullable().optional(),
-  languages: z.array(z.string()).max(20).optional(),
-  relationshipGoal: RelationshipGoalSchema.nullable().optional(),
-  drinking: DrinkingSchema.nullable().optional(),
-  smoking: SmokingSchema.nullable().optional(),
-  workout: WorkoutSchema.nullable().optional(),
-  diet: DietSchema.nullable().optional(),
-  children: ChildrenSchema.nullable().optional(),
-  paceMinSecsPerKm: positiveInt.optional(),
-  paceMaxSecsPerKm: positiveInt.optional(),
-  preferredDistances: z.array(z.string()).max(12).optional(),
-  runningReasons: z.array(z.string()).max(12).optional(),
-  preferredRunTimes: z.array(PreferredRunTimeSchema).max(8).optional(),
-  prefsNewCatches: z.boolean().optional(),
-  prefsMessages: z.boolean().optional(),
-  prefsRunReminders: z.boolean().optional(),
-  prefsRunStatusUpdates: z.boolean().optional(),
-  prefsClubUpdates: z.boolean().optional(),
-  prefsWeeklyDigest: z.boolean().optional(),
-  prefsShowOnMap: z.boolean().optional(),
-}).strict().refine((fields) => Object.keys(fields).length > 0, {
-  message: "At least one profile field is required.",
-});
-
-const UpdateUserProfileSchema = z.object({
-  fields: UserProfilePatchSchema,
-});
+import {
+  schemaErrorMessages,
+  validateUpdateUserProfileCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {
+  UpdateUserProfileCallablePayload,
+} from "../shared/generated/updateUserProfileCallablePayload";
 
 interface UpdateUserProfileDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -145,7 +29,27 @@ const defaultDeps: UpdateUserProfileDeps = {
   checkRateLimit: defaultCheckRateLimit,
 };
 
-type UserProfilePatch = z.infer<typeof UserProfilePatchSchema>;
+type UserProfilePatch = UpdateUserProfileCallablePayload["fields"];
+type ProfilePatchField = keyof UserProfilePatch;
+
+const trimmedStringFields: ProfilePatchField[] = [
+  "name",
+  "displayName",
+  "email",
+  "phoneNumber",
+  "city",
+];
+const nullableTrimmedStringFields: ProfilePatchField[] = [
+  "occupation",
+  "company",
+];
+const trimmedStringArrayFields: ProfilePatchField[] = [
+  "interestedInGenders",
+  "languages",
+  "preferredDistances",
+  "runningReasons",
+  "preferredRunTimes",
+];
 
 /**
  * Applies a validated owner profile patch to users/{uid}.
@@ -157,7 +61,7 @@ export async function updateUserProfileHandler(
   deps: UpdateUserProfileDeps = defaultDeps
 ): Promise<{updated: boolean}> {
   const uid = requireAuth(request);
-  const {fields} = validateCallable(request, UpdateUserProfileSchema);
+  const {fields} = validateUpdateUserProfilePayload(request.data);
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, uid, "updateUserProfile");
 
@@ -185,6 +89,156 @@ export async function updateUserProfileHandler(
   });
 
   return {updated: true};
+}
+
+/**
+ * Normalizes the profile update body, then validates it against the generated
+ * JSON Schema contract.
+ * @param {unknown} data Callable request data.
+ * @return {UpdateUserProfileCallablePayload} Validated profile update payload.
+ */
+function validateUpdateUserProfilePayload(
+  data: unknown
+): UpdateUserProfileCallablePayload {
+  const normalized = normalizeUpdateUserProfilePayload(data);
+  if (validateUpdateUserProfileCallablePayload(normalized)) {
+    return normalized;
+  }
+  const issues = schemaErrorMessages(
+    validateUpdateUserProfileCallablePayload as ValidateFunction<unknown>
+  ).join("; ");
+  throw new HttpsError("invalid-argument", issues);
+}
+
+/**
+ * Keeps input cleanup explicit now that the schema validator is generated.
+ * @param {unknown} data Raw callable payload.
+ * @return {unknown} Payload with profile string fields normalized.
+ */
+function normalizeUpdateUserProfilePayload(data: unknown): unknown {
+  if (!isRecord(data) || !isRecord(data.fields)) return data;
+  return {
+    ...data,
+    fields: normalizeProfilePatchFields(data.fields),
+  };
+}
+
+/**
+ * Normalizes the fields that Zod previously transformed while leaving unknown
+ * fields intact so the generated schema can reject them.
+ * @param {Record<string, unknown>} fields Raw update fields.
+ * @return {Record<string, unknown>} Normalized update fields.
+ */
+function normalizeProfilePatchFields(
+  fields: Record<string, unknown>
+): Record<string, unknown> {
+  const normalized: Record<string, unknown> = {...fields};
+
+  for (const field of trimmedStringFields) {
+    if (typeof normalized[field] === "string") {
+      normalized[field] = normalized[field].trim();
+    }
+  }
+  for (const field of nullableTrimmedStringFields) {
+    if (typeof normalized[field] === "string") {
+      normalized[field] = normalized[field].trim();
+    }
+  }
+  if (typeof normalized.instagramHandle === "string") {
+    normalized.instagramHandle = normalizeInstagramHandle(
+      normalized.instagramHandle
+    );
+  }
+  for (const field of trimmedStringArrayFields) {
+    if (field in normalized) {
+      normalized[field] = trimStringArrayValues(normalized[field]);
+    }
+  }
+  if ("profilePrompts" in normalized) {
+    normalized.profilePrompts = normalizeProfilePromptPayloads(
+      normalized.profilePrompts
+    );
+  }
+  if ("photoPrompts" in normalized) {
+    normalized.photoPrompts = normalizePhotoPromptPayloads(
+      normalized.photoPrompts
+    );
+  }
+
+  return normalized;
+}
+
+/**
+ * Normalizes a user-entered Instagram handle for contract validation.
+ * @param {string} value Raw handle.
+ * @return {string} Trimmed handle without a leading at sign.
+ */
+function normalizeInstagramHandle(value: string): string {
+  const trimmed = value.trim();
+  return trimmed.startsWith("@") ? trimmed.slice(1).trim() : trimmed;
+}
+
+/**
+ * Trims string values inside array payloads.
+ * @param {unknown} value Raw field value.
+ * @return {unknown} Normalized value.
+ */
+function trimStringArrayValues(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+  return value.map((item) => typeof item === "string" ? item.trim() : item);
+}
+
+/**
+ * Trims prompt id/title fields while preserving answer validation semantics.
+ * @param {unknown} value Raw profile prompt payloads.
+ * @return {unknown} Normalized profile prompt payloads.
+ */
+function normalizeProfilePromptPayloads(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+  return value.map((item) => {
+    if (!isRecord(item)) return item;
+    return {
+      ...item,
+      promptId: trimIfString(item.promptId),
+      prompt: trimIfString(item.prompt),
+    };
+  });
+}
+
+/**
+ * Trims photo prompt id/title fields while preserving caption validation
+ * semantics.
+ * @param {unknown} value Raw photo prompt payloads.
+ * @return {unknown} Normalized photo prompt payloads.
+ */
+function normalizePhotoPromptPayloads(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+  return value.map((item) => {
+    if (!isRecord(item)) return item;
+    return {
+      ...item,
+      promptId: trimIfString(item.promptId),
+      prompt: trimIfString(item.prompt),
+    };
+  });
+}
+
+/**
+ * Trims a value only when it is a string.
+ * @param {unknown} value Raw value.
+ * @return {unknown} Trimmed string or original value.
+ */
+function trimIfString(value: unknown): unknown {
+  return typeof value === "string" ? value.trim() : value;
+}
+
+/**
+ * Checks for an object record.
+ * @param {unknown} value Value to inspect.
+ * @return {boolean} Whether the value is a plain record-like object.
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 /**

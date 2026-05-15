@@ -1,0 +1,337 @@
+#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+import {createRequire} from "node:module";
+import {isDeepStrictEqual} from "node:util";
+import {fileURLToPath, pathToFileURL} from "node:url";
+import {
+  assertValidSchemaPayload,
+  validatePublicProfileDocument,
+} from "./generated/schema_contract_validators.mjs";
+
+const toolDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(toolDir, "..");
+const requireFromFunctions = createRequire(
+  path.join(repoRoot, "functions/package.json")
+);
+
+if (isMain()) {
+  await main();
+}
+
+export async function main(argv = process.argv.slice(2)) {
+  const args = parseArgs(argv);
+  if (args.help) {
+    printHelp();
+    return;
+  }
+
+  const projectId = resolveProjectId(args);
+  if (args.apply && isProductionTarget(args, projectId) && !args.allowProd) {
+    throw new Error(
+      "Refusing to repair prod without --allow-prod. " +
+      "Run a dry run first, then rerun with --apply --allow-prod."
+    );
+  }
+  if (args.emulatorHost) {
+    process.env.FIRESTORE_EMULATOR_HOST = args.emulatorHost;
+  }
+
+  const admin = requireFromFunctions("firebase-admin");
+  admin.initializeApp({projectId});
+  const db = admin.firestore();
+  const plan = await buildPublicProfileRepairPlan(db, loadProfileProjection());
+
+  if (args.json) {
+    const summary = args.summaryOnly ?
+      compactSummary(plan.summary) :
+      plan.summary;
+    console.log(JSON.stringify(summary, null, 2));
+  } else {
+    printSummary(plan.summary, {summaryOnly: args.summaryOnly});
+  }
+
+  if (!args.apply) {
+    console.log("\nDry run only. Re-run with --apply to write repairs.");
+    return;
+  }
+
+  await applyPublicProfileRepairPlan(db, plan);
+  console.log("\nApplied public profile projection repairs.");
+}
+
+export async function buildPublicProfileRepairPlan(
+  firestore,
+  profileProjection
+) {
+  const [usersSnap, publicProfilesSnap] = await Promise.all([
+    firestore.collection("users").get(),
+    firestore.collection("publicProfiles").get(),
+  ]);
+
+  const publicProfiles = new Map(
+    publicProfilesSnap.docs.map((doc) => [doc.id, doc.data()])
+  );
+  const warnings = [];
+  const repairs = [];
+  const usersSeen = new Set();
+
+  for (const userDoc of usersSnap.docs) {
+    const uid = userDoc.id;
+    usersSeen.add(uid);
+    const user = userDoc.data();
+    const current = publicProfiles.get(uid);
+
+    if (user.deleted === true) {
+      if (current) repairs.push(deleteRepair(uid, current, "deletedUser"));
+      continue;
+    }
+    if (user.profileComplete !== true) {
+      if (current) {
+        warnings.push(
+          `publicProfiles/${uid} exists but users/${uid} is incomplete.`
+        );
+      }
+      continue;
+    }
+
+    let expected;
+    try {
+      expected = profileProjection.publicProfileFromUserProfileDoc(user);
+    } catch (error) {
+      warnings.push(
+        `users/${uid} could not be projected: ${error.message}`
+      );
+      continue;
+    }
+
+    if (expected.age < 18) {
+      if (current) repairs.push(deleteRepair(uid, current, "underageUser"));
+      continue;
+    }
+
+    try {
+      assertValidSchemaPayload(
+        validatePublicProfileDocument,
+        expected,
+        `publicProfiles/${uid}`
+      );
+    } catch (error) {
+      warnings.push(
+        `users/${uid} projected an invalid public profile: ${error.message}`
+      );
+      continue;
+    }
+
+    if (!current || !isDeepStrictEqual(current, expected)) {
+      repairs.push({
+        op: "set",
+        path: `publicProfiles/${uid}`,
+        uid,
+        reason: current ? "staleProjection" : "missingProjection",
+        current: current ?? null,
+        expected,
+      });
+    }
+  }
+
+  for (const publicProfileDoc of publicProfilesSnap.docs) {
+    if (!usersSeen.has(publicProfileDoc.id)) {
+      warnings.push(
+        `${publicProfileDoc.ref.path} has no matching users/` +
+        `${publicProfileDoc.id}.`
+      );
+    }
+  }
+
+  return {
+    repairs,
+    summary: {
+      usersScanned: usersSnap.size,
+      publicProfilesScanned: publicProfilesSnap.size,
+      repairsNeeded: repairs.length,
+      warnings,
+      repairs,
+    },
+  };
+}
+
+export async function applyPublicProfileRepairPlan(firestore, plan) {
+  for (let i = 0; i < plan.repairs.length; i += 450) {
+    const batch = firestore.batch();
+    for (const repair of plan.repairs.slice(i, i + 450)) {
+      const ref = firestore.doc(repair.path);
+      if (repair.op === "delete") batch.delete(ref);
+      else batch.set(ref, repair.expected);
+    }
+    await batch.commit();
+  }
+}
+
+function deleteRepair(uid, current, reason) {
+  return {
+    op: "delete",
+    path: `publicProfiles/${uid}`,
+    uid,
+    reason,
+    current,
+    expected: null,
+  };
+}
+
+function loadProfileProjection() {
+  try {
+    return requireFromFunctions("./lib/shared/profileProjection.js");
+  } catch (error) {
+    throw new Error(
+      "Could not load functions/lib/shared/profileProjection.js. " +
+      "Run `npm --prefix functions run build` before this repair tool. " +
+      `Original error: ${error.message}`
+    );
+  }
+}
+
+function parseArgs(argv) {
+  const parsed = {
+    env: null,
+    project: null,
+    emulatorHost: null,
+    apply: false,
+    allowProd: false,
+    json: false,
+    summaryOnly: false,
+    help: false,
+  };
+
+  for (let i = 0; i < argv.length; i++) {
+    const arg = argv[i];
+    if (arg === "--help" || arg === "-h") parsed.help = true;
+    else if (arg === "--apply") parsed.apply = true;
+    else if (arg === "--allow-prod") parsed.allowProd = true;
+    else if (arg === "--json") parsed.json = true;
+    else if (arg === "--summary-only") parsed.summaryOnly = true;
+    else if (arg === "--emulator") parsed.emulatorHost = "127.0.0.1:8080";
+    else if (arg === "--emulator-host") {
+      parsed.emulatorHost = requireValue(argv, ++i, arg);
+    } else if (arg === "--env") {
+      parsed.env = requireValue(argv, ++i, arg);
+    } else if (arg === "--project") {
+      parsed.project = requireValue(argv, ++i, arg);
+    } else {
+      throw new Error(`Unknown argument: ${arg}`);
+    }
+  }
+
+  return parsed;
+}
+
+function requireValue(argv, index, flag) {
+  const value = argv[index];
+  if (!value || value.startsWith("--")) {
+    throw new Error(`${flag} requires a value.`);
+  }
+  return value;
+}
+
+function resolveProjectId(parsed) {
+  if (parsed.project) return parsed.project;
+  if (parsed.env) {
+    const firebaserc = readFirebaseRc();
+    const project = firebaserc.projects?.[parsed.env];
+    if (!project) {
+      throw new Error(`No Firebase project alias found for env: ${parsed.env}`);
+    }
+    return project;
+  }
+  return process.env.GCLOUD_PROJECT ||
+    process.env.GOOGLE_CLOUD_PROJECT ||
+    "catchdates-dev";
+}
+
+function isProductionTarget(parsed, projectId) {
+  const firebaserc = readFirebaseRc();
+  return parsed.env === "prod" || projectId === firebaserc.projects?.prod;
+}
+
+function readFirebaseRc() {
+  return JSON.parse(
+    fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
+  );
+}
+
+function printHelp() {
+  console.log(`Usage: node tool/recompute_public_profiles.mjs [options]
+
+Recomputes publicProfiles/{uid} from users/{uid} using the compiled Functions
+profile projection helper. The script is dry-run by default and writes full
+public profile replacements so stale legacy fields are removed.
+
+Options:
+  --apply                 Write repairs. Default is dry-run.
+  --allow-prod            Required with --apply against prod.
+  --json                  Print summary as JSON.
+  --summary-only          Omit per-document repair details from output.
+  --env <dev|staging|prod> Resolve project id from .firebaserc.
+  --project <id>          Firebase project id.
+  --emulator              Use Firestore emulator at 127.0.0.1:8080.
+  --emulator-host <host>  Use a custom Firestore emulator host.
+  -h, --help              Show this help.
+`);
+}
+
+function compactSummary(summary) {
+  const reasonCounts = {};
+  for (const repair of summary.repairs) {
+    reasonCounts[repair.reason] = (reasonCounts[repair.reason] ?? 0) + 1;
+  }
+  return {
+    usersScanned: summary.usersScanned,
+    publicProfilesScanned: summary.publicProfilesScanned,
+    repairsNeeded: summary.repairsNeeded,
+    repairReasonCounts: reasonCounts,
+    warningCount: summary.warnings.length,
+    warnings: summary.warnings,
+  };
+}
+
+function printSummary(summary, {summaryOnly = false} = {}) {
+  const compact = compactSummary(summary);
+  console.log("Public profile projection repair plan");
+  console.log(`Users scanned: ${summary.usersScanned}`);
+  console.log(`Public profiles scanned: ${summary.publicProfilesScanned}`);
+  console.log(`Repairs needed: ${summary.repairsNeeded}`);
+  if (Object.keys(compact.repairReasonCounts).length > 0) {
+    console.log(
+      `Repair reasons: ${JSON.stringify(compact.repairReasonCounts)}`
+    );
+  }
+
+  if (!summaryOnly && summary.repairs.length > 0) {
+    console.log("\nRepairs:");
+    for (const repair of summary.repairs.slice(0, 100)) {
+      console.log(
+        `- ${repair.path} [${repair.op}/${repair.reason}]: ` +
+        `${JSON.stringify(repair.current)} -> ` +
+        `${JSON.stringify(repair.expected)}`
+      );
+    }
+    if (summary.repairs.length > 100) {
+      console.log(`... ${summary.repairs.length - 100} more repairs`);
+    }
+  }
+
+  if (summary.warnings.length > 0) {
+    console.log("\nWarnings:");
+    for (const warning of summary.warnings.slice(0, 100)) {
+      console.log(`- ${warning}`);
+    }
+    if (summary.warnings.length > 100) {
+      console.log(`... ${summary.warnings.length - 100} more warnings`);
+    }
+  }
+}
+
+function isMain() {
+  return process.argv[1] &&
+    import.meta.url === pathToFileURL(process.argv[1]).href;
+}

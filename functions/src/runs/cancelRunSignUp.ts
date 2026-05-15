@@ -4,8 +4,10 @@ import * as logger from "firebase-functions/logger";
 import {UserProfileDoc, PaymentDoc, RunDoc} from "../shared/firestore";
 import {hasBlockingRelationshipInTransaction} from "../safety/blocking";
 import {requireAuth} from "../shared/auth";
-import {validateCallable, requireDoc} from "../shared/validation";
-import {z} from "zod";
+import {RunIdCallablePayload} from "../shared/generated/runIdCallablePayload";
+import {validateRunIdCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {
   appCheckCallableOptionsWithSecrets,
 } from "../shared/callableOptions";
@@ -33,10 +35,7 @@ import {
   claimUserRunScheduleInTransaction,
   releaseUserRunScheduleInTransaction,
 } from "./scheduleConflicts";
-
-const CancelSchema = z.object({
-  runId: z.string(),
-});
+import {normalizeRunIdPayload} from "./runPayloadNormalization";
 
 interface PromotionPush {
   token: string;
@@ -58,7 +57,11 @@ export const cancelRunSignUp = onCall(
   appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
   async (request) => {
     const userId = requireAuth(request);
-    const {runId} = validateCallable(request, CancelSchema);
+    const {runId} = validateCallableWithAjv<RunIdCallablePayload>(
+      request,
+      validateRunIdCallablePayload,
+      normalizeRunIdPayload
+    );
 
     const db = admin.firestore();
     await checkRateLimit(db, userId, "cancelRunSignUp");

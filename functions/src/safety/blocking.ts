@@ -3,25 +3,24 @@ import {onCall, CallableRequest, HttpsError} from
 import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {z} from "zod";
 import {BlockDoc, MatchDoc} from "../shared/firestore";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
+import {BlockUserCallablePayload} from
+  "../shared/generated/blockUserCallablePayload";
+import {
+  validateBlockUserCallablePayload,
+  validateUnblockUserCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {UnblockUserCallablePayload} from
+  "../shared/generated/unblockUserCallablePayload";
+import {normalizePayloadStrings, normalizeSingleIdPayload} from
+  "../shared/callablePayloadNormalization";
+import {validateCallableWithAjv} from "../shared/validation";
 
 const BLOCKS_COLLECTION = "blocks";
 const MATCHES_COLLECTION = "matches";
-
-const BlockUserSchema = z.object({
-  targetUserId: z.string(),
-  source: z.string().optional(),
-  reasonCode: z.string().optional(),
-});
-
-const UnblockUserSchema = z.object({
-  targetUserId: z.string(),
-});
 
 interface BlockingDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -142,7 +141,11 @@ export async function blockUserHandler(
   deps: BlockingDeps = defaultDeps
 ): Promise<{blocked: boolean}> {
   const blockerUserId = requireAuth(request);
-  const data = validateCallable(request, BlockUserSchema);
+  const data = validateCallableWithAjv<BlockUserCallablePayload>(
+    request,
+    validateBlockUserCallablePayload,
+    normalizeBlockUserPayload
+  );
 
   if (data.targetUserId === blockerUserId) {
     throw new HttpsError("invalid-argument", "targetUserId is invalid.");
@@ -184,7 +187,11 @@ export async function unblockUserHandler(
   deps: BlockingDeps = defaultDeps
 ): Promise<{unblocked: boolean}> {
   const blockerUserId = requireAuth(request);
-  const data = validateCallable(request, UnblockUserSchema);
+  const data = validateCallableWithAjv<UnblockUserCallablePayload>(
+    request,
+    validateUnblockUserCallablePayload,
+    normalizeSingleIdPayload("targetUserId")
+  );
 
   if (data.targetUserId === blockerUserId) {
     throw new HttpsError("invalid-argument", "targetUserId is invalid.");
@@ -199,6 +206,17 @@ export async function unblockUserHandler(
     .delete();
 
   return {unblocked: true};
+}
+
+/**
+ * Trims block-user payload fields before generated schema validation.
+ * @param {unknown} data Raw callable payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizeBlockUserPayload(data: unknown): unknown {
+  return normalizePayloadStrings(data, {
+    stringFields: ["targetUserId", "source", "reasonCode"],
+  });
 }
 
 /**

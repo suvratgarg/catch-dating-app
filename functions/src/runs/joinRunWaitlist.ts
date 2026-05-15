@@ -1,11 +1,13 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {z} from "zod";
 import {RunDoc} from "../shared/firestore";
 import {requireAuth} from "../shared/auth";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {appCheckCallableOptions} from "../shared/callableOptions";
-import {validateCallable} from "../shared/validation";
+import {RunIdCallablePayload} from "../shared/generated/runIdCallablePayload";
+import {validateRunIdCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 import {
   participantUids,
   runParticipationId,
@@ -17,10 +19,7 @@ import {
   claimUserRunScheduleInTransaction,
   releaseUserRunScheduleInTransaction,
 } from "./scheduleConflicts";
-
-const RunWaitlistSchema = z.object({
-  runId: z.string(),
-});
+import {normalizeRunIdPayload} from "./runPayloadNormalization";
 
 /**
  * Adds a user to a run waitlist after applying the same block boundary as
@@ -30,7 +29,11 @@ export const joinRunWaitlist = onCall(appCheckCallableOptions, async (
   request
 ) => {
   const userId = requireAuth(request);
-  const {runId} = validateCallable(request, RunWaitlistSchema);
+  const {runId} = validateCallableWithAjv<RunIdCallablePayload>(
+    request,
+    validateRunIdCallablePayload,
+    normalizeRunIdPayload
+  );
 
   const db = admin.firestore();
   await checkRateLimit(db, userId, "joinRunWaitlist");
@@ -116,7 +119,11 @@ export const leaveRunWaitlist = onCall(appCheckCallableOptions, async (
   request
 ) => {
   const userId = requireAuth(request);
-  const {runId} = validateCallable(request, RunWaitlistSchema);
+  const {runId} = validateCallableWithAjv<RunIdCallablePayload>(
+    request,
+    validateRunIdCallablePayload,
+    normalizeRunIdPayload
+  );
 
   const db = admin.firestore();
   await checkRateLimit(db, userId, "leaveRunWaitlist");

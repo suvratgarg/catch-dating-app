@@ -16,14 +16,14 @@ import {hasBlockingRelationship} from "../safety/blocking";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {validateCallable, requireDoc} from "../shared/validation";
+import {RunIdCallablePayload} from "../shared/generated/runIdCallablePayload";
+import {validateRunIdCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {normalizeSingleIdPayload} from
+  "../shared/callablePayloadNormalization";
+import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {runParticipationId} from "../shared/relationshipDocuments";
 import {assertNoUserRunScheduleConflict} from "../runs/scheduleConflicts";
-import {z} from "zod";
-
-const CreateOrderSchema = z.object({
-  runId: z.string(),
-});
 
 interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
@@ -48,7 +48,11 @@ export async function createRazorpayOrderHandler(
   deps: CreateRazorpayOrderDeps = defaultDeps
 ) {
   const uid = requireAuth(request);
-  const {runId} = validateCallable(request, CreateOrderSchema);
+  const {runId} = validateCallableWithAjv<RunIdCallablePayload>(
+    request,
+    validateRunIdCallablePayload,
+    normalizeSingleIdPayload("runId")
+  );
 
   const db = deps.firestore();
   const [runSnap, participationSnap, activeParticipationsSnap] =

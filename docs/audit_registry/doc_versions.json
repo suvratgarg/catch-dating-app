@@ -15,15 +15,15 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "3.0.2",
-    "updated": "2026-05-12",
+    "version": "3.0.3",
+    "updated": "2026-05-15",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "3.0.2",
-    "updated": "2026-05-12",
+    "version": "3.0.3",
+    "updated": "2026-05-15",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
@@ -50,8 +50,8 @@
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "3.0.1",
-    "updated": "2026-05-12",
+    "version": "3.0.2",
+    "updated": "2026-05-15",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
@@ -68,6 +68,13 @@
     "updated": "2026-05-12",
     "status": "active",
     "read_policy": "Read before Firestore rules, Functions mutation, schema-sync, Firestore type generation, data-contract work, or Firestore rules test execution."
+  },
+  "schema_contract_unification": {
+    "path": "docs/schema_contract_unification_tracker.md",
+    "version": "0.8.2",
+    "updated": "2026-05-15",
+    "status": "active",
+    "read_policy": "Read before changing schema-source tooling, Dart/TypeScript model generation, callable validation schemas, seed validation, prompt catalogs, Firestore contract checks, or storage-path migrations."
   },
   "backend_operation_catalog": {
     "path": "docs/backend_operation_catalog.md",
@@ -113,10 +120,17 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.67",
-    "updated": "2026-05-14",
+    "version": "2.5.71",
+    "updated": "2026-05-15",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
+  },
+  "host_tooling_consolidation_tracker": {
+    "path": "docs/host_tooling_consolidation_tracker.md",
+    "version": "1.0.0",
+    "updated": "2026-05-15",
+    "status": "active",
+    "read_policy": "Use while consolidating host tools, host palette, run management, attendance, and backend-ready host action exposure."
   },
   "widget_cleanup": {
     "path": "docs/widget_cleanup_todo.md",
@@ -127,8 +141,8 @@
   },
   "release_operations": {
     "path": "docs/release_operations.md",
-    "version": "1.0.0",
-    "updated": "2026-05-12",
+    "version": "1.2.0",
+    "updated": "2026-05-15",
     "status": "active",
     "read_policy": "Read before changing CI workflows, Firebase deploy ordering, release gates, environment setup, or release evidence."
   },

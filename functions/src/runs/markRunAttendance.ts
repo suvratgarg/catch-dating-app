@@ -2,19 +2,18 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import {RunDoc} from "../shared/firestore";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
+import {MarkRunAttendanceCallablePayload} from
+  "../shared/generated/markRunAttendanceCallablePayload";
+import {validateMarkRunAttendanceCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit} from "../shared/rateLimit";
-import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {
   runParticipationId,
   runParticipationPatch,
 } from "../shared/relationshipDocuments";
-
-const MarkAttendanceSchema = z.object({
-  runId: z.string(),
-  userId: z.string(),
-});
+import {normalizeMarkRunAttendancePayload} from "./runPayloadNormalization";
 
 /**
  * Callable function that toggles a single user's attendance for a run.
@@ -29,7 +28,12 @@ export const markRunAttendance = onCall(appCheckCallableOptions, async (
   request
 ) => {
   const uid = requireAuth(request);
-  const {runId, userId} = validateCallable(request, MarkAttendanceSchema);
+  const {runId, userId} =
+    validateCallableWithAjv<MarkRunAttendanceCallablePayload>(
+      request,
+      validateMarkRunAttendanceCallablePayload,
+      normalizeMarkRunAttendancePayload
+    );
 
   await checkRateLimit(admin.firestore(), uid, "markRunAttendance");
 

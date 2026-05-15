@@ -1,0 +1,8 @@
+{
+  "uid": "runner-1",
+  "deletedAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "retainedFor": ["safety", "payments", "fraud"]
+}

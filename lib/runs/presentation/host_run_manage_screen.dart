@@ -10,6 +10,7 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
+import 'package:catch_dating_app/host_tools/presentation/host_club_tools.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
@@ -166,22 +167,28 @@ class HostRunManageScreen extends ConsumerWidget {
             ],
             Row(
               children: [
-                _HostRunStatCard(
-                  icon: Icons.check_circle_outline_rounded,
-                  value: '$bookedCount/${run.capacityLimit}',
-                  label: 'Booked',
+                Expanded(
+                  child: HostStatChip(
+                    icon: Icons.check_circle_outline_rounded,
+                    value: '$bookedCount/${run.capacityLimit}',
+                    label: 'Booked',
+                  ),
                 ),
                 gapW8,
-                _HostRunStatCard(
-                  icon: Icons.access_time_rounded,
-                  value: '$waitlistCount',
-                  label: 'Waitlist',
+                Expanded(
+                  child: HostStatChip(
+                    icon: Icons.access_time_rounded,
+                    value: '$waitlistCount',
+                    label: 'Waitlist',
+                  ),
                 ),
                 gapW8,
-                _HostRunStatCard(
-                  icon: Icons.currency_rupee_rounded,
-                  value: revenueRupees > 0 ? '₹$revenueRupees' : '-',
-                  label: 'Revenue',
+                Expanded(
+                  child: HostStatChip(
+                    icon: Icons.currency_rupee_rounded,
+                    value: revenueRupees > 0 ? '₹$revenueRupees' : '-',
+                    label: 'Revenue',
+                  ),
                 ),
               ],
             ),
@@ -216,52 +223,6 @@ class HostRunManageScreen extends ConsumerWidget {
               emptyText: 'No one is waiting.',
               loadingText: 'Loading waitlist...',
               trailingLabel: 'WAITLIST',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _HostRunStatCard extends StatelessWidget {
-  const _HostRunStatCard({
-    required this.icon,
-    required this.value,
-    required this.label,
-  });
-
-  final IconData icon;
-  final String value;
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Expanded(
-      child: CatchSurface(
-        padding: const EdgeInsets.all(CatchSpacing.s4),
-        borderColor: t.line,
-        radius: CatchRadius.lg,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: t.primary, size: 18),
-            gapH10,
-            Text(
-              value,
-              style: CatchTextStyles.titleM(context),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            gapH2,
-            Text(
-              label,
-              style: CatchTextStyles.bodyS(context, color: t.ink3),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
             ),
           ],
         ),

@@ -13,11 +13,13 @@ const generatedTypesPath = path.join(
   "functions/src/shared/firestore.ts"
 );
 const functionsIndexPath = path.join(repoRoot, "functions/src/index.ts");
+const contractRoot = path.join(repoRoot, "contracts");
 
 const contract = readJson(contractPath);
 const rules = readText(rulesPath);
 const generatedTypes = readText(generatedTypesPath);
 const functionsIndex = readText(functionsIndexPath);
+const schemaByCollectionId = loadFirestoreSchemas();
 
 const errors = [];
 
@@ -54,6 +56,8 @@ for (const collection of contract.collections ?? []) {
 
   validateFieldGroups(collection, label);
   validateTypeContract(collection, label);
+  validateSchemaFieldProjection(collection, label);
+  validateRulesFieldAllowList(collection, label);
   validateExportedFunctions(collection, label);
   validateOperations(collection, label);
 
@@ -78,6 +82,20 @@ function readJson(filePath) {
 
 function readText(filePath) {
   return fs.readFileSync(filePath, "utf8");
+}
+
+function loadFirestoreSchemas() {
+  const schemas = new Map();
+  const firestoreSchemaDir = path.join(contractRoot, "firestore");
+  for (const entry of fs.readdirSync(firestoreSchemaDir, {withFileTypes: true})) {
+    if (!entry.isFile() || !entry.name.endsWith(".schema.json")) continue;
+    const schema = readJson(path.join(firestoreSchemaDir, entry.name));
+    const collectionId = schema["x-firestore-collection"];
+    if (typeof collectionId === "string" && collectionId.length > 0) {
+      schemas.set(collectionId, schema);
+    }
+  }
+  return schemas;
 }
 
 function requireString(value, label) {
@@ -114,6 +132,7 @@ function validateFieldGroups(collection, label) {
     "callableOwnedFields",
     "triggerOwnedFields",
     "serverOwnedFields",
+    "internalDemoFields",
   ]) {
     const fields = collection[groupName] ?? [];
     if (!Array.isArray(fields)) {
@@ -127,7 +146,12 @@ function validateFieldGroups(collection, label) {
         continue;
       }
       assertUnique(seen, field, `${label}.${groupName}.${field}`);
-      if (groupName !== "allFields" && allFields.size > 0 && !allFields.has(field)) {
+      if (
+        groupName !== "allFields" &&
+        groupName !== "internalDemoFields" &&
+        allFields.size > 0 &&
+        !allFields.has(field)
+      ) {
         errors.push(`${label}.${groupName}.${field} is missing from allFields`);
       }
     }
@@ -142,6 +166,62 @@ function validateFieldGroups(collection, label) {
     ],
     `${label}: clientWritableFields overlap backend-owned fields`
   );
+}
+
+function validateSchemaFieldProjection(collection, label) {
+  const schema = schemaByCollectionId.get(collection.id);
+  if (!schema) return;
+
+  const schemaFields = new Set(Object.keys(schema.properties ?? {}));
+  const internalDemoFields = new Set(schema["x-internal-demo-fields"] ?? []);
+  const modelSchemaFields = [...schemaFields]
+    .filter((field) => !internalDemoFields.has(field))
+    .sort();
+  const contractFields = [...(collection.allFields ?? [])].sort();
+  if (modelSchemaFields.join("\n") !== contractFields.join("\n")) {
+    errors.push(
+      `${label}: allFields differ from JSON schema model fields. ` +
+      `expected [${modelSchemaFields.join(", ")}], actual ` +
+      `[${contractFields.join(", ")}]`
+    );
+  }
+
+  const contractInternalDemoFields = [
+    ...(collection.internalDemoFields ?? []),
+  ].sort();
+  const schemaInternalDemoFields = [...internalDemoFields].sort();
+  if (
+    schemaInternalDemoFields.join("\n") !==
+    contractInternalDemoFields.join("\n")
+  ) {
+    errors.push(
+      `${label}: internalDemoFields differ from JSON schema. expected ` +
+      `[${schemaInternalDemoFields.join(", ")}], actual ` +
+      `[${contractInternalDemoFields.join(", ")}]`
+    );
+  }
+}
+
+function validateRulesFieldAllowList(collection, label) {
+  if (collection.id !== "users") return;
+
+  const rulesFields = extractFirstHasOnlyFields(
+    rules,
+    "function hasValidUserShape(data)"
+  );
+  if (!rulesFields) {
+    errors.push(`${label}: could not find hasValidUserShape hasOnly fields.`);
+    return;
+  }
+  const expected = [...(collection.allFields ?? [])].sort();
+  const actual = [...rulesFields].sort();
+  if (expected.join("\n") !== actual.join("\n")) {
+    errors.push(
+      `${label}: firestore.rules hasValidUserShape fields differ from ` +
+      `ownership contract. expected [${expected.join(", ")}], actual ` +
+      `[${actual.join(", ")}]`
+    );
+  }
 }
 
 function assertNoOverlap(left, right, label) {
@@ -195,6 +275,22 @@ function extractInterfaceFields(source, interfaceName) {
     if (fieldMatch) {
       fields.add(fieldMatch[1]);
     }
+  }
+  return fields;
+}
+
+function extractFirstHasOnlyFields(source, functionHeader) {
+  const functionIndex = source.indexOf(functionHeader);
+  if (functionIndex === -1) return null;
+  const hasOnlyIndex = source.indexOf(".hasOnly([", functionIndex);
+  if (hasOnlyIndex === -1) return null;
+  const arrayStart = source.indexOf("[", hasOnlyIndex);
+  const arrayEnd = source.indexOf("]", arrayStart);
+  if (arrayStart === -1 || arrayEnd === -1) return null;
+  const body = source.slice(arrayStart + 1, arrayEnd);
+  const fields = new Set();
+  for (const match of body.matchAll(/'([^']+)'/g)) {
+    fields.add(match[1]);
   }
   return fields;
 }

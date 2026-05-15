@@ -647,6 +647,15 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("rejects legacy sexualOrientation on profile create", async () => {
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({sexualOrientation: "straight"}),
+        ),
+      );
+    });
+
     it("requires a non-empty profile display name on create", async () => {
       await assertFails(
         setDoc(
@@ -661,6 +670,33 @@ describe("firestore.rules", () => {
         setDoc(
           doc(authedDb("runner-1"), "users", "runner-1"),
           userProfile({interestedInGenders: []}),
+        ),
+      );
+    });
+
+    it("enforces profile height bounds on create", async () => {
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({height: 120}),
+        ),
+      );
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-2"), "users", "runner-2"),
+          userProfile({height: 220}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-3"), "users", "runner-3"),
+          userProfile({height: 119}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-4"), "users", "runner-4"),
+          userProfile({height: 221}),
         ),
       );
     });
@@ -798,6 +834,23 @@ describe("firestore.rules", () => {
           },
         ),
       );
+      await assertSucceeds(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "matches",
+            "match-1",
+            "messages",
+            "image-message-1",
+          ),
+          {
+            senderId: "runner-1",
+            text: "",
+            imageUrl: "https://storage.test/chat-image.jpg",
+            sentAt: serverTimestamp(),
+          },
+        ),
+      );
       await assertFails(
         updateDoc(doc(authedDb("runner-1"), "matches", "match-1"), {
           lastMessagePreview: "client-owned preview",
@@ -837,6 +890,22 @@ describe("firestore.rules", () => {
           {
             senderId: "runner-1",
             text: "hello",
+            sentAt: serverTimestamp(),
+          },
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "matches",
+            "match-1",
+            "messages",
+            "empty-message",
+          ),
+          {
+            senderId: "runner-1",
+            text: "",
             sentAt: serverTimestamp(),
           },
         ),
@@ -945,6 +1014,18 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         setDoc(
           doc(authedDb("runner-1"), "swipes", "runner-1", "outgoing", "runner-2"),
+          swipe(),
+        ),
+      );
+      await assertSucceeds(
+        setDoc(
+          doc(
+            authedDb("runner-1"),
+            "profileDecisions",
+            "runner-1",
+            "outgoing",
+            "runner-2",
+          ),
           swipe(),
         ),
       );

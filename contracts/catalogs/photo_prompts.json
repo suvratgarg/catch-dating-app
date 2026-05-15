@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "kind": "photoPrompts",
+  "limits": {
+    "maxCaptions": 6,
+    "maxPromptIdLength": 80,
+    "maxPromptTitleLength": 140,
+    "maxCaptionLength": 140
+  },
+  "prompts": [
+    {
+      "id": "proofIRun",
+      "title": "Proof I actually run",
+      "placeholder": "Add a caption for this running photo."
+    },
+    {
+      "id": "finishLine",
+      "title": "After the finish line",
+      "placeholder": "What was happening in this moment?"
+    },
+    {
+      "id": "notRunning",
+      "title": "When I'm not running",
+      "placeholder": "Show another side of your life."
+    },
+    {
+      "id": "favoritePeople",
+      "title": "My favorite people know me as",
+      "placeholder": "A small detail friends would recognize."
+    },
+    {
+      "id": "weekendEnergy",
+      "title": "Weekend energy",
+      "placeholder": "What does this photo say about your weekends?"
+    },
+    {
+      "id": "captionThis",
+      "title": "Caption this",
+      "placeholder": "Give people an easy opening line."
+    }
+  ]
+}

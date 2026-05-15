@@ -1,10 +1,12 @@
 # Public Profile Overhaul Tracker
 
-Last updated: 2026-05-14
+Last updated: 2026-05-15
 
 ## Goal
 
-Make the shared public profile surface feel person-first, expressive, trustworthy in the right ways, and optimized for post-event matching. The card is reused in the swipe stack, profile preview, chat header profile view, and public profile routes, so changes here should be treated as product-critical.
+Make the shared public profile surface feel person-first, expressive, trustworthy in the right ways, and optimized for post-event matching. The surface is reused in the Catches decision flow, profile preview, chat header profile view, and public profile routes, so changes here should be treated as product-critical.
+
+The next direction is to move away from the deck/card paradigm entirely. Now that likes can target a specific profile section, photo, compatibility signal, or running block, the primary interaction should become a structured, scrollable public profile screen with contextual reaction controls. Swiping left/right should be retired from the user experience unless a later product decision reintroduces a separate lightweight pass gesture.
 
 ## Completed Baseline
 
@@ -36,6 +38,23 @@ Make the shared public profile surface feel person-first, expressive, trustworth
 - Added viewer-aware time-of-day compatibility reasons such as "You both like morning runs".
 - Folded run-time preferences into profile-quality scoring so running identity means pace, distance, why, and when.
 
+### 2026-05-15: Cardless Profile Direction
+
+- Product direction changed from swipe deck + profile card to a full structured profile surface.
+- Contextual reactions remain the primary action model: users like/comment on the photo or section that caught their attention.
+- Swipes/Catches, Profile Preview, and Public Profile should share the same section renderer, but the renderer should not require an outer card frame.
+- The old `Swipe` domain/storage naming can remain temporarily as an implementation detail, but user-facing copy and UI should move toward "catch", "like", "pass", and "profile" language instead of "swipe".
+- The Catches flow should use a Hinge-style floating dismiss action in the lower-left corner and contextual like/comment controls on reactionable blocks.
+- In the Catches flow, liking or commenting on a block should submit the like and advance to the next profile. Preview and Public Profile should render the same sections without reaction controls.
+
+### 2026-05-15: Cardless Profile Surface Implementation
+
+- Added `ProfileSurface` as the shared cardless renderer for Catches, Profile Preview, and Public Profile.
+- Removed the old `ProfileCard` shell, swipe stamps, `flutter_card_swiper` dependency, and generic bottom like/pass button row from the Catches decision screen.
+- Catches now renders the first queue candidate as a full structured `ProfileSurface`, uses mode-gated section reaction controls, and exposes a floating lower-left X for pass/dismiss.
+- Preview and Public Profile use the same `ProfileSurface` renderer in passive modes so they do not show reaction controls.
+- The existing `SwipeQueueNotifier.swipe` path still records likes/passes and removes the current profile from the queue, so section likes/comments advance to the next candidate without a separate UI-only queue mechanism.
+
 ## Current Product Decisions
 
 - Do not add photo verification as a profile-card trust signal. Catch users meet at an event before seeing the profile, so photo verification is not the main trust problem.
@@ -46,6 +65,56 @@ Make the shared public profile surface feel person-first, expressive, trustworth
 - "Why you might click" is a high-priority profile-card feature. It should include running and non-running compatibility reasons.
 - Same-city compatibility is not useful while swiping is city/event scoped.
 - Time-of-day preference is now an explicit profile field and can later be enriched with attendance-derived behavior.
+- Section-level reactions make generic left/right swiping redundant. The next UX pass should remove swipe gestures and card chrome, then provide clear contextual like/comment and pass/next controls.
+- The sections should not become visually flat. Remove the outer card container, but keep polished section surfaces, gradients, inset photos, and rhythm so the content has more breathing room.
+- Reaction controls are enabled only in the Catches decision context for now. Profile Preview and Public Profile should remain visually identical in content/layout but without like/comment controls.
+- In the Catches flow, use always-visible section reaction controls for the first implementation. This follows the Hinge discoverability pattern and avoids hiding the main action behind a tap state.
+- The pass affordance should be a floating lower-left X, visually separate from section reactions and placed so it coexists with bottom navigation.
+
+## Workstream 0: Cardless Contextual Reaction Surface
+
+The core change is to promote the shared profile renderer from "card content inside a deck" to "the actual screen body." This affects Catches, Profile Preview, Public Profile, and any chat/header profile entry point.
+
+Target behavior:
+
+- Replace the swipe deck with one full-screen profile at a time.
+- Keep the first profile section photo-dominant, but remove the outer card border, shadow, and artificial rounded card frame.
+- Keep rich section surfaces; removing the container should free width/height for larger photos, stronger prompts, and more generous spacing.
+- Render the same ordered sections currently inside the card: hero photo, compatibility/profile signals, profile prompts, running rhythm, additional photos, details, and lifestyle.
+- Keep each meaningful block individually likeable/commentable where a reaction makes sense, using always-visible controls in the Catches flow unless visual review proves they are too noisy.
+- Add a floating lower-left X dismiss/pass affordance so users still have a clear way to dismiss a candidate without liking.
+- Auto-advance to the next candidate after a like or comment in the Catches flow.
+- Preserve the post-event catch-window model, but rename UI language away from swiping where possible.
+- Preserve the shared rendering path for Catches, Profile Preview, and Public Profile so visual changes do not drift.
+
+Implementation notes:
+
+- Keep `ProfileSurface` as the chrome-free section renderer and let routes own optional wrappers/chrome.
+- The shared section renderer should accept reaction controls as optional inputs. Catches passes reaction callbacks; Preview/Public Profile pass none.
+- Prefer an explicit render mode or capabilities object over separate widgets, for example `ProfileSurfaceMode.catches`, `ProfileSurfaceMode.preview`, and `ProfileSurfaceMode.publicProfile`.
+- The section renderer should own layout/content only; route-level screens should own top bars, bottom action bars, safe areas, candidate progression, floating dismiss, and moderation actions.
+- Keep `ProfileCardContent` as the pure derivation layer unless the rename to a cardless term is part of a later cleanup pass.
+- Do not remove the persisted `swipes` collection or `Swipe` model in the first UI pass; that is a separate storage/API rename with migration risk.
+- Revisit bottom navigation and action placement: contextual section reactions should not compete with persistent bottom app navigation, pass/next, or report/block menus.
+- Candidate UI/code names:
+  - User-facing flow: `Catches`, `Catch Window`, or `Profiles`.
+  - Route/widget names: `CatchReviewScreen`, `ProfileSurface`, `PublicProfileSurface`, or `ProfileSectionFeed`.
+  - Data/backend names: keep `Swipe`/`swipes` until a separate migration pass.
+
+Resolved UX decisions:
+
+- Remove the outer card/deck container, but keep rich section surfaces.
+- Use a floating lower-left X for pass/dismiss.
+- Auto-advance to the next candidate after a successful like or comment in the Catches flow.
+- Hide reaction controls in Preview and Public Profile while keeping the same root renderer.
+- Keep backend `Swipe` naming temporarily.
+
+Open UX decisions:
+
+- Exact floating X treatment: size, elevation, safe-area inset, and whether it sits just above or partially over the bottom nav.
+- Exact visual density of always-visible section reaction controls after production render review.
+- Should comment sheets stay as bottom sheets, or become inline composer affordances on larger surfaces?
+- What is the empty/end-of-stack state once swiping is no longer the metaphor?
 
 ## Workstream 1: Confidence Signals
 
@@ -174,21 +243,36 @@ Open modeling questions:
 - Should compatibility reasons stay client-side, move to Functions, or be precomputed for the event swipe window once they depend on richer context?
 - Should complete profiles get a public badge everywhere, or only inside the compatibility/profile-signals section?
 
+## Open Implementation Backlog
+
+| Priority | Item | Status | Notes |
+| --- | --- | --- | --- |
+| P0 | Replace swipe deck/card UI with cardless structured profile surface | Implemented locally | `ProfileSurface` is now shared by Catches, Preview, and Public Profile. Production visual QA still needed on device. |
+| P0 | Add Hinge-style floating pass X after removing swipe gestures | Implemented locally | Catches uses `CatchesPassButton` in the lower-left. Exact visual inset/elevation still needs device QA. |
+| P0 | Update demo data to seed `profilePrompts`, `photoPrompts`, and `preferredRunTimes` | Not started | `tool/seed_demo_data.mjs` still writes legacy `bio` and does not exercise the new profile fields. |
+| P1 | Add one-shot legacy profile prompt backfill/repair tooling | Not started | Runtime migration exists, but there is no script to rewrite existing `bio` data into structured prompts. |
+| P1 | Implement mode-based reaction controls in the shared renderer | Implemented locally | Catches enables like/comment controls; Preview/Public Profile use the same renderer with controls disabled. |
+| P1 | Add prompt-picker UX for profile prompts and photo captions | Not started | Catalog exists in code, but users cannot choose alternate prompts yet. |
+| P1 | Expand compatibility reasons beyond v1 heuristics | Partially implemented | Existing reasons cover run title, relationship goal, running reason, time, distance, pace, language, and easy openers. Missing club/run history, prompt/caption themes, and richer non-running signals. |
+| P2 | Add richer profile quality coaching | Partially implemented | Edit Profile has a top strength card. Still missing inline prompt/photo coaching, Preview checklist, and post-onboarding nudges. |
+| P2 | Add visual regression coverage for profile surfaces | Not started | Need screenshot/golden checks for long names, dense chips, missing photos, multi-photo profiles, and cardless scroll behavior. |
+| P2 | Audit user-facing copy for "swipe" language | Not started | Storage/domain names can remain for now, but user-facing Catches copy should match the new interaction model. |
+
 ## Proposed Iteration Order
 
-1. Finalize confidence-signal rules and whether to show run history publicly.
-2. Define the emotional run tag catalog, including derived vs asked fields.
-3. Define the compatibility reason generator and rank order.
-4. Mock up the profile card with confidence signals, emotional tags, and the compatibility ribbon.
-5. Implement data/model additions behind the shared public profile card.
-6. Add owner-only profile quality guidance in Edit Profile and Preview.
-7. Add tests for scoring, reason generation, omitted empty signals, and card overflow.
+1. Fix demo data and add legacy prompt backfill tooling.
+2. Add prompt-picker UX for profile/photo prompts.
+3. Expand compatibility reasons with approved run-history and non-running signals.
+4. Add owner-only profile quality guidance in Preview and inline prompt/photo coaching.
+5. Add screenshot/golden checks for the final cardless profile surface.
+6. Do device visual QA for the floating pass X, bottom navigation coexistence, and section reaction density.
 
 ## Verification Plan
 
-- Widget tests for profile-card rendering with and without each signal category.
+- Widget tests for profile-surface rendering with and without each signal category.
+- Widget tests for cardless profile rendering with and without each signal category.
 - Unit tests for profile completeness scoring.
 - Unit tests for emotional tag derivation.
 - Unit tests for compatibility reason generation and ordering.
-- Golden or screenshot checks for long names, long prompts, missing photos, and dense chip sets.
+- Golden or screenshot checks for long names, long prompts, missing photos, dense chip sets, cardless action placement, and bottom navigation coexistence.
 - Focused `flutter analyze` and profile/public-profile/swipe tests.

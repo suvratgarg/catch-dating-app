@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/profile_photo.schema.json",
+  "title": "ProfilePhoto",
+  "description": "Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "url",
+    "thumbnailUrl",
+    "storagePath",
+    "thumbnailStoragePath",
+    "position",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "url": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/url"
+    },
+    "thumbnailUrl": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/url"
+    },
+    "storagePath": {
+      "$ref": "#/definitions/storageObjectPath"
+    },
+    "thumbnailStoragePath": {
+      "$ref": "#/definitions/storageObjectPath"
+    },
+    "prompt": {
+      "anyOf": [
+        {"$ref": "photo_prompt_answer.schema.json"},
+        {"type": "null"}
+      ]
+    },
+    "moderation": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["pending", "approved", "rejected"]
+        },
+        "reason": {
+          "type": ["string", "null"],
+          "maxLength": 240
+        },
+        "reviewedAt": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/nullableTimestamp"
+        }
+      }
+    },
+    "position": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 11
+    },
+    "createdAt": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/profile_common.schema.json#/definitions/timestamp"
+    }
+  },
+  "definitions": {
+    "storageObjectPath": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 512,
+      "pattern": "^[^/\\u0000][^\\u0000]*$"
+    }
+  },
+  "x-storage-metadata": true,
+  "x-future-field": "profilePhotos",
+  "x-migration-contract": "../migrations/profile_photos_storage.json"
+}

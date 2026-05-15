@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/run_id_payload.schema.json",
+  "title": "RunIdCallablePayload",
+  "description": "Callable payload accepted by simple run actions that need only a runId.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["runId"],
+  "properties": {
+    "runId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"}
+  }
+}

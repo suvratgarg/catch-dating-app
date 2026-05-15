@@ -1,19 +1,15 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
-
-const ReportUserSchema = z.object({
-  targetUserId: z.string().trim().min(1),
-  source: z.string().trim().max(64).optional(),
-  reasonCode: z.string().trim().max(64).optional(),
-  contextId: z.string().trim().max(128).optional(),
-  notes: z.string().trim().max(2000).optional(),
-});
+import {ReportUserCallablePayload} from
+  "../shared/generated/reportUserCallablePayload";
+import {validateReportUserCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
+import {validateCallableWithAjv} from "../shared/validation";
 
 interface ReportingDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -51,7 +47,11 @@ export async function reportUserHandler(
   deps: ReportingDeps = defaultDeps
 ): Promise<{reported: boolean}> {
   const reporterUserId = requireAuth(request);
-  const data = validateCallable(request, ReportUserSchema);
+  const data = validateCallableWithAjv<ReportUserCallablePayload>(
+    request,
+    validateReportUserCallablePayload,
+    normalizeReportUserPayload
+  );
 
   if (data.targetUserId === reporterUserId) {
     throw new HttpsError("invalid-argument", "targetUserId is invalid.");
@@ -74,6 +74,23 @@ export async function reportUserHandler(
   });
 
   return {reported: true};
+}
+
+/**
+ * Trims report payload text before generated schema validation.
+ * @param {unknown} data Raw callable payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizeReportUserPayload(data: unknown): unknown {
+  return normalizePayloadStrings(data, {
+    stringFields: [
+      "targetUserId",
+      "source",
+      "reasonCode",
+      "contextId",
+      "notes",
+    ],
+  });
 }
 
 export const reportUser = onCall(appCheckCallableOptions, async (request) => {

@@ -1,0 +1,37 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/mark_notification_read.schema.json",
+  "title": "MarkNotificationReadClientWrite",
+  "description": "Client-owned Firestore update operation for notifications/{uid}/items/{notificationId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["path", "data"],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uid", "notificationId"],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+        },
+        "notificationId": {
+          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["readAt"],
+      "properties": {
+        "readAt": {
+          "$ref": "../shared/run_common.schema.json#/definitions/timestamp"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "update",
+  "x-firestore-path": "notifications/{uid}/items/{notificationId}",
+  "x-owner": "notification owner direct read-state update"
+}

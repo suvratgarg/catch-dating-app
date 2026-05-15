@@ -714,6 +714,14 @@ void main() {
         launchedUri?.queryParameters['destination'],
         '22.725848,75.897401',
       );
+
+      launchedUri = null;
+      await tester.tap(find.text('Add to calendar'));
+      await tester.pump();
+
+      expect(launchedUri?.host, 'calendar.google.com');
+      expect(launchedUri?.queryParameters['action'], 'TEMPLATE');
+      expect(launchedUri?.queryParameters['text'], run.title);
     });
 
     testWidgets(
@@ -769,6 +777,10 @@ void main() {
         expect(
           tester.getTopLeft(find.text('Directions')).dy,
           greaterThan(tester.getTopLeft(find.text('View run')).dy),
+        );
+        expect(
+          tester.getTopLeft(find.text('Add to calendar')).dy,
+          greaterThan(tester.getTopLeft(find.text('Directions')).dy),
         );
 
         await tester.drag(
@@ -873,13 +885,13 @@ void main() {
       expect(find.text('1 run'), findsOneWidget);
       expect(find.text('HOST TOOLS'), findsOneWidget);
       expect(find.text('ATTENDANCE OPEN'), findsOneWidget);
-      expect(find.text('Attendance'), findsOneWidget);
-      expect(find.text('Manage'), findsOneWidget);
+      expect(find.text('Take attendance'), findsOneWidget);
+      expect(find.text('Manage run'), findsOneWidget);
       expect(find.text('Take Attendance'), findsNothing);
       expect(find.textContaining('NEXT RUN'), findsNothing);
     });
 
-    testWidgets('shows a scrollable host tools rail for upcoming hosted runs', (
+    testWidgets('shows a paged host tools rail for upcoming hosted runs', (
       tester,
     ) async {
       final now = DateTime.now();
@@ -929,11 +941,20 @@ void main() {
 
       expect(find.text('Host tools'), findsOneWidget);
       expect(find.text('2 runs'), findsOneWidget);
-      expect(find.text('HOST TOOLS'), findsNWidgets(2));
-      expect(find.text('Manage'), findsNWidgets(2));
-      expect(find.text('Opens later'), findsNWidgets(2));
-      expect(find.text('2/20'), findsOneWidget);
-      expect(find.text('7/20'), findsOneWidget);
+      expect(find.text('HOST TOOLS'), findsOneWidget);
+      expect(find.text('Manage run'), findsOneWidget);
+      expect(find.text('Attendance opens later'), findsOneWidget);
+      expect(find.text('1/2'), findsOneWidget);
+      expect(find.textContaining('2/20 booked'), findsOneWidget);
+
+      await tester.drag(
+        find.byKey(const Key('host-run-tools-carousel')),
+        const Offset(-120, 0),
+      );
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('2/2'), findsOneWidget);
+      expect(find.textContaining('7/20 booked'), findsOneWidget);
     });
   });
 
@@ -1055,7 +1076,7 @@ void main() {
       );
       await _pumpDashboardUi(tester);
 
-      await tester.tap(find.text('Manage'));
+      await tester.tap(find.text('Manage run'));
       await _pumpDashboardUi(tester);
 
       expect(find.text('Manage club-host hosted-run'), findsOneWidget);
@@ -1093,7 +1114,7 @@ void main() {
       );
       await _pumpDashboardUi(tester);
 
-      await tester.tap(find.text('Attendance'));
+      await tester.tap(find.text('Take attendance'));
       await _pumpDashboardUi(tester);
 
       expect(find.text('Attendance club-host hosted-run'), findsOneWidget);

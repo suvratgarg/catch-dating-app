@@ -7,16 +7,20 @@ void main() {
   test('builds a calendar URI from run details', () {
     final run = buildRun(
       meetingPoint: 'Marine Drive',
-      startTime: DateTime(2026, 5, 5, 18, 30),
-      endTime: DateTime(2026, 5, 5, 19, 30),
+      locationDetails: 'South entrance',
+      startTime: DateTime.utc(2026, 5, 5, 18, 30),
+      endTime: DateTime.utc(2026, 5, 5, 19, 30),
     );
 
     final uri = PaymentConfirmationController.calendarUri(run);
 
     expect(uri.host, 'calendar.google.com');
-    expect(uri.toString(), contains('Tuesday%20Evening%20Run'));
-    expect(uri.toString(), contains('20260505T183000/20260505T193000'));
-    expect(uri.toString(), contains('Marine%20Drive'));
+    expect(uri.queryParameters['action'], 'TEMPLATE');
+    expect(uri.queryParameters['text'], 'Tuesday Evening Run');
+    expect(uri.queryParameters['dates'], '20260505T183000Z/20260505T193000Z');
+    expect(uri.queryParameters['location'], 'Marine Drive, South entrance');
+    expect(uri.queryParameters['details'], contains('Catch run'));
+    expect(uri.queryParameters['details'], contains('5km · Easy'));
   });
 
   test('builds directions URI from coordinates when available', () {

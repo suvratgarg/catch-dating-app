@@ -1,0 +1,36 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/config_cities.schema.json",
+  "title": "ConfigCitiesDocument",
+  "description": "Public city configuration stored at config/cities.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "config_cities",
+  "x-firestore-path": "config/cities",
+  "x-document-id-field": "cities",
+  "x-owner": "admin city configuration tooling",
+  "required": ["cityNames"],
+  "properties": {
+    "cityNames": {
+      "type": "array",
+      "items": {"$ref": "../shared/run_common.schema.json#/definitions/citySlug"},
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "cities": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["name", "label", "latitude", "longitude"],
+        "properties": {
+          "name": {"$ref": "../shared/run_common.schema.json#/definitions/citySlug"},
+          "label": {"type": "string", "minLength": 1, "maxLength": 80},
+          "latitude": {"$ref": "../shared/run_common.schema.json#/definitions/latitude"},
+          "longitude": {"$ref": "../shared/run_common.schema.json#/definitions/longitude"}
+        }
+      },
+      "uniqueItems": true
+    }
+  }
+}

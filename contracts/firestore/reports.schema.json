@@ -1,0 +1,29 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/reports.schema.json",
+  "title": "ReportDocument",
+  "description": "Canonical safety report stored at reports/{reportId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "reports",
+  "x-firestore-path": "reports/{reportId}",
+  "x-document-id-field": "id",
+  "x-owner": "reportUser callable",
+  "required": [
+    "reporterUserId",
+    "targetUserId",
+    "createdAt",
+    "source",
+    "status"
+  ],
+  "properties": {
+    "reporterUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "targetUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "source": {"type": "string", "enum": ["profile", "chat", "match", "support"]},
+    "status": {"type": "string", "enum": ["open", "reviewed", "dismissed"]},
+    "reasonCode": {"type": "string", "minLength": 1, "maxLength": 80},
+    "contextId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "notes": {"type": "string", "maxLength": 1000}
+  }
+}

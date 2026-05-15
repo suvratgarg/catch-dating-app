@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/swipes.schema.json",
+  "title": "SwipeDocument",
+  "description": "Current storage contract for contextual profile decisions stored at swipes/{userId}/outgoing/{targetId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "swipes",
+  "x-firestore-path": "swipes/{userId}/outgoing/{targetId}",
+  "x-document-id-field": "targetId",
+  "x-owner": "authenticated swiper direct create; matching trigger consumes likes",
+  "x-logical-name": "profileDecision",
+  "x-migration-phase": "observe",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": ["swiperId", "targetId", "runId", "direction", "createdAt"],
+  "properties": {
+    "swiperId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "targetId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "runId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "direction": {"type": "string", "enum": ["like", "pass"]},
+    "reactionTargetId": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
+    "reactionTargetType": {
+      "type": ["string", "null"],
+      "enum": [
+        "heroPhoto",
+        "photo",
+        "profilePrompt",
+        "compatibility",
+        "running",
+        "details",
+        "lifestyle",
+        null
+      ]
+    },
+    "reactionTargetLabel": {"type": ["string", "null"], "maxLength": 80},
+    "reactionTargetPreview": {"type": ["string", "null"], "maxLength": 240},
+    "comment": {"type": ["string", "null"], "maxLength": 240},
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

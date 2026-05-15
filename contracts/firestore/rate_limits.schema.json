@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/rate_limits.schema.json",
+  "title": "RateLimitDocument",
+  "description": "Server-owned callable rate-limit counter stored at rateLimits/{docId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "rateLimits",
+  "x-firestore-path": "rateLimits/{docId}",
+  "x-document-id-field": "docId",
+  "x-owner": "shared callable rate-limit middleware",
+  "required": ["uid", "action", "windowKey", "count", "expiresAt"],
+  "properties": {
+    "uid": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "action": {"type": "string", "minLength": 1, "maxLength": 120},
+    "windowKey": {"type": "integer", "minimum": 0},
+    "count": {"type": "integer", "minimum": 1},
+    "expiresAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"}
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "reporterUserId": "runner-1",
+  "targetUserId": "runner-2",
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "source": "profile",
+  "status": "open",
+  "reasonCode": "harassment",
+  "contextId": "runner-2",
+  "notes": "Inappropriate message."
+}

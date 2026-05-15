@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_run_club_payload.schema.json",
+  "title": "CreateRunClubCallablePayload",
+  "description": "Callable payload accepted by createRunClub.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "description", "location", "area"],
+  "properties": {
+    "clubId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "name": {"type": "string", "minLength": 1, "maxLength": 120},
+    "description": {"type": "string", "minLength": 1, "maxLength": 2000},
+    "location": {"$ref": "../shared/run_common.schema.json#/definitions/citySlug"},
+    "area": {"type": "string", "minLength": 1, "maxLength": 120},
+    "imageUrl": {"$ref": "../shared/run_common.schema.json#/definitions/contactString"},
+    "instagramHandle": {"$ref": "../shared/run_common.schema.json#/definitions/contactString"},
+    "phoneNumber": {"$ref": "../shared/run_common.schema.json#/definitions/contactString"},
+    "email": {"$ref": "../shared/run_common.schema.json#/definitions/contactString"}
+  }
+}

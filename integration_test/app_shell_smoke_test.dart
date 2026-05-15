@@ -957,7 +957,11 @@ void main() {
 
     expect(find.text('Taylor'), findsOneWidget);
 
-    await tester.tap(find.byKey(SwipeKeys.likeButton));
+    final promptLikeButton = find.byTooltip(
+      'Like A perfect run with me looks like...',
+    );
+    await tester.ensureVisible(promptLikeButton);
+    await tester.tap(promptLikeButton);
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 

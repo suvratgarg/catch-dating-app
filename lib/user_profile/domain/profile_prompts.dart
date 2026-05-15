@@ -1,16 +1,19 @@
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart'
+    as schema_contracts;
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'profile_prompts.freezed.dart';
 part 'profile_prompts.g.dart';
 
-/// Editorial source of truth for profile and photo prompts.
+/// App-facing prompt helpers backed by the generated schema contract.
 ///
-/// Add, remove, or reorder prompts here before changing UI code. The stored
+/// Add, remove, or reorder prompts in `contracts/catalogs/`. The stored
 /// profile documents keep stable ids; display copy resolves through this file.
-const profilePromptPerfectRunId = 'perfectRun';
-const maxProfilePromptAnswers = 3;
-const maxPhotoPromptCaptions = 6;
+const profilePromptPerfectRunId =
+    schema_contracts.schemaProfilePromptPerfectRunId;
+const maxProfilePromptAnswers = schema_contracts.schemaMaxProfilePromptAnswers;
+const maxPhotoPromptCaptions = schema_contracts.schemaMaxPhotoPromptCaptions;
 
 class ProfilePromptDefinition {
   const ProfilePromptDefinition({
@@ -36,72 +39,27 @@ class PhotoPromptDefinition {
   final String placeholder;
 }
 
-const profilePromptCatalog = [
-  ProfilePromptDefinition(
-    id: profilePromptPerfectRunId,
-    title: 'A perfect run with me looks like...',
-    placeholder: 'Tell runners what kind of run feels like you.',
-  ),
-  ProfilePromptDefinition(
-    id: 'afterRun',
-    title: 'After a run, you can usually find me...',
-    placeholder: 'Coffee, dosa, stretching, playlists...',
-  ),
-  ProfilePromptDefinition(
-    id: 'greenFlag',
-    title: 'My green flag is...',
-    placeholder: 'Share something specific and easy to respond to.',
-  ),
-  ProfilePromptDefinition(
-    id: 'getAlongIf',
-    title: "We'll get along if...",
-    placeholder: 'Name the energy, habits, or humor you like.',
-  ),
-  ProfilePromptDefinition(
-    id: 'favoriteRoute',
-    title: 'My favorite running route has...',
-    placeholder: 'Shade, chaos, hills, street food, sunrise...',
-  ),
-];
+final profilePromptCatalog = schema_contracts.schemaProfilePromptCatalog
+    .map(
+      (definition) => ProfilePromptDefinition(
+        id: definition.id,
+        title: definition.title,
+        placeholder: definition.placeholder,
+      ),
+    )
+    .toList(growable: false);
 
-const defaultProfilePromptIds = [
-  profilePromptPerfectRunId,
-  'afterRun',
-  'greenFlag',
-];
+const defaultProfilePromptIds = schema_contracts.schemaDefaultProfilePromptIds;
 
-const photoPromptCatalog = [
-  PhotoPromptDefinition(
-    id: 'proofIRun',
-    title: 'Proof I actually run',
-    placeholder: 'Add a caption for this running photo.',
-  ),
-  PhotoPromptDefinition(
-    id: 'finishLine',
-    title: 'After the finish line',
-    placeholder: 'What was happening in this moment?',
-  ),
-  PhotoPromptDefinition(
-    id: 'notRunning',
-    title: "When I'm not running",
-    placeholder: 'Show another side of your life.',
-  ),
-  PhotoPromptDefinition(
-    id: 'favoritePeople',
-    title: 'My favorite people know me as',
-    placeholder: 'A small detail friends would recognize.',
-  ),
-  PhotoPromptDefinition(
-    id: 'weekendEnergy',
-    title: 'Weekend energy',
-    placeholder: 'What does this photo say about your weekends?',
-  ),
-  PhotoPromptDefinition(
-    id: 'captionThis',
-    title: 'Caption this',
-    placeholder: 'Give people an easy opening line.',
-  ),
-];
+final photoPromptCatalog = schema_contracts.schemaPhotoPromptCatalog
+    .map(
+      (definition) => PhotoPromptDefinition(
+        id: definition.id,
+        title: definition.title,
+        placeholder: definition.placeholder,
+      ),
+    )
+    .toList(growable: false);
 
 @freezed
 abstract class ProfilePromptAnswer with _$ProfilePromptAnswer {

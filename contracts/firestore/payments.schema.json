@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/payments.schema.json",
+  "title": "PaymentDocument",
+  "description": "Canonical payment record stored at payments/{paymentId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "payments",
+  "x-firestore-path": "payments/{paymentId}",
+  "x-document-id-field": "id",
+  "x-owner": "payments callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "userId",
+    "orderId",
+    "paymentId",
+    "runId",
+    "amount",
+    "currency",
+    "status",
+    "signUpFailed",
+    "createdAt"
+  ],
+  "properties": {
+    "userId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "orderId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "paymentId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "runId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "amount": {"type": "integer", "minimum": 0, "maximum": 100000000},
+    "currency": {"type": "string", "minLength": 3, "maxLength": 3},
+    "status": {
+      "type": "string",
+      "enum": ["pending", "completed", "failed", "refunded"]
+    },
+    "signUpFailed": {"type": "boolean"},
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/run_club_membership_payload.schema.json",
+  "title": "RunClubMembershipCallablePayload",
+  "description": "Callable payload accepted by joinRunClub and leaveRunClub.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clubId"],
+  "properties": {
+    "clubId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"}
+  }
+}

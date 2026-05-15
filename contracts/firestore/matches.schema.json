@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/matches.schema.json",
+  "title": "MatchDocument",
+  "description": "Canonical match document stored at matches/{matchId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "matches",
+  "x-firestore-path": "matches/{matchId}",
+  "x-document-id-field": "id",
+  "x-owner": "matching triggers own lifecycle; participants may reset only their unread count",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "user1Id",
+    "user2Id",
+    "runIds",
+    "createdAt",
+    "lastMessageAt",
+    "lastMessagePreview",
+    "lastMessageSenderId",
+    "unreadCounts",
+    "status",
+    "blockedBy",
+    "blockedAt",
+    "participantIds"
+  ],
+  "properties": {
+    "user1Id": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "user2Id": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "runIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"}
+    },
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "lastMessageAt": {"$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"},
+    "lastMessagePreview": {"type": ["string", "null"], "maxLength": 300},
+    "lastMessageSenderId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "unreadCounts": {
+      "type": "object",
+      "additionalProperties": {"$ref": "../shared/run_common.schema.json#/definitions/nonNegativeInteger"}
+    },
+    "status": {"type": "string", "enum": ["active", "blocked"]},
+    "blockedBy": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "blockedAt": {"$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"},
+    "participantIds": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "uniqueItems": true,
+      "items": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"}
+    },
+    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

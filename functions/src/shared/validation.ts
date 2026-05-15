@@ -1,27 +1,33 @@
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
-import {ZodType} from "zod";
+import {ValidateFunction} from "ajv";
 
 /**
- * Validates a callable request body against a Zod schema.
+ * Validates a callable request body against a generated Ajv validator.
  *
- * Throws `invalid-argument` with a joined message of all validation issues
- * when the body does not match the schema.
+ * The optional normalizer keeps input cleanup explicit at the callable
+ * boundary; JSON Schema validation itself must stay side-effect free.
  * @param {CallableRequest<unknown>} request The incoming callable request.
- * @param {ZodType<T>} schema The Zod schema to validate against.
- * @return {T} The parsed and typed request data.
+ * @param {ValidateFunction<T>} validator Generated Ajv validator.
+ * @param {function(unknown): unknown} [normalize] Optional input normalizer.
+ * @return {T} Validated request data.
  */
-export function validateCallable<T>(
+export function validateCallableWithAjv<T>(
   request: CallableRequest<unknown>,
-  schema: ZodType<T>,
+  validator: ValidateFunction<T>,
+  normalize: (data: unknown) => unknown = (data) => data
 ): T {
-  const result = schema.safeParse(request.data);
-  if (!result.success) {
-    const message = result.error.issues
-      .map((i) => `${i.path.join(".")}: ${i.message}`)
-      .join("; ");
-    throw new HttpsError("invalid-argument", message);
-  }
-  return result.data;
+  const data = normalize(request.data);
+  if (validator(data)) return data;
+  const message = (validator.errors ?? [])
+    .map((error) => {
+      const location = error.instancePath
+        .split("/")
+        .filter((part) => part.length > 0)
+        .join(".");
+      return `${location}: ${error.message ?? "failed validation"}`;
+    })
+    .join("; ");
+  throw new HttpsError("invalid-argument", message);
 }
 
 /**
@@ -31,19 +37,13 @@ export function validateCallable<T>(
  * which indicates a data integrity issue — the document should always
  * exist and have data if the caller checked `.exists`.
  *
- * When an optional schema is provided, the data is also validated against
- * it. Schema validation failures throw `internal` (not `invalid-argument`)
- * because the data was written by our own code, not the client.
- *
  * @param {FirebaseFirestore.DocumentSnapshot} snap A Firestore doc snapshot.
  * @param {string} label Human-readable label for error messages.
- * @param {ZodType=} schema Optional Zod schema for shape validation.
  * @return {T} The document data cast to T.
  */
 export function requireDoc<T>(
   snap: FirebaseFirestore.DocumentSnapshot,
   label: string,
-  schema?: ZodType<T>,
 ): T {
   const data = snap.data();
   if (data === undefined) {
@@ -51,19 +51,6 @@ export function requireDoc<T>(
       "internal",
       `${label} document is empty or missing.`
     );
-  }
-  if (schema) {
-    const result = schema.safeParse(data);
-    if (!result.success) {
-      const issues = result.error.issues
-        .map((i) => `${i.path.join(".")}: ${i.message}`)
-        .join("; ");
-      throw new HttpsError(
-        "internal",
-        `${label} document shape mismatch: ${issues}`
-      );
-    }
-    return result.data;
   }
   return data as T;
 }
