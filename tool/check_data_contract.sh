@@ -42,6 +42,7 @@ node tool/validate_schema_contracts.mjs
 echo "==> Checking generated schema contract outputs"
 node tool/generate_schema_contracts.mjs --check
 node --check tool/generated/schema_contract_validators.mjs
+node tool/check_schema_type_boundaries.mjs
 
 echo "==> Checking schema path literals"
 node tool/check_schema_path_literals.mjs

@@ -6,6 +6,10 @@
  *
  * To update: dart tool/generate_firestore_types.dart
  *
+ * Transitional Admin SDK typing facade. JSON Schema contracts are the
+ * canonical persisted-data source; this file only exists while Functions
+ * code still needs live FirebaseFirestore.Timestamp-oriented types.
+ *
  * These mirror the Dart freezed models in lib/<feature>/domain/<Model>.dart.
  * Enum values match what Dart's json_serializable serialises by default
  * (enum member name, camelCase — e.g. DrinkingHabit.socially → "socially").

@@ -1,4 +1,16 @@
 {
+  "schemaOwnedExceptions": {
+    "extraFields.UserProfileDoc.profilePhotos": "Transitional Admin SDK facade field. JSON Schema owns the persisted shape; this facade keeps live FirebaseFirestore.Timestamp types for Functions code until the Admin SDK facade is generated from contracts.",
+    "extraFields.PublicProfileDoc.languages": "Transitional Admin SDK facade field. JSON Schema owns public profile fields; the Dart-derived public model still needs this overlay until the old generator is retired.",
+    "extraFields.PublicProfileDoc.profilePhotos": "Transitional Admin SDK facade field. JSON Schema owns the persisted shape; this facade keeps live FirebaseFirestore.Timestamp types for Functions code until the Admin SDK facade is generated from contracts.",
+    "fieldOverrides.UserProfileDoc.profilePhotos": "Override the Dart-derived nullable type so Functions use the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
+    "fieldOverrides.PublicProfileDoc.languages": "Overlay the public-profile language field while the transitional facade is still Dart-derived.",
+    "fieldOverrides.PublicProfileDoc.profilePhotos": "Override the Dart-derived nullable type so Functions use the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
+    "extraInterfaces.ProfilePromptAnswer": "Duplicated only for the transitional Admin SDK facade; the canonical embedded schema remains contracts/embedded/profile_prompt_answer.schema.json.",
+    "extraInterfaces.PhotoPromptAnswer": "Duplicated only for the transitional Admin SDK facade; the canonical embedded schema remains contracts/embedded/photo_prompt_answer.schema.json.",
+    "extraInterfaces.ProfilePhoto": "Duplicated only for the transitional Admin SDK facade because generated schema types model serialized fixture timestamps, while Functions need FirebaseFirestore.Timestamp."
+  },
+
   "extraFields": {
     "UserProfileDoc": [
       { "name": "fcmToken", "tsType": "string", "optional": true, "comment": "Runtime — written by FcmService, not part of the profile form" },

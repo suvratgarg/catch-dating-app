@@ -849,6 +849,20 @@ plus explicit Firestore runtime adapters. That is a separate refactor because
 the current generated document types intentionally model serialized fixture
 timestamps rather than live Admin SDK timestamp instances.
 
+Follow-up closed on 2026-05-16:
+
+- Added `tool/check_schema_type_boundaries.mjs` and wired it into
+  `tool/check_data_contract.sh`.
+- `tool/firestore_ts_overlay.json` now has `schemaOwnedExceptions`; any
+  schema-owned field override or embedded type duplicated for the transitional
+  Admin SDK facade must carry a concrete reason.
+- `functions/src/shared/firestore.ts` now describes itself in the generated
+  header as a transitional Admin SDK typing facade, not canonical schema truth.
+
+Remaining work stays the same: generate this Admin SDK facade from contracts or
+delete it after Function imports stop depending on live `FirebaseFirestore`
+timestamp-oriented document interfaces.
+
 ### 2026-05-15: Phase 6 Ownership/Rules Drift Checks
 
 Added schema-to-ownership checks around profile field lists:
