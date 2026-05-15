@@ -1,7 +1,7 @@
 ---
 doc_id: schema_contract_unification
-version: 0.8.2
-updated: 2026-05-15
+version: 0.8.3
+updated: 2026-05-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -790,6 +790,19 @@ Follow-up closed on 2026-05-16:
   `effectiveProfilePhotos` instead of reading `photoUrls` directly.
 - `tool/check_data_contract.sh` now syntax-checks the thumbnail backfill script
   and runs the profile-photo backfill tests.
+- `tool/backfill_profile_photos.mjs` now resolves Firebase project aliases from
+  `.firebaserc` through a shared resolver, instead of hardcoding invented dev,
+  staging, and prod project ids.
+- Live migration was applied after deploying the updated profile Functions:
+  - dev: 74 users scanned, 74 grouped-photo users after apply, 0 repairs and
+    0 warnings on the final dry run.
+  - staging: 0 users scanned, 0 repairs and 0 warnings after Functions deploy.
+  - prod: 86 users scanned, 86 grouped-photo users after apply, 0 repairs and
+    0 warnings on the final dry run.
+- Important sequencing rule: deploy the updated `syncPublicProfile` projection
+  before applying the user backfill. Otherwise, the currently deployed trigger
+  can rewrite `publicProfiles/{uid}` back to the legacy projection after the
+  user document update.
 
 Proof:
 
@@ -802,6 +815,14 @@ node tool/check_firestore_contract.mjs
 node --test tool/backfill_profile_photos.test.mjs tool/recompute_public_profiles.test.mjs tool/profile_projection_parity.test.mjs tool/seed_demo_data_schema.test.mjs tool/seed_demo_data_append.test.mjs
 node --test functions/lib/safety/accountDeletion.test.js
 ./tool/check_data_contract.sh
+./tool/firebase_with_env.sh dev deploy --only functions:syncPublicProfile,functions:updateUserProfile,functions:generateProfilePhotoThumbnail,functions:moderatePhotoOnUpload,functions:requestAccountDeletion --non-interactive
+./tool/firebase_with_env.sh staging deploy --only functions:syncPublicProfile,functions:updateUserProfile,functions:generateProfilePhotoThumbnail,functions:moderatePhotoOnUpload,functions:requestAccountDeletion --non-interactive
+./tool/firebase_with_env.sh prod deploy --only functions:syncPublicProfile,functions:updateUserProfile,functions:generateProfilePhotoThumbnail,functions:moderatePhotoOnUpload,functions:requestAccountDeletion --non-interactive
+node tool/backfill_profile_photos.mjs --env dev --apply
+node tool/backfill_profile_photos.mjs --env dev
+node tool/backfill_profile_photos.mjs --env staging
+node tool/backfill_profile_photos.mjs --env prod --apply --allow-prod
+node tool/backfill_profile_photos.mjs --env prod
 ```
 
 ### 2026-05-15: Generator Boundary Cleanup

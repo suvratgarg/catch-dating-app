@@ -55,6 +55,7 @@ node --check tool/backfill_profile_photos.mjs
 node --check functions/scripts/backfill-profile-thumbnails.cjs
 node --test tool/seed_demo_data_append.test.mjs \
   tool/seed_demo_data_schema.test.mjs \
+  tool/firebase_project_resolver.test.mjs \
   tool/recompute_public_profiles.test.mjs \
   tool/validate_profile_decision_migration.test.mjs \
   tool/backfill_profile_decisions.test.mjs \

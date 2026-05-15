@@ -8,6 +8,10 @@ import {
   validateProfilePhoto,
   validatePublicProfileDocument,
 } from "./generated/schema_contract_validators.mjs";
+import {
+  isFirebaseProductionTarget,
+  resolveFirebaseProjectId,
+} from "./firebase_project_resolver.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "..");
@@ -139,7 +143,7 @@ export async function buildProfilePhotoBackfillPlan(
       );
       continue;
     }
-    if (!currentPublic || !isDeepStrictEqual(currentPublic, expectedPublic)) {
+    if (!currentPublic || !firestoreDataEqual(currentPublic, expectedPublic)) {
       repairs.push({
         op: "set",
         path: `publicProfiles/${uid}`,
@@ -264,6 +268,13 @@ function photoFieldsEqual(current, patch) {
     isDeepStrictEqual(current.photoUrls ?? [], patch.photoUrls) &&
     isDeepStrictEqual(current.photoThumbnailUrls ?? [], patch.photoThumbnailUrls) &&
     isDeepStrictEqual(current.photoPrompts ?? [], patch.photoPrompts);
+}
+
+function firestoreDataEqual(left, right) {
+  return isDeepStrictEqual(
+    schemaSerializableFirestoreData(left),
+    schemaSerializableFirestoreData(right)
+  );
 }
 
 function validateProfilePhotos(profilePhotos, pathPrefix, validator) {
@@ -422,18 +433,15 @@ function requireValue(argv, index, flag) {
 }
 
 function resolveProjectId(args) {
-  if (args.project) return args.project;
-  if (args.env === "dev") return "catch-dating-dev";
-  if (args.env === "staging") return "catch-dating-staging";
-  if (args.env === "prod") return "catch-dating-prod";
+  if (args.project || args.env) return resolveFirebaseProjectId(args);
   if (process.env.GCLOUD_PROJECT) return process.env.GCLOUD_PROJECT;
   if (process.env.GOOGLE_CLOUD_PROJECT) return process.env.GOOGLE_CLOUD_PROJECT;
-  return "catch-dating-dev";
+  return resolveFirebaseProjectId(args);
 }
 
 function isProductionTarget(args) {
   const projectId = resolveProjectId(args);
-  return args.env === "prod" || /prod/i.test(projectId);
+  return isFirebaseProductionTarget({...args, projectId});
 }
 
 function printSummary(summary) {

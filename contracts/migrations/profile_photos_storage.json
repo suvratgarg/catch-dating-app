@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "logicalName": "profilePhoto",
-  "currentPhase": "dual_write_backfill_ready",
+  "currentPhase": "new_primary_live_backfilled",
   "reason": "Profile photos are currently represented by parallel arrays for full URLs, thumbnail URLs, and photo prompt metadata. That shape is easy to render but brittle for deletion, moderation, thumbnail repair, prompt edits, and future per-photo analytics because every consumer must keep indexes aligned.",
   "currentShape": {
     "userProfileFields": [
@@ -70,12 +70,12 @@
     },
     {
       "id": "backfill",
-      "status": "tool_ready",
-      "description": "Dry-run-first tooling derives profilePhotos from parallel arrays, validates storage paths where available, and reports index gaps before apply."
+      "status": "complete",
+      "description": "Dry-run-first tooling derives profilePhotos from parallel arrays, validates storage paths where available, reports index gaps before apply, and has been applied to dev and prod."
     },
     {
       "id": "new_primary",
-      "status": "in_progress",
+      "status": "complete",
       "description": "Read and project profilePhotos as the canonical shape while retaining legacy arrays as compatibility output."
     },
     {
@@ -95,11 +95,36 @@
     "contracts/firestore/users.schema.json",
     "contracts/firestore/public_profiles.schema.json"
   ],
-  "guardsRequiredBeforeApply": [
+  "guardsCompletedBeforeApply": [
     "Generated Dart and TypeScript ProfilePhoto types exist.",
     "Projection parity tests cover profilePhotos -> publicProfiles.",
     "Thumbnail generation updates the matching ProfilePhoto by storagePath/position rather than relying on legacy URL array writes only.",
     "Backfill dry run reports legacy array length mismatches and missing storage paths.",
     "Profile preview, public profile, and catches surfaces render through the same ProfilePhoto domain getter."
-  ]
+  ],
+  "liveApply": {
+    "dev": {
+      "appliedAt": "2026-05-16",
+      "functionsDeployed": true,
+      "usersScanned": 74,
+      "groupedPhotoUsersAfter": 74,
+      "repairsAfter": 0,
+      "warningsAfter": 0
+    },
+    "staging": {
+      "checkedAt": "2026-05-16",
+      "functionsDeployed": true,
+      "usersScanned": 0,
+      "repairsAfter": 0,
+      "warningsAfter": 0
+    },
+    "prod": {
+      "appliedAt": "2026-05-16",
+      "functionsDeployed": true,
+      "usersScanned": 86,
+      "groupedPhotoUsersAfter": 86,
+      "repairsAfter": 0,
+      "warningsAfter": 0
+    }
+  }
 }

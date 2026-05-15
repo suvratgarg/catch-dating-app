@@ -90,6 +90,12 @@ test("buildProfilePhotoBackfillPlan repairs user and public profile photos",
       firestore.get("publicProfiles/runner-1").profilePhotos[0].thumbnailUrl,
       "https://example.test/thumb.jpg"
     );
+
+    const followUpPlan = await buildProfilePhotoBackfillPlan(firestore, {
+      timestampFromMillis,
+      projection,
+    });
+    assert.equal(followUpPlan.summary.repairsNeeded, 0);
   }
 );
 
