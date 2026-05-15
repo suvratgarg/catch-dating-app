@@ -28,7 +28,6 @@ import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/club_sche
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/host_stats_bar.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/membership_button.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/widgets/stats_strip.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/city_picker.dart';
@@ -1014,7 +1013,9 @@ void main() {
       await tester.pump();
 
       try {
-        await RunClubsListController.joinMutation.run(container, (tx) async {
+        await RunClubMembershipController.joinMutation.run(container, (
+          tx,
+        ) async {
           throw StateError('join failed');
         });
       } catch (_) {}
@@ -1119,7 +1120,6 @@ void main() {
                 isHost: false,
                 isMember: false,
                 upcomingRuns: const [],
-                allRuns: const [],
                 reviews: const [],
                 userProfile: buildUser(uid: 'runner-1'),
                 uid: 'runner-1',
@@ -1169,7 +1169,6 @@ void main() {
                 isHost: false,
                 isMember: true,
                 upcomingRuns: const [],
-                allRuns: const [],
                 reviews: const [],
                 userProfile: buildUser(uid: 'runner-1'),
                 uid: 'runner-1',

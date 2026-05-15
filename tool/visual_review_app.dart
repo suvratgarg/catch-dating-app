@@ -20,6 +20,7 @@ import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/run_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:catch_dating_app/user_profile/presentation/widgets/profile_tab.dart';
@@ -192,6 +193,13 @@ final class _VisualReviewUserProfileRepository
   @override
   Future<void> updatePhotoUrls({
     required String uid,
+    required List<String> photoUrls,
+  }) async {}
+
+  @override
+  Future<void> updateProfilePhotos({
+    required String uid,
+    required List<ProfilePhoto> profilePhotos,
     required List<String> photoUrls,
   }) async {}
 

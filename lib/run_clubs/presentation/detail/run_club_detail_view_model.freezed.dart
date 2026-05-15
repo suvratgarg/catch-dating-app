@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$RunClubDetailViewModel {
 
- RunClub get runClub; bool get isHost; bool get isMember; List<Run> get upcomingRuns; List<Run> get allRuns; List<Review> get reviews; UserProfile? get userProfile; String? get uid; bool get isAuthenticated;
+ RunClub get runClub; bool get isHost; bool get isMember; List<Run> get upcomingRuns; List<Review> get reviews; UserProfile? get userProfile; String? get uid; bool get isAuthenticated;
 /// Create a copy of RunClubDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $RunClubDetailViewModelCopyWith<RunClubDetailViewModel> get copyWith => _$RunClu
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunClubDetailViewModel&&(identical(other.runClub, runClub) || other.runClub == runClub)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&const DeepCollectionEquality().equals(other.upcomingRuns, upcomingRuns)&&const DeepCollectionEquality().equals(other.allRuns, allRuns)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunClubDetailViewModel&&(identical(other.runClub, runClub) || other.runClub == runClub)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&const DeepCollectionEquality().equals(other.upcomingRuns, upcomingRuns)&&const DeepCollectionEquality().equals(other.reviews, reviews)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,runClub,isHost,isMember,const DeepCollectionEquality().hash(upcomingRuns),const DeepCollectionEquality().hash(allRuns),const DeepCollectionEquality().hash(reviews),userProfile,uid,isAuthenticated);
+int get hashCode => Object.hash(runtimeType,runClub,isHost,isMember,const DeepCollectionEquality().hash(upcomingRuns),const DeepCollectionEquality().hash(reviews),userProfile,uid,isAuthenticated);
 
 @override
 String toString() {
-  return 'RunClubDetailViewModel(runClub: $runClub, isHost: $isHost, isMember: $isMember, upcomingRuns: $upcomingRuns, allRuns: $allRuns, reviews: $reviews, userProfile: $userProfile, uid: $uid, isAuthenticated: $isAuthenticated)';
+  return 'RunClubDetailViewModel(runClub: $runClub, isHost: $isHost, isMember: $isMember, upcomingRuns: $upcomingRuns, reviews: $reviews, userProfile: $userProfile, uid: $uid, isAuthenticated: $isAuthenticated)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $RunClubDetailViewModelCopyWith<$Res>  {
   factory $RunClubDetailViewModelCopyWith(RunClubDetailViewModel value, $Res Function(RunClubDetailViewModel) _then) = _$RunClubDetailViewModelCopyWithImpl;
 @useResult
 $Res call({
- RunClub runClub, bool isHost, bool isMember, List<Run> upcomingRuns, List<Run> allRuns, List<Review> reviews, UserProfile? userProfile, String? uid, bool isAuthenticated
+ RunClub runClub, bool isHost, bool isMember, List<Run> upcomingRuns, List<Review> reviews, UserProfile? userProfile, String? uid, bool isAuthenticated
 });
 
 
@@ -62,13 +62,12 @@ class _$RunClubDetailViewModelCopyWithImpl<$Res>
 
 /// Create a copy of RunClubDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? runClub = null,Object? isHost = null,Object? isMember = null,Object? upcomingRuns = null,Object? allRuns = null,Object? reviews = null,Object? userProfile = freezed,Object? uid = freezed,Object? isAuthenticated = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? runClub = null,Object? isHost = null,Object? isMember = null,Object? upcomingRuns = null,Object? reviews = null,Object? userProfile = freezed,Object? uid = freezed,Object? isAuthenticated = null,}) {
   return _then(_self.copyWith(
 runClub: null == runClub ? _self.runClub : runClub // ignore: cast_nullable_to_non_nullable
 as RunClub,isHost: null == isHost ? _self.isHost : isHost // ignore: cast_nullable_to_non_nullable
 as bool,isMember: null == isMember ? _self.isMember : isMember // ignore: cast_nullable_to_non_nullable
 as bool,upcomingRuns: null == upcomingRuns ? _self.upcomingRuns : upcomingRuns // ignore: cast_nullable_to_non_nullable
-as List<Run>,allRuns: null == allRuns ? _self.allRuns : allRuns // ignore: cast_nullable_to_non_nullable
 as List<Run>,reviews: null == reviews ? _self.reviews : reviews // ignore: cast_nullable_to_non_nullable
 as List<Review>,userProfile: freezed == userProfile ? _self.userProfile : userProfile // ignore: cast_nullable_to_non_nullable
 as UserProfile?,uid: freezed == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
@@ -179,10 +178,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RunClub runClub,  bool isHost,  bool isMember,  List<Run> upcomingRuns,  List<Run> allRuns,  List<Review> reviews,  UserProfile? userProfile,  String? uid,  bool isAuthenticated)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( RunClub runClub,  bool isHost,  bool isMember,  List<Run> upcomingRuns,  List<Review> reviews,  UserProfile? userProfile,  String? uid,  bool isAuthenticated)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RunClubDetailViewModel() when $default != null:
-return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_that.allRuns,_that.reviews,_that.userProfile,_that.uid,_that.isAuthenticated);case _:
+return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_that.reviews,_that.userProfile,_that.uid,_that.isAuthenticated);case _:
   return orElse();
 
 }
@@ -200,10 +199,10 @@ return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RunClub runClub,  bool isHost,  bool isMember,  List<Run> upcomingRuns,  List<Run> allRuns,  List<Review> reviews,  UserProfile? userProfile,  String? uid,  bool isAuthenticated)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( RunClub runClub,  bool isHost,  bool isMember,  List<Run> upcomingRuns,  List<Review> reviews,  UserProfile? userProfile,  String? uid,  bool isAuthenticated)  $default,) {final _that = this;
 switch (_that) {
 case _RunClubDetailViewModel():
-return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_that.allRuns,_that.reviews,_that.userProfile,_that.uid,_that.isAuthenticated);case _:
+return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_that.reviews,_that.userProfile,_that.uid,_that.isAuthenticated);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -220,10 +219,10 @@ return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RunClub runClub,  bool isHost,  bool isMember,  List<Run> upcomingRuns,  List<Run> allRuns,  List<Review> reviews,  UserProfile? userProfile,  String? uid,  bool isAuthenticated)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( RunClub runClub,  bool isHost,  bool isMember,  List<Run> upcomingRuns,  List<Review> reviews,  UserProfile? userProfile,  String? uid,  bool isAuthenticated)?  $default,) {final _that = this;
 switch (_that) {
 case _RunClubDetailViewModel() when $default != null:
-return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_that.allRuns,_that.reviews,_that.userProfile,_that.uid,_that.isAuthenticated);case _:
+return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_that.reviews,_that.userProfile,_that.uid,_that.isAuthenticated);case _:
   return null;
 
 }
@@ -235,7 +234,7 @@ return $default(_that.runClub,_that.isHost,_that.isMember,_that.upcomingRuns,_th
 
 
 class _RunClubDetailViewModel implements RunClubDetailViewModel {
-  const _RunClubDetailViewModel({required this.runClub, required this.isHost, required this.isMember, required final  List<Run> upcomingRuns, required final  List<Run> allRuns, required final  List<Review> reviews, required this.userProfile, required this.uid, required this.isAuthenticated}): _upcomingRuns = upcomingRuns,_allRuns = allRuns,_reviews = reviews;
+  const _RunClubDetailViewModel({required this.runClub, required this.isHost, required this.isMember, required final  List<Run> upcomingRuns, required final  List<Review> reviews, required this.userProfile, required this.uid, required this.isAuthenticated}): _upcomingRuns = upcomingRuns,_reviews = reviews;
   
 
 @override final  RunClub runClub;
@@ -246,13 +245,6 @@ class _RunClubDetailViewModel implements RunClubDetailViewModel {
   if (_upcomingRuns is EqualUnmodifiableListView) return _upcomingRuns;
   // ignore: implicit_dynamic_type
   return EqualUnmodifiableListView(_upcomingRuns);
-}
-
- final  List<Run> _allRuns;
-@override List<Run> get allRuns {
-  if (_allRuns is EqualUnmodifiableListView) return _allRuns;
-  // ignore: implicit_dynamic_type
-  return EqualUnmodifiableListView(_allRuns);
 }
 
  final  List<Review> _reviews;
@@ -276,16 +268,16 @@ _$RunClubDetailViewModelCopyWith<_RunClubDetailViewModel> get copyWith => __$Run
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunClubDetailViewModel&&(identical(other.runClub, runClub) || other.runClub == runClub)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&const DeepCollectionEquality().equals(other._upcomingRuns, _upcomingRuns)&&const DeepCollectionEquality().equals(other._allRuns, _allRuns)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunClubDetailViewModel&&(identical(other.runClub, runClub) || other.runClub == runClub)&&(identical(other.isHost, isHost) || other.isHost == isHost)&&(identical(other.isMember, isMember) || other.isMember == isMember)&&const DeepCollectionEquality().equals(other._upcomingRuns, _upcomingRuns)&&const DeepCollectionEquality().equals(other._reviews, _reviews)&&(identical(other.userProfile, userProfile) || other.userProfile == userProfile)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.isAuthenticated, isAuthenticated) || other.isAuthenticated == isAuthenticated));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,runClub,isHost,isMember,const DeepCollectionEquality().hash(_upcomingRuns),const DeepCollectionEquality().hash(_allRuns),const DeepCollectionEquality().hash(_reviews),userProfile,uid,isAuthenticated);
+int get hashCode => Object.hash(runtimeType,runClub,isHost,isMember,const DeepCollectionEquality().hash(_upcomingRuns),const DeepCollectionEquality().hash(_reviews),userProfile,uid,isAuthenticated);
 
 @override
 String toString() {
-  return 'RunClubDetailViewModel(runClub: $runClub, isHost: $isHost, isMember: $isMember, upcomingRuns: $upcomingRuns, allRuns: $allRuns, reviews: $reviews, userProfile: $userProfile, uid: $uid, isAuthenticated: $isAuthenticated)';
+  return 'RunClubDetailViewModel(runClub: $runClub, isHost: $isHost, isMember: $isMember, upcomingRuns: $upcomingRuns, reviews: $reviews, userProfile: $userProfile, uid: $uid, isAuthenticated: $isAuthenticated)';
 }
 
 
@@ -296,7 +288,7 @@ abstract mixin class _$RunClubDetailViewModelCopyWith<$Res> implements $RunClubD
   factory _$RunClubDetailViewModelCopyWith(_RunClubDetailViewModel value, $Res Function(_RunClubDetailViewModel) _then) = __$RunClubDetailViewModelCopyWithImpl;
 @override @useResult
 $Res call({
- RunClub runClub, bool isHost, bool isMember, List<Run> upcomingRuns, List<Run> allRuns, List<Review> reviews, UserProfile? userProfile, String? uid, bool isAuthenticated
+ RunClub runClub, bool isHost, bool isMember, List<Run> upcomingRuns, List<Review> reviews, UserProfile? userProfile, String? uid, bool isAuthenticated
 });
 
 
@@ -313,13 +305,12 @@ class __$RunClubDetailViewModelCopyWithImpl<$Res>
 
 /// Create a copy of RunClubDetailViewModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? runClub = null,Object? isHost = null,Object? isMember = null,Object? upcomingRuns = null,Object? allRuns = null,Object? reviews = null,Object? userProfile = freezed,Object? uid = freezed,Object? isAuthenticated = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? runClub = null,Object? isHost = null,Object? isMember = null,Object? upcomingRuns = null,Object? reviews = null,Object? userProfile = freezed,Object? uid = freezed,Object? isAuthenticated = null,}) {
   return _then(_RunClubDetailViewModel(
 runClub: null == runClub ? _self.runClub : runClub // ignore: cast_nullable_to_non_nullable
 as RunClub,isHost: null == isHost ? _self.isHost : isHost // ignore: cast_nullable_to_non_nullable
 as bool,isMember: null == isMember ? _self.isMember : isMember // ignore: cast_nullable_to_non_nullable
 as bool,upcomingRuns: null == upcomingRuns ? _self._upcomingRuns : upcomingRuns // ignore: cast_nullable_to_non_nullable
-as List<Run>,allRuns: null == allRuns ? _self._allRuns : allRuns // ignore: cast_nullable_to_non_nullable
 as List<Run>,reviews: null == reviews ? _self._reviews : reviews // ignore: cast_nullable_to_non_nullable
 as List<Review>,userProfile: freezed == userProfile ? _self.userProfile : userProfile // ignore: cast_nullable_to_non_nullable
 as UserProfile?,uid: freezed == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable

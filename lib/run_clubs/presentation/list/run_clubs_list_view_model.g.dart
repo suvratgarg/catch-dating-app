@@ -57,7 +57,7 @@ final class SelectedRunClubCityProvider
 }
 
 String _$selectedRunClubCityHash() =>
-    r'53d60204fc0a21ea6374718f8ac66f1d15958fe9';
+    r'3b4a6fbaa54d857ff2a66319f5b1b3f532c987d7';
 
 /// **KeepAlive notifier with internal flag**
 ///

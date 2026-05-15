@@ -201,7 +201,7 @@ class _JoinClubButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final joinMutation = ref.watch(RunClubsListController.joinMutation);
+    final joinMutation = ref.watch(RunClubMembershipController.joinMutation);
 
     return CatchButton(
       label: 'Join',
@@ -224,10 +224,10 @@ class _JoinClubButton extends ConsumerWidget {
   }
 
   void _joinClub(WidgetRef ref) {
-    RunClubsListController.joinMutation.run(ref, (transaction) async {
+    RunClubMembershipController.joinMutation.run(ref, (transaction) async {
       await transaction
-          .get(runClubsListControllerProvider.notifier)
-          .joinClub(clubId);
+          .get(runClubMembershipControllerProvider.notifier)
+          .join(clubId);
     });
   }
 }

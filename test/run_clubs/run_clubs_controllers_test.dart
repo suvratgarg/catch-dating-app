@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
@@ -54,6 +55,27 @@ void main() {
       expect(fakeRepository.joinedClubId, 'club-7');
     });
 
+    test('join throws when there is no signed-in user', () async {
+      final container = ProviderContainer(
+        overrides: [uidProvider.overrideWith((ref) => Stream.value(null))],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      expect(
+        () => container
+            .read(runClubMembershipControllerProvider.notifier)
+            .join('club-123'),
+        throwsA(isA<SignInRequiredException>()),
+      );
+    });
+
     test('leave requires sign-in and forwards the club id', () async {
       final fakeRepository = FakeRunClubsRepository();
       final container = ProviderContainer(
@@ -75,6 +97,30 @@ void main() {
           .leave('club-9');
 
       expect(fakeRepository.leftClubId, 'club-9');
+    });
+
+    test('setPushNotifications forwards the club id and preference', () async {
+      final fakeRepository = FakeRunClubsRepository();
+      final container = ProviderContainer(
+        overrides: [
+          runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-10')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+      await container
+          .read(runClubMembershipControllerProvider.notifier)
+          .setPushNotifications(clubId: 'club-10', enabled: true);
+
+      expect(fakeRepository.notificationsClubId, 'club-10');
+      expect(fakeRepository.notificationsEnabled, isTrue);
     });
   });
 
@@ -109,11 +155,6 @@ void main() {
       expect(vm.upcomingRuns.map((run) => run.id), [
         'sooner-future-run',
         'future-run',
-      ]);
-      expect(vm.allRuns.map((run) => run.id), [
-        'future-run',
-        'past-run',
-        'sooner-future-run',
       ]);
       expect(vm.reviews, hasLength(1));
     });

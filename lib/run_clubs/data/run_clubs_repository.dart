@@ -15,6 +15,7 @@ class RunClubsRepository {
   const RunClubsRepository(this._db, this._functions);
 
   static const _collectionPath = 'runClubs';
+  static const discoveryLimit = 30;
 
   final FirebaseFirestore _db;
   final FirebaseFunctions _functions;
@@ -59,6 +60,7 @@ class RunClubsRepository {
         () => _runClubsRef
             .where('location', isEqualTo: location)
             .orderBy('createdAt', descending: true)
+            .limit(discoveryLimit)
             .snapshots()
             .map((snap) => snap.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
@@ -74,6 +76,7 @@ class RunClubsRepository {
     () => _runClubsRef
         .where('location', isEqualTo: location)
         .orderBy('rating', descending: true)
+        .limit(discoveryLimit)
         .snapshots()
         .map((snap) => snap.docs.map((d) => d.data()).toList()),
     context: const BackendErrorContext(

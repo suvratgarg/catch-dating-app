@@ -1494,7 +1494,6 @@ Generated 2026-05-06.
 | `StatsStrip` | `lib/run_clubs/presentation/detail/widgets/stats_strip.dart:6` | Horizontal strip of stats — runs hosted, members, location — shown on club cards. |
 | `RunClubCoverFallback` | `lib/run_clubs/presentation/shared/run_club_cover_fallback.dart:6` | Gradient + chip fallback shown when a club has no cover photo. |
 | `_CoverChip` | `lib/run_clubs/presentation/shared/run_club_cover_fallback.dart:98` | Small distance/location chip overlaid on the cover fallback. |
-| `CreateRunClubDetailsFields` | `lib/run_clubs/presentation/create/widgets/create_run_club_details_fields.dart:7` | Club name, description, and location fields for the create/edit form. |
 | `CreateRunClubCoverPicker` | `lib/run_clubs/presentation/create/widgets/create_run_club_cover_picker.dart:9` | Cover photo picker for the create/edit club form. |
 | `CreateRunClubContactFields` | `lib/run_clubs/presentation/create/widgets/create_run_club_contact_fields.dart:6` | Contact fields (Instagram, WhatsApp, website, email) for the create/edit form. |
 | `_ClubImage` | `lib/run_clubs/presentation/list/widgets/run_club_list_tile_parts/club_image.dart:3` | Club cover image for list tiles. |
@@ -1509,7 +1508,7 @@ Generated 2026-05-06.
 
 | Widget | File | Purpose |
 |---|---|---|
-| `CreateRunScreen` | `lib/runs/presentation/create_run_screen.dart:29` | Multi-step run creation flow (When → Where → Details → Eligibility → Review). Manages `PageController`, draft auto-save/restore, local form controllers, and the create-run mutation. On success transitions to `CreateRunSuccessScreen` or `HostRunManageScreen`. |
+| `CreateRunScreen` | `lib/runs/presentation/create_run_screen.dart:29` | Multi-step run creation flow (Run details → Where → When → Eligibility). Manages `PageController`, draft save/restore, local form controllers, and the create-run mutation. On success transitions to `CreateRunSuccessScreen` or `HostRunManageScreen`. |
 | `RunMapScreen` | `lib/runs/presentation/run_map_screen.dart:18` | Chromeless map route wrapper. Watches `RunMapViewModel`, centers on device location unless the selected run-club city was manually overridden or location is unavailable, owns local selected-run state, and composes full-screen `RunPinsMap`, floating `MapOverlayControls`, and `RunMapSheet`. |
 
 ### ConsumerWidget
@@ -1545,14 +1544,15 @@ Generated 2026-05-06.
 | `RunCheckInCelebrationScreen` | `lib/runs/presentation/run_check_in_celebration_screen.dart:7` | Participant self-check-in celebration surface. Used only after user self-check-in from Home succeeds; host attendance remains a normal operational flow. |
 | `RunCheckInLocationService` | `lib/runs/presentation/run_check_in_location_service.dart:5` | Provider-backed location seam for self-check-in. Production uses Geolocator with high accuracy and a timeout; tests can inject coordinates without invoking platform plugins. |
 | `RunLocationMapScreen` | `lib/runs/presentation/run_location_map_screen.dart:63` | Chromeless full-screen single-run map with one pinned exact starting point, floating back controls, and a bottom location summary. Reuses `RunPinsMap`; use only when `Run.hasExactStartingPoint` is true. Address-only runs should stay static and show no chevron. |
-| `HostRunManageScreen` | `lib/runs/presentation/host_run_manage_screen.dart:87` | Host run management screen — shows shared host stat chips, summary, profile-backed roster, and waitlist. Roster/waitlist IDs come from `runParticipations` through `RunParticipationRoster`; count stat fallback uses `Run` projections while the roster stream loads. |
+| `HostRunManageScreen` | `lib/runs/presentation/host_run_manage_screen.dart:95` | Host run management screen — shows shared host stat chips, summary, host cancel/delete actions, profile-backed roster, and waitlist. Roster/waitlist IDs come from `runParticipations` through `RunParticipationRoster`; count stats treat `Run` projections as a conservative floor so delete remains unavailable when aggregate activity is visible. |
 | `CreateRunStepHeader` | `lib/runs/presentation/widgets/create_run_step_header.dart:7` | Header for the create-run wizard — back action, step title, club name, step count, and progress bar. |
 | `CreateRunFormKeys` | `lib/runs/presentation/create_run_form_keys.dart:3` | Stable semantic keys for create-run form fields so widget tests target fields by purpose rather than layout order. |
-| `_HostRunSummaryCard` | `lib/runs/presentation/host_run_manage_screen.dart:234` | `CatchSurface` summary card showing run details on the host manage screen. Label/value rows reserve a right-aligned value lane so club, meet point, run details, and price align consistently. |
-| `_HostRunSummaryRow` | `lib/runs/presentation/host_run_manage_screen.dart:282` | Single key-value row in the host summary card. |
-| `_HostRunRosterSection` | `lib/runs/presentation/host_run_manage_screen.dart:353` | Async roster adapter for host manage. Renders loading/error states for `RunParticipationRoster` and passes selected booked/waitlisted IDs to `_HostRunUserList`. |
-| `_HostRunRosterLoading` | `lib/runs/presentation/host_run_manage_screen.dart:390` | Small `CatchSurface` loading row for host roster/waitlist sections. |
-| `_HostRunUserList` | `lib/runs/presentation/host_run_manage_screen.dart:418` | Profile-backed roster/waitlist list on the host manage screen. Uses `PersonRow`, `CatchBadge`, and `CatchEmptyState`. |
+| `_HostRunActionsCard` | `lib/runs/presentation/host_run_manage_screen.dart:257` | Host action surface for cancelling active runs and deleting unused runs. Uses Pattern A `RunBookingController` mutations, destructive confirmation dialogs, mutation error banners, and activity-aware delete gating. |
+| `_HostRunSummaryCard` | `lib/runs/presentation/host_run_manage_screen.dart:426` | `CatchSurface` summary card showing run details on the host manage screen. Label/value rows reserve a right-aligned value lane so club, meet point, run details, and price align consistently. |
+| `_HostRunSummaryRow` | `lib/runs/presentation/host_run_manage_screen.dart:474` | Single key-value row in the host summary card. |
+| `_HostRunRosterSection` | `lib/runs/presentation/host_run_manage_screen.dart:545` | Async roster adapter for host manage. Renders loading/error states for `RunParticipationRoster` and passes selected booked/waitlisted IDs to `_HostRunUserList`. |
+| `_HostRunRosterLoading` | `lib/runs/presentation/host_run_manage_screen.dart:582` | Small `CatchSurface` loading row for host roster/waitlist sections. |
+| `_HostRunUserList` | `lib/runs/presentation/host_run_manage_screen.dart:610` | Profile-backed roster/waitlist list on the host manage screen. Uses `PersonRow`, `CatchBadge`, and `CatchEmptyState`. |
 | `_AttendanceSummaryHeader` | `lib/runs/presentation/attendance_sheet_screen.dart:148` | Host-palette attendance summary card showing checked-in count, host/attendance badges, and the toggle hint. |
 | `SavedRunsScreen` | `lib/runs/presentation/saved_runs_screen.dart:15` | Saved-runs route. Streams the current user's saved run details, orders future saved runs before past saved runs, joins club names via `runClubNameLookupProvider`, and opens saved-run detail routes from shared agenda tiles. |
 | `RunTileData` | `lib/runs/presentation/widgets/run_tiles/run_tile_data.dart:10` | Shared display model for run tile variants. Wraps a `Run` plus relationship status, optional club name, recommendation reason, and carousel position label so widgets do not recompute product state. |
@@ -1579,7 +1579,8 @@ Generated 2026-05-06.
 | `RunDetailSocialSection` | `lib/runs/presentation/widgets/run_detail_social_section.dart:10` | Social context section for the loaded run detail body: roster, guest lock prompt, divider, and run-scoped reviews for signed-in users. Review writing requires the current viewer's attended `RunParticipation` and a run end time that has passed. |
 | `MapOverlayControls` | `lib/runs/presentation/widgets/map_overlay_controls.dart:5` | Floating safe-area controls for chromeless map surfaces. Provides the rounded back affordance plus optional trailing and below content for map actions such as create-run confirm/search. |
 | `RunMapSheet` | `lib/runs/presentation/widgets/run_map_sheet.dart:12` | Overlay sheet for map runs. Uses `CatchSurface`, renders horizontal `RunMapTile` items from relationship-aware `RunMapItem` data, and routes the highlighted run to the dashboard run-detail path from the top-level map surface. |
-| `RunPhotoHeader` | `lib/runs/presentation/widgets/run_photo_header.dart:6` | Photo/map header for the run detail screen. |
+| `RunPhotoHeader` | `lib/runs/presentation/widgets/run_photo_header.dart:6` | Photo header for the run detail screen. Renders uploaded `Run.photoUrl` images with a themed fallback when a run has no photo. |
+| `CreateRunPhotoPicker` | `lib/runs/presentation/widgets/create_run_photo_picker.dart:7` | Optional create-run photo picker surface. Shows selected image bytes before submission and delegates picking/upload behavior to `CreateRunController`. |
 | `MapPinTile` | `lib/runs/presentation/widgets/map_pin_tile.dart:7` | Create-run map-pin tile. Shows whether the starting point is pinned without exposing raw coordinates in the form preview. |
 | `PickerTile` | `lib/runs/presentation/widgets/picker_tile.dart:6` | Tappable tile that opens a picker (date, time, etc.) — shows label + selected value. |
 | `RequirementsRow` | `lib/runs/presentation/widgets/requirements_row.dart:7` | Read-only row showing eligibility requirements. |

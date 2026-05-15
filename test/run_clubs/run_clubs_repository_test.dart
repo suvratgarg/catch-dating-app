@@ -135,6 +135,29 @@ void main() {
       },
     );
 
+    test('watchRunClubsByLocation caps the discovery stream', () async {
+      for (var i = 0; i < RunClubsRepository.discoveryLimit + 5; i++) {
+        await _seedRunClub(
+          firestore,
+          buildRunClub(
+            id: 'club-$i',
+            location: 'mumbai',
+            createdAt: DateTime(2025, 1, 1).add(Duration(days: i)),
+          ),
+        );
+      }
+
+      await expectLater(
+        repository.watchRunClubsByLocation('mumbai'),
+        emits(
+          allOf(
+            hasLength(RunClubsRepository.discoveryLimit),
+            predicate<List<RunClub>>((clubs) => clubs.first.id == 'club-34'),
+          ),
+        ),
+      );
+    });
+
     test('watchRunClubsByLocationSortedByRating orders by rating', () async {
       final lowerRated = buildRunClub(
         id: 'club-low',
