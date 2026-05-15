@@ -1,0 +1,11 @@
+{
+  "clubId": "club-1",
+  "fields": {
+    "name": "Race Course Run Collective",
+    "description": "Updated social run details.",
+    "location": "indore",
+    "area": "Race Course Road",
+    "imageUrl": null,
+    "tags": ["social", "coffee"]
+  }
+}

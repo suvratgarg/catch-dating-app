@@ -1,13 +1,15 @@
 import 'dart:math' as math;
 
-const minimumProfileAge = 18;
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart';
+
+const minimumProfileAge = schemaMinimumProfileAge;
 const preferredMatchAgeOpenEndedDisplayAge = 60;
-const maximumPreferredMatchAge = 99;
-const minimumHeightCm = 120;
-const maximumHeightCm = 220;
+const maximumPreferredMatchAge = schemaMaximumPreferredMatchAge;
+const minimumHeightCm = schemaMinimumHeightCm;
+const maximumHeightCm = schemaMaximumHeightCm;
 const defaultHeightCm = 170;
-const maximumProfilePromptAnswerLength = 300;
-const maximumPhotoPromptCaptionLength = 140;
+const maximumProfilePromptAnswerLength = schemaMaximumProfilePromptAnswerLength;
+const maximumPhotoPromptCaptionLength = schemaMaximumPhotoPromptCaptionLength;
 const maximumConsecutivePromptNewlines = 2;
 @Deprecated('Use maximumProfilePromptAnswerLength.')
 const maximumBioLength = maximumProfilePromptAnswerLength;

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/block_user_payload.schema.json",
+  "title": "BlockUserCallablePayload",
+  "description": "Callable payload accepted by blockUser.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["targetUserId"],
+  "properties": {
+    "targetUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "source": {"type": "string", "maxLength": 80},
+    "reasonCode": {"type": "string", "maxLength": 80}
+  }
+}

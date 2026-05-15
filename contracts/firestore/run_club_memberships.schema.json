@@ -1,0 +1,74 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/run_club_memberships.schema.json",
+  "title": "RunClubMembershipDocument",
+  "description": "Canonical run club membership edge stored at runClubMemberships/{membershipId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "runClubMemberships",
+  "x-firestore-path": "runClubMemberships/{membershipId}",
+  "x-document-id-field": "id",
+  "x-owner": "run-club membership callables; parent member count is trigger-owned",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "clubId",
+    "uid",
+    "role",
+    "status",
+    "pushNotificationsEnabled",
+    "joinedAt",
+    "leftAt",
+    "deletedAt"
+  ],
+  "properties": {
+    "clubId": {
+      "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+    },
+    "role": {
+      "$ref": "../shared/run_common.schema.json#/definitions/runClubMembershipRole"
+    },
+    "status": {
+      "$ref": "../shared/run_common.schema.json#/definitions/runClubMembershipStatus"
+    },
+    "pushNotificationsEnabled": {
+      "type": "boolean"
+    },
+    "joinedAt": {
+      "$ref": "../shared/run_common.schema.json#/definitions/timestamp"
+    },
+    "leftAt": {
+      "$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "deletedAt": {
+      "$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "synthetic": {
+      "$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
+  }
+}

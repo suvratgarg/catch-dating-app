@@ -1,0 +1,15 @@
+{
+  "targetUserId": "runner-1",
+  "flagType": "banned_text",
+  "source": "chat_message",
+  "status": "pending",
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "contextId": "message-1",
+  "context": "message text",
+  "safeSearchResults": {
+    "adult": "unlikely"
+  }
+}

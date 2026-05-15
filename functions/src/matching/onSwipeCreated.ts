@@ -2,6 +2,11 @@ import {onDocumentCreated} from "firebase-functions/v2/firestore";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {MatchDoc, SwipeDoc} from "../shared/firestore";
+import {
+  schemaProfileDecisionCollectionPath,
+  schemaProfileDecisionOutgoingSubcollectionPath,
+  schemaProfileDecisionTriggerPath,
+} from "../shared/generated/schemaPaths";
 import {hasBlockingRelationship} from "../safety/blocking";
 
 interface SwipeCreatedParams {
@@ -48,9 +53,9 @@ export async function onSwipeCreatedHandler(
 
   // Check if the target has already liked the swiper.
   const reverseSwipeDoc = await db
-    .collection("swipes")
+    .collection(schemaProfileDecisionCollectionPath)
     .doc(targetId)
-    .collection("outgoing")
+    .collection(schemaProfileDecisionOutgoingSubcollectionPath)
     .doc(swiperId)
     .get();
 
@@ -165,7 +170,7 @@ function buildReactionCommentText(swipe: SwipeDoc): string | null {
 }
 
 export const onSwipeCreated = onDocumentCreated(
-  "swipes/{swiperId}/outgoing/{targetId}",
+  schemaProfileDecisionTriggerPath,
   async (event) => {
     const {swiperId, targetId} = event.params;
     const swipeData = event.data?.data() as SwipeDoc | undefined;

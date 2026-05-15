@@ -1,0 +1,30 @@
+{
+  "id": "photo_01JZ3M6W7T4G2A1B9C8D",
+  "url": "https://firebasestorage.googleapis.com/v0/b/catchdates-dev.firebasestorage.app/o/users%2Frunner-1%2Fphotos%2Fphoto_01.jpg?alt=media&token=abc",
+  "thumbnailUrl": "https://firebasestorage.googleapis.com/v0/b/catchdates-dev.firebasestorage.app/o/users%2Frunner-1%2FphotoThumbnails%2Fphoto_01.jpg?alt=media&token=def",
+  "storagePath": "users/runner-1/photos/photo_01.jpg",
+  "thumbnailStoragePath": "users/runner-1/photoThumbnails/photo_01.jpg",
+  "prompt": {
+    "photoIndex": 0,
+    "promptId": "proofIRun",
+    "prompt": "Proof I actually run",
+    "caption": "Race morning."
+  },
+  "moderation": {
+    "status": "approved",
+    "reason": null,
+    "reviewedAt": {
+      "_seconds": 1770000000,
+      "_nanoseconds": 0
+    }
+  },
+  "position": 0,
+  "createdAt": {
+    "_seconds": 1770000000,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1770000000,
+    "_nanoseconds": 0
+  }
+}

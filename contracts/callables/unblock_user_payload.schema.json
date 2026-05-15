@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/unblock_user_payload.schema.json",
+  "title": "UnblockUserCallablePayload",
+  "description": "Callable payload accepted by unblockUser.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["targetUserId"],
+  "properties": {
+    "targetUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"}
+  }
+}

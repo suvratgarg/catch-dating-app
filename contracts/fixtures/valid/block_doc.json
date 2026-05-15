@@ -1,0 +1,10 @@
+{
+  "blockerUserId": "runner-1",
+  "blockedUserId": "runner-2",
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "source": "profile",
+  "reasonCode": "not_interested"
+}

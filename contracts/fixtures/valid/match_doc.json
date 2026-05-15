@@ -1,0 +1,20 @@
+{
+  "user1Id": "runner-1",
+  "user2Id": "runner-2",
+  "runIds": ["run-1"],
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "lastMessageAt": null,
+  "lastMessagePreview": null,
+  "lastMessageSenderId": null,
+  "unreadCounts": {
+    "runner-1": 0,
+    "runner-2": 0
+  },
+  "status": "active",
+  "blockedBy": null,
+  "blockedAt": null,
+  "participantIds": ["runner-1", "runner-2"]
+}

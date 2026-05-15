@@ -4,18 +4,20 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_queue_notifier.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/swipe_action_buttons.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/catches_pass_button.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/profile_reaction_controls.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/swipe_empty_state.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_card_swiper/flutter_card_swiper.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -30,34 +32,16 @@ class SwipeScreen extends ConsumerStatefulWidget {
 }
 
 class _SwipeScreenState extends ConsumerState<SwipeScreen> {
-  late final CardSwiperController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = CardSwiperController();
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  Future<bool> _onSwipe(
-    int previousIndex,
-    int? currentIndex,
-    CardSwiperDirection direction,
-  ) async {
-    final swipeDir = direction == CardSwiperDirection.right
-        ? SwipeDirection.like
-        : SwipeDirection.pass;
+  Future<void> _recordSwipe(
+    SwipeDirection direction, {
+    ProfileReactionTarget? reactionTarget,
+    String? comment,
+  }) async {
     await ref
         .read(
           swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds).notifier,
         )
-        .swipe(swipeDir);
-    return true;
+        .swipe(direction, reactionTarget: reactionTarget, comment: comment);
   }
 
   @override
@@ -97,107 +81,96 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                   currentUserParticipation: currentUserParticipation,
                 ),
               )
-            : Column(
-                children: [
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        Positioned.fill(
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(
-                              MediaQuery.of(context).size.width > 600 ? 48 : 8,
-                              6,
-                              MediaQuery.of(context).size.width > 600 ? 48 : 8,
-                              0,
-                            ),
-                            child: CardSwiper(
-                              key: ValueKey(
-                                profiles
-                                    .map((profile) => profile.uid)
-                                    .join('|'),
-                              ),
-                              controller: _controller,
-                              cardsCount: profiles.length,
-                              numberOfCardsDisplayed: 1,
-                              padding: EdgeInsets.zero,
-                              onSwipe: _onSwipe,
-                              allowedSwipeDirection:
-                                  const AllowedSwipeDirection.only(
-                                    left: true,
-                                    right: true,
-                                  ),
-                              cardBuilder:
-                                  (
-                                    context,
-                                    index,
-                                    horizontalOffsetPercentage,
-                                    verticalOffsetPercentage,
-                                  ) {
-                                    if (index >= profiles.length) {
-                                      return const SizedBox.shrink();
-                                    }
-                                    final profile = profiles[index];
-                                    return ProfileCard(
-                                      profile: profile,
-                                      viewerProfile: currentUser,
-                                      sharedRunTitle:
-                                          runAsync.asData?.value?.title,
-                                      horizontalOffsetPercentage:
-                                          horizontalOffsetPercentage,
-                                      bottomPadding: 140,
-                                      onReact: (target, comment) => ref
-                                          .read(
-                                            swipeQueueProvider(
-                                              widget.runId,
-                                              vibeIds: widget.vibeIds,
-                                            ).notifier,
-                                          )
-                                          .swipe(
-                                            SwipeDirection.like,
-                                            reactionTarget: target,
-                                            comment: comment,
-                                          ),
-                                    );
-                                  },
-                            ),
-                          ),
-                        ),
-                        _SwipeDeckTopOverlay(
-                          remainingCount: profiles.length,
-                          onBack: () {
-                            if (context.canPop()) {
-                              context.pop();
-                            } else {
-                              context.goNamed(Routes.swipeHubScreen.name);
-                            }
-                          },
-                          onFilters: () =>
-                              context.pushNamed(Routes.filtersScreen.name),
-                        ),
-                        const _SwipeDeckBottomScrim(),
-                        Positioned(
-                          left: 0,
-                          right: 0,
-                          bottom: 10,
-                          child: SwipeActionButtons(
-                            onPass: () =>
-                                _controller.swipe(CardSwiperDirection.left),
-                            onLike: () =>
-                                _controller.swipe(CardSwiperDirection.right),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
+            : _CatchesProfileReview(
+                profile: profiles.first,
+                remainingCount: profiles.length,
+                viewerProfile: currentUser,
+                sharedRunTitle: runAsync.asData?.value?.title,
+                onBack: () {
+                  if (context.canPop()) {
+                    context.pop();
+                  } else {
+                    context.goNamed(Routes.swipeHubScreen.name);
+                  }
+                },
+                onFilters: () => context.pushNamed(Routes.filtersScreen.name),
+                onPass: () => _recordSwipe(SwipeDirection.pass),
+                onReact: (target, comment) => _recordSwipe(
+                  SwipeDirection.like,
+                  reactionTarget: target,
+                  comment: comment,
+                ),
               ),
       ),
     );
   }
 }
 
-class _SwipeDeckTopOverlay extends StatelessWidget {
-  const _SwipeDeckTopOverlay({
+class _CatchesProfileReview extends StatelessWidget {
+  const _CatchesProfileReview({
+    required this.profile,
+    required this.remainingCount,
+    required this.onBack,
+    required this.onFilters,
+    required this.onPass,
+    required this.onReact,
+    this.viewerProfile,
+    this.sharedRunTitle,
+  });
+
+  final PublicProfile profile;
+  final int remainingCount;
+  final VoidCallback onBack;
+  final VoidCallback onFilters;
+  final VoidCallback onPass;
+  final ProfileReactionCallback onReact;
+  final UserProfile? viewerProfile;
+  final String? sharedRunTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: [
+        Positioned.fill(
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              final horizontalPadding = constraints.maxWidth > 700
+                  ? CatchSpacing.s8
+                  : 0.0;
+
+              return Padding(
+                padding: EdgeInsets.symmetric(horizontal: horizontalPadding),
+                child: ProfileSurface(
+                  key: ValueKey(profile.uid),
+                  profile: profile,
+                  mode: ProfileSurfaceMode.catches,
+                  viewerProfile: viewerProfile,
+                  sharedRunTitle: sharedRunTitle,
+                  bottomPadding: 112,
+                  onReact: onReact,
+                ),
+              );
+            },
+          ),
+        ),
+        _CatchesTopOverlay(
+          remainingCount: remainingCount,
+          onBack: onBack,
+          onFilters: onFilters,
+        ),
+        const _CatchesBottomScrim(),
+        Positioned(
+          left: CatchSpacing.s5,
+          bottom: CatchSpacing.s4,
+          child: CatchesPassButton(onPressed: onPass),
+        ),
+      ],
+    );
+  }
+}
+
+class _CatchesTopOverlay extends StatelessWidget {
+  const _CatchesTopOverlay({
     required this.remainingCount,
     required this.onBack,
     required this.onFilters,
@@ -310,8 +283,8 @@ class _OverlayIconButton extends StatelessWidget {
   }
 }
 
-class _SwipeDeckBottomScrim extends StatelessWidget {
-  const _SwipeDeckBottomScrim();
+class _CatchesBottomScrim extends StatelessWidget {
+  const _CatchesBottomScrim();
 
   @override
   Widget build(BuildContext context) {
@@ -321,7 +294,7 @@ class _SwipeDeckBottomScrim extends StatelessWidget {
       left: 0,
       right: 0,
       bottom: 0,
-      height: 156,
+      height: 128,
       child: IgnorePointer(
         child: DecoratedBox(
           decoration: BoxDecoration(

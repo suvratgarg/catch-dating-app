@@ -9,7 +9,8 @@
       "owner": "public read, server/admin write",
       "read": "any user, authenticated or not",
       "write": "server/admin only",
-      "serverOwnedFields": ["cityNames"],
+      "allFields": ["cityNames", "cities"],
+      "serverOwnedFields": ["cityNames", "cities"],
       "migrationNotes": ["Rules fall back to the hard-coded city enum when this document is absent."]
     },
     {
@@ -120,6 +121,14 @@
       "clientRuntimeWritableFields": ["fcmToken"],
       "callableOwnedFields": [],
       "serverOwnedFields": ["deleted", "deletedAt"],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
       "exportedFunctions": [
         "updateUserProfile",
         "requestAccountDeletion"
@@ -257,6 +266,32 @@
       "read": "owner only",
       "write": "owner only; intentionally extensible draft payload",
       "extensible": true,
+      "allFields": [
+        "step",
+        "draftVersion",
+        "firstName",
+        "lastName",
+        "dateOfBirth",
+        "phoneNumber",
+        "countryCode",
+        "gender",
+        "interestedInGenders",
+        "instagramHandle",
+        "profilePrompts"
+      ],
+      "clientWritableFields": [
+        "step",
+        "draftVersion",
+        "firstName",
+        "lastName",
+        "dateOfBirth",
+        "phoneNumber",
+        "countryCode",
+        "gender",
+        "interestedInGenders",
+        "instagramHandle",
+        "profilePrompts"
+      ],
       "requiredFields": ["step"],
       "operations": [
         {
@@ -334,6 +369,14 @@
         "preferredRunTimes",
         "languages"
       ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
       "exportedFunctions": ["syncPublicProfile"]
     },
     {
@@ -369,6 +412,14 @@
         "archived",
         "archivedAt",
         "archiveReason"
+      ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
       ],
       "clientWritableFields": [],
       "callableOwnedFields": [
@@ -423,6 +474,14 @@
         "joinedAt",
         "leftAt",
         "deletedAt"
+      ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
       ],
       "callableOwnedFields": [
         "clubId",
@@ -494,6 +553,14 @@
         "cancellationReason",
         "constraints",
         "genderCounts"
+      ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
       ],
       "clientWritableFields": [],
       "clientRuntimeWritableFields": [],
@@ -677,6 +744,14 @@
         "genderAtSignup",
         "paymentId"
       ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
       "callableOwnedFields": [
         "runId",
         "runClubId",
@@ -707,6 +782,97 @@
       ]
     },
     {
+      "id": "runClubScheduleLocks",
+      "path": "runClubScheduleLocks/{lockId}",
+      "rulesMatch": "/runClubScheduleLocks/{lockId}",
+      "owner": "run scheduling callables",
+      "read": "server/admin only",
+      "write": "server only",
+      "allFields": [
+        "ownerType",
+        "ownerId",
+        "slot",
+        "runId",
+        "runClubId",
+        "startTimeMillis",
+        "endTimeMillis"
+      ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
+      "callableOwnedFields": [
+        "ownerType",
+        "ownerId",
+        "slot",
+        "runId",
+        "runClubId",
+        "startTimeMillis",
+        "endTimeMillis"
+      ],
+      "exportedFunctions": [
+        "createRun",
+        "updateRun",
+        "cancelRun",
+        "deleteRun"
+      ],
+      "migrationNotes": [
+        "Server-owned minute-bucket lock documents prevent overlapping active runs for a run club.",
+        "Demo seeding writes these only when --include-schedule-locks is explicitly provided."
+      ]
+    },
+    {
+      "id": "userRunScheduleLocks",
+      "path": "userRunScheduleLocks/{lockId}",
+      "rulesMatch": "/userRunScheduleLocks/{lockId}",
+      "owner": "run booking and waitlist callables",
+      "read": "server/admin only",
+      "write": "server only",
+      "allFields": [
+        "ownerType",
+        "ownerId",
+        "slot",
+        "runId",
+        "runClubId",
+        "uid",
+        "startTimeMillis",
+        "endTimeMillis"
+      ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
+      "callableOwnedFields": [
+        "ownerType",
+        "ownerId",
+        "slot",
+        "runId",
+        "runClubId",
+        "uid",
+        "startTimeMillis",
+        "endTimeMillis"
+      ],
+      "exportedFunctions": [
+        "signUpForFreeRun",
+        "verifyRazorpayPayment",
+        "cancelRunSignUp",
+        "joinRunWaitlist",
+        "leaveRunWaitlist"
+      ],
+      "migrationNotes": [
+        "Server-owned minute-bucket lock documents prevent users from signing up or waitlisting for overlapping runs.",
+        "Demo seeding writes these only when --include-schedule-locks is explicitly provided."
+      ]
+    },
+    {
       "id": "savedRuns",
       "path": "savedRuns/{savedRunId}",
       "rulesMatch": "/savedRuns/{savedRunId}",
@@ -717,6 +883,14 @@
       "read": "owner only",
       "write": "owner direct create/delete only",
       "allFields": ["uid", "runId", "savedAt", "removedAt"],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
       "clientWritableFields": ["uid", "runId", "savedAt"],
       "operations": [
         {
@@ -755,6 +929,14 @@
         "signUpFailed",
         "createdAt"
       ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
       "callableOwnedFields": [
         "userId",
         "orderId",
@@ -787,6 +969,14 @@
         "comment",
         "createdAt",
         "updatedAt"
+      ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
       ],
       "clientWritableFields": [],
       "exportedFunctions": [
@@ -868,6 +1058,14 @@
         "comment",
         "createdAt"
       ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
       "clientWritableFields": [
         "swiperId",
         "targetId",
@@ -931,6 +1129,14 @@
         "blockedAt",
         "participantIds"
       ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
       "clientRuntimeWritableFields": ["unreadCounts"],
       "triggerOwnedFields": [
         "user1Id",
@@ -957,6 +1163,14 @@
       "read": "active match participants",
       "write": "sender create only",
       "allFields": ["senderId", "text", "imageUrl", "sentAt"],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
       "clientWritableFields": ["senderId", "text", "imageUrl", "sentAt"],
       "exportedFunctions": ["onMessageCreated", "moderateChatMessage"]
     },
@@ -982,6 +1196,14 @@
         "runClubId",
         "actorUid",
         "actorName"
+      ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
       ],
       "clientRuntimeWritableFields": ["readAt"],
       "serverOwnedFields": [
@@ -1103,7 +1325,8 @@
       "owner": "requestAccountDeletion callable and account cleanup graph",
       "read": "server/admin only",
       "write": "server only",
-      "serverOwnedFields": ["deletedAt", "uid"],
+      "allFields": ["uid", "deletedAt", "retainedFor"],
+      "serverOwnedFields": ["uid", "deletedAt", "retainedFor"],
       "exportedFunctions": ["requestAccountDeletion"]
     },
     {
@@ -1113,6 +1336,7 @@
       "owner": "shared callable rate-limit middleware",
       "read": "server/admin only",
       "write": "server only",
+      "allFields": ["uid", "action", "windowKey", "count", "expiresAt"],
       "serverOwnedFields": ["uid", "action", "windowKey", "count", "expiresAt"],
       "migrationNotes": ["Requires a Firestore TTL policy on expiresAt."]
     },
@@ -1123,6 +1347,13 @@
       "owner": "idempotent Cloud Function trigger handlers",
       "read": "server/admin only",
       "write": "server only",
+      "allFields": [
+        "handler",
+        "eventId",
+        "matchId",
+        "messageId",
+        "createdAt"
+      ],
       "serverOwnedFields": [
         "handler",
         "eventId",
@@ -1132,6 +1363,45 @@
       ],
       "exportedFunctions": ["onMessageCreated"],
       "migrationNotes": ["Used to avoid duplicate unread-count increments when Firestore triggers retry."]
+    },
+    {
+      "id": "seedRuns",
+      "path": "seedRuns/{manifestId}",
+      "rulesMatch": "/seedRuns/{manifestId}",
+      "owner": "demo data seeding tooling",
+      "read": "server/admin only",
+      "write": "server/admin only",
+      "allFields": [
+        "seedId",
+        "manifestId",
+        "generatedAt",
+        "anchorUserIds",
+        "counts",
+        "paths",
+        "appendMode",
+        "appendedAnchorUserIds"
+      ],
+      "internalDemoFields": [
+        "synthetic",
+        "seedPrefix",
+        "scenario",
+        "demoOps",
+        "demoOpsId",
+        "demoOpsCommand"
+      ],
+      "serverOwnedFields": [
+        "seedId",
+        "manifestId",
+        "generatedAt",
+        "anchorUserIds",
+        "counts",
+        "paths",
+        "appendMode",
+        "appendedAnchorUserIds"
+      ],
+      "migrationNotes": [
+        "Tool-owned manifest used to delete prior synthetic seed data safely."
+      ]
     }
   ]
 }

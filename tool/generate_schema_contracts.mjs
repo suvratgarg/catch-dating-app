@@ -1,0 +1,897 @@
+#!/usr/bin/env node
+import fs from "node:fs";
+import path from "node:path";
+import {createRequire} from "node:module";
+import {fileURLToPath} from "node:url";
+
+const requireFromFunctions = createRequire(
+  new URL("../functions/package.json", import.meta.url)
+);
+const {compile} = requireFromFunctions("json-schema-to-typescript");
+
+const toolDir = path.dirname(fileURLToPath(import.meta.url));
+const repoRoot = path.resolve(toolDir, "..");
+const contractRoot = path.join(repoRoot, "contracts");
+const checkOnly = process.argv.includes("--check");
+
+const schemaSpecs = [
+  {
+    name: "ProfilePromptAnswer",
+    source: "embedded/profile_prompt_answer.schema.json",
+    typeOutput: "functions/src/shared/generated/profilePromptAnswer.ts",
+  },
+  {
+    name: "PhotoPromptAnswer",
+    source: "embedded/photo_prompt_answer.schema.json",
+    typeOutput: "functions/src/shared/generated/photoPromptAnswer.ts",
+  },
+  {
+    name: "ProfilePhoto",
+    source: "embedded/profile_photo.schema.json",
+    typeOutput: "functions/src/shared/generated/profilePhoto.ts",
+  },
+  {
+    name: "ConfigCitiesDocument",
+    source: "firestore/config_cities.schema.json",
+    typeOutput: "functions/src/shared/generated/configCitiesDocument.ts",
+  },
+  {
+    name: "OnboardingDraftDocument",
+    source: "firestore/onboarding_drafts.schema.json",
+    typeOutput: "functions/src/shared/generated/onboardingDraftDocument.ts",
+  },
+  {
+    name: "UserProfileDocument",
+    source: "firestore/users.schema.json",
+    typeOutput: "functions/src/shared/generated/userProfileDocument.ts",
+  },
+  {
+    name: "PublicProfileDocument",
+    source: "firestore/public_profiles.schema.json",
+    typeOutput: "functions/src/shared/generated/publicProfileDocument.ts",
+  },
+  {
+    name: "RunClubDocument",
+    source: "firestore/run_clubs.schema.json",
+    typeOutput: "functions/src/shared/generated/runClubDocument.ts",
+  },
+  {
+    name: "RunClubMembershipDocument",
+    source: "firestore/run_club_memberships.schema.json",
+    typeOutput: "functions/src/shared/generated/runClubMembershipDocument.ts",
+  },
+  {
+    name: "RunClubHostClaimDocument",
+    source: "firestore/run_club_host_claims.schema.json",
+    typeOutput: "functions/src/shared/generated/runClubHostClaimDocument.ts",
+  },
+  {
+    name: "RunDocument",
+    source: "firestore/runs.schema.json",
+    typeOutput: "functions/src/shared/generated/runDocument.ts",
+  },
+  {
+    name: "RunParticipationDocument",
+    source: "firestore/run_participations.schema.json",
+    typeOutput: "functions/src/shared/generated/runParticipationDocument.ts",
+  },
+  {
+    name: "RunClubScheduleLockDocument",
+    source: "firestore/run_club_schedule_locks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/runClubScheduleLockDocument.ts",
+  },
+  {
+    name: "UserRunScheduleLockDocument",
+    source: "firestore/user_run_schedule_locks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/userRunScheduleLockDocument.ts",
+  },
+  {
+    name: "SavedRunDocument",
+    source: "firestore/saved_runs.schema.json",
+    typeOutput: "functions/src/shared/generated/savedRunDocument.ts",
+  },
+  {
+    name: "PaymentDocument",
+    source: "firestore/payments.schema.json",
+    typeOutput: "functions/src/shared/generated/paymentDocument.ts",
+  },
+  {
+    name: "SwipeDocument",
+    source: "firestore/swipes.schema.json",
+    typeOutput: "functions/src/shared/generated/swipeDocument.ts",
+  },
+  {
+    name: "MatchDocument",
+    source: "firestore/matches.schema.json",
+    typeOutput: "functions/src/shared/generated/matchDocument.ts",
+  },
+  {
+    name: "ChatMessageDocument",
+    source: "firestore/chat_messages.schema.json",
+    typeOutput: "functions/src/shared/generated/chatMessageDocument.ts",
+  },
+  {
+    name: "ActivityNotificationDocument",
+    source: "firestore/activity_notifications.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/activityNotificationDocument.ts",
+  },
+  {
+    name: "ReviewDocument",
+    source: "firestore/reviews.schema.json",
+    typeOutput: "functions/src/shared/generated/reviewDocument.ts",
+  },
+  {
+    name: "BlockDocument",
+    source: "firestore/blocks.schema.json",
+    typeOutput: "functions/src/shared/generated/blockDocument.ts",
+  },
+  {
+    name: "ReportDocument",
+    source: "firestore/reports.schema.json",
+    typeOutput: "functions/src/shared/generated/reportDocument.ts",
+  },
+  {
+    name: "ModerationFlagDocument",
+    source: "firestore/moderation_flags.schema.json",
+    typeOutput: "functions/src/shared/generated/moderationFlagDocument.ts",
+  },
+  {
+    name: "DeletedUserTombstoneDocument",
+    source: "firestore/deleted_users.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/deletedUserTombstoneDocument.ts",
+  },
+  {
+    name: "RateLimitDocument",
+    source: "firestore/rate_limits.schema.json",
+    typeOutput: "functions/src/shared/generated/rateLimitDocument.ts",
+  },
+  {
+    name: "FunctionEventReceiptDocument",
+    source: "firestore/function_event_receipts.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/functionEventReceiptDocument.ts",
+  },
+  {
+    name: "SeedRunManifestDocument",
+    source: "firestore/seed_runs.schema.json",
+    typeOutput: "functions/src/shared/generated/seedRunManifestDocument.ts",
+  },
+  {
+    name: "UpdateUserProfileCallablePayload",
+    source: "patches/update_user_profile.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/updateUserProfileCallablePayload.ts",
+  },
+  {
+    name: "CreateRunClubCallablePayload",
+    source: "callables/create_run_club_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createRunClubCallablePayload.ts",
+  },
+  {
+    name: "UpdateRunClubCallablePayload",
+    source: "callables/update_run_club_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/updateRunClubCallablePayload.ts",
+  },
+  {
+    name: "ArchiveRunClubCallablePayload",
+    source: "callables/archive_run_club_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/archiveRunClubCallablePayload.ts",
+  },
+  {
+    name: "DeleteRunClubCallablePayload",
+    source: "callables/delete_run_club_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/deleteRunClubCallablePayload.ts",
+  },
+  {
+    name: "RunClubMembershipCallablePayload",
+    source: "callables/run_club_membership_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/runClubMembershipCallablePayload.ts",
+  },
+  {
+    name: "SetRunClubNotificationPreferenceCallablePayload",
+    source: "callables/set_run_club_notification_preference_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/setRunClubNotificationPreferenceCallablePayload.ts",
+  },
+  {
+    name: "CreateRunCallablePayload",
+    source: "callables/create_run_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/createRunCallablePayload.ts",
+  },
+  {
+    name: "UpdateRunCallablePayload",
+    source: "callables/update_run_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updateRunCallablePayload.ts",
+  },
+  {
+    name: "CancelRunCallablePayload",
+    source: "callables/cancel_run_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/cancelRunCallablePayload.ts",
+  },
+  {
+    name: "DeleteRunCallablePayload",
+    source: "callables/delete_run_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/deleteRunCallablePayload.ts",
+  },
+  {
+    name: "RunIdCallablePayload",
+    source: "callables/run_id_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/runIdCallablePayload.ts",
+  },
+  {
+    name: "MarkRunAttendanceCallablePayload",
+    source: "callables/mark_run_attendance_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/markRunAttendanceCallablePayload.ts",
+  },
+  {
+    name: "SelfCheckInAttendanceCallablePayload",
+    source: "callables/self_check_in_attendance_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/selfCheckInAttendanceCallablePayload.ts",
+  },
+  {
+    name: "CreateRunReviewCallablePayload",
+    source: "callables/create_run_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createRunReviewCallablePayload.ts",
+  },
+  {
+    name: "UpdateRunReviewCallablePayload",
+    source: "callables/update_run_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/updateRunReviewCallablePayload.ts",
+  },
+  {
+    name: "DeleteRunReviewCallablePayload",
+    source: "callables/delete_run_review_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/deleteRunReviewCallablePayload.ts",
+  },
+  {
+    name: "BlockUserCallablePayload",
+    source: "callables/block_user_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/blockUserCallablePayload.ts",
+  },
+  {
+    name: "UnblockUserCallablePayload",
+    source: "callables/unblock_user_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/unblockUserCallablePayload.ts",
+  },
+  {
+    name: "ReportUserCallablePayload",
+    source: "callables/report_user_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/reportUserCallablePayload.ts",
+  },
+  {
+    name: "VerifyRazorpayPaymentCallablePayload",
+    source: "callables/verify_razorpay_payment_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/verifyRazorpayPaymentCallablePayload.ts",
+  },
+  {
+    name: "PlacesAutocompleteCallablePayload",
+    source: "callables/places_autocomplete_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/placesAutocompleteCallablePayload.ts",
+  },
+  {
+    name: "PlaceDetailsCallablePayload",
+    source: "callables/place_details_payload.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/placeDetailsCallablePayload.ts",
+  },
+  {
+    name: "CreateProfileDecisionClientWrite",
+    source: "client_writes/create_profile_decision.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createProfileDecisionClientWrite.ts",
+  },
+  {
+    name: "CreateChatMessageClientWrite",
+    source: "client_writes/create_chat_message.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createChatMessageClientWrite.ts",
+  },
+  {
+    name: "CreateSavedRunClientWrite",
+    source: "client_writes/create_saved_run.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createSavedRunClientWrite.ts",
+  },
+  {
+    name: "DeleteSavedRunClientWrite",
+    source: "client_writes/delete_saved_run.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/deleteSavedRunClientWrite.ts",
+  },
+  {
+    name: "MarkNotificationReadClientWrite",
+    source: "client_writes/mark_notification_read.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/markNotificationReadClientWrite.ts",
+  },
+  {
+    name: "ResetMatchUnreadCountClientWrite",
+    source: "client_writes/reset_match_unread_count.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/resetMatchUnreadCountClientWrite.ts",
+  },
+];
+
+const generatedFiles = [];
+
+async function main() {
+  const profileCatalog = readContractJson("catalogs/profile_prompts.json");
+  const photoCatalog = readContractJson("catalogs/photo_prompts.json");
+  const profileDecisionMigration = readContractJson(
+    "migrations/swipes_to_profile_decisions.json"
+  );
+  const bundledSchemas = new Map();
+
+  for (const spec of schemaSpecs) {
+    const file = path.join(contractRoot, spec.source);
+    const schema = bundleSchema(file);
+    bundledSchemas.set(spec.name, schema);
+    await addTypeOutput(spec, schema);
+  }
+
+  addTextOutput(
+    "functions/src/shared/generated/schemaRegistry.ts",
+    renderTsSchemaRegistry({
+      schemaMap: bundledSchemas,
+      profileCatalog,
+      photoCatalog,
+    })
+  );
+  addTextOutput(
+    "functions/src/shared/generated/schemaValidators.ts",
+    renderTsValidators()
+  );
+  addTextOutput(
+    "functions/src/shared/generated/schemaPaths.ts",
+    renderTsPathConstants({
+      profileDecisionSchema: bundledSchemas.get("SwipeDocument"),
+      profileDecisionMigration,
+    })
+  );
+  addTextOutput(
+    "tool/generated/schema_contract_registry.mjs",
+    renderToolSchemaRegistry({
+      schemaMap: bundledSchemas,
+      profileCatalog,
+      photoCatalog,
+    })
+  );
+  addTextOutput(
+    "tool/generated/schema_contract_validators.mjs",
+    renderToolValidators()
+  );
+  addTextOutput(
+    "lib/core/schema_contracts/generated/profile_schema_contracts.g.dart",
+    renderDartContracts({
+      profileCatalog,
+      photoCatalog,
+      profilePromptSchema: bundledSchemas.get("ProfilePromptAnswer"),
+      photoPromptSchema: bundledSchemas.get("PhotoPromptAnswer"),
+      profilePhotoSchema: bundledSchemas.get("ProfilePhoto"),
+      updateUserProfileSchema: bundledSchemas.get(
+        "UpdateUserProfileCallablePayload"
+      ),
+      profileDecisionSchema: bundledSchemas.get("SwipeDocument"),
+      profileDecisionMigration,
+      commonSchema: readContractJson("shared/profile_common.schema.json"),
+    })
+  );
+
+  const staleFiles = [];
+  for (const file of generatedFiles) {
+    const absolutePath = path.join(repoRoot, file.path);
+    if (checkOnly) {
+      const current = fs.existsSync(absolutePath) ?
+        fs.readFileSync(absolutePath, "utf8") :
+        null;
+      if (current !== file.content) staleFiles.push(file.path);
+    } else {
+      fs.mkdirSync(path.dirname(absolutePath), {recursive: true});
+      fs.writeFileSync(absolutePath, file.content);
+    }
+  }
+
+  if (staleFiles.length > 0) {
+    console.error("Generated schema contract outputs are stale:");
+    for (const file of staleFiles) console.error(`- ${file}`);
+    console.error("Run: node tool/generate_schema_contracts.mjs");
+    process.exitCode = 1;
+    return;
+  }
+
+  console.log(
+    checkOnly ?
+      "Generated schema contract outputs are current." :
+      `Generated ${generatedFiles.length} schema contract files.`
+  );
+}
+
+async function addTypeOutput(spec, schema) {
+  const types = await compile(schema, spec.name, {
+    bannerComment: "",
+    cwd: repoRoot,
+    declareExternallyReferenced: false,
+    enableConstEnums: false,
+    format: true,
+    ignoreMinAndMaxItems: true,
+    style: {
+      bracketSpacing: false,
+      printWidth: 80,
+      semi: true,
+      singleQuote: false,
+      tabWidth: 2,
+      trailingComma: "es5",
+      useTabs: false,
+    },
+  });
+  const imports = tsTypeImports(spec.name, types);
+  addTextOutput(
+    spec.typeOutput,
+    `${tsGeneratedHeader()}${imports}${types.trim()}\n`
+  );
+}
+
+function tsTypeImports(currentTypeName, source) {
+  const imports = [];
+  for (const spec of schemaSpecs) {
+    if (currentTypeName === spec.name) continue;
+    const pattern = new RegExp(`\\b${spec.name}\\b`);
+    if (!pattern.test(source)) continue;
+    imports.push(`import {${spec.name}} from "${typeImportPath(spec)}";`);
+  }
+  return imports.length === 0 ? "" : `${imports.join("\n")}\n\n`;
+}
+
+function addTextOutput(relativePath, content) {
+  generatedFiles.push({path: relativePath, content});
+}
+
+function schemaRegistryEntries(schemaMap) {
+  return schemaSpecs.map((spec) => [
+    schemaConstName(spec),
+    schemaMap.get(spec.name),
+  ]);
+}
+
+function schemaConstName(spec) {
+  return `${spec.name.charAt(0).toLowerCase()}${spec.name.slice(1)}Schema`;
+}
+
+function validatorName(spec) {
+  return `validate${spec.name}`;
+}
+
+function typeImportPath(spec) {
+  return `./${path.basename(spec.typeOutput, ".ts")}`;
+}
+
+function renderTsSchemaRegistry({schemaMap, profileCatalog, photoCatalog}) {
+  const entries = schemaRegistryEntries(schemaMap);
+  const catalogEntries = [
+    ["profilePromptCatalog", profileCatalog],
+    ["photoPromptCatalog", photoCatalog],
+    ["profilePromptLimits", profileCatalog.limits],
+    ["photoPromptLimits", photoCatalog.limits],
+    ["defaultProfilePromptIds", profileCatalog.defaultPromptIds],
+  ];
+  return `${tsGeneratedHeader()}${entries.map(([name, schema]) =>
+    `export const ${name}: Record<string, unknown> = ${jsonForTs(schema)};\n`
+  ).join("\n")}\n${catalogEntries.map(([name, value]) =>
+    `export const ${name} = ${jsonForTs(value)};\n`
+  ).join("\n")}`;
+}
+
+function renderTsValidators() {
+  const typeImports = schemaSpecs.map((spec) =>
+    `import {${spec.name}} from "${typeImportPath(spec)}";`
+  ).join("\n");
+  const schemaImports = schemaSpecs.map((spec) =>
+    `  ${schemaConstName(spec)},`
+  ).join("\n");
+  const validators = schemaSpecs.map((spec) => `export const ${validatorName(spec)}:
+  ValidateFunction<${spec.name}> =
+    ajv.compile(${schemaConstName(spec)}) as
+      ValidateFunction<${spec.name}>;`).join("\n");
+
+  return `${tsGeneratedHeader()}import Ajv, {ValidateFunction} from "ajv";
+import addFormats from "ajv-formats";
+${typeImports}
+import {
+${schemaImports}
+} from "./schemaRegistry";
+
+const ajv = new Ajv({allErrors: true, strict: false});
+addFormats(ajv);
+
+${validators}
+
+export function schemaErrorMessages(
+  validator: ValidateFunction<unknown>
+): string[] {
+  return (validator.errors ?? []).map((error) => {
+    const location = error.instancePath || "/";
+    return \`\${location} \${error.message ?? "failed validation"}\`;
+  });
+}
+`;
+}
+
+function renderTsPathConstants({
+  profileDecisionSchema,
+  profileDecisionMigration,
+}) {
+  const pathParts = profileDecisionPathParts(profileDecisionSchema);
+  const futurePathParts = profileDecisionPathParts(
+    profileDecisionMigration?.candidatePrimaryStoragePath
+  );
+  return `${tsGeneratedHeader()}export const schemaProfileDecisionLogicalName =
+  ${JSON.stringify(profileDecisionSchema["x-logical-name"] ?? "profileDecision")};
+export const schemaProfileDecisionPathTemplate =
+  ${JSON.stringify(pathParts.pathTemplate)};
+export const schemaProfileDecisionTriggerPath =
+  ${JSON.stringify(pathParts.triggerPath)};
+export const schemaProfileDecisionCollectionPath =
+  ${JSON.stringify(pathParts.collectionPath)};
+export const schemaProfileDecisionOutgoingSubcollectionPath =
+  ${JSON.stringify(pathParts.outgoingSubcollectionPath)};
+export const schemaProfileDecisionFuturePathTemplate =
+  ${JSON.stringify(futurePathParts.pathTemplate)};
+export const schemaProfileDecisionFutureCollectionPath =
+  ${JSON.stringify(futurePathParts.collectionPath)};
+export const schemaProfileDecisionFutureOutgoingSubcollectionPath =
+  ${JSON.stringify(futurePathParts.outgoingSubcollectionPath)};
+`;
+}
+
+function renderToolSchemaRegistry({schemaMap, profileCatalog, photoCatalog}) {
+  const entries = schemaRegistryEntries(schemaMap);
+  const catalogEntries = [
+    ["profilePromptCatalog", profileCatalog],
+    ["photoPromptCatalog", photoCatalog],
+    ["profilePromptLimits", profileCatalog.limits],
+    ["photoPromptLimits", photoCatalog.limits],
+    ["defaultProfilePromptIds", profileCatalog.defaultPromptIds],
+  ];
+  return `${mjsGeneratedHeader()}${entries.map(([name, schema]) =>
+    `export const ${name} = ${jsonForJs(schema)};\n`
+  ).join("\n")}\n${catalogEntries.map(([name, value]) =>
+    `export const ${name} = ${jsonForJs(value)};\n`
+  ).join("\n")}`;
+}
+
+function renderToolValidators() {
+  const schemaImports = schemaSpecs.map((spec) =>
+    `  ${schemaConstName(spec)},`
+  ).join("\n");
+  const validators = schemaSpecs.map((spec) =>
+    `export const ${validatorName(spec)} = ajv.compile(${schemaConstName(spec)});`
+  ).join("\n");
+
+  return `${mjsGeneratedHeader()}import {createRequire} from "node:module";
+import {
+${schemaImports}
+} from "./schema_contract_registry.mjs";
+
+const requireFromFunctions = createRequire(
+  new URL("../../functions/package.json", import.meta.url)
+);
+const Ajv = requireFromFunctions("ajv");
+const addFormats = requireFromFunctions("ajv-formats");
+
+const ajv = new Ajv({allErrors: true, strict: false});
+addFormats(ajv);
+
+${validators}
+
+export function schemaErrorMessages(validator) {
+  return (validator.errors ?? []).map((error) => {
+    const location = error.instancePath || "/";
+    return \`\${location} \${error.message ?? "failed validation"}\`;
+  });
+}
+
+export function assertValidSchemaPayload(validator, payload, label) {
+  if (validator(payload)) return;
+  const details = schemaErrorMessages(validator).join("; ");
+  throw new Error(\`\${label} failed schema validation: \${details}\`);
+}
+`;
+}
+
+function renderDartContracts({
+  profileCatalog,
+  photoCatalog,
+  profilePromptSchema,
+  photoPromptSchema,
+  profilePhotoSchema,
+  updateUserProfileSchema,
+  profileDecisionSchema,
+  profileDecisionMigration,
+  commonSchema,
+}) {
+  const profileLimits = profileCatalog.limits;
+  const photoLimits = photoCatalog.limits;
+  const height = commonSchema.definitions.heightCm;
+  const profileDecisionPath = profileDecisionPathParts(profileDecisionSchema);
+  const profileDecisionFuturePath = profileDecisionPathParts(
+    profileDecisionMigration?.candidatePrimaryStoragePath
+  );
+  const preferredAge = updateUserProfileSchema.properties.fields.properties
+    .minAgePreference;
+  const profilePrompts = profileCatalog.prompts.map((prompt) =>
+    `  SchemaProfilePromptDefinition(` +
+    `id: ${dartString(prompt.id)}, ` +
+    `title: ${dartString(prompt.title)}, ` +
+    `placeholder: ${dartString(prompt.placeholder)},` +
+    `),`
+  ).join("\n");
+  const photoPrompts = photoCatalog.prompts.map((prompt) =>
+    `  SchemaPhotoPromptDefinition(` +
+    `id: ${dartString(prompt.id)}, ` +
+    `title: ${dartString(prompt.title)}, ` +
+    `placeholder: ${dartString(prompt.placeholder)},` +
+    `),`
+  ).join("\n");
+  const defaultPromptIds = profileCatalog.defaultPromptIds
+    .map((id) => `  ${dartString(id)},`)
+    .join("\n");
+
+  return `${dartGeneratedHeader()}
+class SchemaProfilePromptDefinition {
+  const SchemaProfilePromptDefinition({
+    required this.id,
+    required this.title,
+    required this.placeholder,
+  });
+
+  final String id;
+  final String title;
+  final String placeholder;
+}
+
+class SchemaPhotoPromptDefinition {
+  const SchemaPhotoPromptDefinition({
+    required this.id,
+    required this.title,
+    required this.placeholder,
+  });
+
+  final String id;
+  final String title;
+  final String placeholder;
+}
+
+const schemaProfilePromptPerfectRunId = ${dartString(
+  profileCatalog.defaultPromptIds[0]
+)};
+const schemaMaxProfilePromptAnswers = ${profileLimits.maxAnswers};
+const schemaMaxPhotoPromptCaptions = ${photoLimits.maxCaptions};
+const schemaMaximumProfilePromptAnswerLength =
+    ${profileLimits.maxAnswerLength};
+const schemaMaximumPhotoPromptCaptionLength = ${photoLimits.maxCaptionLength};
+const schemaMinimumProfileAge = ${preferredAge.minimum};
+const schemaMaximumPreferredMatchAge = ${preferredAge.maximum};
+const schemaMinimumHeightCm = ${height.minimum};
+const schemaMaximumHeightCm = ${height.maximum};
+const schemaProfileDecisionLogicalName =
+    ${dartString(profileDecisionSchema["x-logical-name"] ?? "profileDecision")};
+const schemaProfileDecisionPathTemplate =
+    ${dartString(profileDecisionPath.pathTemplate)};
+const schemaProfileDecisionCollectionPath =
+    ${dartString(profileDecisionPath.collectionPath)};
+const schemaProfileDecisionOutgoingSubcollectionPath =
+    ${dartString(profileDecisionPath.outgoingSubcollectionPath)};
+const schemaProfileDecisionFuturePathTemplate =
+    ${dartString(profileDecisionFuturePath.pathTemplate)};
+const schemaProfileDecisionFutureCollectionPath =
+    ${dartString(profileDecisionFuturePath.collectionPath)};
+const schemaProfileDecisionFutureOutgoingSubcollectionPath =
+    ${dartString(profileDecisionFuturePath.outgoingSubcollectionPath)};
+
+const schemaDefaultProfilePromptIds = <String>[
+${defaultPromptIds}
+];
+
+const schemaProfilePromptCatalog = <SchemaProfilePromptDefinition>[
+${profilePrompts}
+];
+
+const schemaPhotoPromptCatalog = <SchemaPhotoPromptDefinition>[
+${photoPrompts}
+];
+
+const schemaProfilePromptAnswerSchema = ${dartLiteral(profilePromptSchema)};
+
+const schemaPhotoPromptAnswerSchema = ${dartLiteral(photoPromptSchema)};
+
+const schemaProfilePhotoSchema = ${dartLiteral(profilePhotoSchema)};
+
+const schemaUpdateUserProfileCallablePayloadSchema =
+    ${dartLiteral(updateUserProfileSchema)};
+`;
+}
+
+function profileDecisionPathParts(schemaOrPath) {
+  const pathTemplate = typeof schemaOrPath === "string" ?
+    schemaOrPath :
+    schemaOrPath?.["x-firestore-path"];
+  if (typeof pathTemplate !== "string") {
+    throw new Error("Profile decision path template is missing.");
+  }
+  const parts = pathTemplate.split("/");
+  if (parts.length !== 4 || parts[2] !== "outgoing") {
+    throw new Error(
+      `Unexpected profile decision path template: ${pathTemplate}`
+    );
+  }
+  return {
+    pathTemplate,
+    triggerPath: pathTemplate
+      .replace("{userId}", "{swiperId}")
+      .replace("{targetId}", "{targetId}"),
+    collectionPath: parts[0],
+    outgoingSubcollectionPath: parts[2],
+  };
+}
+
+function bundleSchema(file) {
+  const absoluteFile = path.resolve(file);
+  const schema = readJsonFile(absoluteFile);
+  return resolveRefs(schema, absoluteFile, true);
+}
+
+function resolveRefs(node, currentFile, keepSchemaMeta) {
+  if (Array.isArray(node)) {
+    return node.map((item) => resolveRefs(item, currentFile, false));
+  }
+  if (!node || typeof node !== "object") return node;
+
+  if (typeof node.$ref === "string") {
+    const {$ref, ...siblings} = node;
+    const resolved = resolveReference($ref, currentFile);
+    const merged = {
+      ...stripSchemaMeta(resolveRefs(resolved.value, resolved.file, false)),
+      ...resolveRefs(siblings, currentFile, false),
+    };
+    return Object.keys(merged).length === 0 ? true : merged;
+  }
+
+  const result = {};
+  for (const [key, value] of Object.entries(node)) {
+    if (!keepSchemaMeta && (key === "$schema" || key === "$id")) continue;
+    result[key] = resolveRefs(value, currentFile, false);
+  }
+  return result;
+}
+
+function resolveReference(ref, currentFile) {
+  if (/^[a-z]+:\/\//i.test(ref)) {
+    throw new Error(`Remote schema refs are not supported by this generator: ${
+      ref
+    }`);
+  }
+  const [target, pointer = ""] = ref.split("#");
+  const file = target ?
+    path.resolve(path.dirname(currentFile), target) :
+    currentFile;
+  const json = readJsonFile(file);
+  return {file, value: resolveJsonPointer(json, pointer)};
+}
+
+function resolveJsonPointer(document, pointer) {
+  if (!pointer || pointer === "/") return document;
+  if (!pointer.startsWith("/")) {
+    throw new Error(`Unsupported JSON pointer: #${pointer}`);
+  }
+  return pointer
+    .slice(1)
+    .split("/")
+    .reduce((value, token) => {
+      const key = token.replace(/~1/g, "/").replace(/~0/g, "~");
+      if (value === undefined || value === null ||
+          !Object.prototype.hasOwnProperty.call(value, key)) {
+        throw new Error(`JSON pointer segment not found: ${key}`);
+      }
+      return value[key];
+    }, document);
+}
+
+function stripSchemaMeta(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+  const {$schema, $id, ...rest} = value;
+  return rest;
+}
+
+function readContractJson(relativePath) {
+  return readJsonFile(path.join(contractRoot, relativePath));
+}
+
+function readJsonFile(file) {
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function tsGeneratedHeader() {
+  return `/* eslint-disable */
+// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/generate_schema_contracts.mjs
+
+`;
+}
+
+function mjsGeneratedHeader() {
+  return `// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/generate_schema_contracts.mjs
+
+`;
+}
+
+function dartGeneratedHeader() {
+  return `// GENERATED CODE - DO NOT MODIFY BY HAND.
+// Regenerate with: node tool/generate_schema_contracts.mjs
+// ignore_for_file: constant_identifier_names
+`;
+}
+
+function jsonForTs(value) {
+  return `${JSON.stringify(value, null, 2)} as const`;
+}
+
+function jsonForJs(value) {
+  return JSON.stringify(value, null, 2);
+}
+
+function dartLiteral(value) {
+  if (value === null) return "null";
+  if (typeof value === "string") return dartString(value);
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (Array.isArray(value)) {
+    if (value.length === 0) return "<Object?>[]";
+    return `<Object?>[
+${value.map((item) => indent(dartLiteral(item), 2)).join(",\n")},
+]`;
+  }
+  const entries = Object.entries(value).map(([key, item]) =>
+    `${indent(`${dartString(key)}: ${dartLiteral(item)}`, 2)}`
+  );
+  if (entries.length === 0) return "<String, Object?>{}";
+  return `<String, Object?>{
+${entries.join(",\n")},
+}`;
+}
+
+function dartString(value) {
+  return `'${String(value)
+    .replace(/\\/g, "\\\\")
+    .replace(/'/g, "\\'")
+    .replace(/\$/g, "\\$")
+    .replace(/\r/g, "\\r")
+    .replace(/\n/g, "\\n")}'`;
+}
+
+function indent(value, spaces) {
+  const pad = " ".repeat(spaces);
+  return String(value)
+    .split("\n")
+    .map((line) => `${pad}${line}`)
+    .join("\n");
+}
+
+await main();

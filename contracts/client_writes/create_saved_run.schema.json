@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/create_saved_run.schema.json",
+  "title": "CreateSavedRunClientWrite",
+  "description": "Client-owned Firestore create operation for savedRuns/{savedRunId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["path", "data"],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["savedRunId"],
+      "properties": {
+        "savedRunId": {
+          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uid", "runId", "savedAt"],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+        },
+        "runId": {
+          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+        },
+        "savedAt": {
+          "$ref": "../shared/run_common.schema.json#/definitions/timestamp"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "create",
+  "x-firestore-path": "savedRuns/{savedRunId}",
+  "x-owner": "authenticated owner direct create"
+}

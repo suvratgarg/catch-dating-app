@@ -1,8 +1,16 @@
 import {onCall} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {z} from "zod";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
+import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
+import {PlaceDetailsCallablePayload} from
+  "../shared/generated/placeDetailsCallablePayload";
+import {PlacesAutocompleteCallablePayload} from
+  "../shared/generated/placesAutocompleteCallablePayload";
+import {
+  validatePlaceDetailsCallablePayload,
+  validatePlacesAutocompleteCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit} from "../shared/rateLimit";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {
@@ -11,23 +19,17 @@ import {
   googleMapsPlacesApiKey,
 } from "./googlePlaces";
 
-const PlacesAutocompleteSchema = z.object({
-  input: z.string().trim().min(2).max(120),
-  sessionToken: z.string().trim().min(8).max(128).optional(),
-  latitude: z.number().min(-90).max(90).optional(),
-  longitude: z.number().min(-180).max(180).optional(),
-});
-
-const PlaceDetailsSchema = z.object({
-  placeId: z.string().trim().min(1).max(256),
-  sessionToken: z.string().trim().min(8).max(128).optional(),
-});
-
 export const placesAutocomplete = onCall(
   appCheckCallableOptionsWithSecrets([googleMapsPlacesApiKey]),
   async (request) => {
     const userId = requireAuth(request);
-    const payload = validateCallable(request, PlacesAutocompleteSchema);
+    const payload = validateCallableWithAjv<
+      PlacesAutocompleteCallablePayload
+    >(
+      request,
+      validatePlacesAutocompleteCallablePayload,
+      normalizePlacesAutocompletePayload
+    );
     await checkRateLimit(admin.firestore(), userId, "placesAutocomplete");
 
     return {
@@ -40,7 +42,11 @@ export const placeDetails = onCall(
   appCheckCallableOptionsWithSecrets([googleMapsPlacesApiKey]),
   async (request) => {
     const userId = requireAuth(request);
-    const payload = validateCallable(request, PlaceDetailsSchema);
+    const payload = validateCallableWithAjv<PlaceDetailsCallablePayload>(
+      request,
+      validatePlaceDetailsCallablePayload,
+      normalizePlaceDetailsPayload
+    );
     await checkRateLimit(admin.firestore(), userId, "placeDetails");
 
     return {
@@ -48,3 +54,25 @@ export const placeDetails = onCall(
     };
   }
 );
+
+/**
+ * Trims Places autocomplete payload text before schema validation.
+ * @param {unknown} data Raw callable payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizePlacesAutocompletePayload(data: unknown): unknown {
+  return normalizePayloadStrings(data, {
+    stringFields: ["input", "sessionToken"],
+  });
+}
+
+/**
+ * Trims Places details payload text before schema validation.
+ * @param {unknown} data Raw callable payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizePlaceDetailsPayload(data: unknown): unknown {
+  return normalizePayloadStrings(data, {
+    stringFields: ["placeId", "sessionToken"],
+  });
+}

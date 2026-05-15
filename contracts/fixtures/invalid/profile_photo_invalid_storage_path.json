@@ -1,0 +1,16 @@
+{
+  "id": "photo_01JZ3M6W7T4G2A1B9C8D",
+  "url": "https://example.test/full.jpg",
+  "thumbnailUrl": "https://example.test/thumb.jpg",
+  "storagePath": "/users/runner-1/photos/photo_01.jpg",
+  "thumbnailStoragePath": "users/runner-1/photoThumbnails/photo_01.jpg",
+  "position": 0,
+  "createdAt": {
+    "_seconds": 1770000000,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1770000000,
+    "_nanoseconds": 0
+  }
+}

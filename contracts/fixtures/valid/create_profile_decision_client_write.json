@@ -1,0 +1,21 @@
+{
+  "path": {
+    "userId": "runner-1",
+    "targetId": "runner-2"
+  },
+  "data": {
+    "swiperId": "runner-1",
+    "targetId": "runner-2",
+    "runId": "run-1",
+    "direction": "like",
+    "reactionTargetId": "prompt-perfect-run",
+    "reactionTargetType": "profilePrompt",
+    "reactionTargetLabel": "Perfect run",
+    "reactionTargetPreview": "An easy 5K and coffee after.",
+    "comment": "This sounds fun.",
+    "createdAt": {
+      "_seconds": 1778716800,
+      "_nanoseconds": 0
+    }
+  }
+}

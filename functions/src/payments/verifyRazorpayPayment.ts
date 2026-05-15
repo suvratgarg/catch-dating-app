@@ -17,14 +17,12 @@ import {
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
-import {z} from "zod";
-
-const VerifyPaymentSchema = z.object({
-  paymentId: z.string(),
-  orderId: z.string(),
-  signature: z.string(),
-});
+import {normalizePayloadStrings} from "../shared/callablePayloadNormalization";
+import {validateVerifyRazorpayPaymentCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {VerifyRazorpayPaymentCallablePayload} from
+  "../shared/generated/verifyRazorpayPaymentCallablePayload";
+import {validateCallableWithAjv} from "../shared/validation";
 
 interface VerifyRazorpayPaymentDeps {
   createClient: () => Razorpay;
@@ -59,9 +57,12 @@ export async function verifyRazorpayPaymentHandler(
   deps: VerifyRazorpayPaymentDeps = defaultDeps
 ) {
   const userId = requireAuth(request);
-  const {paymentId, orderId, signature} = validateCallable(
+  const {paymentId, orderId, signature} = validateCallableWithAjv<
+    VerifyRazorpayPaymentCallablePayload
+  >(
     request,
-    VerifyPaymentSchema
+    validateVerifyRazorpayPaymentCallablePayload,
+    normalizeVerifyPaymentPayload
   );
 
   const db = deps.firestore();
@@ -133,6 +134,17 @@ export async function verifyRazorpayPaymentHandler(
   });
 
   return {verified: true, runId: booking.runId};
+}
+
+/**
+ * Trims Razorpay verification payload fields before schema validation.
+ * @param {unknown} data Raw callable payload.
+ * @return {unknown} Normalized payload.
+ */
+function normalizeVerifyPaymentPayload(data: unknown): unknown {
+  return normalizePayloadStrings(data, {
+    stringFields: ["paymentId", "orderId", "signature"],
+  });
 }
 
 export const verifyRazorpayPayment = onCall(

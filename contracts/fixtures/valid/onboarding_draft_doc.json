@@ -1,0 +1,22 @@
+{
+  "step": 2,
+  "draftVersion": 0,
+  "firstName": "Runner",
+  "lastName": "One",
+  "dateOfBirth": null,
+  "phoneNumber": "9999999999",
+  "countryCode": "+91",
+  "gender": "woman",
+  "interestedInGenders": ["man"],
+  "instagramHandle": null,
+  "profilePrompts": [
+    {
+      "promptId": "perfectRun",
+      "prompt": "A perfect run with me looks like...",
+      "answer": "Easy kilometres and coffee after."
+    }
+  ],
+  "futureStepPayload": {
+    "canEvolveWithoutRulesDeploy": true
+  }
+}

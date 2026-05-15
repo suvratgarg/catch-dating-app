@@ -2,12 +2,25 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {RunClubDoc, RunDoc, RunConstraints} from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireDoc, validateCallable} from "../shared/validation";
+import {CancelRunCallablePayload} from
+  "../shared/generated/cancelRunCallablePayload";
+import {CreateRunCallablePayload} from
+  "../shared/generated/createRunCallablePayload";
+import {DeleteRunCallablePayload} from
+  "../shared/generated/deleteRunCallablePayload";
+import {
+  validateCancelRunCallablePayload,
+  validateCreateRunCallablePayload,
+  validateDeleteRunCallablePayload,
+  validateUpdateRunCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {UpdateRunCallablePayload} from
+  "../shared/generated/updateRunCallablePayload";
+import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   allowsPushPreference,
   activityNotificationId,
@@ -27,70 +40,12 @@ import {
 } from "./scheduleConflicts";
 import {refreshRunClubNextRun as defaultRefreshRunClubNextRun} from
   "../runClubs/syncRunClubNextRun";
-
-const PaceSchema = z.enum(["easy", "moderate", "fast", "competitive"]);
-const nullableString = z.string().trim().max(1000).nullable().optional();
-const nullableLat = z.number().min(-90).max(90).nullable().optional();
-const nullableLng = z.number().min(-180).max(180).nullable().optional();
-const requiredLat = z.number().min(-90).max(90);
-const requiredLng = z.number().min(-180).max(180);
-
-const RunConstraintsSchema = z.object({
-  minAge: z.number().int().min(0).max(120).default(0),
-  maxAge: z.number().int().min(0).max(120).default(99),
-  maxMen: z.number().int().min(0).nullable().optional(),
-  maxWomen: z.number().int().min(0).nullable().optional(),
-}).strict().refine((value) => value.maxAge >= value.minAge, {
-  message: "maxAge must be greater than or equal to minAge",
-});
-
-const RunCreateDetailsSchema = z.object({
-  startTimeMillis: z.number().int(),
-  endTimeMillis: z.number().int(),
-  meetingPoint: z.string().trim().min(1).max(240),
-  startingPointLat: requiredLat,
-  startingPointLng: requiredLng,
-  locationDetails: nullableString,
-  distanceKm: z.number().positive().max(100),
-  pace: PaceSchema,
-  capacityLimit: z.number().int().min(1).max(1000),
-  description: z.string().trim().max(2000),
-  priceInPaise: z.number().int().min(0).max(100000000),
-  constraints: RunConstraintsSchema.default({}),
-}).strict();
-
-const CreateRunSchema = RunCreateDetailsSchema.extend({
-  runId: z.string().trim().min(1).optional(),
-  runClubId: z.string().trim().min(1),
-}).strict();
-
-const RunHostUpdateFieldsSchema = z.object({
-  startTimeMillis: z.number().int().optional(),
-  endTimeMillis: z.number().int().optional(),
-  meetingPoint: z.string().trim().min(1).max(240).optional(),
-  startingPointLat: nullableLat,
-  startingPointLng: nullableLng,
-  locationDetails: nullableString,
-  distanceKm: z.number().positive().max(100).optional(),
-  pace: PaceSchema.optional(),
-  description: z.string().trim().max(2000).optional(),
-}).strict().refine((value) => Object.keys(value).length > 0, {
-  message: "At least one run field must be provided",
-});
-
-const UpdateRunSchema = z.object({
-  runId: z.string().trim().min(1),
-  fields: RunHostUpdateFieldsSchema,
-}).strict();
-
-const CancelRunSchema = z.object({
-  runId: z.string().trim().min(1),
-  reason: z.string().trim().max(500).nullable().optional(),
-}).strict();
-
-const DeleteRunSchema = z.object({
-  runId: z.string().trim().min(1),
-}).strict();
+import {
+  normalizeCancelRunPayload,
+  normalizeCreateRunPayload,
+  normalizeRunIdPayload,
+  normalizeUpdateRunPayload,
+} from "./runPayloadNormalization";
 
 interface RunMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -111,17 +66,10 @@ interface RunMutationDeps {
   ) => Promise<void>;
 }
 
-type ParsedRunConstraints = {
-  minAge?: number;
-  maxAge?: number;
-  maxMen?: number | null;
-  maxWomen?: number | null;
-};
-
-type ParsedCreateRunData =
-  Omit<z.infer<typeof CreateRunSchema>, "constraints"> & {
-    constraints?: ParsedRunConstraints;
-  };
+type ParsedRunConstraints = NonNullable<
+  CreateRunCallablePayload["constraints"]
+>;
+type RunHostUpdateFields = UpdateRunCallablePayload["fields"];
 
 type NotificationUserDoc = {
   fcmToken?: string;
@@ -156,8 +104,13 @@ export async function createRunHandler(
   deps: RunMutationDeps = defaultDeps
 ): Promise<{runId: string}> {
   const hostUserId = requireAuth(request);
-  const data = validateCallable(request, CreateRunSchema);
+  const data = validateCallableWithAjv<CreateRunCallablePayload>(
+    request,
+    validateCreateRunCallablePayload,
+    normalizeCreateRunPayload
+  );
   assertValidRunTimeRange(data.startTimeMillis, data.endTimeMillis);
+  assertValidRunConstraints(data.constraints);
 
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "createRun");
@@ -236,7 +189,11 @@ export async function updateRunHandler(
   deps: RunMutationDeps = defaultDeps
 ): Promise<{updated: boolean}> {
   const hostUserId = requireAuth(request);
-  const data = validateCallable(request, UpdateRunSchema);
+  const data = validateCallableWithAjv<UpdateRunCallablePayload>(
+    request,
+    validateUpdateRunCallablePayload,
+    normalizeUpdateRunPayload
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "updateRun");
 
@@ -332,7 +289,11 @@ export async function cancelRunHandler(
   deps: RunMutationDeps = defaultDeps
 ): Promise<{cancelled: boolean}> {
   const hostUserId = requireAuth(request);
-  const data = validateCallable(request, CancelRunSchema);
+  const data = validateCallableWithAjv<CancelRunCallablePayload>(
+    request,
+    validateCancelRunCallablePayload,
+    normalizeCancelRunPayload
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "cancelRun");
 
@@ -433,7 +394,11 @@ export async function deleteRunHandler(
   deps: RunMutationDeps = defaultDeps
 ): Promise<{deleted: boolean}> {
   const hostUserId = requireAuth(request);
-  const data = validateCallable(request, DeleteRunSchema);
+  const data = validateCallableWithAjv<DeleteRunCallablePayload>(
+    request,
+    validateDeleteRunCallablePayload,
+    normalizeRunIdPayload
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "deleteRun");
 
@@ -503,12 +468,12 @@ export async function deleteRunHandler(
 
 /**
  * Builds the immutable initial run document controlled by the create callable.
- * @param {ParsedCreateRunData} data Validated callable data.
+ * @param {CreateRunCallablePayload} data Validated callable data.
  * @param {RunMutationDeps} deps Injectable dependencies.
  * @return {object} Run fields except ownership/booking aggregates.
  */
 function buildCreateRunDoc(
-  data: ParsedCreateRunData,
+  data: CreateRunCallablePayload,
   deps: RunMutationDeps
 ): Omit<RunDoc, "runClubId" | "genderCounts" |
   "status" | "cancelledAt" | "cancellationReason"> {
@@ -535,7 +500,7 @@ function buildCreateRunDoc(
  * @return {Partial<RunDoc>} Firestore update patch.
  */
 function buildUpdateRunPatch(
-  fields: z.infer<typeof RunHostUpdateFieldsSchema>,
+  fields: RunHostUpdateFields,
   deps: RunMutationDeps
 ): Partial<RunDoc> {
   const patch: Partial<RunDoc> = {};
@@ -569,7 +534,7 @@ function buildUpdateRunPatch(
  * @return {boolean} Whether participants should be notified.
  */
 function hasScheduleOrLocationChange(
-  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+  fields: RunHostUpdateFields
 ): boolean {
   return fields.startTimeMillis !== undefined ||
     fields.endTimeMillis !== undefined ||
@@ -585,7 +550,7 @@ function hasScheduleOrLocationChange(
  * @return {boolean} Whether time locks must be replaced.
  */
 function hasScheduleTimeChange(
-  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+  fields: RunHostUpdateFields
 ): boolean {
   return fields.startTimeMillis !== undefined ||
     fields.endTimeMillis !== undefined;
@@ -599,7 +564,7 @@ function hasScheduleTimeChange(
  */
 function fieldsStartTimeMillis(
   run: RunDoc,
-  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+  fields: RunHostUpdateFields
 ): number {
   return fields.startTimeMillis ?? run.startTime.toMillis();
 }
@@ -612,7 +577,7 @@ function fieldsStartTimeMillis(
  */
 function fieldsEndTimeMillis(
   run: RunDoc,
-  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+  fields: RunHostUpdateFields
 ): number {
   return fields.endTimeMillis ?? run.endTime.toMillis();
 }
@@ -636,6 +601,23 @@ function normalizeConstraints(
     maxMen: value.maxMen ?? null,
     maxWomen: value.maxWomen ?? null,
   };
+}
+
+/**
+ * Enforces cross-field age bounds that JSON Schema draft-07 cannot express
+ * cleanly without making the payload schema harder to read.
+ * @param {ParsedRunConstraints=} constraints Validated constraint fields.
+ */
+function assertValidRunConstraints(constraints?: ParsedRunConstraints) {
+  if (!constraints) return;
+  const minAge = constraints.minAge ?? 0;
+  const maxAge = constraints.maxAge ?? 99;
+  if (maxAge < minAge) {
+    throw new HttpsError(
+      "invalid-argument",
+      "maxAge must be greater than or equal to minAge"
+    );
+  }
 }
 
 /**
@@ -674,7 +656,7 @@ function assertCanMutateRunClub(
  */
 function assertValidMergedRunUpdate(
   run: RunDoc,
-  fields: z.infer<typeof RunHostUpdateFieldsSchema>
+  fields: RunHostUpdateFields
 ) {
   const startTimeMillis = fields.startTimeMillis ??
     run.startTime.toMillis();

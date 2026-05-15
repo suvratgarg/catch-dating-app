@@ -1,5 +1,5 @@
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:flutter/material.dart';
 
 class PreviewTab extends StatelessWidget {
@@ -16,8 +16,9 @@ class PreviewTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ProfileCard(
+    return ProfileSurface(
       profile: profile,
+      mode: ProfileSurfaceMode.preview,
       scrollController: scrollController,
       onLeadingOverscroll: onLeadingOverscroll,
     );

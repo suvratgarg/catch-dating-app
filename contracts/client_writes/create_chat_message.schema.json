@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/create_chat_message.schema.json",
+  "title": "CreateChatMessageClientWrite",
+  "description": "Client-owned Firestore create operation for matches/{matchId}/messages/{messageId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["path", "data"],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matchId", "messageId"],
+      "properties": {
+        "matchId": {
+          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+        },
+        "messageId": {
+          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["senderId", "text", "sentAt"],
+      "properties": {
+        "senderId": {
+          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+        },
+        "text": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "imageUrl": {
+          "$ref": "../shared/run_common.schema.json#/definitions/urlOrNull"
+        },
+        "sentAt": {
+          "$ref": "../shared/run_common.schema.json#/definitions/timestamp"
+        }
+      },
+      "anyOf": [
+        {
+          "properties": {
+            "text": {
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 2000
+            }
+          }
+        },
+        {
+          "required": ["imageUrl"],
+          "properties": {
+            "imageUrl": {
+              "$ref": "../shared/profile_common.schema.json#/definitions/url"
+            }
+          }
+        }
+      ]
+    }
+  },
+  "x-firestore-operation": "create",
+  "x-firestore-path": "matches/{matchId}/messages/{messageId}",
+  "x-owner": "active match participant direct create; moderation and preview fan-out are trigger-owned"
+}

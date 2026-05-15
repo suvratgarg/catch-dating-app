@@ -1,6 +1,6 @@
 ---
 doc_id: release_operations
-version: 1.1.0
+version: 1.2.0
 updated: 2026-05-15
 owner: recursive_audit_loop
 status: active
@@ -67,6 +67,55 @@ the selected manual deploy targets.
 If the automatic dev deploy fails, fix the branch with a new PR rather than
 rerunning deploys against a stale commit. Use the manual `Firebase Deploy`
 workflow for intentional redeploys or environment-specific recovery.
+
+## App Version And Force-Update Gate
+
+Every store release candidate that may be enforced through Remote Config must
+increment the `pubspec.yaml` build number. The marketing version can stay stable
+when the release is compatibility or migration focused, but the build number
+must still move so Firebase Remote Config can target old binaries precisely.
+
+Current release candidate:
+
+```text
+version: 1.0.0+2
+```
+
+Flutter maps this to:
+
+- Android `versionCode`: `2`
+- iOS `CFBundleVersion`: `2`
+- macOS `CFBundleVersion`: `2`
+
+After the compatible binary is available to users, raise only the platform keys
+for platforms included in that release:
+
+```text
+min_build_ios = 2
+min_build_android = 2
+min_build_macos = 2
+```
+
+Keep `min_version` broad unless the release intentionally changes the public
+marketing version. Use the platform build gates for schema/API compatibility
+work because they are less ambiguous than semantic version strings.
+
+For storage/API migrations such as `swipes` to `profileDecisions`:
+
+1. Deploy backend support that can tolerate both old and new clients.
+2. Ship the client release with dual-read/dual-write support.
+3. Wait until the released build is actually available through the relevant
+   store or distribution channel.
+4. Raise the Remote Config `min_build_*` value for released platforms.
+5. Rerun the migration parity gate, for example:
+   `node tool/validate_profile_decision_migration.mjs --env prod --require-parity`.
+6. Cut over backend triggers or remove legacy write support only after the
+   parity gate passes with the force-update gate in place.
+
+Remote Config shortens the compatibility window, but it does not eliminate it
+at release time. A client can start offline, fetch can fail, and store rollout
+timing can lag. Keep legacy-compatible reads/writes until the explicit parity
+and force-update cutover step is complete.
 
 ## Pre-Deploy Checklist
 

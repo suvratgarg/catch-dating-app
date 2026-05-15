@@ -292,14 +292,12 @@ function checkCurrentCodeDrift(parsed) {
   );
   assertContains(
     updateUserProfileSource,
-    `const minimumHeightCm = ${heightCm.minimum};`,
-    `${relative(updateUserProfilePath)} minimum height`
+    "validateUpdateUserProfileCallablePayload",
+    `${relative(updateUserProfilePath)} generated profile validator`
   );
-  assertContains(
-    updateUserProfileSource,
-    `const maximumHeightCm = ${heightCm.maximum};`,
-    `${relative(updateUserProfilePath)} maximum height`
-  );
+  if (updateUserProfileSource.includes("UserProfilePatchSchema")) {
+    fail(`${relative(updateUserProfilePath)} must use generated schema validation.`);
+  }
   if (
     updateUserProfileSource.includes("SexualOrientationSchema") ||
     /sexualOrientation\s*:/.test(updateUserProfileSource)

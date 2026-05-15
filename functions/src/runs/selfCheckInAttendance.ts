@@ -26,9 +26,12 @@ import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
+import {SelfCheckInAttendanceCallablePayload} from
+  "../shared/generated/selfCheckInAttendanceCallablePayload";
+import {validateSelfCheckInAttendanceCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 import {checkRateLimit} from "../shared/rateLimit";
-import {z} from "zod";
 import {RunDoc} from "../shared/firestore";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {
@@ -40,12 +43,7 @@ import {
   RUN_SELF_CHECK_IN_WINDOW_AFTER_MINUTES,
   RUN_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES,
 } from "../shared/businessRules";
-
-const SelfCheckInSchema = z.object({
-  runId: z.string(),
-  latitude: z.number().optional(),
-  longitude: z.number().optional(),
-});
+import {normalizeRunIdPayload} from "./runPayloadNormalization";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -94,9 +92,12 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
   request
 ) => {
   const userId = requireAuth(request);
-  const {runId, latitude, longitude} = validateCallable(
+  const {runId, latitude, longitude} = validateCallableWithAjv<
+    SelfCheckInAttendanceCallablePayload
+  >(
     request,
-    SelfCheckInSchema
+    validateSelfCheckInAttendanceCallablePayload,
+    normalizeRunIdPayload
   );
 
   await checkRateLimit(admin.firestore(), userId, "selfCheckInAttendance");

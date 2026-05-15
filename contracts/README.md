@@ -30,15 +30,24 @@ contract scope or generator behavior.
 
 ## Current Slice
 
-The first slice covers:
+The current contract layer covers:
 
 - private profile documents at `users/{uid}`;
 - public profile projection documents at `publicProfiles/{uid}`;
 - embedded profile prompt answers;
 - embedded photo prompt answers;
+- future embedded `ProfilePhoto` storage metadata objects;
 - profile and photo prompt catalogs;
-- the `updateUserProfile` callable payload;
-- initial valid and invalid fixtures.
+- run, run-club, relationship, social, payment, safety, operational, and demo
+  Firestore document contracts;
+- callable payloads for profile, run, run-club, review, safety, payment, and
+  Places operations;
+- direct client-write operation payloads for contextual profile decisions,
+  chat messages, saved-run edges, notification read updates, and match unread
+  resets;
+- migration contracts for the future `profileDecisions` path and grouped
+  `ProfilePhoto` storage object model;
+- valid and invalid fixtures for generated schema validators.
 
 ## Known Drift Captured By This Slice
 
@@ -48,12 +57,6 @@ The first slice covers:
   `sexualOrientation`. The profile contract does not include it.
 - `firestore.rules` no longer allows new user-profile writes with legacy
   `sexualOrientation`.
-- `tool/seed_demo_data.mjs` emits structured `profilePrompts` and
-  `photoPrompts` from the shared prompt catalog JSON. Full generated helpers
-  and Ajv validation are still Phase 2 work.
-- `functions/src/profiles/syncPublicProfile.ts` currently hardcodes the
-  `perfectRun` prompt label. The prompt catalog should become shared generated
-  input for Dart, Functions, and seeding.
 - `tool/firestore_ts_overlay.json` makes public profile `languages` optional
   while Dart has a default empty list. The contract keeps it optional because
   the backend projection currently omits empty language arrays.

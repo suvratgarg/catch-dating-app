@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart'
+    as schema_contracts;
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,12 +12,29 @@ part 'swipe_repository.g.dart';
 class SwipeRepository {
   const SwipeRepository(this._db);
 
-  static const _collectionPath = 'swipes';
+  static const _collectionPath =
+      schema_contracts.schemaProfileDecisionCollectionPath;
+  static const _futureCollectionPath =
+      schema_contracts.schemaProfileDecisionFutureCollectionPath;
 
   final FirebaseFirestore _db;
 
   CollectionReference<Map<String, dynamic>> _outgoingSwipesRef(String uid) =>
-      _db.collection(_collectionPath).doc(uid).collection('outgoing');
+      _db
+          .collection(_collectionPath)
+          .doc(uid)
+          .collection(
+            schema_contracts.schemaProfileDecisionOutgoingSubcollectionPath,
+          );
+
+  CollectionReference<Map<String, dynamic>> _futureOutgoingSwipesRef(
+    String uid,
+  ) => _db
+      .collection(_futureCollectionPath)
+      .doc(uid)
+      .collection(
+        schema_contracts.schemaProfileDecisionFutureOutgoingSubcollectionPath,
+      );
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
@@ -23,8 +42,14 @@ class SwipeRepository {
   Future<Set<String>> fetchSwipedUserIds({required String uid}) =>
       withBackendErrorContext(
         () async {
-          final snap = await _outgoingSwipesRef(uid).get();
-          return snap.docs.map((d) => d.id).toSet();
+          final snaps = await Future.wait([
+            _outgoingSwipesRef(uid).get(),
+            _futureOutgoingSwipesRef(uid).get(),
+          ]);
+          return {
+            for (final snap in snaps)
+              for (final doc in snap.docs) doc.id,
+          };
         },
         context: const BackendErrorContext(
           service: BackendService.firestore,
@@ -52,14 +77,22 @@ class SwipeRepository {
         reactionFields['comment'] = comment;
       }
 
-      return _outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId).set({
+      final payload = {
         'swiperId': swipe.swiperId,
         'targetId': swipe.targetId,
         'runId': swipe.runId,
         'direction': swipe.direction.name,
         ...reactionFields,
         'createdAt': FieldValue.serverTimestamp(),
-      });
+      };
+      final batch = _db.batch();
+      batch
+        ..set(_outgoingSwipesRef(swipe.swiperId).doc(swipe.targetId), payload)
+        ..set(
+          _futureOutgoingSwipesRef(swipe.swiperId).doc(swipe.targetId),
+          payload,
+        );
+      return batch.commit();
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,

@@ -2,7 +2,6 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {
@@ -15,28 +14,21 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
   runParticipationId,
 } from "../shared/relationshipDocuments";
-import {requireDoc, validateCallable} from "../shared/validation";
+import {CreateRunReviewCallablePayload} from
+  "../shared/generated/createRunReviewCallablePayload";
+import {DeleteRunReviewCallablePayload} from
+  "../shared/generated/deleteRunReviewCallablePayload";
+import {
+  validateCreateRunReviewCallablePayload,
+  validateDeleteRunReviewCallablePayload,
+  validateUpdateRunReviewCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {UpdateRunReviewCallablePayload} from
+  "../shared/generated/updateRunReviewCallablePayload";
+import {normalizePayloadStrings, normalizeSingleIdPayload} from
+  "../shared/callablePayloadNormalization";
+import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {publicDisplayName} from "../shared/profileProjection";
-
-const ReviewRatingSchema = z.number().int().min(1).max(5);
-const ReviewCommentSchema = z.string().trim().max(1000);
-
-const CreateRunReviewSchema = z.object({
-  runClubId: z.string().trim().min(1),
-  runId: z.string().trim().min(1),
-  rating: ReviewRatingSchema,
-  comment: ReviewCommentSchema,
-}).strict();
-
-const UpdateRunReviewSchema = z.object({
-  reviewId: z.string().trim().min(1),
-  rating: ReviewRatingSchema,
-  comment: ReviewCommentSchema,
-}).strict();
-
-const DeleteRunReviewSchema = z.object({
-  reviewId: z.string().trim().min(1),
-}).strict();
 
 interface ReviewMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -59,7 +51,11 @@ export async function createRunReviewHandler(
   deps: ReviewMutationDeps = defaultDeps
 ): Promise<{reviewId: string}> {
   const reviewerUserId = requireAuth(request);
-  const data = validateCallable(request, CreateRunReviewSchema);
+  const data = validateCallableWithAjv<CreateRunReviewCallablePayload>(
+    request,
+    validateCreateRunReviewCallablePayload,
+    normalizeCreateRunReviewPayload
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, reviewerUserId, "createRunReview");
 
@@ -122,7 +118,11 @@ export async function updateRunReviewHandler(
   deps: ReviewMutationDeps = defaultDeps
 ): Promise<{updated: boolean}> {
   const reviewerUserId = requireAuth(request);
-  const data = validateCallable(request, UpdateRunReviewSchema);
+  const data = validateCallableWithAjv<UpdateRunReviewCallablePayload>(
+    request,
+    validateUpdateRunReviewCallablePayload,
+    normalizeUpdateRunReviewPayload
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, reviewerUserId, "updateRunReview");
 
@@ -146,7 +146,11 @@ export async function deleteRunReviewHandler(
   deps: ReviewMutationDeps = defaultDeps
 ): Promise<{deleted: boolean}> {
   const reviewerUserId = requireAuth(request);
-  const data = validateCallable(request, DeleteRunReviewSchema);
+  const data = validateCallableWithAjv<DeleteRunReviewCallablePayload>(
+    request,
+    validateDeleteRunReviewCallablePayload,
+    normalizeSingleIdPayload("reviewId")
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, reviewerUserId, "deleteRunReview");
 
@@ -158,6 +162,18 @@ export async function deleteRunReviewHandler(
   });
 
   return {deleted: true};
+}
+
+function normalizeCreateRunReviewPayload(data: unknown): unknown {
+  return normalizePayloadStrings(data, {
+    stringFields: ["runClubId", "runId", "comment"],
+  });
+}
+
+function normalizeUpdateRunReviewPayload(data: unknown): unknown {
+  return normalizePayloadStrings(data, {
+    stringFields: ["reviewId", "comment"],
+  });
 }
 
 function assertCanWriteReview(

@@ -1,0 +1,20 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/function_event_receipts.schema.json",
+  "title": "FunctionEventReceiptDocument",
+  "description": "Server-owned idempotency receipt stored at functionEventReceipts/{receiptId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "functionEventReceipts",
+  "x-firestore-path": "functionEventReceipts/{receiptId}",
+  "x-document-id-field": "receiptId",
+  "x-owner": "idempotent Firestore trigger handlers",
+  "required": ["handler", "eventId", "matchId", "messageId", "createdAt"],
+  "properties": {
+    "handler": {"type": "string", "enum": ["onMessageCreated"]},
+    "eventId": {"type": "string", "minLength": 1, "maxLength": 240},
+    "matchId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "messageId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"}
+  }
+}

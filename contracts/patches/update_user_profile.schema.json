@@ -24,8 +24,16 @@
           "pattern": ".*\\S.*"
         },
         "email": {
-          "type": "string",
-          "maxLength": 320
+          "anyOf": [
+            {
+              "const": ""
+            },
+            {
+              "type": "string",
+              "format": "email",
+              "maxLength": 320
+            }
+          ]
         },
         "instagramHandle": {
           "anyOf": [

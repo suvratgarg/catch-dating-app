@@ -24,7 +24,7 @@ class ScrollableProfile extends ConsumerWidget {
   const ScrollableProfile({
     super.key,
     required this.profile,
-    required this.cardHeight,
+    required this.surfaceHeight,
     this.scrollController,
     this.onLeadingOverscroll,
     this.bottomPadding = 24,
@@ -36,7 +36,7 @@ class ScrollableProfile extends ConsumerWidget {
   static const scrollViewKey = ValueKey('scrollable-profile-scroll-view');
 
   final PublicProfile profile;
-  final double cardHeight;
+  final double surfaceHeight;
   final ScrollController? scrollController;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
@@ -77,19 +77,24 @@ class ScrollableProfile extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              CardPhotoSection(
-                url: content.primaryPhotoUrl,
-                height: _heroHeight(cardHeight),
-                overlayChild: NameOverlay(profile: profile),
-                reactionTarget: content.primaryPhotoUrl == null
-                    ? null
-                    : _reactionTarget(
-                        id: 'hero-photo',
-                        type: SwipeReactionTargetType.heroPhoto,
-                        label: 'Main photo',
-                        preview: '${profile.name}\'s main profile photo',
-                      ),
-                onReact: onReact,
+              ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  bottom: Radius.circular(30),
+                ),
+                child: CardPhotoSection(
+                  url: content.primaryPhotoUrl,
+                  height: _heroHeight(surfaceHeight),
+                  overlayChild: NameOverlay(profile: profile),
+                  reactionTarget: content.primaryPhotoUrl == null
+                      ? null
+                      : _reactionTarget(
+                          id: 'hero-photo',
+                          type: SwipeReactionTargetType.heroPhoto,
+                          label: 'Main photo',
+                          preview: '${profile.name}\'s main profile photo',
+                        ),
+                  onReact: onReact,
+                ),
               ),
               ProfileMatchSignalsSection(
                 confidenceSignals: content.insights.confidenceSignals,
@@ -132,7 +137,7 @@ class ScrollableProfile extends ConsumerWidget {
               if (additionalPhotos.isNotEmpty)
                 _InsetProfilePhoto(
                   photo: additionalPhotos.first,
-                  height: _photoBlockHeight(cardHeight),
+                  height: _photoBlockHeight(surfaceHeight),
                   reactionTarget: _reactionTarget(
                     id: 'photo-2',
                     type: SwipeReactionTargetType.photo,
@@ -166,7 +171,7 @@ class ScrollableProfile extends ConsumerWidget {
               for (final indexedPhoto in additionalPhotos.skip(1).indexed)
                 _InsetProfilePhoto(
                   photo: indexedPhoto.$2,
-                  height: _photoBlockHeight(cardHeight),
+                  height: _photoBlockHeight(surfaceHeight),
                   reactionTarget: _reactionTarget(
                     id: 'photo-${indexedPhoto.$1 + 3}',
                     type: SwipeReactionTargetType.photo,
@@ -185,14 +190,14 @@ class ScrollableProfile extends ConsumerWidget {
   }
 }
 
-double _heroHeight(double cardHeight) {
-  if (cardHeight.isInfinite || cardHeight <= 0) return 560;
-  return (cardHeight * 0.82).clamp(500.0, 680.0).toDouble();
+double _heroHeight(double surfaceHeight) {
+  if (surfaceHeight.isInfinite || surfaceHeight <= 0) return 560;
+  return (surfaceHeight * 0.82).clamp(500.0, 680.0).toDouble();
 }
 
-double _photoBlockHeight(double cardHeight) {
-  if (cardHeight.isInfinite || cardHeight <= 0) return 480;
-  return (cardHeight * 0.68).clamp(420.0, 560.0).toDouble();
+double _photoBlockHeight(double surfaceHeight) {
+  if (surfaceHeight.isInfinite || surfaceHeight <= 0) return 480;
+  return (surfaceHeight * 0.68).clamp(420.0, 560.0).toDouble();
 }
 
 class _InsetProfilePhoto extends StatelessWidget {

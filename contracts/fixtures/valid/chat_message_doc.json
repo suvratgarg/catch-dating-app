@@ -1,0 +1,9 @@
+{
+  "senderId": "runner-1",
+  "text": "Coffee after the weekend run?",
+  "imageUrl": null,
+  "sentAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  }
+}

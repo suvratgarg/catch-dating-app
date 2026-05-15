@@ -39,6 +39,25 @@ fi
 echo "==> Checking schema contract sources"
 node tool/validate_schema_contracts.mjs
 
+echo "==> Checking generated schema contract outputs"
+node tool/generate_schema_contracts.mjs --check
+node --check tool/generated/schema_contract_validators.mjs
+
+echo "==> Checking schema path literals"
+node tool/check_schema_path_literals.mjs
+
+echo "==> Checking demo seed contract validation"
+node --check tool/seed_demo_data.mjs
+node --check tool/recompute_public_profiles.mjs
+node --check tool/validate_profile_decision_migration.mjs
+node --check tool/backfill_profile_decisions.mjs
+node --test tool/seed_demo_data_append.test.mjs \
+  tool/seed_demo_data_schema.test.mjs \
+  tool/recompute_public_profiles.test.mjs \
+  tool/validate_profile_decision_migration.test.mjs \
+  tool/backfill_profile_decisions.test.mjs
+node tool/seed_demo_data.mjs --scenario smoke --json >/dev/null
+
 echo "==> Analyzing Firestore type generator"
 dart analyze tool/generate_firestore_types.dart
 
@@ -55,6 +74,9 @@ npm --prefix functions run lint
 echo "==> Running Functions tests"
 npm --prefix functions test
 
+echo "==> Checking seed and Functions profile projection parity"
+node --test tool/profile_projection_parity.test.mjs
+
 echo "==> Running Firestore rules emulator tests"
 firebase emulators:exec --project demo-catch-rules --only firestore,storage \
   "npm --prefix functions run test:rules"
@@ -67,6 +89,7 @@ flutter analyze \
   lib/reviews/presentation/reviews_section.dart \
   lib/runs/data/run_repository.dart \
   lib/user_profile/data/user_profile_repository.dart \
+  test/core/schema_contracts_generated_test.dart \
   test/run_clubs/run_clubs_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
   test/runs/run_repository_test.dart \
@@ -74,6 +97,7 @@ flutter analyze \
 
 echo "==> Running focused Flutter tests"
 flutter test \
+  test/core/schema_contracts_generated_test.dart \
   test/run_clubs/run_clubs_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
   test/runs/run_repository_test.dart \

@@ -1,0 +1,13 @@
+{
+  "runClubId": "club-1",
+  "runId": "run-1",
+  "reviewerUserId": "runner-1",
+  "reviewerName": "Runner One",
+  "rating": 5,
+  "comment": "Well organized run with clear pacing.",
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  },
+  "updatedAt": null
+}

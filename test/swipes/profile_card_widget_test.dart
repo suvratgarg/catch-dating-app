@@ -1,6 +1,6 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/swipes/presentation/widgets/name_overlay.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -24,7 +24,7 @@ Widget _profileCardHarness({required ThemeData theme}) {
           child: SizedBox(
             width: 340,
             height: 620,
-            child: ProfileCard(profile: profile),
+            child: ProfileSurface(profile: profile),
           ),
         ),
       ),
@@ -56,7 +56,7 @@ void main() {
   });
 
   testWidgets(
-    'ProfileCard renders polished missing-photo state in light mode',
+    'ProfileSurface renders polished missing-photo state in light mode',
     (tester) async {
       final semantics = tester.ensureSemantics();
 
@@ -69,15 +69,15 @@ void main() {
       expect(find.text('5:00-7:00/km'), findsWidgets);
       expect(find.text('RUNNING RHYTHM'), findsOneWidget);
       expect(
-        tester.getSemantics(find.byType(ProfileCard)).hint,
-        'Swipe left to pass, right to like. Scroll to read the full profile.',
+        tester.getSemantics(find.byType(ProfileSurface)).hint,
+        'Preview how your profile appears to other runners. Scroll to read the full profile.',
       );
       semantics.dispose();
       expect(tester.takeException(), isNull);
     },
   );
 
-  testWidgets('ProfileCard renders the same content in dark mode', (
+  testWidgets('ProfileSurface renders the same content in dark mode', (
     tester,
   ) async {
     await tester.pumpWidget(_profileCardHarness(theme: AppTheme.dark));
@@ -89,7 +89,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('ProfileCard omits prompt cards when prompts are blank', (
+  testWidgets('ProfileSurface omits prompt cards when prompts are blank', (
     tester,
   ) async {
     final profile = buildPublicProfile(name: 'Manan', age: 26).copyWith(
@@ -106,7 +106,7 @@ void main() {
             body: SizedBox(
               width: 340,
               height: 620,
-              child: ProfileCard(profile: profile),
+              child: ProfileSurface(profile: profile),
             ),
           ),
         ),
@@ -119,48 +119,89 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('ProfileCard handles long public profile text without overflow', (
+  testWidgets('ProfileSurface hides reaction controls outside Catches', (
     tester,
   ) async {
-    final profile =
-        buildPublicProfile(
-          name: 'A very long display name that should not break the hero',
-          age: 26,
-          profilePrompts: normalizeProfilePromptAnswers(
-            const [],
-            legacyBio:
-                'Long easy runs, coffee after the finish, and a playlist that keeps the whole group moving without making the card feel cramped.',
-          ),
-        ).copyWith(
-          city: 'indore',
-          height: 180,
-          occupation: 'Senior product designer with an unusually long title',
-          company: 'A company with an unusually long name',
-        );
+    final profile = buildPublicProfile(name: 'Manan', age: 26);
 
-    await tester.pumpWidget(
-      ProviderScope(
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: Scaffold(
-            body: SizedBox(
-              width: 340,
-              height: 620,
-              child: ProfileCard(profile: profile),
+    for (final mode in [
+      ProfileSurfaceMode.preview,
+      ProfileSurfaceMode.publicProfile,
+    ]) {
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: SizedBox(
+                width: 340,
+                height: 620,
+                child: ProfileSurface(
+                  profile: profile,
+                  mode: mode,
+                  onReact: (_, _) {},
+                ),
+              ),
             ),
           ),
         ),
-      ),
-    );
-    await tester.pump();
+      );
+      await tester.pump();
 
-    expect(find.text('A PERFECT RUN WITH ME LOOKS LIKE...'), findsOneWidget);
-    expect(find.text('DETAILS'), findsOneWidget);
-    expect(tester.takeException(), isNull);
+      expect(
+        find.byTooltip('Like A perfect run with me looks like...'),
+        findsNothing,
+      );
+      expect(
+        find.byTooltip('Comment on A perfect run with me looks like...'),
+        findsNothing,
+      );
+    }
   });
 
   testWidgets(
-    'ProfileCard renders compatibility reasons and run identity tags',
+    'ProfileSurface handles long public profile text without overflow',
+    (tester) async {
+      final profile =
+          buildPublicProfile(
+            name: 'A very long display name that should not break the hero',
+            age: 26,
+            profilePrompts: normalizeProfilePromptAnswers(
+              const [],
+              legacyBio:
+                  'Long easy runs, coffee after the finish, and a playlist that keeps the whole group moving without making the card feel cramped.',
+            ),
+          ).copyWith(
+            city: 'indore',
+            height: 180,
+            occupation: 'Senior product designer with an unusually long title',
+            company: 'A company with an unusually long name',
+          );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: Scaffold(
+              body: SizedBox(
+                width: 340,
+                height: 620,
+                child: ProfileSurface(profile: profile),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(find.text('A PERFECT RUN WITH ME LOOKS LIKE...'), findsOneWidget);
+      expect(find.text('DETAILS'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'ProfileSurface renders compatibility reasons and run identity tags',
     (tester) async {
       final viewer = buildUser().copyWith(
         relationshipGoal: RelationshipGoal.relationship,
@@ -181,7 +222,7 @@ void main() {
               body: SizedBox(
                 width: 340,
                 height: 740,
-                child: ProfileCard(
+                child: ProfileSurface(
                   profile: profile,
                   viewerProfile: viewer,
                   sharedRunTitle: 'Thursday Morning Run',
@@ -201,7 +242,7 @@ void main() {
     },
   );
 
-  testWidgets('ProfileCard surfaces section reaction controls when enabled', (
+  testWidgets('ProfileSurface surfaces section reaction controls in Catches', (
     tester,
   ) async {
     ProfileReactionTarget? reactedTarget;
@@ -219,8 +260,9 @@ void main() {
             body: SizedBox(
               width: 340,
               height: 620,
-              child: ProfileCard(
+              child: ProfileSurface(
                 profile: profile,
+                mode: ProfileSurfaceMode.catches,
                 onReact: (target, comment) {
                   reactedTarget = target;
                   reactedComment = comment;
@@ -246,7 +288,7 @@ void main() {
     expect(reactedComment, isNull);
   });
 
-  testWidgets('ProfileCard lets users react to compatibility signals', (
+  testWidgets('ProfileSurface lets users react to compatibility signals', (
     tester,
   ) async {
     ProfileReactionTarget? reactedTarget;
@@ -267,8 +309,9 @@ void main() {
             body: SizedBox(
               width: 340,
               height: 740,
-              child: ProfileCard(
+              child: ProfileSurface(
                 profile: profile,
+                mode: ProfileSurfaceMode.catches,
                 viewerProfile: viewer,
                 onReact: (target, _) {
                   reactedTarget = target;
@@ -289,7 +332,7 @@ void main() {
     expect(reactedTarget?.type, SwipeReactionTargetType.compatibility);
   });
 
-  testWidgets('ProfileCard comment sheet sends a block-specific comment', (
+  testWidgets('ProfileSurface comment sheet sends a block-specific comment', (
     tester,
   ) async {
     ProfileReactionTarget? reactedTarget;
@@ -304,8 +347,9 @@ void main() {
             body: SizedBox(
               width: 340,
               height: 620,
-              child: ProfileCard(
+              child: ProfileSurface(
                 profile: profile,
+                mode: ProfileSurfaceMode.catches,
                 onReact: (target, comment) {
                   reactedTarget = target;
                   reactedComment = comment;

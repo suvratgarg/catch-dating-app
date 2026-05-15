@@ -1,17 +1,16 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {z} from "zod";
 import {RunDoc} from "../shared/firestore";
 import {signUpUserForRun} from "./signUpUserForRun";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {validateCallable} from "../shared/validation";
-
-const SignUpForFreeRunSchema = z.object({
-  runId: z.string().trim().min(1),
-});
+import {RunIdCallablePayload} from "../shared/generated/runIdCallablePayload";
+import {validateRunIdCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
+import {normalizeRunIdPayload} from "./runPayloadNormalization";
 
 interface SignUpForFreeRunDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -44,7 +43,11 @@ export async function signUpForFreeRunHandler(
   deps: SignUpForFreeRunDeps = defaultDeps
 ): Promise<{success: boolean}> {
   const uid = requireAuth(request);
-  const {runId} = validateCallable(request, SignUpForFreeRunSchema);
+  const {runId} = validateCallableWithAjv<RunIdCallablePayload>(
+    request,
+    validateRunIdCallablePayload,
+    normalizeRunIdPayload
+  );
   const db = deps.firestore();
 
   await deps.checkRateLimit(db, uid, "signUpForFreeRun");

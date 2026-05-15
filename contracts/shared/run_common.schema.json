@@ -1,0 +1,142 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/run_common.schema.json",
+  "title": "Run and run-club common contract definitions",
+  "description": "Shared enum, scalar, and embedded definitions for run, run-club, participation, and saved-run contracts.",
+  "definitions": {
+    "demoMetadataFields": {
+      "synthetic": {
+        "type": "boolean",
+        "description": "Internal demo seed marker used for cleanup and diagnostics."
+      },
+      "seedPrefix": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "description": "Internal demo seed prefix used for cleanup and diagnostics."
+      },
+      "scenario": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+      },
+      "demoOps": {
+        "type": "boolean",
+        "description": "Internal demo-operations marker used for cleanup and diagnostics."
+      },
+      "demoOpsId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180,
+        "description": "Internal demo-operations id used for cleanup and diagnostics."
+      },
+      "demoOpsCommand": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80,
+        "description": "Internal demo-operations command name used for cleanup and diagnostics."
+      }
+    },
+    "internalDemoFieldNames": [
+      "synthetic",
+      "seedPrefix",
+      "scenario",
+      "demoOps",
+      "demoOpsId",
+      "demoOpsCommand"
+    ],
+    "documentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "citySlug": {
+      "$ref": "profile_common.schema.json#/definitions/citySlug"
+    },
+    "timestamp": {
+      "$ref": "profile_common.schema.json#/definitions/timestamp"
+    },
+    "nullableTimestamp": {
+      "$ref": "profile_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "latitude": {
+      "$ref": "profile_common.schema.json#/definitions/latitude"
+    },
+    "longitude": {
+      "$ref": "profile_common.schema.json#/definitions/longitude"
+    },
+    "urlOrNull": {
+      "anyOf": [
+        {"$ref": "profile_common.schema.json#/definitions/url"},
+        {"type": "null"}
+      ]
+    },
+    "nullableString": {
+      "$ref": "profile_common.schema.json#/definitions/nullableString"
+    },
+    "contactString": {
+      "type": ["string", "null"],
+      "maxLength": 320
+    },
+    "paceLevel": {
+      "type": "string",
+      "enum": ["easy", "moderate", "fast", "competitive"]
+    },
+    "runClubLifecycleStatus": {
+      "type": "string",
+      "enum": ["active", "archived"]
+    },
+    "runClubMembershipRole": {
+      "type": "string",
+      "enum": ["host", "member"]
+    },
+    "runClubMembershipStatus": {
+      "type": "string",
+      "enum": ["active", "left", "deleted"]
+    },
+    "runLifecycleStatus": {
+      "type": "string",
+      "enum": ["active", "cancelled"]
+    },
+    "runParticipationStatus": {
+      "type": "string",
+      "enum": ["signedUp", "waitlisted", "attended", "cancelled", "deleted"]
+    },
+    "genderAtSignup": {
+      "anyOf": [
+        {"$ref": "profile_common.schema.json#/definitions/gender"},
+        {"type": "null"}
+      ]
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "runConstraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minAge", "maxAge", "maxMen", "maxWomen"],
+      "properties": {
+        "minAge": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 120
+        },
+        "maxAge": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 120
+        },
+        "maxMen": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "maxWomen": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    }
+  }
+}

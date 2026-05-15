@@ -1,0 +1,22 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/deleted_users.schema.json",
+  "title": "DeletedUserTombstoneDocument",
+  "description": "Server-owned account-deletion tombstone stored at deletedUsers/{uid}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "deletedUsers",
+  "x-firestore-path": "deletedUsers/{uid}",
+  "x-document-id-field": "uid",
+  "x-owner": "requestAccountDeletion callable",
+  "required": ["uid", "deletedAt"],
+  "properties": {
+    "uid": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "deletedAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "retainedFor": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 80},
+      "uniqueItems": true
+    }
+  }
+}

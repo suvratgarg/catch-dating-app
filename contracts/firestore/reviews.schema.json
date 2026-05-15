@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/reviews.schema.json",
+  "title": "ReviewDocument",
+  "description": "Canonical attended-run review stored at reviews/{reviewId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "reviews",
+  "x-firestore-path": "reviews/{reviewId}",
+  "x-document-id-field": "id",
+  "x-owner": "review mutation callables; aggregate stats are trigger-owned",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "runClubId",
+    "reviewerUserId",
+    "reviewerName",
+    "rating",
+    "comment",
+    "createdAt"
+  ],
+  "properties": {
+    "runClubId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "runId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "reviewerUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "reviewerName": {"type": "string", "minLength": 1, "maxLength": 120},
+    "rating": {"type": "integer", "minimum": 1, "maximum": 5},
+    "comment": {"type": "string", "maxLength": 1000},
+    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"},
+    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

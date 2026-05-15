@@ -1,0 +1,15 @@
+{
+  "swiperId": "runner-1",
+  "targetId": "runner-2",
+  "runId": "run-1",
+  "direction": "like",
+  "reactionTargetId": "prompt-perfectRun",
+  "reactionTargetType": "profilePrompt",
+  "reactionTargetLabel": "A perfect run with me looks like...",
+  "reactionTargetPreview": "Easy kilometres and coffee after.",
+  "comment": "This sounds like my kind of run.",
+  "createdAt": {
+    "_seconds": 1778716800,
+    "_nanoseconds": 0
+  }
+}

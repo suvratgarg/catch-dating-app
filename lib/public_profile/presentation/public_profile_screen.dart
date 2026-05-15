@@ -8,7 +8,7 @@ import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.d
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/public_profile/presentation/public_profile_controller.dart';
-import 'package:catch_dating_app/swipes/presentation/profile_card.dart';
+import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -220,10 +220,11 @@ class _ProfileBody extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(CatchSpacing.s4),
-          child: ProfileCard(
+        Positioned.fill(
+          child: ProfileSurface(
             profile: profile,
+            mode: ProfileSurfaceMode.publicProfile,
+            bottomPadding: CatchSpacing.s8,
             viewerProfile: viewerProfile?.uid == profile.uid
                 ? null
                 : viewerProfile,

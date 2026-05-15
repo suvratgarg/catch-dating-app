@@ -2,11 +2,37 @@
 import fs from "node:fs";
 import path from "node:path";
 import {createRequire} from "node:module";
+import {isDeepStrictEqual} from "node:util";
 import {fileURLToPath, pathToFileURL} from "node:url";
 import {
   assertScheduleCompliance,
   buildScheduleLockDocs,
 } from "./demo_schedule_policy.mjs";
+import {
+  photoPromptCatalog,
+  profilePromptCatalog,
+} from "./generated/schema_contract_registry.mjs";
+import {
+  assertValidSchemaPayload,
+  validateActivityNotificationDocument,
+  validateChatMessageDocument,
+  validateMatchDocument,
+  validatePaymentDocument,
+  validatePhotoPromptAnswer,
+  validateProfilePromptAnswer,
+  validatePublicProfileDocument,
+  validateReviewDocument,
+  validateRunClubScheduleLockDocument,
+  validateRunClubDocument,
+  validateRunClubMembershipDocument,
+  validateRunDocument,
+  validateRunParticipationDocument,
+  validateSavedRunDocument,
+  validateSeedRunManifestDocument,
+  validateSwipeDocument,
+  validateUserRunScheduleLockDocument,
+  validateUserProfileDocument,
+} from "./generated/schema_contract_validators.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "..");
@@ -19,8 +45,6 @@ const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
 const MATCH_MESSAGE_LIMIT = 18;
 
-const profilePromptCatalog = readContractJson("catalogs/profile_prompts.json");
-const photoPromptCatalog = readContractJson("catalogs/photo_prompts.json");
 const profilePromptsById = promptsById(profilePromptCatalog);
 const photoPromptsById = promptsById(photoPromptCatalog);
 
@@ -132,11 +156,6 @@ const photoCaptions = [
   "Race day nerves, finish line energy.",
   "Not pictured: the snack I was thinking about.",
 ];
-
-function readContractJson(relativePath) {
-  const file = path.join(repoRoot, "contracts", relativePath);
-  return JSON.parse(fs.readFileSync(file, "utf8"));
-}
 
 function promptsById(catalog) {
   return new Map(catalog.prompts.map((prompt) => [prompt.id, prompt]));
@@ -323,11 +342,12 @@ export async function main(argv = process.argv.slice(2)) {
   const writePlan = args.appendAnchors ?
     await createAppendWritePlan({db, seed, anchorProfiles}) :
     createWritePlan(seed);
+  const schemaValidation = validateSeedDocuments(writePlan);
 
   if (args.json) {
-    console.log(JSON.stringify(summary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}), null, 2));
+    console.log(JSON.stringify(summary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds, schemaValidation}), null, 2));
   } else {
-    printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds});
+    printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds, schemaValidation});
   }
 
   if (!args.apply) {
@@ -1377,7 +1397,357 @@ function createWritePlan(seed) {
   return {
     docs: seed.docs,
     paths: seed.docs.map((doc) => doc.path),
+    manifest: seed.manifest,
   };
+}
+
+export function validateSeedDocuments(writePlan) {
+  const result = {
+    users: 0,
+    publicProfiles: 0,
+    runClubs: 0,
+    runClubMemberships: 0,
+    runs: 0,
+    runParticipations: 0,
+    runClubScheduleLocks: 0,
+    userRunScheduleLocks: 0,
+    savedRuns: 0,
+    payments: 0,
+    swipes: 0,
+    matches: 0,
+    chatMessages: 0,
+    reviews: 0,
+    activityNotifications: 0,
+    seedManifests: 0,
+    profilePromptAnswers: 0,
+    photoPromptAnswers: 0,
+    projectionPairs: 0,
+  };
+  const userDocsByUid = new Map();
+  const publicDocsByUid = new Map();
+
+  for (const doc of writePlan.docs) {
+    if (isUserProfilePath(doc.path)) {
+      userDocsByUid.set(uidFromProfilePath(doc.path), doc.data);
+      const data = schemaSerializableFirestoreData(doc.data);
+      validatePromptAnswers({
+        path: doc.path,
+        data,
+        result,
+      });
+      assertValidSchemaPayload(
+        validateUserProfileDocument,
+        data,
+        doc.path
+      );
+      result.users += 1;
+    } else if (isPublicProfilePath(doc.path)) {
+      publicDocsByUid.set(uidFromProfilePath(doc.path), doc.data);
+      const data = schemaSerializableFirestoreData(doc.data);
+      validatePromptAnswers({
+        path: doc.path,
+        data,
+        result,
+      });
+      assertValidSchemaPayload(
+        validatePublicProfileDocument,
+        data,
+        doc.path
+      );
+      result.publicProfiles += 1;
+    } else if (isRunClubPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunClubDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runClubs += 1;
+    } else if (isRunClubMembershipPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunClubMembershipDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runClubMemberships += 1;
+    } else if (isRunPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runs += 1;
+    } else if (isRunParticipationPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunParticipationDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runParticipations += 1;
+    } else if (isRunClubScheduleLockPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateRunClubScheduleLockDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.runClubScheduleLocks += 1;
+    } else if (isUserRunScheduleLockPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateUserRunScheduleLockDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.userRunScheduleLocks += 1;
+    } else if (isSavedRunPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateSavedRunDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.savedRuns += 1;
+    } else if (isPaymentPath(doc.path)) {
+      assertValidSchemaPayload(
+        validatePaymentDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.payments += 1;
+    } else if (isSwipePath(doc.path)) {
+      assertValidSchemaPayload(
+        validateSwipeDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.swipes += 1;
+    } else if (isMatchPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateMatchDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.matches += 1;
+    } else if (isChatMessagePath(doc.path)) {
+      assertValidSchemaPayload(
+        validateChatMessageDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.chatMessages += 1;
+    } else if (isReviewPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateReviewDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.reviews += 1;
+    } else if (isActivityNotificationPath(doc.path)) {
+      assertValidSchemaPayload(
+        validateActivityNotificationDocument,
+        schemaSerializableFirestoreData(doc.data),
+        doc.path
+      );
+      result.activityNotifications += 1;
+    }
+  }
+
+  if (writePlan.manifest) {
+    assertValidSchemaPayload(
+      validateSeedRunManifestDocument,
+      schemaSerializableFirestoreData(writePlan.manifest),
+      `seedRuns/${writePlan.manifest.manifestId ?? "<unknown>"}`
+    );
+    result.seedManifests += 1;
+  }
+
+  for (const [uid, userDoc] of userDocsByUid.entries()) {
+    const publicDoc = publicDocsByUid.get(uid);
+    if (!publicDoc) continue;
+    const expected = schemaSerializableFirestoreData(
+      publicProfileFromUserDoc(userDoc)
+    );
+    const actual = schemaSerializableFirestoreData(publicDoc);
+    if (!isDeepStrictEqual(actual, expected)) {
+      throw new Error(
+        `publicProfiles/${uid} projection mismatch for users/${uid}.`
+      );
+    }
+    result.projectionPairs += 1;
+  }
+
+  return result;
+}
+
+export const validateSeedProfileDocuments = validateSeedDocuments;
+
+function validatePromptAnswers({path: docPath, data, result}) {
+  for (const [index, prompt] of (data.profilePrompts ?? []).entries()) {
+    assertKnownProfilePrompt(
+      prompt,
+      `${docPath}.profilePrompts[${index}]`
+    );
+    assertValidSchemaPayload(
+      validateProfilePromptAnswer,
+      prompt,
+      `${docPath}.profilePrompts[${index}]`
+    );
+    result.profilePromptAnswers += 1;
+  }
+  for (const [index, prompt] of (data.photoPrompts ?? []).entries()) {
+    assertKnownPhotoPrompt(
+      prompt,
+      `${docPath}.photoPrompts[${index}]`
+    );
+    assertValidSchemaPayload(
+      validatePhotoPromptAnswer,
+      prompt,
+      `${docPath}.photoPrompts[${index}]`
+    );
+    result.photoPromptAnswers += 1;
+  }
+}
+
+function assertKnownProfilePrompt(prompt, label) {
+  const expected = profilePromptsById.get(prompt.promptId);
+  if (!expected) {
+    throw new Error(`${label} uses unknown profile prompt id: ${prompt.promptId}`);
+  }
+  if (prompt.prompt !== expected.title) {
+    throw new Error(
+      `${label} prompt title mismatch for ${prompt.promptId}: ` +
+      `expected "${expected.title}", got "${prompt.prompt}"`
+    );
+  }
+}
+
+function assertKnownPhotoPrompt(prompt, label) {
+  const expected = photoPromptsById.get(prompt.promptId);
+  if (!expected) {
+    throw new Error(`${label} uses unknown photo prompt id: ${prompt.promptId}`);
+  }
+  if (prompt.prompt !== expected.title) {
+    throw new Error(
+      `${label} prompt title mismatch for ${prompt.promptId}: ` +
+      `expected "${expected.title}", got "${prompt.prompt}"`
+    );
+  }
+}
+
+function isUserProfilePath(docPath) {
+  return /^users\/[^/]+$/.test(docPath);
+}
+
+function isPublicProfilePath(docPath) {
+  return /^publicProfiles\/[^/]+$/.test(docPath);
+}
+
+function isRunClubPath(docPath) {
+  return /^runClubs\/[^/]+$/.test(docPath);
+}
+
+function isRunClubMembershipPath(docPath) {
+  return /^runClubMemberships\/[^/]+$/.test(docPath);
+}
+
+function isRunPath(docPath) {
+  return /^runs\/[^/]+$/.test(docPath);
+}
+
+function isRunParticipationPath(docPath) {
+  return /^runParticipations\/[^/]+$/.test(docPath);
+}
+
+function isRunClubScheduleLockPath(docPath) {
+  return /^runClubScheduleLocks\/[^/]+$/.test(docPath);
+}
+
+function isUserRunScheduleLockPath(docPath) {
+  return /^userRunScheduleLocks\/[^/]+$/.test(docPath);
+}
+
+function isSavedRunPath(docPath) {
+  return /^savedRuns\/[^/]+$/.test(docPath);
+}
+
+function isPaymentPath(docPath) {
+  return /^payments\/[^/]+$/.test(docPath);
+}
+
+function isSwipePath(docPath) {
+  return /^swipes\/[^/]+\/outgoing\/[^/]+$/.test(docPath);
+}
+
+function isMatchPath(docPath) {
+  return /^matches\/[^/]+$/.test(docPath);
+}
+
+function isChatMessagePath(docPath) {
+  return /^matches\/[^/]+\/messages\/[^/]+$/.test(docPath);
+}
+
+function isReviewPath(docPath) {
+  return /^reviews\/[^/]+$/.test(docPath);
+}
+
+function isActivityNotificationPath(docPath) {
+  return /^notifications\/[^/]+\/items\/[^/]+$/.test(docPath);
+}
+
+function uidFromProfilePath(docPath) {
+  return docPath.split("/")[1];
+}
+
+function schemaSerializableFirestoreData(value) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (isFirestoreTimestamp(value)) {
+    return schemaSerializableTimestamp(value);
+  }
+  if (Array.isArray(value)) {
+    return value.map((item) => schemaSerializableFirestoreData(item));
+  }
+  if (typeof value === "object") {
+    const result = {};
+    for (const [key, item] of Object.entries(value)) {
+      const serialized = schemaSerializableFirestoreData(item);
+      if (serialized !== undefined) result[key] = serialized;
+    }
+    return result;
+  }
+  return value;
+}
+
+function isFirestoreTimestamp(value) {
+  return value &&
+    typeof value === "object" &&
+    typeof value.toDate === "function" &&
+    typeof value.toMillis === "function";
+}
+
+function schemaSerializableTimestamp(timestamp) {
+  const seconds = firstInteger(
+    timestamp.seconds,
+    timestamp._seconds
+  );
+  const nanoseconds = firstInteger(
+    timestamp.nanoseconds,
+    timestamp._nanoseconds
+  );
+  if (seconds !== null && nanoseconds !== null) {
+    return {_seconds: seconds, _nanoseconds: nanoseconds};
+  }
+
+  const millis = timestamp.toMillis();
+  const fallbackSeconds = Math.floor(millis / 1000);
+  return {
+    _seconds: fallbackSeconds,
+    _nanoseconds: Math.round((millis - fallbackSeconds * 1000) * 1_000_000),
+  };
+}
+
+function firstInteger(...values) {
+  for (const value of values) {
+    if (Number.isInteger(value)) return value;
+  }
+  return null;
 }
 
 async function readExistingSeedTime(firestore, seedId) {
@@ -1858,7 +2228,16 @@ async function applyWritePlan({db: firestore, docs}) {
   return {written};
 }
 
-function printSummary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}) {
+function printSummary({
+  args,
+  projectId,
+  scenario,
+  anchorProfiles,
+  seed,
+  writePlan,
+  missingPublicProfileIds,
+  schemaValidation,
+}) {
   const identityDiagnostics = syntheticPublicIdentityDiagnostics(seed.docs);
   console.log("Catch demo data seed plan");
   console.log(`Project: ${projectId}`);
@@ -1881,6 +2260,15 @@ function printSummary({args, projectId, scenario, anchorProfiles, seed, writePla
     console.log(`- ${collection}: ${count}`);
   }
   console.log(`\nTotal docs to write: ${writePlan.docs.length}`);
+  console.log(
+    `Schema-validated docs: ${schemaValidation.users} users, ` +
+    `${schemaValidation.publicProfiles} public profiles, ` +
+    `${schemaValidation.runClubs} run clubs, ` +
+    `${schemaValidation.runs} runs, ` +
+    `${schemaValidation.runParticipations} participations, ` +
+    `${schemaValidation.swipes} decisions, ` +
+    `${schemaValidation.matches} matches`
+  );
   if (identityDiagnostics.duplicateNamePhotoPairs > 0) {
     console.log(
       `Warning: ${identityDiagnostics.duplicateNamePhotoPairs} duplicate synthetic public name/photo pairs generated.`
@@ -1889,7 +2277,16 @@ function printSummary({args, projectId, scenario, anchorProfiles, seed, writePla
   console.log(`Manifest: seedRuns/${seed.manifestId}`);
 }
 
-function summary({args, projectId, scenario, anchorProfiles, seed, writePlan, missingPublicProfileIds}) {
+function summary({
+  args,
+  projectId,
+  scenario,
+  anchorProfiles,
+  seed,
+  writePlan,
+  missingPublicProfileIds,
+  schemaValidation,
+}) {
   return {
     projectId,
     emulatorHost: args.emulatorHost,
@@ -1906,6 +2303,7 @@ function summary({args, projectId, scenario, anchorProfiles, seed, writePlan, mi
     missingPublicProfileIds,
     syntheticPublicIdentityDiagnostics: syntheticPublicIdentityDiagnostics(seed.docs),
     counts: seed.counts,
+    schemaValidation,
     totalDocsToWrite: writePlan.docs.length,
     manifestPath: `seedRuns/${seed.manifestId}`,
   };

@@ -1,33 +1,21 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {UserProfileDoc} from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireDoc, validateCallable} from "../shared/validation";
+import {CreateRunClubCallablePayload} from
+  "../shared/generated/createRunClubCallablePayload";
+import {validateCreateRunClubCallablePayload} from
+  "../shared/generated/schemaValidators";
+import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   activeRunClubMembershipPatch,
   runClubMembershipId,
 } from "../shared/relationshipDocuments";
 import {publicAvatarUrl, publicDisplayName} from "../shared/profileProjection";
-
-const CityNameSchema = z.string().trim().min(1).max(80)
-  .regex(/^[a-z0-9-]+$/);
-const nullableString = z.string().trim().nullable().optional();
-
-const CreateRunClubSchema = z.object({
-  clubId: z.string().min(1).optional(),
-  name: z.string().trim().min(1).max(120),
-  description: z.string().trim().min(1).max(2000),
-  location: CityNameSchema,
-  area: z.string().trim().min(1).max(120),
-  imageUrl: nullableString,
-  instagramHandle: nullableString,
-  phoneNumber: nullableString,
-  email: nullableString,
-});
+import {normalizeCreateRunClubPayload} from "./runClubPayloadNormalization";
 
 interface CreateRunClubDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -56,7 +44,11 @@ export async function createRunClubHandler(
   deps: CreateRunClubDeps = defaultDeps
 ): Promise<{clubId: string}> {
   const hostUserId = requireAuth(request);
-  const data = validateCallable(request, CreateRunClubSchema);
+  const data = validateCallableWithAjv<CreateRunClubCallablePayload>(
+    request,
+    validateCreateRunClubCallablePayload,
+    normalizeCreateRunClubPayload
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, hostUserId, "createRunClub");
   const clubRef = data.clubId ?

@@ -1,26 +1,25 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {z} from "zod";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {RunClubDoc, UserProfileDoc} from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
-import {requireDoc, validateCallable} from "../shared/validation";
+import {RunClubMembershipCallablePayload} from
+  "../shared/generated/runClubMembershipCallablePayload";
+import {
+  validateRunClubMembershipCallablePayload,
+  validateSetRunClubNotificationPreferenceCallablePayload,
+} from "../shared/generated/schemaValidators";
+import {SetRunClubNotificationPreferenceCallablePayload} from
+  "../shared/generated/setRunClubNotificationPreferenceCallablePayload";
+import {requireDoc, validateCallableWithAjv} from "../shared/validation";
 import {
   activeRunClubMembershipPatch,
   leftRunClubMembershipPatch,
   runClubMembershipId,
 } from "../shared/relationshipDocuments";
-
-const RunClubMembershipSchema = z.object({
-  clubId: z.string().min(1),
-});
-
-const RunClubNotificationPreferenceSchema = z.object({
-  clubId: z.string().min(1),
-  enabled: z.boolean(),
-});
+import {normalizeClubIdPayload} from "./runClubPayloadNormalization";
 
 interface RunClubMembershipDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -47,7 +46,11 @@ export async function joinRunClubHandler(
   deps: RunClubMembershipDeps = defaultDeps
 ): Promise<{joined: boolean}> {
   const userId = requireAuth(request);
-  const {clubId} = validateCallable(request, RunClubMembershipSchema);
+  const {clubId} = validateCallableWithAjv<RunClubMembershipCallablePayload>(
+    request,
+    validateRunClubMembershipCallablePayload,
+    normalizeClubIdPayload
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, userId, "joinRunClub");
 
@@ -101,7 +104,11 @@ export async function leaveRunClubHandler(
   deps: RunClubMembershipDeps = defaultDeps
 ): Promise<{joined: boolean}> {
   const userId = requireAuth(request);
-  const {clubId} = validateCallable(request, RunClubMembershipSchema);
+  const {clubId} = validateCallableWithAjv<RunClubMembershipCallablePayload>(
+    request,
+    validateRunClubMembershipCallablePayload,
+    normalizeClubIdPayload
+  );
   const db = deps.firestore();
   await deps.checkRateLimit?.(db, userId, "leaveRunClub");
 
@@ -162,9 +169,12 @@ export async function setRunClubNotificationPreferenceHandler(
   deps: RunClubMembershipDeps = defaultDeps
 ): Promise<{enabled: boolean}> {
   const userId = requireAuth(request);
-  const {clubId, enabled} = validateCallable(
+  const {clubId, enabled} = validateCallableWithAjv<
+    SetRunClubNotificationPreferenceCallablePayload
+  >(
     request,
-    RunClubNotificationPreferenceSchema
+    validateSetRunClubNotificationPreferenceCallablePayload,
+    normalizeClubIdPayload
   );
   const db = deps.firestore();
   await deps.checkRateLimit?.(
