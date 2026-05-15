@@ -889,6 +889,29 @@ Remaining work: derive more of the ownership/write-boundary metadata from
 schema annotations if the schemas gain explicit `x-client-writable`,
 `x-callable-owned`, or `x-trigger-owned` metadata.
 
+### 2026-05-16: Profile Rules Bound Tightening
+
+Closed the focused Phase 6 emulator gap for schema-owned profile bounds:
+
+- Added Firestore rules helpers for optional list size limits.
+- Tightened direct `users/{uid}` create shape checks for profile prompt, photo,
+  interest, language, preferred distance, running reason, preferred run-time,
+  and age preference bounds.
+- Added rules emulator coverage for the new profile list and age-preference
+  limits. The tests intentionally split max-size success cases across small
+  documents to avoid the Firestore rules expression ceiling while still proving
+  each tightened boundary.
+
+Proof:
+
+```bash
+node --check functions/test/firestore.rules.test.cjs
+node tool/check_firestore_contract.mjs
+firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
+```
+
+Result: 61 Firestore/storage rules tests passed on 2026-05-16.
+
 ### 2026-05-15: Phase 6 Ownership/Rules Drift Checks
 
 Added schema-to-ownership checks around profile field lists:

@@ -674,6 +674,67 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("enforces schema-owned profile list bounds on create", async () => {
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({profilePhotos: values(6, {})}),
+        ),
+      );
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-2"), "users", "runner-2"),
+          userProfile({photoUrls: values(12, "https://example.test/photo")}),
+        ),
+      );
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-3"), "users", "runner-3"),
+          userProfile({preferredRunTimes: values(8, "morning")}),
+        ),
+      );
+
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-4"), "users", "runner-4"),
+          userProfile({profilePhotos: values(7, {})}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-5"), "users", "runner-5"),
+          userProfile({photoUrls: values(13, "https://example.test/photo")}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-6"), "users", "runner-6"),
+          userProfile({preferredRunTimes: values(9, "morning")}),
+        ),
+      );
+    });
+
+    it("enforces profile age preference bounds on create", async () => {
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({minAgePreference: 18, maxAgePreference: 99}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-2"), "users", "runner-2"),
+          userProfile({minAgePreference: 17}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-3"), "users", "runner-3"),
+          userProfile({maxAgePreference: 100}),
+        ),
+      );
+    });
+
     it("enforces profile height bounds on create", async () => {
       await assertSucceeds(
         setDoc(
@@ -777,6 +838,10 @@ describe("firestore.rules", () => {
       );
     });
   });
+
+  function values(count, value) {
+    return Array.from({length: count}, () => value);
+  }
 
   describe("onboarding drafts", () => {
     it("allows only the owner to read, write, and delete their draft", async () => {

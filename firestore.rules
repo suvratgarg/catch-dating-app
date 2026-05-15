@@ -57,6 +57,12 @@ service cloud.firestore {
         || data[field] is list;
     }
 
+    function optionalListMax(data, field, maxSize) {
+      return !hasField(data, field)
+        || data[field] == null
+        || (data[field] is list && data[field].size() <= maxSize);
+    }
+
     function isDefaultCity(city) {
       return city in [
         'mumbai',
@@ -192,6 +198,7 @@ service cloud.firestore {
         && data.displayName.matches('.*\\S.*')
         && data.email is string
         && data.profilePrompts is list
+        && data.profilePrompts.size() <= 3
         && optionalString(data, 'instagramHandle')
         && data.phoneNumber is string
         && data.dateOfBirth is timestamp
@@ -199,9 +206,10 @@ service cloud.firestore {
         && data.profileComplete is bool
         // Photos
         && data.photoUrls is list
-        && optionalList(data, 'photoThumbnailUrls')
-        && optionalList(data, 'photoPrompts')
-        && optionalList(data, 'profilePhotos')
+        && data.photoUrls.size() <= 12
+        && optionalListMax(data, 'photoThumbnailUrls', 12)
+        && optionalListMax(data, 'photoPrompts', 6)
+        && optionalListMax(data, 'profilePhotos', 6)
         // Location
         && (!hasField(data, 'city') || data.city == null || isValidCity(data.city))
         && optionalNumber(data, 'latitude')
@@ -209,8 +217,13 @@ service cloud.firestore {
         // Matching
         && data.interestedInGenders is list
         && data.interestedInGenders.size() > 0
+        && data.interestedInGenders.size() <= 8
         && data.minAgePreference is number
+        && data.minAgePreference >= 18
+        && data.minAgePreference <= 99
         && data.maxAgePreference is number
+        && data.maxAgePreference >= 18
+        && data.maxAgePreference <= 99
         // Background
         && optionalHeightCm(data, 'height')
         && optionalString(data, 'occupation')
@@ -224,6 +237,7 @@ service cloud.firestore {
           'other', 'nonReligious'
         ])
         && data.languages is list
+        && data.languages.size() <= 20
         // Intentions
         && optionalIn(data, 'relationshipGoal', [
           'relationship', 'casual', 'marriage', 'friendship', 'unsure'
@@ -250,8 +264,10 @@ service cloud.firestore {
         && data.paceMaxSecsPerKm is number
         && data.paceMaxSecsPerKm > 0
         && data.preferredDistances is list
+        && data.preferredDistances.size() <= 12
         && data.runningReasons is list
-        && optionalList(data, 'preferredRunTimes')
+        && data.runningReasons.size() <= 12
+        && optionalListMax(data, 'preferredRunTimes', 8)
         // Notification / discovery preferences
         && data.prefsNewCatches is bool
         && data.prefsMessages is bool
