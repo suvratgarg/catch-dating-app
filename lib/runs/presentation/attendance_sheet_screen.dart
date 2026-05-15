@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
@@ -10,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
+import 'package:catch_dating_app/host_tools/presentation/host_run_tools.dart';
 import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/presentation/attendance_sheet_view_model.dart';
@@ -155,26 +157,58 @@ class _AttendanceSummaryHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final palette = HostToolPalette.forAttendanceState(
+      context,
+      HostRunAttendanceState.open,
+    );
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
         CatchSpacing.s3,
         CatchSpacing.s5,
-        CatchSpacing.s1,
+        CatchSpacing.s3,
       ),
-      child: Row(
-        children: [
-          Text(
-            '$checkedInCount / $totalCount checked in',
-            style: CatchTextStyles.titleM(context),
-          ),
-          const Spacer(),
-          Text(
-            'Tap to toggle',
-            style: CatchTextStyles.bodyS(context, color: t.ink2),
-          ),
-        ],
+      child: CatchSurface(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        backgroundColor: palette.background,
+        borderColor: palette.border,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Wrap(
+              spacing: CatchSpacing.s2,
+              runSpacing: CatchSpacing.s1,
+              children: [
+                CatchBadge(
+                  label: 'Host tools',
+                  tone: CatchBadgeTone.brand,
+                  uppercase: true,
+                ),
+                CatchBadge(
+                  label: 'Attendance',
+                  tone: CatchBadgeTone.live,
+                  uppercase: true,
+                  icon: Icons.checklist_rounded,
+                ),
+              ],
+            ),
+            gapH10,
+            Row(
+              children: [
+                Text(
+                  '$checkedInCount / $totalCount checked in',
+                  style: CatchTextStyles.titleM(context),
+                ),
+                const Spacer(),
+                Text(
+                  'Tap to toggle',
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

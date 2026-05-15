@@ -3,16 +3,19 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_tiles.dart';
 import 'package:flutter/material.dart';
 
 class ClubScheduleSection extends StatelessWidget {
   const ClubScheduleSection({
     super.key,
     required this.runs,
+    this.isHost = false,
     this.onRunSelected,
   });
 
   final List<Run> runs;
+  final bool isHost;
   final ValueChanged<Run>? onRunSelected;
 
   @override
@@ -49,7 +52,8 @@ class ClubScheduleSection extends StatelessWidget {
         else
           RunAgendaSliverList(
             runs: runs,
-            badgeLabel: 'VIEW',
+            badgeLabel: isHost ? 'HOSTED' : 'VIEW',
+            statusBuilder: isHost ? (_) => RunTileStatus.hosted : null,
             onRunSelected: onRunSelected,
           ),
       ],

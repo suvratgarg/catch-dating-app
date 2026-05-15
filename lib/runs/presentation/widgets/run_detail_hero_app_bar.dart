@@ -13,6 +13,8 @@ class RunDetailHeroAppBar extends StatelessWidget {
     required this.onBack,
     required this.onShare,
     required this.onToggleSaved,
+    required this.showAddToCalendar,
+    required this.onAddToCalendar,
   });
 
   final Run run;
@@ -21,6 +23,8 @@ class RunDetailHeroAppBar extends StatelessWidget {
   final VoidCallback onBack;
   final ValueChanged<BuildContext> onShare;
   final VoidCallback onToggleSaved;
+  final bool showAddToCalendar;
+  final ValueChanged<BuildContext> onAddToCalendar;
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +58,19 @@ class RunDetailHeroAppBar extends StatelessWidget {
             ),
           ),
         ),
+        if (showAddToCalendar)
+          Padding(
+            padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
+            child: Builder(
+              builder: (buttonContext) => CatchTopBarIconAction(
+                icon: Icons.calendar_month_outlined,
+                tooltip: 'Add to calendar',
+                background: t.surface,
+                onPressed: () => onAddToCalendar(buttonContext),
+                foregroundColor: t.ink,
+              ),
+            ),
+          ),
         Padding(
           padding: const EdgeInsets.only(top: 8, bottom: 8, right: 8),
           child: CatchTopBarIconAction(

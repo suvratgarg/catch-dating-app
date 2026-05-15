@@ -12,6 +12,7 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
+import 'package:catch_dating_app/runs/presentation/run_calendar_links.dart';
 import 'package:catch_dating_app/runs/presentation/run_detail_controller.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_cta.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_detail_hero_app_bar.dart';
@@ -57,6 +58,8 @@ class RunDetailBody extends ConsumerWidget {
     final userProfile = this.userProfile;
     final saveMutation = ref.watch(RunDetailController.toggleSavedRunMutation);
     final share = ref.watch(externalShareControllerProvider);
+    final calendar = ref.watch(runCalendarControllerProvider);
+    final now = this.now ?? DateTime.now();
 
     if (isAuthenticated) {
       ref.listen(RunBookingController.bookMutation, (prev, next) {
@@ -89,6 +92,14 @@ class RunDetailBody extends ConsumerWidget {
                   ? onShareRun!(buttonContext, run)
                   : _shareRun(buttonContext, run, share),
             ),
+            showAddToCalendar: _canAddRunToCalendar(
+              run: run,
+              participation: participation,
+              isHost: isHost,
+              now: now,
+            ),
+            onAddToCalendar: (buttonContext) =>
+                unawaited(_addRunToCalendar(buttonContext, run, calendar)),
             onToggleSaved: () => _toggleSavedRun(
               context,
               ref,
@@ -221,6 +232,57 @@ Future<void> _shareRun(
       );
     }
   }
+}
+
+Future<void> _addRunToCalendar(
+  BuildContext context,
+  Run run,
+  RunCalendarController calendar,
+) async {
+  try {
+    final opened = await calendar.addToCalendar(run);
+    if (!context.mounted || opened) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Could not open calendar.')));
+  } on Object catch (error, stackTrace) {
+    final actionError = ExternalActionException(
+      'Failed to add run to calendar',
+      cause: error,
+      stackTrace: stackTrace,
+    );
+
+    if (context.mounted) {
+      ProviderScope.containerOf(context, listen: false)
+          .read(errorLoggerProvider)
+          .logAppException(
+            normalizeBackendError(
+              actionError,
+              stackTrace: stackTrace,
+              context: const BackendErrorContext(
+                service: BackendService.external,
+                action: 'add run to calendar',
+                resource: 'calendar_link',
+              ),
+            ),
+          );
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open calendar.')));
+    }
+  }
+}
+
+bool _canAddRunToCalendar({
+  required Run run,
+  required RunParticipation? participation,
+  required bool isHost,
+  required DateTime now,
+}) {
+  if (run.isCancelled || !run.startTime.isAfter(now)) return false;
+  if (isHost) return true;
+  return participation?.status == RunParticipationStatus.signedUp;
 }
 
 class _GuestBookCta extends StatelessWidget {

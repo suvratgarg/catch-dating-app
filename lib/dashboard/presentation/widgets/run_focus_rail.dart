@@ -12,6 +12,7 @@ import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
+import 'package:catch_dating_app/runs/presentation/run_calendar_links.dart';
 import 'package:catch_dating_app/runs/presentation/run_check_in_celebration_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/run_location_links.dart';
@@ -128,11 +129,8 @@ class _RunFocusRailState extends ConsumerState<RunFocusRail> {
                     cardIndex: _selectedIndex,
                     cardCount: items.length,
                     checkInMutation: checkInMutation,
-                    onPrimaryPressed: () =>
-                        _handlePrimary(context, ref, selectedItem),
-                    onSecondaryPressed: selectedItem.secondaryAction == null
-                        ? null
-                        : () => _handleSecondary(context, ref, selectedItem),
+                    onActionPressed: (action) =>
+                        _handleAction(context, ref, selectedItem, action),
                   ),
                 ),
               ),
@@ -231,39 +229,25 @@ class _RunFocusRailState extends ConsumerState<RunFocusRail> {
     setState(() => _selectedIndex = nextIndex);
   }
 
-  void _handlePrimary(BuildContext context, WidgetRef ref, _RunFocusItem item) {
-    switch (item.primaryAction) {
-      case _RunFocusAction.viewRun:
-        _openRun(context, item.run);
-      case _RunFocusAction.checkIn:
-        _checkIn(context, ref, item.run);
-      case _RunFocusAction.swipe:
-        _openSwipe(context, item.run);
-      case _RunFocusAction.review:
-        _writeReview(context, item.run);
-      case _RunFocusAction.directions:
-        _openDirections(ref, item.run);
-    }
-  }
-
-  void _handleSecondary(
+  void _handleAction(
     BuildContext context,
     WidgetRef ref,
     _RunFocusItem item,
+    _RunFocusAction action,
   ) {
-    switch (item.secondaryAction) {
-      case _RunFocusAction.directions:
-        _openDirections(ref, item.run);
-      case _RunFocusAction.review:
-        _writeReview(context, item.run);
+    switch (action) {
       case _RunFocusAction.viewRun:
         _openRun(context, item.run);
       case _RunFocusAction.checkIn:
         _checkIn(context, ref, item.run);
       case _RunFocusAction.swipe:
         _openSwipe(context, item.run);
-      case null:
-        return;
+      case _RunFocusAction.review:
+        _writeReview(context, item.run);
+      case _RunFocusAction.directions:
+        _openDirections(ref, item.run);
+      case _RunFocusAction.addToCalendar:
+        _addToCalendar(ref, item.run);
     }
   }
 
@@ -280,6 +264,10 @@ class _RunFocusRailState extends ConsumerState<RunFocusRail> {
           .read(externalLinkControllerProvider)
           .openExternal(directionsUriForRun(run)),
     );
+  }
+
+  void _addToCalendar(WidgetRef ref, Run run) {
+    unawaited(ref.read(runCalendarControllerProvider).addToCalendar(run));
   }
 
   void _openSwipe(BuildContext context, Run run) {
@@ -376,16 +364,14 @@ class _RunFocusCard extends StatelessWidget {
     required this.cardIndex,
     required this.cardCount,
     required this.checkInMutation,
-    required this.onPrimaryPressed,
-    this.onSecondaryPressed,
+    required this.onActionPressed,
   });
 
   final _RunFocusItem item;
   final int cardIndex;
   final int cardCount;
   final MutationState checkInMutation;
-  final VoidCallback onPrimaryPressed;
-  final VoidCallback? onSecondaryPressed;
+  final ValueChanged<_RunFocusAction> onActionPressed;
 
   @override
   Widget build(BuildContext context) {
@@ -503,8 +489,7 @@ class _RunFocusCard extends StatelessWidget {
                   isPrimaryLoading:
                       item.primaryAction == _RunFocusAction.checkIn &&
                       checkInMutation.isPending,
-                  onPrimaryPressed: onPrimaryPressed,
-                  onSecondaryPressed: onSecondaryPressed,
+                  onActionPressed: onActionPressed,
                 ),
               ],
             ),
@@ -519,46 +504,35 @@ class _RunFocusActions extends StatelessWidget {
   const _RunFocusActions({
     required this.item,
     required this.isPrimaryLoading,
-    required this.onPrimaryPressed,
-    this.onSecondaryPressed,
+    required this.onActionPressed,
   });
 
   final _RunFocusItem item;
   final bool isPrimaryLoading;
-  final VoidCallback onPrimaryPressed;
-  final VoidCallback? onSecondaryPressed;
+  final ValueChanged<_RunFocusAction> onActionPressed;
 
   @override
   Widget build(BuildContext context) {
-    final secondary = item.secondaryAction;
-    if (secondary == null) {
-      return CatchButton(
-        label: item.primaryAction.label,
-        icon: Icon(item.primaryAction.icon, size: 18),
-        fullWidth: true,
-        isLoading: isPrimaryLoading,
-        onPressed: isPrimaryLoading ? null : onPrimaryPressed,
-      );
-    }
+    final actions = [item.primaryAction, ...item.secondaryActions];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        CatchButton(
-          label: item.primaryAction.label,
-          icon: Icon(item.primaryAction.icon, size: 18),
-          fullWidth: true,
-          isLoading: isPrimaryLoading,
-          onPressed: isPrimaryLoading ? null : onPrimaryPressed,
-        ),
-        gapH10,
-        CatchButton(
-          label: secondary.label,
-          icon: Icon(secondary.icon, size: 18),
-          variant: CatchButtonVariant.secondary,
-          fullWidth: true,
-          onPressed: onSecondaryPressed,
-        ),
+        for (var index = 0; index < actions.length; index += 1) ...[
+          if (index > 0) gapH10,
+          CatchButton(
+            label: actions[index].label,
+            icon: Icon(actions[index].icon, size: 18),
+            variant: index == 0
+                ? CatchButtonVariant.primary
+                : CatchButtonVariant.secondary,
+            fullWidth: true,
+            isLoading: index == 0 && isPrimaryLoading,
+            onPressed: index == 0 && isPrimaryLoading
+                ? null
+                : () => onActionPressed(actions[index]),
+          ),
+        ],
       ],
     );
   }
@@ -593,7 +567,14 @@ class _RunFocusMetaLine extends StatelessWidget {
 
 enum _RunFocusKind { upcoming, checkIn, afterRun }
 
-enum _RunFocusAction { viewRun, checkIn, directions, swipe, review }
+enum _RunFocusAction {
+  viewRun,
+  checkIn,
+  directions,
+  addToCalendar,
+  swipe,
+  review,
+}
 
 extension on _RunFocusAction {
   String get label {
@@ -601,6 +582,7 @@ extension on _RunFocusAction {
       _RunFocusAction.viewRun => 'View run',
       _RunFocusAction.checkIn => 'Check in',
       _RunFocusAction.directions => 'Directions',
+      _RunFocusAction.addToCalendar => 'Add to calendar',
       _RunFocusAction.swipe => 'Start catching',
       _RunFocusAction.review => 'Write review',
     };
@@ -611,6 +593,7 @@ extension on _RunFocusAction {
       _RunFocusAction.viewRun => Icons.chevron_right_rounded,
       _RunFocusAction.checkIn => Icons.location_on_rounded,
       _RunFocusAction.directions => Icons.directions_outlined,
+      _RunFocusAction.addToCalendar => Icons.calendar_month_outlined,
       _RunFocusAction.swipe => Icons.favorite_rounded,
       _RunFocusAction.review => Icons.rate_review_outlined,
     };
@@ -656,12 +639,15 @@ class _RunFocusItem {
     return _RunFocusAction.viewRun;
   }
 
-  _RunFocusAction? get secondaryAction {
-    if (kind == _RunFocusKind.checkIn || kind == _RunFocusKind.upcoming) {
-      return _RunFocusAction.directions;
+  List<_RunFocusAction> get secondaryActions {
+    if (kind == _RunFocusKind.checkIn) {
+      return const [_RunFocusAction.directions];
     }
-    if (canSwipe && needsReview) return _RunFocusAction.review;
-    return null;
+    if (kind == _RunFocusKind.upcoming) {
+      return const [_RunFocusAction.directions, _RunFocusAction.addToCalendar];
+    }
+    if (canSwipe && needsReview) return const [_RunFocusAction.review];
+    return const [];
   }
 }
 

@@ -32,6 +32,7 @@ The module should cover:
 - [x] Update dashboard tests for the consolidated states.
 - [x] Convert the Run Focus rail to full-width snapping cards with a page indicator.
 - [x] Stack primary and secondary run actions so labels do not truncate.
+- [x] Add calendar action for future booked runs in Run Focus.
 - [x] Run focused analyzer and dashboard tests.
 
 ## Scope Notes
@@ -47,6 +48,8 @@ The module should cover:
 - 2026-05-15: `flutter test test/dashboard/dashboard_screen_test.dart` passed (`22` widget tests).
 - 2026-05-15: `flutter analyze --no-fatal-infos lib/dashboard/presentation/widgets/run_focus_rail.dart lib/dashboard/presentation/widgets/dashboard_full.dart test/dashboard/dashboard_screen_test.dart` passed after the full-width snapping card follow-up.
 - 2026-05-15: `flutter test test/dashboard/dashboard_screen_test.dart` passed (`23` widget tests).
+- 2026-05-15: `flutter analyze --no-fatal-infos lib/runs/presentation/run_calendar_links.dart lib/payments/presentation/payment_confirmation_controller.dart lib/dashboard/presentation/widgets/run_focus_rail.dart lib/runs/presentation/widgets/run_detail_body.dart lib/runs/presentation/widgets/run_detail_hero_app_bar.dart lib/swipes/presentation/swipe_screen.dart test/dashboard/dashboard_screen_test.dart test/runs/run_detail_widgets_test.dart test/payments/payment_confirmation_controller_test.dart` passed after shared add-to-calendar integration.
+- 2026-05-15: `flutter test test/dashboard/dashboard_screen_test.dart test/runs/run_detail_widgets_test.dart test/payments/payment_confirmation_controller_test.dart` passed.
 
 ## Completed Notes
 
@@ -57,3 +60,4 @@ The module should cover:
 - Added regression coverage for directions and for combining catch/review actions on a single attended-run card.
 - Reworked Run Focus paging from clipped horizontal cards to one full-width snap card at a time, with dots indicating additional runs.
 - Reworked two-action cards so `View run` and `Directions` render on separate full-width lines.
+- Added `Add to calendar` as a third committed-run action for upcoming booked runs. The action uses the shared calendar link controller also used by booking confirmation and run detail.

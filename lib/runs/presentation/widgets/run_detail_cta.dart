@@ -5,6 +5,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/bottom_cta.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
+import 'package:catch_dating_app/host_tools/presentation/host_run_tools.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -42,8 +43,24 @@ class RunDetailCta extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final referenceNow = now ?? DateTime.now();
 
-    if (isHost && isHostAttendanceOpen(run: run, now: referenceNow)) {
-      return const SizedBox.shrink();
+    if (isHost) {
+      return HostRunBottomActions(
+        item: HostRunToolItem(
+          run: run,
+          attendanceState: _hostAttendanceStateForRun(
+            run: run,
+            now: referenceNow,
+          ),
+        ),
+        onManageRun: (run) => context.pushNamed(
+          Routes.hostRunManageScreen.name,
+          pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+        ),
+        onTakeAttendance: (run) => context.pushNamed(
+          Routes.attendanceSheet.name,
+          pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+        ),
+      );
     }
 
     final eligibility = _eligibilityForParticipation(
@@ -207,6 +224,19 @@ class RunDetailCta extends ConsumerWidget {
       ],
     );
   }
+}
+
+HostRunAttendanceState _hostAttendanceStateForRun({
+  required Run run,
+  required DateTime now,
+}) {
+  if (isHostAttendanceOpen(run: run, now: now)) {
+    return HostRunAttendanceState.open;
+  }
+  if (now.isBefore(hostAttendanceWindowStartsAt(run))) {
+    return HostRunAttendanceState.opensLater;
+  }
+  return HostRunAttendanceState.closed;
 }
 
 RunEligibility _eligibilityForParticipation({

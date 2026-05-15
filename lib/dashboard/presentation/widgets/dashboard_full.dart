@@ -2,8 +2,6 @@ import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
-import 'package:catch_dating_app/core/widgets/catch_badge.dart';
-import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
@@ -12,10 +10,10 @@ import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.da
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/run_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
+import 'package:catch_dating_app/host_tools/presentation/host_run_tools.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/presentation/run_club_name_lookup.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -198,182 +196,36 @@ class HostToolsRail extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            Text('Host tools', style: CatchTextStyles.titleL(context)),
-            gapW8,
-            CatchBadge(
-              label: tools.length == 1 ? '1 run' : '${tools.length} runs',
-              tone: CatchBadgeTone.brand,
+    return HostRunToolsCarousel(
+      tools: tools
+          .map(
+            (tool) => HostRunToolItem(
+              run: tool.run,
+              attendanceState: _hostAttendanceState(tool.attendanceState),
             ),
-          ],
-        ),
-        gapH10,
-        LayoutBuilder(
-          builder: (context, constraints) {
-            final cardWidth = (constraints.maxWidth * 0.86)
-                .clamp(280.0, 360.0)
-                .toDouble();
-
-            return SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  for (var index = 0; index < tools.length; index += 1) ...[
-                    if (index > 0) gapW12,
-                    _HostToolCard(tool: tools[index], width: cardWidth),
-                  ],
-                ],
-              ),
-            );
-          },
-        ),
-      ],
+          )
+          .toList(growable: false),
+      onManageRun: (run) => context.pushNamed(
+        Routes.hostRunManageScreen.name,
+        pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+      ),
+      onTakeAttendance: (run) => context.pushNamed(
+        Routes.attendanceSheet.name,
+        pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+      ),
     );
   }
 }
 
-class _HostToolCard extends StatelessWidget {
-  const _HostToolCard({required this.tool, required this.width});
-
-  final DashboardHostRunTool tool;
-  final double width;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    final run = tool.run;
-    final attendanceOpen = tool.canTakeAttendance;
-
-    return SizedBox(
-      width: width,
-      child: CatchSurface(
-        padding: const EdgeInsets.all(CatchSpacing.s4),
-        backgroundColor: attendanceOpen ? t.primarySoft : t.surface,
-        borderColor: attendanceOpen
-            ? t.primary.withValues(alpha: 0.28)
-            : t.line,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Text(
-                  'HOST TOOLS',
-                  style: CatchTextStyles.labelS(
-                    context,
-                    color: t.primary,
-                  ).copyWith(fontWeight: FontWeight.w700, letterSpacing: 1.0),
-                ),
-                const Spacer(),
-                CatchBadge(
-                  label: _attendanceBadgeLabel(tool.attendanceState),
-                  tone: attendanceOpen
-                      ? CatchBadgeTone.live
-                      : CatchBadgeTone.neutral,
-                  uppercase: true,
-                ),
-              ],
-            ),
-            gapH6,
-            Text(
-              run.title,
-              style: CatchTextStyles.titleM(context),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            gapH10,
-            Text(
-              '${run.shortDateLabel} · ${run.timeRangeLabel}',
-              style: CatchTextStyles.bodyS(context, color: t.ink2),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            gapH8,
-            Row(
-              children: [
-                Icon(Icons.group_outlined, size: 16, color: t.ink3),
-                gapW6,
-                Text(
-                  '${run.signedUpCount}/${run.capacityLimit}',
-                  style: CatchTextStyles.labelM(context, color: t.ink2),
-                ),
-                gapW12,
-                Icon(Icons.schedule_rounded, size: 16, color: t.ink3),
-                gapW6,
-                Text(
-                  '${run.waitlistCount}',
-                  style: CatchTextStyles.labelM(context, color: t.ink2),
-                ),
-              ],
-            ),
-            gapH12,
-            Row(
-              children: [
-                Expanded(
-                  child: CatchButton(
-                    label: 'Manage',
-                    icon: const Icon(Icons.tune_rounded, size: 16),
-                    variant: CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                    fullWidth: true,
-                    onPressed: () => context.pushNamed(
-                      Routes.hostRunManageScreen.name,
-                      pathParameters: {
-                        'runClubId': run.runClubId,
-                        'runId': run.id,
-                      },
-                    ),
-                  ),
-                ),
-                gapW8,
-                Expanded(
-                  child: CatchButton(
-                    label: _attendanceButtonLabel(tool.attendanceState),
-                    icon: const Icon(Icons.checklist_rounded, size: 16),
-                    variant: attendanceOpen
-                        ? CatchButtonVariant.primary
-                        : CatchButtonVariant.secondary,
-                    size: CatchButtonSize.sm,
-                    fullWidth: true,
-                    onPressed: attendanceOpen
-                        ? () => context.pushNamed(
-                            Routes.attendanceSheet.name,
-                            pathParameters: {
-                              'runClubId': run.runClubId,
-                              'runId': run.id,
-                            },
-                          )
-                        : null,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  String _attendanceBadgeLabel(DashboardHostAttendanceState state) {
-    return switch (state) {
-      DashboardHostAttendanceState.open => 'Attendance open',
-      DashboardHostAttendanceState.opensLater => 'Upcoming',
-      DashboardHostAttendanceState.closed => 'Closed',
-    };
-  }
-
-  String _attendanceButtonLabel(DashboardHostAttendanceState state) {
-    return switch (state) {
-      DashboardHostAttendanceState.open => 'Attendance',
-      DashboardHostAttendanceState.opensLater => 'Opens later',
-      DashboardHostAttendanceState.closed => 'Closed',
-    };
-  }
+HostRunAttendanceState _hostAttendanceState(
+  DashboardHostAttendanceState state,
+) {
+  return switch (state) {
+    DashboardHostAttendanceState.open => HostRunAttendanceState.open,
+    DashboardHostAttendanceState.opensLater =>
+      HostRunAttendanceState.opensLater,
+    DashboardHostAttendanceState.closed => HostRunAttendanceState.closed,
+  };
 }
 
 class _DashboardSectionStateCard extends StatelessWidget {

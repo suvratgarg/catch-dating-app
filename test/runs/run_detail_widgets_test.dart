@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
@@ -19,6 +20,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../run_clubs/run_clubs_test_helpers.dart' show FakeRunClubsRepository;
 import '../test_pump_helpers.dart';
@@ -278,34 +280,34 @@ void main() {
       expect(find.text('Join run — 19 spots left'), findsOneWidget);
     });
 
-    testWidgets(
-      'does not render host attendance as a run-detail bottom action',
-      (tester) async {
-        final startTime = DateTime(2026, 1, 1, 9);
+    testWidgets('renders host tools as the run-detail bottom action', (
+      tester,
+    ) async {
+      final startTime = DateTime(2026, 1, 1, 9);
 
-        await pumpRunsTestApp(
-          tester,
-          Scaffold(
-            bottomNavigationBar: RunDetailCta(
-              run: buildRun(startTime: startTime),
-              runClubId: 'club1',
-              isHost: true,
-              now: startTime.subtract(const Duration(minutes: 5)),
-              userProfile: buildUser(uid: 'host-1'),
-              participation: null,
-            ),
+      await pumpRunsTestApp(
+        tester,
+        Scaffold(
+          bottomNavigationBar: RunDetailCta(
+            run: buildRun(startTime: startTime),
+            runClubId: 'club1',
+            isHost: true,
+            now: startTime.subtract(const Duration(minutes: 5)),
+            userProfile: buildUser(uid: 'host-1'),
+            participation: null,
           ),
-          overrides: [
-            paymentRepositoryProvider.overrideWithValue(
-              FakePaymentRepository(),
-            ),
-          ],
-        );
+        ),
+        overrides: [
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
 
-        expect(find.text('Take Attendance'), findsNothing);
-        expect(find.text('Join run — 20 spots left'), findsNothing);
-      },
-    );
+      expect(find.text('HOST TOOLS'), findsOneWidget);
+      expect(find.text('ATTENDANCE OPEN'), findsOneWidget);
+      expect(find.text('Take attendance'), findsOneWidget);
+      expect(find.text('Manage run'), findsOneWidget);
+      expect(find.text('Join run — 20 spots left'), findsNothing);
+    });
 
     testWidgets('does not render self check-in as a run-detail bottom action', (
       tester,
@@ -724,6 +726,7 @@ void main() {
     ) async {
       final fakeSavedRunRepository = FakeSavedRunRepository();
       var sharedRunId = '';
+      Uri? calendarUri;
 
       await tester.pumpWidget(
         ProviderScope(
@@ -737,6 +740,13 @@ void main() {
             savedRunRepositoryProvider.overrideWithValue(
               fakeSavedRunRepository,
             ),
+            externalUrlLauncherProvider.overrideWithValue((
+              uri, {
+              LaunchMode mode = LaunchMode.platformDefault,
+            }) async {
+              calendarUri = uri;
+              return true;
+            }),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -752,7 +762,9 @@ void main() {
                 reviews: const [],
                 isAuthenticated: true,
                 isSaved: false,
-                participation: null,
+                participation: _participation(
+                  status: RunParticipationStatus.signedUp,
+                ),
                 onShareRun: (_, run) async {
                   sharedRunId = run.id;
                 },
@@ -764,8 +776,11 @@ void main() {
       await tester.pump();
       expect(find.byTooltip('Back'), findsOneWidget);
       expect(find.byTooltip('Share run'), findsOneWidget);
+      expect(find.byTooltip('Add to calendar'), findsOneWidget);
       expect(find.byTooltip('Save run'), findsOneWidget);
       await tester.tap(find.byTooltip('Share run'));
+      await tester.pump();
+      await tester.tap(find.byTooltip('Add to calendar'));
       await tester.pump();
       await tester.tap(find.byTooltip('Save run'));
       await tester.pump();
@@ -773,6 +788,7 @@ void main() {
       await _pumpUntilFound(tester, find.text('Home'));
 
       expect(sharedRunId, 'run-1');
+      expect(calendarUri?.host, 'calendar.google.com');
       expect(fakeSavedRunRepository.savedRunId, 'run-1');
       expect(find.text('Home'), findsOneWidget);
     });

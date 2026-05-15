@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/runs/presentation/run_calendar_links.dart';
 import 'package:catch_dating_app/runs/presentation/run_location_links.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,24 +33,7 @@ class PaymentConfirmationController {
   Future<void> shareReferral(Run run) =>
       _share.shareText(text: referralText(run));
 
-  static Uri calendarUri(Run run) {
-    final start = run.startTime;
-    final end = run.endTime;
-    String fmt(DateTime d) =>
-        '${d.year}${d.month.toString().padLeft(2, '0')}'
-        '${d.day.toString().padLeft(2, '0')}T'
-        '${d.hour.toString().padLeft(2, '0')}'
-        '${d.minute.toString().padLeft(2, '0')}00';
-
-    return Uri.parse(
-      'https://calendar.google.com/calendar/render'
-      '?action=TEMPLATE'
-      '&text=${Uri.encodeComponent(run.title)}'
-      '&dates=${fmt(start)}/${fmt(end)}'
-      '&details=${Uri.encodeComponent('Catch run - ${run.meetingPoint}')}'
-      '&location=${Uri.encodeComponent(run.meetingPoint)}',
-    );
-  }
+  static Uri calendarUri(Run run) => calendarUriForRun(run);
 
   static Uri directionsUri(Run run) => directionsUriForRun(run);
 
