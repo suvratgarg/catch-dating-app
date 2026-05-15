@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/embedded/photo_prompt_answer.schema.json",
+  "title": "PhotoPromptAnswer",
+  "description": "One optional caption prompt for a profile photo slot.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["photoIndex", "promptId", "prompt", "caption"],
+  "properties": {
+    "photoIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "promptId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 80
+    },
+    "prompt": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 140
+    },
+    "caption": {
+      "type": "string",
+      "maxLength": 140
+    }
+  },
+  "x-catch-catalog": "../catalogs/photo_prompts.json"
+}

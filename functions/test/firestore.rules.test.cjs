@@ -647,6 +647,15 @@ describe("firestore.rules", () => {
       );
     });
 
+    it("rejects legacy sexualOrientation on profile create", async () => {
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({sexualOrientation: "straight"}),
+        ),
+      );
+    });
+
     it("requires a non-empty profile display name on create", async () => {
       await assertFails(
         setDoc(
@@ -661,6 +670,33 @@ describe("firestore.rules", () => {
         setDoc(
           doc(authedDb("runner-1"), "users", "runner-1"),
           userProfile({interestedInGenders: []}),
+        ),
+      );
+    });
+
+    it("enforces profile height bounds on create", async () => {
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-1"), "users", "runner-1"),
+          userProfile({height: 120}),
+        ),
+      );
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-2"), "users", "runner-2"),
+          userProfile({height: 220}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-3"), "users", "runner-3"),
+          userProfile({height: 119}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-4"), "users", "runner-4"),
+          userProfile({height: 221}),
         ),
       );
     });

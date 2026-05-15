@@ -19,6 +19,11 @@ const DEFAULT_SEED_PREFIX = "demo_beta_2026";
 const DEFAULT_MAX_BATCH_WRITES = 450;
 const MATCH_MESSAGE_LIMIT = 18;
 
+const profilePromptCatalog = readContractJson("catalogs/profile_prompts.json");
+const photoPromptCatalog = readContractJson("catalogs/photo_prompts.json");
+const profilePromptsById = promptsById(profilePromptCatalog);
+const photoPromptsById = promptsById(photoPromptCatalog);
+
 const cityData = {
   mumbai: {label: "Mumbai", lat: 19.076, lng: 72.8777, areas: ["Bandra", "Marine Drive", "Powai"]},
   delhi: {label: "Delhi", lat: 28.7041, lng: 77.1025, areas: ["Lodhi Garden", "Hauz Khas", "India Gate"]},
@@ -95,7 +100,7 @@ const companies = [
   "Freelance", "Urban Loop", "Northstar", "Founders Office", "Studio Run",
   "Cloudline", "Stride Labs", "Independent",
 ];
-const bios = [
+const perfectRunAnswers = [
   "Easy kilometres, strong coffee, and plans that start on time.",
   "Training for a faster 10K and always up for post-run breakfast.",
   "I like neighbourhood routes, clean playlists, and low-pressure chats.",
@@ -103,6 +108,87 @@ const bios = [
   "Mostly here for good routes, kind people, and a reason to wake up early.",
   "Race curious, brunch serious, and happiest near a waterfront route.",
 ];
+const afterRunAnswers = [
+  "Ordering coffee before my watch has finished syncing.",
+  "Looking for the best dosa within walking distance.",
+  "Stretching badly and pretending that counts as recovery.",
+  "Saving the route so I can argue it was uphill both ways.",
+  "Asking who wants to make this a weekly thing.",
+  "Finding a shaded bench and a cold lime soda.",
+];
+const greenFlagAnswers = [
+  "I will slow down if someone is having a rough kilometre.",
+  "I remember birthdays, water stops, and playlist requests.",
+  "I can make a plan without turning it into a spreadsheet.",
+  "I am competitive only with my own previous splits.",
+  "I show up on time and bring extra safety pins on race day.",
+  "I know when to talk and when to enjoy a quiet stretch.",
+];
+const photoCaptions = [
+  "Usually happier after kilometre three.",
+  "The smile is real; the pace was suspicious.",
+  "Proof that I occasionally leave the treadmill.",
+  "My favorite kind of post-run light.",
+  "Race day nerves, finish line energy.",
+  "Not pictured: the snack I was thinking about.",
+];
+
+function readContractJson(relativePath) {
+  const file = path.join(repoRoot, "contracts", relativePath);
+  return JSON.parse(fs.readFileSync(file, "utf8"));
+}
+
+function promptsById(catalog) {
+  return new Map(catalog.prompts.map((prompt) => [prompt.id, prompt]));
+}
+
+function profilePromptAnswer(promptId, answer) {
+  const prompt = profilePromptsById.get(promptId);
+  if (!prompt) throw new Error(`Unknown profile prompt id: ${promptId}`);
+  return {
+    promptId: prompt.id,
+    prompt: prompt.title,
+    answer,
+  };
+}
+
+function photoPromptAnswer(photoIndex, promptId, caption) {
+  const prompt = photoPromptsById.get(promptId);
+  if (!prompt) throw new Error(`Unknown photo prompt id: ${promptId}`);
+  return {
+    photoIndex,
+    promptId: prompt.id,
+    prompt: prompt.title,
+    caption,
+  };
+}
+
+function profilePromptsForIndex(index) {
+  return [
+    profilePromptAnswer(
+      "perfectRun",
+      perfectRunAnswers[index % perfectRunAnswers.length]
+    ),
+    profilePromptAnswer(
+      "afterRun",
+      afterRunAnswers[index % afterRunAnswers.length]
+    ),
+    profilePromptAnswer(
+      "greenFlag",
+      greenFlagAnswers[index % greenFlagAnswers.length]
+    ),
+  ];
+}
+
+function photoPromptsForIndex(index) {
+  return [
+    photoPromptAnswer(
+      0,
+      "proofIRun",
+      photoCaptions[index % photoCaptions.length]
+    ),
+  ];
+}
 const profilePhotos = [
   "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=80",
   "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=900&q=80",
@@ -601,6 +687,8 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
       const repetition = Math.floor(index / firstNames.length);
       const photo = profilePhotos[(index + repetition) % profilePhotos.length];
       const thumbnail = thumbnailUrlForPhoto(photo);
+      const profilePrompts = profilePromptsForIndex(index);
+      const photoPrompts = photoPromptsForIndex(index);
       const userDoc = {
         ...seedMarker,
         name: `${firstName} ${lastName}`,
@@ -612,10 +700,11 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         phoneNumber: `+919900${String(index + 1).padStart(6, "0")}`,
         profileComplete: true,
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${index + 1}@example.test`,
-        bio: bios[index % bios.length],
+        profilePrompts,
         instagramHandle: `${firstName.toLowerCase()}runs${index + 1}`,
         photoUrls: [photo],
         photoThumbnailUrls: thumbnail ? [thumbnail] : [],
+        photoPrompts,
         city,
         latitude: lat,
         longitude: lng,
@@ -638,6 +727,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         paceMaxSecsPerKm: 375 + (index % 5) * 20,
         preferredDistances: [["fiveK", "tenK"], ["tenK"], ["halfMarathon"], ["fiveK", "halfMarathon"]][index % 4],
         runningReasons: [["fitness", "social"], ["community", "mindfulness"], ["challenge", "raceTraining"]][index % 3],
+        preferredRunTimes: [["morning"], ["evening"], ["earlyMorning"], ["morning", "evening"], ["afternoon"]][index % 5],
         prefsNewCatches: true,
         prefsMessages: true,
         prefsRunReminders: true,
@@ -693,10 +783,15 @@ export function publicProfileFromUserDoc(userDoc) {
     scenario: userDoc.scenario,
     name: userDoc.displayName || userDoc.firstName || firstWord(userDoc.name),
     age: ageFromTimestamp(userDoc.dateOfBirth) ?? 30,
-    bio: userDoc.bio,
     gender: userDoc.gender,
+    profilePrompts: Array.isArray(userDoc.profilePrompts) ?
+      userDoc.profilePrompts :
+      [],
     photoUrls: userDoc.photoUrls,
     photoThumbnailUrls: normalizedPhotoThumbnailUrls(userDoc),
+    photoPrompts: Array.isArray(userDoc.photoPrompts) ?
+      userDoc.photoPrompts :
+      [],
     city: userDoc.city,
     height: userDoc.height,
     occupation: userDoc.occupation,
@@ -714,6 +809,7 @@ export function publicProfileFromUserDoc(userDoc) {
     paceMaxSecsPerKm: userDoc.paceMaxSecsPerKm,
     preferredDistances: userDoc.preferredDistances,
     runningReasons: userDoc.runningReasons,
+    preferredRunTimes: userDoc.preferredRunTimes,
   };
 }
 

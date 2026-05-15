@@ -131,6 +131,7 @@ test("updateUserProfileHandler validates and applies profile patches",
           }],
           photoUrls: ["https://example.test/profile.jpg"],
           paceMinSecsPerKm: 300,
+          height: 120,
           prefsWeeklyDigest: true,
         },
       }),
@@ -156,6 +157,7 @@ test("updateUserProfileHandler validates and applies profile patches",
       }],
       photoUrls: ["https://example.test/profile.jpg"],
       paceMinSecsPerKm: 300,
+      height: 120,
       prefsWeeklyDigest: true,
     });
   }
@@ -174,6 +176,13 @@ test("updateUserProfileHandler rejects invalid payloads", async () => {
   await assert.rejects(
     updateUserProfileHandler(
       request("runner-1", {fields: {unknownField: true}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {sexualOrientation: "straight"}}),
       h.deps
     ),
     (error) => assertHttpsCode(error, "invalid-argument")
@@ -203,6 +212,20 @@ test("updateUserProfileHandler rejects invalid payloads", async () => {
   await assert.rejects(
     updateUserProfileHandler(
       request("runner-1", {fields: {interestedInGenders: []}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {height: 119}}),
+      h.deps
+    ),
+    (error) => assertHttpsCode(error, "invalid-argument")
+  );
+  await assert.rejects(
+    updateUserProfileHandler(
+      request("runner-1", {fields: {height: 221}}),
       h.deps
     ),
     (error) => assertHttpsCode(error, "invalid-argument")

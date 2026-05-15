@@ -1,0 +1,175 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/profile_common.schema.json",
+  "title": "Profile common contract definitions",
+  "description": "Shared enum, scalar, and Firestore value definitions for profile contracts.",
+  "definitions": {
+    "timestamp": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": ["_seconds", "_nanoseconds"],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "nullableTimestamp": {
+      "anyOf": [
+        {"$ref": "#/definitions/timestamp"},
+        {"type": "null"}
+      ]
+    },
+    "gender": {
+      "type": "string",
+      "enum": ["man", "woman", "nonBinary", "other"]
+    },
+    "educationLevel": {
+      "type": ["string", "null"],
+      "enum": [
+        "highSchool",
+        "someCollege",
+        "bachelors",
+        "masters",
+        "phd",
+        "tradeSchool",
+        "other",
+        null
+      ]
+    },
+    "religion": {
+      "type": ["string", "null"],
+      "enum": [
+        "hindu",
+        "muslim",
+        "christian",
+        "sikh",
+        "jain",
+        "buddhist",
+        "other",
+        "nonReligious",
+        null
+      ]
+    },
+    "language": {
+      "type": "string",
+      "enum": [
+        "english",
+        "hindi",
+        "marathi",
+        "tamil",
+        "telugu",
+        "kannada",
+        "bengali",
+        "gujarati",
+        "punjabi",
+        "malayalam",
+        "odia",
+        "other"
+      ]
+    },
+    "relationshipGoal": {
+      "type": ["string", "null"],
+      "enum": ["relationship", "casual", "marriage", "friendship", "unsure", null]
+    },
+    "drinkingHabit": {
+      "type": ["string", "null"],
+      "enum": ["never", "socially", "often", null]
+    },
+    "smokingHabit": {
+      "type": ["string", "null"],
+      "enum": ["never", "occasionally", "often", null]
+    },
+    "workoutFrequency": {
+      "type": ["string", "null"],
+      "enum": ["never", "sometimes", "often", "everyday", null]
+    },
+    "dietaryPreference": {
+      "type": ["string", "null"],
+      "enum": ["omnivore", "vegetarian", "vegan", "jain", "other", null]
+    },
+    "childrenStatus": {
+      "type": ["string", "null"],
+      "enum": [
+        "dontHave",
+        "haveWantMore",
+        "haveNoMore",
+        "wantSomeday",
+        "dontWant",
+        null
+      ]
+    },
+    "preferredDistance": {
+      "type": "string",
+      "enum": ["fiveK", "tenK", "halfMarathon", "marathon"]
+    },
+    "runReason": {
+      "type": "string",
+      "enum": [
+        "fitness",
+        "community",
+        "mindfulness",
+        "challenge",
+        "weightLoss",
+        "raceTraining",
+        "social"
+      ]
+    },
+    "preferredRunTime": {
+      "type": "string",
+      "enum": ["earlyMorning", "morning", "afternoon", "evening", "night"]
+    },
+    "citySlug": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 80,
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "nullableString": {
+      "type": ["string", "null"]
+    },
+    "url": {
+      "type": "string",
+      "format": "uri",
+      "maxLength": 2048
+    },
+    "photoUrlList": {
+      "type": "array",
+      "maxItems": 12,
+      "items": {
+        "$ref": "#/definitions/url"
+      }
+    },
+    "heightCm": {
+      "type": ["integer", "null"],
+      "minimum": 120,
+      "maximum": 220
+    },
+    "latitude": {
+      "type": ["number", "null"],
+      "minimum": -90,
+      "maximum": 90
+    },
+    "longitude": {
+      "type": ["number", "null"],
+      "minimum": -180,
+      "maximum": 180
+    },
+    "age": {
+      "type": "integer",
+      "minimum": 18,
+      "maximum": 120
+    },
+    "paceSecsPerKm": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}

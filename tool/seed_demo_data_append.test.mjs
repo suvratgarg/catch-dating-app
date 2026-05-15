@@ -125,14 +125,29 @@ test("seed public profiles carry thumbnail URLs for tiny avatar surfaces", () =>
     firstName: "Aditi",
     displayName: "Aditi Rao",
     dateOfBirth: fakeTimestamp("1998-05-14T00:00:00.000Z"),
-    bio: "Easy kilometres.",
+    profilePrompts: [{
+      promptId: "perfectRun",
+      prompt: "A perfect run with me looks like...",
+      answer: "Easy kilometres.",
+    }],
     gender: "woman",
     photoUrls: [fullPhoto],
+    photoPrompts: [{
+      photoIndex: 0,
+      promptId: "proofIRun",
+      prompt: "Proof I actually run",
+      caption: "Race morning.",
+    }],
+    preferredRunTimes: ["morning"],
   };
 
   const publicProfile = publicProfileFromUserDoc(userDoc);
 
+  assert.equal(Object.hasOwn(publicProfile, "bio"), false);
+  assert.deepEqual(publicProfile.profilePrompts, userDoc.profilePrompts);
   assert.deepEqual(publicProfile.photoUrls, [fullPhoto]);
+  assert.deepEqual(publicProfile.photoPrompts, userDoc.photoPrompts);
+  assert.deepEqual(publicProfile.preferredRunTimes, ["morning"]);
   assert.equal(publicProfile.photoThumbnailUrls.length, 1);
   const thumbnail = new URL(publicProfile.photoThumbnailUrls[0]);
   assert.equal(thumbnail.hostname, "images.unsplash.com");
@@ -146,10 +161,11 @@ test("seed thumbnail normalization preserves existing thumbnails", () => {
     name: "Kabir Mehta",
     firstName: "Kabir",
     dateOfBirth: fakeTimestamp("1996-05-14T00:00:00.000Z"),
-    bio: "Runner.",
+    profilePrompts: [],
     gender: "man",
     photoUrls: ["https://example.test/full.jpg"],
     photoThumbnailUrls: ["https://example.test/thumb.jpg"],
+    photoPrompts: [],
   };
 
   const publicProfile = publicProfileFromUserDoc(userDoc);

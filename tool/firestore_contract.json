@@ -240,7 +240,7 @@
         }
       ],
       "migrationNotes": [
-        "Rules currently tolerate legacy sexualOrientation even though it is not in the generated Dart/TypeScript contract.",
+        "Rules, Functions profile updates, and the generated Dart/TypeScript contract no longer allow new sexualOrientation writes.",
         "firstName and lastName are private identity fields initialized during onboarding; displayName is the editable public name written by the updateUserProfile callable.",
         "Legacy bio text now migrates into structured profilePrompts; new prompt text is stored in profilePrompts and optional photo captions are stored in photoPrompts.",
         "Global notification category preferences live on users/{uid}; per-club push opt-in lives on runClubMemberships/{clubId_uid}.",

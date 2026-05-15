@@ -36,6 +36,9 @@ if ! diff -u "$before_diff" "$after_diff"; then
   exit 1
 fi
 
+echo "==> Checking schema contract sources"
+node tool/validate_schema_contracts.mjs
+
 echo "==> Analyzing Firestore type generator"
 dart analyze tool/generate_firestore_types.dart
 
@@ -53,7 +56,7 @@ echo "==> Running Functions tests"
 npm --prefix functions test
 
 echo "==> Running Firestore rules emulator tests"
-firebase emulators:exec --only firestore \
+firebase emulators:exec --project demo-catch-rules --only firestore,storage \
   "npm --prefix functions run test:rules"
 
 echo "==> Running focused Flutter analysis"

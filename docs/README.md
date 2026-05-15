@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 3.0.1
-updated: 2026-05-12
+version: 3.0.2
+updated: 2026-05-15
 owner: recursive_audit_loop
 status: active
 ---
@@ -45,6 +45,7 @@ section unless the task requires a full historical audit.
 | Error handling | `error-handling-audit.md` | App-wide error-management architecture, backend migration checklist, frontend/local error playbook, Error 101 guide, app error catalogue, naming conventions, branded app error surface guidance, and remediation history. Re-verify before acting on counts. |
 | Release operations | `release_operations.md` | CI/release gates, Firebase deploy ordering, environment prerequisites, smoke tests, and human release evidence. |
 | Firestore and Functions data contracts | `firestore_functions_data_contract_tracker.md` | Firestore rules, Cloud Functions boundaries, schema drift, contract-test workflow, and rules emulator requirements. |
+| Schema contract unification | `schema_contract_unification_tracker.md` | Long-horizon contract-first migration for Dart/TypeScript schemas, runtime validation, prompt catalogs, seed validation, rules metadata, and future storage-path renames. |
 | Backend operation ownership | `backend_operation_catalog.md` | Human-readable catalog of direct client writes, callable-owned mutations, trigger-owned projections, server-only collections, and notification starting points. |
 | Firestore relationship migration | `firestore_relationship_documents_migration.md` | Persistent tracker for relationship/action document migration, match-scoped messages, compatibility arrays, migration tooling, and deletion/anonymization payoff. |
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |

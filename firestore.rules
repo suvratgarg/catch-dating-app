@@ -23,6 +23,16 @@ service cloud.firestore {
         || data[field] is number;
     }
 
+    function optionalHeightCm(data, field) {
+      return !hasField(data, field)
+        || data[field] == null
+        || (
+          data[field] is number
+          && data[field] >= 120
+          && data[field] <= 220
+        );
+    }
+
     function optionalBool(data, field) {
       return !hasField(data, field)
         || data[field] == null
@@ -131,7 +141,7 @@ service cloud.firestore {
           'name', 'firstName', 'lastName', 'displayName', 'email',
           'profilePrompts',
           'instagramHandle', 'phoneNumber', 'dateOfBirth',
-          'gender', 'sexualOrientation', 'profileComplete',
+          'gender', 'profileComplete',
           // Photos
           'photoUrls', 'photoThumbnailUrls', 'photoPrompts',
           // Location
@@ -186,11 +196,6 @@ service cloud.firestore {
         && data.phoneNumber is string
         && data.dateOfBirth is timestamp
         && data.gender in ['man', 'woman', 'nonBinary', 'other']
-        // Legacy tolerance: older clients may still have written this field.
-        // New Dart/TypeScript contracts do not include it.
-        && optionalIn(data, 'sexualOrientation', [
-          'straight', 'gay', 'bisexual', 'pansexual', 'asexual', 'other'
-        ])
         && data.profileComplete is bool
         // Photos
         && data.photoUrls is list
@@ -206,7 +211,7 @@ service cloud.firestore {
         && data.minAgePreference is number
         && data.maxAgePreference is number
         // Background
-        && optionalNumber(data, 'height')
+        && optionalHeightCm(data, 'height')
         && optionalString(data, 'occupation')
         && optionalString(data, 'company')
         && optionalIn(data, 'education', [

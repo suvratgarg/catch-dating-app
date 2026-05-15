@@ -54,18 +54,12 @@ const PreferredRunTimeSchema = z.enum([
   "evening",
   "night",
 ]);
-const SexualOrientationSchema = z.enum([
-  "straight",
-  "gay",
-  "bisexual",
-  "pansexual",
-  "asexual",
-  "other",
-]);
 
 const optionalString = z.string().trim().nullable();
 const positiveInt = z.number().int().positive();
 const nonNegativeMillis = z.number().int().nonnegative();
+const minimumHeightCm = 120;
+const maximumHeightCm = 220;
 const ProfilePromptAnswerSchema = z.object({
   promptId: z.string().trim().min(1).max(80),
   prompt: z.string().trim().min(1).max(140),
@@ -87,7 +81,6 @@ const UserProfilePatchSchema = z.object({
   phoneNumber: z.string().trim().min(1).max(32).optional(),
   dateOfBirth: nonNegativeMillis.optional(),
   gender: GenderSchema.optional(),
-  sexualOrientation: SexualOrientationSchema.nullable().optional(),
   profileComplete: z.boolean().optional(),
   photoUrls: z.array(z.string().url()).max(12).optional(),
   photoPrompts: z.array(PhotoPromptAnswerSchema).max(6).optional(),
@@ -97,7 +90,11 @@ const UserProfilePatchSchema = z.object({
   interestedInGenders: z.array(GenderSchema).min(1).max(8).optional(),
   minAgePreference: z.number().int().min(18).max(99).optional(),
   maxAgePreference: z.number().int().min(18).max(99).optional(),
-  height: z.number().int().min(90).max(260).nullable().optional(),
+  height: z.number().int()
+    .min(minimumHeightCm)
+    .max(maximumHeightCm)
+    .nullable()
+    .optional(),
   occupation: optionalString.optional(),
   company: optionalString.optional(),
   education: EducationSchema.nullable().optional(),
