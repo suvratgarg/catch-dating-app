@@ -1,6 +1,6 @@
 ---
 doc_id: schema_contract_unification
-version: 0.8.3
+version: 0.8.4
 updated: 2026-05-16
 owner: recursive_audit_loop
 status: active
@@ -862,6 +862,32 @@ Follow-up closed on 2026-05-16:
 Remaining work stays the same: generate this Admin SDK facade from contracts or
 delete it after Function imports stop depending on live `FirebaseFirestore`
 timestamp-oriented document interfaces.
+
+### 2026-05-16: Firestore Contract Shape Slimming
+
+Moved `tool/firestore_contract.json` closer to the intended boundary:
+
+- Removed duplicated `allFields` lists from every collection entry now covered
+  by `contracts/firestore/*.schema.json`.
+- Updated `tool/check_firestore_contract.mjs` so effective collection fields are
+  derived from JSON Schema properties minus schema-owned internal demo fields.
+- Kept operation/ownership field groups such as `clientWritableFields`,
+  `callableOwnedFields`, `triggerOwnedFields`, and `serverOwnedFields` in
+  `tool/firestore_contract.json`, because JSON Schema does not express those
+  write-boundary semantics directly yet.
+- Kept the rules allow-list drift check, but it now compares
+  `firestore.rules` against schema-derived fields instead of a duplicated
+  contract-side `allFields` array.
+
+Proof:
+
+```bash
+node tool/check_firestore_contract.mjs
+```
+
+Remaining work: derive more of the ownership/write-boundary metadata from
+schema annotations if the schemas gain explicit `x-client-writable`,
+`x-callable-owned`, or `x-trigger-owned` metadata.
 
 ### 2026-05-15: Phase 6 Ownership/Rules Drift Checks
 

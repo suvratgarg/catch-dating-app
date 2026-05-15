@@ -124,7 +124,7 @@ function assertUnique(seen, value, label) {
 }
 
 function validateFieldGroups(collection, label) {
-  const allFields = new Set(collection.allFields ?? []);
+  const allFields = new Set(effectiveAllFields(collection));
   for (const groupName of [
     "allFields",
     "clientWritableFields",
@@ -172,13 +172,12 @@ function validateSchemaFieldProjection(collection, label) {
   const schema = schemaByCollectionId.get(collection.id);
   if (!schema) return;
 
-  const schemaFields = new Set(Object.keys(schema.properties ?? {}));
-  const internalDemoFields = new Set(schema["x-internal-demo-fields"] ?? []);
-  const modelSchemaFields = [...schemaFields]
-    .filter((field) => !internalDemoFields.has(field))
-    .sort();
+  const modelSchemaFields = schemaModelFields(schema);
   const contractFields = [...(collection.allFields ?? [])].sort();
-  if (modelSchemaFields.join("\n") !== contractFields.join("\n")) {
+  if (
+    collection.allFields &&
+    modelSchemaFields.join("\n") !== contractFields.join("\n")
+  ) {
     errors.push(
       `${label}: allFields differ from JSON schema model fields. ` +
       `expected [${modelSchemaFields.join(", ")}], actual ` +
@@ -186,6 +185,7 @@ function validateSchemaFieldProjection(collection, label) {
     );
   }
 
+  const internalDemoFields = new Set(schema["x-internal-demo-fields"] ?? []);
   const contractInternalDemoFields = [
     ...(collection.internalDemoFields ?? []),
   ].sort();
@@ -213,7 +213,7 @@ function validateRulesFieldAllowList(collection, label) {
     errors.push(`${label}: could not find hasValidUserShape hasOnly fields.`);
     return;
   }
-  const expected = [...(collection.allFields ?? [])].sort();
+  const expected = [...effectiveAllFields(collection)].sort();
   const actual = [...rulesFields].sort();
   if (expected.join("\n") !== actual.join("\n")) {
     errors.push(
@@ -247,8 +247,9 @@ function validateTypeContract(collection, label) {
     return;
   }
 
-  if (collection.allFields) {
-    const expected = [...collection.allFields].sort();
+  const fields = effectiveAllFields(collection);
+  if (fields.length > 0) {
+    const expected = [...fields].sort();
     const actual = [...generatedFields].sort();
     if (expected.join("\n") !== actual.join("\n")) {
       errors.push(
@@ -257,6 +258,20 @@ function validateTypeContract(collection, label) {
       );
     }
   }
+}
+
+function effectiveAllFields(collection) {
+  const schema = schemaByCollectionId.get(collection.id);
+  if (schema) return schemaModelFields(schema);
+  return collection.allFields ?? [];
+}
+
+function schemaModelFields(schema) {
+  const schemaFields = new Set(Object.keys(schema.properties ?? {}));
+  const internalDemoFields = new Set(schema["x-internal-demo-fields"] ?? []);
+  return [...schemaFields]
+    .filter((field) => !internalDemoFields.has(field))
+    .sort();
 }
 
 function extractInterfaceFields(source, interfaceName) {

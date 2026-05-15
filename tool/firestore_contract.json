@@ -9,9 +9,13 @@
       "owner": "public read, server/admin write",
       "read": "any user, authenticated or not",
       "write": "server/admin only",
-      "allFields": ["cityNames", "cities"],
-      "serverOwnedFields": ["cityNames", "cities"],
-      "migrationNotes": ["Rules fall back to the hard-coded city enum when this document is absent."]
+      "serverOwnedFields": [
+        "cityNames",
+        "cities"
+      ],
+      "migrationNotes": [
+        "Rules fall back to the hard-coded city enum when this document is absent."
+      ]
     },
     {
       "id": "users",
@@ -23,56 +27,6 @@
       "owner": "document id must equal Firebase Auth uid for client writes",
       "read": "owner only; app-facing user discovery reads publicProfiles",
       "write": "owner initial create; profile edits via updateUserProfile; narrow runtime direct updates only",
-      "allFields": [
-        "name",
-        "firstName",
-        "lastName",
-        "displayName",
-        "dateOfBirth",
-        "gender",
-        "phoneNumber",
-        "profileComplete",
-        "email",
-        "instagramHandle",
-        "profilePrompts",
-        "photoUrls",
-        "photoThumbnailUrls",
-        "photoPrompts",
-        "profilePhotos",
-        "city",
-        "latitude",
-        "longitude",
-        "interestedInGenders",
-        "minAgePreference",
-        "maxAgePreference",
-        "height",
-        "occupation",
-        "company",
-        "education",
-        "religion",
-        "languages",
-        "relationshipGoal",
-        "drinking",
-        "smoking",
-        "workout",
-        "diet",
-        "children",
-        "paceMinSecsPerKm",
-        "paceMaxSecsPerKm",
-        "preferredDistances",
-        "runningReasons",
-        "preferredRunTimes",
-        "prefsNewCatches",
-        "prefsMessages",
-        "prefsRunReminders",
-        "prefsRunStatusUpdates",
-        "prefsClubUpdates",
-        "prefsWeeklyDigest",
-        "prefsShowOnMap",
-        "fcmToken",
-        "deleted",
-        "deletedAt"
-      ],
       "clientWritableFields": [
         "name",
         "firstName",
@@ -120,9 +74,14 @@
         "prefsWeeklyDigest",
         "prefsShowOnMap"
       ],
-      "clientRuntimeWritableFields": ["fcmToken"],
+      "clientRuntimeWritableFields": [
+        "fcmToken"
+      ],
       "callableOwnedFields": [],
-      "serverOwnedFields": ["deleted", "deletedAt"],
+      "serverOwnedFields": [
+        "deleted",
+        "deletedAt"
+      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -187,8 +146,14 @@
             "prefsWeeklyDigest",
             "prefsShowOnMap"
           ],
-          "deniedFields": ["fcmToken", "deleted", "deletedAt"],
-          "rulesTestNames": ["allows owners to create the current UserProfile schema without legacy sexualOrientation"]
+          "deniedFields": [
+            "fcmToken",
+            "deleted",
+            "deletedAt"
+          ],
+          "rulesTestNames": [
+            "allows owners to create the current UserProfile schema without legacy sexualOrientation"
+          ]
         },
         {
           "id": "owner_profile_patch",
@@ -245,8 +210,13 @@
           "id": "runtime_direct_updates",
           "type": "directUpdate",
           "owner": "authenticated owner",
-          "allowedFields": ["fcmToken"],
-          "deniedFields": ["deleted", "deletedAt"],
+          "allowedFields": [
+            "fcmToken"
+          ],
+          "deniedFields": [
+            "deleted",
+            "deletedAt"
+          ],
           "rulesTestNames": [
             "denies direct profile edits but allows runtime FCM token updates"
           ]
@@ -270,19 +240,6 @@
       "read": "owner only",
       "write": "owner only; intentionally extensible draft payload",
       "extensible": true,
-      "allFields": [
-        "step",
-        "draftVersion",
-        "firstName",
-        "lastName",
-        "dateOfBirth",
-        "phoneNumber",
-        "countryCode",
-        "gender",
-        "interestedInGenders",
-        "instagramHandle",
-        "profilePrompts"
-      ],
       "clientWritableFields": [
         "step",
         "draftVersion",
@@ -296,14 +253,20 @@
         "instagramHandle",
         "profilePrompts"
       ],
-      "requiredFields": ["step"],
+      "requiredFields": [
+        "step"
+      ],
       "operations": [
         {
           "id": "owner_draft_write",
           "type": "directCreateOrUpdate",
           "owner": "authenticated owner",
-          "rulesMustContain": ["hasValidOnboardingDraftShape"],
-          "rulesTestNames": ["allows only the owner to read, write, and delete their draft"]
+          "rulesMustContain": [
+            "hasValidOnboardingDraftShape"
+          ],
+          "rulesTestNames": [
+            "allows only the owner to read, write, and delete their draft"
+          ]
         }
       ],
       "migrationNotes": [
@@ -319,34 +282,6 @@
       "owner": "syncPublicProfile trigger",
       "read": "authenticated users, except deleted or blocked relationships",
       "write": "server only",
-      "allFields": [
-        "name",
-        "age",
-        "gender",
-        "profilePrompts",
-        "photoUrls",
-        "photoThumbnailUrls",
-        "photoPrompts",
-        "profilePhotos",
-        "city",
-        "height",
-        "occupation",
-        "company",
-        "education",
-        "religion",
-        "relationshipGoal",
-        "drinking",
-        "smoking",
-        "workout",
-        "diet",
-        "children",
-        "paceMinSecsPerKm",
-        "paceMaxSecsPerKm",
-        "preferredDistances",
-        "runningReasons",
-        "preferredRunTimes",
-        "languages"
-      ],
       "triggerOwnedFields": [
         "name",
         "age",
@@ -383,7 +318,9 @@
         "demoOpsId",
         "demoOpsCommand"
       ],
-      "exportedFunctions": ["syncPublicProfile"]
+      "exportedFunctions": [
+        "syncPublicProfile"
+      ]
     },
     {
       "id": "runClubs",
@@ -395,30 +332,6 @@
       "owner": "run-club create/update/membership lifecycle is callable-owned; aggregate and next-run projections are trigger-owned",
       "read": "public",
       "write": "all run-club writes are callable-owned; direct client writes are denied",
-      "allFields": [
-        "name",
-        "description",
-        "location",
-        "area",
-        "hostUserId",
-        "hostName",
-        "hostAvatarUrl",
-        "createdAt",
-        "imageUrl",
-        "tags",
-        "memberCount",
-        "rating",
-        "reviewCount",
-        "nextRunAt",
-        "nextRunLabel",
-        "instagramHandle",
-        "phoneNumber",
-        "email",
-        "status",
-        "archived",
-        "archivedAt",
-        "archiveReason"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -471,16 +384,6 @@
       "owner": "run-club membership callables; syncRunClubMemberStats derives parent count",
       "read": "active memberships visible to authenticated users; historical memberships visible to the member",
       "write": "server only",
-      "allFields": [
-        "clubId",
-        "uid",
-        "role",
-        "status",
-        "pushNotificationsEnabled",
-        "joinedAt",
-        "leftAt",
-        "deletedAt"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -520,9 +423,14 @@
       "owner": "createRunClub callable",
       "read": "server only",
       "write": "server only",
-      "allFields": ["uid", "clubId", "createdAt"],
-      "serverOwnedFields": ["uid", "clubId", "createdAt"],
-      "exportedFunctions": ["createRunClub"],
+      "serverOwnedFields": [
+        "uid",
+        "clubId",
+        "createdAt"
+      ],
+      "exportedFunctions": [
+        "createRunClub"
+      ],
       "migrationNotes": [
         "One document per host UID enforces the product rule that a user can host at most one run club.",
         "Existing beta data should be backfilled with a host claim or reset before relying on this invariant in production."
@@ -538,28 +446,6 @@
       "owner": "host creates and edits runs through callables; booking, attendance, waitlist joins, and gender counts are backend-owned",
       "read": "public",
       "write": "all run writes are callable-owned; direct client writes are denied",
-      "allFields": [
-        "runClubId",
-        "startTime",
-        "endTime",
-        "meetingPoint",
-        "startingPointLat",
-        "startingPointLng",
-        "locationDetails",
-        "distanceKm",
-        "pace",
-        "capacityLimit",
-        "description",
-        "priceInPaise",
-        "bookedCount",
-        "checkedInCount",
-        "waitlistedCount",
-        "status",
-        "cancelledAt",
-        "cancellationReason",
-        "constraints",
-        "genderCounts"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -697,7 +583,9 @@
           "type": "callable",
           "owner": "waitlisted authenticated user",
           "function": "leaveRunWaitlist",
-          "allowedFields": ["waitlistedCount"],
+          "allowedFields": [
+            "waitlistedCount"
+          ],
           "rulesTestNames": [
             "denies direct run aggregate rewrites because roster actions are callable-owned"
           ]
@@ -717,7 +605,12 @@
       "embeddedTypes": [
         {
           "typescriptInterface": "RunConstraints",
-          "allFields": ["minAge", "maxAge", "maxMen", "maxWomen"]
+          "allFields": [
+            "minAge",
+            "maxAge",
+            "maxMen",
+            "maxWomen"
+          ]
         }
       ],
       "migrationNotes": [
@@ -735,21 +628,6 @@
       "owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
       "read": "participant, run-club host, or authenticated users for attended edges",
       "write": "server only",
-      "allFields": [
-        "runId",
-        "runClubId",
-        "uid",
-        "status",
-        "createdAt",
-        "updatedAt",
-        "signedUpAt",
-        "waitlistedAt",
-        "attendedAt",
-        "cancelledAt",
-        "deletedAt",
-        "genderAtSignup",
-        "paymentId"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -794,15 +672,6 @@
       "owner": "run scheduling callables",
       "read": "server/admin only",
       "write": "server only",
-      "allFields": [
-        "ownerType",
-        "ownerId",
-        "slot",
-        "runId",
-        "runClubId",
-        "startTimeMillis",
-        "endTimeMillis"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -838,16 +707,6 @@
       "owner": "run booking and waitlist callables",
       "read": "server/admin only",
       "write": "server only",
-      "allFields": [
-        "ownerType",
-        "ownerId",
-        "slot",
-        "runId",
-        "runClubId",
-        "uid",
-        "startTimeMillis",
-        "endTimeMillis"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -888,7 +747,6 @@
       "owner": "authenticated owner",
       "read": "owner only",
       "write": "owner direct create/delete only",
-      "allFields": ["uid", "runId", "savedAt", "removedAt"],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -897,13 +755,21 @@
         "demoOpsId",
         "demoOpsCommand"
       ],
-      "clientWritableFields": ["uid", "runId", "savedAt"],
+      "clientWritableFields": [
+        "uid",
+        "runId",
+        "savedAt"
+      ],
       "operations": [
         {
           "id": "owner_save_run",
           "type": "directCreate",
           "owner": "authenticated owner",
-          "allowedFields": ["uid", "runId", "savedAt"]
+          "allowedFields": [
+            "uid",
+            "runId",
+            "savedAt"
+          ]
         },
         {
           "id": "owner_unsave_run",
@@ -924,17 +790,6 @@
       "owner": "payments callables",
       "read": "payment owner only",
       "write": "server only",
-      "allFields": [
-        "userId",
-        "orderId",
-        "paymentId",
-        "runId",
-        "amount",
-        "currency",
-        "status",
-        "signUpFailed",
-        "createdAt"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -954,7 +809,10 @@
         "signUpFailed",
         "createdAt"
       ],
-      "exportedFunctions": ["createRazorpayOrder", "verifyRazorpayPayment"]
+      "exportedFunctions": [
+        "createRazorpayOrder",
+        "verifyRazorpayPayment"
+      ]
     },
     {
       "id": "reviews",
@@ -966,16 +824,6 @@
       "owner": "review mutations are callable-owned; aggregate stats are trigger-owned",
       "read": "authenticated users",
       "write": "all review writes are callable-owned; direct client writes are denied",
-      "allFields": [
-        "runClubId",
-        "runId",
-        "reviewerUserId",
-        "reviewerName",
-        "rating",
-        "comment",
-        "createdAt",
-        "updatedAt"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -1003,7 +851,10 @@
             "rating",
             "comment"
           ],
-          "pathDataFields": ["runId", "reviewerUserId"],
+          "pathDataFields": [
+            "runId",
+            "reviewerUserId"
+          ],
           "rulesMustContain": [
             "allow write: if false"
           ],
@@ -1016,7 +867,10 @@
           "type": "callable",
           "owner": "updateRunReview",
           "function": "updateRunReview",
-          "allowedFields": ["rating", "comment"],
+          "allowedFields": [
+            "rating",
+            "comment"
+          ],
           "deniedFields": [
             "runClubId",
             "runId",
@@ -1052,18 +906,6 @@
       "owner": "swiper owns outgoing swipe create",
       "read": "swiper only",
       "write": "swiper create only",
-      "allFields": [
-        "swiperId",
-        "targetId",
-        "runId",
-        "direction",
-        "reactionTargetId",
-        "reactionTargetType",
-        "reactionTargetLabel",
-        "reactionTargetPreview",
-        "comment",
-        "createdAt"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -1084,7 +926,9 @@
         "comment",
         "createdAt"
       ],
-      "exportedFunctions": ["onSwipeCreated"],
+      "exportedFunctions": [
+        "onSwipeCreated"
+      ],
       "operations": [
         {
           "id": "owner_outgoing_create",
@@ -1102,8 +946,13 @@
             "comment",
             "createdAt"
           ],
-          "pathDataFields": ["swiperId", "targetId"],
-          "rulesMustContain": ["hasValidSwipeCreate(userId, targetId)"],
+          "pathDataFields": [
+            "swiperId",
+            "targetId"
+          ],
+          "rulesMustContain": [
+            "hasValidSwipeCreate(userId, targetId)"
+          ],
           "rulesTestNames": [
             "allows attended users to create valid outgoing swipes",
             "denies malformed swipe payloads",
@@ -1121,20 +970,6 @@
       "owner": "matching triggers own lifecycle; participants may reset only their unread count",
       "read": "participants only",
       "write": "server create/delete/status; participant unread reset only",
-      "allFields": [
-        "user1Id",
-        "user2Id",
-        "runIds",
-        "createdAt",
-        "lastMessageAt",
-        "lastMessagePreview",
-        "lastMessageSenderId",
-        "unreadCounts",
-        "status",
-        "blockedBy",
-        "blockedAt",
-        "participantIds"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -1143,7 +978,9 @@
         "demoOpsId",
         "demoOpsCommand"
       ],
-      "clientRuntimeWritableFields": ["unreadCounts"],
+      "clientRuntimeWritableFields": [
+        "unreadCounts"
+      ],
       "triggerOwnedFields": [
         "user1Id",
         "user2Id",
@@ -1157,7 +994,11 @@
         "blockedAt",
         "participantIds"
       ],
-      "exportedFunctions": ["onSwipeCreated", "onMatchCreated", "onMessageCreated"]
+      "exportedFunctions": [
+        "onSwipeCreated",
+        "onMatchCreated",
+        "onMessageCreated"
+      ]
     },
     {
       "id": "chat_messages",
@@ -1168,7 +1009,6 @@
       "owner": "active match participant creates message; triggers own derived match preview/unread/moderation",
       "read": "active match participants",
       "write": "sender create only",
-      "allFields": ["senderId", "text", "imageUrl", "sentAt"],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -1177,8 +1017,16 @@
         "demoOpsId",
         "demoOpsCommand"
       ],
-      "clientWritableFields": ["senderId", "text", "imageUrl", "sentAt"],
-      "exportedFunctions": ["onMessageCreated", "moderateChatMessage"]
+      "clientWritableFields": [
+        "senderId",
+        "text",
+        "imageUrl",
+        "sentAt"
+      ],
+      "exportedFunctions": [
+        "onMessageCreated",
+        "moderateChatMessage"
+      ]
     },
     {
       "id": "activity_notifications",
@@ -1190,19 +1038,6 @@
       "owner": "notification fan-out Cloud Functions and booking callables",
       "read": "notification owner only",
       "write": "server create/content only; owner may mark read",
-      "allFields": [
-        "uid",
-        "type",
-        "title",
-        "body",
-        "createdAt",
-        "readAt",
-        "matchId",
-        "runId",
-        "runClubId",
-        "actorUid",
-        "actorName"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -1211,7 +1046,9 @@
         "demoOpsId",
         "demoOpsCommand"
       ],
-      "clientRuntimeWritableFields": ["readAt"],
+      "clientRuntimeWritableFields": [
+        "readAt"
+      ],
       "serverOwnedFields": [
         "uid",
         "type",
@@ -1246,13 +1083,6 @@
       "owner": "safety callables and block trigger",
       "read": "users involved in the block edge",
       "write": "server only",
-      "allFields": [
-        "blockerUserId",
-        "blockedUserId",
-        "createdAt",
-        "source",
-        "reasonCode"
-      ],
       "callableOwnedFields": [
         "blockerUserId",
         "blockedUserId",
@@ -1260,7 +1090,11 @@
         "source",
         "reasonCode"
       ],
-      "exportedFunctions": ["blockUser", "unblockUser", "onBlockCreated"]
+      "exportedFunctions": [
+        "blockUser",
+        "unblockUser",
+        "onBlockCreated"
+      ]
     },
     {
       "id": "reports",
@@ -1270,16 +1104,6 @@
       "owner": "reportUser callable",
       "read": "server/admin only",
       "write": "server only",
-      "allFields": [
-        "reporterUserId",
-        "targetUserId",
-        "createdAt",
-        "source",
-        "status",
-        "reasonCode",
-        "contextId",
-        "notes"
-      ],
       "callableOwnedFields": [
         "reporterUserId",
         "targetUserId",
@@ -1290,7 +1114,9 @@
         "contextId",
         "notes"
       ],
-      "exportedFunctions": ["reportUser"]
+      "exportedFunctions": [
+        "reportUser"
+      ]
     },
     {
       "id": "moderationFlags",
@@ -1300,17 +1126,6 @@
       "owner": "moderation triggers",
       "read": "server/admin only",
       "write": "server only",
-      "allFields": [
-        "targetUserId",
-        "flagType",
-        "source",
-        "status",
-        "createdAt",
-        "reviewedAt",
-        "contextId",
-        "context",
-        "safeSearchResults"
-      ],
       "triggerOwnedFields": [
         "targetUserId",
         "flagType",
@@ -1322,7 +1137,10 @@
         "context",
         "safeSearchResults"
       ],
-      "exportedFunctions": ["moderatePhotoOnUpload", "moderateChatMessage"]
+      "exportedFunctions": [
+        "moderatePhotoOnUpload",
+        "moderateChatMessage"
+      ]
     },
     {
       "id": "deletedUsers",
@@ -1331,9 +1149,14 @@
       "owner": "requestAccountDeletion callable and account cleanup graph",
       "read": "server/admin only",
       "write": "server only",
-      "allFields": ["uid", "deletedAt", "retainedFor"],
-      "serverOwnedFields": ["uid", "deletedAt", "retainedFor"],
-      "exportedFunctions": ["requestAccountDeletion"]
+      "serverOwnedFields": [
+        "uid",
+        "deletedAt",
+        "retainedFor"
+      ],
+      "exportedFunctions": [
+        "requestAccountDeletion"
+      ]
     },
     {
       "id": "rateLimits",
@@ -1342,9 +1165,16 @@
       "owner": "shared callable rate-limit middleware",
       "read": "server/admin only",
       "write": "server only",
-      "allFields": ["uid", "action", "windowKey", "count", "expiresAt"],
-      "serverOwnedFields": ["uid", "action", "windowKey", "count", "expiresAt"],
-      "migrationNotes": ["Requires a Firestore TTL policy on expiresAt."]
+      "serverOwnedFields": [
+        "uid",
+        "action",
+        "windowKey",
+        "count",
+        "expiresAt"
+      ],
+      "migrationNotes": [
+        "Requires a Firestore TTL policy on expiresAt."
+      ]
     },
     {
       "id": "functionEventReceipts",
@@ -1353,13 +1183,6 @@
       "owner": "idempotent Cloud Function trigger handlers",
       "read": "server/admin only",
       "write": "server only",
-      "allFields": [
-        "handler",
-        "eventId",
-        "matchId",
-        "messageId",
-        "createdAt"
-      ],
       "serverOwnedFields": [
         "handler",
         "eventId",
@@ -1367,8 +1190,12 @@
         "messageId",
         "createdAt"
       ],
-      "exportedFunctions": ["onMessageCreated"],
-      "migrationNotes": ["Used to avoid duplicate unread-count increments when Firestore triggers retry."]
+      "exportedFunctions": [
+        "onMessageCreated"
+      ],
+      "migrationNotes": [
+        "Used to avoid duplicate unread-count increments when Firestore triggers retry."
+      ]
     },
     {
       "id": "seedRuns",
@@ -1377,16 +1204,6 @@
       "owner": "demo data seeding tooling",
       "read": "server/admin only",
       "write": "server/admin only",
-      "allFields": [
-        "seedId",
-        "manifestId",
-        "generatedAt",
-        "anchorUserIds",
-        "counts",
-        "paths",
-        "appendMode",
-        "appendedAnchorUserIds"
-      ],
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
