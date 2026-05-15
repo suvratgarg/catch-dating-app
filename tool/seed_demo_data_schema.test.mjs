@@ -335,6 +335,7 @@ function validUserProfileDoc() {
     photoUrls: ["https://example.test/runner-one.jpg"],
     photoThumbnailUrls: ["https://example.test/runner-one-thumb.jpg"],
     photoPrompts: [validPhotoPromptAnswer()],
+    profilePhotos: validProfilePhotos(),
     city: "mumbai",
     latitude: 19.076,
     longitude: 72.8777,
@@ -380,6 +381,7 @@ function validPublicProfileDoc() {
     photoUrls: ["https://example.test/runner-one.jpg"],
     photoThumbnailUrls: ["https://example.test/runner-one-thumb.jpg"],
     photoPrompts: [validPhotoPromptAnswer()],
+    profilePhotos: validProfilePhotos(),
     city: "mumbai",
     height: 168,
     occupation: "Designer",
@@ -578,6 +580,21 @@ function validPhotoPromptAnswer() {
     prompt: photoPrompt.title,
     caption: "Race day, before the nerves kicked in.",
   };
+}
+
+function validProfilePhotos() {
+  return [{
+    id: "runner_one_0",
+    url: "https://example.test/runner-one.jpg",
+    thumbnailUrl: "https://example.test/runner-one-thumb.jpg",
+    storagePath: "users/legacy/photos/0.jpg",
+    thumbnailStoragePath: "users/legacy/photoThumbnails/0.jpg",
+    prompt: validPhotoPromptAnswer(),
+    moderation: null,
+    position: 0,
+    createdAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
+    updatedAt: fakeTimestamp("1970-01-01T00:00:00.000Z"),
+  }];
 }
 
 function fakeTimestamp(iso) {

@@ -28,8 +28,9 @@ operational drag. The same concepts are currently declared in several places:
 - Dart Freezed/json_serializable domain models.
 - Dart profile validation helpers.
 - Dart prompt catalogs.
-- Generated TypeScript interfaces in `functions/src/shared/firestore.ts`.
-- Handwritten Zod schemas inside Cloud Functions.
+- Transitional TypeScript Admin SDK interfaces in
+  `functions/src/shared/firestore.ts`.
+- Generated Ajv validators inside Cloud Functions.
 - `tool/firestore_contract.json` ownership and field metadata.
 - Firestore rules shape checks.
 - Rules emulator fixtures.
@@ -44,9 +45,12 @@ Functions, rules, data validation, and seed tooling.
 
 Existing useful pieces:
 
-- `tool/generate_firestore_types.dart` already generates
-  `functions/src/shared/firestore.ts` from selected Dart models plus
-  `tool/firestore_ts_overlay.json`.
+- `tool/generate_firestore_types.dart` still generates the transitional
+  Cloud Functions Admin SDK facade at `functions/src/shared/firestore.ts` from
+  selected Dart models plus `tool/firestore_ts_overlay.json`.
+- `tool/generate_schema_contracts.mjs` generates schema-owned TypeScript
+  interfaces, Ajv validators, Dart constants, schema registries, and
+  tool-time validators from `contracts/`.
 - `tool/check_data_contract.sh` already checks generated Firestore TS types,
   generated business constants, Firestore contract metadata, validator syntax,
   Functions lint/tests, Firestore rules tests, and focused Flutter tests.
@@ -55,7 +59,7 @@ Existing useful pieces:
 - `tool/business_rules.json` generates shared Dart and TypeScript constants.
 - `lib/user_profile/domain/profile_validation.dart` owns app-side profile
   constraints today.
-- `functions/src/profiles/updateUserProfile.ts` owns handwritten Zod patch
+- `functions/src/profiles/updateUserProfile.ts` consumes generated Ajv patch
   validation today.
 - `lib/user_profile/domain/profile_prompts.dart` owns the current profile/photo
   prompt catalog today.
@@ -88,8 +92,9 @@ Recommended canonical format:
 - Ajv in Node/Functions/tooling for runtime validation.
 - `json-schema-to-typescript` for generated TypeScript types where useful.
 - Dart `json_schema` package for tool/test-time validation and golden fixtures.
-- Keep Zod temporarily only as a migration bridge where replacing it would add
-  too much churn in one pass.
+- Zod has been removed from Functions validation. New callable validation must
+  be described in `contracts/callables` or `contracts/patches` and consumed via
+  generated Ajv validators.
 
 Why draft-07:
 
@@ -745,6 +750,84 @@ migration without switching live reads or writes:
 
 Result: design/scope complete; no live model migration has started.
 
+### 2026-05-15: Phase 10 Profile Photo Dual-Read/Dual-Write Migration
+
+Started the live `ProfilePhoto` migration that had previously only been
+scoped:
+
+- Added a Dart `ProfilePhoto` domain object and threaded optional
+  `profilePhotos` through `UserProfile` and `PublicProfile` while preserving
+  the legacy `photoUrls`, `photoThumbnailUrls`, and `photoPrompts` arrays.
+- Added effective-photo getters so profile rendering and avatar-scale reads
+  prefer grouped `profilePhotos` and synthesize grouped objects from legacy
+  arrays for old documents.
+- Updated uploads to write grouped `profilePhotos` plus the legacy arrays in
+  the same profile update callable payload.
+- Updated photo prompt edits, thumbnail generation, moderation deletion,
+  public-profile projection, seed generation, and projection repair tooling to
+  keep grouped photos and legacy arrays in sync.
+- Added `tool/backfill_profile_photos.mjs`, a dry-run-first migration tool that
+  derives grouped photos from legacy arrays, validates each `ProfilePhoto`
+  against the generated schema, and can repair `users/{uid}` plus
+  `publicProfiles/{uid}` with `--apply`.
+- Updated `contracts/migrations/profile_photos_storage.json` from
+  design-scoped to `dual_write_backfill_ready`.
+
+Result: `profilePhotos` is now a real optional document field with
+dual-read/dual-write support. Legacy arrays remain intentionally present for
+the current app build and can be retired only after forced-update coverage is
+acceptable.
+
+Follow-up closed on 2026-05-16:
+
+- Account deletion now deletes Storage objects referenced by grouped
+  `profilePhotos`, clears the grouped field, and still clears the legacy photo
+  arrays.
+- The legacy thumbnail backfill script now updates grouped `profilePhotos` when
+  it generates missing thumbnails, while continuing to maintain
+  `photoThumbnailUrls` for compatibility.
+- Edit Profile photo grid and photo-caption rows now render through
+  `effectiveProfilePhotos` instead of reading `photoUrls` directly.
+- `tool/check_data_contract.sh` now syntax-checks the thumbnail backfill script
+  and runs the profile-photo backfill tests.
+
+Proof:
+
+```bash
+npm --prefix functions run build
+npm --prefix functions run lint
+dart analyze lib/user_profile/domain/profile_photo.dart lib/user_profile/domain/user_profile.dart lib/public_profile/domain/public_profile.dart lib/image_uploads/data/image_upload_repository.dart lib/image_uploads/presentation/photo_upload_controller.dart lib/swipes/presentation/profile_card_content.dart lib/user_profile/presentation/widgets/profile_tab.dart lib/user_profile/presentation/widgets/profile_inline_editors.dart
+node tool/validate_schema_contracts.mjs
+node tool/check_firestore_contract.mjs
+node --test tool/backfill_profile_photos.test.mjs tool/recompute_public_profiles.test.mjs tool/profile_projection_parity.test.mjs tool/seed_demo_data_schema.test.mjs tool/seed_demo_data_append.test.mjs
+node --test functions/lib/safety/accountDeletion.test.js
+./tool/check_data_contract.sh
+```
+
+### 2026-05-15: Generator Boundary Cleanup
+
+Resolved the immediate duplicate-generator ambiguity without pretending the
+Admin SDK typing facade can be deleted in the same step:
+
+- `contracts/` and `tool/generate_schema_contracts.mjs` are the canonical
+  source for persisted field shape, callable payload schemas, prompt catalogs,
+  generated Ajv validators, generated schema registries, and Dart schema
+  constants.
+- `functions/src/shared/firestore.ts` is now documented as a transitional
+  Cloud Functions Admin SDK facade for code that reads and writes live
+  `FirebaseFirestore.Timestamp` values.
+- `tool/firestore_ts_overlay.json` should only carry transitional Admin SDK or
+  server-only typing gaps. New persisted fields should start in JSON Schema and
+  be projected into this facade only while Functions code still imports it.
+- `functions/README.md` now points new callable validation work to generated
+  Ajv validators instead of the removed Zod path.
+
+Remaining work: replace the Dart-driven Admin SDK facade with a schema-driven
+Admin SDK type generator, or migrate Function imports to generated schema types
+plus explicit Firestore runtime adapters. That is a separate refactor because
+the current generated document types intentionally model serialized fixture
+timestamps rather than live Admin SDK timestamp instances.
+
 ### 2026-05-15: Phase 6 Ownership/Rules Drift Checks
 
 Added schema-to-ownership checks around profile field lists:
@@ -1357,7 +1440,7 @@ backfill/parity tooling were all in place.
 | Full document and patch semantics get conflated. | Keep separate full-document and operation-specific patch schemas. |
 | Firestore rules are over-generated and become unreadable. | Start with metadata checks and generated constants, not a full rules compiler. |
 | Freezed model generation fights contract generation. | Keep Freezed as the app model layer initially; generate constants/validators first. |
-| Zod and Ajv coexist too long. | Track each callable migration and require either generated Ajv usage or parity tests. |
+| Generated schema types and Admin SDK facade types diverge. | Keep JSON Schema canonical and document `functions/src/shared/firestore.ts` as a transitional runtime facade until a schema-driven Admin SDK generator replaces it. |
 | Seed validation slows down demo operations. | Compile validators once and validate planned docs before network writes. |
 | Live production data has legacy shape. | Use dry-run-first repair scripts and environment gates before tightening rules. |
 | Contract files become another stale source of truth. | CI must fail stale generated output and schema fixture drift. |
@@ -1385,7 +1468,8 @@ collection or a risky storage rename at once.
 | --- | --- |
 | 2026-05-15 | Use contract-first JSON Schema governance rather than Dart-only, Zod-only, or seeder-local schemas. |
 | 2026-05-15 | Keep TypeScript Cloud Functions for production because Dart Functions support is experimental and does not deploy Firestore triggers yet. |
-| 2026-05-15 | Prefer Ajv for Node/runtime contract validation; keep Zod only as a transitional bridge or parity-checked wrapper. |
+| 2026-05-15 | Prefer Ajv for Node/runtime contract validation; remove Zod from Functions once callables are contract-generated. |
+| 2026-05-15 | Keep `functions/src/shared/firestore.ts` only as a transitional Admin SDK typing facade; do not use it as canonical schema truth. |
 | 2026-05-15 | Start migration with profiles/prompts/seeding before broader Firestore collection coverage. |
 
 ## Resume Notes

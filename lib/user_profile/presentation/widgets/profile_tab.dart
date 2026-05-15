@@ -12,6 +12,7 @@ import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -117,6 +118,8 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
   Widget build(BuildContext context) {
     final user = widget.user;
     final uploadState = widget.uploadState;
+    final profilePhotos = user.effectiveProfilePhotos;
+    final photoUrls = profilePhotoUrls(profilePhotos);
     final profileQuality = profileQualitySummary(
       publicProfileFromUserProfile(user),
     );
@@ -376,9 +379,9 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           );
         })
         .toList(growable: false);
-    final photoCaptions = user.photoUrls.indexed
-        .map((indexedPhoto) {
-          final index = indexedPhoto.$1;
+    final photoCaptions = profilePhotos
+        .map((photo) {
+          final index = photo.position;
           return _photoPromptEntry(
             context: context,
             user: user,
@@ -392,7 +395,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       _ProfileQualityGuidanceCard(summary: profileQuality),
       gapH14,
       PhotoGrid(
-        photoUrls: user.photoUrls,
+        photoUrls: photoUrls,
         loadingIndices: uploadState.loadingIndices,
         onSlotTapped: (index) {
           unawaited(
@@ -456,6 +459,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     String Function(String value)? normalizeInput,
     FormFieldValidator<String>? validator,
     Object? Function(String value)? toFieldValue,
+    Map<String, dynamic> Function(String value)? toFields,
   }) {
     final editorTitle = title ?? label;
     final editorKey = expansionKey ?? fieldName;
@@ -482,6 +486,7 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
         autofillHints: autofillHints,
         validator: validator,
         toFieldValue: toFieldValue,
+        toFields: toFields,
         onSaved: _collapseField,
         onCancel: _collapseField,
       ),
@@ -531,7 +536,12 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     required int photoIndex,
     required PhotoPromptDefinition definition,
   }) {
-    final answer = photoPromptByIndex(user.photoPrompts, photoIndex);
+    final answer =
+        user.effectiveProfilePhotos
+            .where((photo) => photo.position == photoIndex)
+            .firstOrNull
+            ?.prompt ??
+        photoPromptByIndex(user.photoPrompts, photoIndex);
     final caption = answer?.caption ?? '';
     return _textEntry(
       context: context,
@@ -557,6 +567,31 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           caption: value,
         ),
       ),
+      toFields: (value) {
+        final photoPromptJson = photoPromptsToJson(
+          replacePhotoPromptAnswer(
+            current: user.photoPrompts,
+            photoIndex: photoIndex,
+            definition: definition,
+            caption: value,
+          ),
+        );
+        final updatedProfilePhotos = [
+          for (final photo in user.effectiveProfilePhotos)
+            if (photo.position == photoIndex)
+              replaceProfilePhotoPrompt(
+                photo: photo,
+                definition: definition,
+                caption: value,
+              )
+            else
+              photo,
+        ];
+        return {
+          'photoPrompts': photoPromptJson,
+          'profilePhotos': profilePhotosToJson(updatedProfilePhotos),
+        };
+      },
     );
   }
 

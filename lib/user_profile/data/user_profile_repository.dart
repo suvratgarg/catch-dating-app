@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -98,6 +99,24 @@ class UserProfileRepository {
     fields: {'photoUrls': photoUrls},
     action: 'update photo URLs',
   );
+
+  Future<void> updateProfilePhotos({
+    required String uid,
+    required List<ProfilePhoto> profilePhotos,
+    required List<String> photoUrls,
+  }) {
+    final normalizedPhotos = normalizeProfilePhotos(profilePhotos);
+    return updateUserProfile(
+      uid: uid,
+      fields: {
+        'profilePhotos': profilePhotosToJson(normalizedPhotos),
+        'photoUrls': photoUrls,
+        'photoThumbnailUrls': profilePhotoThumbnailUrls(normalizedPhotos),
+        'photoPrompts': profilePhotoPromptsToJson(normalizedPhotos),
+      },
+      action: 'update profile photos',
+    );
+  }
 
   Future<void> updateDetectedLocation({
     required String uid,

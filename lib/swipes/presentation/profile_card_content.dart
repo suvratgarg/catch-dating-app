@@ -22,7 +22,7 @@ class ProfileCardContent {
     UserProfile? viewerProfile,
     String? sharedRunTitle,
   }) {
-    final photos = profile.photoUrls;
+    final photos = profile.effectiveProfilePhotos;
     final occupation = _trimToNull(profile.occupation);
     final company = _trimToNull(profile.company);
 
@@ -58,17 +58,13 @@ class ProfileCardContent {
         (icon: Icons.child_friendly_outlined, text: profile.children!.label),
     ];
 
-    final photoPrompts = {
-      for (final prompt in normalizePhotoPromptAnswers(profile.photoPrompts))
-        prompt.photoIndex: prompt,
-    };
     final additionalPhotos = photos.indexed
         .skip(1)
-        .map((photo) => (url: photo.$2, prompt: photoPrompts[photo.$1]))
+        .map((photo) => (url: photo.$2.url, prompt: photo.$2.prompt))
         .toList(growable: false);
 
     return ProfileCardContent(
-      primaryPhotoUrl: photos.firstOrNull,
+      primaryPhotoUrl: photos.firstOrNull?.url,
       additionalPhotos: additionalPhotos,
       attributes: attributes,
       lifestyle: lifestyle,

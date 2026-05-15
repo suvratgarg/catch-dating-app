@@ -122,6 +122,49 @@ function downloadUrlContainsPath(url: string, filePath: string) {
   return url.includes(encodedPath) || url.includes(filePath);
 }
 
+/**
+ * Removes a blocked profile photo from the grouped ProfilePhoto array.
+ * @param {object} input Removal input.
+ * @param {unknown} input.profilePhotos Stored profilePhotos value.
+ * @param {number|null} input.photoIndex Legacy slot index.
+ * @param {string} input.filePath Blocked Storage object path.
+ * @return {unknown[] | null} Updated photos, or null when absent.
+ */
+function removeBlockedProfilePhoto({
+  profilePhotos,
+  photoIndex,
+  filePath,
+}: {
+  profilePhotos: unknown;
+  photoIndex: number | null;
+  filePath: string;
+}): unknown[] | null {
+  if (!Array.isArray(profilePhotos)) return null;
+  return profilePhotos.filter((photo) => {
+    if (!isRecord(photo)) return true;
+    const position = photo.position;
+    const storagePath = typeof photo.storagePath === "string" ?
+      photo.storagePath :
+      undefined;
+    const url = typeof photo.url === "string" ? photo.url : undefined;
+    return !(
+      photoIndex !== null &&
+      position === photoIndex &&
+      (storagePath === filePath ||
+        (url !== undefined && downloadUrlContainsPath(url, filePath)))
+    );
+  });
+}
+
+/**
+ * Checks for a plain object record.
+ * @param {unknown} value Candidate value.
+ * @return {boolean} True for non-array object records.
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
 // ── Handler ────────────────────────────────────────────────────────────────
 
 /**
@@ -230,9 +273,15 @@ export const moderatePhotoOnUpload = onObjectFinalized(
               ) {
                 updatedThumbnailUrls.splice(photoIndex, 1);
               }
+              const profilePhotos = removeBlockedProfilePhoto({
+                profilePhotos: data.profilePhotos,
+                photoIndex,
+                filePath,
+              });
               tx.update(userRef, {
                 photoUrls: updatedPhotoUrls,
                 photoThumbnailUrls: updatedThumbnailUrls,
+                ...(profilePhotos && {profilePhotos}),
               });
             });
           }

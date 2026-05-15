@@ -58,10 +58,11 @@ options when specific functions need higher or lower limits.
 | Module | Purpose |
 |--------|---------|
 | `src/shared/callableOptions.ts` | App Check enforcement policy |
-| `src/shared/firestore.ts` | Document type interfaces for every collection |
+| `src/shared/firestore.ts` | Transitional Admin SDK document type facade for code that reads/writes Firestore `Timestamp` values |
+| `src/shared/generated/` | Contract-generated JSON Schema types and Ajv validators |
 | `src/shared/rateLimit.ts` | Per-user Firestore-transaction rate limiter + IP limiter |
 | `src/shared/auth.ts` | `requireAuth()` helper (extracts uid from callable request) |
-| `src/shared/validation.ts` | `validateCallable()` — Zod-based request body validation |
+| `src/shared/validation.ts` | `validateCallableWithAjv()` — generated Ajv request body validation |
 | `src/shared/dates.ts` | `computeAge()` — shared DOB → age helper |
 | `src/moderation/textFilter.ts` | `moderateText()` — block/flag word list checker |
 
@@ -80,9 +81,10 @@ per-IP counter (3 POSTs per hour). This does not survive cold starts.
 
 **Photos:** `moderatePhotoOnUpload` runs Google Cloud Vision SafeSearch on
 every Storage upload. Images with `VERY_LIKELY` adult/violent content are
-deleted and their URLs removed from the user's `photoUrls`. `LIKELY` content
-is flagged for human review. Requires Cloud Vision API enabled on the GCP
-project.
+deleted and removed from the user's grouped `profilePhotos` plus legacy
+`photoUrls`/`photoThumbnailUrls`/`photoPrompts` compatibility arrays. `LIKELY`
+content is flagged for human review. Requires Cloud Vision API enabled on the
+GCP project.
 
 **Text:** `moderateChatMessage` checks every chat message against a block-list
 (hate speech, slurs, explicit content, self-harm) and a flag-list (profanity,
@@ -129,26 +131,33 @@ enforcement.
 
 ## Request validation
 
-Callable functions that accept structured user input should use
-`validateCallable(request, schema)` from `src/shared/validation.ts` with a
-Zod schema:
+Callable functions that accept structured user input should use a generated
+Ajv validator from `src/shared/generated/schemaValidators.ts` with
+`validateCallableWithAjv(request, validator)` from `src/shared/validation.ts`:
 
 ```ts
-import {z} from "zod";
-import {validateCallable} from "../shared/validation";
+import {CreateRunCallablePayload} from "../shared/generated/createRunCallablePayload";
+import {validateCreateRunCallablePayload} from "../shared/generated/schemaValidators";
+import {validateCallableWithAjv} from "../shared/validation";
 
-const MySchema = z.object({
-  runId: z.string(),
-  reasonCode: z.string().max(64).optional(),
-});
-
-const data = validateCallable(request, MySchema);
-// data is typed — `data.runId` is string, `data.reasonCode` is string | undefined
+const data = validateCallableWithAjv<CreateRunCallablePayload>(
+  request,
+  validateCreateRunCallablePayload,
+  normalizeCreateRunPayload,
+);
 ```
 
-This replaces manual type assertions and ad-hoc validation. Zod rejects invalid
-requests with a descriptive `invalid-argument` HttpsError before business logic
-runs.
+Contract sources live under `contracts/`. Regenerate TypeScript validators and
+types with `node tool/generate_schema_contracts.mjs`; `./tool/check_data_contract.sh`
+fails if generated output is stale. Normalization stays explicit at the callable
+boundary so JSON Schema validation remains side-effect free.
+
+`src/shared/firestore.ts` still exists as a transitional Admin SDK type facade
+because Firestore-triggered Functions operate on `FirebaseFirestore.Timestamp`
+instances, while the contract-generated document types intentionally describe
+serialized JSON-schema fixture shapes. Do not add new validation logic or
+canonical field definitions there; add or edit the relevant schema in
+`contracts/` first.
 
 ## Secrets
 

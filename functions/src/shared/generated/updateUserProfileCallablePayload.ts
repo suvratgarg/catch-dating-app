@@ -30,9 +30,42 @@ export interface UpdateUserProfileCallablePayload {
      */
     photoUrls?: string[];
     /**
+     * @maxItems 12
+     */
+    photoThumbnailUrls?: string[];
+    /**
      * @maxItems 6
      */
     photoPrompts?: PhotoPromptAnswer[];
+    /**
+     * @maxItems 6
+     */
+    profilePhotos?: {
+      id: string;
+      url: string;
+      thumbnailUrl: string;
+      storagePath: string;
+      thumbnailStoragePath: string;
+      prompt?: {
+        photoIndex: number;
+        promptId:
+          | "proofIRun"
+          | "postRunRitual"
+          | "favoriteRoute"
+          | "raceDayEnergy"
+          | "runningBuddy";
+        prompt: string;
+        caption: string;
+      } | null;
+      moderation?: {
+        status: "pending" | "approved" | "rejected";
+        reason?: string | null;
+        reviewedAt?: number | null;
+      } | null;
+      position: number;
+      createdAt: number;
+      updatedAt: number;
+    }[];
     city?: string | null;
     latitude?: number | null;
     longitude?: number | null;

@@ -4,6 +4,7 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -65,7 +66,7 @@ class PhotoUploadController extends _$PhotoUploadController {
 
     try {
       final uid = requireSignedInUid(ref, action: 'upload photos');
-      final url = await repo.uploadUserPhoto(
+      final upload = await repo.uploadUserProfilePhoto(
         uid: uid,
         index: index,
         image: photo,
@@ -74,7 +75,7 @@ class PhotoUploadController extends _$PhotoUploadController {
         userProfileRepository: userProfileRepository,
         uid: uid,
         index: index,
-        url: url,
+        upload: upload,
       );
 
       if (!ref.mounted) return;
@@ -132,18 +133,35 @@ class PhotoUploadController extends _$PhotoUploadController {
     required UserProfileRepository userProfileRepository,
     required String uid,
     required int index,
-    required String url,
+    required UploadedImage upload,
   }) {
     return _serializePhotoWrite(() async {
       final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
-      final updatedUrls = _replacePhotoUrlAtIndex(
-        photoUrls: latestUser?.photoUrls ?? const [],
+      final basePhotos = latestUser?.effectiveProfilePhotos ?? const [];
+      final existingPrompt = basePhotos
+          .where((photo) => photo.position == index)
+          .firstOrNull
+          ?.prompt;
+      final uploadedPhoto = ProfilePhoto.uploaded(
+        position: index,
+        url: upload.url,
+        storagePath: upload.storagePath,
+        prompt: existingPrompt,
+      );
+      final updatedPhotos = _replaceProfilePhotoAtIndex(
+        profilePhotos: basePhotos,
         index: index,
-        url: url,
+        photo: uploadedPhoto,
+      );
+      final updatedUrls = _replacePhotoUrlAtIndex(
+        photoUrls: profilePhotoUrls(updatedPhotos),
+        index: index,
+        url: upload.url,
       );
 
-      await userProfileRepository.updatePhotoUrls(
+      await userProfileRepository.updateProfilePhotos(
         uid: uid,
+        profilePhotos: updatedPhotos,
         photoUrls: updatedUrls,
       );
     });
@@ -184,5 +202,18 @@ class PhotoUploadController extends _$PhotoUploadController {
       updatedUrls.add(url);
     }
     return updatedUrls;
+  }
+
+  static List<ProfilePhoto> _replaceProfilePhotoAtIndex({
+    required List<ProfilePhoto> profilePhotos,
+    required int index,
+    required ProfilePhoto photo,
+  }) {
+    final updated = <ProfilePhoto>[
+      for (final existing in profilePhotos)
+        if (existing.position != index) existing,
+      photo,
+    ]..sort((a, b) => a.position.compareTo(b.position));
+    return updated;
   }
 }

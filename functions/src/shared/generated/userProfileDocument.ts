@@ -4,6 +4,7 @@
 
 import {ProfilePromptAnswer} from "./profilePromptAnswer";
 import {PhotoPromptAnswer} from "./photoPromptAnswer";
+import {ProfilePhoto} from "./profilePhoto";
 
 /**
  * Canonical private profile document stored at users/{uid}. The uid is the document id and is not stored in document data.
@@ -65,6 +66,10 @@ export interface UserProfileDocument {
    * @maxItems 6
    */
   photoPrompts: PhotoPromptAnswer[];
+  /**
+   * @maxItems 6
+   */
+  profilePhotos?: ProfilePhoto[];
   city?: string | null;
   latitude?: number | null;
   longitude?: number | null;

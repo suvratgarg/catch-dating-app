@@ -709,6 +709,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
       const thumbnail = thumbnailUrlForPhoto(photo);
       const profilePrompts = profilePromptsForIndex(index);
       const photoPrompts = photoPromptsForIndex(index);
+      const photoThumbnailUrls = thumbnail ? [thumbnail] : [];
       const userDoc = {
         ...seedMarker,
         name: `${firstName} ${lastName}`,
@@ -723,8 +724,14 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         profilePrompts,
         instagramHandle: `${firstName.toLowerCase()}runs${index + 1}`,
         photoUrls: [photo],
-        photoThumbnailUrls: thumbnail ? [thumbnail] : [],
+        photoThumbnailUrls,
         photoPrompts,
+        profilePhotos: profilePhotosFromLegacyArrays({
+          uid,
+          photoUrls: [photo],
+          photoThumbnailUrls,
+          photoPrompts,
+        }),
         city,
         latitude: lat,
         longitude: lng,
@@ -812,6 +819,7 @@ export function publicProfileFromUserDoc(userDoc) {
     photoPrompts: Array.isArray(userDoc.photoPrompts) ?
       userDoc.photoPrompts :
       [],
+    profilePhotos: normalizedProfilePhotos(userDoc),
     city: userDoc.city,
     height: userDoc.height,
     occupation: userDoc.occupation,
@@ -863,6 +871,83 @@ function normalizedPhotoThumbnailUrls(userDoc) {
   return photoUrls
     .map((photoUrl) => thumbnailUrlForPhoto(photoUrl))
     .filter((photoUrl) => typeof photoUrl === "string" && photoUrl.length > 0);
+}
+
+function normalizedProfilePhotos(userDoc) {
+  if (Array.isArray(userDoc.profilePhotos) && userDoc.profilePhotos.length > 0) {
+    return userDoc.profilePhotos;
+  }
+  return profilePhotosFromLegacyArrays({
+    uid: userDoc.uid ?? "seed",
+    photoUrls: Array.isArray(userDoc.photoUrls) ? userDoc.photoUrls : [],
+    photoThumbnailUrls: normalizedPhotoThumbnailUrls(userDoc),
+    photoPrompts: Array.isArray(userDoc.photoPrompts) ? userDoc.photoPrompts : [],
+  });
+}
+
+function profilePhotosFromLegacyArrays({
+  uid,
+  photoUrls,
+  photoThumbnailUrls,
+  photoPrompts,
+}) {
+  const promptsByIndex = new Map(
+    (photoPrompts ?? []).map((prompt) => [prompt.photoIndex, prompt])
+  );
+  return (photoUrls ?? []).map((photoUrl, index) => {
+    const storagePath = storagePathForSeedPhoto(uid, photoUrl, index);
+    return {
+      id: profilePhotoIdForStoragePath(storagePath, index),
+      url: photoUrl,
+      thumbnailUrl: photoThumbnailUrls[index] ?? photoUrl,
+      storagePath,
+      thumbnailStoragePath: thumbnailStoragePathForStoragePath(storagePath),
+      prompt: promptsByIndex.get(index) ?? null,
+      moderation: null,
+      position: index,
+      createdAt: admin.firestore.Timestamp.fromMillis(0),
+      updatedAt: admin.firestore.Timestamp.fromMillis(0),
+    };
+  });
+}
+
+function thumbnailStoragePathForStoragePath(storagePath) {
+  const parts = storagePath.split("/");
+  if (parts.length >= 4 && parts[0] === "users" && parts[2] === "photos") {
+    const sourceName = (parts[parts.length - 1] ?? "").replace(/\.[^.]+$/, "");
+    return `users/${parts[1]}/photoThumbnails/${sourceName}.jpg`;
+  }
+  return `${storagePath}.thumbnail.jpg`;
+}
+
+function storagePathForSeedPhoto(uid, photoUrl, index) {
+  const parsedPath = storagePathFromFirebaseDownloadUrl(photoUrl);
+  if (parsedPath) return parsedPath;
+  return `users/legacy/photos/${index}.jpg`;
+}
+
+function storagePathFromFirebaseDownloadUrl(value) {
+  try {
+    const url = new URL(value);
+    const segments = url.pathname.split("/").filter(Boolean);
+    const objectMarkerIndex = segments.indexOf("o");
+    if (objectMarkerIndex < 0 || objectMarkerIndex + 1 >= segments.length) {
+      return null;
+    }
+    return decodeURIComponent(segments[objectMarkerIndex + 1]);
+  } catch {
+    return null;
+  }
+}
+
+function profilePhotoIdForStoragePath(storagePath, position) {
+  const fileName = storagePath.split("/").pop() ?? "";
+  const withoutExtension = fileName.replace(/\.[^.]+$/, "");
+  const normalized = withoutExtension
+    .replace(/[^A-Za-z0-9_-]+/g, "_")
+    .replace(/_+/g, "_")
+    .replace(/^_|_$/g, "");
+  return normalized || `photo_${position}`;
 }
 
 function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {

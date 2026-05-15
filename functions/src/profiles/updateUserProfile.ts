@@ -164,6 +164,11 @@ function normalizeProfilePatchFields(
       normalized.photoPrompts
     );
   }
+  if ("profilePhotos" in normalized) {
+    normalized.profilePhotos = normalizeProfilePhotoPayloads(
+      normalized.profilePhotos
+    );
+  }
 
   return normalized;
 }
@@ -224,6 +229,35 @@ function normalizePhotoPromptPayloads(value: unknown): unknown {
 }
 
 /**
+ * Trims profile-photo ids, URLs, Storage paths, and nested prompt display
+ * fields while preserving timestamp validation semantics.
+ * @param {unknown} value Raw profile-photo payloads.
+ * @return {unknown} Normalized profile-photo payloads.
+ */
+function normalizeProfilePhotoPayloads(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+  return value.map((item) => {
+    if (!isRecord(item)) return item;
+    const normalized: Record<string, unknown> = {
+      ...item,
+      id: trimIfString(item.id),
+      url: trimIfString(item.url),
+      thumbnailUrl: trimIfString(item.thumbnailUrl),
+      storagePath: trimIfString(item.storagePath),
+      thumbnailStoragePath: trimIfString(item.thumbnailStoragePath),
+    };
+    if (isRecord(item.prompt)) {
+      normalized.prompt = {
+        ...item.prompt,
+        promptId: trimIfString(item.prompt.promptId),
+        prompt: trimIfString(item.prompt.prompt),
+      };
+    }
+    return normalized;
+  });
+}
+
+/**
  * Trims a value only when it is a string.
  * @param {unknown} value Raw value.
  * @return {unknown} Trimmed string or original value.
@@ -271,6 +305,20 @@ function toFirestorePatch(
         caption: collapseStackedPromptBlankLines(prompt.caption).trim(),
       }))
       .filter((prompt) => prompt.caption.length > 0);
+  }
+  if (fields.profilePhotos !== undefined) {
+    updateFields.profilePhotos = fields.profilePhotos.map((photo) => ({
+      ...photo,
+      createdAt: deps.timestampFromMillis(photo.createdAt),
+      updatedAt: deps.timestampFromMillis(photo.updatedAt),
+      ...(photo.moderation?.reviewedAt !== undefined &&
+        photo.moderation?.reviewedAt !== null && {
+        moderation: {
+          ...photo.moderation,
+          reviewedAt: deps.timestampFromMillis(photo.moderation.reviewedAt),
+        },
+      }),
+    }));
   }
   if (fields.dateOfBirth !== undefined) {
     updateFields.dateOfBirth = deps.timestampFromMillis(fields.dateOfBirth);

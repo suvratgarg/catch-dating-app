@@ -61,6 +61,7 @@ export const generateProfilePhotoThumbnail = onObjectFinalized(
         uid: parsed.uid,
         photoIndex: parsed.index,
         sourcePath: filePath,
+        thumbnailPath,
         thumbnailUrl: url,
       });
     } catch (error) {
@@ -122,17 +123,20 @@ function downloadUrl(bucketName: string, filePath: string, token: string) {
  * @param {string} input.uid User id.
  * @param {number} input.photoIndex Profile photo slot index.
  * @param {string} input.sourcePath Source profile photo Storage path.
+ * @param {string} input.thumbnailPath Generated thumbnail Storage path.
  * @param {string} input.thumbnailUrl Generated thumbnail download URL.
  */
 async function updateProfileThumbnailUrl({
   uid,
   photoIndex,
   sourcePath,
+  thumbnailPath,
   thumbnailUrl,
 }: {
   uid: string;
   photoIndex: number;
   sourcePath: string;
+  thumbnailPath: string;
   thumbnailUrl: string;
 }) {
   const userRef = admin.firestore().collection("users").doc(uid);
@@ -150,7 +154,18 @@ async function updateProfileThumbnailUrl({
     while (updated.length <= photoIndex) updated.push("");
     updated[photoIndex] = thumbnailUrl;
 
-    tx.update(userRef, {photoThumbnailUrls: updated});
+    const profilePhotos = updateGroupedProfilePhotoThumbnail({
+      profilePhotos: data.profilePhotos,
+      photoIndex,
+      sourcePath,
+      thumbnailPath,
+      thumbnailUrl,
+    });
+
+    tx.update(userRef, {
+      photoThumbnailUrls: updated,
+      ...(profilePhotos && {profilePhotos}),
+    });
   });
 }
 
@@ -163,6 +178,62 @@ function asStringArray(value: unknown): string[] {
   return Array.isArray(value) ?
     value.filter((item): item is string => typeof item === "string") :
     [];
+}
+
+/**
+ * Updates the grouped ProfilePhoto object that corresponds to the generated
+ * thumbnail while leaving malformed legacy values untouched.
+ * @param {object} input Update input.
+ * @param {unknown} input.profilePhotos Stored profilePhotos value.
+ * @param {number} input.photoIndex Profile photo slot index.
+ * @param {string} input.sourcePath Full-size Storage object path.
+ * @param {string} input.thumbnailPath Thumbnail Storage object path.
+ * @param {string} input.thumbnailUrl Thumbnail download URL.
+ * @return {unknown[] | null} Updated grouped photos, or null when absent.
+ */
+function updateGroupedProfilePhotoThumbnail({
+  profilePhotos,
+  photoIndex,
+  sourcePath,
+  thumbnailPath,
+  thumbnailUrl,
+}: {
+  profilePhotos: unknown;
+  photoIndex: number;
+  sourcePath: string;
+  thumbnailPath: string;
+  thumbnailUrl: string;
+}): unknown[] | null {
+  if (!Array.isArray(profilePhotos)) return null;
+  let didUpdate = false;
+  const updated = profilePhotos.map((photo) => {
+    if (!isRecord(photo)) return photo;
+    const position = photo.position;
+    const url = typeof photo.url === "string" ? photo.url : undefined;
+    const storagePath = typeof photo.storagePath === "string" ?
+      photo.storagePath :
+      undefined;
+    const isMatch = position === photoIndex &&
+      (storagePath === sourcePath || downloadUrlContainsPath(url, sourcePath));
+    if (!isMatch) return photo;
+    didUpdate = true;
+    return {
+      ...photo,
+      thumbnailUrl,
+      thumbnailStoragePath: thumbnailPath,
+      updatedAt: admin.firestore.Timestamp.now(),
+    };
+  });
+  return didUpdate ? updated : profilePhotos;
+}
+
+/**
+ * Checks for a plain object record.
+ * @param {unknown} value Candidate value.
+ * @return {boolean} True for non-array object records.
+ */
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 /**

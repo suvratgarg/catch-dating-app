@@ -729,6 +729,207 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
         "x-catch-catalog": "../catalogs/photo_prompts.json"
       }
     },
+    "profilePhotos": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "title": "ProfilePhoto",
+        "description": "Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "thumbnailUrl",
+          "storagePath",
+          "thumbnailStoragePath",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "storagePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "thumbnailStoragePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "prompt": {
+            "anyOf": [
+              {
+                "title": "PhotoPromptAnswer",
+                "description": "One optional caption prompt for a profile photo slot.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "photoIndex",
+                  "promptId",
+                  "prompt",
+                  "caption"
+                ],
+                "properties": {
+                  "photoIndex": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                  },
+                  "promptId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 140
+                  }
+                },
+                "x-catch-catalog": "../catalogs/photo_prompts.json"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "moderation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "reviewedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 11
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        "definitions": {
+          "storageObjectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          }
+        },
+        "x-storage-metadata": true,
+        "x-future-field": "profilePhotos",
+        "x-migration-contract": "../migrations/profile_photos_storage.json"
+      }
+    },
     "city": {
       "type": [
         "string",
@@ -1222,6 +1423,207 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
+      }
+    },
+    "profilePhotos": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "title": "ProfilePhoto",
+        "description": "Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "thumbnailUrl",
+          "storagePath",
+          "thumbnailStoragePath",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "storagePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "thumbnailStoragePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "prompt": {
+            "anyOf": [
+              {
+                "title": "PhotoPromptAnswer",
+                "description": "One optional caption prompt for a profile photo slot.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "photoIndex",
+                  "promptId",
+                  "prompt",
+                  "caption"
+                ],
+                "properties": {
+                  "photoIndex": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                  },
+                  "promptId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 140
+                  }
+                },
+                "x-catch-catalog": "../catalogs/photo_prompts.json"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "moderation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "reviewedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 11
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        "definitions": {
+          "storageObjectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          }
+        },
+        "x-storage-metadata": true,
+        "x-future-field": "profilePhotos",
+        "x-migration-contract": "../migrations/profile_photos_storage.json"
       }
     },
     "city": {
@@ -4457,6 +4859,15 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
             "maxLength": 2048
           }
         },
+        "photoThumbnailUrls": {
+          "type": "array",
+          "maxItems": 12,
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          }
+        },
         "photoPrompts": {
           "type": "array",
           "maxItems": 6,
@@ -4493,6 +4904,144 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
               }
             },
             "x-catch-catalog": "../catalogs/photo_prompts.json"
+          }
+        },
+        "profilePhotos": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "url",
+              "thumbnailUrl",
+              "storagePath",
+              "thumbnailStoragePath",
+              "position",
+              "createdAt",
+              "updatedAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "thumbnailUrl": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "storagePath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              "thumbnailStoragePath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              "prompt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "photoIndex",
+                      "promptId",
+                      "prompt",
+                      "caption"
+                    ],
+                    "properties": {
+                      "photoIndex": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5
+                      },
+                      "promptId": {
+                        "type": "string",
+                        "enum": [
+                          "proofIRun",
+                          "postRunRitual",
+                          "favoriteRoute",
+                          "raceDayEnergy",
+                          "runningBuddy"
+                        ]
+                      },
+                      "prompt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "caption": {
+                        "type": "string",
+                        "maxLength": 160
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "moderation": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": false,
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "approved",
+                      "rejected"
+                    ]
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 240
+                  },
+                  "reviewedAt": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  }
+                }
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 11
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "updatedAt": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         },
         "city": {
@@ -4786,7 +5335,6 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
   "x-intentionally-excluded-fields": [
     "firstName",
     "lastName",
-    "photoThumbnailUrls",
     "fcmToken",
     "deleted",
     "deletedAt",

@@ -302,6 +302,18 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   }
 
   @override
+  Future<UploadedImage> uploadWithMetadata({
+    required String storagePath,
+    required XFile image,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadedImage = image;
+    return UploadedImage(url: uploadResult, storagePath: '$storagePath.jpg');
+  }
+
+  @override
   Future<String> uploadRunClubCover({
     required String clubId,
     required XFile image,
@@ -325,6 +337,22 @@ class FakeImageUploadRepository implements ImageUploadRepository {
     }
     lastUploadedImage = image;
     return uploadResult;
+  }
+
+  @override
+  Future<UploadedImage> uploadUserProfilePhoto({
+    required String uid,
+    required int index,
+    required XFile image,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadedImage = image;
+    return UploadedImage(
+      url: uploadResult,
+      storagePath: 'users/$uid/photos/${index}_test.jpg',
+    );
   }
 
   @override

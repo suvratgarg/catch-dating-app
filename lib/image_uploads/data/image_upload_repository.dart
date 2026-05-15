@@ -21,6 +21,13 @@ class ImageUploadPolicy {
   final int quality;
 }
 
+class UploadedImage {
+  const UploadedImage({required this.url, required this.storagePath});
+
+  final String url;
+  final String storagePath;
+}
+
 class ImageUploadRepository {
   ImageUploadRepository(this._storage, {ImagePicker? picker})
     : _picker = picker ?? ImagePicker();
@@ -69,15 +76,24 @@ class ImageUploadRepository {
   Future<String> upload({
     required String storagePath,
     required XFile image,
+  }) async =>
+      (await uploadWithMetadata(storagePath: storagePath, image: image)).url;
+
+  /// Uploads [image] and returns both the download URL and final Storage path.
+  Future<UploadedImage> uploadWithMetadata({
+    required String storagePath,
+    required XFile image,
   }) async {
     return withBackendErrorContext(
       () async {
         final bytes = await image.readAsBytes();
         final ext = _normalizedExt(image.name);
         final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
-        final ref = _storage.ref('$storagePath.$ext');
+        final finalStoragePath = '$storagePath.$ext';
+        final ref = _storage.ref(finalStoragePath);
         await ref.putData(bytes, SettableMetadata(contentType: contentType));
-        return ref.getDownloadURL();
+        final url = await ref.getDownloadURL();
+        return UploadedImage(url: url, storagePath: finalStoragePath);
       },
       context: BackendErrorContext(
         service: BackendService.storage,
@@ -98,6 +114,18 @@ class ImageUploadRepository {
         'users/$uid/photos/${index}_${DateTime.now().millisecondsSinceEpoch}',
     image: image,
   );
+
+  Future<UploadedImage> uploadUserProfilePhoto({
+    required String uid,
+    required int index,
+    required XFile image,
+  }) {
+    final millis = DateTime.now().millisecondsSinceEpoch;
+    return uploadWithMetadata(
+      storagePath: 'users/$uid/photos/${index}_$millis',
+      image: image,
+    );
+  }
 
   Future<String> uploadRunClubCover({
     required String clubId,

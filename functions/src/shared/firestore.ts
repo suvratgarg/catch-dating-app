@@ -204,6 +204,10 @@ export interface UserProfileDoc {
   /** Safety/account lifecycle field written by account deletion flow */
   deleted?: boolean;
   deletedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Migration field; legacy documents may still only have parallel photo arrays
+   */
+  profilePhotos?: ProfilePhoto[];
 }
 
 /**
@@ -238,6 +242,11 @@ export interface PublicProfileDoc {
   runningReasons: RunReason[];
   preferredRunTimes: PreferredRunTime[];
   languages?: Language[];
+  /**
+   * Migration field; legacy projections may still only have parallel photo
+   * arrays
+   */
+  profilePhotos?: ProfilePhoto[];
 }
 
 /**
@@ -506,6 +515,34 @@ export interface PhotoPromptAnswer {
   promptId: string;
   prompt: string;
   caption: string;
+}
+
+/**
+ * embedded profile photo moderation
+ * Stored inside users/{uid}.profilePhotos and
+ * publicProfiles/{uid}.profilePhotos.
+ */
+export interface ProfilePhotoModeration {
+  status: "pending" | "approved" | "rejected";
+  reason?: string | null;
+  reviewedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * embedded profile photo
+ * Canonical grouped profile photo object replacing parallel URL/prompt arrays.
+ */
+export interface ProfilePhoto {
+  id: string;
+  url: string;
+  thumbnailUrl: string;
+  storagePath: string;
+  thumbnailStoragePath: string;
+  prompt?: PhotoPromptAnswer | null;
+  moderation?: ProfilePhotoModeration | null;
+  position: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
 }
 
 /**

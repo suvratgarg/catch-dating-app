@@ -72,11 +72,126 @@
         "photoUrls": {
           "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList"
         },
+        "photoThumbnailUrls": {
+          "$ref": "../shared/profile_common.schema.json#/definitions/photoUrlList"
+        },
         "photoPrompts": {
           "type": "array",
           "maxItems": 6,
           "items": {
             "$ref": "../embedded/photo_prompt_answer.schema.json"
+          }
+        },
+        "profilePhotos": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "url",
+              "thumbnailUrl",
+              "storagePath",
+              "thumbnailStoragePath",
+              "position",
+              "createdAt",
+              "updatedAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "url": {
+                "$ref": "../shared/profile_common.schema.json#/definitions/url"
+              },
+              "thumbnailUrl": {
+                "$ref": "../shared/profile_common.schema.json#/definitions/url"
+              },
+              "storagePath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              "thumbnailStoragePath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              "prompt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": ["photoIndex", "promptId", "prompt", "caption"],
+                    "properties": {
+                      "photoIndex": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5
+                      },
+                      "promptId": {
+                        "type": "string",
+                        "enum": [
+                          "proofIRun",
+                          "postRunRitual",
+                          "favoriteRoute",
+                          "raceDayEnergy",
+                          "runningBuddy"
+                        ]
+                      },
+                      "prompt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 120
+                      },
+                      "caption": {
+                        "type": "string",
+                        "maxLength": 160
+                      }
+                    }
+                  },
+                  {"type": "null"}
+                ]
+              },
+              "moderation": {
+                "type": ["object", "null"],
+                "additionalProperties": false,
+                "required": ["status"],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": ["pending", "approved", "rejected"]
+                  },
+                  "reason": {
+                    "type": ["string", "null"],
+                    "maxLength": 240
+                  },
+                  "reviewedAt": {
+                    "type": ["integer", "null"],
+                    "minimum": 0
+                  }
+                }
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 11
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "updatedAt": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         },
         "city": {
@@ -211,7 +326,6 @@
   "x-intentionally-excluded-fields": [
     "firstName",
     "lastName",
-    "photoThumbnailUrls",
     "fcmToken",
     "deleted",
     "deletedAt",

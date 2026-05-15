@@ -3,18 +3,21 @@
     "UserProfileDoc": [
       { "name": "fcmToken", "tsType": "string", "optional": true, "comment": "Runtime — written by FcmService, not part of the profile form" },
       { "name": "deleted", "tsType": "boolean", "optional": true, "comment": "Safety/account lifecycle field written by account deletion flow" },
-      { "name": "deletedAt", "tsType": "FirebaseFirestore.Timestamp", "optional": true }
+      { "name": "deletedAt", "tsType": "FirebaseFirestore.Timestamp", "optional": true },
+      { "name": "profilePhotos", "tsType": "ProfilePhoto[]", "optional": true, "comment": "Migration field; legacy documents may still only have parallel photo arrays" }
     ],
     "MatchDoc": [
       { "name": "participantIds", "tsType": "string[]", "comment": "Always [user1Id, user2Id], used for Firestore arrayContains queries" }
     ],
     "PublicProfileDoc": [
-      { "name": "languages", "tsType": "Language[]", "optional": true }
+      { "name": "languages", "tsType": "Language[]", "optional": true },
+      { "name": "profilePhotos", "tsType": "ProfilePhoto[]", "optional": true, "comment": "Migration field; legacy projections may still only have parallel photo arrays" }
     ]
   },
 
   "fieldOverrides": {
-    "PublicProfileDoc": ["languages"]
+    "UserProfileDoc": ["profilePhotos"],
+    "PublicProfileDoc": ["languages", "profilePhotos"]
   },
 
   "extraInterfaces": [
@@ -37,6 +40,33 @@
         { "name": "promptId", "tsType": "string" },
         { "name": "prompt", "tsType": "string" },
         { "name": "caption", "tsType": "string" }
+      ]
+    },
+    {
+      "name": "ProfilePhotoModeration",
+      "collectionPath": "embedded profile photo moderation",
+      "comment": "Stored inside users/{uid}.profilePhotos and publicProfiles/{uid}.profilePhotos.",
+      "fields": [
+        { "name": "status", "tsType": "\"pending\" | \"approved\" | \"rejected\"" },
+        { "name": "reason", "tsType": "string | null", "optional": true },
+        { "name": "reviewedAt", "tsType": "FirebaseFirestore.Timestamp | null", "optional": true }
+      ]
+    },
+    {
+      "name": "ProfilePhoto",
+      "collectionPath": "embedded profile photo",
+      "comment": "Canonical grouped profile photo object replacing parallel URL/prompt arrays.",
+      "fields": [
+        { "name": "id", "tsType": "string" },
+        { "name": "url", "tsType": "string" },
+        { "name": "thumbnailUrl", "tsType": "string" },
+        { "name": "storagePath", "tsType": "string" },
+        { "name": "thumbnailStoragePath", "tsType": "string" },
+        { "name": "prompt", "tsType": "PhotoPromptAnswer | null", "optional": true },
+        { "name": "moderation", "tsType": "ProfilePhotoModeration | null", "optional": true },
+        { "name": "position", "tsType": "number" },
+        { "name": "createdAt", "tsType": "FirebaseFirestore.Timestamp" },
+        { "name": "updatedAt", "tsType": "FirebaseFirestore.Timestamp" }
       ]
     },
     {

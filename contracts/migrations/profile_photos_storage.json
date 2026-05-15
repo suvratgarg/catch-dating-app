@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "logicalName": "profilePhoto",
-  "currentPhase": "design_scoped",
+  "currentPhase": "dual_write_backfill_ready",
   "reason": "Profile photos are currently represented by parallel arrays for full URLs, thumbnail URLs, and photo prompt metadata. That shape is easy to render but brittle for deletion, moderation, thumbnail repair, prompt edits, and future per-photo analytics because every consumer must keep indexes aligned.",
   "currentShape": {
     "userProfileFields": [
@@ -14,8 +14,8 @@
       "publicProfiles/{uid}.photoThumbnailUrls",
       "publicProfiles/{uid}.photoPrompts"
     ],
-    "storagePathPattern": "profilePhotos/{uid}/photos/{photoIndexOrGeneratedName}",
-    "thumbnailPathPattern": "profilePhotos/{uid}/photos/{photoId}_thumb.jpg"
+    "storagePathPattern": "users/{uid}/photos/{photoIndex}_{timestamp}.{ext}",
+    "thumbnailPathPattern": "users/{uid}/photoThumbnails/{sourceName}.jpg"
   },
   "candidateShape": {
     "field": "profilePhotos",
@@ -50,32 +50,32 @@
   "phases": [
     {
       "id": "design_scoped",
-      "status": "active",
+      "status": "complete",
       "description": "Document the target shape, consumers, risks, and migration gates while keeping live writes on parallel arrays."
     },
     {
       "id": "contract",
-      "status": "pending",
+      "status": "complete",
       "description": "Add JSON Schema definitions for ProfilePhoto and profilePhotos patch operations, then generate Dart and TypeScript types."
     },
     {
       "id": "dual_read",
-      "status": "pending",
+      "status": "complete",
       "description": "Expose a domain getter that builds ProfilePhoto objects from either profilePhotos or the legacy arrays so renderers do not know which storage shape is primary."
     },
     {
       "id": "dual_write",
-      "status": "pending",
+      "status": "complete",
       "description": "Write both profilePhotos and legacy arrays for uploads, deletes, thumbnail repair, and prompt edits."
     },
     {
       "id": "backfill",
-      "status": "pending",
+      "status": "tool_ready",
       "description": "Dry-run-first tooling derives profilePhotos from parallel arrays, validates storage paths where available, and reports index gaps before apply."
     },
     {
       "id": "new_primary",
-      "status": "pending",
+      "status": "in_progress",
       "description": "Read and project profilePhotos as the canonical shape while retaining legacy arrays as compatibility output."
     },
     {
@@ -88,6 +88,8 @@
     "lib/user_profile/presentation/widgets/profile_tab.dart",
     "lib/public_profile/domain/profile_insights.dart",
     "functions/src/profiles/generateProfilePhotoThumbnail.ts",
+    "functions/src/safety/accountDeletion.ts",
+    "functions/scripts/backfill-profile-thumbnails.cjs",
     "functions/src/shared/profileProjection.ts",
     "functions/src/profiles/updateUserProfile.ts",
     "contracts/firestore/users.schema.json",
@@ -96,7 +98,7 @@
   "guardsRequiredBeforeApply": [
     "Generated Dart and TypeScript ProfilePhoto types exist.",
     "Projection parity tests cover profilePhotos -> publicProfiles.",
-    "Thumbnail generation updates the matching ProfilePhoto by id rather than by array index.",
+    "Thumbnail generation updates the matching ProfilePhoto by storagePath/position rather than relying on legacy URL array writes only.",
     "Backfill dry run reports legacy array length mismatches and missing storage paths.",
     "Profile preview, public profile, and catches surfaces render through the same ProfilePhoto domain getter."
   ]
