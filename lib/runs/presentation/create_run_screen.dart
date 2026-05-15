@@ -58,14 +58,15 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
 
   // Draft support
   String? _activeDraftId;
+  Object? _lastSavedDraftSignature;
   bool _checkedDrafts = false;
 
-  final _step0Key = GlobalKey<FormState>();
-  final _step1Key = GlobalKey<FormState>();
-  final _step2Key = GlobalKey<FormState>();
-  final _step3Key = GlobalKey<FormState>();
+  final _runDetailsFormKey = GlobalKey<FormState>();
+  final _whereFormKey = GlobalKey<FormState>();
+  final _whenFormKey = GlobalKey<FormState>();
+  final _eligibilityFormKey = GlobalKey<FormState>();
 
-  // Step 0 — When
+  // Step 2 — When
   final _dateController = TextEditingController();
   final _startTimeController = TextEditingController();
   DateTime? _selectedDate;
@@ -80,12 +81,13 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   final _locationDetailsController = TextEditingController();
   LocationCoordinate? _startingPoint;
 
-  // Step 2 — The run
+  // Step 0 — Run details
   final _distanceController = TextEditingController();
   final _capacityController = TextEditingController();
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
   PaceLevel? _selectedPace;
+  PickedRunPhoto? _runPhoto;
 
   // Step 3 — Rules
   final _minAgeController = TextEditingController();
@@ -94,10 +96,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   final _maxWomenController = TextEditingController();
 
   GlobalKey<FormState> get _currentStepKey => switch (_currentStep) {
-    0 => _step2Key,
-    1 => _step1Key,
-    2 => _step0Key,
-    _ => _step3Key,
+    0 => _runDetailsFormKey,
+    1 => _whereFormKey,
+    2 => _whenFormKey,
+    _ => _eligibilityFormKey,
   };
 
   DateTime? get _selectedStartDateTime {
@@ -219,6 +221,14 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     }
   }
 
+  Future<void> _pickRunPhoto() async {
+    final picked = await ref
+        .read(createRunControllerProvider.notifier)
+        .pickRunPhoto();
+    if (!mounted || picked == null) return;
+    setState(() => _runPhoto = picked);
+  }
+
   void _back() {
     if (_currentStep > 0) {
       _goToStep(_currentStep - 1);
@@ -306,6 +316,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
             priceInPaise: (double.parse(_priceController.text.trim()) * 100)
                 .round(),
             constraints: _constraints,
+            photoImage: _runPhoto?.image,
           );
       if (mounted) {
         setState(() => _createdRun = createdRun);
@@ -326,23 +337,53 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     });
   }
 
-  bool get _hasUnsavedChanges =>
-      _activeDraftId == null &&
-      (_trimmedTextOrNull(_distanceController) != null ||
-          _trimmedTextOrNull(_capacityController) != null ||
-          _trimmedTextOrNull(_priceController) != null ||
-          _trimmedTextOrNull(_descriptionController) != null ||
-          _selectedPace != null ||
-          _trimmedTextOrNull(_meetingPointController) != null ||
-          _trimmedTextOrNull(_locationDetailsController) != null ||
-          _startingPoint != null ||
-          _selectedDate != null ||
-          _selectedStartTime != null ||
-          _durationMinutes != CatchBusinessRules.runDefaultDurationMinutes ||
-          _trimmedTextOrNull(_minAgeController) != null ||
-          _trimmedTextOrNull(_maxAgeController) != null ||
-          _trimmedTextOrNull(_maxMenController) != null ||
-          _trimmedTextOrNull(_maxWomenController) != null);
+  bool get _hasUnsavedChanges {
+    final currentSignature = _currentDraftContentSignature;
+    if (_activeDraftId != null) {
+      return currentSignature != _lastSavedDraftSignature;
+    }
+    return currentSignature != _emptyDraftContentSignature;
+  }
+
+  Object get _currentDraftContentSignature => (
+    distance: _trimmedTextOrNull(_distanceController),
+    capacity: _trimmedTextOrNull(_capacityController),
+    price: _trimmedTextOrNull(_priceController),
+    description: _trimmedTextOrNull(_descriptionController),
+    paceName: _selectedPace?.name,
+    meetingPoint: _trimmedTextOrNull(_meetingPointController),
+    locationDetails: _trimmedTextOrNull(_locationDetailsController),
+    startingPointLat: _startingPoint?.latitude,
+    startingPointLng: _startingPoint?.longitude,
+    selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
+    selectedStartHour: _selectedStartTime?.hour,
+    selectedStartMinute: _selectedStartTime?.minute,
+    durationMinutes: _durationMinutes,
+    minAge: _trimmedTextOrNull(_minAgeController),
+    maxAge: _trimmedTextOrNull(_maxAgeController),
+    maxMen: _trimmedTextOrNull(_maxMenController),
+    maxWomen: _trimmedTextOrNull(_maxWomenController),
+  );
+
+  static const Object _emptyDraftContentSignature = (
+    distance: null,
+    capacity: null,
+    price: null,
+    description: null,
+    paceName: null,
+    meetingPoint: null,
+    locationDetails: null,
+    startingPointLat: null,
+    startingPointLng: null,
+    selectedDateMillis: null,
+    selectedStartHour: null,
+    selectedStartMinute: null,
+    durationMinutes: CatchBusinessRules.runDefaultDurationMinutes,
+    minAge: null,
+    maxAge: null,
+    maxMen: null,
+    maxWomen: null,
+  );
 
   Future<void> _checkForDrafts() async {
     final drafts = await ref
@@ -434,6 +475,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
         _maxWomenController.text = draft.maxWomen!;
       }
     });
+    _lastSavedDraftSignature = _currentDraftContentSignature;
   }
 
   Future<void> _deleteDraftFromPicker(RunDraft draft) {
@@ -478,6 +520,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     if (savedDraft == null) return;
 
     _activeDraftId = savedDraft.id;
+    _lastSavedDraftSignature = _currentDraftContentSignature;
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -517,7 +560,8 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     0 => 'Run basics',
     1 => 'Route & meet point',
     2 => 'When is the run?',
-    _ => 'Review & rules',
+    3 => 'Review & rules',
+    _ => throw RangeError.range(step, 0, _totalSteps - 1, 'step'),
   };
 
   static String _formatClockTime(TimeOfDay time) {
@@ -564,7 +608,9 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
                   RunDetailsStep(
-                    formKey: _step2Key,
+                    formKey: _runDetailsFormKey,
+                    photoImageBytes: _runPhoto?.bytes,
+                    onPickPhoto: _pickRunPhoto,
                     distanceController: _distanceController,
                     capacityController: _capacityController,
                     priceController: _priceController,
@@ -573,14 +619,14 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                     onPaceChanged: (p) => setState(() => _selectedPace = p),
                   ),
                   WhereStep(
-                    formKey: _step1Key,
+                    formKey: _whereFormKey,
                     meetingPointController: _meetingPointController,
                     locationDetailsController: _locationDetailsController,
                     startingPoint: _startingPoint,
                     onPickLocation: _pickLocation,
                   ),
                   WhenStep(
-                    formKey: _step0Key,
+                    formKey: _whenFormKey,
                     dateController: _dateController,
                     startTimeController: _startTimeController,
                     durationMinutes: _durationMinutes,
@@ -592,7 +638,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                     scheduleErrorText: _scheduleErrorText,
                   ),
                   EligibilityStep(
-                    formKey: _step3Key,
+                    formKey: _eligibilityFormKey,
                     minAgeController: _minAgeController,
                     maxAgeController: _maxAgeController,
                     maxMenController: _maxMenController,

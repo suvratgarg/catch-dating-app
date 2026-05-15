@@ -25,6 +25,7 @@ export interface RunDocument {
   startingPointLat: number | null;
   startingPointLng: number | null;
   locationDetails: string | null;
+  photoUrl?: string | null;
   distanceKm: number;
   pace: "easy" | "moderate" | "fast" | "competitive";
   capacityLimit: number;

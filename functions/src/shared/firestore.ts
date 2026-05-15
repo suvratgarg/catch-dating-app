@@ -332,6 +332,7 @@ export interface RunDoc {
   startingPointLng?: number | null;
   /** nullable in Firestore */
   locationDetails?: string | null;
+  photoUrl?: string | null;
   distanceKm: number;
   pace: PaceLevel;
   capacityLimit: number;

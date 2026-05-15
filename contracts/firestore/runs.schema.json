@@ -64,6 +64,9 @@
       "type": ["string", "null"],
       "maxLength": 1000
     },
+    "photoUrl": {
+      "$ref": "../shared/run_common.schema.json#/definitions/urlOrNull"
+    },
     "distanceKm": {
       "type": "number",
       "exclusiveMinimum": 0,

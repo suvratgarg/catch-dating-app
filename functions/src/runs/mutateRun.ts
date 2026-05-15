@@ -484,6 +484,7 @@ function buildCreateRunDoc(
     startingPointLat: data.startingPointLat,
     startingPointLng: data.startingPointLng,
     locationDetails: data.locationDetails ?? null,
+    photoUrl: data.photoUrl ?? null,
     distanceKm: data.distanceKm,
     pace: data.pace,
     capacityLimit: data.capacityLimit,
@@ -522,6 +523,7 @@ function buildUpdateRunPatch(
   if (fields.locationDetails !== undefined) {
     patch.locationDetails = fields.locationDetails;
   }
+  if (fields.photoUrl !== undefined) patch.photoUrl = fields.photoUrl;
   if (fields.distanceKm !== undefined) patch.distanceKm = fields.distanceKm;
   if (fields.pace !== undefined) patch.pace = fields.pace;
   if (fields.description !== undefined) patch.description = fields.description;

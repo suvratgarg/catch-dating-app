@@ -57,7 +57,11 @@ extension RunDraftX on RunDraft {
       meetingPoint == null &&
       locationDetails == null &&
       startingPointLat == null &&
+      startingPointLng == null &&
       selectedDateMillis == null &&
+      selectedStartHour == null &&
+      selectedStartMinute == null &&
+      durationMinutes == CatchBusinessRules.runDefaultDurationMinutes &&
       minAge == null &&
       maxAge == null &&
       maxMen == null &&

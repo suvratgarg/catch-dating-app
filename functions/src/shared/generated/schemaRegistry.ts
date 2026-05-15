@@ -2477,6 +2477,18 @@ export const runDocumentSchema: Record<string, unknown> = {
       ],
       "maxLength": 1000
     },
+    "photoUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "distanceKm": {
       "type": "number",
       "exclusiveMinimum": 0,
@@ -5664,6 +5676,18 @@ export const createRunCallablePayloadSchema: Record<string, unknown> = {
       ],
       "maxLength": 1000
     },
+    "photoUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "distanceKm": {
       "type": "number",
       "exclusiveMinimum": 0,
@@ -5794,6 +5818,18 @@ export const updateRunCallablePayloadSchema: Record<string, unknown> = {
             "null"
           ],
           "maxLength": 1000
+        },
+        "photoUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "distanceKm": {
           "type": "number",

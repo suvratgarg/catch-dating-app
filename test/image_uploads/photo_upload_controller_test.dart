@@ -4,6 +4,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -17,24 +18,30 @@ class FakePhotoUserProfileRepository extends Fake
 
   UserProfile currentUser;
   final updatedPhotoUrls = <List<String>>[];
+  final updatedProfilePhotos = <List<ProfilePhoto>>[];
 
   @override
   Future<UserProfile?> fetchUserProfile({required String? uid}) async =>
       currentUser;
 
   @override
-  Future<void> updatePhotoUrls({
+  Future<void> updateProfilePhotos({
     required String uid,
+    required List<ProfilePhoto> profilePhotos,
     required List<String> photoUrls,
   }) async {
+    updatedProfilePhotos.add(List<ProfilePhoto>.from(profilePhotos));
     updatedPhotoUrls.add(List<String>.from(photoUrls));
-    currentUser = currentUser.copyWith(photoUrls: List<String>.from(photoUrls));
+    currentUser = currentUser.copyWith(
+      profilePhotos: List<ProfilePhoto>.from(profilePhotos),
+      photoUrls: List<String>.from(photoUrls),
+    );
   }
 }
 
 class ControlledImageUploadRepository extends Fake
     implements ImageUploadRepository {
-  final uploadCompleters = <Completer<String>>[];
+  final uploadCompleters = <Completer<UploadedImage>>[];
   final uploadedIndices = <int>[];
 
   @override
@@ -44,13 +51,13 @@ class ControlledImageUploadRepository extends Fake
   }) async => XFile('picked-photo.jpg');
 
   @override
-  Future<String> uploadUserPhoto({
+  Future<UploadedImage> uploadUserProfilePhoto({
     required String uid,
     required int index,
     required XFile image,
   }) {
     uploadedIndices.add(index);
-    final completer = Completer<String>();
+    final completer = Completer<UploadedImage>();
     uploadCompleters.add(completer);
     return completer.future;
   }
@@ -78,6 +85,13 @@ void main() {
     expect(ImageUploadRepository.chatImagePolicy.maxWidth, 1440);
     expect(ImageUploadRepository.chatImagePolicy.quality, 78);
     expect(ImageUploadRepository.runClubCoverPolicy.maxHeight, 1200);
+    expect(ImageUploadRepository.runPhotoPolicy.maxWidth, 1800);
+    expect(
+      ImageUploadRepository.policyForPurpose(
+        ImageUploadPurpose.runPhoto,
+      ).quality,
+      82,
+    );
   });
 
   test(
@@ -138,11 +152,17 @@ void main() {
       expect(imageUploadRepository.uploadedIndices, [0, 1]);
 
       imageUploadRepository.uploadCompleters[1].complete(
-        'https://img.example/new-1.jpg',
+        const UploadedImage(
+          url: 'https://img.example/new-1.jpg',
+          storagePath: 'users/runner-1/photos/1_test.jpg',
+        ),
       );
       await container.pump();
       imageUploadRepository.uploadCompleters[0].complete(
-        'https://img.example/new-0.jpg',
+        const UploadedImage(
+          url: 'https://img.example/new-0.jpg',
+          storagePath: 'users/runner-1/photos/0_test.jpg',
+        ),
       );
 
       await Future.wait([firstUpload, secondUpload]);
@@ -250,7 +270,10 @@ void main() {
     uidSubscription.close();
     uploadSubscription.close();
     imageUploadRepository.uploadCompleters.single.complete(
-      'https://img.example/disposed.jpg',
+      const UploadedImage(
+        url: 'https://img.example/disposed.jpg',
+        storagePath: 'users/runner-1/photos/0_test.jpg',
+      ),
     );
 
     await expectLater(upload, completes);

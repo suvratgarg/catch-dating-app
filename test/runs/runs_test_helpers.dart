@@ -28,6 +28,7 @@ Run buildRun({
   double? startingPointLat,
   double? startingPointLng,
   String? locationDetails,
+  String? photoUrl,
   double distanceKm = 5,
   PaceLevel pace = PaceLevel.easy,
   int capacityLimit = 20,
@@ -50,6 +51,7 @@ Run buildRun({
     startingPointLat: startingPointLat,
     startingPointLng: startingPointLng,
     locationDetails: locationDetails,
+    photoUrl: photoUrl,
     distanceKm: distanceKm,
     pace: pace,
     capacityLimit: capacityLimit,
@@ -236,10 +238,15 @@ class FakeRunRepository extends Fake implements RunRepository {
   Run? createdRun;
   Object? createError;
   Object? cancelError;
+  Object? hostCancelError;
+  Object? deleteRunError;
   Object? joinWaitlistError;
   Object? leaveWaitlistError;
   Object? markAttendanceError;
   String? cancelledRunId;
+  String? hostCancelledRunId;
+  String? hostCancelReason;
+  String? deletedRunId;
   String? joinedWaitlistRunId;
   String? leftWaitlistRunId;
   String? leftWaitlistUserId;
@@ -295,6 +302,23 @@ class FakeRunRepository extends Fake implements RunRepository {
       throw cancelError!;
     }
     cancelledRunId = runId;
+  }
+
+  @override
+  Future<void> cancelRun({required String runId, String? reason}) async {
+    if (hostCancelError != null) {
+      throw hostCancelError!;
+    }
+    hostCancelledRunId = runId;
+    hostCancelReason = reason;
+  }
+
+  @override
+  Future<void> deleteRun({required String runId}) async {
+    if (deleteRunError != null) {
+      throw deleteRunError!;
+    }
+    deletedRunId = runId;
   }
 
   @override

@@ -256,9 +256,9 @@ Run creation:
 
 - Host-only through the `createRun` callable.
 - 4-step wizard:
-  1. When
+  1. Run details
   2. Where
-  3. Run details
+  3. When
   4. Eligibility rules
 
 Eligibility constraints:

@@ -276,6 +276,8 @@ class FakeImageUploadRepository implements ImageUploadRepository {
   Object? uploadError;
   String uploadResult;
   String? lastUploadClubId;
+  String? lastUploadRunClubId;
+  String? lastUploadRunId;
   XFile? lastUploadedImage;
 
   @override
@@ -322,6 +324,21 @@ class FakeImageUploadRepository implements ImageUploadRepository {
       throw uploadError!;
     }
     lastUploadClubId = clubId;
+    lastUploadedImage = image;
+    return uploadResult;
+  }
+
+  @override
+  Future<String> uploadRunPhoto({
+    required String runClubId,
+    required String runId,
+    required XFile image,
+  }) async {
+    if (uploadError != null) {
+      throw uploadError!;
+    }
+    lastUploadRunClubId = runClubId;
+    lastUploadRunId = runId;
     lastUploadedImage = image;
     return uploadResult;
   }

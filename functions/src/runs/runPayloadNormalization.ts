@@ -14,7 +14,7 @@ export function normalizeCreateRunPayload(data: unknown): unknown {
       "meetingPoint",
       "description",
     ],
-    nullableStringFields: ["locationDetails"],
+    nullableStringFields: ["locationDetails", "photoUrl"],
   });
 }
 
@@ -31,7 +31,7 @@ export function normalizeUpdateRunPayload(data: unknown): unknown {
     ...payload,
     fields: normalizeFields(payload.fields, {
       stringFields: ["meetingPoint", "description"],
-      nullableStringFields: ["locationDetails"],
+      nullableStringFields: ["locationDetails", "photoUrl"],
     }),
   };
 }

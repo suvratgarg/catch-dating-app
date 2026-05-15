@@ -62,6 +62,7 @@ abstract class Run with _$Run {
     double? startingPointLat,
     double? startingPointLng,
     String? locationDetails,
+    @JsonKey(includeIfNull: false) String? photoUrl,
     required double distanceKm,
     required PaceLevel pace,
     required int capacityLimit,

@@ -139,6 +139,8 @@ void main() {
         await _pumpTestAnimation(tester);
 
         expect(find.text('HOST MANAGE'), findsOneWidget);
+        await tester.drag(find.byType(ListView), const Offset(0, -500));
+        await _pumpTestAnimation(tester);
         expect(find.text('Roster'), findsOneWidget);
       },
     );
@@ -283,26 +285,23 @@ void main() {
         ),
       ];
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            publicProfileRepositoryProvider.overrideWith(
-              (ref) => publicProfiles,
-            ),
-            runParticipationRepositoryProvider.overrideWith(
-              (ref) => participationRepository,
-            ),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: HostRunManageScreen(
-              runClub: buildRunClub(),
-              run: run,
-              onBackToSuccess: () {},
-            ),
-          ),
+      await pumpRunsTestApp(
+        tester,
+        HostRunManageScreen(
+          runClub: buildRunClub(),
+          run: run,
+          onBackToSuccess: () {},
         ),
+        overrides: [
+          publicProfileRepositoryProvider.overrideWith((ref) => publicProfiles),
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
       );
+      await _pumpTestAnimation(tester);
+
+      await tester.drag(find.byType(ListView), const Offset(0, -500));
       await _pumpTestAnimation(tester);
 
       expect(find.text('Taylor'), findsOneWidget);
@@ -311,6 +310,110 @@ void main() {
       expect(find.text('runner-3'), findsNothing);
       expect(find.text('PAID'), findsOneWidget);
       expect(find.text('WAITLIST'), findsOneWidget);
+    });
+
+    testWidgets('host manage confirms and cancels an active run', (
+      tester,
+    ) async {
+      final fakeRunRepository = FakeRunRepository();
+      final participationRepository = FakeRunParticipationRepository();
+      final run = buildRun(id: 'run-cancel', bookedCount: 1);
+
+      await pumpRunsTestApp(
+        tester,
+        HostRunManageScreen(
+          runClub: buildRunClub(hostUserId: 'host-1'),
+          run: run,
+          onBackToSuccess: () {},
+        ),
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+
+      final cancelButton = find.widgetWithText(CatchButton, 'Cancel run');
+      await tester.ensureVisible(cancelButton);
+      await tester.tap(cancelButton);
+      await _pumpHostActionFrame(tester);
+
+      expect(find.text('Cancel this run?'), findsOneWidget);
+      await tester.tap(_dialogAction('Cancel run'));
+      await _pumpHostActionFrame(tester);
+
+      expect(fakeRunRepository.hostCancelledRunId, 'run-cancel');
+      expect(find.text('Run cancelled.'), findsOneWidget);
+    });
+
+    testWidgets('host manage confirms and deletes an unused run', (
+      tester,
+    ) async {
+      final fakeRunRepository = FakeRunRepository();
+      final participationRepository = FakeRunParticipationRepository();
+      final run = buildRun(id: 'run-delete');
+      var returned = false;
+
+      await pumpRunsTestApp(
+        tester,
+        HostRunManageScreen(
+          runClub: buildRunClub(hostUserId: 'host-1'),
+          run: run,
+          onBackToSuccess: () => returned = true,
+        ),
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+
+      final deleteButton = find.widgetWithText(CatchButton, 'Delete run');
+      await tester.ensureVisible(deleteButton);
+      await tester.tap(deleteButton);
+      await _pumpHostActionFrame(tester);
+
+      expect(find.text('Delete this run?'), findsOneWidget);
+      await tester.tap(_dialogAction('Delete run'));
+      await _pumpHostActionFrame(tester);
+
+      expect(fakeRunRepository.deletedRunId, 'run-delete');
+      expect(returned, isTrue);
+    });
+
+    testWidgets('host manage hides delete when run activity is visible', (
+      tester,
+    ) async {
+      final participationRepository = FakeRunParticipationRepository();
+      final run = buildRun(id: 'run-with-activity', bookedCount: 1);
+
+      await pumpRunsTestApp(
+        tester,
+        HostRunManageScreen(
+          runClub: buildRunClub(hostUserId: 'host-1'),
+          run: run,
+          onBackToSuccess: () {},
+        ),
+        overrides: [
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+
+      expect(find.widgetWithText(CatchButton, 'Delete run'), findsNothing);
+      expect(
+        find.textContaining('Delete is unavailable once a run has bookings'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('draft picker deletes persisted drafts and resumes another', (
@@ -505,10 +608,13 @@ Future<void> _enterCreateRunText(
   Key fieldKey,
   String text,
 ) async {
-  await tester.enterText(
-    find.descendant(of: find.byKey(fieldKey), matching: find.byType(TextField)),
-    text,
+  final field = find.descendant(
+    of: find.byKey(fieldKey),
+    matching: find.byType(TextField),
   );
+  await tester.ensureVisible(field);
+  await tester.pump();
+  await tester.enterText(field, text);
 }
 
 Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {
@@ -573,4 +679,16 @@ Future<void> _acceptInitialTime(WidgetTester tester) async {
 
 Future<void> _pumpTestAnimation(WidgetTester tester) async {
   await pumpFeatureUi(tester);
+}
+
+Future<void> _pumpHostActionFrame(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
+}
+
+Finder _dialogAction(String label) {
+  return find.descendant(
+    of: find.byType(AlertDialog),
+    matching: find.text(label),
+  );
 }

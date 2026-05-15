@@ -7,7 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'image_upload_repository.g.dart';
 
-enum ImageUploadPurpose { profilePhoto, runClubCover, chatImage }
+enum ImageUploadPurpose { profilePhoto, runClubCover, runPhoto, chatImage }
 
 class ImageUploadPolicy {
   const ImageUploadPolicy({
@@ -38,6 +38,11 @@ class ImageUploadRepository {
     quality: 85,
   );
   static const runClubCoverPolicy = ImageUploadPolicy(
+    maxWidth: 1800,
+    maxHeight: 1200,
+    quality: 82,
+  );
+  static const runPhotoPolicy = ImageUploadPolicy(
     maxWidth: 1800,
     maxHeight: 1200,
     quality: 82,
@@ -132,6 +137,15 @@ class ImageUploadRepository {
     required XFile image,
   }) => upload(storagePath: 'runClubs/$clubId/cover', image: image);
 
+  Future<String> uploadRunPhoto({
+    required String runClubId,
+    required String runId,
+    required XFile image,
+  }) => upload(
+    storagePath: 'runClubs/$runClubId/run_${runId}_photo',
+    image: image,
+  );
+
   Future<String> uploadChatImage({
     required String matchId,
     required String messageId,
@@ -149,6 +163,7 @@ class ImageUploadRepository {
     return switch (purpose) {
       ImageUploadPurpose.profilePhoto => profilePhotoPolicy,
       ImageUploadPurpose.runClubCover => runClubCoverPolicy,
+      ImageUploadPurpose.runPhoto => runPhotoPolicy,
       ImageUploadPurpose.chatImage => chatImagePolicy,
     };
   }
@@ -163,6 +178,12 @@ class ImageUploadRepository {
 
   static String _resourceForStoragePath(String storagePath) {
     if (storagePath.startsWith('users/')) return 'profile_photos';
+    final storageName = storagePath.split('/').last;
+    if (storagePath.startsWith('runClubs/') &&
+        storageName.startsWith('run_') &&
+        storageName.endsWith('_photo')) {
+      return 'run_photos';
+    }
     if (storagePath.startsWith('runClubs/')) return 'run_club_covers';
     if (storagePath.startsWith('matches/')) return 'chat_images';
     return 'images';

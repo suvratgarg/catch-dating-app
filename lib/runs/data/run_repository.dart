@@ -265,6 +265,39 @@ class RunRepository {
     ),
   );
 
+  /// Cancels a hosted run via the [cancelRun] Cloud Function.
+  ///
+  /// The backend verifies the signed-in user hosts the run club, marks the run
+  /// cancelled, releases schedule projections, and notifies participants.
+  Future<void> cancelRun({required String runId, String? reason}) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable('cancelRun')
+            .call(
+              CancelRunCallableRequest(runId: runId, reason: reason).toJson(),
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'cancel run',
+          resource: _collectionPath,
+        ),
+      );
+
+  /// Deletes an unused hosted run via the [deleteRun] Cloud Function.
+  ///
+  /// Runs with bookings, payments, reviews, or other activity must be
+  /// cancelled instead so history remains auditable.
+  Future<void> deleteRun({required String runId}) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('deleteRun')
+        .call(RunIdCallableRequest(runId).toJson()),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'delete run',
+      resource: _collectionPath,
+    ),
+  );
+
   /// Cancels the current user's sign-up via the [cancelRunSignUp] Cloud
   /// Function, which atomically updates their participation edge and aggregate
   /// booking projections.

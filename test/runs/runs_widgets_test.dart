@@ -498,7 +498,7 @@ void main() {
       expect(find.text('Stride Social'), findsOneWidget);
     });
 
-    testWidgets('run photo header repaints when the token mode changes', (
+    testWidgets('run photo header uses a plain fallback without a run photo', (
       tester,
     ) async {
       final run = buildRun();
@@ -513,17 +513,27 @@ void main() {
       );
       await tester.pump();
 
+      expect(find.byIcon(Icons.directions_run), findsOneWidget);
+      expect(find.byType(Image), findsNothing);
+    });
+
+    testWidgets('run photo header renders the uploaded run photo', (
+      tester,
+    ) async {
+      final run = buildRun(photoUrl: 'https://img.example/runs/run-1.jpg');
+
       await tester.pumpWidget(
         MaterialApp(
-          theme: ThemeData(extensions: const [CatchTokens.sunsetDark]),
+          theme: ThemeData(extensions: const [CatchTokens.sunsetLight]),
           home: Scaffold(
             body: SizedBox(height: 320, child: RunPhotoHeader(run: run)),
           ),
         ),
       );
-      await tester.pump();
 
-      expect(find.byType(CustomPaint), findsWidgets);
+      final image = tester.widget<Image>(find.byType(Image));
+      expect(image.image, isA<NetworkImage>());
+      expect((image.image as NetworkImage).url, run.photoUrl);
     });
 
     testWidgets('who is running shows the empty upcoming state', (

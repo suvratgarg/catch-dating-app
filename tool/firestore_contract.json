@@ -464,6 +464,7 @@
         "startingPointLat",
         "startingPointLng",
         "locationDetails",
+        "photoUrl",
         "distanceKm",
         "pace",
         "capacityLimit",
@@ -505,6 +506,7 @@
             "startingPointLat",
             "startingPointLng",
             "locationDetails",
+            "photoUrl",
             "distanceKm",
             "pace",
             "capacityLimit",
@@ -532,6 +534,7 @@
             "startingPointLat",
             "startingPointLng",
             "locationDetails",
+            "photoUrl",
             "distanceKm",
             "pace",
             "description"

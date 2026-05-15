@@ -2476,6 +2476,18 @@ export const runDocumentSchema = {
       ],
       "maxLength": 1000
     },
+    "photoUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "distanceKm": {
       "type": "number",
       "exclusiveMinimum": 0,
@@ -5663,6 +5675,18 @@ export const createRunCallablePayloadSchema = {
       ],
       "maxLength": 1000
     },
+    "photoUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "distanceKm": {
       "type": "number",
       "exclusiveMinimum": 0,
@@ -5793,6 +5817,18 @@ export const updateRunCallablePayloadSchema = {
             "null"
           ],
           "maxLength": 1000
+        },
+        "photoUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "distanceKm": {
           "type": "number",

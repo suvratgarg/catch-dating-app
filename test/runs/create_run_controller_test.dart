@@ -1,20 +1,47 @@
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_controller.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:image_picker/image_picker.dart';
 
 import 'runs_test_helpers.dart';
+
+class FakeRunImageUploadRepository extends Fake
+    implements ImageUploadRepository {
+  String uploadResult = 'https://img.example/runs/generated-7.jpg';
+  String? uploadedRunClubId;
+  String? uploadedRunId;
+  XFile? uploadedImage;
+
+  @override
+  Future<String> uploadRunPhoto({
+    required String runClubId,
+    required String runId,
+    required XFile image,
+  }) async {
+    uploadedRunClubId = runClubId;
+    uploadedRunId = runId;
+    uploadedImage = image;
+    return uploadResult;
+  }
+}
 
 void main() {
   group('CreateRunController.submit', () {
     test('creates a run with a generated id and normalized fields', () async {
       final fakeRunRepository = FakeRunRepository()
         ..generatedId = 'generated-7';
+      final fakeImageUploadRepository = FakeRunImageUploadRepository();
+      final photo = XFile('selected-run-photo.jpg');
       final container = ProviderContainer(
         overrides: [
           runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => fakeImageUploadRepository,
+          ),
         ],
       );
       addTearDown(container.dispose);
@@ -40,11 +67,15 @@ void main() {
               maxMen: 9,
               maxWomen: 9,
             ),
+            photoImage: photo,
           );
 
       final createdRun = fakeRunRepository.createdRun;
       expect(createdRun, isNotNull);
       expect(createdRun!.id, 'generated-7');
+      expect(fakeImageUploadRepository.uploadedRunClubId, 'club-7');
+      expect(fakeImageUploadRepository.uploadedRunId, 'generated-7');
+      expect(fakeImageUploadRepository.uploadedImage, photo);
       expect(createdRun.runClubId, 'club-7');
       expect(createdRun.startTime, DateTime(2025, 3, 1, 6));
       expect(createdRun.endTime, DateTime(2025, 3, 1, 7, 15));
@@ -52,6 +83,7 @@ void main() {
       expect(createdRun.startingPointLat, 19.076);
       expect(createdRun.startingPointLng, 72.8777);
       expect(createdRun.locationDetails, isNull);
+      expect(createdRun.photoUrl, 'https://img.example/runs/generated-7.jpg');
       expect(createdRun.distanceKm, 7.5);
       expect(createdRun.pace, PaceLevel.moderate);
       expect(createdRun.capacityLimit, 18);

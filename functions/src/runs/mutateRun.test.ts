@@ -335,6 +335,7 @@ test("createRunHandler creates a server-owned run for the club host",
       startingPointLat: 19.07,
       startingPointLng: 72.82,
       locationDetails: null,
+      photoUrl: null,
       distanceKm: 5,
       pace: "easy",
       capacityLimit: 20,
@@ -506,6 +507,7 @@ test("updateRunHandler updates only host-editable run fields", async () => {
         startTimeMillis: Date.parse("2026-05-02T02:00:00.000Z"),
         endTimeMillis: Date.parse("2026-05-02T03:00:00.000Z"),
         meetingPoint: "Joggers Park",
+        photoUrl: "https://img.example/runs/run-1.jpg",
         description: "Updated route.",
       },
     }),
@@ -516,6 +518,7 @@ test("updateRunHandler updates only host-editable run fields", async () => {
   assert.deepEqual(result, {updated: true});
   assert.deepEqual(h.rateLimitCalls, ["host-1:updateRun"]);
   assert.equal(updated?.meetingPoint, "Joggers Park");
+  assert.equal(updated?.photoUrl, "https://img.example/runs/run-1.jpg");
   assert.equal(updated?.description, "Updated route.");
   assert.equal(updated?.capacityLimit, 12);
 });

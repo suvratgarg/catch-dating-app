@@ -10,12 +10,10 @@ class RunPhotoHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
     return Stack(
       fit: StackFit.expand,
       children: [
-        CustomPaint(painter: _RunMapPainter(primary: t.primary)),
+        _RunPhotoBackground(run: run),
         Positioned.fill(
           child: DecoratedBox(
             decoration: BoxDecoration(
@@ -107,79 +105,47 @@ class RunPhotoHeader extends StatelessWidget {
   }
 }
 
-class _RunMapPainter extends CustomPainter {
-  const _RunMapPainter({required this.primary});
-  final Color primary;
+class _RunPhotoBackground extends StatelessWidget {
+  const _RunPhotoBackground({required this.run});
+
+  final Run run;
 
   @override
-  void paint(Canvas canvas, Size size) {
-    final w = size.width;
-    final h = size.height;
-    final paint = Paint();
-
-    paint.color = const Color(0xFF1A2E2A);
-    canvas.drawRect(Rect.fromLTWH(0, 0, w, h), paint);
-
-    paint.color = const Color(0xFF0F1E2B);
-    final waterPath = Path()
-      ..moveTo(0, h * 0.72)
-      ..cubicTo(w * 0.25, h * 0.65, w * 0.45, h * 0.82, w * 0.7, h * 0.76)
-      ..lineTo(w, h * 0.82)
-      ..lineTo(w, h)
-      ..lineTo(0, h)
-      ..close();
-    canvas.drawPath(waterPath, paint);
-
-    paint
-      ..color = const Color(0xFF2A423D)
-      ..style = PaintingStyle.fill;
-    for (final r in [
-      Rect.fromLTWH(w * 0.05, h * 0.1, w * 0.18, h * 0.12),
-      Rect.fromLTWH(w * 0.28, h * 0.08, w * 0.22, h * 0.1),
-      Rect.fromLTWH(w * 0.6, h * 0.15, w * 0.15, h * 0.14),
-      Rect.fromLTWH(w * 0.1, h * 0.35, w * 0.14, h * 0.1),
-      Rect.fromLTWH(w * 0.38, h * 0.32, w * 0.19, h * 0.12),
-      Rect.fromLTWH(w * 0.65, h * 0.38, w * 0.16, h * 0.09),
-      Rect.fromLTWH(w * 0.05, h * 0.52, w * 0.12, h * 0.12),
-      Rect.fromLTWH(w * 0.42, h * 0.52, w * 0.2, h * 0.1),
-    ]) {
-      canvas.drawRRect(
-        RRect.fromRectAndRadius(r, const Radius.circular(2)),
-        paint,
+  Widget build(BuildContext context) {
+    final photoUrl = run.photoUrl?.trim();
+    if (photoUrl != null && photoUrl.isNotEmpty) {
+      return Image.network(
+        photoUrl,
+        fit: BoxFit.cover,
+        semanticLabel: '${run.title} photo',
+        errorBuilder: (_, _, _) => const _RunPhotoFallback(),
       );
     }
-
-    paint
-      ..color = const Color(0xFF2F2A24)
-      ..strokeWidth = 5
-      ..style = PaintingStyle.stroke;
-    canvas.drawLine(Offset(-10, h * 0.25), Offset(w + 10, h * 0.38), paint);
-    canvas.drawLine(Offset(w * 0.38, 0), Offset(w * 0.45, h + 10), paint);
-    paint.strokeWidth = 3;
-    canvas.drawLine(Offset(-10, h * 0.47), Offset(w + 10, h * 0.52), paint);
-
-    paint
-      ..color = primary
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.round;
-    final route = Path()
-      ..moveTo(w * 0.08, h * 0.6)
-      ..cubicTo(w * 0.15, h * 0.32, w * 0.32, h * 0.22, w * 0.5, h * 0.28)
-      ..cubicTo(w * 0.66, h * 0.34, w * 0.78, h * 0.42, w * 0.82, h * 0.55)
-      ..cubicTo(w * 0.78, h * 0.63, w * 0.55, h * 0.66, w * 0.35, h * 0.62)
-      ..cubicTo(w * 0.22, h * 0.59, w * 0.12, h * 0.65, w * 0.08, h * 0.6);
-    canvas.drawPath(route, paint);
-
-    paint
-      ..color = primary
-      ..style = PaintingStyle.fill;
-    canvas.drawCircle(Offset(w * 0.08, h * 0.6), 6, paint);
-    paint.color = Colors.white;
-    canvas.drawCircle(Offset(w * 0.08, h * 0.6), 3, paint);
+    return const _RunPhotoFallback();
   }
+}
+
+class _RunPhotoFallback extends StatelessWidget {
+  const _RunPhotoFallback();
 
   @override
-  bool shouldRepaint(covariant _RunMapPainter old) => old.primary != primary;
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [t.raised, t.surface, t.primary.withValues(alpha: 0.18)],
+        ),
+      ),
+      child: Center(
+        child: Icon(
+          Icons.directions_run,
+          color: t.primary.withValues(alpha: 0.42),
+          size: 72,
+        ),
+      ),
+    );
+  }
 }

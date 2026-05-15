@@ -14,6 +14,7 @@ export interface CreateRunCallablePayload {
   startingPointLat: number;
   startingPointLng: number;
   locationDetails?: string | null;
+  photoUrl?: string | null;
   distanceKm: number;
   pace: "easy" | "moderate" | "fast" | "competitive";
   capacityLimit: number;

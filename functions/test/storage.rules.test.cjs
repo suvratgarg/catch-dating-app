@@ -48,6 +48,13 @@ function match(overrides = {}) {
   };
 }
 
+function runClub(overrides = {}) {
+  return {
+    hostUserId: "host-1",
+    ...overrides,
+  };
+}
+
 async function seedFirestore(pathSegments, data) {
   await testEnv.withSecurityRulesDisabled(async (context) => {
     await setDoc(doc(context.firestore(), ...pathSegments), data);
@@ -178,6 +185,38 @@ describe("storage.rules", () => {
         authedStorage("runner-3")
           .ref("matches/match-1/images/message-1_123.jpg")
           .getMetadata(),
+      );
+    });
+  });
+
+  describe("run photos", () => {
+    it("allows only the run club host to upload run photos", async () => {
+      await seedFirestore(["runClubs", "club-1"], runClub());
+
+      await assertSucceeds(
+        uploadImage(
+          authedStorage("host-1"),
+          "runClubs/club-1/runs/run-1/photo.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(
+          authedStorage("runner-1"),
+          "runClubs/club-1/runs/run-1/photo.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(
+          unauthenticatedStorage(),
+          "runClubs/club-1/runs/run-1/photo.jpg",
+        ),
+      );
+      await assertFails(
+        uploadImage(
+          authedStorage("host-1"),
+          "runClubs/club-1/runs/run-1/photo.txt",
+          {contentType: "text/plain"},
+        ),
       );
     });
   });
