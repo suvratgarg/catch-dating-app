@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.2.0
-updated: 2026-05-15
+version: 1.3.0
+updated: 2026-05-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -35,6 +35,7 @@ The current workflows are:
 | `.github/workflows/firebase-deploy.yml` | Manual deploy of selected Firebase targets to dev, staging, or prod. Keep staging/prod explicit. |
 | `.github/workflows/data-validation.yml` | Read-only Firestore data validation, nightly and manual. |
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
+| `.github/workflows/ios-testflight-release.yml` | Manual prod iOS archive/export gate, with optional TestFlight upload. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
 
 ## Required Secrets And Environments
@@ -47,6 +48,19 @@ Firebase workflows need one service-account JSON secret per environment:
 
 Use GitHub Environments named `dev`, `staging`, and `prod`. Require manual
 reviewers for `prod`.
+
+The manual `iOS TestFlight Release` workflow also needs these repository or
+`prod` environment secrets:
+
+- `APP_STORE_CONNECT_API_KEY_ID`
+- `APP_STORE_CONNECT_API_ISSUER_ID`
+- `APP_STORE_CONNECT_API_KEY_BASE64`
+- `GOOGLE_MAPS_IOS_API_KEY_PROD`
+
+`APP_STORE_CONNECT_API_KEY_BASE64` is the base64-encoded contents of the
+downloaded `AuthKey_<key-id>.p8` file. Keep the raw `.p8` out of git; it is
+ignored by `.gitignore` and should live only in secure local storage and GitHub
+Actions secrets.
 
 ## CD Policy
 
@@ -78,14 +92,14 @@ must still move so Firebase Remote Config can target old binaries precisely.
 Current release candidate:
 
 ```text
-version: 1.0.0+2
+version: 1.0.1+3
 ```
 
 Flutter maps this to:
 
-- Android `versionCode`: `2`
-- iOS `CFBundleVersion`: `2`
-- macOS `CFBundleVersion`: `2`
+- Android `versionCode`: `3`
+- iOS `CFBundleVersion`: `3`
+- macOS `CFBundleVersion`: `3`
 
 After the compatible binary is available to users, raise only the platform keys
 for platforms included in that release:
@@ -243,6 +257,19 @@ an explicit device/live-service test target.
 Do not make these live-service tests block every PR until they have stable
 fixtures, reset/cleanup steps, and documented credentials. Prefer a separate
 manual or scheduled workflow that records release evidence.
+
+## iOS TestFlight Release
+
+Run `Release Readiness` first. Then run `iOS TestFlight Release` from GitHub
+Actions. Leave `upload_to_testflight` off when you only want a signed IPA
+artifact and entitlement proof. Turn it on only when the exact commit is the
+release candidate to send to App Store Connect.
+
+The workflow uses App Store Connect API key authentication for
+`xcodebuild -allowProvisioningUpdates`, exports with
+`ios/ExportOptions.prod.plist`, verifies the exported profile contains
+HealthKit, checks the signed app contains HealthKit and Associated Domains, and
+stores the IPA as a short-lived GitHub Actions artifact.
 
 ## Human Release Evidence
 
