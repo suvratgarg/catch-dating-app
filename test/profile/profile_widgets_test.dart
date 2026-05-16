@@ -277,6 +277,8 @@ void main() {
     await tester.tap(find.text('Preview'));
     await pumpFeatureUi(tester);
 
+    expect(tester.widget<PreviewTab>(find.byType(PreviewTab)).bottomPadding, 0);
+
     final previewScrollView = find.byKey(ScrollableProfile.scrollViewKey);
     final previewScroll = tester.widget<SingleChildScrollView>(
       previewScrollView,
@@ -300,6 +302,46 @@ void main() {
       greaterThanOrEqualTo(tabBarBottom + 8),
     );
     expect(tester.getTopLeft(previewScrollView).dx, 20);
+  });
+
+  testWidgets('Profile preview upward drag pins the profile tabs', (
+    tester,
+  ) async {
+    tester.view.devicePixelRatio = 1.0;
+    tester.view.physicalSize = const Size(390, 844);
+    addTearDown(tester.view.resetPhysicalSize);
+    addTearDown(tester.view.resetDevicePixelRatio);
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(name: 'Suvrat Garg')),
+          ),
+        ],
+        child: MaterialApp(theme: AppTheme.light, home: const ProfileScreen()),
+      ),
+    );
+    await pumpFeatureUi(tester);
+
+    await tester.tap(find.text('Preview'));
+    await pumpFeatureUi(tester);
+
+    final previewScrollView = find.byKey(ScrollableProfile.scrollViewKey);
+    final previewScroll = tester.widget<SingleChildScrollView>(
+      previewScrollView,
+    );
+
+    expect(find.text('Profile').hitTestable(), findsOneWidget);
+    expect(previewScroll.controller!.offset, 0);
+
+    await tester.drag(previewScrollView, const Offset(0, -260));
+    await pumpFeatureUi(tester);
+
+    expect(find.text('Profile').hitTestable(), findsNothing);
+    expect(find.text('Preview').hitTestable(), findsOneWidget);
+    expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThanOrEqualTo(8));
+    expect(previewScroll.controller!.offset, lessThan(260));
   });
 
   testWidgets('Profile preview overscroll expands the profile header', (

@@ -26,6 +26,7 @@ class ScrollableProfile extends ConsumerWidget {
     required this.profile,
     required this.surfaceHeight,
     this.scrollController,
+    this.scrollPhysics,
     this.onLeadingOverscroll,
     this.bottomPadding = 24,
     this.onReact,
@@ -38,6 +39,7 @@ class ScrollableProfile extends ConsumerWidget {
   final PublicProfile profile;
   final double surfaceHeight;
   final ScrollController? scrollController;
+  final ScrollPhysics? scrollPhysics;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
   final ProfileReactionCallback? onReact;
@@ -73,7 +75,7 @@ class ScrollableProfile extends ConsumerWidget {
           key: scrollViewKey,
           controller: scrollController,
           primary: false,
-          physics: const ClampingScrollPhysics(),
+          physics: scrollPhysics ?? const ClampingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
