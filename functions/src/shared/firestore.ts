@@ -383,7 +383,6 @@ export interface SavedRunDoc {
   uid: string;
   runId: string;
   savedAt: FirebaseFirestore.Timestamp;
-  removedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**

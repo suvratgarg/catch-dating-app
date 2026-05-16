@@ -62,6 +62,18 @@ void main() {
     },
   );
 
+  test('eligibilityFor uses the supplied reference time', () {
+    final now = DateTime(2026, 1, 1, 8);
+    final user = buildUser();
+    final run = buildRun(startTime: now.add(const Duration(minutes: 30)));
+
+    expect(run.eligibilityFor(user, now: now), isA<Eligible>());
+    expect(
+      run.eligibilityFor(user, now: now.add(const Duration(hours: 1))),
+      isA<RunPast>(),
+    );
+  });
+
   // ── #15: AgeTooYoung ─────────────────────────────────────────────────────
 
   test('#15 eligibilityFor returns AgeTooYoung when user age < minAge', () {
@@ -133,7 +145,7 @@ void main() {
     },
   );
 
-  // ── #20: statusFor maps every eligibility to RunSignUpStatus ─────────────
+  // ── #20: statusFor maps fresh-viewer eligibility to RunSignUpStatus ──────
 
   group('#20 statusFor', () {
     test('RunPast → RunSignUpStatus.past', () {

@@ -1195,7 +1195,6 @@ function buildSavedRun({seedMarker, uid, runId, now}) {
       uid,
       runId,
       savedAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {hours: -6})),
-      removedAt: null,
     },
   };
 }

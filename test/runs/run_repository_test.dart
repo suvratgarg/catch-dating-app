@@ -262,6 +262,30 @@ void main() {
       },
     );
 
+    test(
+      'fetchUpcomingRunsForClubs queries beyond the whereIn club cap',
+      () async {
+        final early = buildRun(
+          id: 'early',
+          runClubId: 'club-1',
+          startTime: DateTime.now().add(const Duration(hours: 2)),
+        );
+        final late = buildRun(
+          id: 'late',
+          runClubId: 'club-12',
+          startTime: DateTime.now().add(const Duration(hours: 4)),
+        );
+        await _seedRun(firestore, early);
+        await _seedRun(firestore, late);
+
+        final results = await repository.fetchUpcomingRunsForClubs([
+          for (var i = 1; i <= 12; i += 1) 'club-$i',
+        ]);
+
+        expect(results, [early, late]);
+      },
+    );
+
     test('createRun calls the server-owned createRun Cloud Function', () async {
       final run = buildRun(
         id: 'run-42',

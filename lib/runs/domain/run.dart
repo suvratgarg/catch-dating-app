@@ -90,7 +90,8 @@ abstract class Run with _$Run {
   bool get isFull => signedUpCount >= capacityLimit;
   bool get isFree => priceInPaise == 0;
   bool get isCancelled => status == RunLifecycleStatus.cancelled;
-  bool get isUpcoming => !isCancelled && startTime.isAfter(DateTime.now());
+  bool get isUpcoming => isUpcomingAt(DateTime.now());
+  bool isUpcomingAt(DateTime now) => !isCancelled && startTime.isAfter(now);
   bool get hasRequirements => constraints.hasRequirements;
   bool get hasExactStartingPoint =>
       startingPointLat != null && startingPointLng != null;
@@ -100,8 +101,9 @@ abstract class Run with _$Run {
   /// User-specific roster state lives in `runParticipations`, so callers that
   /// know the viewer's participation edge should prefer a view-model seam that
   /// combines the run and participation before rendering action state.
-  RunEligibility eligibilityFor(UserProfile user) {
-    if (!isUpcoming) return const RunPast();
+  RunEligibility eligibilityFor(UserProfile user, {DateTime? now}) {
+    final referenceNow = now ?? DateTime.now();
+    if (!isUpcomingAt(referenceNow)) return const RunPast();
     if (user.age < constraints.minAge) return AgeTooYoung(constraints.minAge);
     if (user.age > constraints.maxAge) return AgeTooOld(constraints.maxAge);
     final cap = constraints.maxForGender(user.gender);
@@ -112,13 +114,13 @@ abstract class Run with _$Run {
     return const Eligible();
   }
 
-  /// Returns the coarse booking status of this run from [user]'s perspective.
-  RunSignUpStatus statusFor(UserProfile user) {
-    return switch (eligibilityFor(user)) {
-      Attended() => RunSignUpStatus.attended,
-      AlreadySignedUp() => RunSignUpStatus.signedUp,
+  /// Returns the fresh-viewer booking status for [user].
+  ///
+  /// Signed-up, waitlisted, and attended statuses require a `RunParticipation`
+  /// edge and are intentionally resolved outside this model.
+  RunSignUpStatus statusFor(UserProfile user, {DateTime? now}) {
+    return switch (eligibilityFor(user, now: now)) {
       RunPast() => RunSignUpStatus.past,
-      OnWaitlist() => RunSignUpStatus.waitlisted,
       RunFull() => RunSignUpStatus.full,
       Eligible() => RunSignUpStatus.eligible,
       _ => RunSignUpStatus.ineligible,

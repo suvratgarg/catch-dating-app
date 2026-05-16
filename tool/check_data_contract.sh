@@ -47,6 +47,9 @@ node tool/check_schema_type_boundaries.mjs
 echo "==> Checking schema path literals"
 node tool/check_schema_path_literals.mjs
 
+echo "==> Checking Firestore rules semantics against schemas"
+node tool/check_firestore_rules_semantics.mjs
+
 echo "==> Checking demo seed contract validation"
 node --check tool/seed_demo_data.mjs
 node --check tool/recompute_public_profiles.mjs

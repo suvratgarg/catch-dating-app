@@ -513,7 +513,6 @@ function validSavedRunDoc() {
     uid: "runner-1",
     runId: "run-1",
     savedAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
-    removedAt: null,
   };
 }
 

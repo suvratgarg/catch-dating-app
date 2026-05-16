@@ -353,6 +353,22 @@ test("createRunHandler creates a server-owned run for the club host",
   }
 );
 
+test("createRunHandler accepts an uploaded run photo URL", async () => {
+  const h = harness({"runClubs/club-1": club()});
+
+  await createRunHandler(
+    request("host-1", payload({
+      photoUrl: "https://img.example/runs/run-1.jpg",
+    })),
+    h.deps
+  );
+
+  assert.equal(
+    h.firestore.get("runs/run-1")?.photoUrl,
+    "https://img.example/runs/run-1.jpg"
+  );
+});
+
 test("createRunHandler notifies active club members about a new run",
   async () => {
     const h = harness({

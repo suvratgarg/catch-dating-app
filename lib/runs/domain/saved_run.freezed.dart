@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SavedRun {
 
-@JsonKey(includeToJson: false) String get id; String get uid; String get runId;@TimestampConverter() DateTime get savedAt;@NullableTimestampConverter() DateTime? get removedAt;
+@JsonKey(includeToJson: false) String get id; String get uid; String get runId;@TimestampConverter() DateTime get savedAt;
 /// Create a copy of SavedRun
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $SavedRunCopyWith<SavedRun> get copyWith => _$SavedRunCopyWithImpl<SavedRun>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavedRun&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.removedAt, removedAt) || other.removedAt == removedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SavedRun&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,uid,runId,savedAt,removedAt);
+int get hashCode => Object.hash(runtimeType,id,uid,runId,savedAt);
 
 @override
 String toString() {
-  return 'SavedRun(id: $id, uid: $uid, runId: $runId, savedAt: $savedAt, removedAt: $removedAt)';
+  return 'SavedRun(id: $id, uid: $uid, runId: $runId, savedAt: $savedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $SavedRunCopyWith<$Res>  {
   factory $SavedRunCopyWith(SavedRun value, $Res Function(SavedRun) _then) = _$SavedRunCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String uid, String runId,@TimestampConverter() DateTime savedAt,@NullableTimestampConverter() DateTime? removedAt
+@JsonKey(includeToJson: false) String id, String uid, String runId,@TimestampConverter() DateTime savedAt
 });
 
 
@@ -65,14 +65,13 @@ class _$SavedRunCopyWithImpl<$Res>
 
 /// Create a copy of SavedRun
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? uid = null,Object? runId = null,Object? savedAt = null,Object? removedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? uid = null,Object? runId = null,Object? savedAt = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,runId: null == runId ? _self.runId : runId // ignore: cast_nullable_to_non_nullable
 as String,savedAt: null == savedAt ? _self.savedAt : savedAt // ignore: cast_nullable_to_non_nullable
-as DateTime,removedAt: freezed == removedAt ? _self.removedAt : removedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime,
   ));
 }
 
@@ -157,10 +156,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String uid,  String runId, @TimestampConverter()  DateTime savedAt, @NullableTimestampConverter()  DateTime? removedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String uid,  String runId, @TimestampConverter()  DateTime savedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SavedRun() when $default != null:
-return $default(_that.id,_that.uid,_that.runId,_that.savedAt,_that.removedAt);case _:
+return $default(_that.id,_that.uid,_that.runId,_that.savedAt);case _:
   return orElse();
 
 }
@@ -178,10 +177,10 @@ return $default(_that.id,_that.uid,_that.runId,_that.savedAt,_that.removedAt);ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String uid,  String runId, @TimestampConverter()  DateTime savedAt, @NullableTimestampConverter()  DateTime? removedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String uid,  String runId, @TimestampConverter()  DateTime savedAt)  $default,) {final _that = this;
 switch (_that) {
 case _SavedRun():
-return $default(_that.id,_that.uid,_that.runId,_that.savedAt,_that.removedAt);case _:
+return $default(_that.id,_that.uid,_that.runId,_that.savedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -198,10 +197,10 @@ return $default(_that.id,_that.uid,_that.runId,_that.savedAt,_that.removedAt);ca
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String uid,  String runId, @TimestampConverter()  DateTime savedAt, @NullableTimestampConverter()  DateTime? removedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String uid,  String runId, @TimestampConverter()  DateTime savedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _SavedRun() when $default != null:
-return $default(_that.id,_that.uid,_that.runId,_that.savedAt,_that.removedAt);case _:
+return $default(_that.id,_that.uid,_that.runId,_that.savedAt);case _:
   return null;
 
 }
@@ -213,14 +212,13 @@ return $default(_that.id,_that.uid,_that.runId,_that.savedAt,_that.removedAt);ca
 @JsonSerializable()
 
 class _SavedRun implements SavedRun {
-  const _SavedRun({@JsonKey(includeToJson: false) required this.id, required this.uid, required this.runId, @TimestampConverter() required this.savedAt, @NullableTimestampConverter() this.removedAt});
+  const _SavedRun({@JsonKey(includeToJson: false) required this.id, required this.uid, required this.runId, @TimestampConverter() required this.savedAt});
   factory _SavedRun.fromJson(Map<String, dynamic> json) => _$SavedRunFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
 @override final  String uid;
 @override final  String runId;
 @override@TimestampConverter() final  DateTime savedAt;
-@override@NullableTimestampConverter() final  DateTime? removedAt;
 
 /// Create a copy of SavedRun
 /// with the given fields replaced by the non-null parameter values.
@@ -235,16 +233,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavedRun&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.removedAt, removedAt) || other.removedAt == removedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SavedRun&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,uid,runId,savedAt,removedAt);
+int get hashCode => Object.hash(runtimeType,id,uid,runId,savedAt);
 
 @override
 String toString() {
-  return 'SavedRun(id: $id, uid: $uid, runId: $runId, savedAt: $savedAt, removedAt: $removedAt)';
+  return 'SavedRun(id: $id, uid: $uid, runId: $runId, savedAt: $savedAt)';
 }
 
 
@@ -255,7 +253,7 @@ abstract mixin class _$SavedRunCopyWith<$Res> implements $SavedRunCopyWith<$Res>
   factory _$SavedRunCopyWith(_SavedRun value, $Res Function(_SavedRun) _then) = __$SavedRunCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String uid, String runId,@TimestampConverter() DateTime savedAt,@NullableTimestampConverter() DateTime? removedAt
+@JsonKey(includeToJson: false) String id, String uid, String runId,@TimestampConverter() DateTime savedAt
 });
 
 
@@ -272,14 +270,13 @@ class __$SavedRunCopyWithImpl<$Res>
 
 /// Create a copy of SavedRun
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? uid = null,Object? runId = null,Object? savedAt = null,Object? removedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? uid = null,Object? runId = null,Object? savedAt = null,}) {
   return _then(_SavedRun(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
 as String,runId: null == runId ? _self.runId : runId // ignore: cast_nullable_to_non_nullable
 as String,savedAt: null == savedAt ? _self.savedAt : savedAt // ignore: cast_nullable_to_non_nullable
-as DateTime,removedAt: freezed == removedAt ? _self.removedAt : removedAt // ignore: cast_nullable_to_non_nullable
-as DateTime?,
+as DateTime,
   ));
 }
 

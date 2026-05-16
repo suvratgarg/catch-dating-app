@@ -12,7 +12,6 @@ abstract class SavedRun with _$SavedRun {
     required String uid,
     required String runId,
     @TimestampConverter() required DateTime savedAt,
-    @NullableTimestampConverter() DateTime? removedAt,
   }) = _SavedRun;
 
   factory SavedRun.fromJson(Map<String, dynamic> json) =>

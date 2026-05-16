@@ -105,6 +105,7 @@ function userProfile(overrides = {}) {
     gender: "woman",
     profileComplete: true,
     photoUrls: [],
+    photoThumbnailUrls: [],
     photoPrompts: [],
     city: "mumbai",
     latitude: null,
@@ -128,6 +129,7 @@ function userProfile(overrides = {}) {
     paceMaxSecsPerKm: 420,
     preferredDistances: [],
     runningReasons: [],
+    preferredRunTimes: [],
     prefsNewCatches: true,
     prefsMessages: true,
     prefsRunReminders: true,
@@ -609,7 +611,7 @@ describe("firestore.rules", () => {
       await seed(["savedRuns", "runner-1_run-3"], savedRun({runId: "run-3"}));
       await assertFails(
         updateDoc(doc(authedDb("runner-1"), "savedRuns", "runner-1_run-3"), {
-          removedAt: serverTimestamp(),
+          savedAt: serverTimestamp(),
         }),
       );
     });

@@ -252,36 +252,9 @@ RunEligibility _eligibilityForParticipation({
     RunParticipationStatus.waitlisted => const OnWaitlist(),
     RunParticipationStatus.cancelled ||
     RunParticipationStatus.deleted ||
-    null => _eligibilityForFreshViewer(
-      run: run,
-      userProfile: userProfile,
-      now: now,
-    ),
+    null => run.eligibilityFor(userProfile, now: now),
   };
 }
-
-RunEligibility _eligibilityForFreshViewer({
-  required Run run,
-  required UserProfile userProfile,
-  required DateTime now,
-}) {
-  if (!_isRunUpcomingAt(run, now)) return const RunPast();
-  if (userProfile.age < run.constraints.minAge) {
-    return AgeTooYoung(run.constraints.minAge);
-  }
-  if (userProfile.age > run.constraints.maxAge) {
-    return AgeTooOld(run.constraints.maxAge);
-  }
-  final cap = run.constraints.maxForGender(userProfile.gender);
-  if (cap != null && (run.genderCounts[userProfile.gender.name] ?? 0) >= cap) {
-    return const GenderCapacityReached();
-  }
-  if (run.isFull) return const RunFull();
-  return const Eligible();
-}
-
-bool _isRunUpcomingAt(Run run, DateTime now) =>
-    !run.isCancelled && run.startTime.isAfter(now);
 
 bool _hasRunStarted(Run run, DateTime now) => !run.startTime.isAfter(now);
 

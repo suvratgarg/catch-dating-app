@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:catch_dating_app/core/schema_contracts/generated/profile_schema_contracts.g.dart';
+import 'package:catch_dating_app/core/schema_contracts/generated/schema_contracts.g.dart'
+    as schema_contracts;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_schema/json_schema.dart';
 
@@ -122,8 +124,130 @@ void main() {
       isFalse,
     );
   });
+
+  test('generated Dart registry covers the schema contract surface', () {
+    expect(schema_contracts.schemaContractDefinitions.length, greaterThan(50));
+    expect(
+      schema_contracts.schemaContractsByName.keys,
+      containsAll(<String>[
+        'UserProfileDocument',
+        'PublicProfileDocument',
+        'RunDocument',
+        'SavedRunDocument',
+        'SwipeDocument',
+        'CreateRunCallablePayload',
+        'CreateProfileDecisionClientWrite',
+        'CreateSavedRunClientWrite',
+      ]),
+    );
+    expect(
+      schema_contracts.schemaContractsBySource.keys,
+      containsAll(<String>[
+        'firestore/users.schema.json',
+        'firestore/runs.schema.json',
+        'firestore/swipes.schema.json',
+        'client_writes/create_profile_decision.schema.json',
+        'client_writes/create_saved_run.schema.json',
+      ]),
+    );
+  });
+
+  test('generated Dart registry validates representative shared fixtures', () {
+    final cases = <_SchemaFixtureCase>[
+      _SchemaFixtureCase.valid(
+        'UserProfileDocument',
+        'valid/user_profile_doc.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'UserProfileDocument',
+        'invalid/user_profile_legacy_bio.json',
+      ),
+      _SchemaFixtureCase.valid(
+        'PublicProfileDocument',
+        'valid/public_profile_doc.json',
+      ),
+      _SchemaFixtureCase.valid('RunDocument', 'valid/run_doc.json'),
+      _SchemaFixtureCase.invalid(
+        'RunDocument',
+        'invalid/run_doc_invalid_pace.json',
+      ),
+      _SchemaFixtureCase.valid('SavedRunDocument', 'valid/saved_run_doc.json'),
+      _SchemaFixtureCase.valid('SwipeDocument', 'valid/swipe_doc.json'),
+      _SchemaFixtureCase.invalid(
+        'SwipeDocument',
+        'invalid/swipe_doc_invalid_reaction_target.json',
+      ),
+      _SchemaFixtureCase.valid(
+        'CreateProfileDecisionClientWrite',
+        'valid/create_profile_decision_client_write.json',
+      ),
+      _SchemaFixtureCase.valid(
+        'CreateSavedRunClientWrite',
+        'valid/create_saved_run_client_write.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'CreateRunReviewCallablePayload',
+        'invalid/create_run_review_invalid_rating.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'UpdateRunCallablePayload',
+        'invalid/update_run_empty_fields.json',
+      ),
+      _SchemaFixtureCase.invalid(
+        'UpdateRunClubCallablePayload',
+        'invalid/update_run_club_empty_fields.json',
+      ),
+    ];
+
+    for (final fixtureCase in cases) {
+      final schema = schema_contracts
+          .schemaContractsByName[fixtureCase.schemaName];
+      expect(
+        schema,
+        isNotNull,
+        reason: 'Missing generated schema ${fixtureCase.schemaName}',
+      );
+      final result = JsonSchema.create(
+        schema!,
+      ).validate(_readFixture(fixtureCase.fixturePath));
+      expect(
+        result.isValid,
+        fixtureCase.isValid,
+        reason: '${fixtureCase.schemaName} should validate '
+            '${fixtureCase.fixturePath}: ${result.errors}',
+      );
+    }
+  });
 }
 
 Object? _readFixture(String path) {
   return jsonDecode(File('contracts/fixtures/$path').readAsStringSync());
+}
+
+class _SchemaFixtureCase {
+  const _SchemaFixtureCase._({
+    required this.schemaName,
+    required this.fixturePath,
+    required this.isValid,
+  });
+
+  factory _SchemaFixtureCase.valid(String schemaName, String fixturePath) {
+    return _SchemaFixtureCase._(
+      schemaName: schemaName,
+      fixturePath: fixturePath,
+      isValid: true,
+    );
+  }
+
+  factory _SchemaFixtureCase.invalid(String schemaName, String fixturePath) {
+    return _SchemaFixtureCase._(
+      schemaName: schemaName,
+      fixturePath: fixturePath,
+      isValid: false,
+    );
+  }
+
+  final String schemaName;
+  final String fixturePath;
+  final bool isValid;
 }

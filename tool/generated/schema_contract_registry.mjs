@@ -3192,33 +3192,6 @@ export const savedRunDocumentSchema = {
         }
       }
     },
-    "removedAt": {
-      "anyOf": [
-        {
-          "type": "object",
-          "description": "Serialized Firestore Timestamp fixture shape.",
-          "x-firestore-type": "timestamp",
-          "additionalProperties": false,
-          "required": [
-            "_seconds",
-            "_nanoseconds"
-          ],
-          "properties": {
-            "_seconds": {
-              "type": "integer"
-            },
-            "_nanoseconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 999999999
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ]
-    },
     "synthetic": {
       "type": "boolean",
       "description": "Internal demo seed marker used for cleanup and diagnostics."

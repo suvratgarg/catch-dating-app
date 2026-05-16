@@ -1,6 +1,6 @@
 ---
 doc_id: schema_contract_unification
-version: 0.8.4
+version: 0.8.5
 updated: 2026-05-16
 owner: recursive_audit_loop
 status: active
@@ -68,14 +68,18 @@ Existing useful pieces:
 
 Current gaps:
 
-- Dart validation and Zod validation can disagree.
+- Flutter production validation still consumes generated schema constants
+  selectively; broad Dart schema validation is now available for contract tests,
+  but app write paths are not all runtime-validated against JSON Schema.
 - Full document schemas and partial update schemas are not generated from one
   contract.
 - Prompt catalogs are Dart-only even though Functions and seed tools need the
   same prompt ids and limits.
 - Seed data can drift into legacy or invalid shapes unless each script manually
   remembers current fields.
-- Firestore rules and schema metadata are related but independently edited.
+- Firestore rules and schema metadata are related but not generated from one
+  rules compiler. Schema-derived semantic checks now cover the highest-risk
+  direct-write surfaces.
 - Storage/API naming migrations, such as replacing the user-facing swiping
   model with contextual catch/profile decisions, do not yet have a standard
   dual-read/dual-write migration pattern.
@@ -180,6 +184,7 @@ functions/src/shared/generated/
 
 lib/core/schema_contracts/generated/
   profile_schema_contracts.g.dart
+  schema_contracts.g.dart
 
 tool/generated/
   schema_contract_registry.mjs
@@ -560,12 +565,13 @@ Result: all focused Phase 3 checks passed on 2026-05-15.
 
 Auxiliary work identified during Phase 3:
 
-- Firestore rules still enforce only a subset of schema-level profile
-  semantics. Phase 6 should compare generated field sets and scalar limits
-  against rules helpers.
-- The generated Dart schema file is intentionally broad but not yet split into
-  smaller generated files. If it grows much further, split generated prompt
-  catalog, validation limits, and schema maps into separate files.
+- Firestore rules semantic drift is now checked for `users`, contextual profile
+  decisions, and saved runs. Further rules work should add schema-derived
+  checks for any new direct-write surface before it is opened to clients.
+- The broad generated Dart schema registry is intentionally kept separate from
+  the lightweight profile constants file used by production UI. If it grows much
+  further, split generated prompt catalogs, validation limits, and schema maps
+  into separate generated files.
 - `updateUserProfile` now rejects malformed non-empty emails and invalid enum
   strings server-side. Any old seeded/demo data with invalid non-empty email
   values should be repaired before production enforcement is broadened to full
@@ -911,6 +917,38 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm
 ```
 
 Result: 61 Firestore/storage rules tests passed on 2026-05-16.
+
+### 2026-05-16: Phase 6 Rules Semantics And Dart Schema Symmetry
+
+Closed the two asymmetric schema-governance gaps that were still worth handling
+before closing the loop:
+
+- Added `tool/check_firestore_rules_semantics.mjs`, a schema-derived Firestore
+  Rules semantic checker for the direct-write surfaces that rules still own:
+  owner profile create, contextual profile decision create, and saved-run
+  create.
+- Wired that checker into `./tool/check_data_contract.sh` so stale rules
+  literals fail the same gate as stale generated outputs.
+- Tightened `users/{uid}` direct create rules so schema-required fields
+  (`firstName`, `lastName`, `photoThumbnailUrls`, `photoPrompts`, and
+  `preferredRunTimes`) are required in rules, not only in JSON Schema/Dart.
+- Generated a broad Dart schema registry at
+  `lib/core/schema_contracts/generated/schema_contracts.g.dart`, while keeping
+  the existing lightweight `profile_schema_contracts.g.dart` file for
+  production profile constants.
+- Expanded `test/core/schema_contracts_generated_test.dart` to validate
+  representative Firestore documents, callable payloads, and direct client
+  writes through the generated Dart registry.
+
+Proof:
+
+```bash
+node tool/check_firestore_rules_semantics.mjs
+flutter test test/core/schema_contracts_generated_test.dart
+./tool/check_data_contract.sh
+```
+
+Result: full data-contract gate passed on 2026-05-16.
 
 ### 2026-05-15: Phase 6 Ownership/Rules Drift Checks
 
@@ -1380,9 +1418,10 @@ Exit criteria:
 
 ### Phase 6: Firestore Rules And Ownership Metadata
 
-Status: profile field ownership, user rules allow-list drift checks, and
-focused emulator coverage for the tightened profile fields are complete; deeper
-rules semantic generation remains pending.
+Status: profile field ownership, user rules allow-list drift checks, focused
+emulator coverage for tightened profile fields, and schema-derived rules
+semantic drift checks for current direct-write surfaces are complete. A full
+Firestore Rules compiler remains intentionally out of scope.
 
 Tasks:
 
@@ -1391,6 +1430,7 @@ Tasks:
   `tool/firestore_contract.json`.
 - [x] Add checks for rules field allowlists against schema field sets.
 - [x] Add rules emulator tests for any newly tightened profile fields.
+- [x] Add schema-derived semantic checks for rules-owned direct writes.
 - [x] Document any fields intentionally tolerated for legacy reads.
 
 Exit criteria:

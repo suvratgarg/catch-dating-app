@@ -11,14 +11,10 @@ _SavedRun _$SavedRunFromJson(Map<String, dynamic> json) => _SavedRun(
   uid: json['uid'] as String,
   runId: json['runId'] as String,
   savedAt: const TimestampConverter().fromJson(json['savedAt'] as Timestamp),
-  removedAt: const NullableTimestampConverter().fromJson(
-    json['removedAt'] as Timestamp?,
-  ),
 );
 
 Map<String, dynamic> _$SavedRunToJson(_SavedRun instance) => <String, dynamic>{
   'uid': instance.uid,
   'runId': instance.runId,
   'savedAt': const TimestampConverter().toJson(instance.savedAt),
-  'removedAt': const NullableTimestampConverter().toJson(instance.removedAt),
 };

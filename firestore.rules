@@ -181,18 +181,21 @@ service cloud.firestore {
         && data.keys().hasAll([
           'name', 'displayName', 'email', 'phoneNumber', 'dateOfBirth',
           'gender', 'profileComplete', 'profilePrompts',
-          'photoUrls',
+          'firstName', 'lastName',
+          'photoUrls', 'photoThumbnailUrls', 'photoPrompts',
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
           'languages', 'paceMinSecsPerKm', 'paceMaxSecsPerKm',
-          'preferredDistances', 'runningReasons',
+          'preferredDistances', 'runningReasons', 'preferredRunTimes',
           'prefsNewCatches', 'prefsMessages', 'prefsRunReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap'
         ])
         // Core
         && data.name is string
-        && optionalString(data, 'firstName')
-        && optionalString(data, 'lastName')
+        && data.firstName is string
+        && data.firstName.size() <= 80
+        && data.lastName is string
+        && data.lastName.size() <= 80
         && data.displayName is string
         && data.displayName.size() <= 80
         && data.displayName.matches('.*\\S.*')
@@ -207,8 +210,10 @@ service cloud.firestore {
         // Photos
         && data.photoUrls is list
         && data.photoUrls.size() <= 12
-        && optionalListMax(data, 'photoThumbnailUrls', 12)
-        && optionalListMax(data, 'photoPrompts', 6)
+        && data.photoThumbnailUrls is list
+        && data.photoThumbnailUrls.size() <= 12
+        && data.photoPrompts is list
+        && data.photoPrompts.size() <= 6
         && optionalListMax(data, 'profilePhotos', 6)
         // Location
         && (!hasField(data, 'city') || data.city == null || isValidCity(data.city))
@@ -267,7 +272,8 @@ service cloud.firestore {
         && data.preferredDistances.size() <= 12
         && data.runningReasons is list
         && data.runningReasons.size() <= 12
-        && optionalListMax(data, 'preferredRunTimes', 8)
+        && data.preferredRunTimes is list
+        && data.preferredRunTimes.size() <= 8
         // Notification / discovery preferences
         && data.prefsNewCatches is bool
         && data.prefsMessages is bool

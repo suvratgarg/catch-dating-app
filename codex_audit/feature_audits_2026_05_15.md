@@ -177,8 +177,11 @@ Runs is the largest, most carefully-tested feature in the app and the deepest in
 ### A. Data modeling
 
 - **[Medium] `SavedRun.removedAt` is dead** — [saved_run.dart:15](lib/runs/domain/saved_run.dart:15). `unsaveRun` does `delete()` ([saved_run_repository.dart:75-83](lib/runs/data/saved_run_repository.dart:75)), and rules deny updates (`firestore.rules:486` `allow update: if false`). The field exists on the freezed model and nowhere else. Remove.
+  - Done 2026-05-16: removed `SavedRun.removedAt` from the Dart model, Firestore schema, generated TS mirrors, fixtures, and demo seeding paths; the rules test now still proves saved-run updates are denied without keeping the dead field name alive.
 - **[Medium] `Run.statusFor()` has unreachable switch arms** — [run.dart:115-125](lib/runs/domain/run.dart:115). The switch handles `Attended`, `AlreadySignedUp`, `OnWaitlist` but `Run.eligibilityFor()` ([run.dart:102-112](lib/runs/domain/run.dart:102)) never returns those — those require knowing the participation edge. The doc comment acknowledges this. Effectively those switch arms are dead.
+  - Done 2026-05-16: `Run.statusFor` now maps only fresh-viewer eligibility, `Run.eligibilityFor` accepts an injectable `now`, and the run-detail CTA reuses the domain method for fresh-viewer logic while keeping participation-aware states local.
 - **[Medium] `eligibilityFor`/`statusFor` duplicated in the CTA** — [run_detail_cta.dart:211-255](lib/runs/presentation/widgets/run_detail_cta.dart:211): `_eligibilityForFreshViewer` and `_statusForEligibility` are copies of the domain methods. Either route fresh-viewer logic through `Run.eligibilityFor` and keep the participation-aware wrapper local to the CTA, or drop the domain methods entirely.
+  - Done 2026-05-16: removed `_eligibilityForFreshViewer` from the CTA and routed the cancelled/deleted/null participation branch through `Run.eligibilityFor(userProfile, now: now)`.
 - **[Low] `RunDraft.isEmpty` doesn't check all fields** — [run_draft.dart:51-64](lib/runs/domain/run_draft.dart:51) misses `paceName`, `locationDetails`, `startingPointLng`, `durationMinutes`. A draft with only a pace selected reports `isEmpty=true` and gets skipped by the save flow.
   - Done 2026-05-15: expanded `isEmpty` to include secondary location/time fields and non-default duration, with unit coverage.
 - **[Low] Nullable counter trio**: `Run.bookedCount`/`checkedInCount`/`waitlistedCount` are `int?` with getters that fallback to `0`. Null vs 0 is never distinguished anywhere. Pick one.
@@ -189,6 +192,7 @@ Runs is the largest, most carefully-tested feature in the app and the deepest in
 
 - **[High] `_watchRunsForParticipationStatuses` is 100+ lines of hand-rolled stream coordination** — [run_repository.dart:93-204](lib/runs/data/run_repository.dart:93). It listens to a participations query, chunks the resulting runIds, opens N sub-streams against the runs collection, and uses a `generation` counter to drop stale emissions. Works, but it's a lot of state to read. Either replace with rxdart's `switchMap` + `combineLatest`, or extract into a `MultiQueryRunStream` helper with a unit test for the stale-emission case.
 - **[Medium] `fetchUpcomingRunsForClubs` silently caps clubs at 10** — [run_repository.dart:216](lib/runs/data/run_repository.dart:216) (`.take(10)`). Firestore `whereIn` limit. If a user follows 20 clubs the other 10 are invisible with no warning. Split into multiple queries or paginate.
+  - Done 2026-05-16: current repository code chunks unique club ids into Firestore-safe `whereIn` groups and merges/sorts the results; added a regression test covering 12 clubs so this does not quietly regress to the old cap.
 - **[Medium] `cancelRun` and `deleteRun` Cloud Functions exist but no Dart client method calls them** — `functions/src/index.ts:15` exports them, but [run_repository.dart](lib/runs/data/run_repository.dart) has no `cancelRun`/`deleteRun` method and no UI surfaces a host CTA. Hosts cannot cancel or delete a run from the app.
   - Done 2026-05-16: added typed callable DTOs, `RunRepository.cancelRun`/`deleteRun`, `RunBookingController` host mutations, host-manage CTAs, confirmation dialogs, and repository/controller/widget tests.
 - **[Low] `SavedRunRepository.saveRun` writes a raw map** — [saved_run_repository.dart:61-72](lib/runs/data/saved_run_repository.dart:61). Bypasses the typed converter so it can use `FieldValue.serverTimestamp()`. Worth a one-line comment explaining why.
@@ -208,6 +212,7 @@ Runs is the largest, most carefully-tested feature in the app and the deepest in
 - **[Medium] `_hasUnsavedChanges` returns false when a draft is active** — [create_run_screen.dart:329-345](lib/runs/presentation/create_run_screen.dart:329). If a user restored a draft and then made further edits, no "unsaved changes" prompt fires on back. Track a `_dirtySinceLastSave` flag instead.
   - Done 2026-05-15: replaced the active-draft shortcut with a draft-content signature comparison that detects edits after restore/save.
 - **[Medium] `RunDetailScreen` doesn't accept `initialRun`** — [run_detail_screen.dart](lib/runs/presentation/run_detail_screen.dart) vs `RunClubDetailScreen` which does. Deep links always show a full-screen spinner. Mirror the run_clubs pattern.
+  - Done 2026-05-16: `RunDetailScreen` now accepts a route-matching `initialRun`, renders it while the canonical detail stream is loading, and run navigation surfaces pass the full `Run` as `state.extra` when they already have it.
 - **[Low] `_restoreSavedDraft` silently swallows errors** — [create_run_screen.dart](lib/runs/presentation/create_run_screen.dart) (mirror of run_clubs same-named method). At least log.
 - **[Low] PROJECT_CONTEXT step order is stale** — [`PROJECT_CONTEXT.md:259-263`](PROJECT_CONTEXT.md:259) lists the wizard as `When → Where → Run details → Eligibility`. The actual order in [create_run_screen.dart:562-598](lib/runs/presentation/create_run_screen.dart:562) is `Run details → Where → When → Eligibility`. Update the doc.
   - Done 2026-05-15: updated `PROJECT_CONTEXT.md` to the actual run creation step order.
@@ -273,7 +278,7 @@ All wired correctly. No host-only guard at the router on `attendance` — relies
 - No test confirming a `cancelMutation` success actually clears the booking from the UI (depends on the participation stream). [Medium]
 - No test for `_watchRunsForParticipationStatuses` stale-generation handling. [Medium]
 - No test for the create-run step-key scramble (a passing test wouldn't catch the confusing names anyway). [Low]
-- No test for the run-detail deep-link loading state vs the run_clubs `initialRunClub` parity. [Low]
+- No test for the run-detail deep-link loading state vs the run_clubs `initialRunClub` parity. [Low]<br>Done 2026-05-16: added a `RunDetailScreen` widget test that renders `initialRun` while live detail data is still loading.
 
 ### H. Code quality / naming
 
@@ -305,13 +310,13 @@ All wired correctly. No host-only guard at the router on `attendance` — relies
 | 1 | Wire `cancelRun` + `deleteRun` Cloud Functions into `RunRepository` and add host CTAs<br>Done 2026-05-16. | M |
 | 2 | Add real photo support to `Run` (replace `RunPhotoHeader` fake painter)<br>Done 2026-05-16. | M |
 | 3 | Rename scrambled `_step0/1/2/3Key` to step-named keys<br>Done 2026-05-15. | S |
-| 4 | Remove `SavedRun.removedAt` (dead field) | S |
-| 5 | Remove dead switch arms from `Run.statusFor` or remove the duplicated logic in `run_detail_cta.dart` | S |
+| 4 | Remove `SavedRun.removedAt` (dead field)<br>Done 2026-05-16. | S |
+| 5 | Remove dead switch arms from `Run.statusFor` or remove the duplicated logic in `run_detail_cta.dart`<br>Done 2026-05-16. | S |
 | 6 | Fix `_hasUnsavedChanges` to track edits since last draft save<br>Done 2026-05-15. | S |
 | 7 | Fix `RunDraft.isEmpty` to include missing fields<br>Done 2026-05-15. | S |
-| 8 | Add `initialRun` deep-link placeholder to `RunDetailScreen` (mirror run_clubs) | S |
+| 8 | Add `initialRun` deep-link placeholder to `RunDetailScreen` (mirror run_clubs)<br>Done 2026-05-16. | S |
 | 9 | Replace `_watchRunsForParticipationStatuses` with rxdart-style `switchMap` + a test | M |
-| 10 | Paginate or split `fetchUpcomingRunsForClubs` (10-club cap) | S |
+| 10 | Paginate or split `fetchUpcomingRunsForClubs` (10-club cap)<br>Done 2026-05-16. | S |
 | 11 | Add waitlist position display + self-check-in countdown | M |
 | 12 | Add "add to calendar" + per-run reminder push opt-in | M |
 | 13 | Split `create_run_screen.dart` into form-state + screen | M |

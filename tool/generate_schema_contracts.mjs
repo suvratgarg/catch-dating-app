@@ -392,6 +392,10 @@ async function main() {
       commonSchema: readContractJson("shared/profile_common.schema.json"),
     })
   );
+  addTextOutput(
+    "lib/core/schema_contracts/generated/schema_contracts.g.dart",
+    renderDartSchemaContracts({schemaMap: bundledSchemas})
+  );
 
   const staleFiles = [];
   for (const file of generatedFiles) {
@@ -725,6 +729,59 @@ const schemaProfilePhotoSchema = ${dartLiteral(profilePhotoSchema)};
 const schemaUpdateUserProfileCallablePayloadSchema =
     ${dartLiteral(updateUserProfileSchema)};
 `;
+}
+
+function renderDartSchemaContracts({schemaMap}) {
+  const schemaConstants = schemaSpecs.map((spec) => {
+    const name = dartSchemaConstName(spec.name);
+    return `const ${name} = ${dartLiteral(schemaMap.get(spec.name))};`;
+  }).join("\n\n");
+  const definitions = schemaSpecs.map((spec) => {
+    const schemaName = dartSchemaConstName(spec.name);
+    return `  SchemaContractDefinition(
+    name: ${dartString(spec.name)},
+    source: ${dartString(spec.source)},
+    schema: ${schemaName},
+  ),`;
+  }).join("\n");
+  const byName = schemaSpecs.map((spec) =>
+    `  ${dartString(spec.name)}: ${dartSchemaConstName(spec.name)},`
+  ).join("\n");
+  const bySource = schemaSpecs.map((spec) =>
+    `  ${dartString(spec.source)}: ${dartSchemaConstName(spec.name)},`
+  ).join("\n");
+
+  return `${dartGeneratedHeader()}
+class SchemaContractDefinition {
+  const SchemaContractDefinition({
+    required this.name,
+    required this.source,
+    required this.schema,
+  });
+
+  final String name;
+  final String source;
+  final Map<String, Object?> schema;
+}
+
+${schemaConstants}
+
+const schemaContractDefinitions = <SchemaContractDefinition>[
+${definitions}
+];
+
+const schemaContractsByName = <String, Map<String, Object?>>{
+${byName}
+};
+
+const schemaContractsBySource = <String, Map<String, Object?>>{
+${bySource}
+};
+`;
+}
+
+function dartSchemaConstName(name) {
+  return `schema${name}Schema`;
 }
 
 function profileDecisionPathParts(schemaOrPath) {
