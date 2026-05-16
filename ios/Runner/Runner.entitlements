@@ -10,5 +10,7 @@
 	<array>
 		<string>applinks:catchdates.com</string>
 	</array>
+	<key>com.apple.developer.healthkit</key>
+	<true/>
 </dict>
 </plist>

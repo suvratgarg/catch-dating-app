@@ -93,7 +93,7 @@ android {
 
     defaultConfig {
         applicationId = "com.catchdates.app"
-        minSdk = flutter.minSdkVersion
+        minSdk = maxOf(26, flutter.minSdkVersion)
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName

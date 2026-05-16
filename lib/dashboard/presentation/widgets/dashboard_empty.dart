@@ -1,9 +1,12 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/empty_hero_card.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
+import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter/material.dart';
 
 class DashboardEmpty extends StatelessWidget {
@@ -54,7 +57,10 @@ class DashboardEmpty extends StatelessWidget {
 }
 
 class DashboardEmptySliverBody extends StatelessWidget {
-  const DashboardEmptySliverBody({super.key});
+  const DashboardEmptySliverBody({super.key, this.weeklyActivitySection});
+
+  final DashboardSectionModel<WeeklyRunningActivitySnapshot>?
+  weeklyActivitySection;
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +77,10 @@ class DashboardEmptySliverBody extends StatelessWidget {
         delegate: SliverChildListDelegate([
           const EmptyHeroCard(),
           gapH20,
+          if (weeklyActivitySection != null) ...[
+            DashboardStrideSection(section: weeklyActivitySection!),
+            gapH20,
+          ],
           const QuickActions(),
           gapH20,
           Text('How Catch works', style: CatchTextStyles.titleL(context)),

@@ -1,7 +1,7 @@
 ---
 doc_id: sliver_layout
-version: 2.1.4
-updated: 2026-05-08
+version: 2.1.6
+updated: 2026-05-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -19,6 +19,20 @@ surfaces, sticky headers, or scroll-heavy widget tests. For other work, use the
 audit registry's `SLIVER-001` rule summary instead of loading this full guide.
 
 ## Rule Changelog
+
+### 2.1.6
+
+- Home no longer uses a tabbed `NestedScrollView`. It should stay a single
+  `CustomScrollView` with `DashboardSliverHeader` and dashboard sliver body;
+  notifications are now a separate Home-branch route rather than a sibling tab
+  body.
+
+### 2.1.5
+
+- Profile Preview has a two-way bridge for its independently scrollable
+  `ProfileSurface`: upward drags first collapse the route-owned Profile header
+  until the Edit/Preview tab row pins, and leading overscroll at the card top
+  expands the header again. Keep both directions covered by widget tests.
 
 ### 2.1.4
 
@@ -449,13 +463,12 @@ placing that gap outside the filled child lets the outer sliver padding scroll
 away while the card has returned to its own top.
 
 When a tab contains an independently scrollable child, such as the shared
-`ProfileCard`, do not assume the child will hand gestures back to
-`NestedScrollView` at its leading edge. If the intended UX is one continuous
-gesture where dragging down from the child's top reveals the parent header,
-bridge the child's leading overscroll to the route-owned outer scroll
-controller and test that dragging on the child restores the header. Keep this
-bridge route-specific unless the shared card/surface always needs parent-header
-coordination.
+`ProfileSurface`, do not assume the child will hand gestures back to
+`NestedScrollView`. If the intended UX is one continuous gesture, bridge both
+directions in the route: upward child scroll should first collapse the parent
+header until the pinned row is stuck, and leading overscroll at the child top
+should expand the parent header. Keep this bridge route-specific unless the
+shared card/surface always needs parent-header coordination.
 
 ## Should More Screens Become Sliver-Native?
 
@@ -486,6 +499,7 @@ Current repo-specific recommendation:
 
 | Surface | Recommendation |
 |---|---|
+| Home dashboard | Keep as one `CustomScrollView` with `DashboardSliverHeader`; do not reintroduce Dashboard/Activity tabs unless the product explicitly returns to a multi-tab Home contract. |
 | Run clubs list | Keep sliver-native. This is the strongest pattern example. |
 | Chats list | Keep sliver shell. Consider making populated body sliver-native if conversation count or tests demand it. |
 | Run detail | Keep sliver-native. The collapsing hero justifies it. |

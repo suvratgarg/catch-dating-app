@@ -4,12 +4,17 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/run_focus_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
+import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
+import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
+import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -44,6 +49,15 @@ DashboardRecommendationsQuery _recommendationsQueryFor(
 
 const _noRecommendationCandidates =
     AsyncData<List<DashboardRunRecommendationCandidate>>([]);
+
+AsyncData<WeeklyRunningActivitySnapshot> _emptyWeeklyActivitySnapshot() {
+  return AsyncData(
+    WeeklyRunningActivitySnapshot.permissionRequired(
+      referenceDate: DateTime(2026, 5, 13),
+      platformLabel: 'Apple Health',
+    ),
+  );
+}
 
 DashboardRunRecommendationCandidate _recommendationCandidate(
   Run run, {
@@ -222,10 +236,13 @@ void main() {
       expect(find.text('Stride Social'), findsOneWidget);
       expect(find.text('${DashboardFull.greeting()}, Subrath'), findsOneWidget);
       expect(find.text('${DashboardFull.greeting()}, Manan'), findsNothing);
-      expect(tester.getTopLeft(find.byType(TabBar)).dy, lessThanOrEqualTo(88));
+      expect(find.byType(TabBar), findsNothing);
+      expect(find.byTooltip('Notifications'), findsOneWidget);
     });
 
-    testWidgets('uses native Dashboard and Activity tabs', (tester) async {
+    testWidgets('shows notification action with unread badge instead of tabs', (
+      tester,
+    ) async {
       final user = buildUser(uid: 'runner-1');
 
       await tester.pumpWidget(
@@ -233,7 +250,15 @@ void main() {
           overrides: [
             watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
             _membershipsOverride(user, const []),
-            _activityNotificationsOverride(user),
+            _activityNotificationsOverride(user, [
+              _activityNotification(id: 'unread-1', uid: user.uid),
+              _activityNotification(id: 'unread-2', uid: user.uid),
+              _activityNotification(
+                id: 'read',
+                uid: user.uid,
+                readAt: DateTime(2026, 5, 16),
+              ),
+            ]),
             watchSignedUpRunsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Run>>([])),
@@ -247,14 +272,54 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Dashboard'), findsOneWidget);
-      expect(find.text('Activity'), findsOneWidget);
+      expect(find.byType(TabBar), findsNothing);
+      expect(find.text('Dashboard'), findsNothing);
+      expect(find.text('Activity'), findsNothing);
+      expect(find.byTooltip('Notifications'), findsOneWidget);
+      expect(find.text('2'), findsOneWidget);
       expect(find.text("Let's find your first run"), findsOneWidget);
+    });
 
-      await tester.tap(find.text('Activity'));
+    testWidgets('notifications screen opens as a full screen and marks read', (
+      tester,
+    ) async {
+      final notifications = [
+        _activityNotification(id: 'unread', uid: 'runner-1'),
+        _activityNotification(
+          id: 'read',
+          uid: 'runner-1',
+          readAt: DateTime(2026, 5, 16),
+        ),
+      ];
+      final repository = _FakeActivityNotificationRepository(notifications);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
+            activityNotificationRepositoryProvider.overrideWithValue(
+              repository,
+            ),
+            watchSignedUpRunsProvider(
+              'runner-1',
+            ).overrideWithValue(const AsyncData<List<Run>>([])),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const ActivityScreen(),
+          ),
+        ),
+      );
+      await _pumpDashboardUi(tester);
       await _pumpDashboardUi(tester);
 
-      expect(find.text('No new activity'), findsOneWidget);
+      expect(find.text('Notifications'), findsOneWidget);
+      expect(find.text("It's a catch"), findsNWidgets(2));
+      expect(find.text('Mark all read'), findsNothing);
+      expect(repository.markReadCalls, hasLength(1));
+      expect(repository.markReadCalls.single.map((item) => item.id), [
+        'unread',
+      ]);
     });
   });
 
@@ -502,6 +567,91 @@ void main() {
       expect(find.text('Bandra Run Club', skipOffstage: false), findsOneWidget);
       expect(find.text('4/12 signed up', skipOffstage: false), findsOneWidget);
       expect(find.text('Fits your pace', skipOffstage: false), findsOneWidget);
+    });
+
+    testWidgets('shows connected weekly running activity from health data', (
+      tester,
+    ) async {
+      final joinedClubIds = ['club-1'];
+      final user = buildUser(uid: 'runner-1');
+      final nextRun = buildRun(
+        id: 'next-run',
+        bookedCount: 1,
+        startTime: DateTime.now().add(const Duration(hours: 3)),
+      );
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            watchAttendedRunsProvider(
+              user.uid,
+            ).overrideWithValue(const AsyncData<List<Run>>([])),
+            weeklyRunningActivityProvider.overrideWithValue(
+              AsyncData(
+                WeeklyRunningActivitySnapshot.connected(
+                  referenceDate: DateTime.now(),
+                  platformLabel: 'Apple Health',
+                  activities: [
+                    RunnerActivity(
+                      stableId: 'health-run',
+                      provider: RunnerActivityProvider.appleHealth,
+                      type: RunnerActivityType.running,
+                      startTime: DateTime.now(),
+                      endTime: DateTime.now().add(const Duration(hours: 1)),
+                      distanceMeters: 6400,
+                      sourceName: 'Apple Watch',
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            dashboardRecommendedRunsProvider(
+              _recommendationsQueryFor(user.uid, joinedClubIds),
+            ).overrideWithValue(_noRecommendationCandidates),
+            ..._dashboardHostOverrides(user, includeWeeklyActivity: false),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: DashboardFull(
+              user: user,
+              followedClubIds: joinedClubIds,
+              signedUpRuns: [nextRun],
+            ),
+          ),
+        ),
+      );
+
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('Your stride · this week'), findsOneWidget);
+      expect(find.text('6.4'), findsOneWidget);
+      expect(find.text('km · 1 run'), findsOneWidget);
+      expect(find.text('From Apple Health'), findsOneWidget);
+    });
+
+    testWidgets('shows a health permission action on the stride card', (
+      tester,
+    ) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.light,
+          home: Scaffold(
+            body: StrideCard(
+              snapshot: WeeklyRunningActivitySnapshot.permissionRequired(
+                referenceDate: DateTime(2026, 5, 13),
+                platformLabel: 'Apple Health',
+              ),
+              onConnect: () {},
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Connect Apple Health'), findsOneWidget);
+      expect(
+        find.text('Connect Apple Health to include runs outside Catch.'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('scrolls the greeting header away with dashboard content', (
@@ -1131,6 +1281,45 @@ class _FakeRunCheckInLocationService implements RunCheckInLocationService {
   }
 }
 
+class _FakeActivityNotificationRepository
+    implements ActivityNotificationRepository {
+  _FakeActivityNotificationRepository(this.notifications);
+
+  final List<ActivityNotification> notifications;
+  final List<List<ActivityNotification>> markReadCalls = [];
+
+  @override
+  Stream<List<ActivityNotification>> watchActivity({
+    required String uid,
+    int limit = 50,
+  }) => Stream.value(notifications);
+
+  @override
+  Future<void> markAllRead({
+    required String uid,
+    required Iterable<ActivityNotification> notifications,
+  }) async {
+    markReadCalls.add(notifications.toList(growable: false));
+  }
+}
+
+ActivityNotification _activityNotification({
+  required String id,
+  required String uid,
+  DateTime? readAt,
+}) {
+  return ActivityNotification(
+    id: id,
+    uid: uid,
+    type: ActivityNotificationType.match,
+    title: "It's a catch",
+    body: 'You and Runner Two matched. Say hi!',
+    createdAt: DateTime(2026, 5, 16, 10),
+    readAt: readAt,
+    matchId: 'match-1',
+  );
+}
+
 Future<void> _pumpDashboardUi(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
@@ -1153,6 +1342,8 @@ List _dashboardHostOverrides(
   UserProfile user, {
   String hostedClubId = 'club-host',
   List<Run> hostedRuns = const [],
+  bool includeWeeklyActivity = true,
+  AsyncValue<WeeklyRunningActivitySnapshot>? weeklyActivity,
 }) {
   final hostedClubs = hostedRuns.isEmpty
       ? const <RunClub>[]
@@ -1170,6 +1361,10 @@ List _dashboardHostOverrides(
     watchRunClubsHostedByProvider(
       user.uid,
     ).overrideWithValue(AsyncData(hostedClubs)),
+    if (includeWeeklyActivity)
+      weeklyRunningActivityProvider.overrideWithValue(
+        weeklyActivity ?? _emptyWeeklyActivitySnapshot(),
+      ),
     if (hostedRuns.isNotEmpty)
       watchRunsForClubProvider(
         hostedClubId,
