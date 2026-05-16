@@ -31,6 +31,10 @@ void main() {
       );
 
       expect(
+        find.widgetWithText(CatchButton, 'Browse run clubs'),
+        findsOneWidget,
+      );
+      expect(
         find.widgetWithText(CatchButton, 'Continue with phone'),
         findsOneWidget,
       );

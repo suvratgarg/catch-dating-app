@@ -122,6 +122,7 @@ class ClubDetailBody extends StatelessWidget {
           onRunSelected: (run) => context.pushNamed(
             Routes.runDetailScreen.name,
             pathParameters: {'runClubId': runClub.id, 'runId': run.id},
+            extra: run,
           ),
         ),
         if (isAuthenticated)
@@ -265,9 +266,11 @@ class _GuestPrompt extends StatelessWidget {
           const SizedBox(height: 12),
           CatchButton(
             label: 'Sign in to join',
-            onPressed: () => context.pushNamed(
-              Routes.onboardingScreen.name,
-              queryParameters: {'from': '/clubs/run-clubs/${runClub.id}'},
+            onPressed: () => context.go(
+              Uri(
+                path: Routes.authScreen.path,
+                queryParameters: {'from': '/clubs/run-clubs/${runClub.id}'},
+              ).toString(),
             ),
             fullWidth: true,
           ),

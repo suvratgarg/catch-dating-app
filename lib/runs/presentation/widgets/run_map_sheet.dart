@@ -87,6 +87,7 @@ class RunMapSheet extends StatelessWidget {
                 'runClubId': highlightedRun.runClubId,
                 'runId': highlightedRun.id,
               },
+              extra: highlightedRun,
             ),
             fullWidth: true,
           ),

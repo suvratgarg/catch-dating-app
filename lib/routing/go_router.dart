@@ -6,10 +6,12 @@ import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
-import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
+import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart'; // ChatsListScreen
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
+import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
@@ -21,6 +23,7 @@ import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/presentation/create/create_run_club_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_detail_screen.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_screen.dart';
+import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/presentation/attendance_sheet_screen.dart';
 import 'package:catch_dating_app/runs/presentation/create_run_screen.dart';
 import 'package:catch_dating_app/runs/presentation/host_run_manage_screen.dart';
@@ -46,6 +49,7 @@ part 'go_router.g.dart';
 
 enum Routes {
   loadingScreen('/loading'),
+  startScreen('/start'),
   authScreen('/auth'),
   onboardingScreen('/onboarding'),
   calendarScreen('/calendar'),
@@ -59,6 +63,7 @@ enum Routes {
   runLocationMapScreen('/runs/:runId/location'),
   // Home / Dashboard branch (index 0)
   dashboardScreen('/'),
+  notificationsScreen('/notifications'),
   // Clubs branch (index 1)
   runClubsListScreen('/clubs'),
   runClubDetailScreen('/clubs/run-clubs/:runClubId'),
@@ -108,7 +113,7 @@ GoRouter goRouter(Ref ref) {
 
   return GoRouter(
     navigatorKey: _rootNavigatorKey,
-    initialLocation: Routes.dashboardScreen.path,
+    initialLocation: Routes.startScreen.path,
     refreshListenable: notifier,
     observers: [AnalyticsRouteObserver(analytics)],
     redirect: (context, state) {
@@ -124,6 +129,11 @@ GoRouter goRouter(Ref ref) {
         path: Routes.loadingScreen.path,
         name: Routes.loadingScreen.name,
         builder: (context, state) => const _RouterLoadingScreen(),
+      ),
+      GoRoute(
+        path: Routes.startScreen.path,
+        name: Routes.startScreen.name,
+        builder: (context, state) => const WelcomePage(),
       ),
       GoRoute(
         path: Routes.authScreen.path,
@@ -146,6 +156,10 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => RunDetailScreen(
           runClubId: state.pathParameters['runClubId']!,
           runId: state.pathParameters['runId']!,
+          initialRun: switch (state.extra) {
+            final Run run => run,
+            _ => null,
+          },
         ),
       ),
       GoRoute(
@@ -159,6 +173,10 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => RunDetailScreen(
           runClubId: state.pathParameters['runClubId']!,
           runId: state.pathParameters['runId']!,
+          initialRun: switch (state.extra) {
+            final Run run => run,
+            _ => null,
+          },
         ),
       ),
       GoRoute(
@@ -183,6 +201,10 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => RunDetailScreen(
           runClubId: state.pathParameters['runClubId']!,
           runId: state.pathParameters['runId']!,
+          initialRun: switch (state.extra) {
+            final Run run => run,
+            _ => null,
+          },
         ),
       ),
       GoRoute(
@@ -240,6 +262,13 @@ GoRouter goRouter(Ref ref) {
                 path: Routes.dashboardScreen.path,
                 name: Routes.dashboardScreen.name,
                 builder: (context, state) => const DashboardScreen(),
+                routes: [
+                  GoRoute(
+                    path: 'notifications',
+                    name: Routes.notificationsScreen.name,
+                    builder: (context, state) => const ActivityScreen(),
+                  ),
+                ],
               ),
             ],
           ),
@@ -271,6 +300,10 @@ GoRouter goRouter(Ref ref) {
                         builder: (context, state) => RunDetailScreen(
                           runClubId: state.pathParameters['runClubId']!,
                           runId: state.pathParameters['runId']!,
+                          initialRun: switch (state.extra) {
+                            final Run run => run,
+                            _ => null,
+                          },
                         ),
                         routes: [
                           GoRoute(
@@ -399,6 +432,8 @@ GoRouter goRouter(Ref ref) {
 
 /// Routes that unauthenticated users may access for read-only browsing.
 bool _isPublicRoute(String matchedLocation) {
+  if (matchedLocation == Routes.startScreen.path) return true;
+  if (matchedLocation == Routes.authScreen.path) return true;
   if (matchedLocation == Routes.runClubsListScreen.path) return true;
 
   if (matchedLocation.startsWith('/clubs/run-clubs/')) {
@@ -424,6 +459,7 @@ String? appRedirect({
   required Uri uri,
 }) {
   final onLoading = matchedLocation == Routes.loadingScreen.path;
+  final onStart = matchedLocation == Routes.startScreen.path;
   final onOnboarding = matchedLocation == Routes.onboardingScreen.path;
   final onAuth = matchedLocation == Routes.authScreen.path;
 
@@ -445,9 +481,10 @@ String? appRedirect({
 
   if (uid == null) {
     if (_isPublicRoute(matchedLocation)) return null;
-    if (onOnboarding) return null;
-    if (onAuth) return null;
-    return Routes.runClubsListScreen.path;
+    return _locationWithFrom(
+      Routes.startScreen.path,
+      from: _pendingDestination(uri: uri, matchedLocation: matchedLocation),
+    );
   }
 
   if (userProfile == null || !userProfile.profileComplete) {
@@ -458,7 +495,7 @@ String? appRedirect({
     );
   }
 
-  if (onLoading || onAuth || onOnboarding) {
+  if (onLoading || onStart || onAuth || onOnboarding) {
     return _resumeDestination(uri);
   }
 
@@ -500,11 +537,13 @@ String _locationWithFrom(String path, {String? from}) {
 String? _sanitizeFrom(String? from) {
   if (from == null || from.isEmpty || !from.startsWith('/')) return null;
   final uri = Uri.tryParse(from);
-  return uri?.toString();
+  if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
+  return uri.toString();
 }
 
 bool _isTransientRoute(String path) =>
     path == Routes.loadingScreen.path ||
+    path == Routes.startScreen.path ||
     path == Routes.authScreen.path ||
     path == Routes.onboardingScreen.path;
 
@@ -513,7 +552,7 @@ class _RouterLoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: CatchLoadingIndicator());
+    return const CatchStartupLoadingScreen();
   }
 }
 

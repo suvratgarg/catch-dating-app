@@ -27,12 +27,19 @@ class WelcomePage extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '● CATCH',
+                      'CATCH',
                       style: CatchTextStyles.labelM(context).copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 2,
                       ),
+                    ),
+                    const SizedBox(height: 12),
+                    Image.asset(
+                      'assets/branding/catch_icon.png',
+                      width: 52,
+                      height: 52,
+                      semanticLabel: 'Catch',
                     ),
                     const Spacer(),
                     Text(
@@ -56,11 +63,22 @@ class WelcomePage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 26),
                     CatchButton(
-                      label: 'Continue with phone',
-                      onPressed: () => context.go('/auth'),
+                      label: 'Browse run clubs',
+                      onPressed: () => context.go('/clubs'),
                       variant: CatchButtonVariant.light,
                       size: CatchButtonSize.lg,
                       fullWidth: true,
+                    ),
+                    const SizedBox(height: 12),
+                    CatchButton(
+                      label: 'Continue with phone',
+                      onPressed: () => context.go(_authLocation(context)),
+                      variant: CatchButtonVariant.secondary,
+                      size: CatchButtonSize.lg,
+                      fullWidth: true,
+                      backgroundColor: Colors.white.withValues(alpha: 0.14),
+                      foregroundColor: Colors.white,
+                      borderColor: Colors.white.withValues(alpha: 0.42),
                     ),
                   ],
                 ),
@@ -71,6 +89,20 @@ class WelcomePage extends ConsumerWidget {
       ),
     );
   }
+}
+
+String _authLocation(BuildContext context) {
+  final from = _safeFrom(GoRouterState.of(context).uri.queryParameters['from']);
+  if (from == null) return '/auth';
+
+  return Uri(path: '/auth', queryParameters: {'from': from}).toString();
+}
+
+String? _safeFrom(String? from) {
+  if (from == null || from.isEmpty || !from.startsWith('/')) return null;
+  final uri = Uri.tryParse(from);
+  if (uri == null || uri.hasScheme || uri.hasAuthority) return null;
+  return uri.toString();
 }
 
 class _TrackPattern extends StatelessWidget {

@@ -76,6 +76,7 @@ class _ConfirmationBody extends ConsumerWidget {
       onViewRun: () => context.goNamed(
         Routes.runDetailScreen.name,
         pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+        extra: run,
       ),
       onBackHome: () => context.goNamed(Routes.dashboardScreen.name),
     );

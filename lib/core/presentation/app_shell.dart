@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/presentation/app_shell_active_tab.dart';
 import 'package:catch_dating_app/core/presentation/app_shell_keys.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_notice.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
@@ -94,8 +95,46 @@ class AppShell extends ConsumerWidget {
               navigationShell: navigationShell,
               unreadCount: unreadCount,
             )
-          : null,
+          : const _GuestAuthCtaBar(),
     );
+  }
+}
+
+class _GuestAuthCtaBar extends StatelessWidget {
+  const _GuestAuthCtaBar();
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.surface,
+        border: Border(top: BorderSide(color: t.line)),
+      ),
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+          child: CatchButton(
+            label: 'Continue with phone',
+            onPressed: () => context.go(_authLocation(context)),
+            fullWidth: true,
+            size: CatchButtonSize.lg,
+          ),
+        ),
+      ),
+    );
+  }
+
+  String _authLocation(BuildContext context) {
+    final from = GoRouterState.of(context).uri.toString();
+    return Uri(
+      path: Routes.authScreen.path,
+      queryParameters: {
+        'from': from.isEmpty ? Routes.runClubsListScreen.path : from,
+      },
+    ).toString();
   }
 }
 

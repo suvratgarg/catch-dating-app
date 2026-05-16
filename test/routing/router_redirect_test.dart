@@ -41,7 +41,7 @@ String? _redirect({
 void main() {
   group('appRedirect', () {
     test(
-      'unauthenticated users are sent to the clubs list',
+      'unauthenticated users are sent to the start screen with the pending route',
       () {
         expect(
           _redirect(
@@ -50,7 +50,46 @@ void main() {
             location: '/chats/match-1',
             matchedLocation: Routes.chatScreen.path,
           ),
-          '/clubs',
+          '/start?from=%2Fchats%2Fmatch-1',
+        );
+      },
+    );
+
+    test('unauthenticated users can stay on the start screen', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/start',
+          matchedLocation: Routes.startScreen.path,
+        ),
+        null,
+      );
+    });
+
+    test('unauthenticated users can browse the clubs list', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/clubs',
+          matchedLocation: Routes.runClubsListScreen.path,
+        ),
+        null,
+      );
+    });
+
+    test(
+      'legacy unauthenticated onboarding links move to start and preserve from',
+      () {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
+            location: '/onboarding?from=%2Fclubs%2Frun-clubs%2Fclub-1',
+            matchedLocation: Routes.onboardingScreen.path,
+          ),
+          '/start?from=%2Fclubs%2Frun-clubs%2Fclub-1',
         );
       },
     );
@@ -70,17 +109,20 @@ void main() {
       },
     );
 
-    test('run club detail deep links are accessible to unauthenticated users', () {
-      expect(
-        _redirect(
-          uidAsync: const AsyncData(null),
-          userProfileAsync: const AsyncData(null),
-          location: '/clubs/run-clubs/club-1',
-          matchedLocation: Routes.runClubDetailScreen.path,
-        ),
-        null,
-      );
-    });
+    test(
+      'run club detail deep links are accessible to unauthenticated users',
+      () {
+        expect(
+          _redirect(
+            uidAsync: const AsyncData(null),
+            userProfileAsync: const AsyncData(null),
+            location: '/clubs/run-clubs/club-1',
+            matchedLocation: Routes.runClubDetailScreen.path,
+          ),
+          null,
+        );
+      },
+    );
 
     test('run detail deep links are accessible to unauthenticated users', () {
       expect(
@@ -136,17 +178,29 @@ void main() {
       },
     );
 
+    test('fully set-up users visiting the auth route land on dashboard', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData('user-1'),
+          userProfileAsync: AsyncData(_completeUser()),
+          location: '/auth',
+          matchedLocation: Routes.authScreen.path,
+        ),
+        '/',
+      );
+    });
+
     test(
-      'fully set-up users visiting the auth route land on dashboard',
+      'fully set-up users visiting start resume the preserved destination',
       () {
         expect(
           _redirect(
             uidAsync: const AsyncData('user-1'),
             userProfileAsync: AsyncData(_completeUser()),
-            location: '/auth',
-            matchedLocation: Routes.authScreen.path,
+            location: '/start?from=%2Fclubs%2Frun-clubs%2Fclub-1',
+            matchedLocation: Routes.startScreen.path,
           ),
-          '/',
+          '/clubs/run-clubs/club-1',
         );
       },
     );
@@ -169,6 +223,18 @@ void main() {
           uidAsync: const AsyncData('user-1'),
           userProfileAsync: AsyncData(_completeUser()),
           location: '/auth?from=chats/match-1',
+          matchedLocation: Routes.authScreen.path,
+        ),
+        '/',
+      );
+    });
+
+    test('authority-style from values are discarded on resume', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData('user-1'),
+          userProfileAsync: AsyncData(_completeUser()),
+          location: '/auth?from=%2F%2Fexample.com%2Fclubs',
           matchedLocation: Routes.authScreen.path,
         ),
         '/',

@@ -97,7 +97,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   }
 
   void _openRunDetail(BuildContext context, Run run) {
-    GoRouter.of(context).push(_calendarRunDetailPath(run));
+    GoRouter.of(context).push(_calendarRunDetailPath(run), extra: run);
   }
 
   void _selectDate(DateTime date) {

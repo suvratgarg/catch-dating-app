@@ -210,9 +210,11 @@ class _JoinClubButton extends ConsumerWidget {
           : () {
               final uid = ref.read(uidProvider).asData?.value;
               if (uid == null) {
-                context.pushNamed(
-                  Routes.onboardingScreen.name,
-                  queryParameters: {'from': '/clubs'},
+                context.go(
+                  Uri(
+                    path: Routes.authScreen.path,
+                    queryParameters: {'from': '/clubs/run-clubs/$clubId'},
+                  ).toString(),
                 );
                 return;
               }

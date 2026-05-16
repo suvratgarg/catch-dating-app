@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_form_field_label.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:country_code_picker/country_code_picker.dart';
@@ -80,28 +81,49 @@ class _PhonePageState extends ConsumerState<PhonePage> {
                       style: CatchTextStyles.bodyM(context, color: t.ink2),
                     ),
                     const SizedBox(height: 40),
-                    CatchTextField(
-                      key: AuthFormKeys.phoneField,
-                      label: 'Mobile number',
-                      controller: _phoneController,
-                      autofocus: shouldAutofocus,
-                      keyboardType: TextInputType.phone,
-                      textInputAction: TextInputAction.done,
-                      autofillHints: const [
-                        AutofillHints.telephoneNumberNational,
-                      ],
-                      onSubmitted: (_) => _submit(),
-                      onChanged: (_) =>
-                          AuthController.sendOtpMutation.reset(ref),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        LengthLimitingTextInputFormatter(
-                          AuthInput.maxPhoneDigits,
+                    const CatchFormFieldLabel(label: 'Mobile number'),
+                    const SizedBox(height: CatchSpacing.s2),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _CountryCodeSelector(
+                          countryCode: ref.watch(
+                            authControllerProvider.select((d) => d.countryCode),
+                          ),
+                          onChanged: (code) {
+                            ref
+                                .read(authControllerProvider.notifier)
+                                .setCountryCode(code);
+                            AuthController.sendOtpMutation.reset(ref);
+                          },
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: CatchTextField(
+                            key: AuthFormKeys.phoneField,
+                            label: 'Mobile number',
+                            showLabel: false,
+                            controller: _phoneController,
+                            autofocus: shouldAutofocus,
+                            keyboardType: TextInputType.phone,
+                            textInputAction: TextInputAction.done,
+                            autofillHints: const [
+                              AutofillHints.telephoneNumberNational,
+                            ],
+                            onSubmitted: (_) => _submit(),
+                            onChanged: (_) =>
+                                AuthController.sendOtpMutation.reset(ref),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                              LengthLimitingTextInputFormatter(
+                                AuthInput.maxPhoneDigits,
+                              ),
+                            ],
+                            hintText: '98765 43210',
+                            validator: AuthInput.phoneNumberError,
+                          ),
                         ),
                       ],
-                      hintText: '98765 43210',
-                      prefixIcon: _buildCountryCodePicker(t),
-                      validator: AuthInput.phoneNumberError,
                     ),
                     if (mutation.hasError) ...[
                       gapH16,
@@ -130,28 +152,83 @@ class _PhonePageState extends ConsumerState<PhonePage> {
       ),
     );
   }
+}
 
-  Widget _buildCountryCodePicker(CatchTokens t) {
-    return CountryCodePicker(
-      initialSelection: ref.watch(
-        authControllerProvider.select((d) => d.countryCode),
+class _CountryCodeSelector extends StatelessWidget {
+  const _CountryCodeSelector({
+    required this.countryCode,
+    required this.onChanged,
+  });
+
+  final String countryCode;
+  final ValueChanged<String> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return SizedBox(
+      width: 120,
+      height: CatchTextField.mdControlHeight,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: t.surface,
+          borderRadius: BorderRadius.circular(CatchRadius.sm),
+          border: Border.all(color: t.line2, width: 1.5),
+        ),
+        child: CountryCodePicker(
+          initialSelection: countryCode.isEmpty ? 'IN' : countryCode,
+          onChanged: (code) {
+            final dialCode = code.dialCode;
+            if (dialCode == null || dialCode.isEmpty) return;
+            onChanged(dialCode);
+          },
+          showCountryOnly: false,
+          showOnlyCountryWhenClosed: false,
+          alignLeft: false,
+          showFlag: true,
+          showFlagMain: true,
+          showFlagDialog: true,
+          showDropDownButton: true,
+          hideMainText: false,
+          favorite: const ['IN'],
+          textStyle: CatchTextStyles.bodyM(context, color: t.ink),
+          dialogTextStyle: CatchTextStyles.bodyM(context, color: t.ink),
+          searchStyle: CatchTextStyles.bodyM(context, color: t.ink),
+          headerTextStyle: CatchTextStyles.titleM(context, color: t.ink),
+          dialogBackgroundColor: t.surface,
+          backgroundColor: t.surface,
+          barrierColor: Colors.black.withValues(alpha: 0.54),
+          boxDecoration: BoxDecoration(
+            color: t.surface,
+            borderRadius: BorderRadius.circular(CatchRadius.md),
+            border: Border.all(color: t.line),
+          ),
+          searchDecoration: InputDecoration(
+            hintText: 'Search country',
+            hintStyle: CatchTextStyles.bodyM(context, color: t.ink3),
+            filled: true,
+            fillColor: t.raised,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+              borderSide: BorderSide(color: t.line),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+              borderSide: BorderSide(color: t.line),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(CatchRadius.sm),
+              borderSide: BorderSide(color: t.primary),
+            ),
+          ),
+          closeIcon: Icon(Icons.close_rounded, color: t.ink2),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          margin: const EdgeInsets.only(right: 6),
+          flagWidth: 24,
+          flagDecoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
+        ),
       ),
-      onChanged: (code) {
-        ref
-            .read(authControllerProvider.notifier)
-            .setCountryCode(code.dialCode!);
-        AuthController.sendOtpMutation.reset(ref);
-      },
-      showCountryOnly: false,
-      showOnlyCountryWhenClosed: false,
-      alignLeft: false,
-      showFlag: true,
-      showDropDownButton: true,
-      hideMainText: false,
-      favorite: const ['IN'],
-      textStyle: CatchTextStyles.bodyM(context, color: t.ink),
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      flagDecoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
     );
   }
 }

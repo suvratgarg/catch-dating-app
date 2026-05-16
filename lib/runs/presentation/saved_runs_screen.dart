@@ -101,7 +101,7 @@ class SavedRunsScreen extends ConsumerWidget {
   void _openRunDetail(BuildContext context, Run run) {
     final runClubId = Uri.encodeComponent(run.runClubId);
     final runId = Uri.encodeComponent(run.id);
-    context.push('/saved-runs/run-clubs/$runClubId/runs/$runId');
+    context.push('/saved-runs/run-clubs/$runClubId/runs/$runId', extra: run);
   }
 }
 
