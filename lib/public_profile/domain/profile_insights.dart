@@ -120,13 +120,20 @@ class ProfileCardInsights {
 }
 
 ProfileQualitySummary profileQualitySummary(PublicProfile profile) {
-  final photoCount = profile.photoUrls
-      .where((url) => url.trim().isNotEmpty)
-      .length;
+  final profilePhotos = profile.effectiveProfilePhotos;
+  final photoCount = profilePhotos.isNotEmpty
+      ? profilePhotos.length
+      : profile.photoUrls.where((url) => url.trim().isNotEmpty).length;
   final promptCount = normalizeProfilePromptAnswers(
     profile.profilePrompts,
   ).length;
-  final captionCount = normalizePhotoPromptAnswers(profile.photoPrompts).length;
+  final nestedPhotoPrompts = [
+    for (final photo in profilePhotos)
+      if (photo.prompt != null) photo.prompt!,
+  ];
+  final captionCount = normalizePhotoPromptAnswers(
+    nestedPhotoPrompts.isNotEmpty ? nestedPhotoPrompts : profile.photoPrompts,
+  ).length;
   final runningDetailsComplete =
       profile.preferredDistances.isNotEmpty &&
       profile.runningReasons.isNotEmpty &&

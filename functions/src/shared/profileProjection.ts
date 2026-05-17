@@ -7,7 +7,10 @@ import {
   UserProfileDoc,
 } from "./firestore";
 import {DemoMetadata, demoMetadataFromSources} from "./demoMetadata";
-import {profilePromptCatalog} from "./generated/schemaRegistry";
+import {
+  profilePhotoPolicy,
+  profilePromptCatalog,
+} from "./generated/schemaRegistry";
 
 export type PublicProfileProjection = PublicProfileDoc & DemoMetadata;
 
@@ -35,6 +38,7 @@ type UserProfileWithPhotos = UserProfileDoc & {
 const perfectRunPromptDefinition = profilePromptCatalog.prompts.find(
   (prompt) => prompt.id === profilePromptCatalog.defaultPromptIds[0]
 ) ?? profilePromptCatalog.prompts[0];
+const maxProfilePhotos = profilePhotoPolicy.maxPhotos;
 
 /**
  * Returns the public-safe display name for denormalized app surfaces.
@@ -174,12 +178,12 @@ export function normalizePhotoPrompts(
     .filter((prompt) =>
       Number.isInteger(prompt.photoIndex) &&
       prompt.photoIndex >= 0 &&
-      prompt.photoIndex < 6 &&
+      prompt.photoIndex < maxProfilePhotos &&
       prompt.promptId.length > 0 &&
       prompt.prompt.length > 0 &&
       prompt.caption.length > 0
     )
-    .slice(0, 6);
+    .slice(0, maxProfilePhotos);
 }
 
 /**
@@ -212,10 +216,10 @@ export function normalizeProfilePhotos(
       photo.thumbnailStoragePath.length > 0 &&
       Number.isInteger(photo.position) &&
       photo.position >= 0 &&
-      photo.position < 6
+      photo.position < maxProfilePhotos
     )
     .sort((a, b) => a.position - b.position)
-    .slice(0, 6);
+    .slice(0, maxProfilePhotos);
   if (groupedPhotos.length > 0) return groupedPhotos;
 
   const promptsByIndex = new Map(
@@ -255,7 +259,7 @@ export function normalizePhotoUrls(urls: string[] | undefined): string[] {
   return (urls ?? [])
     .map((url) => url.trim())
     .filter((url) => isPublicPhotoUri(url))
-    .slice(0, 12);
+    .slice(0, maxProfilePhotos);
 }
 
 /**

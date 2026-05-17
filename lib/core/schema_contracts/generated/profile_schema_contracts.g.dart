@@ -29,6 +29,14 @@ class SchemaPhotoPromptDefinition {
 const schemaProfilePromptPerfectRunId = 'perfectRun';
 const schemaMaxProfilePromptAnswers = 3;
 const schemaMaxPhotoPromptCaptions = 6;
+const schemaMinimumProfilePhotos = 2;
+const schemaMaximumProfilePhotos = 6;
+const schemaProfilePhotoAspectRatioWidth =
+    3;
+const schemaProfilePhotoAspectRatioHeight =
+    4;
+const schemaProfilePhotoThumbnailSize = 160;
+const schemaProfilePhotoMaxUploadBytes = 8388608;
 const schemaMaximumProfilePromptAnswerLength =
     300;
 const schemaMaximumPhotoPromptCaptionLength = 140;
@@ -451,7 +459,7 @@ const schemaUpdateUserProfileCallablePayloadSchema =
         },
         'photoUrls': <String, Object?>{
           'type': 'array',
-          'maxItems': 12,
+          'maxItems': 6,
           'items': <String, Object?>{
             'type': 'string',
             'format': 'uri',
@@ -460,7 +468,7 @@ const schemaUpdateUserProfileCallablePayloadSchema =
         },
         'photoThumbnailUrls': <String, Object?>{
           'type': 'array',
-          'maxItems': 12,
+          'maxItems': 6,
           'items': <String, Object?>{
             'type': 'string',
             'format': 'uri',
@@ -553,6 +561,8 @@ const schemaUpdateUserProfileCallablePayloadSchema =
               'prompt': <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
+                    'title': 'PhotoPromptAnswer',
+                    'description': 'One optional caption prompt for a profile photo slot.',
                     'type': 'object',
                     'additionalProperties': false,
                     'required': <Object?>[
@@ -569,24 +579,20 @@ const schemaUpdateUserProfileCallablePayloadSchema =
                       },
                       'promptId': <String, Object?>{
                         'type': 'string',
-                        'enum': <Object?>[
-                          'proofIRun',
-                          'postRunRitual',
-                          'favoriteRoute',
-                          'raceDayEnergy',
-                          'runningBuddy',
-                        ],
+                        'minLength': 1,
+                        'maxLength': 80,
                       },
                       'prompt': <String, Object?>{
                         'type': 'string',
                         'minLength': 1,
-                        'maxLength': 120,
+                        'maxLength': 140,
                       },
                       'caption': <String, Object?>{
                         'type': 'string',
-                        'maxLength': 160,
+                        'maxLength': 140,
                       },
                     },
+                    'x-catch-catalog': '../catalogs/photo_prompts.json',
                   },
                   <String, Object?>{
                     'type': 'null',

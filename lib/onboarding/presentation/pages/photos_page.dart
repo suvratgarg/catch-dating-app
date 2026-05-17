@@ -5,10 +5,12 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_controller.dart';
 import 'package:catch_dating_app/onboarding/presentation/onboarding_step.dart';
 import 'package:catch_dating_app/onboarding/presentation/widgets/onboarding_step_header.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -17,8 +19,12 @@ class PhotosPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final photoUrls =
-        ref.watch(watchUserProfileProvider).asData?.value?.photoUrls ??
+    final profilePhotos =
+        ref
+            .watch(watchUserProfileProvider)
+            .asData
+            ?.value
+            ?.effectiveProfilePhotos ??
         const [];
     final uploadState = ref.watch(photoUploadControllerProvider);
     final t = CatchTokens.of(context);
@@ -35,9 +41,10 @@ class PhotosPage extends ConsumerWidget {
     });
 
     final canContinue =
-        photoUrls.length >= 2 && uploadState.loadingIndices.isEmpty;
+        profilePhotos.length >= minimumProfilePhotoCount &&
+        uploadState.loadingIndices.isEmpty;
     final continueHint = _continueHint(
-      photoCount: photoUrls.length,
+      photoCount: profilePhotos.length,
       uploadingCount: uploadState.loadingIndices.length,
     );
 
@@ -68,14 +75,35 @@ class PhotosPage extends ConsumerWidget {
           ),
           gapH24,
           PhotoGrid(
-            photoUrls: photoUrls,
+            profilePhotos: profilePhotos,
             loadingIndices: uploadState.loadingIndices,
             onSlotTapped: (index) {
+              unawaited(
+                openProfilePhotoEditor(
+                  context: context,
+                  ref: ref,
+                  index: index,
+                  photo: index < profilePhotos.length
+                      ? profilePhotos[index]
+                      : null,
+                ),
+              );
+            },
+            onDeletePhoto: (index) {
               unawaited(
                 PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
                   await tx
                       .get(photoUploadControllerProvider.notifier)
-                      .pickAndUpload(index);
+                      .deletePhoto(index);
+                }),
+              );
+            },
+            onReorderPhoto: (fromIndex, toIndex) {
+              unawaited(
+                PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
+                  await tx
+                      .get(photoUploadControllerProvider.notifier)
+                      .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
                 }),
               );
             },
@@ -115,7 +143,7 @@ class PhotosPage extends ConsumerWidget {
       return 'Finish uploading your photos to continue.';
     }
 
-    final remainingPhotos = 2 - photoCount;
+    final remainingPhotos = minimumProfilePhotoCount - photoCount;
     if (remainingPhotos > 0) {
       final label = remainingPhotos == 1
           ? '1 more photo'

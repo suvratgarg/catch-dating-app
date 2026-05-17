@@ -126,35 +126,7 @@
               "prompt": {
                 "anyOf": [
                   {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": ["photoIndex", "promptId", "prompt", "caption"],
-                    "properties": {
-                      "photoIndex": {
-                        "type": "integer",
-                        "minimum": 0,
-                        "maximum": 5
-                      },
-                      "promptId": {
-                        "type": "string",
-                        "enum": [
-                          "proofIRun",
-                          "postRunRitual",
-                          "favoriteRoute",
-                          "raceDayEnergy",
-                          "runningBuddy"
-                        ]
-                      },
-                      "prompt": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 120
-                      },
-                      "caption": {
-                        "type": "string",
-                        "maxLength": 160
-                      }
-                    }
+                    "$ref": "../embedded/photo_prompt_answer.schema.json"
                   },
                   {"type": "null"}
                 ]

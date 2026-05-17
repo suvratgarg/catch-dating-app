@@ -26,11 +26,11 @@ export interface UpdateUserProfileCallablePayload {
     gender?: "man" | "woman" | "nonBinary" | "other";
     profileComplete?: boolean;
     /**
-     * @maxItems 12
+     * @maxItems 6
      */
     photoUrls?: string[];
     /**
-     * @maxItems 12
+     * @maxItems 6
      */
     photoThumbnailUrls?: string[];
     /**
@@ -46,17 +46,7 @@ export interface UpdateUserProfileCallablePayload {
       thumbnailUrl: string;
       storagePath: string;
       thumbnailStoragePath: string;
-      prompt?: {
-        photoIndex: number;
-        promptId:
-          | "proofIRun"
-          | "postRunRitual"
-          | "favoriteRoute"
-          | "raceDayEnergy"
-          | "runningBuddy";
-        prompt: string;
-        caption: string;
-      } | null;
+      prompt?: PhotoPromptAnswer | null;
       moderation?: {
         status: "pending" | "approved" | "rejected";
         reason?: string | null;

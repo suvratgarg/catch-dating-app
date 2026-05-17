@@ -209,9 +209,9 @@ service cloud.firestore {
         && data.profileComplete is bool
         // Photos
         && data.photoUrls is list
-        && data.photoUrls.size() <= 12
+        && data.photoUrls.size() <= 6
         && data.photoThumbnailUrls is list
-        && data.photoThumbnailUrls.size() <= 12
+        && data.photoThumbnailUrls.size() <= 6
         && data.photoPrompts is list
         && data.photoPrompts.size() <= 6
         && optionalListMax(data, 'profilePhotos', 6)

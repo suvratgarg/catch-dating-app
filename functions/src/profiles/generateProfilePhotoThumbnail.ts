@@ -3,8 +3,9 @@ import * as logger from "firebase-functions/logger";
 import * as admin from "firebase-admin";
 import sharp from "sharp";
 import {randomUUID} from "crypto";
+import {profilePhotoPolicy} from "../shared/generated/schemaRegistry";
 
-const THUMBNAIL_SIZE = 160;
+const THUMBNAIL_SIZE = profilePhotoPolicy.thumbnailSize;
 const JPEG_QUALITY = 72;
 
 interface ProfilePhotoPath {
@@ -145,6 +146,22 @@ async function updateProfileThumbnailUrl({
     if (!snap.exists) return;
 
     const data = snap.data() ?? {};
+    const groupedUpdate = updateGroupedProfilePhotoThumbnail({
+      profilePhotos: data.profilePhotos,
+      sourcePath,
+      thumbnailPath,
+      thumbnailUrl,
+    });
+    if (groupedUpdate) {
+      tx.update(userRef, {
+        profilePhotos: groupedUpdate.profilePhotos,
+        photoThumbnailUrls: photoThumbnailUrlsFromGroupedProfilePhotos(
+          groupedUpdate.profilePhotos
+        ),
+      });
+      return;
+    }
+
     const photoUrls = asStringArray(data.photoUrls);
     const sourceUrl = photoUrls[photoIndex];
     if (!downloadUrlContainsPath(sourceUrl, sourcePath)) return;
@@ -154,17 +171,8 @@ async function updateProfileThumbnailUrl({
     while (updated.length <= photoIndex) updated.push("");
     updated[photoIndex] = thumbnailUrl;
 
-    const profilePhotos = updateGroupedProfilePhotoThumbnail({
-      profilePhotos: data.profilePhotos,
-      photoIndex,
-      sourcePath,
-      thumbnailPath,
-      thumbnailUrl,
-    });
-
     tx.update(userRef, {
       photoThumbnailUrls: updated,
-      ...(profilePhotos && {profilePhotos}),
     });
   });
 }
@@ -185,27 +193,25 @@ function asStringArray(value: unknown): string[] {
  * thumbnail while leaving malformed legacy values untouched.
  * @param {object} input Update input.
  * @param {unknown} input.profilePhotos Stored profilePhotos value.
- * @param {number} input.photoIndex Profile photo slot index.
  * @param {string} input.sourcePath Full-size Storage object path.
  * @param {string} input.thumbnailPath Thumbnail Storage object path.
  * @param {string} input.thumbnailUrl Thumbnail download URL.
- * @return {unknown[] | null} Updated grouped photos, or null when absent.
+ * @return {{profilePhotos: unknown[], position: number} | null} Updated
+ * grouped photos, or null when absent.
  */
 function updateGroupedProfilePhotoThumbnail({
   profilePhotos,
-  photoIndex,
   sourcePath,
   thumbnailPath,
   thumbnailUrl,
 }: {
   profilePhotos: unknown;
-  photoIndex: number;
   sourcePath: string;
   thumbnailPath: string;
   thumbnailUrl: string;
-}): unknown[] | null {
+}): {profilePhotos: unknown[]; position: number} | null {
   if (!Array.isArray(profilePhotos)) return null;
-  let didUpdate = false;
+  let updatedPosition: number | null = null;
   const updated = profilePhotos.map((photo) => {
     if (!isRecord(photo)) return photo;
     const position = photo.position;
@@ -213,10 +219,10 @@ function updateGroupedProfilePhotoThumbnail({
     const storagePath = typeof photo.storagePath === "string" ?
       photo.storagePath :
       undefined;
-    const isMatch = position === photoIndex &&
-      (storagePath === sourcePath || downloadUrlContainsPath(url, sourcePath));
+    const isMatch = storagePath === sourcePath ||
+      downloadUrlContainsPath(url, sourcePath);
     if (!isMatch) return photo;
-    didUpdate = true;
+    updatedPosition = typeof position === "number" ? position : 0;
     return {
       ...photo,
       thumbnailUrl,
@@ -224,7 +230,30 @@ function updateGroupedProfilePhotoThumbnail({
       updatedAt: admin.firestore.Timestamp.now(),
     };
   });
-  return didUpdate ? updated : profilePhotos;
+  return updatedPosition === null ? null : {
+    profilePhotos: updated,
+    position: updatedPosition,
+  };
+}
+
+/**
+ * Derives the compatibility thumbnail URL array from grouped profile photos.
+ * @param {unknown[]} profilePhotos Stored grouped photo records.
+ * @return {string[]} Ordered thumbnail URL list.
+ */
+function photoThumbnailUrlsFromGroupedProfilePhotos(
+  profilePhotos: unknown[]
+): string[] {
+  return profilePhotos
+    .filter(isRecord)
+    .filter((photo) =>
+      typeof photo.position === "number" &&
+      Number.isInteger(photo.position) &&
+      typeof photo.thumbnailUrl === "string"
+    )
+    .sort((a, b) => (a.position as number) - (b.position as number))
+    .map((photo) => photo.thumbnailUrl as string)
+    .slice(0, profilePhotoPolicy.maxPhotos);
 }
 
 /**

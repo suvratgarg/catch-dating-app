@@ -42,11 +42,11 @@ export interface PublicProfileDocument {
    */
   profilePrompts: ProfilePromptAnswer[];
   /**
-   * @maxItems 12
+   * @maxItems 6
    */
   photoUrls: string[];
   /**
-   * @maxItems 12
+   * @maxItems 6
    */
   photoThumbnailUrls: string[];
   /**

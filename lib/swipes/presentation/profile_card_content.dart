@@ -9,7 +9,7 @@ typedef ProfileCardPhoto = ({String url, PhotoPromptAnswer? prompt});
 
 class ProfileCardContent {
   const ProfileCardContent({
-    required this.primaryPhotoUrl,
+    required this.primaryPhoto,
     required this.additionalPhotos,
     required this.attributes,
     required this.lifestyle,
@@ -64,7 +64,9 @@ class ProfileCardContent {
         .toList(growable: false);
 
     return ProfileCardContent(
-      primaryPhotoUrl: photos.firstOrNull?.url,
+      primaryPhoto: photos.firstOrNull == null
+          ? null
+          : (url: photos.first.url, prompt: photos.first.prompt),
       additionalPhotos: additionalPhotos,
       attributes: attributes,
       lifestyle: lifestyle,
@@ -77,12 +79,14 @@ class ProfileCardContent {
     );
   }
 
-  final String? primaryPhotoUrl;
+  final ProfileCardPhoto? primaryPhoto;
   final List<ProfileCardPhoto> additionalPhotos;
   final List<ProfileCardFact> attributes;
   final List<ProfileCardFact> lifestyle;
   final List<ProfilePromptAnswer> profilePrompts;
   final ProfileCardInsights insights;
+
+  String? get primaryPhotoUrl => primaryPhoto?.url;
 
   bool get hasProfilePrompts => profilePrompts.isNotEmpty;
 }

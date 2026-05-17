@@ -686,7 +686,7 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         setDoc(
           doc(authedDb("runner-2"), "users", "runner-2"),
-          userProfile({photoUrls: values(12, "https://example.test/photo")}),
+          userProfile({photoUrls: values(6, "https://example.test/photo")}),
         ),
       );
       await assertSucceeds(
@@ -705,7 +705,7 @@ describe("firestore.rules", () => {
       await assertFails(
         setDoc(
           doc(authedDb("runner-5"), "users", "runner-5"),
-          userProfile({photoUrls: values(13, "https://example.test/photo")}),
+          userProfile({photoUrls: values(7, "https://example.test/photo")}),
         ),
       );
       await assertFails(

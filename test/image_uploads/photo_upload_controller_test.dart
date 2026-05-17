@@ -5,6 +5,7 @@ import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -35,6 +36,11 @@ class FakePhotoUserProfileRepository extends Fake
     currentUser = currentUser.copyWith(
       profilePhotos: List<ProfilePhoto>.from(profilePhotos),
       photoUrls: List<String>.from(photoUrls),
+      photoThumbnailUrls: profilePhotoThumbnailUrls(profilePhotos),
+      photoPrompts: [
+        for (final photo in profilePhotos)
+          if (photo.prompt != null) photo.prompt!,
+      ],
     );
   }
 }
@@ -79,6 +85,27 @@ class SlowPickingImageUploadRepository extends Fake
 }
 
 void main() {
+  ProfilePhoto profilePhoto(
+    int position, {
+    String? url,
+    PhotoPromptAnswer? prompt,
+  }) {
+    return ProfilePhoto.uploaded(
+      position: position,
+      url: url ?? 'https://img.example/$position.jpg',
+      storagePath: 'users/runner-1/photos/${position}_test.jpg',
+      prompt: prompt,
+      now: DateTime(2026, 5, 17),
+    );
+  }
+
+  PhotoPromptAnswer prompt(int index, String caption) => PhotoPromptAnswer(
+    photoIndex: index,
+    promptId: 'proofIRun',
+    prompt: 'Proof I actually run',
+    caption: caption,
+  );
+
   test('image upload policies keep picked media bounded by surface', () {
     expect(ImageUploadRepository.profilePhotoPolicy.maxWidth, 1600);
     expect(ImageUploadRepository.profilePhotoPolicy.quality, 85);
@@ -278,4 +305,168 @@ void main() {
 
     await expectLater(upload, completes);
   });
+
+  test(
+    'deletePhoto compacts grouped photos and compatibility arrays',
+    () async {
+      final userProfileRepository = FakePhotoUserProfileRepository(
+        buildUser(uid: 'runner-1').copyWith(
+          profileComplete: true,
+          profilePhotos: [
+            profilePhoto(0),
+            profilePhoto(1),
+            profilePhoto(2, prompt: prompt(2, 'Hill repeat')),
+          ],
+        ),
+      );
+      final container = ProviderContainer(
+        overrides: [
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await container
+          .read(photoUploadControllerProvider.notifier)
+          .deletePhoto(1);
+
+      final updatedPhotos = userProfileRepository.updatedProfilePhotos.single;
+      expect(updatedPhotos.map((photo) => photo.url), [
+        'https://img.example/0.jpg',
+        'https://img.example/2.jpg',
+      ]);
+      expect(updatedPhotos.map((photo) => photo.position), [0, 1]);
+      expect(updatedPhotos.last.prompt?.photoIndex, 1);
+      expect(userProfileRepository.updatedPhotoUrls.single, [
+        'https://img.example/0.jpg',
+        'https://img.example/2.jpg',
+      ]);
+    },
+  );
+
+  test('deletePhoto keeps completed profiles above the photo floor', () async {
+    final userProfileRepository = FakePhotoUserProfileRepository(
+      buildUser(uid: 'runner-1').copyWith(
+        profileComplete: true,
+        profilePhotos: [profilePhoto(0), profilePhoto(1)],
+      ),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        userProfileRepositoryProvider.overrideWith(
+          (ref) => userProfileRepository,
+        ),
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+      ],
+    );
+    addTearDown(container.dispose);
+    final uidSubscription = container.listen(
+      uidProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(uidSubscription.close);
+    await container.pump();
+
+    await expectLater(
+      container.read(photoUploadControllerProvider.notifier).deletePhoto(1),
+      throwsStateError,
+    );
+    expect(userProfileRepository.updatedProfilePhotos, isEmpty);
+  });
+
+  test('reorderPhoto moves photos and keeps prompts aligned', () async {
+    final userProfileRepository = FakePhotoUserProfileRepository(
+      buildUser(uid: 'runner-1').copyWith(
+        profilePhotos: [
+          profilePhoto(0, prompt: prompt(0, 'Coffee')),
+          profilePhoto(1),
+          profilePhoto(2),
+        ],
+      ),
+    );
+    final container = ProviderContainer(
+      overrides: [
+        userProfileRepositoryProvider.overrideWith(
+          (ref) => userProfileRepository,
+        ),
+        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+      ],
+    );
+    addTearDown(container.dispose);
+    final uidSubscription = container.listen(
+      uidProvider,
+      (_, _) {},
+      fireImmediately: true,
+    );
+    addTearDown(uidSubscription.close);
+    await container.pump();
+
+    await container
+        .read(photoUploadControllerProvider.notifier)
+        .reorderPhoto(fromIndex: 0, toIndex: 2);
+
+    final updatedPhotos = userProfileRepository.updatedProfilePhotos.single;
+    expect(updatedPhotos.map((photo) => photo.url), [
+      'https://img.example/1.jpg',
+      'https://img.example/2.jpg',
+      'https://img.example/0.jpg',
+    ]);
+    expect(updatedPhotos.map((photo) => photo.position), [0, 1, 2]);
+    expect(updatedPhotos.last.prompt?.photoIndex, 2);
+  });
+
+  test(
+    'savePhoto updates an existing photo caption without uploading',
+    () async {
+      final userProfileRepository = FakePhotoUserProfileRepository(
+        buildUser(uid: 'runner-1').copyWith(profilePhotos: [profilePhoto(0)]),
+      );
+      final imageUploadRepository = ControlledImageUploadRepository();
+      final container = ProviderContainer(
+        overrides: [
+          userProfileRepositoryProvider.overrideWith(
+            (ref) => userProfileRepository,
+          ),
+          imageUploadRepositoryProvider.overrideWith(
+            (ref) => imageUploadRepository,
+          ),
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
+
+      await container
+          .read(photoUploadControllerProvider.notifier)
+          .savePhoto(index: 0, prompt: prompt(0, 'Finish line'));
+
+      expect(imageUploadRepository.uploadedIndices, isEmpty);
+      expect(
+        userProfileRepository
+            .updatedProfilePhotos
+            .single
+            .single
+            .prompt
+            ?.caption,
+        'Finish line',
+      );
+    },
+  );
 }

@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "kind": "profilePhotoPolicy",
+  "minPhotos": 2,
+  "maxPhotos": 6,
+  "displayAspectRatio": {
+    "width": 3,
+    "height": 4
+  },
+  "thumbnailSize": 160,
+  "maxUploadBytes": 8388608
+}

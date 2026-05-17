@@ -10,9 +10,10 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_upload_controller.dart';
+import 'package:catch_dating_app/image_uploads/presentation/profile_photo_editor_screen.dart';
 import 'package:catch_dating_app/public_profile/domain/profile_insights.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -119,7 +120,6 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
     final user = widget.user;
     final uploadState = widget.uploadState;
     final profilePhotos = user.effectiveProfilePhotos;
-    final photoUrls = profilePhotoUrls(profilePhotos);
     final profileQuality = profileQualitySummary(
       publicProfileFromUserProfile(user),
     );
@@ -379,30 +379,43 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           );
         })
         .toList(growable: false);
-    final photoCaptions = profilePhotos
-        .map((photo) {
-          final index = photo.position;
-          return _photoPromptEntry(
-            context: context,
-            user: user,
-            photoIndex: index,
-            definition: defaultPhotoPromptForIndex(index),
-          );
-        })
-        .toList(growable: false);
 
     return widget.builder(context, [
       _ProfileQualityGuidanceCard(summary: profileQuality),
       gapH14,
       PhotoGrid(
-        photoUrls: photoUrls,
+        profilePhotos: profilePhotos,
         loadingIndices: uploadState.loadingIndices,
         onSlotTapped: (index) {
+          unawaited(
+            openProfilePhotoEditor(
+              context: context,
+              ref: ref,
+              index: index,
+              photo: index < profilePhotos.length ? profilePhotos[index] : null,
+            ),
+          );
+        },
+        canDeletePhotos: profilePhotos.length > minimumProfilePhotoCount,
+        onDeletePhoto: profilePhotos.length > minimumProfilePhotoCount
+            ? (index) {
+                unawaited(
+                  PhotoUploadController.uploadPhotoMutation.run(ref, (
+                    tx,
+                  ) async {
+                    await tx
+                        .get(photoUploadControllerProvider.notifier)
+                        .deletePhoto(index);
+                  }),
+                );
+              }
+            : null,
+        onReorderPhoto: (fromIndex, toIndex) {
           unawaited(
             PhotoUploadController.uploadPhotoMutation.run(ref, (tx) async {
               await tx
                   .get(photoUploadControllerProvider.notifier)
-                  .pickAndUpload(index);
+                  .reorderPhoto(fromIndex: fromIndex, toIndex: toIndex);
             }),
           );
         },
@@ -410,11 +423,6 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       gapH14,
       SectionHeader(title: 'Profile prompts'),
       ProfileInfoSection(entries: prompts, grouped: true),
-      if (photoCaptions.isNotEmpty) ...[
-        gapH20,
-        SectionHeader(title: 'Photo captions'),
-        ProfileInfoSection(entries: photoCaptions, grouped: true),
-      ],
       gapH20,
       SectionHeader(title: 'About'),
       ProfileInfoSection(entries: basics, grouped: true),
@@ -527,71 +535,6 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
           answer: value,
         ),
       ),
-    );
-  }
-
-  ProfileInfoEntry _photoPromptEntry({
-    required BuildContext context,
-    required UserProfile user,
-    required int photoIndex,
-    required PhotoPromptDefinition definition,
-  }) {
-    final answer =
-        user.effectiveProfilePhotos
-            .where((photo) => photo.position == photoIndex)
-            .firstOrNull
-            ?.prompt ??
-        photoPromptByIndex(user.photoPrompts, photoIndex);
-    final caption = answer?.caption ?? '';
-    return _textEntry(
-      context: context,
-      icon: Icons.photo_camera_outlined,
-      label: definition.title,
-      value: caption.isNotEmpty ? caption : definition.placeholder,
-      currentValue: caption,
-      fieldName: 'photoPrompts',
-      expansionKey: 'photoPrompt:$photoIndex',
-      isAddAffordance: caption.isEmpty,
-      maxLines: 2,
-      maxLength: maximumPhotoPromptCaptionLength,
-      showCounter: true,
-      collapseStackedBlankLines: true,
-      normalizeInput: normalizePhotoPromptCaption,
-      keyboardType: TextInputType.multiline,
-      validator: validateOptionalPhotoPromptCaption,
-      toFieldValue: (value) => photoPromptsToJson(
-        replacePhotoPromptAnswer(
-          current: user.photoPrompts,
-          photoIndex: photoIndex,
-          definition: definition,
-          caption: value,
-        ),
-      ),
-      toFields: (value) {
-        final photoPromptJson = photoPromptsToJson(
-          replacePhotoPromptAnswer(
-            current: user.photoPrompts,
-            photoIndex: photoIndex,
-            definition: definition,
-            caption: value,
-          ),
-        );
-        final updatedProfilePhotos = [
-          for (final photo in user.effectiveProfilePhotos)
-            if (photo.position == photoIndex)
-              replaceProfilePhotoPrompt(
-                photo: photo,
-                definition: definition,
-                caption: value,
-              )
-            else
-              photo,
-        ];
-        return {
-          'photoPrompts': photoPromptJson,
-          'profilePhotos': profilePhotosToJson(updatedProfilePhotos),
-        };
-      },
     );
   }
 

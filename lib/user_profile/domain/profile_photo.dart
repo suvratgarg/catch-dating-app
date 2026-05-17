@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
@@ -201,14 +202,122 @@ List<ProfilePhoto> normalizeProfilePhotos(Iterable<ProfilePhoto> photos) {
       thumbnailUrl: thumbnailUrl,
       storagePath: storagePath,
       thumbnailStoragePath: thumbnailStoragePath,
-      position: photo.position.clamp(0, 11),
+      position: photo.position.clamp(0, maximumProfilePhotoCount - 1),
     );
     byId[normalized.id] = normalized;
   }
 
   final ordered = byId.values.toList(growable: false)
     ..sort((a, b) => a.position.compareTo(b.position));
-  return ordered.take(maxPhotoPromptCaptions).toList(growable: false);
+  return ordered.take(maximumProfilePhotoCount).toList(growable: false);
+}
+
+List<ProfilePhoto> compactProfilePhotoPositions(
+  Iterable<ProfilePhoto> photos, {
+  DateTime? updatedAt,
+}) {
+  final ordered = normalizeProfilePhotos(photos);
+  return [
+    for (final indexedPhoto in ordered.indexed)
+      _copyProfilePhotoToPosition(
+        indexedPhoto.$2,
+        indexedPhoto.$1,
+        updatedAt: updatedAt,
+      ),
+  ];
+}
+
+List<ProfilePhoto> replaceProfilePhotoAtPosition({
+  required Iterable<ProfilePhoto> profilePhotos,
+  required int position,
+  required ProfilePhoto photo,
+  DateTime? updatedAt,
+}) {
+  RangeError.checkValueInInterval(
+    position,
+    0,
+    maximumProfilePhotoCount - 1,
+    'position',
+  );
+  final timestamp = updatedAt ?? DateTime.now();
+  final next = <ProfilePhoto>[
+    for (final existing in normalizeProfilePhotos(profilePhotos))
+      if (existing.position != position) existing,
+    _copyProfilePhotoToPosition(photo, position, updatedAt: timestamp),
+  ]..sort((a, b) => a.position.compareTo(b.position));
+  return compactProfilePhotoPositions(next, updatedAt: timestamp);
+}
+
+List<ProfilePhoto> removeProfilePhotoAtPosition({
+  required Iterable<ProfilePhoto> profilePhotos,
+  required int position,
+  DateTime? updatedAt,
+}) {
+  RangeError.checkValueInInterval(
+    position,
+    0,
+    maximumProfilePhotoCount - 1,
+    'position',
+  );
+  final timestamp = updatedAt ?? DateTime.now();
+  return compactProfilePhotoPositions([
+    for (final photo in compactProfilePhotoPositions(
+      profilePhotos,
+      updatedAt: timestamp,
+    ))
+      if (photo.position != position) photo,
+  ], updatedAt: timestamp);
+}
+
+List<ProfilePhoto> reorderProfilePhoto({
+  required Iterable<ProfilePhoto> profilePhotos,
+  required int fromPosition,
+  required int toPosition,
+  DateTime? updatedAt,
+}) {
+  RangeError.checkValueInInterval(
+    fromPosition,
+    0,
+    maximumProfilePhotoCount - 1,
+    'fromPosition',
+  );
+  RangeError.checkValueInInterval(
+    toPosition,
+    0,
+    maximumProfilePhotoCount - 1,
+    'toPosition',
+  );
+  final photos = compactProfilePhotoPositions(profilePhotos);
+  if (fromPosition == toPosition ||
+      fromPosition >= photos.length ||
+      toPosition >= photos.length) {
+    return photos;
+  }
+  final moved = photos.removeAt(fromPosition);
+  photos.insert(toPosition, moved);
+  final timestamp = updatedAt ?? DateTime.now();
+  return [
+    for (final indexedPhoto in photos.indexed)
+      _copyProfilePhotoToPosition(
+        indexedPhoto.$2,
+        indexedPhoto.$1,
+        updatedAt: timestamp,
+      ),
+  ];
+}
+
+ProfilePhoto _copyProfilePhotoToPosition(
+  ProfilePhoto photo,
+  int position, {
+  DateTime? updatedAt,
+}) {
+  final prompt = photo.prompt?.copyWith(photoIndex: position);
+  final changed = photo.position != position || photo.prompt != prompt;
+  return photo.copyWith(
+    position: position,
+    prompt: prompt,
+    updatedAt: changed && updatedAt != null ? updatedAt : photo.updatedAt,
+  );
 }
 
 List<ProfilePhoto> profilePhotosFromLegacyArrays({

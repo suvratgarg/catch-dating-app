@@ -73,6 +73,10 @@ function checkPromptCatalogs(parsed) {
     "catalogs/profile_prompts.json"
   );
   const photoCatalogPath = path.join(contractRoot, "catalogs/photo_prompts.json");
+  const profilePhotoPolicyPath = path.join(
+    contractRoot,
+    "catalogs/profile_photo_policy.json"
+  );
   const profileSchemaPath = path.join(
     contractRoot,
     "embedded/profile_prompt_answer.schema.json"
@@ -93,13 +97,14 @@ function checkPromptCatalogs(parsed) {
 
   const profileCatalog = parsed.get(profileCatalogPath);
   const photoCatalog = parsed.get(photoCatalogPath);
+  const profilePhotoPolicy = parsed.get(profilePhotoPolicyPath);
   const profileSchema = parsed.get(profileSchemaPath);
   const photoSchema = parsed.get(photoSchemaPath);
   const usersSchema = parsed.get(usersSchemaPath);
   const publicSchema = parsed.get(publicSchemaPath);
   const patchSchema = parsed.get(patchSchemaPath);
 
-  if (!profileCatalog || !photoCatalog) {
+  if (!profileCatalog || !photoCatalog || !profilePhotoPolicy) {
     fail("Missing prompt catalog files.");
     return;
   }
@@ -119,11 +124,16 @@ function checkPromptCatalogs(parsed) {
     file: photoCatalogPath,
     catalog: photoCatalog,
     expectedKind: "photoPrompts",
-    maxItemKey: "maxCaptions",
   });
 
   const profileLimits = profileCatalog.limits ?? {};
-  const photoLimits = photoCatalog.limits ?? {};
+  if (!Number.isInteger(profilePhotoPolicy.maxPhotos)) {
+    fail(`${relative(profilePhotoPolicyPath)}: maxPhotos must be an integer.`);
+  }
+  const photoLimits = {
+    ...(photoCatalog.limits ?? {}),
+    maxCaptions: profilePhotoPolicy.maxPhotos,
+  };
   assertEqual(
     profileSchema.properties?.promptId?.maxLength,
     profileLimits.maxPromptIdLength,
@@ -154,8 +164,14 @@ function checkPromptCatalogs(parsed) {
     photoLimits.maxCaptionLength,
     "photo prompt caption max length"
   );
+  const photoIndexMax =
+    photoSchema.properties?.photoIndex?.maximum ??
+    (photoSchema.properties?.photoIndex?.["x-catch-maximumFrom"] ===
+      "profilePhotoPolicy.maxPhotosMinusOne" ?
+      profilePhotoPolicy.maxPhotos - 1 :
+      undefined);
   assertEqual(
-    photoSchema.properties?.photoIndex?.maximum,
+    photoIndexMax,
     photoLimits.maxCaptions - 1,
     "photo prompt max index"
   );
@@ -218,7 +234,7 @@ function checkCatalog({file, catalog, expectedKind, maxItemKey}) {
       fail(`${relative(file)}: prompt ${prompt.id} has invalid placeholder.`);
     }
   }
-  if (!Number.isInteger(catalog.limits?.[maxItemKey])) {
+  if (maxItemKey && !Number.isInteger(catalog.limits?.[maxItemKey])) {
     fail(`${relative(file)}: limits.${maxItemKey} must be an integer.`);
   }
   if (Array.isArray(catalog.defaultPromptIds)) {

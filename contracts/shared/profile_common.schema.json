@@ -142,7 +142,7 @@
     },
     "photoUrlList": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "$ref": "#/definitions/url"
       }

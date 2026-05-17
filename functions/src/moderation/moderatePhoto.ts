@@ -132,28 +132,88 @@ function downloadUrlContainsPath(url: string, filePath: string) {
  */
 function removeBlockedProfilePhoto({
   profilePhotos,
-  photoIndex,
   filePath,
 }: {
   profilePhotos: unknown;
-  photoIndex: number | null;
   filePath: string;
 }): unknown[] | null {
   if (!Array.isArray(profilePhotos)) return null;
-  return profilePhotos.filter((photo) => {
+  const remaining = profilePhotos.filter((photo) => {
     if (!isRecord(photo)) return true;
-    const position = photo.position;
     const storagePath = typeof photo.storagePath === "string" ?
       photo.storagePath :
       undefined;
     const url = typeof photo.url === "string" ? photo.url : undefined;
-    return !(
-      photoIndex !== null &&
-      position === photoIndex &&
-      (storagePath === filePath ||
-        (url !== undefined && downloadUrlContainsPath(url, filePath)))
-    );
+    return storagePath !== filePath &&
+      (url === undefined || !downloadUrlContainsPath(url, filePath));
   });
+  return compactGroupedProfilePhotos(remaining);
+}
+
+/**
+ * Re-densifies grouped profile photo positions after a removal.
+ * @param {unknown[]} profilePhotos Remaining grouped photo records.
+ * @return {unknown[]} Photos with compact positions and prompt photoIndex.
+ */
+function compactGroupedProfilePhotos(profilePhotos: unknown[]): unknown[] {
+  return profilePhotos
+    .map((photo) => isRecord(photo) ? photo : null)
+    .filter((photo): photo is Record<string, unknown> => photo !== null)
+    .sort((a, b) => numericPosition(a) - numericPosition(b))
+    .map((photo, position) => {
+      const prompt = isRecord(photo.prompt) ?
+        {...photo.prompt, photoIndex: position} :
+        photo.prompt;
+      return {
+        ...photo,
+        position,
+        prompt,
+        updatedAt: admin.firestore.Timestamp.now(),
+      };
+    });
+}
+
+/**
+ * Returns a sortable profile photo position.
+ * @param {Record<string, unknown>} photo Grouped profile photo.
+ * @return {number} Position or a high fallback.
+ */
+function numericPosition(photo: Record<string, unknown>): number {
+  return typeof photo.position === "number" &&
+    Number.isInteger(photo.position) ?
+    photo.position :
+    Number.MAX_SAFE_INTEGER;
+}
+
+/**
+ * Derives compatibility URL arrays from grouped profile photos.
+ * @param {unknown[]} profilePhotos Stored grouped photo records.
+ * @param {"url" | "thumbnailUrl"} field URL field to read.
+ * @return {string[]} Ordered URL list.
+ */
+function urlsFromGroupedProfilePhotos(
+  profilePhotos: unknown[],
+  field: "url" | "thumbnailUrl"
+): string[] {
+  return profilePhotos
+    .filter(isRecord)
+    .sort((a, b) => numericPosition(a) - numericPosition(b))
+    .map((photo) => photo[field])
+    .filter((url): url is string => typeof url === "string");
+}
+
+/**
+ * Derives the generated thumbnail path for a source profile photo path.
+ * @param {string} filePath Source profile photo Storage path.
+ * @return {string | null} Thumbnail path, or null for non-profile paths.
+ */
+function thumbnailPathForProfilePhoto(filePath: string): string | null {
+  const parts = filePath.split("/");
+  if (parts.length !== 4 || parts[0] !== "users" || parts[2] !== "photos") {
+    return null;
+  }
+  const sourceName = parts[3].replace(/\.[^.]+$/, "");
+  return `users/${parts[1]}/photoThumbnails/${sourceName}.jpg`;
 }
 
 /**
@@ -240,7 +300,13 @@ export const moderatePhotoOnUpload = onObjectFinalized(
       // ── Block: delete the photo ────────────────────────────────────────
 
       if (severity === "block") {
-        await file.delete();
+        const thumbnailPath = thumbnailPathForProfilePhoto(filePath);
+        await Promise.all([
+          file.delete(),
+          ...(thumbnailPath ?
+            [bucket.file(thumbnailPath).delete({ignoreNotFound: true})] :
+            []),
+        ]);
 
         // Remove the URL from the user's photoUrls if it's a profile photo.
         if (isProfilePhoto) {
@@ -275,13 +341,25 @@ export const moderatePhotoOnUpload = onObjectFinalized(
               }
               const profilePhotos = removeBlockedProfilePhoto({
                 profilePhotos: data.profilePhotos,
-                photoIndex,
                 filePath,
               });
+              if (profilePhotos) {
+                tx.update(userRef, {
+                  photoUrls: urlsFromGroupedProfilePhotos(
+                    profilePhotos,
+                    "url"
+                  ),
+                  photoThumbnailUrls: urlsFromGroupedProfilePhotos(
+                    profilePhotos,
+                    "thumbnailUrl"
+                  ),
+                  profilePhotos,
+                });
+                return;
+              }
               tx.update(userRef, {
                 photoUrls: updatedPhotoUrls,
                 photoThumbnailUrls: updatedThumbnailUrls,
-                ...(profilePhotos && {profilePhotos}),
               });
             });
           }

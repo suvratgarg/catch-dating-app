@@ -2,7 +2,6 @@
   "schemaVersion": 1,
   "kind": "photoPrompts",
   "limits": {
-    "maxCaptions": 6,
     "maxPromptIdLength": 80,
     "maxPromptTitleLength": 140,
     "maxCaptionLength": 140

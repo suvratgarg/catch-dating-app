@@ -317,6 +317,92 @@ test("updateUserProfileHandler rejects unsafe account states", async () => {
   );
 });
 
+test("updateUserProfileHandler enforces the completed profile photo floor",
+  async () => {
+    const h = harness({
+      "users/runner-1": {
+        name: "Runner One",
+        profileComplete: false,
+        photoUrls: ["https://example.test/one.jpg"],
+      },
+    });
+
+    await assert.rejects(
+      updateUserProfileHandler(
+        request("runner-1", {fields: {profileComplete: true}}),
+        h.deps
+      ),
+      (error) => assertHttpsCode(error, "failed-precondition")
+    );
+
+    assert.equal(h.firestore.get("users/runner-1")?.profileComplete, false);
+  }
+);
+
+test("updateUserProfileHandler deletes removed grouped photo storage objects",
+  async () => {
+    const removedStoragePaths: string[] = [];
+    const h = harness({
+      "users/runner-1": {
+        name: "Runner One",
+        profileComplete: false,
+        profilePhotos: [
+          {
+            id: "old",
+            url: "https://example.test/old.jpg",
+            thumbnailUrl: "https://example.test/old-thumb.jpg",
+            storagePath: "users/runner-1/photos/0_old.jpg",
+            thumbnailStoragePath:
+              "users/runner-1/photoThumbnails/0_old.jpg",
+            position: 0,
+          },
+          {
+            id: "keep",
+            url: "https://example.test/keep.jpg",
+            thumbnailUrl: "https://example.test/keep-thumb.jpg",
+            storagePath: "users/runner-1/photos/1_keep.jpg",
+            thumbnailStoragePath:
+              "users/runner-1/photoThumbnails/1_keep.jpg",
+            position: 1,
+          },
+        ],
+      },
+    });
+
+    await updateUserProfileHandler(
+      request("runner-1", {
+        fields: {
+          profilePhotos: [{
+            id: "keep",
+            url: "https://example.test/keep.jpg",
+            thumbnailUrl: "https://example.test/keep-thumb.jpg",
+            storagePath: "users/runner-1/photos/1_keep.jpg",
+            thumbnailStoragePath:
+              "users/runner-1/photoThumbnails/1_keep.jpg",
+            position: 0,
+            createdAt: 0,
+            updatedAt: 0,
+          }],
+          photoUrls: ["https://example.test/keep.jpg"],
+          photoThumbnailUrls: ["https://example.test/keep-thumb.jpg"],
+          photoPrompts: [],
+        },
+      }),
+      {
+        ...h.deps,
+        deleteStoragePaths: async (paths) => {
+          removedStoragePaths.push(...paths);
+        },
+      }
+    );
+
+    assert.deepEqual(removedStoragePaths.sort(), [
+      "users/runner-1/photoThumbnails/0_old.jpg",
+      "users/runner-1/photos/0_old.jpg",
+    ]);
+  }
+);
+
 test("updateUserProfileHandler rate limits before profile writes", async () => {
   const h = harness({"users/runner-1": {name: "Runner One"}});
 

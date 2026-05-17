@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter/material.dart';
 
 class PhotoSlot extends StatelessWidget {
@@ -10,6 +12,9 @@ class PhotoSlot extends StatelessWidget {
     required this.isLoading,
     required this.isActive,
     required this.onTap,
+    this.prompt,
+    this.onDelete,
+    this.isReorderTarget = false,
   });
 
   final int index;
@@ -17,6 +22,9 @@ class PhotoSlot extends StatelessWidget {
   final bool isLoading;
   final bool isActive;
   final VoidCallback onTap;
+  final PhotoPromptAnswer? prompt;
+  final VoidCallback? onDelete;
+  final bool isReorderTarget;
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +32,7 @@ class PhotoSlot extends StatelessWidget {
     final borderRadius = BorderRadius.circular(CatchRadius.md);
 
     final hasPhoto = url != null;
+    final promptLabel = prompt?.caption.trim();
     final label = switch ((hasPhoto, isLoading, isActive)) {
       (true, true, _) => 'Photo ${index + 1} uploading',
       (true, false, _) => 'Replace photo ${index + 1}',
@@ -39,6 +48,12 @@ class PhotoSlot extends StatelessWidget {
         fit: BoxFit.cover,
         width: double.infinity,
         height: double.infinity,
+        errorBuilder: (context, error, stackTrace) => ColoredBox(
+          color: t.raised,
+          child: Center(
+            child: Icon(Icons.broken_image_outlined, size: 28, color: t.ink2),
+          ),
+        ),
       );
     } else if (isActive) {
       content = Container(
@@ -97,6 +112,34 @@ class PhotoSlot extends StatelessWidget {
                           ),
                         ),
                       ),
+                    if (!isLoading &&
+                        hasPhoto &&
+                        promptLabel != null &&
+                        promptLabel.isNotEmpty)
+                      Positioned(
+                        left: 6,
+                        right: 34,
+                        bottom: 6,
+                        child: DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: Colors.black.withValues(alpha: 0.58),
+                            borderRadius: BorderRadius.circular(CatchRadius.sm),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 4,
+                            ),
+                            child: Text(
+                              prompt!.displayPrompt,
+                              style: Theme.of(context).textTheme.labelSmall
+                                  ?.copyWith(color: Colors.white),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -109,11 +152,40 @@ class PhotoSlot extends StatelessWidget {
                   borderRadius: borderRadius,
                 ),
               ),
+              if (!isLoading && onDelete != null)
+                Positioned(
+                  top: 4,
+                  right: 4,
+                  child: Tooltip(
+                    message: 'Delete photo ${index + 1}',
+                    child: Material(
+                      color: t.surface.withValues(alpha: 0.9),
+                      shape: const CircleBorder(),
+                      clipBehavior: Clip.antiAlias,
+                      child: InkWell(
+                        key: PhotoGridKeys.delete(index),
+                        customBorder: const CircleBorder(),
+                        onTap: onDelete,
+                        child: SizedBox.square(
+                          dimension: 28,
+                          child: Icon(
+                            Icons.close_rounded,
+                            size: 18,
+                            color: t.ink,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
               IgnorePointer(
                 child: DecoratedBox(
                   decoration: BoxDecoration(
                     borderRadius: borderRadius,
-                    border: Border.all(color: t.line),
+                    border: Border.all(
+                      color: isReorderTarget ? t.primary : t.line,
+                      width: isReorderTarget ? 2 : 1,
+                    ),
                   ),
                 ),
               ),

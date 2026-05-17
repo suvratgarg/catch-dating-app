@@ -8,6 +8,7 @@ import {
   validateProfilePhoto,
   validatePublicProfileDocument,
 } from "./generated/schema_contract_validators.mjs";
+import {profilePhotoPolicy} from "./generated/schema_contract_registry.mjs";
 import {
   isFirebaseProductionTarget,
   resolveFirebaseProjectId,
@@ -249,7 +250,7 @@ function normalizeStoredProfilePhotos(photos) {
       photo.thumbnailStoragePath
     )
     .sort((a, b) => a.position - b.position)
-    .slice(0, 6);
+    .slice(0, profilePhotoPolicy.maxPhotos);
 }
 
 function profilePhotoPatch(profilePhotos) {
