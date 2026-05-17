@@ -1,6 +1,6 @@
 ---
 doc_id: widget_catalog
-version: 2.5.76
+version: 2.5.77
 updated: 2026-05-17
 owner: recursive_audit_loop
 status: active
@@ -16,6 +16,20 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.77
+
+- Home run-state actions are consolidated into `RunFocusRail`. The old
+  dashboard-only `UpcomingRunsHero`, `RunArrivalActionCard`, `CatchesCallout`,
+  and `ReviewPromptCard` widgets have been deleted; committed-run state now
+  flows through one full-width snapping rail with check-in, directions,
+  calendar, catch-window, and review actions.
+- Profile photo editing is now grouped-photo first. `PhotoGrid` renders
+  `ProfilePhoto` objects, supports guarded delete and long-press reorder, and
+  routes add/replace/edit work through `ProfilePhotoEditorScreen`.
+- Host run management now includes guarded Cancel run and Delete run actions
+  on `HostRunManageScreen`; unused runs can be deleted, while runs with visible
+  activity are cancelled and retain history.
 
 ### 2.5.76
 
@@ -1216,14 +1230,11 @@ Generated 2026-05-06.
 |---|---|---|
 | `DashboardScreen` | `lib/dashboard/presentation/dashboard_screen.dart:21` | Home tab. Watches the user's profile, active run-club memberships, signed-up runs, and Home unread notification count only while Home is active. Renders one `CustomScrollView` with a scroll-away greeting/empty header, top-right Notifications bell, red unread badge, and dashboard sliver body; it no longer owns a route-local tab controller or Dashboard/Activity tab row. |
 | `DashboardFull` | `lib/dashboard/presentation/widgets/dashboard_full.dart:21` | Standalone full-dashboard wrapper used by focused tests/non-tab embedding. Takes explicit `followedClubIds` from the membership-edge seam and renders the full dashboard header plus `DashboardFullSliverBody`. The header avatar is a Profile-tab button and must use thumbnail-scale profile imagery through `UserProfile.primaryPhotoThumbnailUrl`. |
-| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:80` | Sliver body for the populated Home dashboard: first-priority runner self-check-in action card, consolidated host tools carousel, upcoming-runs pager, attended-run section (`StrideCard` + `CatchesCallout`), post-run review prompt for the latest attended unreviewed run, `QuickActions`, and recommended runs. It joins club names for upcoming booked runs through `runClubNameLookupProvider`; notifications are intentionally routed to the dedicated Notifications screen. |
+| `DashboardFullSliverBody` | `lib/dashboard/presentation/widgets/dashboard_full.dart:80` | Sliver body for the populated Home dashboard: consolidated runner `RunFocusRail`, consolidated host tools carousel, `StrideCard`, `QuickActions`, and recommended runs. It joins club names for committed runs through `runClubNameLookupProvider`; notifications are intentionally routed to the dedicated Notifications screen. |
 | `HostToolsRail` | `lib/dashboard/presentation/widgets/dashboard_full.dart:192` | Dashboard adapter for shared `HostRunToolsCarousel`. Converts `DashboardHostRunTool` availability into host-tool items and owns only route navigation for Manage and Attendance. |
-| `ReviewPromptCard` | `lib/dashboard/presentation/widgets/review_prompt_card.dart:11` | Dashboard card shown after a completed attended run that the user has not reviewed. Opens the shared run-scoped `WriteReviewSheet`; it does not own review persistence. |
+| `RunFocusRail` | `lib/dashboard/presentation/widgets/run_focus_rail.dart:28` | Consolidated Home rail for runner committed-run actions. Builds full-width snapping `Run Focus` cards for upcoming, check-in, catch-window, and review states; stacks actions such as View run, Check in, Directions, Add to calendar, Start catching, and Write review so labels do not clip on narrow screens. |
 | `ActivityScreen` | `lib/dashboard/presentation/activity_screen.dart:18` | Route-level Notifications screen opened from the Home header bell. Uses `CatchTopBar(title: 'Notifications')`, keeps the bottom nav visible by living under the Home shell branch, renders `ActivitySection`, and automatically delegates unread notification docs to `ActivityController.markAllRead` when the screen opens. |
 | `ActivitySection` | `lib/dashboard/presentation/widgets/activity_section.dart:43` | Reusable timeline-style activity feed for backend-owned match, message, club-update, run-signup, waitlist-promotion, run-update, run-cancellation, and run-reminder notification items plus local derived reminders only until the backend reminder exists. Uses a branded inline error state with retry and can either show a manual `Mark all read` action or hide it when a route owns automatic read state. |
-| `CatchesCallout` | `lib/dashboard/presentation/widgets/catches_callout.dart:11` | Dashboard card promoting the active catch window — shows the run name, remaining time, roster count, and a "Start catching" CTA. |
-| `UpcomingRunsHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:10` | Horizontal pager for all booked upcoming runs, rendered soonest-first. Delegates tap behavior to the route owner so Home can open a dashboard-owned run detail route and preserve back navigation to Home. Its page affordance is a fixed-width progress rail, not one dot per run, so it remains bounded for unbounded upcoming-run counts. |
-| `NextRunHero` | `lib/dashboard/presentation/widgets/next_run_hero.dart:133` | Compatibility wrapper around shared `RunHeroTile` for one booked upcoming run with location, time, distance/pace, projected confirmed-runner count, optional club name, and optional run-position pill. The runner hype row uses shared `RunHypeAvatarStack` so tiny circles use blurred profile thumbnails when available and deterministic obscured placeholders otherwise; never feed this row full-size profile photos. |
 | `Recommendations` | `lib/dashboard/presentation/widgets/recommendations.dart:7` | Intrinsic-height horizontal rail of `RecommendCard` widgets for recommended runs from the user's followed clubs. |
 | `RecommendCard` | `lib/dashboard/presentation/widgets/recommend_card.dart:11` | Compatibility wrapper around shared `RunRailTile` for dashboard recommended runs. It surfaces distance, price, pace, title, club, date/time, meeting point, signed-up count, and recommendation reason without fake imagery. |
 | `StrideCard` | `lib/dashboard/presentation/widgets/stride_card.dart:8` | Dashboard card showing stride (weekly run count) stats with bar columns and a "Keep it up" message. |
@@ -1233,7 +1244,6 @@ Generated 2026-05-06.
 | `DashboardEmptySliverBody` | `lib/dashboard/presentation/widgets/dashboard_empty.dart:116` | Sliver body for the empty Home dashboard. Keeps the existing "book your first run" education flow without embedding activity updates. |
 | `EmptyHeroCard` | `lib/dashboard/presentation/widgets/empty_hero_card.dart:10` | Hero card variant shown on the empty dashboard prompting the user to book their first run. Its solid-white CTA uses `CatchButtonVariant.light` so the pill stays legible in dark mode. |
 | `DashedAvatar` | `lib/dashboard/presentation/widgets/dashed_avatar.dart:7` | Dashed-border circular avatar placeholder used in empty-state layouts. |
-| `RunArrivalActionCard` | `lib/dashboard/presentation/widgets/run_arrival_action_card.dart:17` | First-priority Home card for active run-arrival tasks. Shows participant self check-in or host attendance actions and routes mutations/navigation through `RunBookingController` / router seams. Participant self-check-in opens `RunCheckInCelebrationScreen`; host attendance intentionally does not. |
 | `StaticMapDark` | `lib/dashboard/presentation/widgets/static_map_dark.dart:3` | Static map image widget with dark mode support. |
 
 ### Sliver Helpers
@@ -1491,12 +1501,18 @@ Generated 2026-05-06.
 
 ## Image Uploads
 
+### ConsumerStatefulWidget
+
+| Widget | File | Purpose |
+|---|---|---|
+| `ProfilePhotoEditorScreen` | `lib/image_uploads/presentation/profile_photo_editor_screen.dart:14` | Add/edit profile-photo flow opened by onboarding and Edit Profile. It picks or replaces the image, shows a crop preview, lets the user choose a generated photo prompt and caption, and saves through `PhotoUploadController.savePhoto` so grouped `profilePhotos` and legacy compatibility arrays stay synchronized. |
+
 ### StatelessWidget
 
 | Widget | File | Purpose |
 |---|---|---|
-| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:10` | Grid of profile photo slots. Uses `maxProfilePhotoCount`, keyed slots, and delegates taps to the owning upload caller. |
-| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:6` | Single keyed photo slot. Renders through `CatchSurface`, exposes semantic labels/tooltips for add/replace/uploading/unavailable states, and blocks taps while inactive or loading. |
+| `PhotoGrid` | `lib/image_uploads/presentation/photo_grid.dart:10` | Dense 3x2 profile photo grid over normalized `ProfilePhoto` objects. Uses `maximumProfilePhotoCount`, keyed slots, guarded delete callbacks, and long-press drag targets for reorder; callers own opening `ProfilePhotoEditorScreen` and enforcing the completed-profile minimum. |
+| `PhotoSlot` | `lib/image_uploads/presentation/widgets/photo_slot.dart:6` | Single keyed photo slot. Renders through `CatchSurface`, exposes semantic labels/tooltips for add/replace/delete/uploading/unavailable states, displays prompt captions where present, shows reorder target affordance, and blocks taps while inactive or loading. |
 
 ---
 

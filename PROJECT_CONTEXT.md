@@ -4,19 +4,19 @@ This file is a technical working document for future Codex sessions. If you are 
 
 ## 1. What the app is
 
-Catch is a Flutter app for meeting people through run clubs.
+Catch is a Flutter app for meeting people through clubs.
 
 Core product loop:
 
 1. A user signs in with a verified phone OTP.
 2. The user completes an onboarding flow with dating + running preferences.
-3. The user browses run clubs by city, joins clubs, and views scheduled runs.
-4. A club host creates clubs and runs through callable Cloud Functions.
-5. Users book a run.
-   - Free runs use a callable Cloud Function.
-   - Paid runs use Razorpay on Android/iOS, then a Cloud Function verifies payment and signs the user up.
-6. After the run ends, the host manually marks attendance.
-7. Attendees can swipe on other attendees from that run during a 24-hour window.
+3. The user browses clubs by city, joins clubs, and views scheduled events.
+4. A club host creates clubs and events through callable Cloud Functions.
+5. Users book an event.
+   - Free events use a callable Cloud Function.
+   - Paid events use Razorpay on Android/iOS, then a Cloud Function verifies payment and signs the user up.
+6. After the event ends, the host manually marks attendance.
+7. Attendees can swipe on other attendees from that event during a 24-hour window.
 8. Mutual likes create matches automatically.
 9. Matches can chat, receive push notifications, and leave reviews.
 
@@ -106,7 +106,7 @@ Startup flow in [`lib/main.dart`](/Users/suvratgarg/Development/catch-dating-app
 Firebase App Check is activated immediately after Firebase initialization.
 Debug Flutter builds use debug providers; production web uses reCAPTCHA
 Enterprise, Android uses Play Integrity, and iOS/macOS uses App Attest. Local
-web debug runs also set Firebase's documented `FIREBASE_APPCHECK_DEBUG_TOKEN`
+web debug events also set Firebase's documented `FIREBASE_APPCHECK_DEBUG_TOKEN`
 flag in `web/index.html` for localhost/loopback origins only.
 
 ### 4.2 Auth and routing
@@ -138,28 +138,35 @@ Standalone routes:
 - `/loading` → transient loading screen during auth resolution
 - `/auth` → legacy redirect to `/onboarding`
 - `/onboarding`
-- `/calendar` → calendar timeline/agenda view of signed-up runs
+- `/calendar` → calendar timeline/agenda view of signed-up events
 - `/activity` → activity/notifications feed
 - `/filters` → swipe filter preferences (age, pace, distance, gender)
-- `/map` → full-screen run map with pinned runs
+- `/map` → full-screen event map with pinned events
 - `/payment-history`
 - `/payment-confirmation` → post-payment status (uses extra data)
 - `/settings` → safety/settings/account controls
 - `/dev/event-policy-lab` → dev/staging-only static event policy lab
+- `/dev/event-success-lab` → dev/staging-only event-success feature lab
+- `/dev/event-success-preview/:clubId/:eventId` → dev/staging-only contextual
+  success preview for a real event
+- `/dashboard/clubs/:clubId/events/:eventId/success` → host event-success
+  setup, live facilitation, and feedback report
 - `/profiles/:uid` → public profile of any user
 
 Tabbed shell routes:
 
 - `/` → Dashboard
-- `/clubs` → Run clubs list
-- `/clubs/run-clubs/:runClubId` → Club detail
-- `/clubs/run-clubs/:runClubId/edit` → Edit run club
-- `/clubs/run-clubs/:runClubId/runs/:runId` → Run detail
-- `/clubs/create-run-club` → Create club
-- `/clubs/run-clubs/:runClubId/create-run` → Create run
-- `/catches` → Attended runs eligible for swiping
-- `/catches/:runId` → Swipe deck for a specific run
-- `/catches/:runId/recap` → Post-run recap
+- `/clubs` → Clubs list
+- `/clubs/:clubId` → Club detail
+- `/clubs/:clubId/edit` → Edit club
+- `/clubs/:clubId/events/:eventId` → Event detail
+- `/clubs/:clubId/events/:eventId/companion` → attendee event-success
+  companion for the booked/attended event
+- `/clubs/create-club` → Create club
+- `/clubs/:clubId/create-event` → Create event
+- `/catches` → Attended events eligible for swiping
+- `/catches/:eventId` → Swipe deck for a specific event
+- `/catches/:eventId/recap` → Post-event recap
 - `/chats` → Matches list
 - `/chats/:matchId` → Chat
 - `/you` → Profile
@@ -199,23 +206,23 @@ Files:
 
 Behavior:
 
-- Shows `DashboardEmpty` when the user has no signed-up runs.
-- Shows `DashboardFull` once the user has at least one signed-up run.
+- Shows `DashboardEmpty` when the user has no signed-up events.
+- Shows `DashboardFull` once the user has at least one signed-up event.
 
 Dashboard sections:
 
-- Next booked run
-- Swipe-window callout for the latest attended run still within 24 hours
+- Next booked event
+- Swipe-window callout for the latest attended event still within 24 hours
 - Quick actions
 - Weekly distance summary
-- Recommended upcoming runs from followed clubs
+- Recommended upcoming events from followed clubs
 
-### 6.3 Run club discovery
+### 6.3 Club discovery
 
 Files:
 
-- Screen: [`lib/run_clubs/presentation/run_clubs_list_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/presentation/run_clubs_list_screen.dart)
-- State/view model: [`lib/run_clubs/presentation/run_clubs_list_state.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/presentation/run_clubs_list_state.dart)
+- Screen: [`lib/clubs/presentation/clubs_list_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/clubs_list_screen.dart)
+- State/view model: [`lib/clubs/presentation/clubs_list_state.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/clubs_list_state.dart)
 
 Behavior:
 
@@ -230,9 +237,9 @@ Behavior:
 
 Files:
 
-- Screen: [`lib/run_clubs/presentation/run_club_detail_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/presentation/run_club_detail_screen.dart)
-- Controller/view model: [`lib/run_clubs/presentation/run_club_detail_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/presentation/run_club_detail_controller.dart)
-- UI body: [`lib/run_clubs/presentation/widgets/club_detail_body.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/presentation/widgets/club_detail_body.dart)
+- Screen: [`lib/clubs/presentation/club_detail_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/club_detail_screen.dart)
+- Controller/view model: [`lib/clubs/presentation/club_detail_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/club_detail_controller.dart)
+- UI body: [`lib/clubs/presentation/widgets/club_detail_body.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/widgets/club_detail_body.dart)
 
 Behavior:
 
@@ -240,24 +247,24 @@ Behavior:
 - Hosts see host stats and create/edit tools, but they cannot leave a club they
   host.
 - Non-host members can join/leave the club.
-- Club pages show review aggregates only. Review writes are run-scoped from the
-  run detail page.
+- Club pages show review aggregates only. Review writes are event-scoped from the
+  event detail page.
 
-### 6.5 Run creation and booking
+### 6.5 Event creation and booking
 
 Files:
 
-- Create run screen: [`lib/runs/presentation/create_run_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/create_run_screen.dart)
-- Create run controller: [`lib/runs/presentation/create_run_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/create_run_controller.dart)
-- Run detail screen: [`lib/runs/presentation/run_detail_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/run_detail_screen.dart)
-- Run detail CTA logic: [`lib/runs/presentation/widgets/run_detail_cta.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/widgets/run_detail_cta.dart)
-- Booking controller: [`lib/runs/presentation/run_booking_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/run_booking_controller.dart)
+- Create event screen: [`lib/events/presentation/create_event_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/create_event_screen.dart)
+- Create event controller: [`lib/events/presentation/create_event_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/create_event_controller.dart)
+- Event detail screen: [`lib/events/presentation/event_detail_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/event_detail_screen.dart)
+- Event detail CTA logic: [`lib/events/presentation/widgets/event_detail_cta.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/widgets/event_detail_cta.dart)
+- Booking controller: [`lib/events/presentation/run_booking_controller.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/run_booking_controller.dart)
 
-Run creation:
+Event creation:
 
-- Host-only through the `createRun` callable.
+- Host-only through the `createEvent` callable.
 - 4-step wizard:
-  1. Run details
+  1. Event details
   2. Where
   3. When
   4. Event policy
@@ -267,11 +274,11 @@ Event policy:
 - `lib/event_policies/**` is the in-progress policy engine for the singles
   event-platform model. It is now wired into the first production migration
   path and should not be removed as dead code.
-- New run creation writes an `EventPolicyBundle` snapshot with admission,
+- New event creation writes an `EventPolicyBundle` snapshot with admission,
   waitlist, pricing, cancellation, and settlement policy. The wizard currently
   supports open capacity, balanced singles, and fixed cohort caps, plus bounded
   cancellation policies.
-- `Run.capacityLimit`, `Run.priceInPaise`, and `RunConstraints` remain
+- `Event.capacityLimit`, `Event.priceInPaise`, and `EventConstraints` remain
   backward-compatible projections for legacy documents and UI surfaces during
   migration. Do not remove them until the backend, rules, and client have a
   completed migration plan.
@@ -283,34 +290,44 @@ Event policy:
   cohorts into admission, waitlist, manual-review, price-quote, cancellation,
   and host-payout settlement outcomes.
 - Keep the model boundaries explicit: `EventPolicyBundle` owns admission,
-  pricing, cancellation, and settlement policy axes for new runs. Host
+  pricing, cancellation, and settlement policy axes for new events. Host
   cancellation always makes attendees complete, and platform settlement is
   modeled as host payout after event completion.
 - `lib/event_policies/presentation/event_policy_lab_screen.dart` renders those
   fixtures behind the dev/staging-only `/dev/event-policy-lab` route. The
   Settings screen links to it only when `AppConfig.enableEventPolicyLab` is true.
   The lab remains read-only/static; production testing should use the normal
-  create-run flow.
+  create-event flow.
 - The development tracker is
   [`codex_audit/event_policy_engine_in_development.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/event_policy_engine_in_development.md).
 
 Parallel event-success work:
 
 - `lib/event_success/**` is an in-development live event success layer for the
-  future event-platform model. It is intentionally not wired into production
-  routes, Firestore, Cloud Functions, booking, attendance, swipes, reviews, or
-  chat yet and should not be removed as dead code.
+  future event-platform model. It now has production route entry points from
+  host event management and attendee event detail, while the dev/staging lab and
+  contextual preview remain available for product iteration.
+- Live state is intentionally separate from `events/{eventId}`: host setup and
+  live step state live in `eventSuccessPlans/{eventId}`, while attendee
+  post-event feedback lives in `eventSuccessFeedback/{eventId_uid}`.
+- The private-crush action reuses the existing swipe/profile-decision pipeline
+  so reciprocal interest can still become a match; host reports must only use
+  aggregate/decomposed feedback and never expose private target identities.
 - The first pass models host playbooks, social intensity, check-in, crowd
   balance, micro-pods, social missions, rotations, private crushes, contextual
   openers, decomposed feedback, host analytics, and safety controls.
-- This layer should stay isolated until product, safety, privacy, and backend
-  ownership decisions are approved. Movement-heavy events like runs should keep
-  live structure light; stationary formats can support more guided or
-  algorithmic modules.
+- Movement-heavy events like events should keep live structure light; stationary
+  formats can support more guided or algorithmic modules. Safety, privacy,
+  block/report behavior, attendee visibility, and opt-outs remain the main
+  product hardening axes before aggressive expansion of live modules.
+- `lib/event_success/domain/event_success_event_preview.dart` adapts today's
+  `Event`, `Club`, and roster counts into the existing preview blocks. It owns
+  no persistence and exists only so host setup, live mode, attendee companion,
+  and post-event report ideas can be reviewed against real events.
 - The development tracker is
   [`codex_audit/event_success_layer_in_development.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/event_success_layer_in_development.md).
 
-Run detail CTA states are derived from `run.statusFor(userProfile)`:
+Event detail CTA states are derived from `event.statusFor(userProfile)`:
 
 - eligible
 - signed up
@@ -331,16 +348,16 @@ Swipe files:
 
 Swipe candidate rules:
 
-- Start from `runParticipations` for the selected run with `status == attended`.
-- Require the current user to have an attended participation edge for that run.
+- Start from `eventParticipations` for the selected event with `status == attended`.
+- Require the current user to have an attended participation edge for that event.
 - Remove current user.
 - Remove users already swiped on.
 - Remove blocked users.
 - Fetch public profiles in batches.
 - Filter by current user’s age and gender preferences.
 
-Important: swiping depends on attended `runParticipations` being populated and
-kept consistent with run aggregate counts.
+Important: swiping depends on attended `eventParticipations` being populated and
+kept consistent with event aggregate counts.
 
 Matching files:
 
@@ -366,11 +383,11 @@ Files:
 
 Behavior:
 
-- Reviews are run-scoped: one deterministic `reviews/{runId~reviewerUserId}`
-  document per user per run.
+- Reviews are event-scoped: one deterministic `reviews/{eventId~reviewerUserId}`
+  document per user per event.
 - Club pages show aggregate reviews for the club but do not expose a club-level
   write CTA.
-- Run review CTA requires attendance.
+- Event review CTA requires attendance.
 - UI previews 5 reviews, then shows “See all”.
 
 ### 6.8 Profile and image uploads
@@ -402,7 +419,7 @@ Behavior:
 
 - Paid booking is supported only on Android and iOS.
 - Web and macOS deliberately disable paid booking.
-- Payment history shows Firestore `payments` docs and resolves the run title from `runs/{runId}`.
+- Payment history shows Firestore `payments` docs and resolves the event title from `events/{eventId}`.
 
 Force update:
 
@@ -444,7 +461,7 @@ Private user data:
 
 - `users/{uid}`
   - source of truth for onboarding/profile
-  - includes dating prefs, running prefs, `joinedRunClubIds`, `photoUrls`, optional `fcmToken`
+  - includes dating prefs, running prefs, `joinedClubIds`, `photoUrls`, optional `fcmToken`
   - optional `latitude`/`longitude` for proximity features (collected once via device GPS)
 
 Public user projection:
@@ -453,14 +470,14 @@ Public user projection:
   - generated from `users/{uid}` once `profileComplete == true`
   - contains only public-facing fields such as `name`, `age`, `bio`, public attributes, and optional `latitude`/`longitude`
 
-Run clubs:
+Clubs:
 
-- `runClubs/{clubId}`
+- `clubs/{clubId}`
   - club metadata, host, membership, rating summary, imagery
 
-Runs:
+Events:
 
-- `runs/{runId}`
+- `events/{eventId}`
   - schedule, location, price, constraints
   - booking arrays:
     - `signedUpUserIds`
@@ -497,7 +514,7 @@ The generated TypeScript mirror of the Firestore schema is:
 
 - [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
 
-If you change a Dart model that a Cloud Function reads or writes, run
+If you change a Dart model that a Cloud Function reads or writes, event
 `dart tool/generate_firestore_types.dart` and commit the generated TS mirror.
 
 ## 8. Backend contract
@@ -509,41 +526,41 @@ Cloud Functions entrypoint:
 Callable functions:
 
 - `createRazorpayOrder`
-  - validates auth and run availability
+  - validates auth and event availability
   - creates Razorpay order
 - `verifyRazorpayPayment`
   - verifies signature
   - attempts sign-up
   - refunds immediately if sign-up fails after payment
   - records payment doc
-- `signUpForFreeRun`
-  - validates free run
+- `signUpForFreeEvent`
+  - validates free event
   - reuses shared sign-up logic
-- `createRun`
-  - host-only run creation
-  - derives host authority from the authenticated user and `runClubs/{clubId}`
+- `createEvent`
+  - host-only event creation
+  - derives host authority from the authenticated user and `clubs/{clubId}`
   - initializes booking, attendance, waitlist, and gender count state server-side
-- `updateRun`
-  - host-only schedule/descriptive run edits
-  - keeps run ownership, capacity, payment, eligibility, booking, attendance,
+- `updateEvent`
+  - host-only schedule/descriptive event edits
+  - keeps event ownership, capacity, payment, eligibility, booking, attendance,
     waitlist, and gender counts out of direct client writes
-- `cancelRunSignUp`
+- `cancelEventSignUp`
   - removes user from sign-up
   - decrements gender counts
   - promotes first eligible waitlisted user
   - attempts Razorpay refund if paid
-- `joinRunWaitlist`
-  - adds user to a run's waitlist
-- `createRunClub`
+- `joinEventWaitlist`
+  - adds user to an event's waitlist
+- `createClub`
   - creates the club, derives host name/avatar from `users/{uid}`, and mirrors
-    host membership onto `users/{uid}.joinedRunClubIds`
-- `joinRunClub` / `leaveRunClub`
-  - atomically maintain `runClubs/{clubId}.memberUserIds`,
-    `runClubs/{clubId}.memberCount`, and `users/{uid}.joinedRunClubIds`
+    host membership onto `users/{uid}.joinedClubIds`
+- `joinClub` / `leaveClub`
+  - atomically maintain `clubs/{clubId}.memberUserIds`,
+    `clubs/{clubId}.memberCount`, and `users/{uid}.joinedClubIds`
   - direct client updates to club membership fields are denied by rules
-- `markRunAttendance`
+- `markEventAttendance`
   - host-only
-  - can run only after run end
+  - can event only after event end
   - copies signed-up users into `attendedUserIds`
 - `blockUser`
   - creates a block edge between two users
@@ -576,8 +593,8 @@ Firestore triggers:
   - idempotently updates match preview/unread counts using
     `functionEventReceipts/{receiptId}`
   - sends message push notification after the metadata transaction applies
-- `syncRunClubReviewStats`
-  - recalculates `runClubs/{clubId}.rating` and `reviewCount`
+- `syncClubReviewStats`
+  - recalculates `clubs/{clubId}.rating` and `reviewCount`
 - `onBlockCreated`
   - closes any existing match/chat between the two users on block creation
 
@@ -596,8 +613,8 @@ Summary:
 
 - Most Firestore reads require auth.
 - Users can write only their own `users/{uid}` docs.
-- `users/{uid}.joinedRunClubIds`, run club creation, run club membership, run
-  creation, and host run edits are backend-owned through callables.
+- `users/{uid}.joinedClubIds`, club creation, club membership, event
+  creation, and host event edits are backend-owned through callables.
 - `publicProfiles` are read-only to clients.
 - `payments` are backend-write-only.
 - `matches` are backend-write-only.
@@ -605,7 +622,7 @@ Summary:
   retry-safe triggers.
 - `chats` are writable only by match participants.
 - `swipes` are writable only by the owner of the outgoing subcollection.
-- Direct run and club deletes are denied until backend cleanup/refund behavior
+- Direct event and club deletes are denied until backend cleanup/refund behavior
   exists.
 - Storage is currently permissive for any authenticated user.
 
@@ -619,8 +636,8 @@ GPS / device location:
 
 City auto-select:
 
-- `SelectedRunClubCity` in [`lib/run_clubs/presentation/list/run_clubs_list_view_model.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/presentation/list/run_clubs_list_view_model.dart) has an `autoSelectCity()` method that sets the city from GPS but never overrides a manual user pick (tracked with an internal `_userSelected` flag).
-- The run clubs header watches `DeviceLocation` and calls `autoSelectCity` when GPS resolves (or via post-frame callback for already-resolved GPS).
+- `SelectedClubCity` in [`lib/clubs/presentation/list/clubs_list_view_model.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/presentation/list/clubs_list_view_model.dart) has an `autoSelectCity()` method that sets the city from GPS but never overrides a manual user pick (tracked with an internal `_userSelected` flag).
+- The clubs header watches `DeviceLocation` and calls `autoSelectCity` when GPS resolves (or via post-frame callback for already-resolved GPS).
 
 Distance on profile cards:
 
@@ -629,8 +646,8 @@ Distance on profile cards:
 
 Map center fallback:
 
-- [`lib/runs/presentation/location_picker_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/location_picker_screen.dart) — `_pickLocation()` in `CreateRunScreen` uses device GPS as the initial map center when no prior pin exists.
-- [`lib/runs/presentation/run_map_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/run_map_screen.dart) — `_RunsMap` falls back to device GPS center when no runs with coordinates are available.
+- [`lib/events/presentation/location_picker_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/location_picker_screen.dart) — `_pickLocation()` in `CreateEventScreen` uses device GPS as the initial map center when no prior pin exists.
+- [`lib/events/presentation/event_map_screen.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/event_map_screen.dart) — `_EventsMap` falls back to device GPS center when no events with coordinates are available.
 
 All map UIs use:
 
@@ -641,7 +658,7 @@ Location data model:
 
 - `users/{uid}` carries optional private `latitude`/`longitude` (nullable doubles).
 - `publicProfiles/{uid}` carries coarse city only; exact user coordinates are not projected.
-- `runs/{runId}` stores required `startingPointLat`/`startingPointLng` for new runs.
+- `events/{eventId}` stores required `startingPointLat`/`startingPointLng` for new events.
 - Flutter app/domain code uses `LocationCoordinate`; Google Maps `LatLng` is confined to adapter/UI SDK edges.
 
 No geohash, GeoPoint, or server-side proximity queries are used — all distance math is client-side. If server-side "within X km" queries are needed later, add a geohash field in a separate migration.
@@ -656,18 +673,18 @@ flutter analyze
 flutter test
 ```
 
-Run app:
+Event app:
 
 ```bash
-./tool/flutter_with_env.sh dev run
+./tool/flutter_with_env.sh dev event
 ```
 
-Preferred environment-aware runs:
+Preferred environment-aware events:
 
 ```bash
-./tool/flutter_with_env.sh dev run
-./tool/flutter_with_env.sh staging run
-./tool/flutter_with_env.sh prod run
+./tool/flutter_with_env.sh dev event
+./tool/flutter_with_env.sh staging event
+./tool/flutter_with_env.sh prod event
 ```
 
 Switch active native/web Firebase files:
@@ -681,19 +698,19 @@ Switch active native/web Firebase files:
 Use emulators:
 
 ```bash
-flutter run --dart-define=USE_FIREBASE_EMULATORS=true
+flutter event --dart-define=USE_FIREBASE_EMULATORS=true
 ```
 
 Push messaging:
 
 ```bash
-flutter run --dart-define=ENABLE_PUSH_MESSAGING=true
+flutter event --dart-define=ENABLE_PUSH_MESSAGING=true
 ```
 
 Regenerate Riverpod/Freezed/Envied code:
 
 ```bash
-dart run build_runner build --delete-conflicting-outputs
+dart event build_runner build --delete-conflicting-outputs
 ```
 
 Functions:
@@ -726,7 +743,7 @@ Generated files are committed. Common patterns:
 - `*.g.dart`
 - `*.freezed.dart`
 
-If you change any of the following, run `build_runner`:
+If you change any of the following, event `build_runner`:
 
 - Riverpod annotations
 - Freezed models
@@ -744,14 +761,14 @@ If you need to change auth/onboarding:
 - `lib/user_profile/**`
 - `lib/public_profile/**`
 
-If you need to change run club discovery or hosting:
+If you need to change club discovery or hosting:
 
-- `lib/run_clubs/**`
+- `lib/clubs/**`
 
 If you need to change booking, eligibility, or attendance:
 
-- `lib/runs/**`
-- `functions/src/runs/**`
+- `lib/events/**`
+- `functions/src/events/**`
 - `lib/payments/**`
 - `functions/src/payments/**`
 
@@ -782,9 +799,9 @@ If you need to change force-update:
 
 These are the most important things for future Codex sessions to know before editing.
 
-### 14.1 Keep `runClubs` schema aligned across client, rules, and Functions
+### 14.1 Keep `clubs` schema aligned across client, rules, and Functions
 
-The current Dart `RunClub` model, Firestore ownership contract, Firestore
+The current Dart `Club` model, Firestore ownership contract, Firestore
 rules, rules tests, and Functions shared TS interface are aligned for fields
 such as:
 
@@ -792,12 +809,12 @@ such as:
 - `hostName`
 - `hostAvatarUrl`
 - `memberCount`
-- `nextRunAt`
-- `nextRunLabel`
+- `nextEventAt`
+- `nextEventLabel`
 
 Files involved:
 
-- Dart model: [`lib/run_clubs/domain/run_club.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/run_clubs/domain/run_club.dart)
+- Dart model: [`lib/clubs/domain/club.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/clubs/domain/club.dart)
 - Rules: [`firestore.rules`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/firestore.rules)
 - TS types: [`functions/src/shared/firestore.ts`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/functions/src/shared/firestore.ts)
 - Ownership contract: [`tool/firestore_contract.json`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/tool/firestore_contract.json)
@@ -807,22 +824,22 @@ Files involved:
 Impact:
 
 - Future backend changes can easily drift if the TS types are not updated.
-- When changing `RunClub`, update the Dart model, ownership contract, rules
+- When changing `Club`, update the Dart model, ownership contract, rules
   validation, Functions TS type, and rules tests in the same pass.
 
-### 14.2 Review identity is run-scoped
+### 14.2 Review identity is event-scoped
 
-Review document IDs are deterministic per `(runId, reviewerUserId)` using
-`runId~reviewerUserId`.
+Review document IDs are deterministic per `(eventId, reviewerUserId)` using
+`eventId~reviewerUserId`.
 
 Impact:
 
-- A user can have one review per run.
-- New review creates require `runId`, matching path/data identity, matching
-  reviewer name, and attended-run membership in Firestore rules.
-- Club pages aggregate run reviews for display but do not create club-level
+- A user can have one review per event.
+- New review creates require `eventId`, matching path/data identity, matching
+  reviewer name, and attended-event membership in Firestore rules.
+- Club pages aggregate event reviews for display but do not create club-level
   reviews.
-- Existing random-ID or missing-`runId` reviews should be found by
+- Existing random-ID or missing-`eventId` reviews should be found by
   `node tool/validate_firestore_data.mjs --env <env>` and migrated or archived
   before tightening production data further.
 
@@ -834,7 +851,7 @@ The profile `email` field is optional and defaults to an empty string.
 
 ### 14.4 Attendance is manual, not automatic
 
-Swiping depends on `attendedUserIds`, and those are only populated when the host calls `markRunAttendance`.
+Swiping depends on `attendedUserIds`, and those are only populated when the host calls `markEventAttendance`.
 
 Impact:
 
@@ -852,13 +869,13 @@ Impact:
 
 Current status:
 
-- Share button on run detail opens the native share sheet.
-- Bookmark/save button on run detail writes `users/{uid}.savedRunIds`.
+- Share button on event detail opens the native share sheet.
+- Bookmark/save button on event detail writes `users/{uid}.savedEventIds`.
 - Dashboard quick actions for Map view and Calendar route to real screens.
 
 Files:
 
-- [`lib/runs/presentation/widgets/run_detail_body.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/runs/presentation/widgets/run_detail_body.dart)
+- [`lib/events/presentation/widgets/event_detail_body.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/events/presentation/widgets/event_detail_body.dart)
 - [`lib/dashboard/presentation/widgets/quick_actions.dart`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/lib/dashboard/presentation/widgets/quick_actions.dart)
 
 ### 14.8 Firebase environments are real, but root config files are mutable
@@ -896,7 +913,7 @@ Impact:
   `./tool/flutter_with_env.sh <env> ...` or
   `./tool/use_firebase_environment.sh <env>` before environment-specific
   debugging.
-- Run `./tool/validate_firebase_environment.sh <env>` when Firebase runtime
+- Event `./tool/validate_firebase_environment.sh <env>` when Firebase runtime
   behavior looks wrong.
 - Dev and staging currently reuse prod Razorpay test-mode secrets. Replace them
   with environment-owned secrets before live payments.
@@ -905,7 +922,7 @@ Impact:
 
 - [`TESTS.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/TESTS.md) now tracks the current test-suite inventory instead of the old aspirational checklist.
 - Recent broad verification included `flutter analyze`, `flutter test --concurrency=1`, Functions lint/tests, Firestore rules tests, live Functions deploy/list checks, and Firebase environment validation.
-- Default fully parallel `flutter test` has previously exposed a `two_dimensional_scrollables`/TableView isolation issue in a run-clubs widget test; use the documented serialized command for broad verification until that is resolved.
+- Default fully parallel `flutter test` has previously exposed a `two_dimensional_scrollables`/TableView isolation issue in an clubs widget test; use the documented serialized command for broad verification until that is resolved.
 
 ## 16. Suggested workflow for future Codex prompts
 
@@ -913,11 +930,11 @@ When working in this repo:
 
 1. Read this file.
 2. Read the feature’s `domain`, `data`, and `presentation` files together.
-3. If a change touches a model used by Cloud Functions, update Dart, run
+3. If a change touches a model used by Cloud Functions, update Dart, event
    `dart tool/generate_firestore_types.dart`, and commit
    `functions/src/shared/firestore.ts`.
 4. If a change touches rules-sensitive documents, check `firestore.rules` immediately.
-5. Run `build_runner` after annotation/model changes.
+5. Event `build_runner` after annotation/model changes.
 6. Prefer updating repository/controller layers instead of pushing Firebase calls directly into widgets.
 7. Treat the sharp edges above as real until verified in code or in the deployed Firebase project.
 
@@ -961,7 +978,7 @@ rejections gracefully so users (and developers) aren't left guessing.
   display.** Don't show `error.toString()` to users — it's either raw
   exception text or uselessly truncated. The `ErrorBanner` widget and
   `listenForMutationErrorSnackbar` utility are the right display channels.
-- **Firestore rules tests and the contract checker run in CI** on every PR
+- **Firestore rules tests and the contract checker event in CI** on every PR
   that touches rules, schema, or contract files. Keep
   `functions/test/firestore.rules.test.cjs` and `tool/firestore_contract.json`
   in sync with rule changes.
@@ -984,7 +1001,7 @@ rejections gracefully so users (and developers) aren't left guessing.
 
 1. Check the debug-mode error banner — it shows `[DEBUG Firestore <code>]`
    with the server-side message.
-2. Run `cd functions && node --test test/firestore.rules.test.cjs` to
+2. Event `cd functions && node --test test/firestore.rules.test.cjs` to
    reproduce the failing operation against the local rules.
 3. Use the Firebase Console > Firestore > Rules > Rules Playground to
    simulate the exact document path and auth state.

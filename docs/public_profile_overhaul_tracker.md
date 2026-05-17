@@ -1,6 +1,14 @@
+---
+doc_id: public_profile_overhaul_tracker
+version: 0.2.0
+updated: 2026-05-17
+owner: public_profile
+status: active
+---
+
 # Public Profile Overhaul Tracker
 
-Last updated: 2026-05-15
+Last updated: 2026-05-17
 
 ## Goal
 
@@ -247,25 +255,25 @@ Open modeling questions:
 
 | Priority | Item | Status | Notes |
 | --- | --- | --- | --- |
-| P0 | Replace swipe deck/card UI with cardless structured profile surface | Implemented locally | `ProfileSurface` is now shared by Catches, Preview, and Public Profile. Production visual QA still needed on device. |
-| P0 | Add Hinge-style floating pass X after removing swipe gestures | Implemented locally | Catches uses `CatchesPassButton` in the lower-left. Exact visual inset/elevation still needs device QA. |
-| P0 | Update demo data to seed `profilePrompts`, `photoPrompts`, and `preferredRunTimes` | Not started | `tool/seed_demo_data.mjs` still writes legacy `bio` and does not exercise the new profile fields. |
-| P1 | Add one-shot legacy profile prompt backfill/repair tooling | Not started | Runtime migration exists, but there is no script to rewrite existing `bio` data into structured prompts. |
+| P0 | Replace swipe deck/card UI with cardless structured profile surface | Implemented; needs device QA | `ProfileSurface` is shared by Catches, Preview, and Public Profile. Production visual QA is still needed on device. |
+| P0 | Add Hinge-style floating pass X after removing swipe gestures | Implemented; needs device QA | Catches uses `CatchesPassButton` in the lower-left. Exact visual inset/elevation still needs device QA. |
+| P0 | Update demo data to seed `profilePrompts`, `photoPrompts`, and `preferredRunTimes` | Implemented | `tool/seed_demo_data.mjs` now builds profile prompts, photo prompts, and preferred run times from generated catalogs and validates seeded docs. |
+| P1 | Add one-shot legacy profile prompt backfill/repair tooling | Implemented | `tool/recompute_public_profiles.mjs` and schema-contract repair docs cover stale public-profile projection repair, including legacy `bio` cleanup. |
 | P1 | Implement mode-based reaction controls in the shared renderer | Implemented locally | Catches enables like/comment controls; Preview/Public Profile use the same renderer with controls disabled. |
-| P1 | Add prompt-picker UX for profile prompts and photo captions | Not started | Catalog exists in code, but users cannot choose alternate prompts yet. |
+| P1 | Add prompt-picker UX for profile prompts and photo captions | Partially implemented | Photo prompt/caption editing is implemented in `ProfilePhotoEditorScreen`. Profile prompt selection still uses the fixed default prompt set in onboarding/edit profile. |
 | P1 | Expand compatibility reasons beyond v1 heuristics | Partially implemented | Existing reasons cover run title, relationship goal, running reason, time, distance, pace, language, and easy openers. Missing club/run history, prompt/caption themes, and richer non-running signals. |
 | P2 | Add richer profile quality coaching | Partially implemented | Edit Profile has a top strength card. Still missing inline prompt/photo coaching, Preview checklist, and post-onboarding nudges. |
 | P2 | Add visual regression coverage for profile surfaces | Not started | Need screenshot/golden checks for long names, dense chips, missing photos, multi-photo profiles, and cardless scroll behavior. |
-| P2 | Audit user-facing copy for "swipe" language | Not started | Storage/domain names can remain for now, but user-facing Catches copy should match the new interaction model. |
+| P2 | Audit user-facing copy for "swipe" language | Not started | Storage/domain names can remain for now, but user-facing Catches copy should match the new interaction model. Current live copy still includes swipe-window language. |
 
 ## Proposed Iteration Order
 
-1. Fix demo data and add legacy prompt backfill tooling.
-2. Add prompt-picker UX for profile/photo prompts.
-3. Expand compatibility reasons with approved run-history and non-running signals.
-4. Add owner-only profile quality guidance in Preview and inline prompt/photo coaching.
-5. Add screenshot/golden checks for the final cardless profile surface.
-6. Do device visual QA for the floating pass X, bottom navigation coexistence, and section reaction density.
+1. Add profile prompt picker UX; photo prompt/caption editing is already done.
+2. Expand compatibility reasons with approved run-history and non-running signals.
+3. Add owner-only profile quality guidance in Preview and inline prompt/photo coaching.
+4. Add screenshot/golden checks for the final cardless profile surface.
+5. Do device visual QA for the floating pass X, bottom navigation coexistence, and section reaction density.
+6. Audit user-facing copy and move visible labels away from "swipe" where the new Catches interaction model applies.
 
 ## Verification Plan
 
