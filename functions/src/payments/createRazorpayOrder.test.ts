@@ -119,6 +119,65 @@ test(
   }
 );
 
+test(
+  "createRazorpayOrderHandler rejects policy-blocked cohorts before payment",
+  async () => {
+    await assert.rejects(
+      createRazorpayOrderHandler(
+        buildRequest({
+          data: {runId: "run-1"},
+          auth: {uid: "runner-1"},
+        }),
+        {
+          firestore: () =>
+            createRunFirestore(buildRunDoc({
+              bookedCount: 11,
+              cohortCounts: {
+                menInterestedInWomen: 10,
+                womenInterestedInMen: 1,
+              },
+              eventPolicy: {
+                version: 1,
+                admission: {
+                  format: "balancedRatio",
+                  capacityLimit: 20,
+                  waitlistPolicy: {
+                    mode: "rankedOffer",
+                    offerWindowMinutes: 20,
+                  },
+                  inviteRequired: false,
+                  membershipRequired: false,
+                  manualApprovalRequired: false,
+                  cohortCapacityLimits: {},
+                  balancedRatioPolicy: {
+                    leftCohortId: "menInterestedInWomen",
+                    rightCohortId: "womenInterestedInMen",
+                    maxSkew: 1,
+                    openingBufferPerCohort: 1,
+                    outOfRatioCohortPolicy: "waitlist",
+                  },
+                },
+                pricing: {
+                  basePriceInPaise: 25000,
+                  cohortAdjustmentsInPaise: {},
+                  demandPricingRules: [],
+                },
+                cancellation: {policyId: "standard"},
+                settlement: {hostPayoutTiming: "afterEventCompletion"},
+              },
+            })),
+          createClient: failOnClientUse,
+          now: () => 0,
+        }
+      ),
+      isHttpsError(
+        "failed-precondition",
+        "A balanced spot is not available right now. Join the waitlist."
+      )
+    );
+  }
+);
+
 function buildRequest({
   data,
   auth,

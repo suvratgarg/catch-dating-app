@@ -375,6 +375,52 @@ test("createRunHandler creates a server-owned run for the club host",
   }
 );
 
+test("createRunHandler accepts client event-policy snapshots", async () => {
+  const h = harness({"runClubs/club-1": club()});
+
+  const eventPolicy = {
+    version: 1,
+    admission: {
+      format: "balancedRatio",
+      capacityLimit: 20,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: false,
+      membershipRequired: false,
+      manualApprovalRequired: false,
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: {
+        leftCohortId: "menInterestedInWomen",
+        rightCohortId: "womenInterestedInMen",
+        maxSkew: 1,
+        openingBufferPerCohort: 1,
+        outOfRatioCohortPolicy: "admitWithinGeneralCapacity",
+      },
+    },
+    pricing: {
+      basePriceInPaise: 40000,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId: "strict"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
+
+  const result = await createRunHandler(
+    request("host-1", payload({
+      capacityLimit: 20,
+      priceInPaise: 40000,
+      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
+      eventPolicy,
+    })),
+    h.deps
+  );
+
+  assert.deepEqual(result, {runId: "run-1"});
+  assert.deepEqual(h.firestore.get("runs/run-1")?.eventPolicy, eventPolicy);
+  assert.equal(h.firestore.get("runs/run-1")?.priceInPaise, 40000);
+  assert.equal(h.firestore.get("runs/run-1")?.capacityLimit, 20);
+});
+
 test("createRunHandler accepts an uploaded run photo URL", async () => {
   const h = harness({"runClubs/club-1": club()});
 

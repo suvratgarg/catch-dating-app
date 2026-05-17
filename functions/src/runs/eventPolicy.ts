@@ -33,6 +33,12 @@ export type EventOutOfRatioCohortPolicy =
 
 export type EventCancellationPolicyId = "flexible" | "standard" | "strict";
 
+export type EventCancellationRemedy =
+  | "fullRefund"
+  | "platformCredit"
+  | "noRefund"
+  | "waitlistRelease";
+
 export interface EventPolicyBundleDoc {
   version: number;
   admission: {
@@ -218,6 +224,58 @@ export function quotePriceInPaise(params: {
   return Math.max(0, Math.trunc(amount));
 }
 
+export function quoteAttendeeCancellation(params: {
+  policy: EventPolicyBundleDoc;
+  paidAmountInPaise: number;
+  startTimeMillis: number;
+  nowMillis: number;
+  isWaitlisted?: boolean;
+}): {
+  remedy: EventCancellationRemedy;
+  refundAmountInPaise: number;
+  creditAmountInPaise: number;
+} {
+  if (params.isWaitlisted) {
+    return {
+      remedy: "waitlistRelease",
+      refundAmountInPaise: 0,
+      creditAmountInPaise: 0,
+    };
+  }
+
+  const paidAmount = Math.max(0, Math.trunc(params.paidAmountInPaise));
+  if (paidAmount === 0) {
+    return {
+      remedy: "fullRefund",
+      refundAmountInPaise: 0,
+      creditAmountInPaise: 0,
+    };
+  }
+
+  const window = cancellationWindow(params.policy.cancellation.policyId);
+  const beforeStartMillis = params.startTimeMillis - params.nowMillis;
+  if (beforeStartMillis >= window.fullRefundBeforeStartMillis) {
+    return {
+      remedy: "fullRefund",
+      refundAmountInPaise: paidAmount,
+      creditAmountInPaise: 0,
+    };
+  }
+  if (beforeStartMillis >= window.creditBeforeStartMillis &&
+      window.creditPercent > 0) {
+    return {
+      remedy: "platformCredit",
+      refundAmountInPaise: 0,
+      creditAmountInPaise: Math.trunc(paidAmount * window.creditPercent / 100),
+    };
+  }
+  return {
+    remedy: "noRefund",
+    refundAmountInPaise: 0,
+    creditAmountInPaise: 0,
+  };
+}
+
 export function assertPolicyAllowsSignup(params: {
   policy: EventPolicyBundleDoc;
   cohortId: string;
@@ -323,4 +381,33 @@ function sanitizeAmountMap(value?: Record<string, number> | null):
       .filter(([, amount]) => Number.isFinite(amount))
       .map(([key, amount]) => [key, Math.trunc(amount)])
   );
+}
+
+function cancellationWindow(policyId: EventCancellationPolicyId): {
+  fullRefundBeforeStartMillis: number;
+  creditBeforeStartMillis: number;
+  creditPercent: number;
+} {
+  const hourMillis = 60 * 60 * 1000;
+  switch (policyId) {
+  case "flexible":
+    return {
+      fullRefundBeforeStartMillis: 6 * hourMillis,
+      creditBeforeStartMillis: hourMillis,
+      creditPercent: 100,
+    };
+  case "strict":
+    return {
+      fullRefundBeforeStartMillis: 72 * hourMillis,
+      creditBeforeStartMillis: 24 * hourMillis,
+      creditPercent: 50,
+    };
+  case "standard":
+  default:
+    return {
+      fullRefundBeforeStartMillis: 24 * hourMillis,
+      creditBeforeStartMillis: 6 * hourMillis,
+      creditPercent: 50,
+    };
+  }
 }

@@ -15,10 +15,13 @@ import 'package:catch_dating_app/runs/presentation/widgets/requirements_row.dart
 import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_photo_header.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_stats_grid.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_hero_tile.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_tile_data.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_where_card.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -496,6 +499,51 @@ void main() {
 
       expect(find.text('Global surface start'), findsOneWidget);
       expect(find.text('Stride Social'), findsOneWidget);
+    });
+
+    testWidgets('run hero tile renders key details and forwards taps', (
+      tester,
+    ) async {
+      final surfaceKey = UniqueKey();
+      var tapped = false;
+      final run = buildRun(
+        startTime: DateTime.now().add(const Duration(days: 3)),
+        meetingPoint: 'Sea Link promenade',
+        distanceKm: 8,
+      );
+
+      await pumpRunsTestApp(
+        tester,
+        Scaffold(
+          body: SizedBox(
+            width: 360,
+            child: RunHeroTile(
+              surfaceKey: surfaceKey,
+              data: RunTileData.fromRun(
+                run: run,
+                status: RunTileStatus.recommended,
+                clubName: 'Stride Social',
+                positionLabel: 'FEATURED',
+              ),
+              viewerInterestedInGenders: const [Gender.woman],
+              onTap: () => tapped = true,
+            ),
+          ),
+        ),
+      );
+
+      expect(find.textContaining('NEXT RUN'), findsOneWidget);
+      expect(find.text(run.title), findsOneWidget);
+      expect(find.text('Stride Social'), findsOneWidget);
+      expect(find.text('Sea Link promenade'), findsOneWidget);
+      expect(find.text('8km · Easy'), findsOneWidget);
+      expect(find.text('0 runners confirmed'), findsOneWidget);
+      expect(find.text('FEATURED'), findsOneWidget);
+
+      await tester.tap(find.byKey(surfaceKey));
+      await tester.pump();
+
+      expect(tapped, isTrue);
     });
 
     testWidgets('run photo header uses a plain fallback without a run photo', (

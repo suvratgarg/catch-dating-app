@@ -25,6 +25,7 @@ import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {runParticipationId} from "../shared/relationshipDocuments";
 import {assertNoUserRunScheduleConflict} from "../runs/scheduleConflicts";
 import {
+  assertPolicyAllowsSignup,
   cohortIdForUser,
   eventPolicyFromRun,
   quotePriceInPaise,
@@ -127,10 +128,21 @@ export async function createRazorpayOrderHandler(
     );
   }
 
+  const policy = eventPolicyFromRun(run);
+  const cohortId = cohortIdForUser(user);
+  assertPolicyAllowsSignup({
+    policy,
+    cohortId,
+    roster: {
+      ...rosterFromRun(run),
+      totalBooked: run.bookedCount ?? signedUpCount,
+    },
+  });
+
   const razorpay = deps.createClient();
   const amountInPaise = quotePriceInPaise({
-    policy: eventPolicyFromRun(run),
-    cohortId: cohortIdForUser(user),
+    policy,
+    cohortId,
     roster: rosterFromRun(run),
   });
   const order = await razorpay.orders.create(
