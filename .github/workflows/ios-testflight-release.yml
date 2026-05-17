@@ -142,7 +142,7 @@ jobs:
           retention-days: 14
 
       - name: Upload to TestFlight
-        if: ${{ inputs.upload_to_testflight }}
+        if: ${{ github.event.inputs.upload_to_testflight == 'true' }}
         run: |
           set -euo pipefail
           upload_options="$RUNNER_TEMP/ExportOptions.upload.plist"
