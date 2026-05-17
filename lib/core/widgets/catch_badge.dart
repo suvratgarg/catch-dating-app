@@ -36,40 +36,48 @@ class CatchBadge extends StatelessWidget {
     final displayLabel = uppercase ? label.toUpperCase() : label;
     final foreground = foregroundColor ?? palette.foreground;
 
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: backgroundColor ?? palette.background,
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: borderColor ?? palette.border),
-      ),
-      child: Padding(
-        padding: metrics.padding,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (tone == CatchBadgeTone.live) ...[
-              DecoratedBox(
-                decoration: BoxDecoration(
-                  color: foreground,
-                  borderRadius: BorderRadius.circular(CatchRadius.pill),
-                ),
-                child: SizedBox.square(dimension: metrics.dotSize),
-              ),
-              SizedBox(width: metrics.gap),
-            ],
-            if (icon != null) ...[
-              Icon(icon, size: metrics.iconSize, color: foreground),
-              SizedBox(width: metrics.gap),
-            ],
-            Text(
-              displayLabel,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: metrics.textStyle(context, foreground),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final label = Text(
+          displayLabel,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+          style: metrics.textStyle(context, foreground),
+        );
+        return DecoratedBox(
+          decoration: BoxDecoration(
+            color: backgroundColor ?? palette.background,
+            borderRadius: BorderRadius.circular(CatchRadius.pill),
+            border: Border.all(color: borderColor ?? palette.border),
+          ),
+          child: Padding(
+            padding: metrics.padding,
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (tone == CatchBadgeTone.live) ...[
+                  DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: foreground,
+                      borderRadius: BorderRadius.circular(CatchRadius.pill),
+                    ),
+                    child: SizedBox.square(dimension: metrics.dotSize),
+                  ),
+                  SizedBox(width: metrics.gap),
+                ],
+                if (icon != null) ...[
+                  Icon(icon, size: metrics.iconSize, color: foreground),
+                  SizedBox(width: metrics.gap),
+                ],
+                if (constraints.hasBoundedWidth)
+                  Flexible(child: label)
+                else
+                  label,
+              ],
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

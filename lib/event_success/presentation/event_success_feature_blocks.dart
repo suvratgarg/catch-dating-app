@@ -1,0 +1,718 @@
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_chip.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
+import 'package:flutter/material.dart';
+
+class EventSuccessHostSetupFlow extends StatefulWidget {
+  const EventSuccessHostSetupFlow({
+    super.key,
+    this.initialDraft,
+    this.playbooks = EventSuccessPlaybookLibrary.all,
+  });
+
+  final EventSuccessHostDraft? initialDraft;
+  final List<EventSuccessPlaybook> playbooks;
+
+  @override
+  State<EventSuccessHostSetupFlow> createState() =>
+      _EventSuccessHostSetupFlowState();
+}
+
+class _EventSuccessHostSetupFlowState extends State<EventSuccessHostSetupFlow> {
+  late EventSuccessHostDraft _draft =
+      widget.initialDraft ??
+      EventSuccessHostDraft.fromPlaybook(
+        widget.playbooks.isEmpty
+            ? EventSuccessPlaybookLibrary.socialRun
+            : widget.playbooks.first,
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final readinessTone = _draft.status == EventSuccessSetupStatus.readyForPilot
+        ? CatchBadgeTone.success
+        : CatchBadgeTone.warning;
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _BlockHeader(
+            icon: Icons.tune_rounded,
+            title: 'Host setup flow',
+            subtitle:
+                'Choose the format, social structure, modules, and safety gates before an event goes live.',
+            badge: CatchBadge(label: _draft.status.label, tone: readinessTone),
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          Text('Format', style: CatchTextStyles.titleS(context)),
+          const SizedBox(height: CatchSpacing.s2),
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              for (final playbook in widget.playbooks)
+                CatchChip(
+                  label: playbook.activityType.label,
+                  active: playbook.id == _draft.playbook.id,
+                  onTap: () {
+                    setState(() {
+                      _draft = EventSuccessHostDraft.fromPlaybook(playbook);
+                    });
+                  },
+                ),
+            ],
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          _PlanSummary(draft: _draft),
+          const SizedBox(height: CatchSpacing.s4),
+          Text('Modules', style: CatchTextStyles.titleS(context)),
+          const SizedBox(height: CatchSpacing.s2),
+          for (final module in _draft.playbook.modules)
+            _ModuleToggleRow(
+              module: module,
+              selected: _draft.isModuleSelected(module.id),
+              onChanged: (_) {
+                setState(() => _draft = _draft.toggleModule(module.id));
+              },
+            ),
+          if (_draft.readinessIssues.isNotEmpty) ...[
+            const SizedBox(height: CatchSpacing.s4),
+            _IssueList(issues: _draft.readinessIssues),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class EventSuccessLiveHostMode extends StatelessWidget {
+  const EventSuccessLiveHostMode({super.key, this.plan});
+
+  final EventSuccessLivePlan? plan;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedPlan = plan ?? EventSuccessFeatureSamples.livePlan;
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _BlockHeader(
+            icon: Icons.play_circle_outline_rounded,
+            title: 'Live host mode',
+            subtitle:
+                'A phone-friendly run-of-show for check-in, welcome, current instruction, and next social cue.',
+            badge: CatchBadge(label: 'Host only', tone: CatchBadgeTone.brand),
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          _ProgressRow(
+            label: 'Checked in',
+            value: resolvedPlan.checkInProgress,
+            detail:
+                '${resolvedPlan.checkedInCount}/${resolvedPlan.bookedCount}',
+          ),
+          const SizedBox(height: CatchSpacing.s3),
+          _ProgressRow(
+            label: 'Run of show',
+            value: resolvedPlan.runOfShowProgress,
+            detail:
+                '${resolvedPlan.activeStepIndex + 1}/${resolvedPlan.steps.length}',
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          CatchSurface(
+            tone: CatchSurfaceTone.raised,
+            radius: CatchRadius.sm,
+            borderColor: t.line,
+            padding: const EdgeInsets.all(CatchSpacing.s4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchBadge(
+                  label: resolvedPlan.activeStep.stage.label,
+                  tone: CatchBadgeTone.live,
+                ),
+                const SizedBox(height: CatchSpacing.s3),
+                Text(
+                  resolvedPlan.activeStep.title,
+                  style: CatchTextStyles.displayS(context),
+                ),
+                const SizedBox(height: CatchSpacing.s2),
+                Text(
+                  resolvedPlan.activeStep.hostInstruction,
+                  style: CatchTextStyles.bodyM(context),
+                ),
+                const SizedBox(height: CatchSpacing.s3),
+                Text(
+                  'Attendee experience: ${resolvedPlan.activeStep.attendeeExperience}',
+                  style: CatchTextStyles.bodyS(context),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          for (var i = 0; i < resolvedPlan.steps.length; i++)
+            _LiveStepRow(
+              step: resolvedPlan.steps[i],
+              index: i,
+              activeIndex: resolvedPlan.activeStepIndex,
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class EventSuccessAttendeeCompanionPreview extends StatelessWidget {
+  const EventSuccessAttendeeCompanionPreview({super.key, this.state});
+
+  final EventSuccessAttendeeState? state;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedState = state ?? EventSuccessFeatureSamples.attendeeState;
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _BlockHeader(
+            icon: Icons.phone_iphone_rounded,
+            title: 'Attendee companion',
+            subtitle:
+                'The attendee sees only what helps them participate: check-in, pod, prompt, and private follow-up.',
+            badge: CatchBadge(label: 'Attendee', tone: CatchBadgeTone.success),
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          CatchSurface(
+            tone: CatchSurfaceTone.primarySoft,
+            borderColor: Colors.transparent,
+            padding: const EdgeInsets.all(CatchSpacing.s4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                CatchBadge(
+                  label: resolvedState.checkedIn ? 'Checked in' : 'Check in',
+                  tone: resolvedState.checkedIn
+                      ? CatchBadgeTone.success
+                      : CatchBadgeTone.warning,
+                  icon: Icons.qr_code_2_rounded,
+                ),
+                const SizedBox(height: CatchSpacing.s3),
+                Text(
+                  resolvedState.eventTitle,
+                  style: CatchTextStyles.displayS(context),
+                ),
+                const SizedBox(height: CatchSpacing.s2),
+                Text(
+                  resolvedState.podLabel,
+                  style: CatchTextStyles.bodyM(context),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          _PromptCard(prompt: resolvedState.prompt),
+          const SizedBox(height: CatchSpacing.s4),
+          Text('Private follow-up', style: CatchTextStyles.titleS(context)),
+          const SizedBox(height: CatchSpacing.s2),
+          for (final candidate in resolvedState.privateCrushCandidates)
+            _CrushCandidateRow(candidate: candidate),
+        ],
+      ),
+    );
+  }
+}
+
+class EventSuccessPostEventReport extends StatelessWidget {
+  const EventSuccessPostEventReport({super.key, this.brief});
+
+  final EventSuccessBrief? brief;
+
+  @override
+  Widget build(BuildContext context) {
+    final resolvedBrief = brief ?? EventSuccessFeatureSamples.postEventBrief;
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _BlockHeader(
+            icon: Icons.insights_outlined,
+            title: 'Post-event host report',
+            subtitle:
+                'A concrete report surface that turns event outcomes into the next change the host should make.',
+            badge: CatchBadge(
+              label:
+                  '${(resolvedBrief.scorecard.experienceScore * 100).round()}%',
+              tone: CatchBadgeTone.brand,
+            ),
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              _MetricPill(
+                label: 'Check-in',
+                value: resolvedBrief.scorecard.checkInRate,
+              ),
+              _MetricPill(
+                label: 'Intro coverage',
+                value: resolvedBrief.scorecard.introCoverageRate,
+              ),
+              _MetricPill(
+                label: 'Private crush',
+                value: resolvedBrief.scorecard.privateCrushRate,
+              ),
+              _MetricPill(
+                label: 'Chat start',
+                value: resolvedBrief.scorecard.chatStartRate,
+              ),
+            ],
+          ),
+          const SizedBox(height: CatchSpacing.s4),
+          for (final recommendation in resolvedBrief.recommendations.take(4))
+            _RecommendationBlock(recommendation: recommendation),
+        ],
+      ),
+    );
+  }
+}
+
+class _BlockHeader extends StatelessWidget {
+  const _BlockHeader({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.badge,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final Widget badge;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: t.primary),
+            const SizedBox(width: CatchSpacing.s2),
+            Expanded(
+              child: Text(title, style: CatchTextStyles.titleL(context)),
+            ),
+            const SizedBox(width: CatchSpacing.s2),
+            badge,
+          ],
+        ),
+        const SizedBox(height: CatchSpacing.s2),
+        Text(subtitle, style: CatchTextStyles.bodyS(context)),
+      ],
+    );
+  }
+}
+
+class _PlanSummary extends StatelessWidget {
+  const _PlanSummary({required this.draft});
+
+  final EventSuccessHostDraft draft;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      tone: CatchSurfaceTone.raised,
+      radius: CatchRadius.sm,
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(draft.playbook.title, style: CatchTextStyles.titleM(context)),
+          const SizedBox(height: CatchSpacing.s2),
+          Text(draft.playbook.summary, style: CatchTextStyles.bodyS(context)),
+          const SizedBox(height: CatchSpacing.s3),
+          Wrap(
+            spacing: CatchSpacing.s2,
+            runSpacing: CatchSpacing.s2,
+            children: [
+              CatchBadge(
+                label: '${draft.targetAttendeeCount} target attendees',
+                tone: CatchBadgeTone.neutral,
+                icon: Icons.confirmation_number_outlined,
+              ),
+              CatchBadge(
+                label: draft.playbook.socialIntensity.label,
+                tone: CatchBadgeTone.brand,
+              ),
+              CatchBadge(
+                label: '${draft.livePhoneModules.length} live phone modules',
+                tone: draft.livePhoneModules.length > 2
+                    ? CatchBadgeTone.warning
+                    : CatchBadgeTone.neutral,
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ModuleToggleRow extends StatelessWidget {
+  const _ModuleToggleRow({
+    required this.module,
+    required this.selected,
+    required this.onChanged,
+  });
+
+  final EventSuccessModule module;
+  final bool selected;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      child: CatchSurface(
+        tone: selected ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
+        radius: CatchRadius.sm,
+        borderColor: selected ? Colors.transparent : t.line,
+        padding: const EdgeInsets.fromLTRB(
+          CatchSpacing.s3,
+          CatchSpacing.s2,
+          CatchSpacing.s2,
+          CatchSpacing.s2,
+        ),
+        child: Row(
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(module.title, style: CatchTextStyles.titleS(context)),
+                  const SizedBox(height: CatchSpacing.s1),
+                  Text(
+                    module.hostPromise,
+                    style: CatchTextStyles.bodyS(context),
+                  ),
+                ],
+              ),
+            ),
+            Semantics(
+              label: '${module.title} module',
+              toggled: selected,
+              child: Material(
+                type: MaterialType.transparency,
+                child: Switch.adaptive(value: selected, onChanged: onChanged),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _IssueList extends StatelessWidget {
+  const _IssueList({required this.issues});
+
+  final List<String> issues;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      tone: CatchSurfaceTone.raised,
+      radius: CatchRadius.sm,
+      borderColor: t.warning.withValues(alpha: 0.28),
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CatchBadge(
+            label: 'Before pilot',
+            tone: CatchBadgeTone.warning,
+            icon: Icons.warning_amber_rounded,
+          ),
+          const SizedBox(height: CatchSpacing.s2),
+          for (final issue in issues)
+            Padding(
+              padding: const EdgeInsets.only(bottom: CatchSpacing.s1),
+              child: Text(issue, style: CatchTextStyles.bodyS(context)),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProgressRow extends StatelessWidget {
+  const _ProgressRow({
+    required this.label,
+    required this.value,
+    required this.detail,
+  });
+
+  final String label;
+  final double value;
+  final String detail;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(label, style: CatchTextStyles.titleS(context)),
+            ),
+            Text(detail, style: CatchTextStyles.labelL(context)),
+          ],
+        ),
+        const SizedBox(height: CatchSpacing.s2),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(CatchRadius.pill),
+          child: LinearProgressIndicator(
+            value: value,
+            minHeight: 8,
+            backgroundColor: t.raised,
+            valueColor: AlwaysStoppedAnimation<Color>(t.primary),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LiveStepRow extends StatelessWidget {
+  const _LiveStepRow({
+    required this.step,
+    required this.index,
+    required this.activeIndex,
+  });
+
+  final EventRunOfShowStep step;
+  final int index;
+  final int activeIndex;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final active = index == activeIndex;
+    final complete = index < activeIndex;
+    final color = active
+        ? t.primary
+        : complete
+        ? t.success
+        : t.ink3;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            complete
+                ? Icons.check_circle_rounded
+                : active
+                ? Icons.radio_button_checked_rounded
+                : Icons.radio_button_unchecked_rounded,
+            color: color,
+            size: CatchIcon.md,
+          ),
+          const SizedBox(width: CatchSpacing.s3),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(step.title, style: CatchTextStyles.titleS(context)),
+                const SizedBox(height: CatchSpacing.s1),
+                Text(
+                  '${step.durationMinutes} min · ${step.stage.label}',
+                  style: CatchTextStyles.bodyS(context),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _PromptCard extends StatelessWidget {
+  const _PromptCard({required this.prompt});
+
+  final String prompt;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      tone: CatchSurfaceTone.raised,
+      radius: CatchRadius.sm,
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.chat_bubble_outline_rounded, color: t.primary),
+          const SizedBox(width: CatchSpacing.s3),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Social mission', style: CatchTextStyles.titleS(context)),
+                const SizedBox(height: CatchSpacing.s1),
+                Text(prompt, style: CatchTextStyles.bodyS(context)),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _CrushCandidateRow extends StatelessWidget {
+  const _CrushCandidateRow({required this.candidate});
+
+  final PrivateCrushCandidate candidate;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
+      child: Row(
+        children: [
+          Icon(
+            candidate.marked
+                ? Icons.favorite_rounded
+                : Icons.favorite_border_rounded,
+            color: candidate.marked ? t.primary : t.ink3,
+          ),
+          const SizedBox(width: CatchSpacing.s3),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  candidate.displayName,
+                  style: CatchTextStyles.titleS(context),
+                ),
+                Text(candidate.context, style: CatchTextStyles.bodyS(context)),
+              ],
+            ),
+          ),
+          CatchBadge(
+            label: candidate.marked ? 'Marked' : 'Private',
+            tone: candidate.marked
+                ? CatchBadgeTone.brand
+                : CatchBadgeTone.neutral,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RecommendationBlock extends StatelessWidget {
+  const _RecommendationBlock({required this.recommendation});
+
+  final EventSuccessRecommendation recommendation;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
+      child: CatchSurface(
+        tone: CatchSurfaceTone.raised,
+        radius: CatchRadius.sm,
+        borderColor: t.line,
+        padding: const EdgeInsets.all(CatchSpacing.s3),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.tips_and_updates_outlined, color: t.primary),
+            const SizedBox(width: CatchSpacing.s3),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    recommendation.title,
+                    style: CatchTextStyles.titleS(context),
+                  ),
+                  const SizedBox(height: CatchSpacing.s1),
+                  Text(
+                    recommendation.rationale,
+                    style: CatchTextStyles.bodyS(context),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _MetricPill extends StatelessWidget {
+  const _MetricPill({required this.label, required this.value});
+
+  final String label;
+  final double value;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      tone: CatchSurfaceTone.raised,
+      radius: CatchRadius.pill,
+      borderColor: t.line,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CatchSpacing.s3,
+        vertical: CatchSpacing.s2,
+      ),
+      child: Text(
+        '$label ${(value * 100).round()}%',
+        style: CatchTextStyles.labelL(context),
+      ),
+    );
+  }
+}
