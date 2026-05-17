@@ -15,12 +15,12 @@ void main() {
           swipe: Swipe(
             swiperId: 'runner-1',
             targetId: 'runner-2',
-            runId: 'run-1',
+            eventId: 'event-1',
             direction: SwipeDirection.like,
             reactionTargetId: 'profile-prompt-perfectRun',
             reactionTargetType: SwipeReactionTargetType.profilePrompt,
-            reactionTargetLabel: 'A perfect run with me looks like...',
-            reactionTargetPreview: 'Always up for a sunrise run.',
+            reactionTargetLabel: 'A perfect event with me looks like...',
+            reactionTargetPreview: 'Always up for a sunrise event.',
             comment: '  Same here.  ',
             createdAt: DateTime(2026, 5, 14),
           ),
@@ -49,9 +49,9 @@ void main() {
         expect(data?['reactionTargetType'], 'profilePrompt');
         expect(
           data?['reactionTargetLabel'],
-          'A perfect run with me looks like...',
+          'A perfect event with me looks like...',
         );
-        expect(data?['reactionTargetPreview'], 'Always up for a sunrise run.');
+        expect(data?['reactionTargetPreview'], 'Always up for a sunrise event.');
         expect(data?['comment'], 'Same here.');
       },
     );
@@ -64,7 +64,7 @@ void main() {
         swipe: Swipe(
           swiperId: 'runner-1',
           targetId: 'runner-2',
-          runId: 'run-1',
+          eventId: 'event-1',
           direction: SwipeDirection.pass,
           createdAt: DateTime(2026, 5, 14),
         ),

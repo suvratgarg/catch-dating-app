@@ -1,7 +1,7 @@
 {
   "user1Id": "runner-1",
   "user2Id": "runner-2",
-  "runIds": ["run-1"],
+  "eventIds": ["event-1"],
   "createdAt": {
     "_seconds": 1778716800,
     "_nanoseconds": 0

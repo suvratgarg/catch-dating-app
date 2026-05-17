@@ -16,7 +16,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 class _FakeMatchRepository implements MatchRepository {
@@ -87,7 +87,7 @@ Match _buildMatch({
     id: id,
     user1Id: user1Id,
     user2Id: user2Id,
-    runIds: const ['run-1'],
+    eventIds: const ['event-1'],
     createdAt: createdAt ?? DateTime(2026, 4, 23, 9),
     lastMessageAt: lastMessageAt,
     lastMessagePreview: lastMessagePreview,
@@ -170,7 +170,7 @@ void main() {
     expect(find.byType(TextField), findsNothing);
     expect(
       find.text(
-        'When someone catches you back after a shared run, the conversation opens here with that run as context.',
+        'When someone catches you back after a shared event, the conversation opens here with that event as context.',
       ),
       findsOneWidget,
     );

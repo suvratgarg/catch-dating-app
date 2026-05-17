@@ -4,17 +4,17 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_controller.dart';
+import 'package:catch_dating_app/chats/presentation/widgets/chat_event_context_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_input_bar.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_message_list.dart';
-import 'package:catch_dating_app/chats/presentation/widgets/chat_run_context_header.dart';
 import 'package:catch_dating_app/chats/presentation/widgets/chat_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/block_user_dialog.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -251,10 +251,10 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
     );
     final matchAsync = ref.watch(matchStreamProvider(widget.matchId));
     final match = matchAsync.asData?.value;
-    final latestRunId = match?.latestRunId;
-    final runAsync = latestRunId == null
-        ? const AsyncData<Run?>(null)
-        : ref.watch(watchRunProvider(latestRunId));
+    final latestEventId = match?.latestEventId;
+    final eventAsync = latestEventId == null
+        ? const AsyncData<Event?>(null)
+        : ref.watch(watchEventProvider(latestEventId));
     final otherUid = uid == null ? null : match?.otherId(uid);
     final otherProfileAsync = otherUid == null
         ? const AsyncData<PublicProfile?>(null)
@@ -303,7 +303,7 @@ class _ChatContentState extends ConsumerState<_ChatContent> {
         ),
         body: Column(
           children: [
-            ChatRunContextHeader(run: runAsync.asData?.value),
+            ChatEventContextHeader(event: eventAsync.asData?.value),
             Expanded(
               child: ChatMessageList(
                 messagesAsync: messagesAsync,

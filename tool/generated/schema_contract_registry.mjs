@@ -520,7 +520,7 @@ export const userProfileDocumentSchema = {
     "preferredRunTimes",
     "prefsNewCatches",
     "prefsMessages",
-    "prefsRunReminders",
+    "prefsEventReminders",
     "prefsRunStatusUpdates",
     "prefsClubUpdates",
     "prefsWeeklyDigest",
@@ -1193,7 +1193,7 @@ export const userProfileDocumentSchema = {
     "prefsMessages": {
       "type": "boolean"
     },
-    "prefsRunReminders": {
+    "prefsEventReminders": {
       "type": "boolean"
     },
     "prefsRunStatusUpdates": {
@@ -1865,17 +1865,17 @@ export const publicProfileDocumentSchema = {
   ]
 };
 
-export const runClubDocumentSchema = {
+export const clubDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/run_clubs.schema.json",
-  "title": "RunClubDocument",
-  "description": "Canonical run club document stored at runClubs/{clubId}. The club id is the document id and is not stored in document data.",
+  "$id": "https://catch.app/contracts/firestore/clubs.schema.json",
+  "title": "ClubDocument",
+  "description": "Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "runClubs",
-  "x-firestore-path": "runClubs/{clubId}",
+  "x-firestore-collection": "clubs",
+  "x-firestore-path": "clubs/{clubId}",
   "x-document-id-field": "id",
-  "x-owner": "create/update/archive/delete run-club callables; aggregate projections are trigger-owned",
+  "x-owner": "create/update/archive/delete club callables; aggregate projections are trigger-owned",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
@@ -1898,8 +1898,8 @@ export const runClubDocumentSchema = {
     "memberCount",
     "rating",
     "reviewCount",
-    "nextRunAt",
-    "nextRunLabel",
+    "nextEventAt",
+    "nextEventLabel",
     "instagramHandle",
     "phoneNumber",
     "email",
@@ -2010,7 +2010,7 @@ export const runClubDocumentSchema = {
       "type": "integer",
       "minimum": 0
     },
-    "nextRunAt": {
+    "nextEventAt": {
       "anyOf": [
         {
           "type": "object",
@@ -2037,7 +2037,7 @@ export const runClubDocumentSchema = {
         }
       ]
     },
-    "nextRunLabel": {
+    "nextEventLabel": {
       "type": [
         "string",
         "null"
@@ -2144,17 +2144,17 @@ export const runClubDocumentSchema = {
   }
 };
 
-export const runClubMembershipDocumentSchema = {
+export const clubMembershipDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/run_club_memberships.schema.json",
-  "title": "RunClubMembershipDocument",
-  "description": "Canonical run club membership edge stored at runClubMemberships/{membershipId}.",
+  "$id": "https://catch.app/contracts/firestore/club_memberships.schema.json",
+  "title": "ClubMembershipDocument",
+  "description": "Canonical club membership edge stored at clubMemberships/{membershipId}.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "runClubMemberships",
-  "x-firestore-path": "runClubMemberships/{membershipId}",
+  "x-firestore-collection": "clubMemberships",
+  "x-firestore-path": "clubMemberships/{membershipId}",
   "x-document-id-field": "id",
-  "x-owner": "run-club membership callables; parent member count is trigger-owned",
+  "x-owner": "club membership callables; parent member count is trigger-owned",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
@@ -2311,17 +2311,17 @@ export const runClubMembershipDocumentSchema = {
   }
 };
 
-export const runClubHostClaimDocumentSchema = {
+export const clubHostClaimDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/run_club_host_claims.schema.json",
-  "title": "RunClubHostClaimDocument",
-  "description": "Server-owned singleton claim stored at runClubHostClaims/{uid} to enforce one hosted club per user.",
+  "$id": "https://catch.app/contracts/firestore/club_host_claims.schema.json",
+  "title": "ClubHostClaimDocument",
+  "description": "Server-owned singleton claim stored at clubHostClaims/{uid} to enforce one hosted club per user.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "runClubHostClaims",
-  "x-firestore-path": "runClubHostClaims/{uid}",
+  "x-firestore-collection": "clubHostClaims",
+  "x-firestore-path": "clubHostClaims/{uid}",
   "x-document-id-field": "uid",
-  "x-owner": "createRunClub callable",
+  "x-owner": "createClub callable",
   "required": [
     "uid",
     "clubId",
@@ -2361,15 +2361,15 @@ export const runClubHostClaimDocumentSchema = {
   }
 };
 
-export const runDocumentSchema = {
+export const eventDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/runs.schema.json",
-  "title": "RunDocument",
-  "description": "Canonical run document stored at runs/{runId}. The run id is the document id and is not stored in document data.",
+  "$id": "https://catch.app/contracts/firestore/events.schema.json",
+  "title": "EventDocument",
+  "description": "Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "runs",
-  "x-firestore-path": "runs/{runId}",
+  "x-firestore-collection": "events",
+  "x-firestore-path": "events/{eventId}",
   "x-document-id-field": "id",
   "x-owner": "host create/update/cancel/delete callables; booking and attendance aggregates are callable-owned",
   "x-internal-demo-fields": [
@@ -2381,7 +2381,7 @@ export const runDocumentSchema = {
     "demoOpsCommand"
   ],
   "required": [
-    "runClubId",
+    "clubId",
     "startTime",
     "endTime",
     "meetingPoint",
@@ -2403,7 +2403,7 @@ export const runDocumentSchema = {
     "genderCounts"
   ],
   "properties": {
-    "runClubId": {
+    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -2892,15 +2892,15 @@ export const runDocumentSchema = {
   }
 };
 
-export const runParticipationDocumentSchema = {
+export const eventParticipationDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/run_participations.schema.json",
-  "title": "RunParticipationDocument",
-  "description": "Canonical run roster edge stored at runParticipations/{participationId}.",
+  "$id": "https://catch.app/contracts/firestore/event_participations.schema.json",
+  "title": "EventParticipationDocument",
+  "description": "Canonical event roster edge stored at eventParticipations/{participationId}.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "runParticipations",
-  "x-firestore-path": "runParticipations/{participationId}",
+  "x-firestore-collection": "eventParticipations",
+  "x-firestore-path": "eventParticipations/{participationId}",
   "x-document-id-field": "id",
   "x-owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
   "x-internal-demo-fields": [
@@ -2912,8 +2912,8 @@ export const runParticipationDocumentSchema = {
     "demoOpsCommand"
   ],
   "required": [
-    "runId",
-    "runClubId",
+    "eventId",
+    "clubId",
     "uid",
     "status",
     "createdAt",
@@ -2927,12 +2927,12 @@ export const runParticipationDocumentSchema = {
     "paymentId"
   ],
   "properties": {
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
     },
-    "runClubId": {
+    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -3194,17 +3194,309 @@ export const runParticipationDocumentSchema = {
   }
 };
 
-export const runClubScheduleLockDocumentSchema = {
+export const eventSuccessPlanDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/run_club_schedule_locks.schema.json",
-  "title": "RunClubScheduleLockDocument",
-  "description": "Server-owned time-slot claim stored at runClubScheduleLocks/{clubId_slot}.",
+  "$id": "https://catch.app/contracts/firestore/event_success_plans.schema.json",
+  "title": "EventSuccessPlanDocument",
+  "description": "Host-owned live event-success setup stored at eventSuccessPlans/{eventId}. The event id is the document id and is also stored for cheap validation and reads.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "runClubScheduleLocks",
-  "x-firestore-path": "runClubScheduleLocks/{lockId}",
+  "x-firestore-collection": "eventSuccessPlans",
+  "x-firestore-path": "eventSuccessPlans/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "club host direct write; event participants read",
+  "required": [
+    "eventId",
+    "clubId",
+    "playbookId",
+    "selectedModuleIds",
+    "targetAttendeeCount",
+    "hostGoal",
+    "privateCrushEnabled",
+    "contextualOpenersEnabled",
+    "activeStepIndex",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "playbookId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "selectedModuleIds": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      }
+    },
+    "targetAttendeeCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "hostGoal": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "privateCrushEnabled": {
+      "type": "boolean"
+    },
+    "contextualOpenersEnabled": {
+      "type": "boolean"
+    },
+    "activeStepIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "setup",
+        "live",
+        "complete"
+      ]
+    },
+    "attendeePrompt": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 300
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "frozenAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "completedAt": {
+      "anyOf": [
+        {
+          "type": "object",
+          "description": "Serialized Firestore Timestamp fixture shape.",
+          "x-firestore-type": "timestamp",
+          "additionalProperties": false,
+          "required": [
+            "_seconds",
+            "_nanoseconds"
+          ],
+          "properties": {
+            "_seconds": {
+              "type": "integer"
+            },
+            "_nanoseconds": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 999999999
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    }
+  }
+};
+
+export const eventSuccessFeedbackDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_feedback.schema.json",
+  "title": "EventSuccessFeedbackDocument",
+  "description": "Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Hosts can read aggregate-relevant fields for their event report.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessFeedback",
+  "x-firestore-path": "eventSuccessFeedback/{feedbackId}",
+  "x-document-id-field": "id",
+  "x-owner": "attendee direct write after attended event; host read",
+  "required": [
+    "eventId",
+    "clubId",
+    "uid",
+    "welcomeRating",
+    "structureRating",
+    "metNewPeopleCount",
+    "markedPrivateCrush",
+    "safetyConcern",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "uid": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "welcomeRating": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "structureRating": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "metNewPeopleCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "markedPrivateCrush": {
+      "type": "boolean"
+    },
+    "safetyConcern": {
+      "type": "boolean"
+    },
+    "privateNote": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "maxLength": 500
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    },
+    "updatedAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
+    }
+  }
+};
+
+export const clubScheduleLockDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/club_schedule_locks.schema.json",
+  "title": "ClubScheduleLockDocument",
+  "description": "Server-owned time-slot claim stored at clubScheduleLocks/{clubId_slot}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "clubScheduleLocks",
+  "x-firestore-path": "clubScheduleLocks/{lockId}",
   "x-document-id-field": "lockId",
-  "x-owner": "run schedule conflict callables",
+  "x-owner": "event schedule conflict callables",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
@@ -3217,15 +3509,15 @@ export const runClubScheduleLockDocumentSchema = {
     "ownerType",
     "ownerId",
     "slot",
-    "runId",
-    "runClubId",
+    "eventId",
+    "clubId",
     "startTimeMillis",
     "endTimeMillis"
   ],
   "properties": {
     "ownerType": {
       "type": "string",
-      "const": "runClub"
+      "const": "club"
     },
     "ownerId": {
       "type": "string",
@@ -3236,12 +3528,12 @@ export const runClubScheduleLockDocumentSchema = {
       "type": "integer",
       "minimum": 0
     },
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
     },
-    "runClubId": {
+    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -3289,17 +3581,17 @@ export const runClubScheduleLockDocumentSchema = {
   }
 };
 
-export const userRunScheduleLockDocumentSchema = {
+export const userEventScheduleLockDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/user_run_schedule_locks.schema.json",
-  "title": "UserRunScheduleLockDocument",
-  "description": "Server-owned time-slot claim stored at userRunScheduleLocks/{uid_slot}.",
+  "$id": "https://catch.app/contracts/firestore/user_event_schedule_locks.schema.json",
+  "title": "UserEventScheduleLockDocument",
+  "description": "Server-owned time-slot claim stored at userEventScheduleLocks/{uid_slot}.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "userRunScheduleLocks",
-  "x-firestore-path": "userRunScheduleLocks/{lockId}",
+  "x-firestore-collection": "userEventScheduleLocks",
+  "x-firestore-path": "userEventScheduleLocks/{lockId}",
   "x-document-id-field": "lockId",
-  "x-owner": "run signup and waitlist callables",
+  "x-owner": "event signup and waitlist callables",
   "x-internal-demo-fields": [
     "synthetic",
     "seedPrefix",
@@ -3312,8 +3604,8 @@ export const userRunScheduleLockDocumentSchema = {
     "ownerType",
     "ownerId",
     "slot",
-    "runId",
-    "runClubId",
+    "eventId",
+    "clubId",
     "uid",
     "startTimeMillis",
     "endTimeMillis"
@@ -3332,12 +3624,12 @@ export const userRunScheduleLockDocumentSchema = {
       "type": "integer",
       "minimum": 0
     },
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
     },
-    "runClubId": {
+    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -3390,15 +3682,15 @@ export const userRunScheduleLockDocumentSchema = {
   }
 };
 
-export const savedRunDocumentSchema = {
+export const savedEventDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/saved_runs.schema.json",
-  "title": "SavedRunDocument",
-  "description": "Canonical saved-run edge stored at savedRuns/{savedRunId}.",
+  "$id": "https://catch.app/contracts/firestore/saved_events.schema.json",
+  "title": "SavedEventDocument",
+  "description": "Canonical saved-event edge stored at savedEvents/{savedEventId}.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "savedRuns",
-  "x-firestore-path": "savedRuns/{savedRunId}",
+  "x-firestore-collection": "savedEvents",
+  "x-firestore-path": "savedEvents/{savedEventId}",
   "x-document-id-field": "id",
   "x-owner": "authenticated owner direct create/delete",
   "x-internal-demo-fields": [
@@ -3411,7 +3703,7 @@ export const savedRunDocumentSchema = {
   ],
   "required": [
     "uid",
-    "runId",
+    "eventId",
     "savedAt"
   ],
   "properties": {
@@ -3420,7 +3712,7 @@ export const savedRunDocumentSchema = {
       "minLength": 1,
       "maxLength": 180
     },
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -3503,7 +3795,7 @@ export const paymentDocumentSchema = {
     "userId",
     "orderId",
     "paymentId",
-    "runId",
+    "eventId",
     "amount",
     "currency",
     "status",
@@ -3526,7 +3818,7 @@ export const paymentDocumentSchema = {
       "minLength": 1,
       "maxLength": 240
     },
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -3632,7 +3924,7 @@ export const swipeDocumentSchema = {
   "required": [
     "swiperId",
     "targetId",
-    "runId",
+    "eventId",
     "direction",
     "createdAt"
   ],
@@ -3647,7 +3939,7 @@ export const swipeDocumentSchema = {
       "minLength": 1,
       "maxLength": 180
     },
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -3781,7 +4073,7 @@ export const matchDocumentSchema = {
   "required": [
     "user1Id",
     "user2Id",
-    "runIds",
+    "eventIds",
     "createdAt",
     "lastMessageAt",
     "lastMessagePreview",
@@ -3803,7 +4095,7 @@ export const matchDocumentSchema = {
       "minLength": 1,
       "maxLength": 180
     },
-    "runIds": {
+    "eventIds": {
       "type": "array",
       "minItems": 1,
       "uniqueItems": true,
@@ -4137,11 +4429,11 @@ export const activityNotificationDocumentSchema = {
       "enum": [
         "message",
         "match",
-        "runReminder",
-        "runSignup",
+        "eventReminder",
+        "eventSignup",
         "waitlistPromotion",
-        "runCancelled",
-        "runUpdated",
+        "eventCancelled",
+        "eventUpdated",
         "clubUpdate"
       ]
     },
@@ -4210,7 +4502,7 @@ export const activityNotificationDocumentSchema = {
       "minLength": 1,
       "maxLength": 240
     },
-    "runId": {
+    "eventId": {
       "type": [
         "string",
         "null"
@@ -4218,7 +4510,7 @@ export const activityNotificationDocumentSchema = {
       "minLength": 1,
       "maxLength": 180
     },
-    "runClubId": {
+    "clubId": {
       "type": [
         "string",
         "null"
@@ -4280,7 +4572,7 @@ export const reviewDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/reviews.schema.json",
   "title": "ReviewDocument",
-  "description": "Canonical attended-run review stored at reviews/{reviewId}.",
+  "description": "Canonical attended-event review stored at reviews/{reviewId}.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "reviews",
@@ -4296,7 +4588,7 @@ export const reviewDocumentSchema = {
     "demoOpsCommand"
   ],
   "required": [
-    "runClubId",
+    "clubId",
     "reviewerUserId",
     "reviewerName",
     "rating",
@@ -4304,12 +4596,12 @@ export const reviewDocumentSchema = {
     "createdAt"
   ],
   "properties": {
-    "runClubId": {
+    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
     },
-    "runId": {
+    "eventId": {
       "type": [
         "string",
         "null"
@@ -4851,15 +5143,15 @@ export const functionEventReceiptDocumentSchema = {
   }
 };
 
-export const seedRunManifestDocumentSchema = {
+export const seedEventManifestDocumentSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/firestore/seed_runs.schema.json",
-  "title": "SeedRunManifestDocument",
-  "description": "Tool-owned synthetic-data manifest stored at seedRuns/{manifestId}.",
+  "$id": "https://catch.app/contracts/firestore/seed_events.schema.json",
+  "title": "SeedEventManifestDocument",
+  "description": "Tool-owned synthetic-data manifest stored at seedEvents/{manifestId}.",
   "type": "object",
   "additionalProperties": false,
-  "x-firestore-collection": "seedRuns",
-  "x-firestore-path": "seedRuns/{manifestId}",
+  "x-firestore-collection": "seedEvents",
+  "x-firestore-path": "seedEvents/{manifestId}",
   "x-document-id-field": "manifestId",
   "x-owner": "demo data seeding tooling",
   "x-internal-demo-fields": [
@@ -5543,7 +5835,7 @@ export const updateUserProfileCallablePayloadSchema = {
         "prefsMessages": {
           "type": "boolean"
         },
-        "prefsRunReminders": {
+        "prefsEventReminders": {
           "type": "boolean"
         },
         "prefsRunStatusUpdates": {
@@ -5578,11 +5870,11 @@ export const updateUserProfileCallablePayloadSchema = {
   ]
 };
 
-export const createRunClubCallablePayloadSchema = {
+export const createClubCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/create_run_club_payload.schema.json",
-  "title": "CreateRunClubCallablePayload",
-  "description": "Callable payload accepted by createRunClub.",
+  "$id": "https://catch.app/contracts/callables/create_club_payload.schema.json",
+  "title": "CreateClubCallablePayload",
+  "description": "Callable payload accepted by createClub.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -5652,11 +5944,11 @@ export const createRunClubCallablePayloadSchema = {
   }
 };
 
-export const updateRunClubCallablePayloadSchema = {
+export const updateClubCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/update_run_club_payload.schema.json",
-  "title": "UpdateRunClubCallablePayload",
-  "description": "Callable payload accepted by updateRunClub.",
+  "$id": "https://catch.app/contracts/callables/update_club_payload.schema.json",
+  "title": "UpdateClubCallablePayload",
+  "description": "Callable payload accepted by updateClub.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -5753,11 +6045,11 @@ export const updateRunClubCallablePayloadSchema = {
   }
 };
 
-export const archiveRunClubCallablePayloadSchema = {
+export const archiveClubCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/archive_run_club_payload.schema.json",
-  "title": "ArchiveRunClubCallablePayload",
-  "description": "Callable payload accepted by archiveRunClub.",
+  "$id": "https://catch.app/contracts/callables/archive_club_payload.schema.json",
+  "title": "ArchiveClubCallablePayload",
+  "description": "Callable payload accepted by archiveClub.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -5779,11 +6071,11 @@ export const archiveRunClubCallablePayloadSchema = {
   }
 };
 
-export const deleteRunClubCallablePayloadSchema = {
+export const deleteClubCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/delete_run_club_payload.schema.json",
-  "title": "DeleteRunClubCallablePayload",
-  "description": "Callable payload accepted by deleteRunClub.",
+  "$id": "https://catch.app/contracts/callables/delete_club_payload.schema.json",
+  "title": "DeleteClubCallablePayload",
+  "description": "Callable payload accepted by deleteClub.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -5798,11 +6090,11 @@ export const deleteRunClubCallablePayloadSchema = {
   }
 };
 
-export const runClubMembershipCallablePayloadSchema = {
+export const clubMembershipCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/run_club_membership_payload.schema.json",
-  "title": "RunClubMembershipCallablePayload",
-  "description": "Callable payload accepted by joinRunClub and leaveRunClub.",
+  "$id": "https://catch.app/contracts/callables/club_membership_payload.schema.json",
+  "title": "ClubMembershipCallablePayload",
+  "description": "Callable payload accepted by joinClub and leaveClub.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -5817,11 +6109,11 @@ export const runClubMembershipCallablePayloadSchema = {
   }
 };
 
-export const setRunClubNotificationPreferenceCallablePayloadSchema = {
+export const setClubNotificationPreferenceCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/set_run_club_notification_preference_payload.schema.json",
-  "title": "SetRunClubNotificationPreferenceCallablePayload",
-  "description": "Callable payload accepted by setRunClubNotificationPreference.",
+  "$id": "https://catch.app/contracts/callables/set_club_notification_preference_payload.schema.json",
+  "title": "SetClubNotificationPreferenceCallablePayload",
+  "description": "Callable payload accepted by setClubNotificationPreference.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -5840,15 +6132,15 @@ export const setRunClubNotificationPreferenceCallablePayloadSchema = {
   }
 };
 
-export const createRunCallablePayloadSchema = {
+export const createEventCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/create_run_payload.schema.json",
-  "title": "CreateRunCallablePayload",
-  "description": "Callable payload accepted by createRun.",
+  "$id": "https://catch.app/contracts/callables/create_event_payload.schema.json",
+  "title": "CreateEventCallablePayload",
+  "description": "Callable payload accepted by createEvent.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "runClubId",
+    "clubId",
     "startTimeMillis",
     "endTimeMillis",
     "meetingPoint",
@@ -5861,12 +6153,12 @@ export const createRunCallablePayloadSchema = {
     "priceInPaise"
   ],
   "properties": {
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
     },
-    "runClubId": {
+    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -6210,19 +6502,19 @@ export const createRunCallablePayloadSchema = {
   }
 };
 
-export const updateRunCallablePayloadSchema = {
+export const updateEventCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/update_run_payload.schema.json",
-  "title": "UpdateRunCallablePayload",
-  "description": "Callable payload accepted by updateRun.",
+  "$id": "https://catch.app/contracts/callables/update_event_payload.schema.json",
+  "title": "UpdateEventCallablePayload",
+  "description": "Callable payload accepted by updateEvent.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "runId",
+    "eventId",
     "fields"
   ],
   "properties": {
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -6315,18 +6607,18 @@ export const updateRunCallablePayloadSchema = {
   }
 };
 
-export const cancelRunCallablePayloadSchema = {
+export const cancelEventCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/cancel_run_payload.schema.json",
-  "title": "CancelRunCallablePayload",
-  "description": "Callable payload accepted by cancelRun.",
+  "$id": "https://catch.app/contracts/callables/cancel_event_payload.schema.json",
+  "title": "CancelEventCallablePayload",
+  "description": "Callable payload accepted by cancelEvent.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "runId"
+    "eventId"
   ],
   "properties": {
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -6341,18 +6633,18 @@ export const cancelRunCallablePayloadSchema = {
   }
 };
 
-export const deleteRunCallablePayloadSchema = {
+export const deleteEventCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/delete_run_payload.schema.json",
-  "title": "DeleteRunCallablePayload",
-  "description": "Callable payload accepted by deleteRun.",
+  "$id": "https://catch.app/contracts/callables/delete_event_payload.schema.json",
+  "title": "DeleteEventCallablePayload",
+  "description": "Callable payload accepted by deleteEvent.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "runId"
+    "eventId"
   ],
   "properties": {
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -6360,18 +6652,18 @@ export const deleteRunCallablePayloadSchema = {
   }
 };
 
-export const runIdCallablePayloadSchema = {
+export const eventIdCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/run_id_payload.schema.json",
-  "title": "RunIdCallablePayload",
-  "description": "Callable payload accepted by simple run actions that need only a runId.",
+  "$id": "https://catch.app/contracts/callables/event_id_payload.schema.json",
+  "title": "EventIdCallablePayload",
+  "description": "Callable payload accepted by simple event actions that need only a eventId.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "runId"
+    "eventId"
   ],
   "properties": {
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -6379,19 +6671,19 @@ export const runIdCallablePayloadSchema = {
   }
 };
 
-export const markRunAttendanceCallablePayloadSchema = {
+export const markEventAttendanceCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/mark_run_attendance_payload.schema.json",
-  "title": "MarkRunAttendanceCallablePayload",
-  "description": "Callable payload accepted by markRunAttendance.",
+  "$id": "https://catch.app/contracts/callables/mark_event_attendance_payload.schema.json",
+  "title": "MarkEventAttendanceCallablePayload",
+  "description": "Callable payload accepted by markEventAttendance.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "runId",
+    "eventId",
     "userId"
   ],
   "properties": {
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -6412,10 +6704,10 @@ export const selfCheckInAttendanceCallablePayloadSchema = {
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "runId"
+    "eventId"
   ],
   "properties": {
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -6439,26 +6731,26 @@ export const selfCheckInAttendanceCallablePayloadSchema = {
   }
 };
 
-export const createRunReviewCallablePayloadSchema = {
+export const createEventReviewCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/create_run_review_payload.schema.json",
-  "title": "CreateRunReviewCallablePayload",
-  "description": "Callable payload accepted by createRunReview.",
+  "$id": "https://catch.app/contracts/callables/create_event_review_payload.schema.json",
+  "title": "CreateEventReviewCallablePayload",
+  "description": "Callable payload accepted by createEventReview.",
   "type": "object",
   "additionalProperties": false,
   "required": [
-    "runClubId",
-    "runId",
+    "clubId",
+    "eventId",
     "rating",
     "comment"
   ],
   "properties": {
-    "runClubId": {
+    "clubId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
     },
-    "runId": {
+    "eventId": {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
@@ -6475,11 +6767,11 @@ export const createRunReviewCallablePayloadSchema = {
   }
 };
 
-export const updateRunReviewCallablePayloadSchema = {
+export const updateEventReviewCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/update_run_review_payload.schema.json",
-  "title": "UpdateRunReviewCallablePayload",
-  "description": "Callable payload accepted by updateRunReview.",
+  "$id": "https://catch.app/contracts/callables/update_event_review_payload.schema.json",
+  "title": "UpdateEventReviewCallablePayload",
+  "description": "Callable payload accepted by updateEventReview.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -6505,11 +6797,11 @@ export const updateRunReviewCallablePayloadSchema = {
   }
 };
 
-export const deleteRunReviewCallablePayloadSchema = {
+export const deleteEventReviewCallablePayloadSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/callables/delete_run_review_payload.schema.json",
-  "title": "DeleteRunReviewCallablePayload",
-  "description": "Callable payload accepted by deleteRunReview.",
+  "$id": "https://catch.app/contracts/callables/delete_event_review_payload.schema.json",
+  "title": "DeleteEventReviewCallablePayload",
+  "description": "Callable payload accepted by deleteEventReview.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -6748,7 +7040,7 @@ export const createProfileDecisionClientWriteSchema = {
       "required": [
         "swiperId",
         "targetId",
-        "runId",
+        "eventId",
         "direction",
         "createdAt"
       ],
@@ -6763,7 +7055,7 @@ export const createProfileDecisionClientWriteSchema = {
           "minLength": 1,
           "maxLength": 180
         },
-        "runId": {
+        "eventId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
@@ -6995,11 +7287,11 @@ export const createChatMessageClientWriteSchema = {
   "x-owner": "active match participant direct create; moderation and preview fan-out are trigger-owned"
 };
 
-export const createSavedRunClientWriteSchema = {
+export const createSavedEventClientWriteSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/client_writes/create_saved_run.schema.json",
-  "title": "CreateSavedRunClientWrite",
-  "description": "Client-owned Firestore create operation for savedRuns/{savedRunId}.",
+  "$id": "https://catch.app/contracts/client_writes/create_saved_event.schema.json",
+  "title": "CreateSavedEventClientWrite",
+  "description": "Client-owned Firestore create operation for savedEvents/{savedEventId}.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -7011,10 +7303,10 @@ export const createSavedRunClientWriteSchema = {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "savedRunId"
+        "savedEventId"
       ],
       "properties": {
-        "savedRunId": {
+        "savedEventId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
@@ -7026,7 +7318,7 @@ export const createSavedRunClientWriteSchema = {
       "additionalProperties": false,
       "required": [
         "uid",
-        "runId",
+        "eventId",
         "savedAt"
       ],
       "properties": {
@@ -7035,7 +7327,7 @@ export const createSavedRunClientWriteSchema = {
           "minLength": 1,
           "maxLength": 180
         },
-        "runId": {
+        "eventId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
@@ -7064,15 +7356,15 @@ export const createSavedRunClientWriteSchema = {
     }
   },
   "x-firestore-operation": "create",
-  "x-firestore-path": "savedRuns/{savedRunId}",
+  "x-firestore-path": "savedEvents/{savedEventId}",
   "x-owner": "authenticated owner direct create"
 };
 
-export const deleteSavedRunClientWriteSchema = {
+export const deleteSavedEventClientWriteSchema = {
   "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "https://catch.app/contracts/client_writes/delete_saved_run.schema.json",
-  "title": "DeleteSavedRunClientWrite",
-  "description": "Client-owned Firestore delete operation for savedRuns/{savedRunId}.",
+  "$id": "https://catch.app/contracts/client_writes/delete_saved_event.schema.json",
+  "title": "DeleteSavedEventClientWrite",
+  "description": "Client-owned Firestore delete operation for savedEvents/{savedEventId}.",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -7083,10 +7375,10 @@ export const deleteSavedRunClientWriteSchema = {
       "type": "object",
       "additionalProperties": false,
       "required": [
-        "savedRunId"
+        "savedEventId"
       ],
       "properties": {
-        "savedRunId": {
+        "savedEventId": {
           "type": "string",
           "minLength": 1,
           "maxLength": 180
@@ -7095,7 +7387,7 @@ export const deleteSavedRunClientWriteSchema = {
     }
   },
   "x-firestore-operation": "delete",
-  "x-firestore-path": "savedRuns/{savedRunId}",
+  "x-firestore-path": "savedEvents/{savedEventId}",
   "x-owner": "authenticated owner direct delete"
 };
 
@@ -7227,18 +7519,18 @@ export const profilePromptCatalog = {
   },
   "defaultPromptIds": [
     "perfectRun",
-    "afterRun",
+    "afterEvent",
     "greenFlag"
   ],
   "prompts": [
     {
       "id": "perfectRun",
-      "title": "A perfect run with me looks like...",
-      "placeholder": "Tell runners what kind of run feels like you."
+      "title": "A perfect event with me looks like...",
+      "placeholder": "Tell runners what kind of event feels like you."
     },
     {
-      "id": "afterRun",
-      "title": "After a run, you can usually find me...",
+      "id": "afterEvent",
+      "title": "After an event, you can usually find me...",
       "placeholder": "Coffee, dosa, stretching, playlists..."
     },
     {
@@ -7271,7 +7563,7 @@ export const photoPromptCatalog = {
   "prompts": [
     {
       "id": "proofIRun",
-      "title": "Proof I actually run",
+      "title": "Proof I actually event",
       "placeholder": "Add a caption for this running photo."
     },
     {
@@ -7331,6 +7623,6 @@ export const profilePhotoPolicy = {
 
 export const defaultProfilePromptIds = [
   "perfectRun",
-  "afterRun",
+  "afterEvent",
   "greenFlag"
 ];

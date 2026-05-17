@@ -9,8 +9,8 @@ part 'review.g.dart';
 abstract class Review with _$Review {
   const factory Review({
     @JsonKey(includeToJson: false) required String id,
-    required String runClubId,
-    String? runId,
+    required String clubId,
+    String? eventId,
     required String reviewerUserId,
     required String reviewerName,
     required int rating,

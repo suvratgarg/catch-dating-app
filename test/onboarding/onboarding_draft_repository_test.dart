@@ -87,6 +87,6 @@ OnboardingDraft buildDraft({
     countryCode: countryCode,
     gender: Gender.woman,
     interestedInGenders: const [Gender.man],
-    instagramHandle: '@asha_runs',
+    instagramHandle: '@asha_events',
   );
 }

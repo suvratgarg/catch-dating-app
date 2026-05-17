@@ -13,8 +13,8 @@
   "properties": {
     "handler": {"type": "string", "enum": ["onMessageCreated"]},
     "eventId": {"type": "string", "minLength": 1, "maxLength": 240},
-    "matchId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "messageId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"}
+    "matchId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "messageId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
   }
 }

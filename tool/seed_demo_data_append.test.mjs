@@ -10,9 +10,9 @@ import {
 test("append filter drops swipes and match artifacts without attended edges",
   async () => {
     const firestore = fakeFirestore({
-      runParticipations: {
-        run_1_new: {runId: "run_1", uid: "new", status: "attended"},
-        run_1_target: {runId: "run_1", uid: "target", status: "signedUp"},
+      eventParticipations: {
+        run_1_new: {eventId: "run_1", uid: "new", status: "attended"},
+        run_1_target: {eventId: "run_1", uid: "target", status: "signedUp"},
       },
     });
     const docs = [
@@ -27,7 +27,7 @@ test("append filter drops swipes and match artifacts without attended edges",
       },
       {
         path: "notifications/new/items/run_reminder",
-        data: {runId: "run_1", type: "runReminder"},
+        data: {eventId: "run_1", type: "eventReminder"},
       },
     ];
 
@@ -37,8 +37,8 @@ test("append filter drops swipes and match artifacts without attended edges",
     );
 
     assert.deepEqual(result.docs.map((doc) => doc.path).sort(), [
+      "eventParticipations/run_1_new",
       "notifications/new/items/run_reminder",
-      "runParticipations/run_1_new",
     ]);
     assert.deepEqual(result.skippedPaths.sort(), [
       "matches/new_target",
@@ -53,8 +53,8 @@ test("append filter drops swipes and match artifacts without attended edges",
 test("append filter keeps swipe relationships when both users attended",
   async () => {
     const firestore = fakeFirestore({
-      runParticipations: {
-        run_1_target: {runId: "run_1", uid: "target", status: "attended"},
+      eventParticipations: {
+        run_1_target: {eventId: "run_1", uid: "target", status: "attended"},
       },
     });
     const docs = [
@@ -71,9 +71,9 @@ test("append filter keeps swipe relationships when both users attended",
     );
 
     assert.deepEqual(result.docs.map((doc) => doc.path).sort(), [
+      "eventParticipations/run_1_new",
       "matches/new_target",
       "matches/new_target/messages/one",
-      "runParticipations/run_1_new",
       "swipes/new/outgoing/target",
       "swipes/target/outgoing/new",
     ]);
@@ -81,10 +81,10 @@ test("append filter keeps swipe relationships when both users attended",
   }
 );
 
-test("append normalization downgrades attended edges for future runs",
+test("append normalization downgrades attended edges for future events",
   async () => {
     const firestore = fakeFirestore({
-      runs: {
+      events: {
         run_1: {
           capacityLimit: 10,
           bookedCount: 0,
@@ -94,9 +94,9 @@ test("append normalization downgrades attended edges for future runs",
     });
     const docs = [
       {
-        path: "runParticipations/run_1_new",
+        path: "eventParticipations/run_1_new",
         data: {
-          runId: "run_1",
+          eventId: "run_1",
           uid: "new",
           status: "attended",
           attendedAt: fakeTimestamp("2099-05-14T04:15:00.000Z"),
@@ -127,7 +127,7 @@ test("seed public profiles carry thumbnail URLs for tiny avatar surfaces", () =>
     dateOfBirth: fakeTimestamp("1998-05-14T00:00:00.000Z"),
     profilePrompts: [{
       promptId: "perfectRun",
-      prompt: "A perfect run with me looks like...",
+      prompt: "A perfect event with me looks like...",
       answer: "Easy kilometres.",
     }],
     gender: "woman",
@@ -135,7 +135,7 @@ test("seed public profiles carry thumbnail URLs for tiny avatar surfaces", () =>
     photoPrompts: [{
       photoIndex: 0,
       promptId: "proofIRun",
-      prompt: "Proof I actually run",
+      prompt: "Proof I actually event",
       caption: "Race morning.",
     }],
     preferredRunTimes: ["morning"],
@@ -182,10 +182,10 @@ test("thumbnailUrlForPhoto leaves non-Unsplash URLs usable", () => {
   );
 });
 
-function participationDoc(runId, uid, status) {
+function participationDoc(eventId, uid, status) {
   return {
-    path: `runParticipations/${runId}_${uid}`,
-    data: {runId, uid, status},
+    path: `eventParticipations/${eventId}_${uid}`,
+    data: {eventId, uid, status},
   };
 }
 
@@ -197,10 +197,10 @@ function fakeTimestamp(iso) {
   };
 }
 
-function swipeDoc(swiperId, targetId, runId) {
+function swipeDoc(swiperId, targetId, eventId) {
   return {
     path: `swipes/${swiperId}/outgoing/${targetId}`,
-    data: {swiperId, targetId, runId, direction: "like"},
+    data: {swiperId, targetId, eventId, direction: "like"},
   };
 }
 

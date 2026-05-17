@@ -62,21 +62,21 @@ service firebase.storage {
         && canWriteMatchImage(matchId);
     }
 
-    match /runClubs/{clubId}/{fileName} {
+    match /clubs/{clubId}/{fileName} {
       allow read: if true;
       allow write: if isSignedIn()
         && isImage()
         && firestore.get(
-          /databases/(default)/documents/runClubs/$(clubId)
+          /databases/(default)/documents/clubs/$(clubId)
         ).data.hostUserId == request.auth.uid;
     }
 
-    match /runClubs/{clubId}/runs/{runId}/{fileName} {
+    match /clubs/{clubId}/events/{eventId}/{fileName} {
       allow read: if true;
       allow write: if isSignedIn()
         && isImage()
         && firestore.get(
-          /databases/(default)/documents/runClubs/$(clubId)
+          /databases/(default)/documents/clubs/$(clubId)
         ).data.hostUserId == request.auth.uid;
     }
 

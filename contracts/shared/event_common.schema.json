@@ -1,0 +1,284 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/shared/event_common.schema.json",
+  "title": "Event and club common contract definitions",
+  "description": "Shared enum, scalar, and embedded definitions for event, club, participation, and saved-event contracts.",
+  "definitions": {
+    "demoMetadataFields": {
+      "synthetic": {
+        "type": "boolean",
+        "description": "Internal demo seed marker used for cleanup and diagnostics."
+      },
+      "seedPrefix": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "description": "Internal demo seed prefix used for cleanup and diagnostics."
+      },
+      "scenario": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120,
+        "description": "Internal demo seed scenario name used for cleanup and diagnostics."
+      },
+      "demoOps": {
+        "type": "boolean",
+        "description": "Internal demo-operations marker used for cleanup and diagnostics."
+      },
+      "demoOpsId": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 180,
+        "description": "Internal demo-operations id used for cleanup and diagnostics."
+      },
+      "demoOpsCommand": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 80,
+        "description": "Internal demo-operations command name used for cleanup and diagnostics."
+      }
+    },
+    "internalDemoFieldNames": [
+      "synthetic",
+      "seedPrefix",
+      "scenario",
+      "demoOps",
+      "demoOpsId",
+      "demoOpsCommand"
+    ],
+    "documentId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "citySlug": {
+      "$ref": "profile_common.schema.json#/definitions/citySlug"
+    },
+    "timestamp": {
+      "$ref": "profile_common.schema.json#/definitions/timestamp"
+    },
+    "nullableTimestamp": {
+      "$ref": "profile_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "latitude": {
+      "$ref": "profile_common.schema.json#/definitions/latitude"
+    },
+    "longitude": {
+      "$ref": "profile_common.schema.json#/definitions/longitude"
+    },
+    "urlOrNull": {
+      "anyOf": [
+        {"$ref": "profile_common.schema.json#/definitions/url"},
+        {"type": "null"}
+      ]
+    },
+    "nullableString": {
+      "$ref": "profile_common.schema.json#/definitions/nullableString"
+    },
+    "contactString": {
+      "type": ["string", "null"],
+      "maxLength": 320
+    },
+    "paceLevel": {
+      "type": "string",
+      "enum": ["easy", "moderate", "fast", "competitive"]
+    },
+    "clubLifecycleStatus": {
+      "type": "string",
+      "enum": ["active", "archived"]
+    },
+    "clubMembershipRole": {
+      "type": "string",
+      "enum": ["host", "member"]
+    },
+    "clubMembershipStatus": {
+      "type": "string",
+      "enum": ["active", "left", "deleted"]
+    },
+    "eventLifecycleStatus": {
+      "type": "string",
+      "enum": ["active", "cancelled"]
+    },
+    "eventParticipationStatus": {
+      "type": "string",
+      "enum": ["signedUp", "waitlisted", "attended", "cancelled", "deleted"]
+    },
+    "genderAtSignup": {
+      "anyOf": [
+        {"$ref": "profile_common.schema.json#/definitions/gender"},
+        {"type": "null"}
+      ]
+    },
+    "nonNegativeInteger": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "eventConstraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["minAge", "maxAge", "maxMen", "maxWomen"],
+      "properties": {
+        "minAge": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 120
+        },
+        "maxAge": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 120
+        },
+        "maxMen": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        },
+        "maxWomen": {
+          "type": ["integer", "null"],
+          "minimum": 0
+        }
+      }
+    },
+    "eventPolicyBundle": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "admission", "pricing", "cancellation", "settlement"],
+      "properties": {
+        "version": {"type": "integer", "const": 1},
+        "admission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "format",
+            "capacityLimit",
+            "waitlistPolicy",
+            "inviteRequired",
+            "membershipRequired",
+            "manualApprovalRequired",
+            "cohortCapacityLimits",
+            "balancedRatioPolicy"
+          ],
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": [
+                "open",
+                "inviteOnly",
+                "manualApproval",
+                "fixedCohortCaps",
+                "balancedRatio",
+                "membersOnly"
+              ]
+            },
+            "capacityLimit": {"type": "integer", "minimum": 1, "maximum": 1000},
+            "waitlistPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mode", "offerWindowMinutes"],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "rankedOffer",
+                    "broadcastFirstComeFirstServed",
+                    "manualReview"
+                  ]
+                },
+                "offerWindowMinutes": {"type": "integer", "minimum": 0, "maximum": 10080}
+              }
+            },
+            "inviteRequired": {"type": "boolean"},
+            "membershipRequired": {"type": "boolean"},
+            "manualApprovalRequired": {"type": "boolean"},
+            "cohortCapacityLimits": {
+              "type": "object",
+              "additionalProperties": {"type": "integer", "minimum": 0}
+            },
+            "balancedRatioPolicy": {
+              "type": ["object", "null"],
+              "additionalProperties": false,
+              "required": [
+                "leftCohortId",
+                "rightCohortId",
+                "maxSkew",
+                "openingBufferPerCohort",
+                "outOfRatioCohortPolicy"
+              ],
+              "properties": {
+                "leftCohortId": {"type": "string", "minLength": 1, "maxLength": 120},
+                "rightCohortId": {"type": "string", "minLength": 1, "maxLength": 120},
+                "maxSkew": {"type": "integer", "minimum": 0, "maximum": 1000},
+                "openingBufferPerCohort": {"type": "integer", "minimum": 0, "maximum": 1000},
+                "outOfRatioCohortPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "admitWithinGeneralCapacity",
+                    "waitlist",
+                    "manualReview",
+                    "reject"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "basePriceInPaise",
+            "cohortAdjustmentsInPaise",
+            "demandPricingRules"
+          ],
+          "properties": {
+            "basePriceInPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
+            "cohortAdjustmentsInPaise": {
+              "type": "object",
+              "additionalProperties": {"type": "integer", "minimum": -100000000, "maximum": 100000000}
+            },
+            "demandPricingRules": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pricedCohortId",
+                  "balancingCohortId",
+                  "stepAdjustmentInPaise",
+                  "maxAdjustmentInPaise",
+                  "freeSkew",
+                  "demandStep"
+                ],
+                "properties": {
+                  "pricedCohortId": {"type": "string", "minLength": 1, "maxLength": 120},
+                  "balancingCohortId": {"type": "string", "minLength": 1, "maxLength": 120},
+                  "stepAdjustmentInPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
+                  "maxAdjustmentInPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
+                  "freeSkew": {"type": "integer", "minimum": 0, "maximum": 1000},
+                  "demandStep": {"type": "integer", "minimum": 1, "maximum": 1000}
+                }
+              }
+            }
+          }
+        },
+        "cancellation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["policyId"],
+          "properties": {
+            "policyId": {"type": "string", "enum": ["flexible", "standard", "strict"]}
+          }
+        },
+        "settlement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["hostPayoutTiming"],
+          "properties": {
+            "hostPayoutTiming": {"type": "string", "enum": ["afterEventCompletion"]}
+          }
+        }
+      }
+    }
+  }
+}

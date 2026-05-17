@@ -2,115 +2,120 @@ import 'dart:async';
 
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/saved_event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart' as app_router;
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/domain/run_participation.dart';
-import 'package:catch_dating_app/runs/presentation/run_detail_screen.dart';
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../run_clubs/run_clubs_test_helpers.dart' as club_test;
-import '../runs/runs_test_helpers.dart';
+import '../clubs/clubs_test_helpers.dart' as club_test;
+import '../events/events_test_helpers.dart';
 
 void main() {
   group('CalendarScreen', () {
-    testWidgets('shows a loading state while booked runs are loading', (
+    testWidgets('shows a loading state while booked events are loading', (
       tester,
     ) async {
-      final runsController = StreamController<List<Run>>();
-      addTearDown(runsController.close);
+      final eventsController = StreamController<List<Event>>();
+      addTearDown(eventsController.close);
 
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpRunsProvider(
+          watchSignedUpEventsProvider(
             'runner-1',
-          ).overrideWith((ref) => runsController.stream),
+          ).overrideWith((ref) => eventsController.stream),
         ],
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
-      expect(find.text('No planned runs yet'), findsNothing);
+      expect(find.text('No planned events yet'), findsNothing);
     });
 
-    testWidgets('shows the empty calendar when the user has no planned runs', (
+    testWidgets(
+      'shows the empty calendar when the user has no planned events',
+      (tester) async {
+        await _pumpCalendar(
+          tester,
+          overrides: [
+            watchSignedUpEventsProvider(
+              'runner-1',
+            ).overrideWithValue(const AsyncData<List<Event>>([])),
+          ],
+        );
+
+        expect(find.text('No planned events yet'), findsOneWidget);
+        expect(
+          find.text(
+            'Events you book or save will show up here by day and time.',
+          ),
+          findsOneWidget,
+        );
+        expect(find.text('Planned'), findsOneWidget);
+        expect(find.text('None'), findsOneWidget);
+      },
+    );
+
+    testWidgets('shows an error state when planned events fail to load', (
       tester,
     ) async {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpRunsProvider(
-            'runner-1',
-          ).overrideWithValue(const AsyncData<List<Run>>([])),
-        ],
-      );
-
-      expect(find.text('No planned runs yet'), findsOneWidget);
-      expect(
-        find.text('Runs you book or save will show up here by day and time.'),
-        findsOneWidget,
-      );
-      expect(find.text('Planned'), findsOneWidget);
-      expect(find.text('None'), findsOneWidget);
-    });
-
-    testWidgets('shows an error state when planned runs fail to load', (
-      tester,
-    ) async {
-      await _pumpCalendar(
-        tester,
-        overrides: [
-          watchSignedUpRunsProvider('runner-1').overrideWithValue(
-            AsyncError<List<Run>>(Exception('boom'), StackTrace.empty),
+          watchSignedUpEventsProvider('runner-1').overrideWithValue(
+            AsyncError<List<Event>>(Exception('boom'), StackTrace.empty),
           ),
         ],
       );
 
       expect(find.text('Calendar unavailable'), findsOneWidget);
       expect(
-        find.text('Your planned runs could not be loaded.'),
+        find.text('Your planned events could not be loaded.'),
         findsOneWidget,
       );
-      expect(find.text('No planned runs yet'), findsNothing);
+      expect(find.text('No planned events yet'), findsNothing);
     });
 
-    testWidgets('renders agenda stats and booked run details', (tester) async {
+    testWidgets('renders agenda stats and booked event details', (
+      tester,
+    ) async {
       final now = DateTime.now();
-      final firstRunStart = DateTime(
+      final firstEventStart = DateTime(
         now.year,
         now.month,
         now.day,
       ).add(const Duration(days: 1, hours: 7, minutes: 15));
-      final secondRunStart = DateTime(
+      final secondEventStart = DateTime(
         now.year,
         now.month,
         now.day,
       ).add(const Duration(days: 2, hours: 18, minutes: 30));
-      final runs = [
-        buildRun(
-          id: 'run-late',
-          startTime: secondRunStart,
+      final events = [
+        buildEvent(
+          id: 'event-late',
+          startTime: secondEventStart,
           meetingPoint: 'Juhu Beach Gate',
           distanceKm: 8,
           pace: PaceLevel.moderate,
           bookedCount: 2,
           capacityLimit: 12,
         ),
-        buildRun(
-          id: 'run-early',
-          startTime: firstRunStart,
+        buildEvent(
+          id: 'event-early',
+          startTime: firstEventStart,
           meetingPoint: 'Carter Road Promenade',
           distanceKm: 5,
           pace: PaceLevel.easy,
@@ -122,14 +127,14 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpRunsProvider(
+          watchSignedUpEventsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Run>>(runs)),
+          ).overrideWithValue(AsyncData<List<Event>>(events)),
         ],
       );
 
       expect(find.text('Calendar'), findsOneWidget);
-      expect(find.text(_monthYearLabel(firstRunStart)), findsOneWidget);
+      expect(find.text(_monthYearLabel(firstEventStart)), findsOneWidget);
       expect(find.text('Planned'), findsOneWidget);
       expect(find.text('2'), findsOneWidget);
       expect(find.text('Distance'), findsOneWidget);
@@ -144,7 +149,7 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text(_agendaDayLabel(firstRunStart, now)), findsOneWidget);
+      expect(find.text(_agendaDayLabel(firstEventStart, now)), findsOneWidget);
       expect(find.text('Carter Road Promenade'), findsOneWidget);
       expect(find.text('Juhu Beach Gate'), findsOneWidget);
       expect(find.text('Stride Social'), findsAtLeastNWidgets(1));
@@ -152,26 +157,26 @@ void main() {
       expect(find.text('8km · Moderate · 2/12 spots'), findsOneWidget);
     });
 
-    testWidgets('includes future saved runs as planned calendar rows', (
+    testWidgets('includes future saved events as planned calendar rows', (
       tester,
     ) async {
       final now = DateTime.now();
-      final signedUpRun = buildRun(
-        id: 'signed-up-run',
+      final signedUpEvent = buildEvent(
+        id: 'signed-up-event',
         startTime: now.add(const Duration(days: 2)),
         meetingPoint: 'Booked Promenade',
         distanceKm: 5,
         bookedCount: 1,
       );
-      final savedFutureRun = buildRun(
-        id: 'saved-future-run',
+      final savedFutureEvent = buildEvent(
+        id: 'saved-future-event',
         startTime: now.add(const Duration(days: 1)),
         meetingPoint: 'Saved Start',
         distanceKm: 8,
         bookedCount: 3,
       );
-      final savedPastRun = buildRun(
-        id: 'saved-past-run',
+      final savedPastEvent = buildEvent(
+        id: 'saved-past-event',
         startTime: now.subtract(const Duration(days: 1)),
         meetingPoint: 'Old Saved Start',
         distanceKm: 10,
@@ -179,11 +184,11 @@ void main() {
 
       await _pumpCalendar(
         tester,
-        savedRuns: [savedFutureRun, savedPastRun],
+        savedEvents: [savedFutureEvent, savedPastEvent],
         overrides: [
-          watchSignedUpRunsProvider(
+          watchSignedUpEventsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Run>>([signedUpRun])),
+          ).overrideWithValue(AsyncData<List<Event>>([signedUpEvent])),
         ],
       );
 
@@ -205,19 +210,19 @@ void main() {
       expect(find.text('JOINED'), findsOneWidget);
     });
 
-    testWidgets('anchors calendar summary to the next upcoming run', (
+    testWidgets('anchors calendar summary to the next upcoming event', (
       tester,
     ) async {
       final now = DateTime.now();
-      final pastRun = buildRun(
-        id: 'past-run',
+      final pastEvent = buildEvent(
+        id: 'past-event',
         startTime: now.subtract(const Duration(days: 4, hours: -6)),
         meetingPoint: 'Old Beach',
         distanceKm: 5,
         pace: PaceLevel.easy,
       );
-      final futureRun = buildRun(
-        id: 'future-run',
+      final futureEvent = buildEvent(
+        id: 'future-event',
         startTime: now.add(const Duration(days: 3, hours: 2)),
         meetingPoint: 'Future Park',
         distanceKm: 8,
@@ -227,15 +232,15 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpRunsProvider(
+          watchSignedUpEventsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Run>>([pastRun, futureRun])),
+          ).overrideWithValue(AsyncData<List<Event>>([pastEvent, futureEvent])),
         ],
       );
 
       expect(find.text('Next'), findsOneWidget);
       expect(
-        find.text(_timeLabel(futureRun.startTime)),
+        find.text(_timeLabel(futureEvent.startTime)),
         findsAtLeastNWidgets(1),
       );
       expect(
@@ -245,11 +250,11 @@ void main() {
     });
 
     testWidgets(
-      'falls back to the current week when there are no upcoming runs',
+      'falls back to the current week when there are no upcoming events',
       (tester) async {
         final now = DateTime.now();
-        final oldRun = buildRun(
-          id: 'old-run',
+        final oldEvent = buildEvent(
+          id: 'old-event',
           startTime: DateTime(
             now.year,
             now.month,
@@ -263,9 +268,9 @@ void main() {
         await _pumpCalendar(
           tester,
           overrides: [
-            watchSignedUpRunsProvider(
+            watchSignedUpEventsProvider(
               'runner-1',
-            ).overrideWithValue(AsyncData<List<Run>>([oldRun])),
+            ).overrideWithValue(AsyncData<List<Event>>([oldEvent])),
           ],
         );
 
@@ -276,7 +281,7 @@ void main() {
       },
     );
 
-    testWidgets('scrolls as one surface so later agenda runs are reachable', (
+    testWidgets('scrolls as one surface so later agenda events are reachable', (
       tester,
     ) async {
       tester.view.devicePixelRatio = 1.0;
@@ -285,12 +290,12 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
 
       final now = DateTime.now();
-      final runs = List.generate(
+      final events = List.generate(
         8,
-        (index) => buildRun(
-          id: 'run-$index',
+        (index) => buildEvent(
+          id: 'event-$index',
           startTime: now.add(Duration(days: index + 1)),
-          meetingPoint: 'Future Run $index',
+          meetingPoint: 'Future Event $index',
           distanceKm: 5,
           pace: PaceLevel.easy,
         ),
@@ -299,23 +304,23 @@ void main() {
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpRunsProvider(
+          watchSignedUpEventsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Run>>(runs)),
+          ).overrideWithValue(AsyncData<List<Event>>(events)),
         ],
       );
 
-      expect(find.text('Future Run 7'), findsOneWidget);
-      expect(find.text('Future Run 7').hitTestable(), findsNothing);
+      expect(find.text('Future Event 7'), findsOneWidget);
+      expect(find.text('Future Event 7').hitTestable(), findsNothing);
 
       await tester.scrollUntilVisible(
-        find.text('Future Run 7'),
+        find.text('Future Event 7'),
         300,
         scrollable: find.byType(Scrollable),
       );
       await tester.pump();
 
-      expect(find.text('Future Run 7').hitTestable(), findsOneWidget);
+      expect(find.text('Future Event 7').hitTestable(), findsOneWidget);
     });
 
     testWidgets('tapping a week date scrolls to that agenda day', (
@@ -330,42 +335,42 @@ void main() {
         DateTime.now().add(const Duration(days: 7)),
       );
       final monday = nextWeek.subtract(Duration(days: nextWeek.weekday - 1));
-      final runs = List.generate(
+      final events = List.generate(
         7,
-        (index) => buildRun(
-          id: 'week-run-$index',
+        (index) => buildEvent(
+          id: 'week-event-$index',
           startTime: monday.add(Duration(days: index, hours: 7)),
-          meetingPoint: 'Week Run $index',
+          meetingPoint: 'Week Event $index',
           distanceKm: 5,
           pace: PaceLevel.easy,
         ),
       );
-      final targetDate = DateUtils.dateOnly(runs.last.startTime);
+      final targetDate = DateUtils.dateOnly(events.last.startTime);
 
       await _pumpCalendar(
         tester,
         overrides: [
-          watchSignedUpRunsProvider(
+          watchSignedUpEventsProvider(
             'runner-1',
-          ).overrideWithValue(AsyncData<List<Run>>(runs)),
+          ).overrideWithValue(AsyncData<List<Event>>(events)),
         ],
       );
 
-      expect(find.text('Week Run 6'), findsOneWidget);
-      expect(find.text('Week Run 6').hitTestable(), findsNothing);
+      expect(find.text('Week Event 6'), findsOneWidget);
+      expect(find.text('Week Event 6').hitTestable(), findsNothing);
 
       await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
       await tester.pumpAndSettle();
 
-      expect(find.text('Week Run 6').hitTestable(), findsOneWidget);
+      expect(find.text('Week Event 6').hitTestable(), findsOneWidget);
     });
 
     testWidgets(
-      'opens a booked run from the agenda and back returns to calendar',
+      'opens a booked event from the agenda and back returns to calendar',
       (tester) async {
-        final run = buildRun(
-          id: 'run-1',
-          runClubId: 'club-1',
+        final event = buildEvent(
+          id: 'event-1',
+          clubId: 'club-1',
           startTime: DateTime(2026, 5, 7, 7, 15),
           meetingPoint: 'Carter Road Promenade',
           distanceKm: 5,
@@ -373,7 +378,7 @@ void main() {
           bookedCount: 1,
         );
         final user = buildUser(uid: 'runner-1');
-        final runClub = buildRunClub(id: 'club-1');
+        final club = buildClub(id: 'club-1');
         final router = GoRouter(
           initialLocation: app_router.Routes.calendarScreen.path,
           routes: [
@@ -383,11 +388,11 @@ void main() {
               builder: (context, state) => const CalendarScreen(),
             ),
             GoRoute(
-              path: app_router.Routes.calendarRunDetailScreen.path,
-              name: app_router.Routes.calendarRunDetailScreen.name,
-              builder: (context, state) => RunDetailScreen(
-                runClubId: state.pathParameters['runClubId']!,
-                runId: state.pathParameters['runId']!,
+              path: app_router.Routes.calendarEventDetailScreen.path,
+              name: app_router.Routes.calendarEventDetailScreen.name,
+              builder: (context, state) => EventDetailScreen(
+                clubId: state.pathParameters['clubId']!,
+                eventId: state.pathParameters['eventId']!,
               ),
             ),
           ],
@@ -401,36 +406,36 @@ void main() {
                 const AsyncData<String?>('runner-1'),
               ),
               watchUserProfileProvider.overrideWithValue(AsyncData(user)),
-              watchSignedUpRunsProvider(
+              watchSignedUpEventsProvider(
                 user.uid,
-              ).overrideWithValue(AsyncData<List<Run>>([run])),
-              watchSavedRunDetailsForUserProvider(
+              ).overrideWithValue(AsyncData<List<Event>>([event])),
+              watchSavedEventDetailsForUserProvider(
                 user.uid,
-              ).overrideWithValue(const AsyncData<List<Run>>([])),
-              watchRunProvider(run.id).overrideWithValue(AsyncData(run)),
-              watchSavedRunProvider(
+              ).overrideWithValue(const AsyncData<List<Event>>([])),
+              watchEventProvider(event.id).overrideWithValue(AsyncData(event)),
+              watchSavedEventProvider(
                 user.uid,
-                run.id,
+                event.id,
               ).overrideWithValue(const AsyncData(null)),
-              watchRunParticipationProvider(run.id, user.uid).overrideWithValue(
+              watchEventParticipationProvider(
+                event.id,
+                user.uid,
+              ).overrideWithValue(
                 AsyncData(
                   _participation(
-                    run: run,
+                    event: event,
                     uid: user.uid,
-                    status: RunParticipationStatus.signedUp,
+                    status: EventParticipationStatus.signedUp,
                   ),
                 ),
               ),
-              runClubsRepositoryProvider.overrideWith(
+              clubsRepositoryProvider.overrideWith(
                 (ref) =>
-                    club_test.FakeRunClubsRepository()
-                      ..clubsById[runClub.id] = runClub,
+                    club_test.FakeClubsRepository()..clubsById[club.id] = club,
               ),
-              fetchRunClubProvider(
-                runClub.id,
-              ).overrideWithValue(AsyncData(runClub)),
-              watchReviewsForRunProvider(
-                run.id,
+              fetchClubProvider(club.id).overrideWithValue(AsyncData(club)),
+              watchReviewsForEventProvider(
+                event.id,
               ).overrideWithValue(const AsyncData([])),
               paymentRepositoryProvider.overrideWithValue(
                 FakePaymentRepository(),
@@ -449,21 +454,21 @@ void main() {
 
         await _scrollCalendarDown(tester);
 
-        final runCard = find.byType(RunAgendaRunCard);
-        expect(tester.widget<RunAgendaRunCard>(runCard).onTap, isNotNull);
+        final eventCard = find.byType(EventAgendaCard);
+        expect(tester.widget<EventAgendaCard>(eventCard).onTap, isNotNull);
 
-        tester.widget<RunAgendaRunCard>(runCard).onTap!.call();
+        tester.widget<EventAgendaCard>(eventCard).onTap!.call();
         expect(tester.takeException(), isNull);
         await _pumpRouterFrame(tester);
 
-        expect(find.byType(RunDetailScreen), findsOneWidget);
+        expect(find.byType(EventDetailScreen), findsOneWidget);
         expect(find.byTooltip('Back'), findsOneWidget);
 
         await tester.tap(find.byTooltip('Back'));
         await _pumpRouterFrame(tester);
 
         expect(_routerPath(router), app_router.Routes.calendarScreen.path);
-        expect(find.byType(RunDetailScreen), findsNothing);
+        expect(find.byType(EventDetailScreen), findsNothing);
         expect(find.text('Calendar'), findsWidgets);
       },
     );
@@ -473,20 +478,20 @@ void main() {
 Future<void> _pumpCalendar(
   WidgetTester tester, {
   required Iterable overrides,
-  List<Run> savedRuns = const [],
+  List<Event> savedEvents = const [],
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
         uidProvider.overrideWithValue(const AsyncData<String?>('runner-1')),
-        runClubsRepositoryProvider.overrideWith(
+        clubsRepositoryProvider.overrideWith(
           (ref) =>
-              club_test.FakeRunClubsRepository()
-                ..clubsById['club-1'] = buildRunClub(id: 'club-1'),
+              club_test.FakeClubsRepository()
+                ..clubsById['club-1'] = buildClub(id: 'club-1'),
         ),
-        watchSavedRunDetailsForUserProvider(
+        watchSavedEventDetailsForUserProvider(
           'runner-1',
-        ).overrideWithValue(AsyncData<List<Run>>(savedRuns)),
+        ).overrideWithValue(AsyncData<List<Event>>(savedEvents)),
         ...overrides,
       ],
       child: MaterialApp(theme: AppTheme.light, home: const CalendarScreen()),
@@ -508,16 +513,16 @@ Future<void> _scrollCalendarDown(WidgetTester tester) async {
   }
 }
 
-RunParticipation _participation({
-  required Run run,
+EventParticipation _participation({
+  required Event event,
   required String uid,
-  required RunParticipationStatus status,
+  required EventParticipationStatus status,
 }) {
   final now = DateTime(2026, 1, 1);
-  return RunParticipation(
-    id: runParticipationId(runId: run.id, uid: uid),
-    runId: run.id,
-    runClubId: run.runClubId,
+  return EventParticipation(
+    id: eventParticipationId(eventId: event.id, uid: uid),
+    eventId: event.id,
+    clubId: event.clubId,
     uid: uid,
     status: status,
     createdAt: now,
@@ -525,7 +530,7 @@ RunParticipation _participation({
   );
 }
 
-String _timeLabel(DateTime date) => RunFormatters.time(date);
+String _timeLabel(DateTime date) => EventFormatters.time(date);
 
 Key _calendarWeekDayKey(DateTime date) {
   return ValueKey<String>('calendar-week-day-${_dateKey(date)}');

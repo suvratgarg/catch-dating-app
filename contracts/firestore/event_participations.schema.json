@@ -1,0 +1,101 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_participations.schema.json",
+  "title": "EventParticipationDocument",
+  "description": "Canonical event roster edge stored at eventParticipations/{participationId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventParticipations",
+  "x-firestore-path": "eventParticipations/{participationId}",
+  "x-document-id-field": "id",
+  "x-owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "eventId",
+    "clubId",
+    "uid",
+    "status",
+    "createdAt",
+    "updatedAt",
+    "signedUpAt",
+    "waitlistedAt",
+    "attendedAt",
+    "cancelledAt",
+    "deletedAt",
+    "genderAtSignup",
+    "paymentId"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "status": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventParticipationStatus"
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "signedUpAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "waitlistedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "attendedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "cancelledAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "deletedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "genderAtSignup": {
+      "$ref": "../shared/event_common.schema.json#/definitions/genderAtSignup"
+    },
+    "cohortAtSignup": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "paymentId": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "synthetic": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"
+    },
+    "seedPrefix": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"
+    },
+    "scenario": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"
+    },
+    "demoOps": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"
+    },
+    "demoOpsId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"
+    },
+    "demoOpsCommand": {
+      "$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"
+    }
+  }
+}

@@ -533,7 +533,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
     'preferredRunTimes',
     'prefsNewCatches',
     'prefsMessages',
-    'prefsRunReminders',
+    'prefsEventReminders',
     'prefsRunStatusUpdates',
     'prefsClubUpdates',
     'prefsWeeklyDigest',
@@ -1206,7 +1206,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
     'prefsMessages': <String, Object?>{
       'type': 'boolean',
     },
-    'prefsRunReminders': <String, Object?>{
+    'prefsEventReminders': <String, Object?>{
       'type': 'boolean',
     },
     'prefsRunStatusUpdates': <String, Object?>{
@@ -1878,17 +1878,17 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
   ],
 };
 
-const schemaRunClubDocumentSchema = <String, Object?>{
+const schemaClubDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/run_clubs.schema.json',
-  'title': 'RunClubDocument',
-  'description': 'Canonical run club document stored at runClubs/{clubId}. The club id is the document id and is not stored in document data.',
+  '\$id': 'https://catch.app/contracts/firestore/clubs.schema.json',
+  'title': 'ClubDocument',
+  'description': 'Canonical club document stored at clubs/{clubId}. The club id is the document id and is not stored in document data.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'runClubs',
-  'x-firestore-path': 'runClubs/{clubId}',
+  'x-firestore-collection': 'clubs',
+  'x-firestore-path': 'clubs/{clubId}',
   'x-document-id-field': 'id',
-  'x-owner': 'create/update/archive/delete run-club callables; aggregate projections are trigger-owned',
+  'x-owner': 'create/update/archive/delete club callables; aggregate projections are trigger-owned',
   'x-internal-demo-fields': <Object?>[
     'synthetic',
     'seedPrefix',
@@ -1911,8 +1911,8 @@ const schemaRunClubDocumentSchema = <String, Object?>{
     'memberCount',
     'rating',
     'reviewCount',
-    'nextRunAt',
-    'nextRunLabel',
+    'nextEventAt',
+    'nextEventLabel',
     'instagramHandle',
     'phoneNumber',
     'email',
@@ -2023,7 +2023,7 @@ const schemaRunClubDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
     },
-    'nextRunAt': <String, Object?>{
+    'nextEventAt': <String, Object?>{
       'anyOf': <Object?>[
         <String, Object?>{
           'type': 'object',
@@ -2050,7 +2050,7 @@ const schemaRunClubDocumentSchema = <String, Object?>{
         },
       ],
     },
-    'nextRunLabel': <String, Object?>{
+    'nextEventLabel': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
@@ -2157,17 +2157,17 @@ const schemaRunClubDocumentSchema = <String, Object?>{
   },
 };
 
-const schemaRunClubMembershipDocumentSchema = <String, Object?>{
+const schemaClubMembershipDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/run_club_memberships.schema.json',
-  'title': 'RunClubMembershipDocument',
-  'description': 'Canonical run club membership edge stored at runClubMemberships/{membershipId}.',
+  '\$id': 'https://catch.app/contracts/firestore/club_memberships.schema.json',
+  'title': 'ClubMembershipDocument',
+  'description': 'Canonical club membership edge stored at clubMemberships/{membershipId}.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'runClubMemberships',
-  'x-firestore-path': 'runClubMemberships/{membershipId}',
+  'x-firestore-collection': 'clubMemberships',
+  'x-firestore-path': 'clubMemberships/{membershipId}',
   'x-document-id-field': 'id',
-  'x-owner': 'run-club membership callables; parent member count is trigger-owned',
+  'x-owner': 'club membership callables; parent member count is trigger-owned',
   'x-internal-demo-fields': <Object?>[
     'synthetic',
     'seedPrefix',
@@ -2324,17 +2324,17 @@ const schemaRunClubMembershipDocumentSchema = <String, Object?>{
   },
 };
 
-const schemaRunClubHostClaimDocumentSchema = <String, Object?>{
+const schemaClubHostClaimDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/run_club_host_claims.schema.json',
-  'title': 'RunClubHostClaimDocument',
-  'description': 'Server-owned singleton claim stored at runClubHostClaims/{uid} to enforce one hosted club per user.',
+  '\$id': 'https://catch.app/contracts/firestore/club_host_claims.schema.json',
+  'title': 'ClubHostClaimDocument',
+  'description': 'Server-owned singleton claim stored at clubHostClaims/{uid} to enforce one hosted club per user.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'runClubHostClaims',
-  'x-firestore-path': 'runClubHostClaims/{uid}',
+  'x-firestore-collection': 'clubHostClaims',
+  'x-firestore-path': 'clubHostClaims/{uid}',
   'x-document-id-field': 'uid',
-  'x-owner': 'createRunClub callable',
+  'x-owner': 'createClub callable',
   'required': <Object?>[
     'uid',
     'clubId',
@@ -2374,15 +2374,15 @@ const schemaRunClubHostClaimDocumentSchema = <String, Object?>{
   },
 };
 
-const schemaRunDocumentSchema = <String, Object?>{
+const schemaEventDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/runs.schema.json',
-  'title': 'RunDocument',
-  'description': 'Canonical run document stored at runs/{runId}. The run id is the document id and is not stored in document data.',
+  '\$id': 'https://catch.app/contracts/firestore/events.schema.json',
+  'title': 'EventDocument',
+  'description': 'Canonical event document stored at events/{eventId}. The event id is the document id and is not stored in document data.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'runs',
-  'x-firestore-path': 'runs/{runId}',
+  'x-firestore-collection': 'events',
+  'x-firestore-path': 'events/{eventId}',
   'x-document-id-field': 'id',
   'x-owner': 'host create/update/cancel/delete callables; booking and attendance aggregates are callable-owned',
   'x-internal-demo-fields': <Object?>[
@@ -2394,7 +2394,7 @@ const schemaRunDocumentSchema = <String, Object?>{
     'demoOpsCommand',
   ],
   'required': <Object?>[
-    'runClubId',
+    'clubId',
     'startTime',
     'endTime',
     'meetingPoint',
@@ -2416,7 +2416,7 @@ const schemaRunDocumentSchema = <String, Object?>{
     'genderCounts',
   ],
   'properties': <String, Object?>{
-    'runClubId': <String, Object?>{
+    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -2905,15 +2905,15 @@ const schemaRunDocumentSchema = <String, Object?>{
   },
 };
 
-const schemaRunParticipationDocumentSchema = <String, Object?>{
+const schemaEventParticipationDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/run_participations.schema.json',
-  'title': 'RunParticipationDocument',
-  'description': 'Canonical run roster edge stored at runParticipations/{participationId}.',
+  '\$id': 'https://catch.app/contracts/firestore/event_participations.schema.json',
+  'title': 'EventParticipationDocument',
+  'description': 'Canonical event roster edge stored at eventParticipations/{participationId}.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'runParticipations',
-  'x-firestore-path': 'runParticipations/{participationId}',
+  'x-firestore-collection': 'eventParticipations',
+  'x-firestore-path': 'eventParticipations/{participationId}',
   'x-document-id-field': 'id',
   'x-owner': 'booking, waitlist, attendance, cancellation, and account-deletion callables',
   'x-internal-demo-fields': <Object?>[
@@ -2925,8 +2925,8 @@ const schemaRunParticipationDocumentSchema = <String, Object?>{
     'demoOpsCommand',
   ],
   'required': <Object?>[
-    'runId',
-    'runClubId',
+    'eventId',
+    'clubId',
     'uid',
     'status',
     'createdAt',
@@ -2940,12 +2940,12 @@ const schemaRunParticipationDocumentSchema = <String, Object?>{
     'paymentId',
   ],
   'properties': <String, Object?>{
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
     },
-    'runClubId': <String, Object?>{
+    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -3207,17 +3207,309 @@ const schemaRunParticipationDocumentSchema = <String, Object?>{
   },
 };
 
-const schemaRunClubScheduleLockDocumentSchema = <String, Object?>{
+const schemaEventSuccessPlanDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/run_club_schedule_locks.schema.json',
-  'title': 'RunClubScheduleLockDocument',
-  'description': 'Server-owned time-slot claim stored at runClubScheduleLocks/{clubId_slot}.',
+  '\$id': 'https://catch.app/contracts/firestore/event_success_plans.schema.json',
+  'title': 'EventSuccessPlanDocument',
+  'description': 'Host-owned live event-success setup stored at eventSuccessPlans/{eventId}. The event id is the document id and is also stored for cheap validation and reads.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'runClubScheduleLocks',
-  'x-firestore-path': 'runClubScheduleLocks/{lockId}',
+  'x-firestore-collection': 'eventSuccessPlans',
+  'x-firestore-path': 'eventSuccessPlans/{eventId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'club host direct write; event participants read',
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'playbookId',
+    'selectedModuleIds',
+    'targetAttendeeCount',
+    'hostGoal',
+    'privateCrushEnabled',
+    'contextualOpenersEnabled',
+    'activeStepIndex',
+    'status',
+    'createdAt',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'playbookId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 120,
+    },
+    'selectedModuleIds': <String, Object?>{
+      'type': 'array',
+      'maxItems': 24,
+      'items': <String, Object?>{
+        'type': 'string',
+        'minLength': 1,
+        'maxLength': 120,
+      },
+    },
+    'targetAttendeeCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 1000,
+    },
+    'hostGoal': <String, Object?>{
+      'type': 'string',
+      'maxLength': 300,
+    },
+    'privateCrushEnabled': <String, Object?>{
+      'type': 'boolean',
+    },
+    'contextualOpenersEnabled': <String, Object?>{
+      'type': 'boolean',
+    },
+    'activeStepIndex': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 100,
+    },
+    'status': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'setup',
+        'live',
+        'complete',
+      ],
+    },
+    'attendeePrompt': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 300,
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'frozenAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+    'completedAt': <String, Object?>{
+      'anyOf': <Object?>[
+        <String, Object?>{
+          'type': 'object',
+          'description': 'Serialized Firestore Timestamp fixture shape.',
+          'x-firestore-type': 'timestamp',
+          'additionalProperties': false,
+          'required': <Object?>[
+            '_seconds',
+            '_nanoseconds',
+          ],
+          'properties': <String, Object?>{
+            '_seconds': <String, Object?>{
+              'type': 'integer',
+            },
+            '_nanoseconds': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 999999999,
+            },
+          },
+        },
+        <String, Object?>{
+          'type': 'null',
+        },
+      ],
+    },
+  },
+};
+
+const schemaEventSuccessFeedbackDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_success_feedback.schema.json',
+  'title': 'EventSuccessFeedbackDocument',
+  'description': 'Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Hosts can read aggregate-relevant fields for their event report.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventSuccessFeedback',
+  'x-firestore-path': 'eventSuccessFeedback/{feedbackId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'attendee direct write after attended event; host read',
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'uid',
+    'welcomeRating',
+    'structureRating',
+    'metNewPeopleCount',
+    'markedPrivateCrush',
+    'safetyConcern',
+    'createdAt',
+    'updatedAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'uid': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'welcomeRating': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 5,
+    },
+    'structureRating': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 5,
+    },
+    'metNewPeopleCount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 0,
+      'maximum': 100,
+    },
+    'markedPrivateCrush': <String, Object?>{
+      'type': 'boolean',
+    },
+    'safetyConcern': <String, Object?>{
+      'type': 'boolean',
+    },
+    'privateNote': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'maxLength': 500,
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+    'updatedAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
+    },
+  },
+};
+
+const schemaClubScheduleLockDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/club_schedule_locks.schema.json',
+  'title': 'ClubScheduleLockDocument',
+  'description': 'Server-owned time-slot claim stored at clubScheduleLocks/{clubId_slot}.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'clubScheduleLocks',
+  'x-firestore-path': 'clubScheduleLocks/{lockId}',
   'x-document-id-field': 'lockId',
-  'x-owner': 'run schedule conflict callables',
+  'x-owner': 'event schedule conflict callables',
   'x-internal-demo-fields': <Object?>[
     'synthetic',
     'seedPrefix',
@@ -3230,15 +3522,15 @@ const schemaRunClubScheduleLockDocumentSchema = <String, Object?>{
     'ownerType',
     'ownerId',
     'slot',
-    'runId',
-    'runClubId',
+    'eventId',
+    'clubId',
     'startTimeMillis',
     'endTimeMillis',
   ],
   'properties': <String, Object?>{
     'ownerType': <String, Object?>{
       'type': 'string',
-      'const': 'runClub',
+      'const': 'club',
     },
     'ownerId': <String, Object?>{
       'type': 'string',
@@ -3249,12 +3541,12 @@ const schemaRunClubScheduleLockDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
     },
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
     },
-    'runClubId': <String, Object?>{
+    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -3302,17 +3594,17 @@ const schemaRunClubScheduleLockDocumentSchema = <String, Object?>{
   },
 };
 
-const schemaUserRunScheduleLockDocumentSchema = <String, Object?>{
+const schemaUserEventScheduleLockDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/user_run_schedule_locks.schema.json',
-  'title': 'UserRunScheduleLockDocument',
-  'description': 'Server-owned time-slot claim stored at userRunScheduleLocks/{uid_slot}.',
+  '\$id': 'https://catch.app/contracts/firestore/user_event_schedule_locks.schema.json',
+  'title': 'UserEventScheduleLockDocument',
+  'description': 'Server-owned time-slot claim stored at userEventScheduleLocks/{uid_slot}.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'userRunScheduleLocks',
-  'x-firestore-path': 'userRunScheduleLocks/{lockId}',
+  'x-firestore-collection': 'userEventScheduleLocks',
+  'x-firestore-path': 'userEventScheduleLocks/{lockId}',
   'x-document-id-field': 'lockId',
-  'x-owner': 'run signup and waitlist callables',
+  'x-owner': 'event signup and waitlist callables',
   'x-internal-demo-fields': <Object?>[
     'synthetic',
     'seedPrefix',
@@ -3325,8 +3617,8 @@ const schemaUserRunScheduleLockDocumentSchema = <String, Object?>{
     'ownerType',
     'ownerId',
     'slot',
-    'runId',
-    'runClubId',
+    'eventId',
+    'clubId',
     'uid',
     'startTimeMillis',
     'endTimeMillis',
@@ -3345,12 +3637,12 @@ const schemaUserRunScheduleLockDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
     },
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
     },
-    'runClubId': <String, Object?>{
+    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -3403,15 +3695,15 @@ const schemaUserRunScheduleLockDocumentSchema = <String, Object?>{
   },
 };
 
-const schemaSavedRunDocumentSchema = <String, Object?>{
+const schemaSavedEventDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/saved_runs.schema.json',
-  'title': 'SavedRunDocument',
-  'description': 'Canonical saved-run edge stored at savedRuns/{savedRunId}.',
+  '\$id': 'https://catch.app/contracts/firestore/saved_events.schema.json',
+  'title': 'SavedEventDocument',
+  'description': 'Canonical saved-event edge stored at savedEvents/{savedEventId}.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'savedRuns',
-  'x-firestore-path': 'savedRuns/{savedRunId}',
+  'x-firestore-collection': 'savedEvents',
+  'x-firestore-path': 'savedEvents/{savedEventId}',
   'x-document-id-field': 'id',
   'x-owner': 'authenticated owner direct create/delete',
   'x-internal-demo-fields': <Object?>[
@@ -3424,7 +3716,7 @@ const schemaSavedRunDocumentSchema = <String, Object?>{
   ],
   'required': <Object?>[
     'uid',
-    'runId',
+    'eventId',
     'savedAt',
   ],
   'properties': <String, Object?>{
@@ -3433,7 +3725,7 @@ const schemaSavedRunDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -3516,7 +3808,7 @@ const schemaPaymentDocumentSchema = <String, Object?>{
     'userId',
     'orderId',
     'paymentId',
-    'runId',
+    'eventId',
     'amount',
     'currency',
     'status',
@@ -3539,7 +3831,7 @@ const schemaPaymentDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 240,
     },
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -3645,7 +3937,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
   'required': <Object?>[
     'swiperId',
     'targetId',
-    'runId',
+    'eventId',
     'direction',
     'createdAt',
   ],
@@ -3660,7 +3952,7 @@ const schemaSwipeDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -3794,7 +4086,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
   'required': <Object?>[
     'user1Id',
     'user2Id',
-    'runIds',
+    'eventIds',
     'createdAt',
     'lastMessageAt',
     'lastMessagePreview',
@@ -3816,7 +4108,7 @@ const schemaMatchDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
-    'runIds': <String, Object?>{
+    'eventIds': <String, Object?>{
       'type': 'array',
       'minItems': 1,
       'uniqueItems': true,
@@ -4150,11 +4442,11 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       'enum': <Object?>[
         'message',
         'match',
-        'runReminder',
-        'runSignup',
+        'eventReminder',
+        'eventSignup',
         'waitlistPromotion',
-        'runCancelled',
-        'runUpdated',
+        'eventCancelled',
+        'eventUpdated',
         'clubUpdate',
       ],
     },
@@ -4223,7 +4515,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 240,
     },
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
@@ -4231,7 +4523,7 @@ const schemaActivityNotificationDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 180,
     },
-    'runClubId': <String, Object?>{
+    'clubId': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
@@ -4293,7 +4585,7 @@ const schemaReviewDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/firestore/reviews.schema.json',
   'title': 'ReviewDocument',
-  'description': 'Canonical attended-run review stored at reviews/{reviewId}.',
+  'description': 'Canonical attended-event review stored at reviews/{reviewId}.',
   'type': 'object',
   'additionalProperties': false,
   'x-firestore-collection': 'reviews',
@@ -4309,7 +4601,7 @@ const schemaReviewDocumentSchema = <String, Object?>{
     'demoOpsCommand',
   ],
   'required': <Object?>[
-    'runClubId',
+    'clubId',
     'reviewerUserId',
     'reviewerName',
     'rating',
@@ -4317,12 +4609,12 @@ const schemaReviewDocumentSchema = <String, Object?>{
     'createdAt',
   ],
   'properties': <String, Object?>{
-    'runClubId': <String, Object?>{
+    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
     },
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': <Object?>[
         'string',
         'null',
@@ -4864,15 +5156,15 @@ const schemaFunctionEventReceiptDocumentSchema = <String, Object?>{
   },
 };
 
-const schemaSeedRunManifestDocumentSchema = <String, Object?>{
+const schemaSeedEventManifestDocumentSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/firestore/seed_runs.schema.json',
-  'title': 'SeedRunManifestDocument',
-  'description': 'Tool-owned synthetic-data manifest stored at seedRuns/{manifestId}.',
+  '\$id': 'https://catch.app/contracts/firestore/seed_events.schema.json',
+  'title': 'SeedEventManifestDocument',
+  'description': 'Tool-owned synthetic-data manifest stored at seedEvents/{manifestId}.',
   'type': 'object',
   'additionalProperties': false,
-  'x-firestore-collection': 'seedRuns',
-  'x-firestore-path': 'seedRuns/{manifestId}',
+  'x-firestore-collection': 'seedEvents',
+  'x-firestore-path': 'seedEvents/{manifestId}',
   'x-document-id-field': 'manifestId',
   'x-owner': 'demo data seeding tooling',
   'x-internal-demo-fields': <Object?>[
@@ -5556,7 +5848,7 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
         'prefsMessages': <String, Object?>{
           'type': 'boolean',
         },
-        'prefsRunReminders': <String, Object?>{
+        'prefsEventReminders': <String, Object?>{
           'type': 'boolean',
         },
         'prefsRunStatusUpdates': <String, Object?>{
@@ -5591,11 +5883,11 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
   ],
 };
 
-const schemaCreateRunClubCallablePayloadSchema = <String, Object?>{
+const schemaCreateClubCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/create_run_club_payload.schema.json',
-  'title': 'CreateRunClubCallablePayload',
-  'description': 'Callable payload accepted by createRunClub.',
+  '\$id': 'https://catch.app/contracts/callables/create_club_payload.schema.json',
+  'title': 'CreateClubCallablePayload',
+  'description': 'Callable payload accepted by createClub.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -5665,11 +5957,11 @@ const schemaCreateRunClubCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaUpdateRunClubCallablePayloadSchema = <String, Object?>{
+const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/update_run_club_payload.schema.json',
-  'title': 'UpdateRunClubCallablePayload',
-  'description': 'Callable payload accepted by updateRunClub.',
+  '\$id': 'https://catch.app/contracts/callables/update_club_payload.schema.json',
+  'title': 'UpdateClubCallablePayload',
+  'description': 'Callable payload accepted by updateClub.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -5766,11 +6058,11 @@ const schemaUpdateRunClubCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaArchiveRunClubCallablePayloadSchema = <String, Object?>{
+const schemaArchiveClubCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/archive_run_club_payload.schema.json',
-  'title': 'ArchiveRunClubCallablePayload',
-  'description': 'Callable payload accepted by archiveRunClub.',
+  '\$id': 'https://catch.app/contracts/callables/archive_club_payload.schema.json',
+  'title': 'ArchiveClubCallablePayload',
+  'description': 'Callable payload accepted by archiveClub.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -5792,11 +6084,11 @@ const schemaArchiveRunClubCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaDeleteRunClubCallablePayloadSchema = <String, Object?>{
+const schemaDeleteClubCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/delete_run_club_payload.schema.json',
-  'title': 'DeleteRunClubCallablePayload',
-  'description': 'Callable payload accepted by deleteRunClub.',
+  '\$id': 'https://catch.app/contracts/callables/delete_club_payload.schema.json',
+  'title': 'DeleteClubCallablePayload',
+  'description': 'Callable payload accepted by deleteClub.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -5811,11 +6103,11 @@ const schemaDeleteRunClubCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaRunClubMembershipCallablePayloadSchema = <String, Object?>{
+const schemaClubMembershipCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/run_club_membership_payload.schema.json',
-  'title': 'RunClubMembershipCallablePayload',
-  'description': 'Callable payload accepted by joinRunClub and leaveRunClub.',
+  '\$id': 'https://catch.app/contracts/callables/club_membership_payload.schema.json',
+  'title': 'ClubMembershipCallablePayload',
+  'description': 'Callable payload accepted by joinClub and leaveClub.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -5830,11 +6122,11 @@ const schemaRunClubMembershipCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaSetRunClubNotificationPreferenceCallablePayloadSchema = <String, Object?>{
+const schemaSetClubNotificationPreferenceCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/set_run_club_notification_preference_payload.schema.json',
-  'title': 'SetRunClubNotificationPreferenceCallablePayload',
-  'description': 'Callable payload accepted by setRunClubNotificationPreference.',
+  '\$id': 'https://catch.app/contracts/callables/set_club_notification_preference_payload.schema.json',
+  'title': 'SetClubNotificationPreferenceCallablePayload',
+  'description': 'Callable payload accepted by setClubNotificationPreference.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -5853,15 +6145,15 @@ const schemaSetRunClubNotificationPreferenceCallablePayloadSchema = <String, Obj
   },
 };
 
-const schemaCreateRunCallablePayloadSchema = <String, Object?>{
+const schemaCreateEventCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/create_run_payload.schema.json',
-  'title': 'CreateRunCallablePayload',
-  'description': 'Callable payload accepted by createRun.',
+  '\$id': 'https://catch.app/contracts/callables/create_event_payload.schema.json',
+  'title': 'CreateEventCallablePayload',
+  'description': 'Callable payload accepted by createEvent.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'runClubId',
+    'clubId',
     'startTimeMillis',
     'endTimeMillis',
     'meetingPoint',
@@ -5874,12 +6166,12 @@ const schemaCreateRunCallablePayloadSchema = <String, Object?>{
     'priceInPaise',
   ],
   'properties': <String, Object?>{
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
     },
-    'runClubId': <String, Object?>{
+    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -6223,19 +6515,19 @@ const schemaCreateRunCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaUpdateRunCallablePayloadSchema = <String, Object?>{
+const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/update_run_payload.schema.json',
-  'title': 'UpdateRunCallablePayload',
-  'description': 'Callable payload accepted by updateRun.',
+  '\$id': 'https://catch.app/contracts/callables/update_event_payload.schema.json',
+  'title': 'UpdateEventCallablePayload',
+  'description': 'Callable payload accepted by updateEvent.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'runId',
+    'eventId',
     'fields',
   ],
   'properties': <String, Object?>{
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -6328,18 +6620,18 @@ const schemaUpdateRunCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaCancelRunCallablePayloadSchema = <String, Object?>{
+const schemaCancelEventCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/cancel_run_payload.schema.json',
-  'title': 'CancelRunCallablePayload',
-  'description': 'Callable payload accepted by cancelRun.',
+  '\$id': 'https://catch.app/contracts/callables/cancel_event_payload.schema.json',
+  'title': 'CancelEventCallablePayload',
+  'description': 'Callable payload accepted by cancelEvent.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'runId',
+    'eventId',
   ],
   'properties': <String, Object?>{
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -6354,18 +6646,18 @@ const schemaCancelRunCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaDeleteRunCallablePayloadSchema = <String, Object?>{
+const schemaDeleteEventCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/delete_run_payload.schema.json',
-  'title': 'DeleteRunCallablePayload',
-  'description': 'Callable payload accepted by deleteRun.',
+  '\$id': 'https://catch.app/contracts/callables/delete_event_payload.schema.json',
+  'title': 'DeleteEventCallablePayload',
+  'description': 'Callable payload accepted by deleteEvent.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'runId',
+    'eventId',
   ],
   'properties': <String, Object?>{
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -6373,18 +6665,18 @@ const schemaDeleteRunCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaRunIdCallablePayloadSchema = <String, Object?>{
+const schemaEventIdCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/run_id_payload.schema.json',
-  'title': 'RunIdCallablePayload',
-  'description': 'Callable payload accepted by simple run actions that need only a runId.',
+  '\$id': 'https://catch.app/contracts/callables/event_id_payload.schema.json',
+  'title': 'EventIdCallablePayload',
+  'description': 'Callable payload accepted by simple event actions that need only a eventId.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'runId',
+    'eventId',
   ],
   'properties': <String, Object?>{
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -6392,19 +6684,19 @@ const schemaRunIdCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaMarkRunAttendanceCallablePayloadSchema = <String, Object?>{
+const schemaMarkEventAttendanceCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/mark_run_attendance_payload.schema.json',
-  'title': 'MarkRunAttendanceCallablePayload',
-  'description': 'Callable payload accepted by markRunAttendance.',
+  '\$id': 'https://catch.app/contracts/callables/mark_event_attendance_payload.schema.json',
+  'title': 'MarkEventAttendanceCallablePayload',
+  'description': 'Callable payload accepted by markEventAttendance.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'runId',
+    'eventId',
     'userId',
   ],
   'properties': <String, Object?>{
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -6425,10 +6717,10 @@ const schemaSelfCheckInAttendanceCallablePayloadSchema = <String, Object?>{
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'runId',
+    'eventId',
   ],
   'properties': <String, Object?>{
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -6452,26 +6744,26 @@ const schemaSelfCheckInAttendanceCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaCreateRunReviewCallablePayloadSchema = <String, Object?>{
+const schemaCreateEventReviewCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/create_run_review_payload.schema.json',
-  'title': 'CreateRunReviewCallablePayload',
-  'description': 'Callable payload accepted by createRunReview.',
+  '\$id': 'https://catch.app/contracts/callables/create_event_review_payload.schema.json',
+  'title': 'CreateEventReviewCallablePayload',
+  'description': 'Callable payload accepted by createEventReview.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
-    'runClubId',
-    'runId',
+    'clubId',
+    'eventId',
     'rating',
     'comment',
   ],
   'properties': <String, Object?>{
-    'runClubId': <String, Object?>{
+    'clubId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
     },
-    'runId': <String, Object?>{
+    'eventId': <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
@@ -6488,11 +6780,11 @@ const schemaCreateRunReviewCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaUpdateRunReviewCallablePayloadSchema = <String, Object?>{
+const schemaUpdateEventReviewCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/update_run_review_payload.schema.json',
-  'title': 'UpdateRunReviewCallablePayload',
-  'description': 'Callable payload accepted by updateRunReview.',
+  '\$id': 'https://catch.app/contracts/callables/update_event_review_payload.schema.json',
+  'title': 'UpdateEventReviewCallablePayload',
+  'description': 'Callable payload accepted by updateEventReview.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -6518,11 +6810,11 @@ const schemaUpdateRunReviewCallablePayloadSchema = <String, Object?>{
   },
 };
 
-const schemaDeleteRunReviewCallablePayloadSchema = <String, Object?>{
+const schemaDeleteEventReviewCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/callables/delete_run_review_payload.schema.json',
-  'title': 'DeleteRunReviewCallablePayload',
-  'description': 'Callable payload accepted by deleteRunReview.',
+  '\$id': 'https://catch.app/contracts/callables/delete_event_review_payload.schema.json',
+  'title': 'DeleteEventReviewCallablePayload',
+  'description': 'Callable payload accepted by deleteEventReview.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -6761,7 +7053,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
       'required': <Object?>[
         'swiperId',
         'targetId',
-        'runId',
+        'eventId',
         'direction',
         'createdAt',
       ],
@@ -6776,7 +7068,7 @@ const schemaCreateProfileDecisionClientWriteSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 180,
         },
-        'runId': <String, Object?>{
+        'eventId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
@@ -7008,11 +7300,11 @@ const schemaCreateChatMessageClientWriteSchema = <String, Object?>{
   'x-owner': 'active match participant direct create; moderation and preview fan-out are trigger-owned',
 };
 
-const schemaCreateSavedRunClientWriteSchema = <String, Object?>{
+const schemaCreateSavedEventClientWriteSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/client_writes/create_saved_run.schema.json',
-  'title': 'CreateSavedRunClientWrite',
-  'description': 'Client-owned Firestore create operation for savedRuns/{savedRunId}.',
+  '\$id': 'https://catch.app/contracts/client_writes/create_saved_event.schema.json',
+  'title': 'CreateSavedEventClientWrite',
+  'description': 'Client-owned Firestore create operation for savedEvents/{savedEventId}.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -7024,10 +7316,10 @@ const schemaCreateSavedRunClientWriteSchema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'required': <Object?>[
-        'savedRunId',
+        'savedEventId',
       ],
       'properties': <String, Object?>{
-        'savedRunId': <String, Object?>{
+        'savedEventId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
@@ -7039,7 +7331,7 @@ const schemaCreateSavedRunClientWriteSchema = <String, Object?>{
       'additionalProperties': false,
       'required': <Object?>[
         'uid',
-        'runId',
+        'eventId',
         'savedAt',
       ],
       'properties': <String, Object?>{
@@ -7048,7 +7340,7 @@ const schemaCreateSavedRunClientWriteSchema = <String, Object?>{
           'minLength': 1,
           'maxLength': 180,
         },
-        'runId': <String, Object?>{
+        'eventId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
@@ -7077,15 +7369,15 @@ const schemaCreateSavedRunClientWriteSchema = <String, Object?>{
     },
   },
   'x-firestore-operation': 'create',
-  'x-firestore-path': 'savedRuns/{savedRunId}',
+  'x-firestore-path': 'savedEvents/{savedEventId}',
   'x-owner': 'authenticated owner direct create',
 };
 
-const schemaDeleteSavedRunClientWriteSchema = <String, Object?>{
+const schemaDeleteSavedEventClientWriteSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
-  '\$id': 'https://catch.app/contracts/client_writes/delete_saved_run.schema.json',
-  'title': 'DeleteSavedRunClientWrite',
-  'description': 'Client-owned Firestore delete operation for savedRuns/{savedRunId}.',
+  '\$id': 'https://catch.app/contracts/client_writes/delete_saved_event.schema.json',
+  'title': 'DeleteSavedEventClientWrite',
+  'description': 'Client-owned Firestore delete operation for savedEvents/{savedEventId}.',
   'type': 'object',
   'additionalProperties': false,
   'required': <Object?>[
@@ -7096,10 +7388,10 @@ const schemaDeleteSavedRunClientWriteSchema = <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
       'required': <Object?>[
-        'savedRunId',
+        'savedEventId',
       ],
       'properties': <String, Object?>{
-        'savedRunId': <String, Object?>{
+        'savedEventId': <String, Object?>{
           'type': 'string',
           'minLength': 1,
           'maxLength': 180,
@@ -7108,7 +7400,7 @@ const schemaDeleteSavedRunClientWriteSchema = <String, Object?>{
     },
   },
   'x-firestore-operation': 'delete',
-  'x-firestore-path': 'savedRuns/{savedRunId}',
+  'x-firestore-path': 'savedEvents/{savedEventId}',
   'x-owner': 'authenticated owner direct delete',
 };
 
@@ -7266,44 +7558,54 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaPublicProfileDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'RunClubDocument',
-    source: 'firestore/run_clubs.schema.json',
-    schema: schemaRunClubDocumentSchema,
+    name: 'ClubDocument',
+    source: 'firestore/clubs.schema.json',
+    schema: schemaClubDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'RunClubMembershipDocument',
-    source: 'firestore/run_club_memberships.schema.json',
-    schema: schemaRunClubMembershipDocumentSchema,
+    name: 'ClubMembershipDocument',
+    source: 'firestore/club_memberships.schema.json',
+    schema: schemaClubMembershipDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'RunClubHostClaimDocument',
-    source: 'firestore/run_club_host_claims.schema.json',
-    schema: schemaRunClubHostClaimDocumentSchema,
+    name: 'ClubHostClaimDocument',
+    source: 'firestore/club_host_claims.schema.json',
+    schema: schemaClubHostClaimDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'RunDocument',
-    source: 'firestore/runs.schema.json',
-    schema: schemaRunDocumentSchema,
+    name: 'EventDocument',
+    source: 'firestore/events.schema.json',
+    schema: schemaEventDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'RunParticipationDocument',
-    source: 'firestore/run_participations.schema.json',
-    schema: schemaRunParticipationDocumentSchema,
+    name: 'EventParticipationDocument',
+    source: 'firestore/event_participations.schema.json',
+    schema: schemaEventParticipationDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'RunClubScheduleLockDocument',
-    source: 'firestore/run_club_schedule_locks.schema.json',
-    schema: schemaRunClubScheduleLockDocumentSchema,
+    name: 'EventSuccessPlanDocument',
+    source: 'firestore/event_success_plans.schema.json',
+    schema: schemaEventSuccessPlanDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'UserRunScheduleLockDocument',
-    source: 'firestore/user_run_schedule_locks.schema.json',
-    schema: schemaUserRunScheduleLockDocumentSchema,
+    name: 'EventSuccessFeedbackDocument',
+    source: 'firestore/event_success_feedback.schema.json',
+    schema: schemaEventSuccessFeedbackDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'SavedRunDocument',
-    source: 'firestore/saved_runs.schema.json',
-    schema: schemaSavedRunDocumentSchema,
+    name: 'ClubScheduleLockDocument',
+    source: 'firestore/club_schedule_locks.schema.json',
+    schema: schemaClubScheduleLockDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'UserEventScheduleLockDocument',
+    source: 'firestore/user_event_schedule_locks.schema.json',
+    schema: schemaUserEventScheduleLockDocumentSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'SavedEventDocument',
+    source: 'firestore/saved_events.schema.json',
+    schema: schemaSavedEventDocumentSchema,
   ),
   SchemaContractDefinition(
     name: 'PaymentDocument',
@@ -7366,9 +7668,9 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaFunctionEventReceiptDocumentSchema,
   ),
   SchemaContractDefinition(
-    name: 'SeedRunManifestDocument',
-    source: 'firestore/seed_runs.schema.json',
-    schema: schemaSeedRunManifestDocumentSchema,
+    name: 'SeedEventManifestDocument',
+    source: 'firestore/seed_events.schema.json',
+    schema: schemaSeedEventManifestDocumentSchema,
   ),
   SchemaContractDefinition(
     name: 'UpdateUserProfileCallablePayload',
@@ -7376,64 +7678,64 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaUpdateUserProfileCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'CreateRunClubCallablePayload',
-    source: 'callables/create_run_club_payload.schema.json',
-    schema: schemaCreateRunClubCallablePayloadSchema,
+    name: 'CreateClubCallablePayload',
+    source: 'callables/create_club_payload.schema.json',
+    schema: schemaCreateClubCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'UpdateRunClubCallablePayload',
-    source: 'callables/update_run_club_payload.schema.json',
-    schema: schemaUpdateRunClubCallablePayloadSchema,
+    name: 'UpdateClubCallablePayload',
+    source: 'callables/update_club_payload.schema.json',
+    schema: schemaUpdateClubCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'ArchiveRunClubCallablePayload',
-    source: 'callables/archive_run_club_payload.schema.json',
-    schema: schemaArchiveRunClubCallablePayloadSchema,
+    name: 'ArchiveClubCallablePayload',
+    source: 'callables/archive_club_payload.schema.json',
+    schema: schemaArchiveClubCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'DeleteRunClubCallablePayload',
-    source: 'callables/delete_run_club_payload.schema.json',
-    schema: schemaDeleteRunClubCallablePayloadSchema,
+    name: 'DeleteClubCallablePayload',
+    source: 'callables/delete_club_payload.schema.json',
+    schema: schemaDeleteClubCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'RunClubMembershipCallablePayload',
-    source: 'callables/run_club_membership_payload.schema.json',
-    schema: schemaRunClubMembershipCallablePayloadSchema,
+    name: 'ClubMembershipCallablePayload',
+    source: 'callables/club_membership_payload.schema.json',
+    schema: schemaClubMembershipCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'SetRunClubNotificationPreferenceCallablePayload',
-    source: 'callables/set_run_club_notification_preference_payload.schema.json',
-    schema: schemaSetRunClubNotificationPreferenceCallablePayloadSchema,
+    name: 'SetClubNotificationPreferenceCallablePayload',
+    source: 'callables/set_club_notification_preference_payload.schema.json',
+    schema: schemaSetClubNotificationPreferenceCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'CreateRunCallablePayload',
-    source: 'callables/create_run_payload.schema.json',
-    schema: schemaCreateRunCallablePayloadSchema,
+    name: 'CreateEventCallablePayload',
+    source: 'callables/create_event_payload.schema.json',
+    schema: schemaCreateEventCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'UpdateRunCallablePayload',
-    source: 'callables/update_run_payload.schema.json',
-    schema: schemaUpdateRunCallablePayloadSchema,
+    name: 'UpdateEventCallablePayload',
+    source: 'callables/update_event_payload.schema.json',
+    schema: schemaUpdateEventCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'CancelRunCallablePayload',
-    source: 'callables/cancel_run_payload.schema.json',
-    schema: schemaCancelRunCallablePayloadSchema,
+    name: 'CancelEventCallablePayload',
+    source: 'callables/cancel_event_payload.schema.json',
+    schema: schemaCancelEventCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'DeleteRunCallablePayload',
-    source: 'callables/delete_run_payload.schema.json',
-    schema: schemaDeleteRunCallablePayloadSchema,
+    name: 'DeleteEventCallablePayload',
+    source: 'callables/delete_event_payload.schema.json',
+    schema: schemaDeleteEventCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'RunIdCallablePayload',
-    source: 'callables/run_id_payload.schema.json',
-    schema: schemaRunIdCallablePayloadSchema,
+    name: 'EventIdCallablePayload',
+    source: 'callables/event_id_payload.schema.json',
+    schema: schemaEventIdCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'MarkRunAttendanceCallablePayload',
-    source: 'callables/mark_run_attendance_payload.schema.json',
-    schema: schemaMarkRunAttendanceCallablePayloadSchema,
+    name: 'MarkEventAttendanceCallablePayload',
+    source: 'callables/mark_event_attendance_payload.schema.json',
+    schema: schemaMarkEventAttendanceCallablePayloadSchema,
   ),
   SchemaContractDefinition(
     name: 'SelfCheckInAttendanceCallablePayload',
@@ -7441,19 +7743,19 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaSelfCheckInAttendanceCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'CreateRunReviewCallablePayload',
-    source: 'callables/create_run_review_payload.schema.json',
-    schema: schemaCreateRunReviewCallablePayloadSchema,
+    name: 'CreateEventReviewCallablePayload',
+    source: 'callables/create_event_review_payload.schema.json',
+    schema: schemaCreateEventReviewCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'UpdateRunReviewCallablePayload',
-    source: 'callables/update_run_review_payload.schema.json',
-    schema: schemaUpdateRunReviewCallablePayloadSchema,
+    name: 'UpdateEventReviewCallablePayload',
+    source: 'callables/update_event_review_payload.schema.json',
+    schema: schemaUpdateEventReviewCallablePayloadSchema,
   ),
   SchemaContractDefinition(
-    name: 'DeleteRunReviewCallablePayload',
-    source: 'callables/delete_run_review_payload.schema.json',
-    schema: schemaDeleteRunReviewCallablePayloadSchema,
+    name: 'DeleteEventReviewCallablePayload',
+    source: 'callables/delete_event_review_payload.schema.json',
+    schema: schemaDeleteEventReviewCallablePayloadSchema,
   ),
   SchemaContractDefinition(
     name: 'BlockUserCallablePayload',
@@ -7496,14 +7798,14 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaCreateChatMessageClientWriteSchema,
   ),
   SchemaContractDefinition(
-    name: 'CreateSavedRunClientWrite',
-    source: 'client_writes/create_saved_run.schema.json',
-    schema: schemaCreateSavedRunClientWriteSchema,
+    name: 'CreateSavedEventClientWrite',
+    source: 'client_writes/create_saved_event.schema.json',
+    schema: schemaCreateSavedEventClientWriteSchema,
   ),
   SchemaContractDefinition(
-    name: 'DeleteSavedRunClientWrite',
-    source: 'client_writes/delete_saved_run.schema.json',
-    schema: schemaDeleteSavedRunClientWriteSchema,
+    name: 'DeleteSavedEventClientWrite',
+    source: 'client_writes/delete_saved_event.schema.json',
+    schema: schemaDeleteSavedEventClientWriteSchema,
   ),
   SchemaContractDefinition(
     name: 'MarkNotificationReadClientWrite',
@@ -7525,14 +7827,16 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'OnboardingDraftDocument': schemaOnboardingDraftDocumentSchema,
   'UserProfileDocument': schemaUserProfileDocumentSchema,
   'PublicProfileDocument': schemaPublicProfileDocumentSchema,
-  'RunClubDocument': schemaRunClubDocumentSchema,
-  'RunClubMembershipDocument': schemaRunClubMembershipDocumentSchema,
-  'RunClubHostClaimDocument': schemaRunClubHostClaimDocumentSchema,
-  'RunDocument': schemaRunDocumentSchema,
-  'RunParticipationDocument': schemaRunParticipationDocumentSchema,
-  'RunClubScheduleLockDocument': schemaRunClubScheduleLockDocumentSchema,
-  'UserRunScheduleLockDocument': schemaUserRunScheduleLockDocumentSchema,
-  'SavedRunDocument': schemaSavedRunDocumentSchema,
+  'ClubDocument': schemaClubDocumentSchema,
+  'ClubMembershipDocument': schemaClubMembershipDocumentSchema,
+  'ClubHostClaimDocument': schemaClubHostClaimDocumentSchema,
+  'EventDocument': schemaEventDocumentSchema,
+  'EventParticipationDocument': schemaEventParticipationDocumentSchema,
+  'EventSuccessPlanDocument': schemaEventSuccessPlanDocumentSchema,
+  'EventSuccessFeedbackDocument': schemaEventSuccessFeedbackDocumentSchema,
+  'ClubScheduleLockDocument': schemaClubScheduleLockDocumentSchema,
+  'UserEventScheduleLockDocument': schemaUserEventScheduleLockDocumentSchema,
+  'SavedEventDocument': schemaSavedEventDocumentSchema,
   'PaymentDocument': schemaPaymentDocumentSchema,
   'SwipeDocument': schemaSwipeDocumentSchema,
   'MatchDocument': schemaMatchDocumentSchema,
@@ -7545,24 +7849,24 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'DeletedUserTombstoneDocument': schemaDeletedUserTombstoneDocumentSchema,
   'RateLimitDocument': schemaRateLimitDocumentSchema,
   'FunctionEventReceiptDocument': schemaFunctionEventReceiptDocumentSchema,
-  'SeedRunManifestDocument': schemaSeedRunManifestDocumentSchema,
+  'SeedEventManifestDocument': schemaSeedEventManifestDocumentSchema,
   'UpdateUserProfileCallablePayload': schemaUpdateUserProfileCallablePayloadSchema,
-  'CreateRunClubCallablePayload': schemaCreateRunClubCallablePayloadSchema,
-  'UpdateRunClubCallablePayload': schemaUpdateRunClubCallablePayloadSchema,
-  'ArchiveRunClubCallablePayload': schemaArchiveRunClubCallablePayloadSchema,
-  'DeleteRunClubCallablePayload': schemaDeleteRunClubCallablePayloadSchema,
-  'RunClubMembershipCallablePayload': schemaRunClubMembershipCallablePayloadSchema,
-  'SetRunClubNotificationPreferenceCallablePayload': schemaSetRunClubNotificationPreferenceCallablePayloadSchema,
-  'CreateRunCallablePayload': schemaCreateRunCallablePayloadSchema,
-  'UpdateRunCallablePayload': schemaUpdateRunCallablePayloadSchema,
-  'CancelRunCallablePayload': schemaCancelRunCallablePayloadSchema,
-  'DeleteRunCallablePayload': schemaDeleteRunCallablePayloadSchema,
-  'RunIdCallablePayload': schemaRunIdCallablePayloadSchema,
-  'MarkRunAttendanceCallablePayload': schemaMarkRunAttendanceCallablePayloadSchema,
+  'CreateClubCallablePayload': schemaCreateClubCallablePayloadSchema,
+  'UpdateClubCallablePayload': schemaUpdateClubCallablePayloadSchema,
+  'ArchiveClubCallablePayload': schemaArchiveClubCallablePayloadSchema,
+  'DeleteClubCallablePayload': schemaDeleteClubCallablePayloadSchema,
+  'ClubMembershipCallablePayload': schemaClubMembershipCallablePayloadSchema,
+  'SetClubNotificationPreferenceCallablePayload': schemaSetClubNotificationPreferenceCallablePayloadSchema,
+  'CreateEventCallablePayload': schemaCreateEventCallablePayloadSchema,
+  'UpdateEventCallablePayload': schemaUpdateEventCallablePayloadSchema,
+  'CancelEventCallablePayload': schemaCancelEventCallablePayloadSchema,
+  'DeleteEventCallablePayload': schemaDeleteEventCallablePayloadSchema,
+  'EventIdCallablePayload': schemaEventIdCallablePayloadSchema,
+  'MarkEventAttendanceCallablePayload': schemaMarkEventAttendanceCallablePayloadSchema,
   'SelfCheckInAttendanceCallablePayload': schemaSelfCheckInAttendanceCallablePayloadSchema,
-  'CreateRunReviewCallablePayload': schemaCreateRunReviewCallablePayloadSchema,
-  'UpdateRunReviewCallablePayload': schemaUpdateRunReviewCallablePayloadSchema,
-  'DeleteRunReviewCallablePayload': schemaDeleteRunReviewCallablePayloadSchema,
+  'CreateEventReviewCallablePayload': schemaCreateEventReviewCallablePayloadSchema,
+  'UpdateEventReviewCallablePayload': schemaUpdateEventReviewCallablePayloadSchema,
+  'DeleteEventReviewCallablePayload': schemaDeleteEventReviewCallablePayloadSchema,
   'BlockUserCallablePayload': schemaBlockUserCallablePayloadSchema,
   'UnblockUserCallablePayload': schemaUnblockUserCallablePayloadSchema,
   'ReportUserCallablePayload': schemaReportUserCallablePayloadSchema,
@@ -7571,8 +7875,8 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'PlaceDetailsCallablePayload': schemaPlaceDetailsCallablePayloadSchema,
   'CreateProfileDecisionClientWrite': schemaCreateProfileDecisionClientWriteSchema,
   'CreateChatMessageClientWrite': schemaCreateChatMessageClientWriteSchema,
-  'CreateSavedRunClientWrite': schemaCreateSavedRunClientWriteSchema,
-  'DeleteSavedRunClientWrite': schemaDeleteSavedRunClientWriteSchema,
+  'CreateSavedEventClientWrite': schemaCreateSavedEventClientWriteSchema,
+  'DeleteSavedEventClientWrite': schemaDeleteSavedEventClientWriteSchema,
   'MarkNotificationReadClientWrite': schemaMarkNotificationReadClientWriteSchema,
   'ResetMatchUnreadCountClientWrite': schemaResetMatchUnreadCountClientWriteSchema,
 };
@@ -7585,14 +7889,16 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/onboarding_drafts.schema.json': schemaOnboardingDraftDocumentSchema,
   'firestore/users.schema.json': schemaUserProfileDocumentSchema,
   'firestore/public_profiles.schema.json': schemaPublicProfileDocumentSchema,
-  'firestore/run_clubs.schema.json': schemaRunClubDocumentSchema,
-  'firestore/run_club_memberships.schema.json': schemaRunClubMembershipDocumentSchema,
-  'firestore/run_club_host_claims.schema.json': schemaRunClubHostClaimDocumentSchema,
-  'firestore/runs.schema.json': schemaRunDocumentSchema,
-  'firestore/run_participations.schema.json': schemaRunParticipationDocumentSchema,
-  'firestore/run_club_schedule_locks.schema.json': schemaRunClubScheduleLockDocumentSchema,
-  'firestore/user_run_schedule_locks.schema.json': schemaUserRunScheduleLockDocumentSchema,
-  'firestore/saved_runs.schema.json': schemaSavedRunDocumentSchema,
+  'firestore/clubs.schema.json': schemaClubDocumentSchema,
+  'firestore/club_memberships.schema.json': schemaClubMembershipDocumentSchema,
+  'firestore/club_host_claims.schema.json': schemaClubHostClaimDocumentSchema,
+  'firestore/events.schema.json': schemaEventDocumentSchema,
+  'firestore/event_participations.schema.json': schemaEventParticipationDocumentSchema,
+  'firestore/event_success_plans.schema.json': schemaEventSuccessPlanDocumentSchema,
+  'firestore/event_success_feedback.schema.json': schemaEventSuccessFeedbackDocumentSchema,
+  'firestore/club_schedule_locks.schema.json': schemaClubScheduleLockDocumentSchema,
+  'firestore/user_event_schedule_locks.schema.json': schemaUserEventScheduleLockDocumentSchema,
+  'firestore/saved_events.schema.json': schemaSavedEventDocumentSchema,
   'firestore/payments.schema.json': schemaPaymentDocumentSchema,
   'firestore/swipes.schema.json': schemaSwipeDocumentSchema,
   'firestore/matches.schema.json': schemaMatchDocumentSchema,
@@ -7605,24 +7911,24 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/deleted_users.schema.json': schemaDeletedUserTombstoneDocumentSchema,
   'firestore/rate_limits.schema.json': schemaRateLimitDocumentSchema,
   'firestore/function_event_receipts.schema.json': schemaFunctionEventReceiptDocumentSchema,
-  'firestore/seed_runs.schema.json': schemaSeedRunManifestDocumentSchema,
+  'firestore/seed_events.schema.json': schemaSeedEventManifestDocumentSchema,
   'patches/update_user_profile.schema.json': schemaUpdateUserProfileCallablePayloadSchema,
-  'callables/create_run_club_payload.schema.json': schemaCreateRunClubCallablePayloadSchema,
-  'callables/update_run_club_payload.schema.json': schemaUpdateRunClubCallablePayloadSchema,
-  'callables/archive_run_club_payload.schema.json': schemaArchiveRunClubCallablePayloadSchema,
-  'callables/delete_run_club_payload.schema.json': schemaDeleteRunClubCallablePayloadSchema,
-  'callables/run_club_membership_payload.schema.json': schemaRunClubMembershipCallablePayloadSchema,
-  'callables/set_run_club_notification_preference_payload.schema.json': schemaSetRunClubNotificationPreferenceCallablePayloadSchema,
-  'callables/create_run_payload.schema.json': schemaCreateRunCallablePayloadSchema,
-  'callables/update_run_payload.schema.json': schemaUpdateRunCallablePayloadSchema,
-  'callables/cancel_run_payload.schema.json': schemaCancelRunCallablePayloadSchema,
-  'callables/delete_run_payload.schema.json': schemaDeleteRunCallablePayloadSchema,
-  'callables/run_id_payload.schema.json': schemaRunIdCallablePayloadSchema,
-  'callables/mark_run_attendance_payload.schema.json': schemaMarkRunAttendanceCallablePayloadSchema,
+  'callables/create_club_payload.schema.json': schemaCreateClubCallablePayloadSchema,
+  'callables/update_club_payload.schema.json': schemaUpdateClubCallablePayloadSchema,
+  'callables/archive_club_payload.schema.json': schemaArchiveClubCallablePayloadSchema,
+  'callables/delete_club_payload.schema.json': schemaDeleteClubCallablePayloadSchema,
+  'callables/club_membership_payload.schema.json': schemaClubMembershipCallablePayloadSchema,
+  'callables/set_club_notification_preference_payload.schema.json': schemaSetClubNotificationPreferenceCallablePayloadSchema,
+  'callables/create_event_payload.schema.json': schemaCreateEventCallablePayloadSchema,
+  'callables/update_event_payload.schema.json': schemaUpdateEventCallablePayloadSchema,
+  'callables/cancel_event_payload.schema.json': schemaCancelEventCallablePayloadSchema,
+  'callables/delete_event_payload.schema.json': schemaDeleteEventCallablePayloadSchema,
+  'callables/event_id_payload.schema.json': schemaEventIdCallablePayloadSchema,
+  'callables/mark_event_attendance_payload.schema.json': schemaMarkEventAttendanceCallablePayloadSchema,
   'callables/self_check_in_attendance_payload.schema.json': schemaSelfCheckInAttendanceCallablePayloadSchema,
-  'callables/create_run_review_payload.schema.json': schemaCreateRunReviewCallablePayloadSchema,
-  'callables/update_run_review_payload.schema.json': schemaUpdateRunReviewCallablePayloadSchema,
-  'callables/delete_run_review_payload.schema.json': schemaDeleteRunReviewCallablePayloadSchema,
+  'callables/create_event_review_payload.schema.json': schemaCreateEventReviewCallablePayloadSchema,
+  'callables/update_event_review_payload.schema.json': schemaUpdateEventReviewCallablePayloadSchema,
+  'callables/delete_event_review_payload.schema.json': schemaDeleteEventReviewCallablePayloadSchema,
   'callables/block_user_payload.schema.json': schemaBlockUserCallablePayloadSchema,
   'callables/unblock_user_payload.schema.json': schemaUnblockUserCallablePayloadSchema,
   'callables/report_user_payload.schema.json': schemaReportUserCallablePayloadSchema,
@@ -7631,8 +7937,8 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/place_details_payload.schema.json': schemaPlaceDetailsCallablePayloadSchema,
   'client_writes/create_profile_decision.schema.json': schemaCreateProfileDecisionClientWriteSchema,
   'client_writes/create_chat_message.schema.json': schemaCreateChatMessageClientWriteSchema,
-  'client_writes/create_saved_run.schema.json': schemaCreateSavedRunClientWriteSchema,
-  'client_writes/delete_saved_run.schema.json': schemaDeleteSavedRunClientWriteSchema,
+  'client_writes/create_saved_event.schema.json': schemaCreateSavedEventClientWriteSchema,
+  'client_writes/delete_saved_event.schema.json': schemaDeleteSavedEventClientWriteSchema,
   'client_writes/mark_notification_read.schema.json': schemaMarkNotificationReadClientWriteSchema,
   'client_writes/reset_match_unread_count.schema.json': schemaResetMatchUnreadCountClientWriteSchema,
 };

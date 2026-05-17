@@ -34,7 +34,7 @@ class PaymentRepository {
   Completer<PaymentConfirmationData>? _completer;
 
   /// Captured order data used to build the confirmation payload on success.
-  String? _pendingRunId;
+  String? _pendingEventId;
   int? _pendingAmountInPaise;
 
   bool get supportsPaidBookings {
@@ -48,17 +48,17 @@ class PaymentRepository {
     };
   }
 
-  // ── Paid run booking ──────────────────────────────────────────────────────
+  // ── Paid event booking ──────────────────────────────────────────────────────
 
-  /// Initiates the full Razorpay payment + sign-up flow for a paid run.
+  /// Initiates the full Razorpay payment + sign-up flow for a paid event.
   ///
   /// On success the Cloud Function [verifyRazorpayPayment] atomically verifies
-  /// the payment and writes the user's run participation edge.
+  /// the payment and writes the user's event participation edge.
   ///
   /// Returns [PaymentConfirmationData] with the payment details for the
   /// confirmation screen.
   Future<PaymentConfirmationData> processPayment({
-    required String runId,
+    required String eventId,
     required String description,
     required String userName,
     required String userEmail,
@@ -76,13 +76,13 @@ class PaymentRepository {
     }
 
     // Step 1: Create a Razorpay order server-side.
-    final orderResult = await _createOrder(runId: runId);
+    final orderResult = await _createOrder(eventId: eventId);
     final order = _parseOrderResponse(orderResult.data);
 
     // Step 2: Open the Razorpay checkout sheet.
     final completer = Completer<PaymentConfirmationData>();
     _completer = completer;
-    _pendingRunId = runId;
+    _pendingEventId = eventId;
     _pendingAmountInPaise = order.amountInPaise;
 
     try {
@@ -126,23 +126,24 @@ class PaymentRepository {
     }
   }
 
-  // ── Free run booking ──────────────────────────────────────────────────────
+  // ── Free event booking ──────────────────────────────────────────────────────
 
-  /// Signs the current user up for a free run via the [signUpForFreeRun]
-  /// Cloud Function, which validates the run is free and checks capacity.
-  Future<void> bookFreeRun({required String runId}) => withBackendErrorContext(
-    () => _functions
-        .httpsCallable('signUpForFreeRun')
-        .call(RunBookingCallableRequest(runId: runId).toJson()),
-    context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'book a run',
-      resource: 'runs',
-    ),
-    mapper: _runBookingErrorMapper(
-      fallbackMessage: 'Unable to book this run right now.',
-    ),
-  );
+  /// Signs the current user up for a free event via the [signUpForFreeEvent]
+  /// Cloud Function, which validates the event is free and checks capacity.
+  Future<void> bookFreeEvent({required String eventId}) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable('signUpForFreeEvent')
+            .call(EventBookingCallableRequest(eventId: eventId).toJson()),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'book an event',
+          resource: 'events',
+        ),
+        mapper: _eventBookingErrorMapper(
+          fallbackMessage: 'Unable to book this event right now.',
+        ),
+      );
 
   // ── Razorpay callbacks ────────────────────────────────────────────────────
 
@@ -184,7 +185,7 @@ class PaymentRepository {
           paymentId: paymentId,
           orderId: orderId,
           amountInPaise: _pendingAmountInPaise ?? 0,
-          runId: _pendingRunId ?? '',
+          eventId: _pendingEventId ?? '',
         ),
       );
     } catch (e, st) {
@@ -220,22 +221,23 @@ class PaymentRepository {
     _razorpay = null;
   }
 
-  Future<HttpsCallableResult<Object?>> _createOrder({required String runId}) =>
-      withBackendErrorContext(
-        () => _functions
-            .httpsCallable('createRazorpayOrder')
-            .call<Object?>(
-              CreateRazorpayOrderCallableRequest(runId: runId).toJson(),
-            ),
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'create payment order',
-          resource: 'payments',
+  Future<HttpsCallableResult<Object?>> _createOrder({
+    required String eventId,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('createRazorpayOrder')
+        .call<Object?>(
+          CreateRazorpayOrderCallableRequest(eventId: eventId).toJson(),
         ),
-        mapper: _paymentErrorMapper(
-          fallbackMessage: 'Unable to start the payment.',
-        ),
-      );
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'create payment order',
+      resource: 'payments',
+    ),
+    mapper: _paymentErrorMapper(
+      fallbackMessage: 'Unable to start the payment.',
+    ),
+  );
 
   RazorpayOrderCallableResponse _parseOrderResponse(Object? data) {
     try {
@@ -314,12 +316,12 @@ BackendErrorMapper _paymentErrorMapper({required String fallbackMessage}) {
   };
 }
 
-BackendErrorMapper _runBookingErrorMapper({required String fallbackMessage}) {
+BackendErrorMapper _eventBookingErrorMapper({required String fallbackMessage}) {
   return (error, stackTrace, context) {
     if (error is FirebaseFunctionsException) {
       if (error.code == 'unauthenticated') {
         return SignInRequiredException(
-          'book a run',
+          'book an event',
           debugMessage: '${error.plugin}/${error.code}: ${error.message}',
           cause: error,
           stackTrace: stackTrace,
@@ -328,7 +330,7 @@ BackendErrorMapper _runBookingErrorMapper({required String fallbackMessage}) {
       }
 
       final message = error.message;
-      return RunBookingFailedException(
+      return EventBookingFailedException(
         message == null || message.isEmpty ? fallbackMessage : message,
         debugMessage: '${error.plugin}/${error.code}: ${error.message}',
         cause: error,

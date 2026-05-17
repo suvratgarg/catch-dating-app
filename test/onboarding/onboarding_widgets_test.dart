@@ -15,7 +15,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 import 'onboarding_test_helpers.dart';
 
 void main() {
@@ -31,7 +31,7 @@ void main() {
       );
 
       expect(
-        find.widgetWithText(CatchButton, 'Browse run clubs'),
+        find.widgetWithText(CatchButton, 'Browse clubs'),
         findsOneWidget,
       );
       expect(
@@ -257,7 +257,7 @@ void main() {
   });
 
   group('RunningPrefsPage', () {
-    testWidgets('shows favorite run-time preferences', (tester) async {
+    testWidgets('shows favorite event-time preferences', (tester) async {
       final container = createOnboardingTestContainer(
         overrides: [
           watchUserProfileProvider.overrideWith(
@@ -277,7 +277,7 @@ void main() {
         child: const RunningPrefsPage(),
       );
 
-      expect(find.text('Favorite run times'), findsOneWidget);
+      expect(find.text('Favorite event times'), findsOneWidget);
       expect(find.text('Morning'), findsOneWidget);
       expect(find.text('Evening'), findsOneWidget);
     });

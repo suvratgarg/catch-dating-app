@@ -13,8 +13,8 @@ class TestFirebaseFunctionsException extends FirebaseFunctionsException {
 void main() {
   const firestoreContext = BackendErrorContext(
     service: BackendService.firestore,
-    action: 'load runs',
-    resource: 'runs',
+    action: 'load events',
+    resource: 'events',
   );
 
   group('normalizeBackendError', () {
@@ -32,15 +32,15 @@ void main() {
         StateError('server refused booking'),
         context: const BackendErrorContext(
           service: BackendService.functions,
-          action: 'book run',
-          resource: 'runs',
+          action: 'book event',
+          resource: 'events',
         ),
         mapper: (error, stackTrace, context) =>
-            RunBookingFailedException('This run is full.', context: context),
+            EventBookingFailedException('This event is full.', context: context),
       );
 
-      expect(mapped, isA<RunBookingFailedException>());
-      expect(mapped.message, 'This run is full.');
+      expect(mapped, isA<EventBookingFailedException>());
+      expect(mapped.message, 'This event is full.');
       expect(mapped.context?.service, BackendService.functions);
     });
 
@@ -68,7 +68,7 @@ void main() {
         context: firestoreContext,
       );
       expect(missing, isA<DocumentNotFoundException>());
-      expect(missing.context?.resource, 'runs');
+      expect(missing.context?.resource, 'events');
     });
 
     test('maps callable Functions failures with Functions service context', () {
@@ -79,14 +79,14 @@ void main() {
         ),
         context: const BackendErrorContext(
           service: BackendService.functions,
-          action: 'join run',
-          resource: 'runs',
+          action: 'join event',
+          resource: 'events',
         ),
       );
 
       expect(error, isA<SignInRequiredException>());
       expect(error.context?.service, BackendService.functions);
-      expect(error.context?.action, 'join run');
+      expect(error.context?.action, 'join event');
     });
 
     test('maps Firebase Auth validation and retry failures', () {
@@ -181,7 +181,7 @@ void main() {
         context: firestoreContext,
       );
       expect(timeout, isA<NetworkException>());
-      expect(timeout.context?.action, 'load runs');
+      expect(timeout.context?.action, 'load events');
 
       final unexpected = normalizeBackendError(
         StateError('bad decode'),

@@ -9,8 +9,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Usage:
 /// ```dart
-/// AsyncValueWidget<List<RunClub>>(
-///   value: ref.watch(watchRunClubsProvider),
+/// AsyncValueWidget<List<Club>>(
+///   value: ref.watch(watchClubsProvider),
 ///   data: (clubs) => ListView(...),
 /// )
 /// ```

@@ -8,17 +8,17 @@ import {
   DEFAULT_SEED_PREFIX,
   applyDeletePlan,
   applyDocPlan,
-  buildCheckInRunPlan,
+  buildCheckInEventPlan,
   buildDemoChecklist,
   buildHostAccountPlan,
   buildLaunchCleanupPlan,
-  buildMakeRunFullPlan,
+  buildMakeEventFullPlan,
   buildMatchPhonePlan,
   buildMarkAttendedPlan,
   buildPromoteWaitlistPlan,
   buildRefundPlan,
   buildResetUserDemoStatePlan,
-  buildStaleRunCleanupPlan,
+  buildStaleEventCleanupPlan,
   buildUnreadMessagePlan,
   buildValidateDemoStateReport,
   buildWarmGroupPlans,
@@ -33,13 +33,13 @@ import {
   writeManifest,
 } from "./demo_ops_core.mjs";
 import {
-  applyRunAggregateRepairPlan,
-  buildRunAggregateRepairPlan,
-} from "./recompute_run_aggregate_counts.mjs";
+  applyEventAggregateRepairPlan,
+  buildEventAggregateRepairPlan,
+} from "./recompute_event_aggregate_counts.mjs";
 import {
   applyMemberCountRepairPlan,
   buildMemberCountRepairPlan,
-} from "./recompute_run_club_member_counts.mjs";
+} from "./recompute_club_member_counts.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const admin = loadFirebaseAdmin();
@@ -93,18 +93,18 @@ export async function main(argv = process.argv.slice(2)) {
     await runDemoChecklist({db, args, projectId});
   } else if (command === "cleanup-demo-data") {
     await runCleanupDemoData({db, args, projectId});
-  } else if (command === "cleanup-stale-runs") {
-    await runCleanupStaleRuns({db, args, projectId});
-  } else if (command === "make-run-full") {
+  } else if (command === "cleanup-stale-events") {
+    await runCleanupStaleEvents({db, args, projectId});
+  } else if (command === "make-event-full") {
     await runWritePlan({
       db,
       args,
       projectId,
-      title: "Demo make run full plan",
-      plan: await buildMakeRunFullPlan({
+      title: "Demo make event full plan",
+      plan: await buildMakeEventFullPlan({
         db,
         admin,
-        runId: requireArg(args, "runId", "--run-id"),
+        eventId: requireArg(args, "eventId", "--event-id"),
         seedPrefix: args.seedPrefix,
       }),
       repair: true,
@@ -119,7 +119,7 @@ export async function main(argv = process.argv.slice(2)) {
         db,
         admin,
         phone: requireArg(args, "phone", "--phone"),
-        runId: requireArg(args, "runId", "--run-id"),
+        eventId: requireArg(args, "eventId", "--event-id"),
         seedPrefix: args.seedPrefix,
       }),
       repair: true,
@@ -134,7 +134,7 @@ export async function main(argv = process.argv.slice(2)) {
         db,
         admin,
         phone: requireArg(args, "phone", "--phone"),
-        runId: requireArg(args, "runId", "--run-id"),
+        eventId: requireArg(args, "eventId", "--event-id"),
         seedPrefix: args.seedPrefix,
       }),
       repair: true,
@@ -164,7 +164,7 @@ export async function main(argv = process.argv.slice(2)) {
         db,
         admin,
         phone: requireArg(args, "phone", "--phone"),
-        runId: requireArg(args, "runId", "--run-id"),
+        eventId: requireArg(args, "eventId", "--event-id"),
         seedPrefix: args.seedPrefix,
       }),
     });
@@ -182,13 +182,13 @@ export async function main(argv = process.argv.slice(2)) {
       }),
       repair: true,
     });
-  } else if (command === "create-check-in-run") {
+  } else if (command === "create-check-in-event") {
     await runWritePlan({
       db,
       args,
       projectId,
-      title: "Demo check-in run plan",
-      plan: await buildCheckInRunPlan({
+      title: "Demo check-in event plan",
+      plan: await buildCheckInEventPlan({
         db,
         admin,
         phone: requireArg(args, "phone", "--phone"),
@@ -210,7 +210,7 @@ async function runMatchPhones({db, args, projectId}) {
     admin,
     phoneA: requireArg(args, "phoneA", "--phone-a"),
     phoneB: requireArg(args, "phoneB", "--phone-b"),
-    runId: args.runId,
+    eventId: args.eventId,
     viaSwipes: args.viaSwipes,
     direct: !args.viaSwipesOnly,
     withMessages: args.withMessages,
@@ -375,8 +375,8 @@ async function runCleanupDemoData({db, args, projectId}) {
   });
 }
 
-async function runCleanupStaleRuns({db, args, projectId}) {
-  const plan = await buildStaleRunCleanupPlan({
+async function runCleanupStaleEvents({db, args, projectId}) {
+  const plan = await buildStaleEventCleanupPlan({
     db,
     seedPrefixes: args.seedPrefixes.length > 0 ?
       args.seedPrefixes :
@@ -392,7 +392,7 @@ async function runCleanupStaleRuns({db, args, projectId}) {
   printPlan({
     args,
     projectId,
-    title: "Demo stale run cleanup plan",
+    title: "Demo stale event cleanup plan",
     plan,
     manifest: {pathCount: plan.paths.length},
     appliedSummary: args.apply ? {deleted: plan.paths.length, aggregateSummary} : null,
@@ -417,13 +417,13 @@ async function runWritePlan({db, args, projectId, title, plan, repair = false}) 
 }
 
 async function repairAggregates(db) {
-  const runPlan = await buildRunAggregateRepairPlan(db);
+  const eventPlan = await buildEventAggregateRepairPlan(db);
   const clubPlan = await buildMemberCountRepairPlan(db);
-  await applyRunAggregateRepairPlan(db, runPlan);
+  await applyEventAggregateRepairPlan(db, eventPlan);
   await applyMemberCountRepairPlan(db, clubPlan);
   return {
-    runRepairs: runPlan.summary.repairsNeeded,
-    runWarnings: runPlan.summary.warnings.length,
+    eventRepairs: eventPlan.summary.repairsNeeded,
+    eventWarnings: eventPlan.summary.warnings.length,
     clubRepairs: clubPlan.summary.repairsNeeded,
     clubWarnings: clubPlan.summary.warnings.length,
   };
@@ -482,7 +482,7 @@ function parseArgs(argv) {
     fromPhone: null,
     toPhone: null,
     uid: null,
-    runId: null,
+    eventId: null,
     lat: null,
     lng: null,
     meetingPoint: undefined,
@@ -518,8 +518,8 @@ function parseArgs(argv) {
       args.viaSwipesOnly = true;
       args.withMessages = false;
     } else if (arg === "--no-messages") args.withMessages = false;
-    else if (arg === "--keep-past-runs") args.cleanupPast = false;
-    else if (arg === "--keep-cancelled-runs") args.cleanupCancelled = false;
+    else if (arg === "--keep-past-events") args.cleanupPast = false;
+    else if (arg === "--keep-cancelled-events") args.cleanupCancelled = false;
     else if (arg === "--emulator") args.emulatorHost = "127.0.0.1:8080";
     else if (arg === "--emulator-host") args.emulatorHost = requireValue(argv, ++i, arg);
     else if (arg === "--env") args.env = requireValue(argv, ++i, arg);
@@ -537,7 +537,7 @@ function parseArgs(argv) {
     else if (arg === "--from-phone") args.fromPhone = requireValue(argv, ++i, arg);
     else if (arg === "--to-phone") args.toPhone = requireValue(argv, ++i, arg);
     else if (arg === "--uid") args.uid = requireValue(argv, ++i, arg);
-    else if (arg === "--run-id") args.runId = requireValue(argv, ++i, arg);
+    else if (arg === "--event-id") args.eventId = requireValue(argv, ++i, arg);
     else if (arg === "--lat") args.lat = requireValue(argv, ++i, arg);
     else if (arg === "--lng") args.lng = requireValue(argv, ++i, arg);
     else if (arg === "--meeting-point") args.meetingPoint = requireValue(argv, ++i, arg);
@@ -625,12 +625,12 @@ function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
   }
   console.log(title);
   console.log(`Project: ${projectId}`);
-  console.log(`Mode: ${args.apply ? "apply" : "dry run"}`);
+  console.log(`Mode: ${args.apply ? "apply" : "dry event"}`);
   if (plan.command) console.log(`Command: ${plan.command}`);
   if (plan.operationId) console.log(`Operation: ${plan.operationId}`);
   if (plan.uid) console.log(`User: ${plan.uid}`);
   if (plan.matchId) console.log(`Match: ${plan.matchId}`);
-  if (plan.runId) console.log(`Run: ${plan.runId}`);
+  if (plan.eventId) console.log(`Event: ${plan.eventId}`);
   if (plan.docs) console.log(`Docs to write: ${plan.docs.length}`);
   if (plan.paths) console.log(`Docs to delete: ${plan.paths.length}`);
   if (plan.pairCount) console.log(`Pairs: ${plan.pairCount}`);
@@ -657,7 +657,7 @@ function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
       }
     }
   } else {
-    console.log("\nDry run only. Re-run with --apply to write changes.");
+    console.log("\nDry event only. Re-event with --apply to write changes.");
   }
 }
 
@@ -672,14 +672,14 @@ function printCommands() {
 - validate-demo-state
 - demo-checklist
 - cleanup-demo-data
-- cleanup-stale-runs
-- make-run-full
+- cleanup-stale-events
+- make-event-full
 - mark-attended
 - promote-waitlist
 - create-unread-message
 - create-refund
 - create-host-account
-- create-check-in-run
+- create-check-in-event
 - scenario-info
 - list-golden-accounts`);
 }
@@ -696,15 +696,15 @@ Usage:
   node tool/demo_ops.mjs reset-user-demo-state --env prod --phone +91... --apply --allow-prod
   node tool/demo_ops.mjs validate-demo-state --env prod --phones +91...,+91...
   node tool/demo_ops.mjs cleanup-demo-data --env prod --allow-prod
-  node tool/demo_ops.mjs cleanup-stale-runs --env prod --apply --allow-prod
-  node tool/demo_ops.mjs create-check-in-run --env prod --phone +91... --lat 28.6 --lng 77.2 --apply --allow-prod
+  node tool/demo_ops.mjs cleanup-stale-events --env prod --apply --allow-prod
+  node tool/demo_ops.mjs create-check-in-event --env prod --phone +91... --lat 28.6 --lng 77.2 --apply --allow-prod
   node tool/demo_ops.mjs demo-checklist --env prod --phone +91...
   node tool/demo_ops.mjs scenario-info --demo-scenario investor-demo
 
 Common options:
   --env <dev|staging|prod>       Resolve project id from .firebaserc.
   --project <firebase-project>   Explicit project id.
-  --apply                        Write/delete documents. Default is dry run.
+  --apply                        Write/delete documents. Default is dry event.
   --allow-prod                   Required for prod writes.
   --json                         Machine-readable output.
   --emulator / --emulator-host   Use Firestore emulator.
@@ -714,9 +714,9 @@ Command options:
   --phones <phone,...>           Comma-separated phone numbers.
   --phone-a / --phone-b          Pair for match-phones.
   --from-phone / --to-phone      Sender and recipient for unread-message.
-  --run-id <runId>               Force match/shared run context.
-  --lat / --lng                  Manual coordinates for create-check-in-run.
-  --meeting-point <label>        Meeting label for create-check-in-run.
+  --event-id <eventId>               Force match/shared event context.
+  --lat / --lng                  Manual coordinates for create-check-in-event.
+  --meeting-point <label>        Meeting label for create-check-in-event.
   --text <message>               Demo chat message text.
   --via-swipes                   Also write reciprocal swipe likes.
   --via-swipes-only              Write reciprocal likes only; rely on trigger.
@@ -724,8 +724,8 @@ Command options:
   --no-messages                  Deprecated; match-phones defaults to no messages.
   --synthetic-matches <n>        warm-user synthetic match count. Default: 3.
   --seed-prefixes <prefix,...>   cleanup-demo-data prefixes.
-  --keep-past-runs               cleanup-stale-runs leaves past seeded runs.
-  --keep-cancelled-runs          cleanup-stale-runs leaves cancelled seeded runs.
+  --keep-past-events               cleanup-stale-events leaves past seeded events.
+  --keep-cancelled-events          cleanup-stale-events leaves cancelled seeded events.
   --demo-scenario <name|path>    scenario-info target.
   --golden-file <path>           Golden account registry JSON.
   --anchor-file <path>           seed-world/append-user anchor file.

@@ -1,15 +1,15 @@
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -44,67 +44,67 @@ class DashboardSectionModel<T> {
 
 class DashboardFullViewModel {
   const DashboardFullViewModel({
-    required this.upcomingRuns,
-    required this.nextRun,
+    required this.upcomingEvents,
+    required this.nextEvent,
     required this.arrivalAction,
-    required this.activeSwipeRun,
-    required this.pendingReviewRun,
-    required this.hostRunTools,
-    required this.attendedRunsSection,
+    required this.activeSwipeEvent,
+    required this.pendingReviewEvent,
+    required this.hostEventTools,
+    required this.attendedEventsSection,
     required this.weeklyActivitySection,
     required this.recommendationsSection,
   });
 
-  final List<Run> upcomingRuns;
-  final Run? nextRun;
-  final RunArrivalAction? arrivalAction;
-  final Run? activeSwipeRun;
-  final Run? pendingReviewRun;
-  final List<DashboardHostRunTool> hostRunTools;
-  final DashboardSectionModel<List<Run>> attendedRunsSection;
+  final List<Event> upcomingEvents;
+  final Event? nextEvent;
+  final EventArrivalAction? arrivalAction;
+  final Event? activeSwipeEvent;
+  final Event? pendingReviewEvent;
+  final List<DashboardHostEventTool> hostEventTools;
+  final DashboardSectionModel<List<Event>> attendedEventsSection;
   final DashboardSectionModel<WeeklyRunningActivitySnapshot>
   weeklyActivitySection;
-  final DashboardSectionModel<List<DashboardRunRecommendation>>
+  final DashboardSectionModel<List<DashboardEventRecommendation>>
   recommendationsSection;
 }
 
 enum DashboardHostAttendanceState { open, opensLater, closed }
 
-class DashboardHostRunTool {
-  const DashboardHostRunTool({
-    required this.run,
+class DashboardHostEventTool {
+  const DashboardHostEventTool({
+    required this.event,
     required this.attendanceState,
   });
 
-  final Run run;
+  final Event event;
   final DashboardHostAttendanceState attendanceState;
 
   bool get canTakeAttendance =>
       attendanceState == DashboardHostAttendanceState.open;
 }
 
-class DashboardRunRecommendation {
-  const DashboardRunRecommendation({
-    required this.run,
+class DashboardEventRecommendation {
+  const DashboardEventRecommendation({
+    required this.event,
     required this.clubName,
     required this.reasonLabel,
     required this.score,
   });
 
-  final Run run;
+  final Event event;
   final String clubName;
   final String reasonLabel;
   final double score;
 }
 
 DashboardFullViewModel buildDashboardFullViewModel({
-  required List<Run> signedUpRuns,
+  required List<Event> signedUpEvents,
   String? uid,
   UserProfile? viewer,
-  List<Run> hostedRuns = const [],
-  required AsyncValue<List<Run>> attendedRunsAsync,
-  required AsyncValue<List<DashboardRunRecommendationCandidate>>
-  recommendedRunsAsync,
+  List<Event> hostedEvents = const [],
+  required AsyncValue<List<Event>> attendedEventsAsync,
+  required AsyncValue<List<DashboardEventRecommendationCandidate>>
+  recommendedEventsAsync,
   AsyncValue<WeeklyRunningActivitySnapshot>? weeklyActivityAsync,
   AsyncValue<List<Review>> reviewsByUserAsync = const AsyncData<List<Review>>(
     [],
@@ -113,86 +113,90 @@ DashboardFullViewModel buildDashboardFullViewModel({
 }) {
   final effectiveNow = now ?? DateTime.now();
 
-  final upcomingRuns =
-      signedUpRuns.where((run) => run.startTime.isAfter(effectiveNow)).toList()
+  final upcomingEvents =
+      signedUpEvents
+          .where((event) => event.startTime.isAfter(effectiveNow))
+          .toList()
         ..sort((a, b) => a.startTime.compareTo(b.startTime));
-  final hostRunTools = _buildHostRunTools(hostedRuns, now: effectiveNow);
+  final hostEventTools = _buildHostEventTools(hostedEvents, now: effectiveNow);
 
-  final nextRun = upcomingRuns.firstOrNull;
+  final nextEvent = upcomingEvents.firstOrNull;
 
-  final attendedRunsSection = attendedRunsAsync.when(
-    loading: () => const DashboardSectionModel<List<Run>>.loading(
-      'Loading your recent runs...',
+  final attendedEventsSection = attendedEventsAsync.when(
+    loading: () => const DashboardSectionModel<List<Event>>.loading(
+      'Loading your recent events...',
     ),
-    error: (error, stackTrace) => const DashboardSectionModel<List<Run>>.error(
-      'Unable to load your recent runs.',
-    ),
-    data: DashboardSectionModel<List<Run>>.data,
+    error: (error, stackTrace) =>
+        const DashboardSectionModel<List<Event>>.error(
+          'Unable to load your recent events.',
+        ),
+    data: DashboardSectionModel<List<Event>>.data,
   );
   final weeklyActivitySection = _buildWeeklyActivitySection(
-    attendedRunsAsync: attendedRunsAsync,
+    attendedEventsAsync: attendedEventsAsync,
     weeklyActivityAsync: weeklyActivityAsync,
     referenceDate: effectiveNow,
   );
 
-  final signedUpRunIds = signedUpRuns.map((run) => run.id).toSet();
-  final recommendationsSection = recommendedRunsAsync.when(
+  final signedUpEventIds = signedUpEvents.map((event) => event.id).toSet();
+  final recommendationsSection = recommendedEventsAsync.when(
     loading: () =>
-        const DashboardSectionModel<List<DashboardRunRecommendation>>.loading(
-          'Loading recommended runs...',
+        const DashboardSectionModel<List<DashboardEventRecommendation>>.loading(
+          'Loading recommended events...',
         ),
     error: (error, stackTrace) =>
-        const DashboardSectionModel<List<DashboardRunRecommendation>>.error(
-          'Unable to load recommended runs.',
+        const DashboardSectionModel<List<DashboardEventRecommendation>>.error(
+          'Unable to load recommended events.',
         ),
     data: (candidates) =>
-        DashboardSectionModel<List<DashboardRunRecommendation>>.data(
-          rankDashboardRunRecommendations(
+        DashboardSectionModel<List<DashboardEventRecommendation>>.data(
+          rankDashboardEventRecommendations(
             candidates: candidates,
-            signedUpRunIds: signedUpRunIds,
-            attendedRuns: attendedRunsAsync.asData?.value ?? const <Run>[],
-            signedUpRuns: signedUpRuns,
+            signedUpEventIds: signedUpEventIds,
+            attendedEvents:
+                attendedEventsAsync.asData?.value ?? const <Event>[],
+            signedUpEvents: signedUpEvents,
             viewer: viewer,
             now: effectiveNow,
           ),
         ),
   );
 
-  final activeSwipeRun = attendedRunsSection.data == null
+  final activeSwipeEvent = attendedEventsSection.data == null
       ? null
-      : latestRunWithOpenSwipeWindow(
-          attendedRunsSection.data!,
+      : latestEventWithOpenSwipeWindow(
+          attendedEventsSection.data!,
           now: effectiveNow,
         );
-  final reviewedRunIds =
+  final reviewedEventIds =
       reviewsByUserAsync.asData?.value
-          .map((review) => review.runId)
+          .map((review) => review.eventId)
           .whereType<String>()
           .toSet() ??
       const <String>{};
-  final pendingReviewRun = attendedRunsSection.data == null
+  final pendingReviewEvent = attendedEventsSection.data == null
       ? null
-      : _latestUnreviewedAttendedRun(
-          attendedRunsSection.data!,
-          reviewedRunIds: reviewedRunIds,
+      : _latestUnreviewedAttendedEvent(
+          attendedEventsSection.data!,
+          reviewedEventIds: reviewedEventIds,
         );
   final arrivalAction = uid == null
       ? null
-      : selectRunArrivalAction(
-          signedUpRuns: signedUpRuns,
-          hostedRuns: const [],
+      : selectEventArrivalAction(
+          signedUpEvents: signedUpEvents,
+          hostedEvents: const [],
           uid: uid,
           now: effectiveNow,
         );
 
   return DashboardFullViewModel(
-    upcomingRuns: upcomingRuns,
-    nextRun: nextRun,
+    upcomingEvents: upcomingEvents,
+    nextEvent: nextEvent,
     arrivalAction: arrivalAction,
-    activeSwipeRun: activeSwipeRun,
-    pendingReviewRun: pendingReviewRun,
-    hostRunTools: hostRunTools,
-    attendedRunsSection: attendedRunsSection,
+    activeSwipeEvent: activeSwipeEvent,
+    pendingReviewEvent: pendingReviewEvent,
+    hostEventTools: hostEventTools,
+    attendedEventsSection: attendedEventsSection,
     weeklyActivitySection: weeklyActivitySection,
     recommendationsSection: recommendationsSection,
   );
@@ -200,13 +204,13 @@ DashboardFullViewModel buildDashboardFullViewModel({
 
 DashboardSectionModel<WeeklyRunningActivitySnapshot>
 _buildWeeklyActivitySection({
-  required AsyncValue<List<Run>> attendedRunsAsync,
+  required AsyncValue<List<Event>> attendedEventsAsync,
   required AsyncValue<WeeklyRunningActivitySnapshot>? weeklyActivityAsync,
   required DateTime referenceDate,
 }) {
-  if (attendedRunsAsync.isLoading) {
+  if (attendedEventsAsync.isLoading) {
     return const DashboardSectionModel<WeeklyRunningActivitySnapshot>.loading(
-      'Loading your recent runs...',
+      'Loading your recent events...',
     );
   }
   if (weeklyActivityAsync?.isLoading ?? false) {
@@ -215,19 +219,19 @@ _buildWeeklyActivitySection({
     );
   }
 
-  final attendedRuns = attendedRunsAsync.asData?.value;
+  final attendedEvents = attendedEventsAsync.asData?.value;
   final platformSnapshot = weeklyActivityAsync?.asData?.value;
-  if (attendedRunsAsync.hasError &&
+  if (attendedEventsAsync.hasError &&
       platformSnapshot?.hasPlatformConnection != true) {
     return const DashboardSectionModel<WeeklyRunningActivitySnapshot>.error(
-      'Unable to load your recent runs.',
+      'Unable to load your recent events.',
     );
   }
 
-  if (attendedRuns != null || platformSnapshot != null) {
+  if (attendedEvents != null || platformSnapshot != null) {
     return DashboardSectionModel<WeeklyRunningActivitySnapshot>.data(
       buildDashboardWeeklyActivitySnapshot(
-        attendedRuns: attendedRuns ?? const <Run>[],
+        attendedEvents: attendedEvents ?? const <Event>[],
         platformSnapshot:
             platformSnapshot ??
             WeeklyRunningActivitySnapshot.unsupported(
@@ -244,12 +248,12 @@ _buildWeeklyActivitySection({
 }
 
 WeeklyRunningActivitySnapshot buildDashboardWeeklyActivitySnapshot({
-  required List<Run> attendedRuns,
+  required List<Event> attendedEvents,
   required WeeklyRunningActivitySnapshot platformSnapshot,
   required DateTime referenceDate,
 }) {
-  final catchActivities = attendedRuns
-      .map(_runnerActivityFromCatchRun)
+  final catchActivities = attendedEvents
+      .map(_activityFromCatchEvent)
       .toList(growable: false);
 
   if (!platformSnapshot.hasPlatformConnection) {
@@ -258,7 +262,7 @@ WeeklyRunningActivitySnapshot buildDashboardWeeklyActivitySnapshot({
       referenceDate: referenceDate,
       refreshedAt: platformSnapshot.summary.refreshedAt,
     );
-    if (!catchSummary.hasRuns) {
+    if (!catchSummary.hasEvents) {
       return platformSnapshot.copyWith(
         summary: catchSummary,
         activities: const [],
@@ -303,16 +307,16 @@ WeeklyRunningActivitySnapshot buildDashboardWeeklyActivitySnapshot({
   );
 }
 
-RunnerActivity _runnerActivityFromCatchRun(Run run) {
+RunnerActivity _activityFromCatchEvent(Event event) {
   return RunnerActivity(
-    stableId: 'catch:${run.id}',
+    stableId: 'catch:${event.id}',
     provider: RunnerActivityProvider.catchAttendance,
     type: RunnerActivityType.running,
-    startTime: run.startTime,
-    endTime: run.endTime,
-    distanceMeters: run.distanceKm * 1000,
+    startTime: event.startTime,
+    endTime: event.endTime,
+    distanceMeters: event.distanceKm * 1000,
     sourceName: 'Catch',
-    matchedCatchRunId: run.id,
+    matchedCatchEventId: event.id,
   );
 }
 
@@ -334,7 +338,7 @@ WeeklyRunningActivitySource _weeklyActivitySource({
   required List<RunnerActivity> catchActivities,
   required WeeklyActivitySummary summary,
 }) {
-  if (!summary.hasRuns) return WeeklyRunningActivitySource.none;
+  if (!summary.hasEvents) return WeeklyRunningActivitySource.none;
   if (platformActivities.isNotEmpty && catchActivities.isNotEmpty) {
     return WeeklyRunningActivitySource.mixed;
   }
@@ -344,78 +348,82 @@ WeeklyRunningActivitySource _weeklyActivitySource({
   return WeeklyRunningActivitySource.catchFallback;
 }
 
-List<DashboardHostRunTool> _buildHostRunTools(
-  List<Run> hostedRuns, {
+List<DashboardHostEventTool> _buildHostEventTools(
+  List<Event> hostedEvents, {
   required DateTime now,
 }) {
-  final tools = <DashboardHostRunTool>[];
-  for (final run in hostedRuns) {
-    if (run.isCancelled) continue;
-    final attendanceState = _hostAttendanceState(run: run, now: now);
-    final isFuture = run.startTime.isAfter(now);
+  final tools = <DashboardHostEventTool>[];
+  for (final event in hostedEvents) {
+    if (event.isCancelled) continue;
+    final attendanceState = _hostAttendanceState(event: event, now: now);
+    final isFuture = event.startTime.isAfter(now);
     if (!isFuture && attendanceState != DashboardHostAttendanceState.open) {
       continue;
     }
-    tools.add(DashboardHostRunTool(run: run, attendanceState: attendanceState));
+    tools.add(
+      DashboardHostEventTool(event: event, attendanceState: attendanceState),
+    );
   }
 
   tools.sort((a, b) {
     if (a.canTakeAttendance != b.canTakeAttendance) {
       return a.canTakeAttendance ? -1 : 1;
     }
-    return a.run.startTime.compareTo(b.run.startTime);
+    return a.event.startTime.compareTo(b.event.startTime);
   });
   return tools;
 }
 
 DashboardHostAttendanceState _hostAttendanceState({
-  required Run run,
+  required Event event,
   required DateTime now,
 }) {
-  if (isHostAttendanceOpen(run: run, now: now)) {
+  if (isHostAttendanceOpen(event: event, now: now)) {
     return DashboardHostAttendanceState.open;
   }
-  if (now.isBefore(hostAttendanceWindowStartsAt(run))) {
+  if (now.isBefore(hostAttendanceWindowStartsAt(event))) {
     return DashboardHostAttendanceState.opensLater;
   }
   return DashboardHostAttendanceState.closed;
 }
 
-Run? _latestUnreviewedAttendedRun(
-  List<Run> attendedRuns, {
-  required Set<String> reviewedRunIds,
+Event? _latestUnreviewedAttendedEvent(
+  List<Event> attendedEvents, {
+  required Set<String> reviewedEventIds,
 }) {
-  final unreviewedRuns =
-      attendedRuns.where((run) => !reviewedRunIds.contains(run.id)).toList()
+  final unreviewedEvents =
+      attendedEvents
+          .where((event) => !reviewedEventIds.contains(event.id))
+          .toList()
         ..sort((a, b) => b.endTime.compareTo(a.endTime));
-  return unreviewedRuns.firstOrNull;
+  return unreviewedEvents.firstOrNull;
 }
 
-List<DashboardRunRecommendation> rankDashboardRunRecommendations({
-  required List<DashboardRunRecommendationCandidate> candidates,
-  required Set<String> signedUpRunIds,
-  required List<Run> attendedRuns,
-  required List<Run> signedUpRuns,
+List<DashboardEventRecommendation> rankDashboardEventRecommendations({
+  required List<DashboardEventRecommendationCandidate> candidates,
+  required Set<String> signedUpEventIds,
+  required List<Event> attendedEvents,
+  required List<Event> signedUpEvents,
   required DateTime now,
   UserProfile? viewer,
   int limit = 10,
 }) {
-  final timePreference = _timePreferenceFromRuns(
-    attendedRuns: attendedRuns,
-    signedUpRuns: signedUpRuns,
+  final timePreference = _timePreferenceFromEvents(
+    attendedEvents: attendedEvents,
+    signedUpEvents: signedUpEvents,
     now: now,
   );
 
-  final recommendations = <DashboardRunRecommendation>[];
+  final recommendations = <DashboardEventRecommendation>[];
   for (final candidate in candidates) {
-    final run = candidate.run;
-    if (signedUpRunIds.contains(run.id) ||
-        run.isCancelled ||
-        !run.startTime.isAfter(now) ||
-        run.isFull) {
+    final event = candidate.event;
+    if (signedUpEventIds.contains(event.id) ||
+        event.isCancelled ||
+        !event.startTime.isAfter(now) ||
+        event.isFull) {
       continue;
     }
-    if (viewer != null && !_isEligibleForRecommendation(run, viewer)) {
+    if (viewer != null && !_isEligibleForRecommendation(event, viewer)) {
       continue;
     }
 
@@ -431,57 +439,57 @@ List<DashboardRunRecommendation> rankDashboardRunRecommendations({
   recommendations.sort((a, b) {
     final scoreOrder = b.score.compareTo(a.score);
     if (scoreOrder != 0) return scoreOrder;
-    return a.run.startTime.compareTo(b.run.startTime);
+    return a.event.startTime.compareTo(b.event.startTime);
   });
   return recommendations.take(limit).toList(growable: false);
 }
 
-bool _isEligibleForRecommendation(Run run, UserProfile viewer) {
-  if (viewer.age < run.constraints.minAge ||
-      viewer.age > run.constraints.maxAge) {
+bool _isEligibleForRecommendation(Event event, UserProfile viewer) {
+  if (viewer.age < event.constraints.minAge ||
+      viewer.age > event.constraints.maxAge) {
     return false;
   }
-  final genderCap = run.constraints.maxForGender(viewer.gender);
+  final genderCap = event.constraints.maxForGender(viewer.gender);
   if (genderCap != null &&
-      (run.genderCounts[viewer.gender.name] ?? 0) >= genderCap) {
+      (event.genderCounts[viewer.gender.name] ?? 0) >= genderCap) {
     return false;
   }
   return true;
 }
 
-DashboardRunRecommendation _scoreRecommendation({
-  required DashboardRunRecommendationCandidate candidate,
+DashboardEventRecommendation _scoreRecommendation({
+  required DashboardEventRecommendationCandidate candidate,
   required UserProfile? viewer,
-  required _RunTimeBucket? timePreference,
+  required _EventTimeBucket? timePreference,
   required DateTime now,
 }) {
-  final run = candidate.run;
+  final event = candidate.event;
   var score = 0.0;
   var reason = 'From your clubs';
 
-  final distanceReason = _distancePreferenceReason(viewer, run);
+  final distanceReason = _distancePreferenceReason(viewer, event);
   if (distanceReason != null) {
     score += 28;
     reason = distanceReason;
-  } else if (_hasNearbyPreferredDistance(viewer, run)) {
+  } else if (_hasNearbyPreferredDistance(viewer, event)) {
     score += 12;
   }
 
-  final paceScore = _paceFitScore(viewer, run);
+  final paceScore = _paceFitScore(viewer, event);
   score += paceScore;
   if (reason == 'From your clubs' && paceScore >= 18) {
     reason = 'Fits your pace';
   }
 
-  final runTimeBucket = _RunTimeBucket.fromHour(run.startTime.hour);
-  if (timePreference != null && runTimeBucket == timePreference) {
+  final eventTimeBucket = _EventTimeBucket.fromHour(event.startTime.hour);
+  if (timePreference != null && eventTimeBucket == timePreference) {
     score += 18;
     if (reason == 'From your clubs') {
-      reason = '${timePreference.label} run pattern';
+      reason = '${timePreference.label} event pattern';
     }
   }
 
-  final proximityScore = _proximityScore(viewer, run);
+  final proximityScore = _proximityScore(viewer, event);
   score += proximityScore;
   if (reason == 'From your clubs' && proximityScore >= 14) {
     reason = 'Near you';
@@ -491,58 +499,58 @@ DashboardRunRecommendation _scoreRecommendation({
     score += 10;
   }
 
-  score += _startTimeScore(run, now);
-  score += run.spotsRemaining >= 5 ? 5 : 2;
+  score += _startTimeScore(event, now);
+  score += event.spotsRemaining >= 5 ? 5 : 2;
 
-  return DashboardRunRecommendation(
-    run: run,
+  return DashboardEventRecommendation(
+    event: event,
     clubName: candidate.clubName,
     reasonLabel: reason,
     score: score,
   );
 }
 
-String? _distancePreferenceReason(UserProfile? viewer, Run run) {
+String? _distancePreferenceReason(UserProfile? viewer, Event event) {
   final preferredDistances = viewer?.preferredDistances ?? const [];
   for (final preferred in preferredDistances) {
-    if ((run.distanceKm - preferred.targetKm).abs() <= 0.75) {
+    if ((event.distanceKm - preferred.targetKm).abs() <= 0.75) {
       return 'Matches your ${preferred.label} preference';
     }
   }
   return null;
 }
 
-bool _hasNearbyPreferredDistance(UserProfile? viewer, Run run) {
+bool _hasNearbyPreferredDistance(UserProfile? viewer, Event event) {
   final preferredDistances = viewer?.preferredDistances ?? const [];
   return preferredDistances.any(
-    (preferred) => (run.distanceKm - preferred.targetKm).abs() <= 2,
+    (preferred) => (event.distanceKm - preferred.targetKm).abs() <= 2,
   );
 }
 
-double _paceFitScore(UserProfile? viewer, Run run) {
+double _paceFitScore(UserProfile? viewer, Event event) {
   if (viewer == null) return 0;
-  final runPace = run.pace.secondsPerKm;
-  if (runPace >= viewer.paceMinSecsPerKm &&
-      runPace <= viewer.paceMaxSecsPerKm) {
+  final eventPace = event.pace.secondsPerKm;
+  if (eventPace >= viewer.paceMinSecsPerKm &&
+      eventPace <= viewer.paceMaxSecsPerKm) {
     return 18;
   }
-  final minDelta = (runPace - viewer.paceMinSecsPerKm).abs();
-  final maxDelta = (runPace - viewer.paceMaxSecsPerKm).abs();
+  final minDelta = (eventPace - viewer.paceMinSecsPerKm).abs();
+  final maxDelta = (eventPace - viewer.paceMaxSecsPerKm).abs();
   return minDelta < 45 || maxDelta < 45 ? 8 : 0;
 }
 
-double _proximityScore(UserProfile? viewer, Run run) {
+double _proximityScore(UserProfile? viewer, Event event) {
   final userLocation = LocationCoordinate.fromNullable(
     latitude: viewer?.latitude,
     longitude: viewer?.longitude,
   );
-  final runLocation = LocationCoordinate.fromNullable(
-    latitude: run.startingPointLat,
-    longitude: run.startingPointLng,
+  final eventLocation = LocationCoordinate.fromNullable(
+    latitude: event.startingPointLat,
+    longitude: event.startingPointLng,
   );
-  if (userLocation == null || runLocation == null) return 0;
+  if (userLocation == null || eventLocation == null) return 0;
 
-  final distanceKm = userLocation.distanceTo(runLocation) / 1000;
+  final distanceKm = userLocation.distanceTo(eventLocation) / 1000;
   if (distanceKm <= 3) return 18;
   if (distanceKm <= 8) return 12;
   if (distanceKm <= 15) return 6;
@@ -559,31 +567,31 @@ bool _isSameCity(UserProfile? viewer, String? clubLocation) {
       userCity == location;
 }
 
-double _startTimeScore(Run run, DateTime now) {
-  final daysAway = run.startTime.difference(now).inDays;
+double _startTimeScore(Event event, DateTime now) {
+  final daysAway = event.startTime.difference(now).inDays;
   if (daysAway <= 7) return 8;
   if (daysAway <= 14) return 5;
   if (daysAway <= 30) return 2;
   return 0;
 }
 
-_RunTimeBucket? _timePreferenceFromRuns({
-  required List<Run> attendedRuns,
-  required List<Run> signedUpRuns,
+_EventTimeBucket? _timePreferenceFromEvents({
+  required List<Event> attendedEvents,
+  required List<Event> signedUpEvents,
   required DateTime now,
 }) {
-  final counts = <_RunTimeBucket, int>{};
-  void addRun(Run run, int weight) {
-    if (run.startTime.isAfter(now)) return;
-    final bucket = _RunTimeBucket.fromHour(run.startTime.hour);
+  final counts = <_EventTimeBucket, int>{};
+  void addRun(Event event, int weight) {
+    if (event.startTime.isAfter(now)) return;
+    final bucket = _EventTimeBucket.fromHour(event.startTime.hour);
     counts[bucket] = (counts[bucket] ?? 0) + weight;
   }
 
-  for (final run in attendedRuns) {
-    addRun(run, 2);
+  for (final event in attendedEvents) {
+    addRun(event, 2);
   }
-  for (final run in signedUpRuns) {
-    addRun(run, 1);
+  for (final event in signedUpEvents) {
+    addRun(event, 1);
   }
   if (counts.isEmpty) return null;
 
@@ -592,19 +600,19 @@ _RunTimeBucket? _timePreferenceFromRuns({
   return ranked.first.value > 1 ? ranked.first.key : null;
 }
 
-enum _RunTimeBucket {
+enum _EventTimeBucket {
   morning('Morning'),
   afternoon('Afternoon'),
   evening('Evening');
 
-  const _RunTimeBucket(this.label);
+  const _EventTimeBucket(this.label);
 
   final String label;
 
-  factory _RunTimeBucket.fromHour(int hour) {
-    if (hour < 12) return _RunTimeBucket.morning;
-    if (hour < 17) return _RunTimeBucket.afternoon;
-    return _RunTimeBucket.evening;
+  factory _EventTimeBucket.fromHour(int hour) {
+    if (hour < 12) return _EventTimeBucket.morning;
+    if (hour < 17) return _EventTimeBucket.afternoon;
+    return _EventTimeBucket.evening;
   }
 }
 
@@ -626,38 +634,35 @@ extension on PaceLevel {
   };
 }
 
-/// Combines signed-up runs, attended runs, and recommended runs into a single
+/// Combines signed-up events, attended events, and recommended events into a single
 /// [DashboardFullViewModel] for the dashboard screen.
 @riverpod
 DashboardFullViewModel dashboardFullViewModel(
   Ref ref, {
-  required List<Run> signedUpRuns,
+  required List<Event> signedUpEvents,
   required UserProfile user,
   required String uid,
   required List<String> followedClubIds,
 }) {
-  final hostedClubs = ref
-      .watch(watchRunClubsHostedByProvider(uid))
-      .asData
-      ?.value;
-  final hostedRuns = <Run>[];
-  for (final club in hostedClubs ?? const <RunClub>[]) {
-    final runs = ref.watch(watchRunsForClubProvider(club.id)).asData?.value;
-    if (runs != null) {
-      hostedRuns.addAll(runs);
+  final hostedClubs = ref.watch(watchClubsHostedByProvider(uid)).asData?.value;
+  final hostedEvents = <Event>[];
+  for (final club in hostedClubs ?? const <Club>[]) {
+    final events = ref.watch(watchEventsForClubProvider(club.id)).asData?.value;
+    if (events != null) {
+      hostedEvents.addAll(events);
     }
   }
 
   return buildDashboardFullViewModel(
-    signedUpRuns: signedUpRuns,
+    signedUpEvents: signedUpEvents,
     uid: uid,
     viewer: user,
-    hostedRuns: hostedRuns,
-    attendedRunsAsync: ref.watch(watchAttendedRunsProvider(uid)),
+    hostedEvents: hostedEvents,
+    attendedEventsAsync: ref.watch(watchAttendedEventsProvider(uid)),
     weeklyActivityAsync: ref.watch(weeklyRunningActivityProvider),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
-    recommendedRunsAsync: ref.watch(
-      dashboardRecommendedRunsProvider(
+    recommendedEventsAsync: ref.watch(
+      dashboardRecommendedEventsProvider(
         DashboardRecommendationsQuery(
           userId: uid,
           followedClubIds: followedClubIds,

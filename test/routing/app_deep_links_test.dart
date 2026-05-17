@@ -3,29 +3,29 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('AppDeepLinks', () {
-    test('builds a run club detail URL from the router path contract', () {
+    test('builds a club detail URL from the router path contract', () {
       expect(
-        AppDeepLinks.runClub('club-1').toString(),
-        'https://catchdates.com/clubs/run-clubs/club-1',
+        AppDeepLinks.club('club-1').toString(),
+        'https://catchdates.com/clubs/club-1',
       );
     });
 
-    test('builds a nested run detail URL from the router path contract', () {
+    test('builds a nested event detail URL from the router path contract', () {
       expect(
-        AppDeepLinks.run(runClubId: 'club-1', runId: 'run-1').toString(),
-        'https://catchdates.com/clubs/run-clubs/club-1/runs/run-1',
+        AppDeepLinks.event(clubId: 'club-1', eventId: 'event-1').toString(),
+        'https://catchdates.com/clubs/club-1/events/event-1',
       );
     });
 
     test('encodes route parameter values as path segments', () {
       expect(
-        AppDeepLinks.runClub('club with spaces').toString(),
-        'https://catchdates.com/clubs/run-clubs/club%20with%20spaces',
+        AppDeepLinks.club('club with spaces').toString(),
+        'https://catchdates.com/clubs/club%20with%20spaces',
       );
     });
 
     test('rejects missing route parameter values', () {
-      expect(() => AppDeepLinks.runClub(''), throwsArgumentError);
+      expect(() => AppDeepLinks.club(''), throwsArgumentError);
     });
   });
 }

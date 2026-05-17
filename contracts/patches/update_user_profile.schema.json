@@ -271,7 +271,7 @@
         "prefsMessages": {
           "type": "boolean"
         },
-        "prefsRunReminders": {
+        "prefsEventReminders": {
           "type": "boolean"
         },
         "prefsRunStatusUpdates": {

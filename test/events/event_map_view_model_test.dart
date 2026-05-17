@@ -1,0 +1,260 @@
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
+import 'package:catch_dating_app/core/domain/city_data.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/saved_event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_map_center.dart';
+import 'package:catch_dating_app/events/presentation/event_map_view_model.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
+import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+import '../clubs/clubs_test_helpers.dart' as club_test;
+import 'events_test_helpers.dart';
+
+ClubMembership _membership({required String clubId, String uid = 'runner-1'}) =>
+    ClubMembership(
+      id: clubMembershipId(clubId: clubId, uid: uid),
+      clubId: clubId,
+      uid: uid,
+      role: ClubMembershipRole.member,
+      status: ClubMembershipStatus.active,
+      joinedAt: DateTime(2026, 1, 1),
+    );
+
+void main() {
+  group('buildEventMapViewModel', () {
+    final now = DateTime(2026, 1, 1);
+
+    test(
+      'deduplicates events, keeps signed-up data, and sorts chronologically',
+      () {
+        final laterRecommended = buildEvent(
+          id: 'event-2',
+          meetingPoint: 'Later',
+          startTime: DateTime(2026, 1, 3, 7),
+          startingPointLat: 19.1,
+          startingPointLng: 72.9,
+        );
+        final recommendedDuplicate = buildEvent(
+          id: 'event-1',
+          meetingPoint: 'Recommended copy',
+          startTime: DateTime(2026, 1, 2, 7),
+        );
+        final signedUpDuplicate = buildEvent(
+          id: 'event-1',
+          meetingPoint: 'Signed-up copy',
+          startTime: DateTime(2026, 1, 2, 7),
+          startingPointLat: 19.0,
+          startingPointLng: 72.8,
+        );
+
+        final viewModel = buildEventMapViewModel(
+          signedUpEvents: [signedUpDuplicate],
+          savedEvents: const [],
+          recommendedEvents: [laterRecommended, recommendedDuplicate],
+          now: now,
+        );
+
+        expect(viewModel.events.map((event) => event.id), [
+          'event-1',
+          'event-2',
+        ]);
+        expect(viewModel.events.first.meetingPoint, 'Signed-up copy');
+        expect(viewModel.pinnedEvents.map((event) => event.id), [
+          'event-1',
+          'event-2',
+        ]);
+      },
+    );
+
+    test('filters map pins without dropping unpinned sheet rows', () {
+      final pinned = buildEvent(
+        id: 'pinned',
+        startTime: DateTime(2026, 1, 2, 7),
+        startingPointLat: 19.0,
+        startingPointLng: 72.8,
+      );
+      final unpinned = buildEvent(
+        id: 'unpinned',
+        startTime: DateTime(2026, 1, 3, 7),
+      );
+
+      final viewModel = buildEventMapViewModel(
+        signedUpEvents: [unpinned],
+        savedEvents: const [],
+        recommendedEvents: [pinned],
+        now: now,
+      );
+
+      expect(viewModel.events.map((event) => event.id), ['pinned', 'unpinned']);
+      expect(viewModel.pinnedEvents.map((event) => event.id), ['pinned']);
+      expect(viewModel.selectedEvent('unpinned'), unpinned);
+    });
+
+    test('filters past and cancelled events out of the map surface', () {
+      final past = buildEvent(id: 'past', startTime: DateTime(2025, 12, 31, 7));
+      final cancelled = buildEvent(
+        id: 'cancelled',
+        startTime: DateTime(2026, 1, 2, 7),
+        status: EventLifecycleStatus.cancelled,
+      );
+      final upcoming = buildEvent(
+        id: 'upcoming',
+        startTime: DateTime(2026, 1, 2, 8),
+        startingPointLat: 19.0,
+        startingPointLng: 72.8,
+      );
+
+      final viewModel = buildEventMapViewModel(
+        signedUpEvents: [past, upcoming],
+        savedEvents: const [],
+        recommendedEvents: [cancelled],
+        now: now,
+      );
+
+      expect(viewModel.events.map((event) => event.id), ['upcoming']);
+      expect(viewModel.pinnedEvents.map((event) => event.id), ['upcoming']);
+    });
+  });
+
+  group('resolveEventMapInitialCenter', () {
+    const selectedCity = CityData(
+      name: 'mumbai',
+      label: 'Mumbai',
+      latitude: 19.076,
+      longitude: 72.8777,
+    );
+
+    test('uses device location while the city is auto-selected', () {
+      final center = resolveEventMapInitialCenter(
+        deviceLocation: const LocationCoordinate(22.7, 75.8),
+        selectedCity: selectedCity,
+        selectedCityWasUserSelected: false,
+      );
+
+      expect(center.latitude, 22.7);
+      expect(center.longitude, 75.8);
+    });
+
+    test('uses selected city when device location is unavailable', () {
+      final center = resolveEventMapInitialCenter(
+        selectedCity: selectedCity,
+        selectedCityWasUserSelected: false,
+      );
+
+      expect(center.latitude, 19.076);
+      expect(center.longitude, 72.8777);
+    });
+
+    test('uses selected city when the user overrides the city', () {
+      final center = resolveEventMapInitialCenter(
+        deviceLocation: const LocationCoordinate(22.7, 75.8),
+        selectedCity: selectedCity,
+        selectedCityWasUserSelected: true,
+      );
+
+      expect(center.latitude, 19.076);
+      expect(center.longitude, 72.8777);
+    });
+  });
+
+  group('eventMapViewModelProvider', () {
+    test(
+      'combines profile, signed-up, saved, and recommended events',
+      () async {
+        final repository = FakeEventRepository();
+        final savedEventRepository = FakeSavedEventRepository();
+        final user = buildUser(uid: 'runner-1');
+        final signedUpEvent = buildEvent(
+          id: 'signed-up',
+          startTime: DateTime.now().add(const Duration(days: 1)),
+          startingPointLat: 19.0,
+          startingPointLng: 72.8,
+        );
+        final recommendedRun = buildEvent(
+          id: 'recommended',
+          clubId: 'club-1',
+          startTime: DateTime.now().add(const Duration(days: 2)),
+          startingPointLat: 19.1,
+          startingPointLng: 72.9,
+        );
+        final savedEvent = buildEvent(
+          id: 'saved',
+          startTime: DateTime.now().add(const Duration(hours: 12)),
+          startingPointLat: 19.2,
+          startingPointLng: 72.7,
+        );
+        repository.signedUpEvents[user.uid] = [signedUpEvent];
+        repository.recommendedEvents = [recommendedRun];
+        savedEventRepository.savedEventDetails[user.uid] = [savedEvent];
+
+        final container = ProviderContainer(
+          overrides: [
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
+            watchActiveClubMembershipsForUserProvider(user.uid).overrideWith(
+              (ref) => Stream.value([_membership(clubId: 'club-1')]),
+            ),
+            eventRepositoryProvider.overrideWith((ref) => repository),
+            clubsRepositoryProvider.overrideWith(
+              (ref) =>
+                  club_test.FakeClubsRepository()
+                    ..clubsById['club-1'] = buildClub(id: 'club-1'),
+            ),
+            savedEventRepositoryProvider.overrideWithValue(
+              savedEventRepository,
+            ),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final subscription = container.listen(
+          eventMapViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+
+        await container.read(watchUserProfileProvider.future);
+        await container.read(
+          watchActiveClubMembershipsForUserProvider(user.uid).future,
+        );
+        await container.read(watchSignedUpEventsProvider(user.uid).future);
+        await container.read(
+          watchSavedEventDetailsForUserProvider(user.uid).future,
+        );
+        await container.read(
+          recommendedEventsProvider(
+            RecommendedEventsQuery.fromClubIds(const ['club-1']),
+          ).future,
+        );
+        await container.read(
+          clubNameLookupProvider(ClubNameLookupQuery(const ['club-1'])).future,
+        );
+        await container.pump();
+
+        final viewModel = subscription.read().requireValue;
+        expect(viewModel.events.map((event) => event.id), [
+          'saved',
+          'signed-up',
+          'recommended',
+        ]);
+        expect(viewModel.effectiveItems.map((item) => item.status), [
+          EventTileStatus.saved,
+          EventTileStatus.joined,
+          EventTileStatus.recommended,
+        ]);
+        expect(viewModel.effectiveItems.map((item) => item.clubName).toSet(), {
+          'Stride Social',
+        });
+        expect(viewModel.pinnedEvents.length, 3);
+        expect(repository.recommendedClubIds, ['club-1']);
+      },
+    );
+  });
+}

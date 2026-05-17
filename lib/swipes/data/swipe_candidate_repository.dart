@@ -1,8 +1,8 @@
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run_participation.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
@@ -14,30 +14,30 @@ part 'swipe_candidate_repository.g.dart';
 
 class SwipeCandidateRepository {
   const SwipeCandidateRepository(
-    this._runRepository,
-    this._runParticipationRepository,
+    this._eventRepository,
+    this._eventParticipationRepository,
     this._swipeRepository,
     this._publicProfileRepository, [
     this._safetyRepository,
   ]);
 
-  final RunRepository _runRepository;
-  final RunParticipationRepository _runParticipationRepository;
+  final EventRepository _eventRepository;
+  final EventParticipationRepository _eventParticipationRepository;
   final SwipeRepository _swipeRepository;
   final PublicProfileRepository _publicProfileRepository;
   final SafetyRepository? _safetyRepository;
 
   Future<List<PublicProfile>> fetchCandidates({
-    required String runId,
+    required String eventId,
     required UserProfile currentUser,
   }) async {
-    // 1. Get the run to find attendees.
-    final run = await _runRepository.fetchRun(runId);
-    if (run == null) return [];
-    if (!hasOpenSwipeWindow(run)) return [];
+    // 1. Get the event to find attendees.
+    final event = await _eventRepository.fetchEvent(eventId);
+    if (event == null) return [];
+    if (!hasOpenSwipeWindow(event)) return [];
 
     final attendedParticipantIds = await _fetchAttendedParticipantIds(
-      runId: run.id,
+      eventId: event.id,
     );
     if (!attendedParticipantIds.contains(currentUser.uid)) return [];
     attendedParticipantIds.remove(currentUser.uid);
@@ -82,15 +82,15 @@ class SwipeCandidateRepository {
   }
 
   Future<List<String>> _fetchAttendedParticipantIds({
-    required String runId,
+    required String eventId,
   }) async {
-    final participations = await _runParticipationRepository
-        .fetchParticipationsForRun(runId: runId);
+    final participations = await _eventParticipationRepository
+        .fetchParticipationsForEvent(eventId: eventId);
     final attendedParticipations =
         participations
             .where(
               (participation) =>
-                  participation.status == RunParticipationStatus.attended,
+                  participation.status == EventParticipationStatus.attended,
             )
             .toList()
           ..sort(_compareParticipationTimes);
@@ -121,7 +121,7 @@ class SwipeCandidateRepository {
   }
 }
 
-int _compareParticipationTimes(RunParticipation a, RunParticipation b) {
+int _compareParticipationTimes(EventParticipation a, EventParticipation b) {
   final aTime = a.attendedAt ?? a.signedUpAt ?? a.createdAt;
   final bTime = b.attendedAt ?? b.signedUpAt ?? b.createdAt;
   final byTime = aTime.compareTo(bTime);
@@ -132,8 +132,8 @@ int _compareParticipationTimes(RunParticipation a, RunParticipation b) {
 @riverpod
 SwipeCandidateRepository swipeCandidateRepository(Ref ref) =>
     SwipeCandidateRepository(
-      ref.watch(runRepositoryProvider),
-      ref.watch(runParticipationRepositoryProvider),
+      ref.watch(eventRepositoryProvider),
+      ref.watch(eventParticipationRepositoryProvider),
       ref.watch(swipeRepositoryProvider),
       ref.watch(publicProfileRepositoryProvider),
       ref.watch(safetyRepositoryProvider),

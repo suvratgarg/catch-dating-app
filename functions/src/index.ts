@@ -7,38 +7,46 @@ admin.initializeApp();
 
 export {createRazorpayOrder} from "./payments/createRazorpayOrder";
 export {verifyRazorpayPayment} from "./payments/verifyRazorpayPayment";
-export {signUpForFreeRun} from "./runs/signUpForFreeRun";
-export {cancelRunSignUp} from "./runs/cancelRunSignUp";
-export {joinRunWaitlist, leaveRunWaitlist} from "./runs/joinRunWaitlist";
-export {markRunAttendance} from "./runs/markRunAttendance";
-export {selfCheckInAttendance} from "./runs/selfCheckInAttendance";
-export {createRun, updateRun, cancelRun, deleteRun} from "./runs/mutateRun";
-export {sendRunReminders} from "./runs/sendRunReminders";
+export {signUpForFreeEvent} from "./events/signUpForFreeEvent";
+export {cancelEventSignUp} from "./events/cancelEventSignUp";
+export {
+  joinEventWaitlist,
+  leaveEventWaitlist,
+} from "./events/joinEventWaitlist";
+export {markEventAttendance} from "./events/markEventAttendance";
+export {selfCheckInAttendance} from "./events/selfCheckInAttendance";
+export {
+  createEvent,
+  updateEvent,
+  cancelEvent,
+  deleteEvent,
+} from "./events/mutateEvent";
+export {sendEventReminders} from "./events/sendEventReminders";
 export {
   placeDetails,
   placesAutocomplete,
 } from "./places/placeAutocomplete";
-export {createRunClub} from "./runClubs/createRunClub";
-export {syncRunClubMemberStats} from "./runClubs/syncRunClubMemberStats";
-export {syncRunClubNextRun} from "./runClubs/syncRunClubNextRun";
+export {createClub} from "./clubs/createClub";
+export {syncClubMemberStats} from "./clubs/syncClubMemberStats";
+export {syncClubNextEvent} from "./clubs/syncClubNextEvent";
 export {
-  joinRunClub,
-  leaveRunClub,
-  setRunClubNotificationPreference,
-} from "./runClubs/membership";
+  joinClub,
+  leaveClub,
+  setClubNotificationPreference,
+} from "./clubs/membership";
 export {
-  archiveRunClub,
-  deleteRunClub,
-  updateRunClub,
-} from "./runClubs/mutateRunClub";
+  archiveClub,
+  deleteClub,
+  updateClub,
+} from "./clubs/mutateClub";
 export {onSwipeCreated} from "./matching/onSwipeCreated";
 export {onMatchCreated} from "./matching/onMatchCreated";
 export {onMessageCreated} from "./matching/onMessageCreated";
-export {syncRunClubReviewStats} from "./reviews/syncRunClubReviewStats";
+export {syncClubReviewStats} from "./reviews/syncClubReviewStats";
 export {
-  createRunReview,
-  deleteRunReview,
-  updateRunReview,
+  createEventReview,
+  deleteEventReview,
+  updateEventReview,
 } from "./reviews/mutateReview";
 export {syncPublicProfile} from "./profiles/syncPublicProfile";
 export {updateUserProfile} from "./profiles/updateUserProfile";

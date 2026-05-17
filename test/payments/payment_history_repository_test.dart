@@ -17,7 +17,7 @@ void main() {
     });
 
     test(
-      'fetchPaymentForRun returns the latest completed payment without sign-up failures',
+      'fetchPaymentForEvent returns the latest completed payment without sign-up failures',
       () async {
         await _seedPayment(
           firestore,
@@ -38,15 +38,15 @@ void main() {
         await _seedPayment(
           firestore,
           buildPayment(
-            id: 'payment-other-run',
-            runId: 'run-2',
+            id: 'payment-other-event',
+            eventId: 'event-2',
             createdAt: DateTime(2025, 1, 5),
           ),
         );
 
-        final payment = await repository.fetchPaymentForRun(
+        final payment = await repository.fetchPaymentForEvent(
           userId: 'runner-1',
-          runId: 'run-1',
+          eventId: 'event-1',
         );
 
         expect(payment?.id, 'payment-latest');
@@ -54,7 +54,7 @@ void main() {
     );
 
     test(
-      'fetchPaymentForRun returns null when no successful completed payment exists',
+      'fetchPaymentForEvent returns null when no successful completed payment exists',
       () async {
         await _seedPayment(
           firestore,
@@ -73,9 +73,9 @@ void main() {
           ),
         );
 
-        final payment = await repository.fetchPaymentForRun(
+        final payment = await repository.fetchPaymentForEvent(
           userId: 'runner-1',
-          runId: 'run-1',
+          eventId: 'event-1',
         );
 
         expect(payment, isNull);
@@ -187,7 +187,7 @@ Payment buildPayment({
   required String id,
   required DateTime createdAt,
   String userId = 'runner-1',
-  String runId = 'run-1',
+  String eventId = 'event-1',
   PaymentStatus status = PaymentStatus.completed,
   bool signUpFailed = false,
 }) {
@@ -196,7 +196,7 @@ Payment buildPayment({
     userId: userId,
     orderId: 'order-$id',
     paymentId: 'payment-$id',
-    runId: runId,
+    eventId: eventId,
     amount: 25000,
     status: status,
     signUpFailed: signUpFailed,

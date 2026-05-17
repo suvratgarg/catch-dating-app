@@ -5,15 +5,15 @@ const _deepLinkHost = 'catchdates.com';
 class AppDeepLinks {
   const AppDeepLinks._();
 
-  static Uri runClub(String runClubId) => _httpsRoute(
-    Routes.runClubDetailScreen.path,
-    pathParameters: {'runClubId': runClubId},
+  static Uri club(String clubId) => _httpsRoute(
+    Routes.clubDetailScreen.path,
+    pathParameters: {'clubId': clubId},
   );
 
-  static Uri run({required String runClubId, required String runId}) =>
+  static Uri event({required String clubId, required String eventId}) =>
       _httpsRoute(
-        Routes.runDetailScreen.path,
-        pathParameters: {'runClubId': runClubId, 'runId': runId},
+        Routes.eventDetailScreen.path,
+        pathParameters: {'clubId': clubId, 'eventId': eventId},
       );
 }
 

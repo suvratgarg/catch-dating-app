@@ -21,7 +21,7 @@
     "userId",
     "orderId",
     "paymentId",
-    "runId",
+    "eventId",
     "amount",
     "currency",
     "status",
@@ -29,10 +29,10 @@
     "createdAt"
   ],
   "properties": {
-    "userId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "userId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "orderId": {"type": "string", "minLength": 1, "maxLength": 240},
     "paymentId": {"type": "string", "minLength": 1, "maxLength": 240},
-    "runId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "amount": {"type": "integer", "minimum": 0, "maximum": 100000000},
     "currency": {"type": "string", "minLength": 3, "maxLength": 3},
     "status": {
@@ -40,12 +40,12 @@
       "enum": ["pending", "completed", "failed", "refunded"]
     },
     "signUpFailed": {"type": "boolean"},
-    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
-    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
   }
 }

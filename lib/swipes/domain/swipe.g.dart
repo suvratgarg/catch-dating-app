@@ -9,7 +9,7 @@ part of 'swipe.dart';
 _Swipe _$SwipeFromJson(Map<String, dynamic> json) => _Swipe(
   swiperId: json['swiperId'] as String,
   targetId: json['targetId'] as String,
-  runId: json['runId'] as String,
+  eventId: json['eventId'] as String,
   direction: $enumDecode(_$SwipeDirectionEnumMap, json['direction']),
   reactionTargetId: json['reactionTargetId'] as String?,
   reactionTargetType: $enumDecodeNullable(
@@ -27,7 +27,7 @@ _Swipe _$SwipeFromJson(Map<String, dynamic> json) => _Swipe(
 Map<String, dynamic> _$SwipeToJson(_Swipe instance) => <String, dynamic>{
   'swiperId': instance.swiperId,
   'targetId': instance.targetId,
-  'runId': instance.runId,
+  'eventId': instance.eventId,
   'direction': _$SwipeDirectionEnumMap[instance.direction]!,
   'reactionTargetId': instance.reactionTargetId,
   'reactionTargetType':

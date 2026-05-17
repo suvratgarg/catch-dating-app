@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/event_id_payload.schema.json",
+  "title": "EventIdCallablePayload",
+  "description": "Callable payload accepted by simple event actions that need only a eventId.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

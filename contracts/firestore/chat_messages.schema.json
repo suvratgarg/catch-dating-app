@@ -38,15 +38,15 @@
     }
   ],
   "properties": {
-    "senderId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "senderId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "text": {"type": "string", "maxLength": 2000},
-    "imageUrl": {"$ref": "../shared/run_common.schema.json#/definitions/urlOrNull"},
-    "sentAt": {"$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"},
-    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"},
+    "sentAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
   }
 }

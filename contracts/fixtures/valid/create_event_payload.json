@@ -1,0 +1,22 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "startTimeMillis": 1778889600000,
+  "endTimeMillis": 1778893800000,
+  "meetingPoint": "Race Course Road gate",
+  "startingPointLat": 22.7196,
+  "startingPointLng": 75.8577,
+  "locationDetails": "Meet near the main gate.",
+  "photoUrl": "https://img.example/events/event-1.jpg",
+  "distanceKm": 5,
+  "pace": "easy",
+  "capacityLimit": 12,
+  "description": "Easy social 5K with coffee after.",
+  "priceInPaise": 0,
+  "constraints": {
+    "minAge": 21,
+    "maxAge": 45,
+    "maxMen": 8,
+    "maxWomen": null
+  }
+}

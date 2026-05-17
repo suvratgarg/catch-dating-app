@@ -16,7 +16,7 @@ class QuickActions extends StatelessWidget {
     _QuickAction(
       icon: Icons.map_outlined,
       label: 'Map view',
-      route: Routes.runMapScreen.path,
+      route: Routes.eventMapScreen.path,
     ),
     _QuickAction(
       icon: Icons.calendar_month_outlined,
@@ -25,8 +25,8 @@ class QuickActions extends StatelessWidget {
     ),
     _QuickAction(
       icon: Icons.bookmark_border_rounded,
-      label: 'Saved runs',
-      route: Routes.savedRunsScreen.path,
+      label: 'Saved events',
+      route: Routes.savedEventsScreen.path,
     ),
   ];
 

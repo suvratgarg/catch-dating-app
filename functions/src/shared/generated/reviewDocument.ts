@@ -3,11 +3,11 @@
 // Regenerate with: node tool/generate_schema_contracts.mjs
 
 /**
- * Canonical attended-run review stored at reviews/{reviewId}.
+ * Canonical attended-event review stored at reviews/{reviewId}.
  */
 export interface ReviewDocument {
-  runClubId: string;
-  runId?: string | null;
+  clubId: string;
+  eventId?: string | null;
   reviewerUserId: string;
   reviewerName: string;
   rating: number;

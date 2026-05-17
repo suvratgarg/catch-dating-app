@@ -223,7 +223,7 @@ export const joinWaitlist = onRequest(
 
     if (!isValidCity(city)) {
       response.status(400).json({
-        error: "Please tell us which city you run in.",
+        error: "Please tell us which city you event in.",
       });
       return;
     }

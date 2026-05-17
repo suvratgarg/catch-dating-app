@@ -32,7 +32,7 @@ class EmptyHeroCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                '● NO RUNS BOOKED',
+                '● NO EVENTS BOOKED',
                 style: CatchTextStyles.labelM(
                   context,
                   color: Colors.white,
@@ -40,7 +40,7 @@ class EmptyHeroCard extends StatelessWidget {
               ),
               gapH10,
               Text(
-                'Your catches unlock\nafter your first run.',
+                'Your catches unlock\nafter your first event.',
                 style: CatchTextStyles.displayL(
                   context,
                   color: Colors.white,
@@ -48,7 +48,7 @@ class EmptyHeroCard extends StatelessWidget {
               ),
               gapH8,
               Text(
-                "Book a group run. Show up. Meet people.\nThen we'll hand you the roster.",
+                "Book a group event. Show up. Meet people.\nThen we'll hand you the roster.",
                 style: CatchTextStyles.bodyS(
                   context,
                   color: Colors.white,
@@ -56,8 +56,8 @@ class EmptyHeroCard extends StatelessWidget {
               ),
               gapH16,
               CatchButton(
-                label: 'Find a run near me',
-                onPressed: () => context.go(Routes.runClubsListScreen.path),
+                label: 'Find an event near me',
+                onPressed: () => context.go(Routes.clubsListScreen.path),
                 variant: CatchButtonVariant.light,
                 size: CatchButtonSize.lg,
                 fullWidth: true,

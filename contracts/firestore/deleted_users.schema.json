@@ -11,8 +11,8 @@
   "x-owner": "requestAccountDeletion callable",
   "required": ["uid", "deletedAt"],
   "properties": {
-    "uid": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "deletedAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "deletedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "retainedFor": {
       "type": "array",
       "items": {"type": "string", "minLength": 1, "maxLength": 80},

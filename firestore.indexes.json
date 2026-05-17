@@ -1,7 +1,7 @@
 {
   "indexes": [
     {
-      "collectionGroup": "runs",
+      "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "status", "mode": "ASCENDING"},
@@ -9,24 +9,24 @@
       ]
     },
     {
-      "collectionGroup": "runs",
+      "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "runClubId", "mode": "ASCENDING"},
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
       ]
     },
     {
-      "collectionGroup": "runs",
+      "collectionGroup": "events",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "runClubId", "mode": "ASCENDING"},
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
         {"fieldPath": "startTime", "mode": "ASCENDING"}
       ]
     },
     {
-      "collectionGroup": "runParticipations",
+      "collectionGroup": "eventParticipations",
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "uid", "mode": "ASCENDING"},
@@ -34,24 +34,24 @@
       ]
     },
     {
-      "collectionGroup": "runParticipations",
+      "collectionGroup": "eventParticipations",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "runId", "mode": "ASCENDING"},
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"}
       ]
     },
     {
-      "collectionGroup": "runParticipations",
+      "collectionGroup": "eventParticipations",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "runId", "mode": "ASCENDING"},
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "waitlistedAt", "mode": "ASCENDING"}
       ]
     },
     {
-      "collectionGroup": "runClubs",
+      "collectionGroup": "clubs",
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "location", "mode": "ASCENDING"},
@@ -59,7 +59,7 @@
       ]
     },
     {
-      "collectionGroup": "runClubs",
+      "collectionGroup": "clubs",
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "location", "mode": "ASCENDING"},
@@ -96,7 +96,7 @@
       "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "runClubId", "mode": "ASCENDING"},
+        {"fieldPath": "clubId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
       ]
     },
@@ -104,7 +104,7 @@
       "collectionGroup": "reviews",
       "queryScope": "COLLECTION",
       "fields": [
-        {"fieldPath": "runId", "mode": "ASCENDING"},
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
       ]
     },
@@ -129,7 +129,7 @@
       "queryScope": "COLLECTION",
       "fields": [
         {"fieldPath": "userId", "mode": "ASCENDING"},
-        {"fieldPath": "runId", "mode": "ASCENDING"},
+        {"fieldPath": "eventId", "mode": "ASCENDING"},
         {"fieldPath": "status", "mode": "ASCENDING"},
         {"fieldPath": "createdAt", "mode": "DESCENDING"}
       ]

@@ -4,9 +4,9 @@ import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
 import {
-  assertNoUserRunScheduleConflictInFirestore,
-  buildRunClubScheduleLockDocs,
-  buildUserRunScheduleLockDocs,
+  assertNoUserEventScheduleConflictInFirestore,
+  buildClubScheduleLockDocs,
+  buildUserEventScheduleLockDocs,
 } from "./demo_schedule_policy.mjs";
 
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
@@ -17,7 +17,7 @@ const requireFromFunctions = createRequire(
 
 export const DEFAULT_DEMO_OPS_PREFIX = "demo_ops_2026";
 export const DEFAULT_SEED_PREFIX = "demo_beta_2026";
-export const DEMO_MANIFEST_COLLECTION = "demoOpsRuns";
+export const DEMO_MANIFEST_COLLECTION = "demoOpsEvents";
 export const DEFAULT_MAX_BATCH_WRITES = 450;
 export const DEFAULT_GOLDEN_ACCOUNTS_FILE =
   "tool/demo_seed/golden_accounts.example.json";
@@ -145,60 +145,60 @@ export async function resolveUsersByPhones(db, phones) {
   return users;
 }
 
-export async function findSharedAttendedRunId(db, uidA, uidB) {
+export async function findSharedAttendedEventId(db, uidA, uidB) {
   const [aSnap, bSnap] = await Promise.all([
-    db.collection("runParticipations")
+    db.collection("eventParticipations")
       .where("uid", "==", uidA)
       .where("status", "==", "attended")
       .get(),
-    db.collection("runParticipations")
+    db.collection("eventParticipations")
       .where("uid", "==", uidB)
       .where("status", "==", "attended")
       .get(),
   ]);
-  const bRunIds = new Set(bSnap.docs.map((doc) => doc.data().runId));
+  const bEventIds = new Set(bSnap.docs.map((doc) => doc.data().eventId));
   const shared = aSnap.docs
-    .map((doc) => doc.data().runId)
-    .filter((runId) => typeof runId === "string" && bRunIds.has(runId));
+    .map((doc) => doc.data().eventId)
+    .filter((eventId) => typeof eventId === "string" && bEventIds.has(eventId));
   return shared.sort()[0] ?? null;
 }
 
-export async function findDemoRuns(db, {now = new Date(), city = null} = {}) {
-  const snap = await db.collection("runs").get();
-  let runs = snap.docs
+export async function findDemoEvents(db, {now = new Date(), city = null} = {}) {
+  const snap = await db.collection("events").get();
+  let events = snap.docs
     .map((doc) => ({id: doc.id, path: doc.ref.path, data: doc.data()}))
-    .filter((run) => run.data.status !== "cancelled")
-    .filter((run) => typeof run.data.startTime?.toDate === "function");
+    .filter((event) => event.data.status !== "cancelled")
+    .filter((event) => typeof event.data.startTime?.toDate === "function");
 
   if (city) {
-    runs = await filterRunsByClubCity(db, runs, city);
+    events = await filterEventsByClubCity(db, events, city);
   }
 
-  const upcoming = runs
-    .filter((run) => run.data.startTime.toDate() > now)
+  const upcoming = events
+    .filter((event) => event.data.startTime.toDate() > now)
     .sort((a, b) => a.data.startTime.toMillis() - b.data.startTime.toMillis());
-  const past = runs
-    .filter((run) => run.data.startTime.toDate() <= now)
+  const past = events
+    .filter((event) => event.data.startTime.toDate() <= now)
     .sort((a, b) => b.data.startTime.toMillis() - a.data.startTime.toMillis());
-  const paidUpcoming = upcoming.filter((run) => Number(run.data.priceInPaise ?? 0) > 0);
+  const paidUpcoming = upcoming.filter((event) => Number(event.data.priceInPaise ?? 0) > 0);
 
   return {upcoming, past, paidUpcoming};
 }
 
-async function filterRunsByClubCity(db, runs, city) {
+async function filterEventsByClubCity(db, events, city) {
   const clubCityById = new Map();
   const filtered = [];
-  for (const run of runs) {
-    const clubId = run.data.runClubId;
+  for (const event of events) {
+    const clubId = event.data.clubId;
     if (typeof clubId !== "string" || clubId.length === 0) continue;
     if (!clubCityById.has(clubId)) {
-      const clubSnap = await db.collection("runClubs").doc(clubId).get();
+      const clubSnap = await db.collection("clubs").doc(clubId).get();
       clubCityById.set(
         clubId,
         clubSnap.exists ? clubSnap.data()?.location ?? null : null
       );
     }
-    if (clubCityById.get(clubId) === city) filtered.push(run);
+    if (clubCityById.get(clubId) === city) filtered.push(event);
   }
   return filtered;
 }
@@ -252,7 +252,7 @@ function scenarioPath(nameOrPath) {
   throw new Error(`Unknown demo scenario: ${nameOrPath}`);
 }
 
-export function buildSwipeDocs({admin, marker, uidA, uidB, runId, now}) {
+export function buildSwipeDocs({admin, marker, uidA, uidB, eventId, now}) {
   const createdAt = timestampFromDate(admin, now);
   return [
     {
@@ -261,7 +261,7 @@ export function buildSwipeDocs({admin, marker, uidA, uidB, runId, now}) {
         ...marker,
         swiperId: uidA,
         targetId: uidB,
-        runId,
+        eventId,
         direction: "like",
         createdAt,
       },
@@ -272,7 +272,7 @@ export function buildSwipeDocs({admin, marker, uidA, uidB, runId, now}) {
         ...marker,
         swiperId: uidB,
         targetId: uidA,
-        runId,
+        eventId,
         direction: "like",
         createdAt,
       },
@@ -280,7 +280,7 @@ export function buildSwipeDocs({admin, marker, uidA, uidB, runId, now}) {
   ];
 }
 
-export function buildMatchDoc({admin, marker, uidA, uidB, runId, now}) {
+export function buildMatchDoc({admin, marker, uidA, uidB, eventId, now}) {
   const [user1Id, user2Id] = [uidA, uidB].sort();
   return {
     path: `matches/${matchIdFor(uidA, uidB)}`,
@@ -291,7 +291,7 @@ export function buildMatchDoc({admin, marker, uidA, uidB, runId, now}) {
       user1Id,
       user2Id,
       participantIds: [user1Id, user2Id],
-      runIds: runId ? [runId] : [],
+      eventIds: eventId ? [eventId] : [],
       createdAt: timestampFromDate(admin, now),
       lastMessageAt: null,
       lastMessagePreview: null,
@@ -306,9 +306,9 @@ export function buildMatchDoc({admin, marker, uidA, uidB, runId, now}) {
 
 export function starterMessagesForPair() {
   return [
-    {sender: "b", text: "That was a fun run. Are you doing the next one?"},
+    {sender: "b", text: "That was a fun event. Are you doing the next one?"},
     {sender: "a", text: "Yes. I wanted to try the weekend route too."},
-    {sender: "b", text: "Perfect. Let's save a spot after the run."},
+    {sender: "b", text: "Perfect. Let's save a spot after the event."},
   ];
 }
 
@@ -346,7 +346,7 @@ export function buildMatchNotifications({
   uidB,
   nameA,
   nameB,
-  runId,
+  eventId,
   now,
   includeUidA = true,
   includeUidB = true,
@@ -364,8 +364,8 @@ export function buildMatchNotifications({
         createdAt: timestampFromDate(admin, now),
         readAt: null,
         matchId,
-        runId: runId ?? null,
-        runClubId: null,
+        eventId: eventId ?? null,
+        clubId: null,
         actorUid: uidB,
         actorName: nameB,
       },
@@ -383,8 +383,8 @@ export function buildMatchNotifications({
         createdAt: timestampFromDate(admin, now),
         readAt: null,
         matchId,
-        runId: runId ?? null,
-        runClubId: null,
+        eventId: eventId ?? null,
+        clubId: null,
         actorUid: uidA,
         actorName: nameA,
       },
@@ -398,7 +398,7 @@ export async function buildMatchPhonePlan({
   admin,
   phoneA,
   phoneB,
-  runId,
+  eventId,
   viaSwipes = false,
   direct = true,
   withMessages = false,
@@ -410,11 +410,11 @@ export async function buildMatchPhonePlan({
     requirePublicProfile(db, userA.uid),
     requirePublicProfile(db, userB.uid),
   ]);
-  const resolvedRunId = runId ?? await findSharedAttendedRunId(db, userA.uid, userB.uid);
-  if (viaSwipes && !resolvedRunId) {
+  const resolvedEventId = eventId ?? await findSharedAttendedEventId(db, userA.uid, userB.uid);
+  if (viaSwipes && !resolvedEventId) {
     throw new Error(
-      "Cannot create reciprocal swipe demo without a shared attended run. " +
-      "Pass --run-id or warm/reset the users into a shared attended run first."
+      "Cannot create reciprocal swipe demo without a shared attended event. " +
+      "Pass --event-id or warm/reset the users into a shared attended event first."
     );
   }
 
@@ -441,7 +441,7 @@ export async function buildMatchPhonePlan({
       marker,
       uidA: userA.uid,
       uidB: userB.uid,
-      runId: resolvedRunId,
+      eventId: resolvedEventId,
       now: relationshipCreatedAt,
     }));
   }
@@ -451,7 +451,7 @@ export async function buildMatchPhonePlan({
       marker,
       uidA: userA.uid,
       uidB: userB.uid,
-      runId: resolvedRunId,
+      eventId: resolvedEventId,
       now: relationshipCreatedAt,
     }));
   }
@@ -466,7 +466,7 @@ export async function buildMatchPhonePlan({
       uidB: userB.uid,
       nameA,
       nameB,
-      runId: resolvedRunId,
+      eventId: resolvedEventId,
       now: relationshipCreatedAt,
     }));
   }
@@ -488,7 +488,7 @@ export async function buildMatchPhonePlan({
     matchId,
     phones: [userA.phoneNumber, userB.phoneNumber],
     users: [userA.uid, userB.uid],
-    runId: resolvedRunId,
+    eventId: resolvedEventId,
     direct,
     viaSwipes,
     docs: uniqueDocsByPath(docs),
@@ -518,34 +518,34 @@ export async function buildWarmUserPlan({
     now,
   });
   const userCity = typeof user.data.city === "string" ? user.data.city : null;
-  const {upcoming, past, paidUpcoming} = await findDemoRuns(db, {
+  const {upcoming, past, paidUpcoming} = await findDemoEvents(db, {
     now,
     city: userCity,
   });
   const docs = [];
 
-  for (const run of upcoming.slice(0, 3)) {
+  for (const event of upcoming.slice(0, 3)) {
     docs.push({
-      path: `savedRuns/${user.uid}_${run.id}`,
+      path: `savedEvents/${user.uid}_${event.id}`,
       data: {
         ...marker,
         uid: user.uid,
-        runId: run.id,
+        eventId: event.id,
         savedAt: timestampFromDate(admin, offsetDate(now, {hours: -2})),
       },
     });
   }
 
-  const signedUpRun = upcoming[0];
+  const signedUpEvent = upcoming[0];
   const waitlistedRun = upcoming[1];
   const attendedRun = past[0];
-  if (signedUpRun) {
+  if (signedUpEvent) {
     docs.push(...await buildParticipationDocsWithLocks({
       db,
       admin,
       marker,
       uid: user.uid,
-      run: signedUpRun,
+      event: signedUpEvent,
       status: "signedUp",
       genderAtSignup: user.data.gender,
       now,
@@ -557,7 +557,7 @@ export async function buildWarmUserPlan({
       admin,
       marker,
       uid: user.uid,
-      run: waitlistedRun,
+      event: waitlistedRun,
       status: "waitlisted",
       genderAtSignup: user.data.gender,
       now,
@@ -569,7 +569,7 @@ export async function buildWarmUserPlan({
       admin,
       marker,
       uid: user.uid,
-      run: attendedRun,
+      event: attendedRun,
       status: "attended",
       genderAtSignup: user.data.gender,
       now,
@@ -586,7 +586,7 @@ export async function buildWarmUserPlan({
         userId: user.uid,
         orderId: `${seedPrefix}_order_${paidRun.id}_${user.uid}`,
         paymentId,
-        runId: paidRun.id,
+        eventId: paidRun.id,
         amount: Number(paidRun.data.priceInPaise ?? 29900) || 29900,
         currency: "INR",
         status: "completed",
@@ -600,7 +600,7 @@ export async function buildWarmUserPlan({
     admin,
     marker,
     uid: user.uid,
-    runs: {upcoming: signedUpRun, waitlisted: waitlistedRun, attended: attendedRun},
+    events: {upcoming: signedUpEvent, waitlisted: waitlistedRun, attended: attendedRun},
     now,
   }));
 
@@ -615,7 +615,7 @@ export async function buildWarmUserPlan({
       user,
       publicProfile,
       target,
-      runId: attendedRun?.id ?? null,
+      eventId: attendedRun?.id ?? null,
       now,
     });
     docs.push(...matchPlan.docs);
@@ -636,21 +636,21 @@ export function buildParticipationDoc({
   admin,
   marker,
   uid,
-  run,
+  event,
   status,
   genderAtSignup = "other",
   now,
 }) {
   const createdAt = offsetDate(now, {days: status === "attended" ? -10 : -2});
-  const attendedAt = status === "attended" && typeof run.data.endTime?.toDate === "function" ?
-    run.data.endTime.toDate() :
+  const attendedAt = status === "attended" && typeof event.data.endTime?.toDate === "function" ?
+    event.data.endTime.toDate() :
     null;
   return {
-    path: `runParticipations/${run.id}_${uid}`,
+    path: `eventParticipations/${event.id}_${uid}`,
     data: {
       ...marker,
-      runId: run.id,
-      runClubId: run.data.runClubId,
+      eventId: event.id,
+      clubId: event.data.clubId,
       uid,
       status,
       createdAt: timestampFromDate(admin, createdAt),
@@ -673,51 +673,51 @@ async function buildParticipationDocsWithLocks({
   admin,
   marker,
   uid,
-  run,
+  event,
   status,
   genderAtSignup = "other",
   now,
 }) {
-  await assertNoUserRunScheduleConflictInFirestore({db, uid, run});
+  await assertNoUserEventScheduleConflictInFirestore({db, uid, event});
   const participation = buildParticipationDoc({
     admin,
     marker,
     uid,
-    run,
+    event,
     status,
     genderAtSignup,
     now,
   });
   return [
     participation,
-    ...buildUserRunScheduleLockDocs({run, participation}),
+    ...buildUserEventScheduleLockDocs({event, participation}),
   ];
 }
 
-export function buildWarmNotifications({admin, marker, uid, runs, now}) {
+export function buildWarmNotifications({admin, marker, uid, events, now}) {
   const docs = [];
-  if (runs.upcoming) {
+  if (events.upcoming) {
     docs.push({
-      path: `notifications/${uid}/items/demoOps_runReminder_${runs.upcoming.id}`,
+      path: `notifications/${uid}/items/demoOps_eventReminder_${events.upcoming.id}`,
       data: {
         ...marker,
         uid,
-        type: "runReminder",
-        title: "Run coming up",
-        body: "Your demo run is ready for tomorrow morning.",
+        type: "eventReminder",
+        title: "Event coming up",
+        body: "Your demo event is ready for tomorrow morning.",
         createdAt: timestampFromDate(admin, offsetDate(now, {hours: -1})),
         readAt: null,
         matchId: null,
-        runId: runs.upcoming.id,
-        runClubId: runs.upcoming.data.runClubId,
+        eventId: events.upcoming.id,
+        clubId: events.upcoming.data.clubId,
         actorUid: null,
         actorName: null,
       },
     });
   }
-  if (runs.waitlisted) {
+  if (events.waitlisted) {
     docs.push({
-      path: `notifications/${uid}/items/demoOps_waitlist_${runs.waitlisted.id}`,
+      path: `notifications/${uid}/items/demoOps_waitlist_${events.waitlisted.id}`,
       data: {
         ...marker,
         uid,
@@ -727,8 +727,8 @@ export function buildWarmNotifications({admin, marker, uid, runs, now}) {
         createdAt: timestampFromDate(admin, offsetDate(now, {hours: -4})),
         readAt: null,
         matchId: null,
-        runId: runs.waitlisted.id,
-        runClubId: runs.waitlisted.data.runClubId,
+        eventId: events.waitlisted.id,
+        clubId: events.waitlisted.data.clubId,
         actorUid: null,
         actorName: null,
       },
@@ -743,7 +743,7 @@ async function buildDirectSyntheticMatchPlan({
   user,
   publicProfile,
   target,
-  runId,
+  eventId,
   now,
 }) {
   const matchId = matchIdFor(user.uid, target.uid);
@@ -756,7 +756,7 @@ async function buildDirectSyntheticMatchPlan({
       marker,
       uidA: user.uid,
       uidB: target.uid,
-      runId,
+      eventId,
       now: relationshipCreatedAt,
     }),
     ...buildMatchNotifications({
@@ -767,7 +767,7 @@ async function buildDirectSyntheticMatchPlan({
       uidB: target.uid,
       nameA,
       nameB,
-      runId,
+      eventId,
       now: relationshipCreatedAt,
       includeUidB: false,
     }),
@@ -811,36 +811,36 @@ export async function buildWarmGroupPlans({
   return plans;
 }
 
-export async function buildMakeRunFullPlan({
+export async function buildMakeEventFullPlan({
   db,
   admin,
-  runId,
+  eventId,
   seedPrefix = DEFAULT_DEMO_OPS_PREFIX,
   now = new Date(),
 }) {
-  const runSnap = await db.collection("runs").doc(runId).get();
-  if (!runSnap.exists) throw new Error(`Missing runs/${runId}.`);
-  const run = {id: runSnap.id, path: runSnap.ref.path, data: runSnap.data()};
-  const existing = await db.collection("runParticipations")
-    .where("runId", "==", runId)
+  const eventSnap = await db.collection("events").doc(eventId).get();
+  if (!eventSnap.exists) throw new Error(`Missing events/${eventId}.`);
+  const event = {id: eventSnap.id, path: eventSnap.ref.path, data: eventSnap.data()};
+  const existing = await db.collection("eventParticipations")
+    .where("eventId", "==", eventId)
     .get();
   const activeCount = existing.docs
     .filter((doc) => ["signedUp", "attended"].includes(doc.data().status))
     .length;
-  const capacity = Number(run.data.capacityLimit ?? activeCount);
+  const capacity = Number(event.data.capacityLimit ?? activeCount);
   const slotsToFill = Math.max(0, capacity - activeCount);
   const targets = await findSyntheticTargets(db, {
-    excludeUid: run.data.hostUserId,
+    excludeUid: event.data.hostUserId,
     limit: slotsToFill,
   });
   const operationId = demoOperationId({
     command: "make_run_full",
     seedPrefix,
-    subject: runId,
+    subject: eventId,
   });
   const marker = buildDemoMarker({
     admin,
-    command: "make-run-full",
+    command: "make-event-full",
     operationId,
     seedPrefix,
     now,
@@ -852,16 +852,16 @@ export async function buildMakeRunFullPlan({
       admin,
       marker,
       uid: target.uid,
-      run,
+      event,
       status: "signedUp",
       genderAtSignup: target.data.gender,
       now,
     }));
   }
   return {
-    command: "make-run-full",
+    command: "make-event-full",
     operationId,
-    runId,
+    eventId,
     slotsToFill,
     docs: uniqueDocsByPath(docs),
     aggregateRepairRecommended: true,
@@ -872,17 +872,17 @@ export async function buildMarkAttendedPlan({
   db,
   admin,
   phone,
-  runId,
+  eventId,
   seedPrefix = DEFAULT_DEMO_OPS_PREFIX,
   now = new Date(),
 }) {
   const user = await resolveUserByPhone(db, phone);
-  const runSnap = await db.collection("runs").doc(runId).get();
-  if (!runSnap.exists) throw new Error(`Missing runs/${runId}.`);
+  const eventSnap = await db.collection("events").doc(eventId).get();
+  if (!eventSnap.exists) throw new Error(`Missing events/${eventId}.`);
   const operationId = demoOperationId({
     command: "mark_attended",
     seedPrefix,
-    subject: `${runId}_${user.uid}`,
+    subject: `${eventId}_${user.uid}`,
   });
   const marker = buildDemoMarker({
     admin,
@@ -896,7 +896,7 @@ export async function buildMarkAttendedPlan({
     admin,
     marker,
     uid: user.uid,
-    run: {id: runSnap.id, path: runSnap.ref.path, data: runSnap.data()},
+    event: {id: eventSnap.id, path: eventSnap.ref.path, data: eventSnap.data()},
     status: "attended",
     genderAtSignup: user.data.gender,
     now,
@@ -906,7 +906,7 @@ export async function buildMarkAttendedPlan({
     operationId,
     phone: user.phoneNumber,
     uid: user.uid,
-    runId,
+    eventId,
     docs,
     aggregateRepairRecommended: true,
   };
@@ -916,17 +916,17 @@ export async function buildPromoteWaitlistPlan({
   db,
   admin,
   phone,
-  runId,
+  eventId,
   seedPrefix = DEFAULT_DEMO_OPS_PREFIX,
   now = new Date(),
 }) {
   const user = await resolveUserByPhone(db, phone);
-  const runSnap = await db.collection("runs").doc(runId).get();
-  if (!runSnap.exists) throw new Error(`Missing runs/${runId}.`);
+  const eventSnap = await db.collection("events").doc(eventId).get();
+  if (!eventSnap.exists) throw new Error(`Missing events/${eventId}.`);
   const operationId = demoOperationId({
     command: "promote_waitlist",
     seedPrefix,
-    subject: `${runId}_${user.uid}`,
+    subject: `${eventId}_${user.uid}`,
   });
   const marker = buildDemoMarker({
     admin,
@@ -935,31 +935,31 @@ export async function buildPromoteWaitlistPlan({
     seedPrefix,
     now,
   });
-  const run = {id: runSnap.id, path: runSnap.ref.path, data: runSnap.data()};
+  const event = {id: eventSnap.id, path: eventSnap.ref.path, data: eventSnap.data()};
   const docs = [
     ...await buildParticipationDocsWithLocks({
       db,
       admin,
       marker,
       uid: user.uid,
-      run,
+      event,
       status: "signedUp",
       genderAtSignup: user.data.gender,
       now,
     }),
     {
-      path: `notifications/${user.uid}/items/demoOps_waitlistPromotion_${runId}`,
+      path: `notifications/${user.uid}/items/demoOps_waitlistPromotion_${eventId}`,
       data: {
         ...marker,
         uid: user.uid,
         type: "waitlistPromotion",
         title: "You're in",
-        body: "A spot opened on your demo run.",
+        body: "A spot opened on your demo event.",
         createdAt: timestampFromDate(admin, now),
         readAt: null,
         matchId: null,
-        runId,
-        runClubId: run.data.runClubId,
+        eventId,
+        clubId: event.data.clubId,
         actorUid: null,
         actorName: null,
       },
@@ -970,7 +970,7 @@ export async function buildPromoteWaitlistPlan({
     operationId,
     phone: user.phoneNumber,
     uid: user.uid,
-    runId,
+    eventId,
     docs,
     aggregateRepairRecommended: true,
   };
@@ -989,7 +989,7 @@ export async function buildUnreadMessagePlan({
   const matchId = matchIdFor(fromUser.uid, toUser.uid);
   const matchSnap = await db.collection("matches").doc(matchId).get();
   if (!matchSnap.exists) {
-    throw new Error(`Missing matches/${matchId}. Run match-phones first.`);
+    throw new Error(`Missing matches/${matchId}. Event match-phones first.`);
   }
   const operationId = demoOperationId({
     command: "unread_message",
@@ -1027,18 +1027,18 @@ export async function buildRefundPlan({
   db,
   admin,
   phone,
-  runId,
+  eventId,
   seedPrefix = DEFAULT_DEMO_OPS_PREFIX,
   now = new Date(),
 }) {
   const user = await resolveUserByPhone(db, phone);
-  const runSnap = await db.collection("runs").doc(runId).get();
-  if (!runSnap.exists) throw new Error(`Missing runs/${runId}.`);
-  const amount = Number(runSnap.data().priceInPaise ?? 29900) || 29900;
+  const eventSnap = await db.collection("events").doc(eventId).get();
+  if (!eventSnap.exists) throw new Error(`Missing events/${eventId}.`);
+  const amount = Number(eventSnap.data().priceInPaise ?? 29900) || 29900;
   const operationId = demoOperationId({
     command: "refund",
     seedPrefix,
-    subject: `${runId}_${user.uid}`,
+    subject: `${eventId}_${user.uid}`,
   });
   const marker = buildDemoMarker({
     admin,
@@ -1047,21 +1047,21 @@ export async function buildRefundPlan({
     seedPrefix,
     now,
   });
-  const paymentId = `${seedPrefix}_refund_${runId}_${user.uid}`;
+  const paymentId = `${seedPrefix}_refund_${eventId}_${user.uid}`;
   return {
     command: "create-refund",
     operationId,
     phone: user.phoneNumber,
     uid: user.uid,
-    runId,
+    eventId,
     docs: [{
       path: `payments/${paymentId}`,
       data: {
         ...marker,
         userId: user.uid,
-        orderId: `${seedPrefix}_refund_order_${runId}_${user.uid}`,
+        orderId: `${seedPrefix}_refund_order_${eventId}_${user.uid}`,
         paymentId,
-        runId,
+        eventId,
         amount,
         currency: "INR",
         status: "refunded",
@@ -1094,24 +1094,24 @@ export async function buildHostAccountPlan({
     now,
   });
   const clubId = `${seedPrefix}_host_club_${user.uid}`;
-  const runId = `${seedPrefix}_host_run_${user.uid}_01`;
+  const eventId = `${seedPrefix}_host_run_${user.uid}_01`;
   const city = user.data.city ?? "mumbai";
   const docs = [
     {
-      path: `runClubHostClaims/${user.uid}`,
+      path: `clubHostClaims/${user.uid}`,
       data: {
         ...marker,
         uid: user.uid,
-        runClubId: clubId,
+        clubId: clubId,
         createdAt: timestampFromDate(admin, now),
       },
     },
     {
-      path: `runClubs/${clubId}`,
+      path: `clubs/${clubId}`,
       data: {
         ...marker,
-        name: `${publicName(profile.data, user.data)} Run Club`,
-        description: "Demo host-owned run club for investor and beta walkthroughs.",
+        name: `${publicName(profile.data, user.data)} Club`,
+        description: "Demo host-owned club for investor and beta walkthroughs.",
         location: city,
         area: cityLabel(city),
         hostUserId: user.uid,
@@ -1123,8 +1123,8 @@ export async function buildHostAccountPlan({
         memberCount: 1,
         rating: 0,
         reviewCount: 0,
-        nextRunAt: timestampFromDate(admin, offsetDate(now, {days: 2})),
-        nextRunLabel: `${cityLabel(city)} main gate`,
+        nextEventAt: timestampFromDate(admin, offsetDate(now, {days: 2})),
+        nextEventLabel: `${cityLabel(city)} main gate`,
         instagramHandle: null,
         phoneNumber: user.phoneNumber,
         email: user.data.email ?? null,
@@ -1135,7 +1135,7 @@ export async function buildHostAccountPlan({
       },
     },
     {
-      path: `runClubMemberships/${clubId}_${user.uid}`,
+      path: `clubMemberships/${clubId}_${user.uid}`,
       data: {
         ...marker,
         clubId,
@@ -1149,20 +1149,20 @@ export async function buildHostAccountPlan({
       },
     },
     {
-      path: `runs/${runId}`,
+      path: `events/${eventId}`,
       data: {
         ...marker,
-        runClubId: clubId,
+        clubId: clubId,
         startTime: timestampFromDate(admin, offsetDate(now, {days: 2})),
         endTime: timestampFromDate(admin, offsetDate(now, {days: 2, hours: 1})),
         meetingPoint: `${cityLabel(city)} main gate`,
         startingPointLat: user.data.latitude ?? null,
         startingPointLng: user.data.longitude ?? null,
-        locationDetails: "Demo host run created by demo ops.",
+        locationDetails: "Demo host event created by demo ops.",
         distanceKm: 5,
         pace: "easy",
         capacityLimit: 12,
-        description: "Host tools demo run with editable roster and attendance state.",
+        description: "Host tools demo event with editable roster and attendance state.",
         priceInPaise: 0,
         bookedCount: 0,
         checkedInCount: 0,
@@ -1175,10 +1175,10 @@ export async function buildHostAccountPlan({
       },
     },
   ];
-  docs.push(...buildRunClubScheduleLockDocs({
-    run: {
-      id: runId,
-      data: docs.find((doc) => doc.path === `runs/${runId}`).data,
+  docs.push(...buildClubScheduleLockDocs({
+    event: {
+      id: eventId,
+      data: docs.find((doc) => doc.path === `events/${eventId}`).data,
     },
   }));
   return {
@@ -1186,14 +1186,14 @@ export async function buildHostAccountPlan({
     operationId,
     phone: user.phoneNumber,
     uid: user.uid,
-    runId,
-    runClubId: clubId,
+    eventId,
+    clubId: clubId,
     docs,
     aggregateRepairRecommended: true,
   };
 }
 
-export async function buildCheckInRunPlan({
+export async function buildCheckInEventPlan({
   db,
   admin,
   phone,
@@ -1209,7 +1209,7 @@ export async function buildCheckInRunPlan({
   const lng = finiteNumber(longitude ?? user.data.longitude);
   if (lat == null || lng == null) {
     throw new Error(
-      "create-check-in-run requires --lat/--lng or stored users latitude/longitude."
+      "create-check-in-event requires --lat/--lng or stored users latitude/longitude."
     );
   }
 
@@ -1220,7 +1220,7 @@ export async function buildCheckInRunPlan({
   });
   const marker = buildDemoMarker({
     admin,
-    command: "create-check-in-run",
+    command: "create-check-in-event",
     operationId,
     seedPrefix,
     now,
@@ -1228,25 +1228,25 @@ export async function buildCheckInRunPlan({
   const city = user.data.city ?? "mumbai";
   const name = publicName(profile.data, user.data);
   const clubId = `${seedPrefix}_checkin_club_${user.uid}`;
-  const runId = `${seedPrefix}_checkin_run_${user.uid}`;
+  const eventId = `${seedPrefix}_checkin_run_${user.uid}`;
   const startTime = offsetDate(now, {minutes: 5});
   const endTime = offsetDate(now, {minutes: 50});
-  const run = {
-    id: runId,
-    path: `runs/${runId}`,
+  const event = {
+    id: eventId,
+    path: `events/${eventId}`,
     data: {
       ...marker,
-      runClubId: clubId,
+      clubId: clubId,
       startTime: timestampFromDate(admin, startTime),
       endTime: timestampFromDate(admin, endTime),
       meetingPoint,
       startingPointLat: lat,
       startingPointLng: lng,
-      locationDetails: "Demo check-in run. The check-in window is already open.",
+      locationDetails: "Demo check-in event. The check-in window is already open.",
       distanceKm: 5,
       pace: "easy",
       capacityLimit: 12,
-      description: "Short-lived demo run for testing location-gated self check-in.",
+      description: "Short-lived demo event for testing location-gated self check-in.",
       priceInPaise: 0,
       bookedCount: 1,
       checkedInCount: 0,
@@ -1260,16 +1260,16 @@ export async function buildCheckInRunPlan({
   };
   const docs = [
     {
-      path: `runClubHostClaims/${user.uid}`,
+      path: `clubHostClaims/${user.uid}`,
       data: {
         ...marker,
         uid: user.uid,
-        runClubId: clubId,
+        clubId: clubId,
         createdAt: timestampFromDate(admin, now),
       },
     },
     {
-      path: `runClubs/${clubId}`,
+      path: `clubs/${clubId}`,
       data: {
         ...marker,
         name: `${name} Check-In Club`,
@@ -1285,8 +1285,8 @@ export async function buildCheckInRunPlan({
         memberCount: 1,
         rating: 0,
         reviewCount: 0,
-        nextRunAt: timestampFromDate(admin, startTime),
-        nextRunLabel: meetingPoint,
+        nextEventAt: timestampFromDate(admin, startTime),
+        nextEventLabel: meetingPoint,
         instagramHandle: null,
         phoneNumber: user.phoneNumber,
         email: user.data.email ?? null,
@@ -1297,7 +1297,7 @@ export async function buildCheckInRunPlan({
       },
     },
     {
-      path: `runClubMemberships/${clubId}_${user.uid}`,
+      path: `clubMemberships/${clubId}_${user.uid}`,
       data: {
         ...marker,
         clubId,
@@ -1311,16 +1311,16 @@ export async function buildCheckInRunPlan({
       },
     },
     {
-      path: run.path,
-      data: run.data,
+      path: event.path,
+      data: event.data,
     },
-    ...buildRunClubScheduleLockDocs({run}),
+    ...buildClubScheduleLockDocs({event}),
     ...await buildParticipationDocsWithLocks({
       db,
       admin,
       marker,
       uid: user.uid,
-      run,
+      event,
       status: "signedUp",
       genderAtSignup: user.data.gender,
       now,
@@ -1328,12 +1328,12 @@ export async function buildCheckInRunPlan({
   ];
 
   return {
-    command: "create-check-in-run",
+    command: "create-check-in-event",
     operationId,
     phone: user.phoneNumber,
     uid: user.uid,
-    runId,
-    runClubId: clubId,
+    eventId,
+    clubId: clubId,
     latitude: lat,
     longitude: lng,
     checkInWindowOpensAt: offsetDate(startTime, {minutes: -10}).toISOString(),
@@ -1356,10 +1356,10 @@ export async function buildResetUserDemoStatePlan({db, phone, uid}) {
   const demoMatchIds = new Set();
 
   await collectManifestPaths(db, docs, userId);
-  await collectTopLevelQueryPaths(db, docs, "runClubMemberships", "uid", userId);
-  await collectTopLevelQueryPaths(db, docs, "runParticipations", "uid", userId);
-  await collectTopLevelQueryPaths(db, docs, "userRunScheduleLocks", "uid", userId);
-  await collectTopLevelQueryPaths(db, docs, "savedRuns", "uid", userId);
+  await collectTopLevelQueryPaths(db, docs, "clubMemberships", "uid", userId);
+  await collectTopLevelQueryPaths(db, docs, "eventParticipations", "uid", userId);
+  await collectTopLevelQueryPaths(db, docs, "userEventScheduleLocks", "uid", userId);
+  await collectTopLevelQueryPaths(db, docs, "savedEvents", "uid", userId);
   await collectTopLevelQueryPaths(db, docs, "payments", "userId", userId);
   await collectMatchPaths(db, docs, demoMatchIds, userId);
   await collectOutgoingSwipePaths(db, docs, userId);
@@ -1448,20 +1448,20 @@ export async function buildValidateDemoStateReport({db, phone, uid, now = new Da
     publicProfile,
     matches,
     participations,
-    savedRuns,
+    savedEvents,
     payments,
     notifications,
     outgoingSwipes,
-    runs,
+    events,
   ] = await Promise.all([
     db.collection("publicProfiles").doc(userId).get(),
     db.collection("matches").where("participantIds", "array-contains", userId).get(),
-    db.collection("runParticipations").where("uid", "==", userId).get(),
-    db.collection("savedRuns").where("uid", "==", userId).get(),
+    db.collection("eventParticipations").where("uid", "==", userId).get(),
+    db.collection("savedEvents").where("uid", "==", userId).get(),
     db.collection("payments").where("userId", "==", userId).get(),
     db.collection("notifications").doc(userId).collection("items").get(),
     db.collection("swipes").doc(userId).collection("outgoing").get(),
-    db.collection("runs").get(),
+    db.collection("events").get(),
   ]);
 
   let messageCount = 0;
@@ -1474,14 +1474,14 @@ export async function buildValidateDemoStateReport({db, phone, uid, now = new Da
     activeMatches: matches.docs.filter((doc) => doc.data().status !== "blocked").length,
     messages: messageCount,
     participations: participations.size,
-    attendedRuns: participations.docs.filter((doc) => doc.data().status === "attended").length,
-    savedRuns: savedRuns.size,
+    attendedEvents: participations.docs.filter((doc) => doc.data().status === "attended").length,
+    savedEvents: savedEvents.size,
     payments: payments.size,
     notifications: notifications.size,
     outgoingSwipes: outgoingSwipes.size,
-    upcomingMappedRuns: countUpcomingMappedRuns(runs.docs, now),
-    checkInReadyRuns: countCheckInReadyRuns({
-      runDocs: runs.docs,
+    upcomingMappedEvents: countUpcomingMappedEvents(events.docs, now),
+    checkInReadyEvents: countCheckInReadyEvents({
+      eventDocs: events.docs,
       participationDocs: participations.docs,
       now,
     }),
@@ -1490,11 +1490,11 @@ export async function buildValidateDemoStateReport({db, phone, uid, now = new Da
   if (!publicProfile.exists) issues.push(`Missing publicProfiles/${userId}.`);
   if (counts.activeMatches < 3) issues.push("Fewer than 3 active matches.");
   if (counts.messages < 3) issues.push("Fewer than 3 chat messages.");
-  if (counts.participations < 3) issues.push("Fewer than 3 run participation edges.");
+  if (counts.participations < 3) issues.push("Fewer than 3 event participation edges.");
   if (counts.notifications < 3) issues.push("Fewer than 3 notifications.");
-  if (counts.upcomingMappedRuns < 1) issues.push("No upcoming mapped runs.");
-  if (counts.checkInReadyRuns < 1) {
-    issues.push("No signed-up run is currently check-in ready.");
+  if (counts.upcomingMappedEvents < 1) issues.push("No upcoming mapped events.");
+  if (counts.checkInReadyEvents < 1) {
+    issues.push("No signed-up event is currently check-in ready.");
   }
 
   return {
@@ -1522,15 +1522,15 @@ export async function buildDemoChecklist({db, phone, uid, now = new Date()}) {
     canDemo,
     gaps,
     ok: report.counts.participations > 0,
-    label: "run detail and booking state",
-    gap: "no run participation edges",
+    label: "event detail and booking state",
+    gap: "no event participation edges",
   });
   addCapability({
     canDemo,
     gaps,
-    ok: report.counts.attendedRuns > 0,
-    label: "post-run recap and swipe entry",
-    gap: "no attended runs",
+    ok: report.counts.attendedEvents > 0,
+    label: "post-event recap and swipe entry",
+    gap: "no attended events",
   });
   addCapability({
     canDemo,
@@ -1549,23 +1549,23 @@ export async function buildDemoChecklist({db, phone, uid, now = new Date()}) {
   addCapability({
     canDemo,
     gaps,
-    ok: report.counts.savedRuns > 0,
-    label: "saved runs",
-    gap: "no saved runs",
+    ok: report.counts.savedEvents > 0,
+    label: "saved events",
+    gap: "no saved events",
   });
   addCapability({
     canDemo,
     gaps,
-    ok: report.counts.upcomingMappedRuns > 0,
-    label: "run map pins",
-    gap: "no upcoming runs with map coordinates",
+    ok: report.counts.upcomingMappedEvents > 0,
+    label: "event map pins",
+    gap: "no upcoming events with map coordinates",
   });
   addCapability({
     canDemo,
     gaps,
-    ok: report.counts.checkInReadyRuns > 0,
+    ok: report.counts.checkInReadyEvents > 0,
     label: "location-gated self check-in",
-    gap: "no signed-up mapped run inside the check-in window",
+    gap: "no signed-up mapped event inside the check-in window",
   });
   addCapability({
     canDemo,
@@ -1584,36 +1584,36 @@ export async function buildDemoChecklist({db, phone, uid, now = new Date()}) {
   return {...report, canDemo, gaps};
 }
 
-function countUpcomingMappedRuns(runDocs, now) {
-  return runDocs
+function countUpcomingMappedEvents(eventDocs, now) {
+  return eventDocs
     .map((doc) => doc.data())
-    .filter((run) => run.status !== "cancelled")
-    .filter(hasRunCoordinates)
-    .filter((run) => {
-      const startTime = dateFromTimestampLike(run.startTime);
+    .filter((event) => event.status !== "cancelled")
+    .filter(hasEventCoordinates)
+    .filter((event) => {
+      const startTime = dateFromTimestampLike(event.startTime);
       return startTime != null && startTime > now;
     })
     .length;
 }
 
-function countCheckInReadyRuns({runDocs, participationDocs, now}) {
-  const runsById = new Map(runDocs.map((doc) => [doc.id, doc.data()]));
+function countCheckInReadyEvents({eventDocs, participationDocs, now}) {
+  const eventsById = new Map(eventDocs.map((doc) => [doc.id, doc.data()]));
   return participationDocs
     .map((doc) => doc.data())
     .filter((participation) => participation.status === "signedUp")
     .filter((participation) => {
-      const run = runsById.get(participation.runId);
-      return run != null &&
-        run.status !== "cancelled" &&
-        hasRunCoordinates(run) &&
-        isSelfCheckInWindowOpen(run.startTime, now);
+      const event = eventsById.get(participation.eventId);
+      return event != null &&
+        event.status !== "cancelled" &&
+        hasEventCoordinates(event) &&
+        isSelfCheckInWindowOpen(event.startTime, now);
     })
     .length;
 }
 
-function hasRunCoordinates(run) {
-  return finiteNumber(run.startingPointLat) != null &&
-    finiteNumber(run.startingPointLng) != null;
+function hasEventCoordinates(event) {
+  return finiteNumber(event.startingPointLat) != null &&
+    finiteNumber(event.startingPointLng) != null;
 }
 
 function isSelfCheckInWindowOpen(startTimeValue, now) {
@@ -1651,18 +1651,18 @@ export async function buildLaunchCleanupPlan({
   const topLevel = [
     "users",
     "publicProfiles",
-    "runClubs",
-    "runClubMemberships",
-    "runClubHostClaims",
-    "runs",
-    "runParticipations",
-    "runClubScheduleLocks",
-    "userRunScheduleLocks",
-    "savedRuns",
+    "clubs",
+    "clubMemberships",
+    "clubHostClaims",
+    "events",
+    "eventParticipations",
+    "clubScheduleLocks",
+    "userEventScheduleLocks",
+    "savedEvents",
     "payments",
     "reviews",
     "matches",
-    "seedRuns",
+    "seedEvents",
     DEMO_MANIFEST_COLLECTION,
   ];
   for (const collectionName of topLevel) {
@@ -1701,8 +1701,8 @@ export async function buildLaunchCleanupPlan({
         hasDemoPrefix(userDoc.id, seedPrefixes) ||
         hasDemoPrefix(doc.id, seedPrefixes) ||
         hasDemoPrefix(data.matchId, seedPrefixes) ||
-        hasDemoPrefix(data.runId, seedPrefixes) ||
-        hasDemoPrefix(data.runClubId, seedPrefixes)) {
+        hasDemoPrefix(data.eventId, seedPrefixes) ||
+        hasDemoPrefix(data.clubId, seedPrefixes)) {
         paths.add(doc.ref.path);
       }
     }
@@ -1715,7 +1715,7 @@ export async function buildLaunchCleanupPlan({
   };
 }
 
-export async function buildStaleRunCleanupPlan({
+export async function buildStaleEventCleanupPlan({
   db,
   seedPrefixes = [DEFAULT_DEMO_OPS_PREFIX, DEFAULT_SEED_PREFIX],
   now = new Date(),
@@ -1723,14 +1723,14 @@ export async function buildStaleRunCleanupPlan({
   includeCancelled = true,
 } = {}) {
   if (!includePast && !includeCancelled) {
-    throw new Error("Stale run cleanup requires past runs, cancelled runs, or both.");
+    throw new Error("Stale event cleanup requires past events, cancelled events, or both.");
   }
 
   const paths = new Set();
-  const staleRunIds = new Set();
+  const staleEventIds = new Set();
   const staleDemoMatchIds = new Set();
-  const runs = await db.collection("runs").get();
-  for (const doc of runs.docs) {
+  const events = await db.collection("events").get();
+  for (const doc of events.docs) {
     const data = doc.data();
     if (!isDemoOwned(data) && !hasDemoPrefix(doc.id, seedPrefixes)) continue;
     const startTime = typeof data.startTime?.toDate === "function" ?
@@ -1739,40 +1739,40 @@ export async function buildStaleRunCleanupPlan({
     const isPast = includePast && startTime != null && startTime <= now;
     const isCancelled = includeCancelled && data.status === "cancelled";
     if (!isPast && !isCancelled) continue;
-    staleRunIds.add(doc.id);
+    staleEventIds.add(doc.id);
     paths.add(doc.ref.path);
   }
 
-  if (staleRunIds.size === 0) {
+  if (staleEventIds.size === 0) {
     return {
-      command: "cleanup-stale-runs",
+      command: "cleanup-stale-events",
       seedPrefixes,
-      staleRunIds: [],
+      staleEventIds: [],
       paths: [],
       aggregateRepairRecommended: false,
     };
   }
 
   for (const collectionName of [
-    "runParticipations",
-    "runClubScheduleLocks",
-    "userRunScheduleLocks",
-    "savedRuns",
+    "eventParticipations",
+    "clubScheduleLocks",
+    "userEventScheduleLocks",
+    "savedEvents",
     "payments",
     "reviews",
   ]) {
     const snap = await db.collection(collectionName).get();
     for (const doc of snap.docs) {
-      if (staleRunIds.has(doc.data().runId)) paths.add(doc.ref.path);
+      if (staleEventIds.has(doc.data().eventId)) paths.add(doc.ref.path);
     }
   }
 
   const matches = await db.collection("matches").get();
   for (const doc of matches.docs) {
     const data = doc.data();
-    const touchesStaleRun = Array.isArray(data.runIds) &&
-      data.runIds.some((runId) => staleRunIds.has(runId));
-    if (!touchesStaleRun || !isDemoOwned(data)) continue;
+    const touchesStaleEvent = Array.isArray(data.eventIds) &&
+      data.eventIds.some((eventId) => staleEventIds.has(eventId));
+    if (!touchesStaleEvent || !isDemoOwned(data)) continue;
     staleDemoMatchIds.add(doc.id);
     const messages = await doc.ref.collection("messages").get();
     for (const message of messages.docs) paths.add(message.ref.path);
@@ -1783,7 +1783,7 @@ export async function buildStaleRunCleanupPlan({
   for (const swiperDoc of swipers.docs) {
     const outgoing = await swiperDoc.ref.collection("outgoing").get();
     for (const doc of outgoing.docs) {
-      if (staleRunIds.has(doc.data().runId)) paths.add(doc.ref.path);
+      if (staleEventIds.has(doc.data().eventId)) paths.add(doc.ref.path);
     }
   }
 
@@ -1792,16 +1792,16 @@ export async function buildStaleRunCleanupPlan({
     const items = await userDoc.ref.collection("items").get();
     for (const doc of items.docs) {
       const data = doc.data();
-      if (staleRunIds.has(data.runId) || staleDemoMatchIds.has(data.matchId)) {
+      if (staleEventIds.has(data.eventId) || staleDemoMatchIds.has(data.matchId)) {
         paths.add(doc.ref.path);
       }
     }
   }
 
   return {
-    command: "cleanup-stale-runs",
+    command: "cleanup-stale-events",
     seedPrefixes,
-    staleRunIds: [...staleRunIds].sort(),
+    staleEventIds: [...staleEventIds].sort(),
     paths: [...paths].sort(),
     aggregateRepairRecommended: true,
   };
@@ -1854,7 +1854,7 @@ export async function writeManifest({db, admin, plan, apply, now = new Date()}) 
     users: plan.users ?? (plan.uid ? [plan.uid] : []),
     phones: plan.phones ?? (plan.phone ? [plan.phone] : []),
     matchId: plan.matchId ?? null,
-    runId: plan.runId ?? null,
+    eventId: plan.eventId ?? null,
     paths,
     pathCount: paths.length,
   };

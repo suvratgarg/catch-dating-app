@@ -16,15 +16,15 @@ options when specific functions need higher or lower limits.
 
 | Function | File | Purpose |
 |----------|------|---------|
-| `createRazorpayOrder` | `src/payments/` | Create Razorpay order for paid runs |
+| `createRazorpayOrder` | `src/payments/` | Create Razorpay order for paid events |
 | `verifyRazorpayPayment` | `src/payments/` | Verify payment signature + sign up |
-| `signUpForFreeRun` | `src/runs/` | Book a free run |
-| `cancelRunSignUp` | `src/runs/` | Cancel booking (refunds paid runs) |
-| `joinRunWaitlist` | `src/runs/` | Join a full run's waitlist |
-| `createRunClub` | `src/runClubs/` | Create a run club and follow it as host |
-| `joinRunClub` / `leaveRunClub` | `src/runClubs/` | Join/leave a run club and mirror user membership |
-| `markRunAttendance` | `src/runs/` | Host marks attendance |
-| `selfCheckInAttendance` | `src/runs/` | Participant self-check-in with GPS |
+| `signUpForFreeEvent` | `src/events/` | Book a free event |
+| `cancelEventSignUp` | `src/events/` | Cancel booking (refunds paid events) |
+| `joinEventWaitlist` | `src/events/` | Join a full event's waitlist |
+| `createClub` | `src/clubs/` | Create a club and follow it as host |
+| `joinClub` / `leaveClub` | `src/clubs/` | Join/leave a club and mirror user membership |
+| `markEventAttendance` | `src/events/` | Host marks attendance |
+| `selfCheckInAttendance` | `src/events/` | Participant self-check-in with GPS |
 | `blockUser` / `unblockUser` | `src/safety/` | Block/unblock another user |
 | `requestAccountDeletion` | `src/safety/` | Anonymize + delete user data |
 | `reportUser` | `src/safety/` | File a safety report |
@@ -37,7 +37,7 @@ options when specific functions need higher or lower limits.
 | `onSwipeCreated` | `src/matching/` | `swipes/{id}/outgoing/{id}` onCreate — mutual-like → match |
 | `onMatchCreated` | `src/matching/` | `matches/{id}` onCreate — FCM push to both users |
 | `onMessageCreated` | `src/matching/` | `matches/{id}/messages/{id}` onCreate — unread conversation flag + FCM |
-| `syncRunClubReviewStats` | `src/reviews/` | `reviews/{id}` onWrite — recalculates club rating |
+| `syncClubReviewStats` | `src/reviews/` | `reviews/{id}` onWrite — recalculates club rating |
 | `onBlockCreated` | `src/safety/` | `blocks/{id}` onCreate — closes existing matches |
 | `moderateChatMessage` | `src/moderation/` | `matches/{id}/messages/{id}` onCreate — banned-word filter |
 
@@ -79,7 +79,7 @@ per-IP counter (3 POSTs per hour). This does not survive cold starts.
 
 ## Content moderation
 
-**Photos:** `moderatePhotoOnUpload` runs Google Cloud Vision SafeSearch on
+**Photos:** `moderatePhotoOnUpload` events Google Cloud Vision SafeSearch on
 every Storage upload. Images with `VERY_LIKELY` adult/violent content are
 deleted and removed from the user's grouped `profilePhotos` plus legacy
 `photoUrls`/`photoThumbnailUrls`/`photoPrompts` compatibility arrays. `LIKELY`
@@ -109,18 +109,18 @@ onCall(appCheckCallableOptionsWithSecrets([...]), handler)
 
 Do not inline `{enforceAppCheck: true, invoker: "public"}` in individual
 function files. Firebase callable Gen 2 functions must be publicly invokable at
-the Cloud Run/IAM layer so client SDK calls can reach the callable adapter; App
+the Cloud Event/IAM layer so client SDK calls can reach the callable adapter; App
 Check and Firebase Auth are then enforced by the shared callable options and
 each handler. The shared options declare this intent, and the default `npm test`
 suite includes a guard test that fails when an exported callable does not use
 the shared App Check options.
 
-After deploying callable Functions, run `npm run sync:callable-invokers -- \
+After deploying callable Functions, event `npm event sync:callable-invokers -- \
 <project-id> [...]`. Current callable deployment manifests do not reliably
-propagate `invoker` onto the underlying Cloud Run services, and a missing
-binding shows up as a Cloud Run/GFE HTML 401/403 before Firebase callable
-handling. The sync command grants `allUsers` only the `roles/run.invoker`
-permission on the callable Cloud Run services; it does not bypass Firebase Auth
+propagate `invoker` onto the underlying Cloud Event services, and a missing
+binding shows up as a Cloud Event/GFE HTML 401/403 before Firebase callable
+handling. The sync command grants `allUsers` only the `roles/event.invoker`
+permission on the callable Cloud Event services; it does not bypass Firebase Auth
 or App Check.
 
 The public `joinWaitlist` endpoint is an HTTPS endpoint for the marketing site,
@@ -136,14 +136,14 @@ Ajv validator from `src/shared/generated/schemaValidators.ts` with
 `validateCallableWithAjv(request, validator)` from `src/shared/validation.ts`:
 
 ```ts
-import {CreateRunCallablePayload} from "../shared/generated/createRunCallablePayload";
-import {validateCreateRunCallablePayload} from "../shared/generated/schemaValidators";
+import {CreateEventCallablePayload} from "../shared/generated/createEventCallablePayload";
+import {validateCreateEventCallablePayload} from "../shared/generated/schemaValidators";
 import {validateCallableWithAjv} from "../shared/validation";
 
-const data = validateCallableWithAjv<CreateRunCallablePayload>(
+const data = validateCallableWithAjv<CreateEventCallablePayload>(
   request,
-  validateCreateRunCallablePayload,
-  normalizeCreateRunPayload,
+  validateCreateEventCallablePayload,
+  normalizeCreateEventPayload,
 );
 ```
 
@@ -192,10 +192,10 @@ release evidence.
 
 ## Firestore rules
 
-`firebase.json` includes a predeploy hook that runs Functions tests and the
+`firebase.json` includes a predeploy hook that events Functions tests and the
 Firestore rules emulator suite before every
 `firebase deploy --only firestore:rules`. Broken rules fail the deploy before
-reaching Firebase. The same rules tests run in CI on every PR that touches
+reaching Firebase. The same rules tests event in CI on every PR that touches
 `firestore.rules` or the schema/contract files
 (`.github/workflows/firestore-rules-ci.yml`).
 
@@ -205,23 +205,23 @@ emulators. Add test cases for any new rule conditions, especially `diff()`
 checks, `hasOnly`/`hasAll` shape validation, and Storage paths that depend on
 Firestore relationship documents.
 
-Run the rules suite through the Firestore + Storage emulator wrapper unless you
+Event the rules suite through the Firestore + Storage emulator wrapper unless you
 already have Firestore on `127.0.0.1:8080` and Storage on `127.0.0.1:9199`.
-A direct `npm run test:rules` from this directory only works when those
+A direct `npm event test:rules` from this directory only works when those
 emulators are already running; `connect ECONNREFUSED` means the emulator
 workflow is missing, not necessarily that the rules changed incorrectly.
 
 ## Commands
 
 ```bash
-npm --prefix functions run lint
+npm --prefix functions event lint
 npm --prefix functions test
-firebase emulators:exec --only firestore,storage "npm --prefix functions run test:rules"
+firebase emulators:exec --only firestore,storage "npm --prefix functions event test:rules"
 ./tool/firebase_with_env.sh dev deploy --only functions
 ./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions
 ./tool/firebase_with_env.sh dev deploy --only firestore:rules
 ./tool/firebase_with_env.sh staging deploy --only firestore:rules
 ./tool/firebase_with_env.sh prod deploy --only firestore:rules
-npm run sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
+npm event sync:callable-invokers -- catchdates-dev catchdates-staging catch-dating-app-64e51
 ```

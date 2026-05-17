@@ -6,25 +6,25 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
 import {
   ReviewDoc,
-  RunDoc,
-  RunParticipationDoc,
+  EventDoc,
+  EventParticipationDoc,
   UserProfileDoc,
 } from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {
-  runParticipationId,
+  eventParticipationId,
 } from "../shared/relationshipDocuments";
-import {CreateRunReviewCallablePayload} from
-  "../shared/generated/createRunReviewCallablePayload";
-import {DeleteRunReviewCallablePayload} from
-  "../shared/generated/deleteRunReviewCallablePayload";
+import {CreateEventReviewCallablePayload} from
+  "../shared/generated/createEventReviewCallablePayload";
+import {DeleteEventReviewCallablePayload} from
+  "../shared/generated/deleteEventReviewCallablePayload";
 import {
-  validateCreateRunReviewCallablePayload,
-  validateDeleteRunReviewCallablePayload,
-  validateUpdateRunReviewCallablePayload,
+  validateCreateEventReviewCallablePayload,
+  validateDeleteEventReviewCallablePayload,
+  validateUpdateEventReviewCallablePayload,
 } from "../shared/generated/schemaValidators";
-import {UpdateRunReviewCallablePayload} from
-  "../shared/generated/updateRunReviewCallablePayload";
+import {UpdateEventReviewCallablePayload} from
+  "../shared/generated/updateEventReviewCallablePayload";
 import {normalizePayloadStrings, normalizeSingleIdPayload} from
   "../shared/callablePayloadNormalization";
 import {requireDoc, validateCallableWithAjv} from "../shared/validation";
@@ -46,38 +46,38 @@ const defaultDeps: ReviewMutationDeps = {
   checkRateLimit: defaultCheckRateLimit,
 };
 
-export async function createRunReviewHandler(
+export async function createEventReviewHandler(
   request: CallableRequest<unknown>,
   deps: ReviewMutationDeps = defaultDeps
 ): Promise<{reviewId: string}> {
   const reviewerUserId = requireAuth(request);
-  const data = validateCallableWithAjv<CreateRunReviewCallablePayload>(
+  const data = validateCallableWithAjv<CreateEventReviewCallablePayload>(
     request,
-    validateCreateRunReviewCallablePayload,
-    normalizeCreateRunReviewPayload
+    validateCreateEventReviewCallablePayload,
+    normalizeCreateEventReviewPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, reviewerUserId, "createRunReview");
+  await deps.checkRateLimit?.(db, reviewerUserId, "createEventReview");
 
-  const reviewId = runReviewId(data.runId, reviewerUserId);
+  const reviewId = eventReviewId(data.eventId, reviewerUserId);
   const reviewRef = db.collection("reviews").doc(reviewId);
-  const runRef = db.collection("runs").doc(data.runId);
+  const eventRef = db.collection("events").doc(data.eventId);
   const userRef = db.collection("users").doc(reviewerUserId);
   const deletedUserRef = db.collection("deletedUsers").doc(reviewerUserId);
   const participationRef = db
-    .collection("runParticipations")
-    .doc(runParticipationId(data.runId, reviewerUserId));
+    .collection("eventParticipations")
+    .doc(eventParticipationId(data.eventId, reviewerUserId));
 
   await db.runTransaction(async (tx) => {
     const [
       reviewSnap,
-      runSnap,
+      eventSnap,
       userSnap,
       deletedUserSnap,
       participationSnap,
     ] = await Promise.all([
       tx.get(reviewRef),
-      tx.get(runRef),
+      tx.get(eventRef),
       tx.get(userRef),
       tx.get(deletedUserRef),
       tx.get(participationRef),
@@ -86,21 +86,21 @@ export async function createRunReviewHandler(
     if (reviewSnap.exists) {
       throw new HttpsError(
         "already-exists",
-        "You have already reviewed this run."
+        "You have already reviewed this event."
       );
     }
     assertCanWriteReview(
-      runSnap,
+      eventSnap,
       userSnap,
       deletedUserSnap,
       participationSnap,
-      data.runClubId
+      data.clubId
     );
 
     const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
     tx.create(reviewRef, {
-      runClubId: data.runClubId,
-      runId: data.runId,
+      clubId: data.clubId,
+      eventId: data.eventId,
       reviewerUserId,
       reviewerName: publicDisplayName(user),
       rating: data.rating,
@@ -113,18 +113,18 @@ export async function createRunReviewHandler(
   return {reviewId};
 }
 
-export async function updateRunReviewHandler(
+export async function updateEventReviewHandler(
   request: CallableRequest<unknown>,
   deps: ReviewMutationDeps = defaultDeps
 ): Promise<{updated: boolean}> {
   const reviewerUserId = requireAuth(request);
-  const data = validateCallableWithAjv<UpdateRunReviewCallablePayload>(
+  const data = validateCallableWithAjv<UpdateEventReviewCallablePayload>(
     request,
-    validateUpdateRunReviewCallablePayload,
-    normalizeUpdateRunReviewPayload
+    validateUpdateEventReviewCallablePayload,
+    normalizeUpdateEventReviewPayload
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, reviewerUserId, "updateRunReview");
+  await deps.checkRateLimit?.(db, reviewerUserId, "updateEventReview");
 
   const reviewRef = db.collection("reviews").doc(data.reviewId);
   await db.runTransaction(async (tx) => {
@@ -141,18 +141,18 @@ export async function updateRunReviewHandler(
   return {updated: true};
 }
 
-export async function deleteRunReviewHandler(
+export async function deleteEventReviewHandler(
   request: CallableRequest<unknown>,
   deps: ReviewMutationDeps = defaultDeps
 ): Promise<{deleted: boolean}> {
   const reviewerUserId = requireAuth(request);
-  const data = validateCallableWithAjv<DeleteRunReviewCallablePayload>(
+  const data = validateCallableWithAjv<DeleteEventReviewCallablePayload>(
     request,
-    validateDeleteRunReviewCallablePayload,
+    validateDeleteEventReviewCallablePayload,
     normalizeSingleIdPayload("reviewId")
   );
   const db = deps.firestore();
-  await deps.checkRateLimit?.(db, reviewerUserId, "deleteRunReview");
+  await deps.checkRateLimit?.(db, reviewerUserId, "deleteEventReview");
 
   const reviewRef = db.collection("reviews").doc(data.reviewId);
   await db.runTransaction(async (tx) => {
@@ -164,24 +164,24 @@ export async function deleteRunReviewHandler(
   return {deleted: true};
 }
 
-function normalizeCreateRunReviewPayload(data: unknown): unknown {
+function normalizeCreateEventReviewPayload(data: unknown): unknown {
   return normalizePayloadStrings(data, {
-    stringFields: ["runClubId", "runId", "comment"],
+    stringFields: ["clubId", "eventId", "comment"],
   });
 }
 
-function normalizeUpdateRunReviewPayload(data: unknown): unknown {
+function normalizeUpdateEventReviewPayload(data: unknown): unknown {
   return normalizePayloadStrings(data, {
     stringFields: ["reviewId", "comment"],
   });
 }
 
 function assertCanWriteReview(
-  runSnap: FirebaseFirestore.DocumentSnapshot,
+  eventSnap: FirebaseFirestore.DocumentSnapshot,
   userSnap: FirebaseFirestore.DocumentSnapshot,
   deletedUserSnap: FirebaseFirestore.DocumentSnapshot,
   participationSnap: FirebaseFirestore.DocumentSnapshot,
-  runClubId: string
+  clubId: string
 ) {
   if (deletedUserSnap.exists) {
     throw new HttpsError(
@@ -192,32 +192,32 @@ function assertCanWriteReview(
   if (!userSnap.exists) {
     throw new HttpsError("not-found", "User profile not found.");
   }
-  if (!runSnap.exists) {
-    throw new HttpsError("not-found", "Run not found.");
+  if (!eventSnap.exists) {
+    throw new HttpsError("not-found", "Event not found.");
   }
 
-  const run = requireDoc<RunDoc>(runSnap, "RunDoc");
-  if (run.runClubId !== runClubId) {
+  const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
+  if (event.clubId !== clubId) {
     throw new HttpsError(
       "failed-precondition",
-      "This review does not match the run club."
+      "This review does not match the club."
     );
   }
   if (!participationSnap.exists) {
     throw new HttpsError(
       "failed-precondition",
-      "Only attended runners can review a run."
+      "Only attended attendees can review an event."
     );
   }
 
-  const participation = requireDoc<RunParticipationDoc>(
+  const participation = requireDoc<EventParticipationDoc>(
     participationSnap,
-    "RunParticipationDoc"
+    "EventParticipationDoc"
   );
   if (participation.status !== "attended") {
     throw new HttpsError(
       "failed-precondition",
-      "Only attended runners can review a run."
+      "Only attended attendees can review an event."
     );
   }
 }
@@ -238,21 +238,21 @@ function assertOwnsReview(
   }
 }
 
-function runReviewId(runId: string, reviewerUserId: string): string {
-  return `${runId}~${reviewerUserId}`;
+function eventReviewId(eventId: string, reviewerUserId: string): string {
+  return `${eventId}~${reviewerUserId}`;
 }
 
-export const createRunReview = onCall(
+export const createEventReview = onCall(
   appCheckCallableOptions,
-  (request) => createRunReviewHandler(request)
+  (request) => createEventReviewHandler(request)
 );
 
-export const updateRunReview = onCall(
+export const updateEventReview = onCall(
   appCheckCallableOptions,
-  (request) => updateRunReviewHandler(request)
+  (request) => updateEventReviewHandler(request)
 );
 
-export const deleteRunReview = onCall(
+export const deleteEventReview = onCall(
   appCheckCallableOptions,
-  (request) => deleteRunReviewHandler(request)
+  (request) => deleteEventReviewHandler(request)
 );

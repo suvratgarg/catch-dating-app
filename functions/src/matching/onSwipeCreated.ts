@@ -69,8 +69,8 @@ export async function onSwipeCreatedHandler(
     return;
   }
 
-  const sharedRunIds = Array.from(
-    new Set([reverseSwipe.runId, swipeData.runId].filter(Boolean))
+  const sharedEventIds = Array.from(
+    new Set([reverseSwipe.eventId, swipeData.eventId].filter(Boolean))
   );
 
   // Deterministic match ID, regardless of who swiped first.
@@ -82,7 +82,7 @@ export async function onSwipeCreatedHandler(
     user1Id: id1,
     user2Id: id2,
     participantIds: [id1, id2],
-    runIds: sharedRunIds,
+    eventIds: sharedEventIds,
     createdAt:
       deps.serverTimestamp() as unknown as FirebaseFirestore.Timestamp,
     lastMessageAt: null,
@@ -108,10 +108,10 @@ export async function onSwipeCreatedHandler(
   } catch (e: unknown) {
     const code = (e as {code?: unknown}).code;
     if (code === 6 || code === "already-exists") {
-      // ALREADY_EXISTS - keep one match doc per pair and append shared run
+      // ALREADY_EXISTS - keep one match doc per pair and append shared event
       // history instead of creating another conversation.
-      if (sharedRunIds.length > 0) {
-        await matchRef.update({runIds: deps.arrayUnion(...sharedRunIds)});
+      if (sharedEventIds.length > 0) {
+        await matchRef.update({eventIds: deps.arrayUnion(...sharedEventIds)});
       }
       await writeReactionCommentMessages(
         matchRef,

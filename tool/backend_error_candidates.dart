@@ -27,8 +27,8 @@ final rules = <CandidateRule>[
   CandidateRule(
     id: 'legacy_run_booking_message',
     status: CandidateStatus.mustMigrate,
-    pattern: RegExp(r'\brunBookingErrorMessage\b'),
-    recommendation: 'Replace with appErrorMessage and AppErrorContext.run.',
+    pattern: RegExp(r'\beventBookingErrorMessage\b'),
+    recommendation: 'Replace with appErrorMessage and AppErrorContext.event.',
   ),
   CandidateRule(
     id: 'legacy_firestore_exception',

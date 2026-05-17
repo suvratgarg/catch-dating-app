@@ -116,7 +116,7 @@ if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
       fi
       ;;
   esac
-elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" && $has_flavor -eq 0 ]]; then
+elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "event" && $has_flavor -eq 0 ]]; then
   if ! is_web_target "$target_device"; then
       flutter_args+=("--flavor" "$environment")
   fi
@@ -132,7 +132,7 @@ if [[ ${#flutter_args[@]} -ge 2 && "${flutter_args[0]}" == "build" ]]; then
       maps_platform="ios"
       ;;
   esac
-elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
+elif [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "event" ]]; then
   if is_web_target "$target_device"; then
     :
   elif is_ios_target "$target_device"; then
@@ -158,7 +158,7 @@ fi
 supports_dart_defines=0
 if [[ ${#flutter_args[@]} -ge 1 ]]; then
   case "${flutter_args[0]}" in
-    run|test|drive)
+    event|test|drive)
       supports_dart_defines=1
       ;;
     build)
@@ -168,7 +168,7 @@ if [[ ${#flutter_args[@]} -ge 1 ]]; then
 fi
 
 is_debug_mobile_run=0
-if [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "run" ]]; then
+if [[ ${#flutter_args[@]} -ge 1 && "${flutter_args[0]}" == "event" ]]; then
   is_debug_mobile_run=1
   for arg in "${flutter_args[@]}"; do
     case "$arg" in
@@ -195,7 +195,7 @@ if [[ $requires_debug_token -eq 1 &&
   -z "${FIREBASE_APP_CHECK_DEBUG_TOKEN:-}" &&
   "${ALLOW_RANDOM_APP_CHECK_DEBUG_TOKEN:-}" != "1" ]]; then
   cat >&2 <<EOF
-Missing FIREBASE_APP_CHECK_DEBUG_TOKEN for a mobile debug run.
+Missing FIREBASE_APP_CHECK_DEBUG_TOKEN for a mobile debug event.
 
 Firebase App Check enforcement rejects random debug tokens. Add a registered
 debug token to .env.local, for example:

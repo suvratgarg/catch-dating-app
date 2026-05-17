@@ -11,7 +11,7 @@
   "x-owner": "moderation triggers",
   "required": ["targetUserId", "flagType", "source", "status", "createdAt"],
   "properties": {
-    "targetUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "targetUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "flagType": {
       "type": "string",
       "enum": ["explicit_photo", "banned_text", "underage_content"]
@@ -28,8 +28,8 @@
       ]
     },
     "status": {"type": "string", "enum": ["pending", "reviewed", "dismissed"]},
-    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
-    "reviewedAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "reviewedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "contextId": {"type": "string", "minLength": 1, "maxLength": 180},
     "context": {"type": "string", "maxLength": 1000},
     "safeSearchResults": {

@@ -12,7 +12,7 @@ class RunnerActivity {
     required this.distanceMeters,
     this.isManualEntry = false,
     this.sourceName,
-    this.matchedCatchRunId,
+    this.matchedCatchEventId,
   });
 
   final String stableId;
@@ -23,7 +23,7 @@ class RunnerActivity {
   final double distanceMeters;
   final bool isManualEntry;
   final String? sourceName;
-  final String? matchedCatchRunId;
+  final String? matchedCatchEventId;
 
   double get distanceKm => distanceMeters / 1000;
 

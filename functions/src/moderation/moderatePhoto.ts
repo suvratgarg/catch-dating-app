@@ -2,7 +2,7 @@
  * Photo moderation via Google Cloud Vision SafeSearch.
  *
  * Triggered automatically on every Storage object finalize event. Downloads
- * the uploaded image bytes, runs SafeSearch detection, and takes one of
+ * the uploaded image bytes, events SafeSearch detection, and takes one of
  * three actions:
  *
  *   **Allow** — No adult/violent/racy content detected. The upload proceeds
@@ -20,7 +20,7 @@
  * ## Storage paths moderated
  *
  *   - `users/{uid}/photos/{fileName}` — profile photos
- *   - `runClubs/{clubId}/{fileName}` — club images
+ *   - `clubs/{clubId}/{fileName}` — club images
  *   - `matches/{matchId}/images/{messageId}` — chat images (future)
  *
  * ## Costs
@@ -228,7 +228,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 // ── Handler ────────────────────────────────────────────────────────────────
 
 /**
- * Storage finalize handler that runs SafeSearch on every uploaded image.
+ * Storage finalize handler that events SafeSearch on every uploaded image.
  *
  * When a photo is blocked (VERY_LIKELY explicit/violent), this handler
  * deletes the Storage object and removes the URL from the user's
@@ -242,7 +242,7 @@ export const moderatePhotoOnUpload = onObjectFinalized(
     // Only moderate recognized image paths.
     const isProfilePhoto = filePath.startsWith("users/") &&
       filePath.includes("/photos/");
-    const isClubImage = filePath.startsWith("runClubs/");
+    const isClubImage = filePath.startsWith("clubs/");
     const isChatImage = filePath.startsWith("matches/");
 
     if (!isProfilePhoto && !isClubImage && !isChatImage) return;

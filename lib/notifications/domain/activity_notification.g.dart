@@ -21,8 +21,8 @@ _ActivityNotification _$ActivityNotificationFromJson(
     json['readAt'] as Timestamp?,
   ),
   matchId: json['matchId'] as String?,
-  runId: json['runId'] as String?,
-  runClubId: json['runClubId'] as String?,
+  eventId: json['eventId'] as String?,
+  clubId: json['clubId'] as String?,
   actorUid: json['actorUid'] as String?,
   actorName: json['actorName'] as String?,
 );
@@ -37,8 +37,8 @@ Map<String, dynamic> _$ActivityNotificationToJson(
   'createdAt': const TimestampConverter().toJson(instance.createdAt),
   'readAt': const NullableTimestampConverter().toJson(instance.readAt),
   'matchId': instance.matchId,
-  'runId': instance.runId,
-  'runClubId': instance.runClubId,
+  'eventId': instance.eventId,
+  'clubId': instance.clubId,
   'actorUid': instance.actorUid,
   'actorName': instance.actorName,
 };
@@ -46,10 +46,10 @@ Map<String, dynamic> _$ActivityNotificationToJson(
 const _$ActivityNotificationTypeEnumMap = {
   ActivityNotificationType.message: 'message',
   ActivityNotificationType.match: 'match',
-  ActivityNotificationType.runReminder: 'runReminder',
-  ActivityNotificationType.runSignup: 'runSignup',
+  ActivityNotificationType.eventReminder: 'eventReminder',
+  ActivityNotificationType.eventSignup: 'eventSignup',
   ActivityNotificationType.waitlistPromotion: 'waitlistPromotion',
-  ActivityNotificationType.runCancelled: 'runCancelled',
-  ActivityNotificationType.runUpdated: 'runUpdated',
+  ActivityNotificationType.eventCancelled: 'eventCancelled',
+  ActivityNotificationType.eventUpdated: 'eventUpdated',
   ActivityNotificationType.clubUpdate: 'clubUpdate',
 };

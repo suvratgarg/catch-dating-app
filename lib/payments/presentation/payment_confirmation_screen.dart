@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -7,14 +8,13 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_joined_celebration_screen.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_controller.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_joined_celebration_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -26,57 +26,57 @@ class PaymentConfirmationScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final runAsync = ref.watch(watchRunProvider(data.runId));
+    final eventAsync = ref.watch(watchEventProvider(data.eventId));
 
-    return runAsync.when(
+    return eventAsync.when(
       loading: () => const Scaffold(body: CatchLoadingIndicator()),
       error: (e, _) => Scaffold(
         body: CatchErrorState.fromError(
           e,
           context: AppErrorContext.payments,
-          onRetry: () => ref.invalidate(watchRunProvider(data.runId)),
+          onRetry: () => ref.invalidate(watchEventProvider(data.eventId)),
         ),
       ),
-      data: (run) {
-        if (run == null) {
+      data: (event) {
+        if (event == null) {
           return const Scaffold(
             body: CatchErrorState(
-              title: 'Run not found',
-              message: 'This run is no longer available.',
+              title: 'Event not found',
+              message: 'This event is no longer available.',
             ),
           );
         }
-        return _ConfirmationBody(data: data, run: run);
+        return _ConfirmationBody(data: data, event: event);
       },
     );
   }
 }
 
 class _ConfirmationBody extends ConsumerWidget {
-  const _ConfirmationBody({required this.data, required this.run});
+  const _ConfirmationBody({required this.data, required this.event});
 
   final PaymentConfirmationData data;
-  final Run run;
+  final Event event;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clubAsync = ref.watch(watchRunClubProvider(run.runClubId));
+    final clubAsync = ref.watch(watchClubProvider(event.clubId));
     final clubName = clubAsync.asData?.value?.name;
 
-    return RunJoinedCelebrationScreen(
-      run: run,
+    return EventJoinedCelebrationScreen(
+      event: event,
       clubName: clubName,
       paymentData: data,
       supplementalChildren: [
-        _QuickActions(run: run),
+        _QuickActions(event: event),
         const _HeadsUp(),
-        _ReferralBanner(run: run),
+        _ReferralBanner(event: event),
       ],
       backHomeKey: PaymentConfirmationKeys.backHome,
-      onViewRun: () => context.goNamed(
-        Routes.runDetailScreen.name,
-        pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
-        extra: run,
+      onViewEvent: () => context.goNamed(
+        Routes.eventDetailScreen.name,
+        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
+        extra: event,
       ),
       onBackHome: () => context.goNamed(Routes.dashboardScreen.name),
     );
@@ -84,9 +84,9 @@ class _ConfirmationBody extends ConsumerWidget {
 }
 
 class _QuickActions extends ConsumerWidget {
-  const _QuickActions({required this.run});
+  const _QuickActions({required this.event});
 
-  final Run run;
+  final Event event;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -99,7 +99,7 @@ class _QuickActions extends ConsumerWidget {
             key: PaymentConfirmationKeys.addToCalendar,
             icon: Icons.calendar_month_outlined,
             label: 'Add to calendar',
-            onTap: () => unawaited(controller.addToCalendar(run)),
+            onTap: () => unawaited(controller.addToCalendar(event)),
           ),
         ),
         gapW8,
@@ -108,7 +108,7 @@ class _QuickActions extends ConsumerWidget {
             key: PaymentConfirmationKeys.directions,
             icon: Icons.directions_outlined,
             label: 'Get directions',
-            onTap: () => unawaited(controller.openDirections(run)),
+            onTap: () => unawaited(controller.openDirections(event)),
           ),
         ),
         gapW8,
@@ -117,7 +117,7 @@ class _QuickActions extends ConsumerWidget {
             key: PaymentConfirmationKeys.inviteFriend,
             icon: Icons.ios_share_rounded,
             label: 'Invite a friend',
-            onTap: () => unawaited(controller.inviteFriend(run)),
+            onTap: () => unawaited(controller.inviteFriend(event)),
           ),
         ),
       ],
@@ -184,7 +184,7 @@ class _HeadsUp extends StatelessWidget {
           gapH6,
           Text(
             'Bring a water bottle and arrive by the meeting time. '
-            'Catches unlock automatically when the run finishes — '
+            'Catches unlock automatically when the event finishes — '
             'keep your phone charged.',
             style: CatchTextStyles.bodyS(context, color: t.ink),
           ),
@@ -195,9 +195,9 @@ class _HeadsUp extends StatelessWidget {
 }
 
 class _ReferralBanner extends ConsumerWidget {
-  const _ReferralBanner({required this.run});
+  const _ReferralBanner({required this.event});
 
-  final Run run;
+  final Event event;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -206,7 +206,7 @@ class _ReferralBanner extends ConsumerWidget {
 
     return CatchSurface(
       key: PaymentConfirmationKeys.referralShare,
-      onTap: () => unawaited(controller.shareReferral(run)),
+      onTap: () => unawaited(controller.shareReferral(event)),
       padding: const EdgeInsets.all(Sizes.p14),
       radius: CatchRadius.md,
       borderColor: t.line2,
@@ -220,7 +220,7 @@ class _ReferralBanner extends ConsumerWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Bring a friend, run together',
+                  'Bring a friend, event together',
                   style: CatchTextStyles.titleS(context),
                 ),
                 gapH2,

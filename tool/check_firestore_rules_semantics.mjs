@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {fileURLToPath} from "node:url";
 import {
-  createSavedRunClientWriteSchema,
+  createSavedEventClientWriteSchema,
   swipeDocumentSchema,
   userProfileDocumentSchema,
 } from "./generated/schema_contract_registry.mjs";
@@ -16,7 +16,7 @@ const errors = [];
 
 checkUserProfileRules();
 checkProfileDecisionRules();
-checkSavedRunRules();
+checkSavedEventRules();
 
 if (errors.length > 0) {
   console.error("Firestore rules semantic check failed:");
@@ -93,18 +93,18 @@ function checkProfileDecisionRules() {
   checkSwipeTextMax(body, "comment", schema);
 }
 
-function checkSavedRunRules() {
-  const body = extractMatchBlock("/savedRuns/{savedRunId}");
-  const dataSchema = createSavedRunClientWriteSchema.properties.data;
+function checkSavedEventRules() {
+  const body = extractMatchBlock("/savedEvents/{savedEventId}");
+  const dataSchema = createSavedEventClientWriteSchema.properties.data;
   expectSet({
     actual: extractFirstMethodFields(body, "hasOnly"),
     expected: Object.keys(dataSchema.properties ?? {}).sort(),
-    label: "savedRuns create hasOnly fields",
+    label: "savedEvents create hasOnly fields",
   });
   expectSet({
     actual: extractFirstMethodFields(body, "hasAll"),
     expected: [...(dataSchema.required ?? [])].sort(),
-    label: "savedRuns create hasAll required fields",
+    label: "savedEvents create hasAll required fields",
   });
 }
 

@@ -66,7 +66,7 @@ void main() {
               prompt: const PhotoPromptAnswer(
                 photoIndex: 1,
                 promptId: 'proofIRun',
-                prompt: 'Proof I actually run',
+                prompt: 'Proof I actually event',
                 caption: 'Track day',
               ),
             ),
@@ -90,7 +90,7 @@ void main() {
             prompt: const PhotoPromptAnswer(
               photoIndex: 0,
               promptId: 'proofIRun',
-              prompt: 'Proof I actually run',
+              prompt: 'Proof I actually event',
               caption: 'Race day',
             ),
           ),
@@ -152,7 +152,7 @@ void main() {
     expect(publicProfileJson.containsKey('longitude'), isFalse);
   });
 
-  test('legacy bio JSON is migrated into the perfect-run prompt', () {
+  test('legacy bio JSON is migrated into the perfect-event prompt', () {
     final user = UserProfile.fromJson({
       'uid': 'user-1',
       'name': 'Runner',
@@ -164,7 +164,7 @@ void main() {
     });
 
     expect(user.profilePrompts, hasLength(1));
-    expect(user.profilePrompts.single.promptId, profilePromptPerfectRunId);
+    expect(user.profilePrompts.single.promptId, profilePromptPerfectEventId);
     expect(user.profilePrompts.single.answer, 'Easy miles and coffee.');
     expect(user.toJson().containsKey('bio'), isFalse);
   });

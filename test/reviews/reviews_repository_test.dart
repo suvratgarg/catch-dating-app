@@ -48,101 +48,107 @@ void main() {
       repository = ReviewsRepository(firestore, functions);
     });
 
-    test('reviewIdForRunUser is deterministic and path-safe', () {
+    test('reviewIdForEventUser is deterministic and path-safe', () {
       expect(
-        ReviewsRepository.reviewIdForRunUser(
-          runId: 'run-1',
+        ReviewsRepository.reviewIdForEventUser(
+          eventId: 'event-1',
           reviewerUserId: 'runner-1',
         ),
-        'run-1~runner-1',
+        'event-1~runner-1',
       );
 
       expect(
-        () => ReviewsRepository.reviewIdForRunUser(
-          runId: '',
+        () => ReviewsRepository.reviewIdForEventUser(
+          eventId: '',
           reviewerUserId: 'runner-1',
         ),
         throwsArgumentError,
       );
       expect(
-        () => ReviewsRepository.reviewIdForRunUser(
-          runId: 'run-1',
+        () => ReviewsRepository.reviewIdForEventUser(
+          eventId: 'event-1',
           reviewerUserId: 'runner/1',
         ),
         throwsArgumentError,
       );
     });
 
-    test('addReview delegates deterministic run reviews to callable', () async {
-      final review = _review(runId: 'run-1', reviewerUserId: 'runner-1');
+    test(
+      'addReview delegates deterministic event reviews to callable',
+      () async {
+        final review = _review(eventId: 'event-1', reviewerUserId: 'runner-1');
 
-      await repository.addReview(review);
+        await repository.addReview(review);
 
-      final callable = functions.httpsCallable('createRunReview')
-          as TestHttpsCallable;
-      expect(callable.calls, [
-        {
-          'runClubId': 'club-1',
-          'runId': 'run-1',
-          'rating': 5,
-          'comment': 'Great run.',
-        },
-      ]);
-    });
+        final callable =
+            functions.httpsCallable('createEventReview') as TestHttpsCallable;
+        expect(callable.calls, [
+          {
+            'clubId': 'club-1',
+            'eventId': 'event-1',
+            'rating': 5,
+            'comment': 'Great event.',
+          },
+        ]);
+      },
+    );
 
     test('updateReview and deleteReview delegate to callables', () async {
       await repository.updateReview(
-        _review(runId: 'run-1').copyWith(id: 'run-1~runner-1', rating: 4),
+        _review(eventId: 'event-1').copyWith(id: 'event-1~runner-1', rating: 4),
       );
-      await repository.deleteReview('run-1~runner-1');
+      await repository.deleteReview('event-1~runner-1');
 
-      final updateCallable = functions.httpsCallable('updateRunReview')
-          as TestHttpsCallable;
-      final deleteCallable = functions.httpsCallable('deleteRunReview')
-          as TestHttpsCallable;
+      final updateCallable =
+          functions.httpsCallable('updateEventReview') as TestHttpsCallable;
+      final deleteCallable =
+          functions.httpsCallable('deleteEventReview') as TestHttpsCallable;
       expect(updateCallable.calls, [
         {
-          'reviewId': 'run-1~runner-1',
+          'reviewId': 'event-1~runner-1',
           'rating': 4,
-          'comment': 'Great run.',
+          'comment': 'Great event.',
         },
       ]);
       expect(deleteCallable.calls, [
-        {'reviewId': 'run-1~runner-1'},
+        {'reviewId': 'event-1~runner-1'},
       ]);
     });
 
-    test('watchUserReviewForRun emits the deterministic review doc', () async {
-      await firestore.collection('reviews').doc('run-1~runner-1').set({
-        'runClubId': 'club-1',
-        'runId': 'run-1',
-        'reviewerUserId': 'runner-1',
-        'reviewerName': 'Runner One',
-        'rating': 5,
-        'comment': 'Great run.',
-        'createdAt': DateTime.utc(2026, 5),
-      });
+    test(
+      'watchUserReviewForEvent emits the deterministic review doc',
+      () async {
+        await firestore.collection('reviews').doc('event-1~runner-1').set({
+          'clubId': 'club-1',
+          'eventId': 'event-1',
+          'reviewerUserId': 'runner-1',
+          'reviewerName': 'Runner One',
+          'rating': 5,
+          'comment': 'Great event.',
+          'createdAt': DateTime.utc(2026, 5),
+        });
 
-      await expectLater(
-        repository.watchUserReviewForRun(
-          runId: 'run-1',
-          reviewerUserId: 'runner-1',
-        ),
-        emits(
-          isA<Review>()
-              .having((r) => r.id, 'id', 'run-1~runner-1')
-              .having((r) => r.runId, 'runId', 'run-1')
-              .having((r) => r.reviewerUserId, 'reviewerUserId', 'runner-1'),
-        ),
-      );
-    });
+        await expectLater(
+          repository.watchUserReviewForEvent(
+            eventId: 'event-1',
+            reviewerUserId: 'runner-1',
+          ),
+          emits(
+            isA<Review>()
+                .having((r) => r.id, 'id', 'event-1~runner-1')
+                .having((r) => r.eventId, 'eventId', 'event-1')
+                .having((r) => r.reviewerUserId, 'reviewerUserId', 'runner-1'),
+          ),
+        );
+      },
+    );
 
     test(
-      'watchUserReviewForRun emits null when the deterministic doc is absent',
+      'watchUserReviewForEvent emits null when the deterministic doc is absent',
       () async {
         await expectLater(
-          repository.watchUserReviewForRun(
-            runId: 'run-missing',
+          repository.watchUserReviewForEvent(
+            eventId: 'event-missing',
             reviewerUserId: 'runner-1',
           ),
           emits(isNull),
@@ -150,9 +156,9 @@ void main() {
       },
     );
 
-    test('addReview rejects reviews without a runId', () async {
+    test('addReview rejects reviews without a eventId', () async {
       expect(
-        () => repository.addReview(_review(runId: null)),
+        () => repository.addReview(_review(eventId: null)),
         throwsArgumentError,
       );
     });
@@ -160,18 +166,18 @@ void main() {
 }
 
 Review _review({
-  String runClubId = 'club-1',
-  String? runId = 'run-1',
+  String clubId = 'club-1',
+  String? eventId = 'event-1',
   String reviewerUserId = 'runner-1',
 }) {
   return Review(
     id: '',
-    runClubId: runClubId,
-    runId: runId,
+    clubId: clubId,
+    eventId: eventId,
     reviewerUserId: reviewerUserId,
     reviewerName: 'Runner One',
     rating: 5,
-    comment: 'Great run.',
+    comment: 'Great event.',
     createdAt: DateTime.utc(2026, 5),
   );
 }

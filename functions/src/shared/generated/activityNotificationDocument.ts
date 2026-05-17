@@ -10,11 +10,11 @@ export interface ActivityNotificationDocument {
   type:
     | "message"
     | "match"
-    | "runReminder"
-    | "runSignup"
+    | "eventReminder"
+    | "eventSignup"
     | "waitlistPromotion"
-    | "runCancelled"
-    | "runUpdated"
+    | "eventCancelled"
+    | "eventUpdated"
     | "clubUpdate";
   title: string;
   body: string;
@@ -30,8 +30,8 @@ export interface ActivityNotificationDocument {
     _nanoseconds: number;
   } | null;
   matchId?: string | null;
-  runId?: string | null;
-  runClubId?: string | null;
+  eventId?: string | null;
+  clubId?: string | null;
   actorUid?: string | null;
   actorName?: string | null;
   /**

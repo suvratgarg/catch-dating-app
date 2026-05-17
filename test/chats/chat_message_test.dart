@@ -9,13 +9,13 @@ void main() {
     final message = ChatMessage.fromJson({
       'id': 'msg-1',
       'senderId': 'runner-1',
-      'text': 'Morning run?',
+      'text': 'Morning event?',
       'sentAt': Timestamp.fromDate(sentAt),
     });
 
     expect(message.id, 'msg-1');
     expect(message.senderId, 'runner-1');
-    expect(message.text, 'Morning run?');
+    expect(message.text, 'Morning event?');
     expect(message.sentAt, sentAt);
   });
 
@@ -23,7 +23,7 @@ void main() {
     final message = ChatMessage.fromJson({
       'id': 'msg-1',
       'senderId': 'runner-1',
-      'text': 'Morning run?',
+      'text': 'Morning event?',
       'sentAt': null,
     });
 

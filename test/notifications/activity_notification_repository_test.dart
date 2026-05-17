@@ -150,7 +150,7 @@ ActivityNotification _notification({
     createdAt: createdAt ?? DateTime(2026, 5, 1, 10),
     readAt: readAt,
     matchId: 'match-1',
-    runId: 'run-1',
+    eventId: 'event-1',
     actorUid: 'runner-2',
     actorName: 'Runner Two',
   );

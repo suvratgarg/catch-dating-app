@@ -131,9 +131,9 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
           ),
           const SizedBox(height: 28),
 
-          // ── Run reasons ───────────────────────────────────────────────────
+          // ── Event reasons ───────────────────────────────────────────────────
           ChipField<RunReason>(
-            label: 'Why do you run?',
+            label: 'Why do you event?',
             isOptional: true,
             values: RunReason.values,
             selected: _reasons,
@@ -151,7 +151,7 @@ class _RunningPrefsPageState extends ConsumerState<RunningPrefsPage> {
 
           // ── Time of day ───────────────────────────────────────────────────
           ChipField<PreferredRunTime>(
-            label: 'Favorite run times',
+            label: 'Favorite event times',
             isOptional: true,
             values: PreferredRunTime.values,
             selected: _runTimes,

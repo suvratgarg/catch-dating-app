@@ -5,10 +5,10 @@
   "description": "Callable payload accepted by selfCheckInAttendance.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["runId"],
+  "required": ["eventId"],
   "properties": {
-    "runId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "latitude": {"$ref": "../shared/run_common.schema.json#/definitions/latitude"},
-    "longitude": {"$ref": "../shared/run_common.schema.json#/definitions/longitude"}
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "latitude": {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},
+    "longitude": {"$ref": "../shared/event_common.schema.json#/definitions/longitude"}
   }
 }

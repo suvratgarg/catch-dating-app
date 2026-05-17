@@ -1,0 +1,26 @@
+import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class ClubsSearchField extends ConsumerWidget {
+  const ClubsSearchField({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final query = ref.watch(clubSearchQueryProvider);
+
+    return CatchTextField(
+      label: 'Search clubs',
+      showLabel: false,
+      initialValue: query,
+      onChanged: (q) => ref.read(clubSearchQueryProvider.notifier).setQuery(q),
+      hintText: 'Search clubs',
+      size: CatchTextFieldSize.compact,
+      shape: CatchTextFieldShape.pill,
+      textInputAction: TextInputAction.search,
+      prefixIcon: const Icon(Icons.search_rounded, size: 18),
+      showClearButton: true,
+    );
+  }
+}

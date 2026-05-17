@@ -37,16 +37,19 @@ void main() {
 
       await analytics.initialize();
       analytics.logEvent(
-        AnalyticsEvents.runViewed,
-        parameters: {AnalyticsParameters.runId: 'run-1', 'empty_value': null},
+        AnalyticsEvents.eventViewed,
+        parameters: {
+          AnalyticsParameters.eventId: 'event-1',
+          'empty_value': null,
+        },
       );
 
       expect(reporter.collectionEnabled, isTrue);
       expect(reporter.events, hasLength(1));
-      expect(reporter.events.single.name, AnalyticsEvents.runViewed);
+      expect(reporter.events.single.name, AnalyticsEvents.eventViewed);
       expect(
         reporter.events.single.parameters,
-        containsPair('run_id', 'run-1'),
+        containsPair('event_id', 'event-1'),
       );
       expect(
         reporter.events.single.parameters,
@@ -67,7 +70,7 @@ void main() {
     await analytics.initialize();
 
     expect(
-      () => analytics.logEvent('run-viewed'),
+      () => analytics.logEvent('event-viewed'),
       throwsA(isA<ArgumentError>()),
     );
     expect(reporter.events, isEmpty);
@@ -80,9 +83,9 @@ void main() {
 
     observer.didPush(_route('dashboardScreen'), null);
     observer.didPush(_route('dashboardScreen'), null);
-    observer.didPush(_route('runDetailScreen'), null);
+    observer.didPush(_route('eventDetailScreen'), null);
 
-    expect(reporter.screenViews, ['dashboardScreen', 'runDetailScreen']);
+    expect(reporter.screenViews, ['dashboardScreen', 'eventDetailScreen']);
   });
 }
 

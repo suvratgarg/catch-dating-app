@@ -1,26 +1,26 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/runs/presentation/run_arrival_action.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 const _noRecommendationCandidates =
-    AsyncData<List<DashboardRunRecommendationCandidate>>([]);
+    AsyncData<List<DashboardEventRecommendationCandidate>>([]);
 
-DashboardRunRecommendationCandidate _recommendationCandidate(
-  Run run, {
+DashboardEventRecommendationCandidate _recommendationCandidate(
+  Event event, {
   String clubName = 'Stride Social',
   String? clubLocation = 'mumbai',
-}) => DashboardRunRecommendationCandidate(
-  run: run,
+}) => DashboardEventRecommendationCandidate(
+  event: event,
   clubName: clubName,
   clubLocation: clubLocation,
 );
@@ -43,77 +43,77 @@ RunnerActivity _platformActivity({
 
 void main() {
   group('buildDashboardFullViewModel', () {
-    test('selects the nearest upcoming run as nextRun', () {
+    test('selects the nearest upcoming event as nextEvent', () {
       final now = DateTime(2026, 4, 23, 9);
-      final earlier = buildRun(startTime: now.add(const Duration(hours: 2)));
-      final later = buildRun(
+      final earlier = buildEvent(startTime: now.add(const Duration(hours: 2)));
+      final later = buildEvent(
         id: 'later',
         startTime: now.add(const Duration(hours: 5)),
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: [later, earlier],
-        attendedRunsAsync: const AsyncData<List<Run>>([]),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        signedUpEvents: [later, earlier],
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync: _noRecommendationCandidates,
         now: now,
       );
 
-      expect(viewModel.nextRun?.id, earlier.id);
-      expect(viewModel.upcomingRuns.map((run) => run.id), [
+      expect(viewModel.nextEvent?.id, earlier.id);
+      expect(viewModel.upcomingEvents.map((event) => event.id), [
         earlier.id,
         later.id,
       ]);
     });
 
-    test('filters past booked runs out of upcomingRuns', () {
+    test('filters past booked events out of upcomingEvents', () {
       final now = DateTime(2026, 4, 23, 9);
-      final past = buildRun(
+      final past = buildEvent(
         id: 'past',
         startTime: now.subtract(const Duration(hours: 2)),
       );
-      final upcoming = buildRun(
+      final upcoming = buildEvent(
         id: 'upcoming',
         startTime: now.add(const Duration(hours: 2)),
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: [past, upcoming],
-        attendedRunsAsync: const AsyncData<List<Run>>([]),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        signedUpEvents: [past, upcoming],
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync: _noRecommendationCandidates,
         now: now,
       );
 
-      expect(viewModel.nextRun?.id, 'upcoming');
-      expect(viewModel.upcomingRuns.map((run) => run.id), ['upcoming']);
+      expect(viewModel.nextEvent?.id, 'upcoming');
+      expect(viewModel.upcomingEvents.map((event) => event.id), ['upcoming']);
     });
 
-    test('surfaces attended section errors and clears the swipe run', () {
+    test('surfaces attended section errors and clears the swipe event', () {
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: const [],
-        attendedRunsAsync: AsyncError<List<Run>>(
+        signedUpEvents: const [],
+        attendedEventsAsync: AsyncError<List<Event>>(
           Exception('boom'),
           StackTrace.empty,
         ),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: _noRecommendationCandidates,
       );
 
-      expect(viewModel.attendedRunsSection.hasError, isTrue);
+      expect(viewModel.attendedEventsSection.hasError, isTrue);
       expect(
-        viewModel.attendedRunsSection.message,
-        'Unable to load your recent runs.',
+        viewModel.attendedEventsSection.message,
+        'Unable to load your recent events.',
       );
-      expect(viewModel.activeSwipeRun, isNull);
+      expect(viewModel.activeSwipeEvent, isNull);
     });
 
-    test('selects the most recent run with an open swipe window', () {
+    test('selects the most recent event with an open swipe window', () {
       final now = DateTime(2026, 4, 23, 20);
-      final older = buildRun(
+      final older = buildEvent(
         id: 'older',
         checkedInCount: 1,
         startTime: now.subtract(const Duration(hours: 8)),
         endTime: now.subtract(const Duration(hours: 6)),
       );
-      final latest = buildRun(
+      final latest = buildEvent(
         id: 'latest',
         checkedInCount: 1,
         startTime: now.subtract(const Duration(hours: 4)),
@@ -121,33 +121,33 @@ void main() {
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: const [],
-        attendedRunsAsync: AsyncData<List<Run>>([older, latest]),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        signedUpEvents: const [],
+        attendedEventsAsync: AsyncData<List<Event>>([older, latest]),
+        recommendedEventsAsync: _noRecommendationCandidates,
         now: now,
       );
 
-      expect(viewModel.activeSwipeRun?.id, latest.id);
+      expect(viewModel.activeSwipeEvent?.id, latest.id);
     });
 
-    test('uses Catch attended runs as the weekly activity fallback', () {
+    test('uses Catch attended events as the weekly activity fallback', () {
       final now = DateTime(2026, 5, 13, 12);
-      final attendedRun = buildRun(
-        id: 'catch-run',
+      final attendedRun = buildEvent(
+        id: 'catch-event',
         startTime: DateTime(2026, 5, 11, 6),
         distanceKm: 5,
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: const [],
-        attendedRunsAsync: AsyncData<List<Run>>([attendedRun]),
+        signedUpEvents: const [],
+        attendedEventsAsync: AsyncData<List<Event>>([attendedRun]),
         weeklyActivityAsync: AsyncData(
           WeeklyRunningActivitySnapshot.permissionRequired(
             referenceDate: now,
             platformLabel: 'Apple Health',
           ),
         ),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: _noRecommendationCandidates,
         now: now,
       );
 
@@ -159,23 +159,23 @@ void main() {
     });
 
     test(
-      'merges connected platform activity with non-overlapping Catch runs',
+      'merges connected platform activity with non-overlapping Catch events',
       () {
         final now = DateTime(2026, 5, 13, 12);
-        final catchRun = buildRun(
-          id: 'catch-run',
+        final catchEvent = buildEvent(
+          id: 'catch-event',
           startTime: DateTime(2026, 5, 12, 7),
           distanceKm: 5,
         );
         final platformActivity = _platformActivity(
-          id: 'health-run',
+          id: 'health-event',
           startTime: DateTime(2026, 5, 11, 7),
           distanceMeters: 3000,
         );
 
         final viewModel = buildDashboardFullViewModel(
-          signedUpRuns: const [],
-          attendedRunsAsync: AsyncData<List<Run>>([catchRun]),
+          signedUpEvents: const [],
+          attendedEventsAsync: AsyncData<List<Event>>([catchEvent]),
           weeklyActivityAsync: AsyncData(
             WeeklyRunningActivitySnapshot.connected(
               referenceDate: now,
@@ -183,7 +183,7 @@ void main() {
               activities: [platformActivity],
             ),
           ),
-          recommendedRunsAsync: _noRecommendationCandidates,
+          recommendedEventsAsync: _noRecommendationCandidates,
           now: now,
         );
 
@@ -192,29 +192,29 @@ void main() {
         expect(snapshot.summary.totalDistanceKm, 8);
         expect(snapshot.summary.runCount, 2);
         expect(snapshot.activities.map((activity) => activity.stableId), [
-          'health-run',
-          'catch:catch-run',
+          'health-event',
+          'catch:catch-event',
         ]);
       },
     );
 
     test('does not double count overlapping platform and Catch activity', () {
       final now = DateTime(2026, 5, 13, 12);
-      final catchRun = buildRun(
-        id: 'catch-run',
+      final catchEvent = buildEvent(
+        id: 'catch-event',
         startTime: DateTime(2026, 5, 12, 7),
         endTime: DateTime(2026, 5, 12, 8),
         distanceKm: 5,
       );
       final platformActivity = _platformActivity(
-        id: 'health-run',
+        id: 'health-event',
         startTime: DateTime(2026, 5, 12, 7, 10),
         distanceMeters: 5100,
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: const [],
-        attendedRunsAsync: AsyncData<List<Run>>([catchRun]),
+        signedUpEvents: const [],
+        attendedEventsAsync: AsyncData<List<Event>>([catchEvent]),
         weeklyActivityAsync: AsyncData(
           WeeklyRunningActivitySnapshot.connected(
             referenceDate: now,
@@ -222,7 +222,7 @@ void main() {
             activities: [platformActivity],
           ),
         ),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        recommendedEventsAsync: _noRecommendationCandidates,
         now: now,
       );
 
@@ -231,72 +231,75 @@ void main() {
       expect(snapshot.summary.totalDistanceMeters, 5100);
       expect(snapshot.summary.runCount, 1);
       expect(snapshot.activities.map((activity) => activity.stableId), [
-        'health-run',
+        'health-event',
       ]);
     });
 
-    test('selects the latest attended run that has not been reviewed', () {
+    test('selects the latest attended event that has not been reviewed', () {
       final now = DateTime(2026, 4, 23, 20);
-      final reviewedRun = buildRun(
-        id: 'reviewed-run',
+      final reviewedEvent = buildEvent(
+        id: 'reviewed-event',
         startTime: now.subtract(const Duration(hours: 8)),
         endTime: now.subtract(const Duration(hours: 7)),
       );
-      final pendingRun = buildRun(
-        id: 'pending-run',
+      final pendingRun = buildEvent(
+        id: 'pending-event',
         startTime: now.subtract(const Duration(hours: 4)),
         endTime: now.subtract(const Duration(hours: 3)),
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: const [],
-        attendedRunsAsync: AsyncData<List<Run>>([reviewedRun, pendingRun]),
-        reviewsByUserAsync: AsyncData<List<Review>>([
-          buildReview(id: 'reviewed-run~runner-1', runId: reviewedRun.id),
+        signedUpEvents: const [],
+        attendedEventsAsync: AsyncData<List<Event>>([
+          reviewedEvent,
+          pendingRun,
         ]),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        reviewsByUserAsync: AsyncData<List<Review>>([
+          buildReview(id: 'reviewed-event~runner-1', eventId: reviewedEvent.id),
+        ]),
+        recommendedEventsAsync: _noRecommendationCandidates,
         now: now,
       );
 
-      expect(viewModel.pendingReviewRun?.id, 'pending-run');
+      expect(viewModel.pendingReviewEvent?.id, 'pending-event');
     });
 
     test('surfaces recommendation loading state', () {
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: const [],
-        attendedRunsAsync: const AsyncData<List<Run>>([]),
-        recommendedRunsAsync:
-            const AsyncLoading<List<DashboardRunRecommendationCandidate>>(),
+        signedUpEvents: const [],
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync:
+            const AsyncLoading<List<DashboardEventRecommendationCandidate>>(),
       );
 
       expect(viewModel.recommendationsSection.isLoading, isTrue);
       expect(
         viewModel.recommendationsSection.message,
-        'Loading recommended runs...',
+        'Loading recommended events...',
       );
     });
 
-    test('removes already booked runs from recommendations', () {
-      final booked = buildRun(id: 'booked');
-      final unbooked = buildRun(id: 'recommended');
+    test('removes already booked events from recommendations', () {
+      final booked = buildEvent(id: 'booked');
+      final unbooked = buildEvent(id: 'recommended');
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: [booked],
-        attendedRunsAsync: const AsyncData<List<Run>>([]),
-        recommendedRunsAsync:
-            AsyncData<List<DashboardRunRecommendationCandidate>>([
+        signedUpEvents: [booked],
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync:
+            AsyncData<List<DashboardEventRecommendationCandidate>>([
               _recommendationCandidate(booked),
               _recommendationCandidate(unbooked),
             ]),
       );
 
       expect(
-        viewModel.recommendationsSection.data?.map((item) => item.run.id),
+        viewModel.recommendationsSection.data?.map((item) => item.event.id),
         ['recommended'],
       );
     });
 
-    test('ranks recommendations by preferences, proximity, and run time', () {
+    test('ranks recommendations by preferences, proximity, and event time', () {
       final now = DateTime(2026, 4, 23, 9);
       final viewer = buildUser().copyWith(
         city: 'mumbai',
@@ -306,11 +309,11 @@ void main() {
         paceMaxSecsPerKm: 390,
         preferredDistances: const [PreferredDistance.tenK],
       );
-      final morningHistory = buildRun(
+      final morningHistory = buildEvent(
         id: 'morning-history',
         startTime: now.subtract(const Duration(days: 3, hours: 2)),
       );
-      final strongMatch = buildRun(
+      final strongMatch = buildEvent(
         id: 'strong-match',
         distanceKm: 10,
         pace: PaceLevel.moderate,
@@ -318,7 +321,7 @@ void main() {
         startingPointLat: 19.08,
         startingPointLng: 72.88,
       );
-      final weakMatch = buildRun(
+      final weakMatch = buildEvent(
         id: 'weak-match',
         distanceKm: 5,
         pace: PaceLevel.competitive,
@@ -327,66 +330,66 @@ void main() {
         startingPointLng: 72.90,
       );
 
-      final recommendations = rankDashboardRunRecommendations(
+      final recommendations = rankDashboardEventRecommendations(
         candidates: [
           _recommendationCandidate(
             weakMatch,
             clubName: 'Late Miles',
             clubLocation: 'delhi',
           ),
-          _recommendationCandidate(strongMatch, clubName: 'Bandra Run Club'),
+          _recommendationCandidate(strongMatch, clubName: 'Bandra Club'),
         ],
-        signedUpRunIds: const {},
-        attendedRuns: [morningHistory],
-        signedUpRuns: const [],
+        signedUpEventIds: const {},
+        attendedEvents: [morningHistory],
+        signedUpEvents: const [],
         viewer: viewer,
         now: now,
       );
 
-      expect(recommendations.map((item) => item.run.id), [
+      expect(recommendations.map((item) => item.event.id), [
         'strong-match',
         'weak-match',
       ]);
-      expect(recommendations.first.clubName, 'Bandra Run Club');
+      expect(recommendations.first.clubName, 'Bandra Club');
       expect(
         recommendations.first.reasonLabel,
         'Matches your 10 km preference',
       );
     });
 
-    test('filters past, cancelled, full, booked, and ineligible runs', () {
+    test('filters past, cancelled, full, booked, and ineligible events', () {
       final now = DateTime(2026, 4, 23, 9);
       final viewer = buildUser();
-      final eligible = buildRun(
+      final eligible = buildEvent(
         id: 'eligible',
         startTime: now.add(const Duration(hours: 3)),
       );
-      final booked = buildRun(
+      final booked = buildEvent(
         id: 'booked',
         startTime: now.add(const Duration(hours: 4)),
       );
-      final cancelled = buildRun(
+      final cancelled = buildEvent(
         id: 'cancelled',
         startTime: now.add(const Duration(hours: 5)),
-        status: RunLifecycleStatus.cancelled,
+        status: EventLifecycleStatus.cancelled,
       );
-      final full = buildRun(
+      final full = buildEvent(
         id: 'full',
         startTime: now.add(const Duration(hours: 6)),
         capacityLimit: 2,
         bookedCount: 2,
       );
-      final ineligible = buildRun(
+      final ineligible = buildEvent(
         id: 'ineligible',
         startTime: now.add(const Duration(hours: 7)),
-        constraints: const RunConstraints(minAge: 45),
+        constraints: const EventConstraints(minAge: 45),
       );
-      final past = buildRun(
+      final past = buildEvent(
         id: 'past',
         startTime: now.subtract(const Duration(hours: 1)),
       );
 
-      final recommendations = rankDashboardRunRecommendations(
+      final recommendations = rankDashboardEventRecommendations(
         candidates: [
           eligible,
           booked,
@@ -395,101 +398,104 @@ void main() {
           ineligible,
           past,
         ].map(_recommendationCandidate).toList(),
-        signedUpRunIds: {'booked'},
-        attendedRuns: const [],
-        signedUpRuns: const [],
+        signedUpEventIds: {'booked'},
+        attendedEvents: const [],
+        signedUpEvents: const [],
         viewer: viewer,
         now: now,
       );
 
-      expect(recommendations.map((item) => item.run.id), ['eligible']);
+      expect(recommendations.map((item) => item.event.id), ['eligible']);
     });
 
-    test('selects self check-in during the run check-in window', () {
+    test('selects self check-in during the event check-in window', () {
       final now = DateTime(2026, 4, 23, 8, 55);
-      final run = buildRun(
-        id: 'check-in-run',
+      final event = buildEvent(
+        id: 'check-in-event',
         bookedCount: 1,
         startTime: DateTime(2026, 4, 23, 9),
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: [run],
+        signedUpEvents: [event],
         uid: 'runner-1',
-        attendedRunsAsync: const AsyncData<List<Run>>([]),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync: _noRecommendationCandidates,
         now: now,
       );
 
-      expect(viewModel.arrivalAction?.kind, RunArrivalActionKind.selfCheckIn);
-      expect(viewModel.arrivalAction?.run.id, 'check-in-run');
+      expect(viewModel.arrivalAction?.kind, EventArrivalActionKind.selfCheckIn);
+      expect(viewModel.arrivalAction?.event.id, 'check-in-event');
     });
 
     test('exposes open host attendance in host tools', () {
       final now = DateTime(2026, 4, 23, 9, 5);
-      final hostedRun = buildRun(
-        id: 'hosted-run',
+      final hostedRun = buildEvent(
+        id: 'hosted-event',
         startTime: DateTime(2026, 4, 23, 9),
         endTime: DateTime(2026, 4, 23, 10),
       );
 
       final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: const [],
+        signedUpEvents: const [],
         uid: 'host-1',
-        hostedRuns: [hostedRun],
-        attendedRunsAsync: const AsyncData<List<Run>>([]),
-        recommendedRunsAsync: _noRecommendationCandidates,
+        hostedEvents: [hostedRun],
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync: _noRecommendationCandidates,
         now: now,
       );
 
       expect(viewModel.arrivalAction, isNull);
-      expect(viewModel.hostRunTools.single.run.id, 'hosted-run');
+      expect(viewModel.hostEventTools.single.event.id, 'hosted-event');
       expect(
-        viewModel.hostRunTools.single.attendanceState,
+        viewModel.hostEventTools.single.attendanceState,
         DashboardHostAttendanceState.open,
       );
     });
 
-    test('exposes actionable hosted runs with attendance-open runs first', () {
-      final now = DateTime(2026, 4, 23, 9);
-      final recentlyEnded = buildRun(
-        id: 'recently-ended-hosted',
-        startTime: now.subtract(const Duration(hours: 2)),
-        endTime: now.subtract(const Duration(hours: 1)),
-      );
-      final old = buildRun(
-        id: 'old-hosted',
-        startTime: now.subtract(const Duration(hours: 10)),
-        endTime: now.subtract(const Duration(hours: 9)),
-      );
-      final later = buildRun(
-        id: 'later-hosted',
-        startTime: now.add(const Duration(hours: 4)),
-      );
-      final sooner = buildRun(
-        id: 'sooner-hosted',
-        startTime: now.add(const Duration(hours: 2)),
-      );
+    test(
+      'exposes actionable hosted events with attendance-open events first',
+      () {
+        final now = DateTime(2026, 4, 23, 9);
+        final recentlyEnded = buildEvent(
+          id: 'recently-ended-hosted',
+          startTime: now.subtract(const Duration(hours: 2)),
+          endTime: now.subtract(const Duration(hours: 1)),
+        );
+        final old = buildEvent(
+          id: 'old-hosted',
+          startTime: now.subtract(const Duration(hours: 10)),
+          endTime: now.subtract(const Duration(hours: 9)),
+        );
+        final later = buildEvent(
+          id: 'later-hosted',
+          startTime: now.add(const Duration(hours: 4)),
+        );
+        final sooner = buildEvent(
+          id: 'sooner-hosted',
+          startTime: now.add(const Duration(hours: 2)),
+        );
 
-      final viewModel = buildDashboardFullViewModel(
-        signedUpRuns: const [],
-        uid: 'host-1',
-        hostedRuns: [old, later, recentlyEnded, sooner],
-        attendedRunsAsync: const AsyncData<List<Run>>([]),
-        recommendedRunsAsync: _noRecommendationCandidates,
-        now: now,
-      );
+        final viewModel = buildDashboardFullViewModel(
+          signedUpEvents: const [],
+          uid: 'host-1',
+          hostedEvents: [old, later, recentlyEnded, sooner],
+          attendedEventsAsync: const AsyncData<List<Event>>([]),
+          recommendedEventsAsync: _noRecommendationCandidates,
+          now: now,
+        );
 
-      expect(viewModel.hostRunTools.map((tool) => tool.run.id), [
-        'recently-ended-hosted',
-        'sooner-hosted',
-        'later-hosted',
-      ]);
-      expect(viewModel.hostRunTools.map((tool) => tool.attendanceState), [
-        DashboardHostAttendanceState.open,
-        DashboardHostAttendanceState.opensLater,
-        DashboardHostAttendanceState.opensLater,
-      ]);
-    });
+        expect(viewModel.hostEventTools.map((tool) => tool.event.id), [
+          'recently-ended-hosted',
+          'sooner-hosted',
+          'later-hosted',
+        ]);
+        expect(viewModel.hostEventTools.map((tool) => tool.attendanceState), [
+          DashboardHostAttendanceState.open,
+          DashboardHostAttendanceState.opensLater,
+          DashboardHostAttendanceState.opensLater,
+        ]);
+      },
+    );
   });
 }

@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -60,7 +60,7 @@ void main() {
     await tester.tap(find.text('Open filters'));
     await pumpFeatureUi(tester);
     expect(find.text('Pace range'), findsNothing);
-    expect(find.text('Run type'), findsNothing);
+    expect(find.text('Event type'), findsNothing);
     expect(find.text('18 - 60+'), findsOneWidget);
     expect(find.byKey(SwipeKeys.ageRangeSlider), findsOneWidget);
     expect(find.byType(CatchRangeSlider), findsOneWidget);

@@ -2,26 +2,26 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:flutter/material.dart';
 
-/// Sticky bottom action footer used on Run Detail, Create Run review,
+/// Sticky bottom action footer used on Event Detail, Create Event review,
 /// onboarding steps, and the swipe screen.
 ///
 /// Renders a white [CatchTokens.surface] bar separated from content by a
 /// hairline [CatchTokens.line] border, with bottom safe-area padding.
 ///
 /// Pass [leadingContent] to place price / subtitle text to the left of the
-/// primary button (as seen on the Run Detail CTA: "₹299 / incl. coffee").
+/// primary button (as seen on the Event Detail CTA: "₹299 / incl. coffee").
 ///
 /// Usage:
 /// ```dart
 /// // Simple full-width button
 /// BottomCTA(
-///   label: 'Join run — 6 spots left',
+///   label: 'Join event — 6 spots left',
 ///   onPressed: () {},
 /// )
 ///
 /// // With price lead-in
 /// BottomCTA(
-///   label: 'Join run',
+///   label: 'Join event',
 ///   onPressed: () {},
 ///   leadingContent: Column(
 ///     crossAxisAlignment: CrossAxisAlignment.start,

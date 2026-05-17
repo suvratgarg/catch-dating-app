@@ -51,46 +51,58 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/publicProfileDocument.ts",
   },
   {
-    name: "RunClubDocument",
-    source: "firestore/run_clubs.schema.json",
-    typeOutput: "functions/src/shared/generated/runClubDocument.ts",
+    name: "ClubDocument",
+    source: "firestore/clubs.schema.json",
+    typeOutput: "functions/src/shared/generated/clubDocument.ts",
   },
   {
-    name: "RunClubMembershipDocument",
-    source: "firestore/run_club_memberships.schema.json",
-    typeOutput: "functions/src/shared/generated/runClubMembershipDocument.ts",
+    name: "ClubMembershipDocument",
+    source: "firestore/club_memberships.schema.json",
+    typeOutput: "functions/src/shared/generated/clubMembershipDocument.ts",
   },
   {
-    name: "RunClubHostClaimDocument",
-    source: "firestore/run_club_host_claims.schema.json",
-    typeOutput: "functions/src/shared/generated/runClubHostClaimDocument.ts",
+    name: "ClubHostClaimDocument",
+    source: "firestore/club_host_claims.schema.json",
+    typeOutput: "functions/src/shared/generated/clubHostClaimDocument.ts",
   },
   {
-    name: "RunDocument",
-    source: "firestore/runs.schema.json",
-    typeOutput: "functions/src/shared/generated/runDocument.ts",
+    name: "EventDocument",
+    source: "firestore/events.schema.json",
+    typeOutput: "functions/src/shared/generated/eventDocument.ts",
   },
   {
-    name: "RunParticipationDocument",
-    source: "firestore/run_participations.schema.json",
-    typeOutput: "functions/src/shared/generated/runParticipationDocument.ts",
+    name: "EventParticipationDocument",
+    source: "firestore/event_participations.schema.json",
+    typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",
   },
   {
-    name: "RunClubScheduleLockDocument",
-    source: "firestore/run_club_schedule_locks.schema.json",
+    name: "EventSuccessPlanDocument",
+    source: "firestore/event_success_plans.schema.json",
     typeOutput:
-      "functions/src/shared/generated/runClubScheduleLockDocument.ts",
+      "functions/src/shared/generated/eventSuccessPlanDocument.ts",
   },
   {
-    name: "UserRunScheduleLockDocument",
-    source: "firestore/user_run_schedule_locks.schema.json",
+    name: "EventSuccessFeedbackDocument",
+    source: "firestore/event_success_feedback.schema.json",
     typeOutput:
-      "functions/src/shared/generated/userRunScheduleLockDocument.ts",
+      "functions/src/shared/generated/eventSuccessFeedbackDocument.ts",
   },
   {
-    name: "SavedRunDocument",
-    source: "firestore/saved_runs.schema.json",
-    typeOutput: "functions/src/shared/generated/savedRunDocument.ts",
+    name: "ClubScheduleLockDocument",
+    source: "firestore/club_schedule_locks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/clubScheduleLockDocument.ts",
+  },
+  {
+    name: "UserEventScheduleLockDocument",
+    source: "firestore/user_event_schedule_locks.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/userEventScheduleLockDocument.ts",
+  },
+  {
+    name: "SavedEventDocument",
+    source: "firestore/saved_events.schema.json",
+    typeOutput: "functions/src/shared/generated/savedEventDocument.ts",
   },
   {
     name: "PaymentDocument",
@@ -156,9 +168,9 @@ const schemaSpecs = [
       "functions/src/shared/generated/functionEventReceiptDocument.ts",
   },
   {
-    name: "SeedRunManifestDocument",
-    source: "firestore/seed_runs.schema.json",
-    typeOutput: "functions/src/shared/generated/seedRunManifestDocument.ts",
+    name: "SeedEventManifestDocument",
+    source: "firestore/seed_events.schema.json",
+    typeOutput: "functions/src/shared/generated/seedEventManifestDocument.ts",
   },
   {
     name: "UpdateUserProfileCallablePayload",
@@ -167,71 +179,71 @@ const schemaSpecs = [
       "functions/src/shared/generated/updateUserProfileCallablePayload.ts",
   },
   {
-    name: "CreateRunClubCallablePayload",
-    source: "callables/create_run_club_payload.schema.json",
+    name: "CreateClubCallablePayload",
+    source: "callables/create_club_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/createRunClubCallablePayload.ts",
+      "functions/src/shared/generated/createClubCallablePayload.ts",
   },
   {
-    name: "UpdateRunClubCallablePayload",
-    source: "callables/update_run_club_payload.schema.json",
+    name: "UpdateClubCallablePayload",
+    source: "callables/update_club_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/updateRunClubCallablePayload.ts",
+      "functions/src/shared/generated/updateClubCallablePayload.ts",
   },
   {
-    name: "ArchiveRunClubCallablePayload",
-    source: "callables/archive_run_club_payload.schema.json",
+    name: "ArchiveClubCallablePayload",
+    source: "callables/archive_club_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/archiveRunClubCallablePayload.ts",
+      "functions/src/shared/generated/archiveClubCallablePayload.ts",
   },
   {
-    name: "DeleteRunClubCallablePayload",
-    source: "callables/delete_run_club_payload.schema.json",
+    name: "DeleteClubCallablePayload",
+    source: "callables/delete_club_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/deleteRunClubCallablePayload.ts",
+      "functions/src/shared/generated/deleteClubCallablePayload.ts",
   },
   {
-    name: "RunClubMembershipCallablePayload",
-    source: "callables/run_club_membership_payload.schema.json",
+    name: "ClubMembershipCallablePayload",
+    source: "callables/club_membership_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/runClubMembershipCallablePayload.ts",
+      "functions/src/shared/generated/clubMembershipCallablePayload.ts",
   },
   {
-    name: "SetRunClubNotificationPreferenceCallablePayload",
-    source: "callables/set_run_club_notification_preference_payload.schema.json",
+    name: "SetClubNotificationPreferenceCallablePayload",
+    source: "callables/set_club_notification_preference_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/setRunClubNotificationPreferenceCallablePayload.ts",
+      "functions/src/shared/generated/setClubNotificationPreferenceCallablePayload.ts",
   },
   {
-    name: "CreateRunCallablePayload",
-    source: "callables/create_run_payload.schema.json",
-    typeOutput: "functions/src/shared/generated/createRunCallablePayload.ts",
+    name: "CreateEventCallablePayload",
+    source: "callables/create_event_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/createEventCallablePayload.ts",
   },
   {
-    name: "UpdateRunCallablePayload",
-    source: "callables/update_run_payload.schema.json",
-    typeOutput: "functions/src/shared/generated/updateRunCallablePayload.ts",
+    name: "UpdateEventCallablePayload",
+    source: "callables/update_event_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/updateEventCallablePayload.ts",
   },
   {
-    name: "CancelRunCallablePayload",
-    source: "callables/cancel_run_payload.schema.json",
-    typeOutput: "functions/src/shared/generated/cancelRunCallablePayload.ts",
+    name: "CancelEventCallablePayload",
+    source: "callables/cancel_event_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/cancelEventCallablePayload.ts",
   },
   {
-    name: "DeleteRunCallablePayload",
-    source: "callables/delete_run_payload.schema.json",
-    typeOutput: "functions/src/shared/generated/deleteRunCallablePayload.ts",
+    name: "DeleteEventCallablePayload",
+    source: "callables/delete_event_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/deleteEventCallablePayload.ts",
   },
   {
-    name: "RunIdCallablePayload",
-    source: "callables/run_id_payload.schema.json",
-    typeOutput: "functions/src/shared/generated/runIdCallablePayload.ts",
+    name: "EventIdCallablePayload",
+    source: "callables/event_id_payload.schema.json",
+    typeOutput: "functions/src/shared/generated/eventIdCallablePayload.ts",
   },
   {
-    name: "MarkRunAttendanceCallablePayload",
-    source: "callables/mark_run_attendance_payload.schema.json",
+    name: "MarkEventAttendanceCallablePayload",
+    source: "callables/mark_event_attendance_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/markRunAttendanceCallablePayload.ts",
+      "functions/src/shared/generated/markEventAttendanceCallablePayload.ts",
   },
   {
     name: "SelfCheckInAttendanceCallablePayload",
@@ -240,22 +252,22 @@ const schemaSpecs = [
       "functions/src/shared/generated/selfCheckInAttendanceCallablePayload.ts",
   },
   {
-    name: "CreateRunReviewCallablePayload",
-    source: "callables/create_run_review_payload.schema.json",
+    name: "CreateEventReviewCallablePayload",
+    source: "callables/create_event_review_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/createRunReviewCallablePayload.ts",
+      "functions/src/shared/generated/createEventReviewCallablePayload.ts",
   },
   {
-    name: "UpdateRunReviewCallablePayload",
-    source: "callables/update_run_review_payload.schema.json",
+    name: "UpdateEventReviewCallablePayload",
+    source: "callables/update_event_review_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/updateRunReviewCallablePayload.ts",
+      "functions/src/shared/generated/updateEventReviewCallablePayload.ts",
   },
   {
-    name: "DeleteRunReviewCallablePayload",
-    source: "callables/delete_run_review_payload.schema.json",
+    name: "DeleteEventReviewCallablePayload",
+    source: "callables/delete_event_review_payload.schema.json",
     typeOutput:
-      "functions/src/shared/generated/deleteRunReviewCallablePayload.ts",
+      "functions/src/shared/generated/deleteEventReviewCallablePayload.ts",
   },
   {
     name: "BlockUserCallablePayload",
@@ -303,16 +315,16 @@ const schemaSpecs = [
       "functions/src/shared/generated/createChatMessageClientWrite.ts",
   },
   {
-    name: "CreateSavedRunClientWrite",
-    source: "client_writes/create_saved_run.schema.json",
+    name: "CreateSavedEventClientWrite",
+    source: "client_writes/create_saved_event.schema.json",
     typeOutput:
-      "functions/src/shared/generated/createSavedRunClientWrite.ts",
+      "functions/src/shared/generated/createSavedEventClientWrite.ts",
   },
   {
-    name: "DeleteSavedRunClientWrite",
-    source: "client_writes/delete_saved_run.schema.json",
+    name: "DeleteSavedEventClientWrite",
+    source: "client_writes/delete_saved_event.schema.json",
     typeOutput:
-      "functions/src/shared/generated/deleteSavedRunClientWrite.ts",
+      "functions/src/shared/generated/deleteSavedEventClientWrite.ts",
   },
   {
     name: "MarkNotificationReadClientWrite",
@@ -426,7 +438,7 @@ async function main() {
   if (staleFiles.length > 0) {
     console.error("Generated schema contract outputs are stale:");
     for (const file of staleFiles) console.error(`- ${file}`);
-    console.error("Run: node tool/generate_schema_contracts.mjs");
+    console.error("Event: node tool/generate_schema_contracts.mjs");
     process.exitCode = 1;
     return;
   }
@@ -755,7 +767,7 @@ class SchemaPhotoPromptDefinition {
   final String placeholder;
 }
 
-const schemaProfilePromptPerfectRunId = ${dartString(
+const schemaProfilePromptPerfectEventId = ${dartString(
   profileCatalog.defaultPromptIds[0]
 )};
 const schemaMaxProfilePromptAnswers = ${profileLimits.maxAnswers};

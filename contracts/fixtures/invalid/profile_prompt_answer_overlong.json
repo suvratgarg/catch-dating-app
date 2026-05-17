@@ -1,5 +1,5 @@
 {
   "promptId": "perfectRun",
-  "prompt": "A perfect run with me looks like...",
+  "prompt": "A perfect event with me looks like...",
   "answer": "This fixture intentionally exceeds the 300 character profile prompt limit. It exists so the later Ajv and Dart validator pass has a stable negative case. Keep adding text here until it remains over the limit for every generated validator and prevents accidental loosening of the contract in tests. This extra sentence keeps the fixture clearly beyond the accepted boundary."
 }

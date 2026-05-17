@@ -9,7 +9,7 @@ import 'package:json_schema/json_schema.dart';
 
 void main() {
   test('generated profile prompt constants match contract limits', () {
-    expect(schemaProfilePromptPerfectRunId, 'perfectRun');
+    expect(schemaProfilePromptPerfectEventId, 'perfectRun');
     expect(schemaMaxProfilePromptAnswers, 3);
     expect(schemaMaxPhotoPromptCaptions, 6);
     expect(schemaMinimumProfilePhotos, 2);
@@ -24,7 +24,7 @@ void main() {
     expect(schemaMaximumHeightCm, 220);
     expect(schemaDefaultProfilePromptIds, [
       'perfectRun',
-      'afterRun',
+      'afterEvent',
       'greenFlag',
     ]);
   });
@@ -39,7 +39,7 @@ void main() {
     expect(
       profilePromptSchema.validate({
         'promptId': 'perfectRun',
-        'prompt': 'A perfect run with me looks like...',
+        'prompt': 'A perfect event with me looks like...',
         'answer': 'Coffee after an easy 5K.',
       }).isValid,
       isTrue,
@@ -47,7 +47,7 @@ void main() {
     expect(
       profilePromptSchema.validate({
         'promptId': 'perfectRun',
-        'prompt': 'A perfect run with me looks like...',
+        'prompt': 'A perfect event with me looks like...',
         'answer': 'x' * (schemaMaximumProfilePromptAnswerLength + 1),
       }).isValid,
       isFalse,
@@ -56,7 +56,7 @@ void main() {
       photoPromptSchema.validate({
         'photoIndex': 0,
         'promptId': 'proofIRun',
-        'prompt': 'Proof I actually run',
+        'prompt': 'Proof I actually event',
         'caption': 'Finish line.',
       }).isValid,
       isTrue,
@@ -138,22 +138,22 @@ void main() {
       containsAll(<String>[
         'UserProfileDocument',
         'PublicProfileDocument',
-        'RunDocument',
-        'SavedRunDocument',
+        'EventDocument',
+        'SavedEventDocument',
         'SwipeDocument',
-        'CreateRunCallablePayload',
+        'CreateEventCallablePayload',
         'CreateProfileDecisionClientWrite',
-        'CreateSavedRunClientWrite',
+        'CreateSavedEventClientWrite',
       ]),
     );
     expect(
       schema_contracts.schemaContractsBySource.keys,
       containsAll(<String>[
         'firestore/users.schema.json',
-        'firestore/runs.schema.json',
+        'firestore/events.schema.json',
         'firestore/swipes.schema.json',
         'client_writes/create_profile_decision.schema.json',
-        'client_writes/create_saved_run.schema.json',
+        'client_writes/create_saved_event.schema.json',
       ]),
     );
   });
@@ -172,12 +172,12 @@ void main() {
         'PublicProfileDocument',
         'valid/public_profile_doc.json',
       ),
-      _SchemaFixtureCase.valid('RunDocument', 'valid/run_doc.json'),
+      _SchemaFixtureCase.valid('EventDocument', 'valid/event_doc.json'),
       _SchemaFixtureCase.invalid(
-        'RunDocument',
-        'invalid/run_doc_invalid_pace.json',
+        'EventDocument',
+        'invalid/event_doc_invalid_pace.json',
       ),
-      _SchemaFixtureCase.valid('SavedRunDocument', 'valid/saved_run_doc.json'),
+      _SchemaFixtureCase.valid('SavedEventDocument', 'valid/saved_event_doc.json'),
       _SchemaFixtureCase.valid('SwipeDocument', 'valid/swipe_doc.json'),
       _SchemaFixtureCase.invalid(
         'SwipeDocument',
@@ -188,20 +188,20 @@ void main() {
         'valid/create_profile_decision_client_write.json',
       ),
       _SchemaFixtureCase.valid(
-        'CreateSavedRunClientWrite',
-        'valid/create_saved_run_client_write.json',
+        'CreateSavedEventClientWrite',
+        'valid/create_saved_event_client_write.json',
       ),
       _SchemaFixtureCase.invalid(
-        'CreateRunReviewCallablePayload',
-        'invalid/create_run_review_invalid_rating.json',
+        'CreateEventReviewCallablePayload',
+        'invalid/create_event_review_invalid_rating.json',
       ),
       _SchemaFixtureCase.invalid(
-        'UpdateRunCallablePayload',
-        'invalid/update_run_empty_fields.json',
+        'UpdateEventCallablePayload',
+        'invalid/update_event_empty_fields.json',
       ),
       _SchemaFixtureCase.invalid(
-        'UpdateRunClubCallablePayload',
-        'invalid/update_run_club_empty_fields.json',
+        'UpdateClubCallablePayload',
+        'invalid/update_club_empty_fields.json',
       ),
     ];
 

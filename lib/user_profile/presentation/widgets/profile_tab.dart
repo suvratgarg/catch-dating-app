@@ -353,20 +353,20 @@ class _ProfileTabContentState extends ConsumerState<_ProfileTabContent> {
       _multiEnumEntry<RunReason>(
         context: context,
         icon: Icons.directions_run_outlined,
-        label: 'Why I run',
+        label: 'Why I event',
         values: RunReason.values,
         selected: user.runningReasons,
         fieldName: 'runningReasons',
-        placeholder: 'Why I run',
+        placeholder: 'Why I event',
       ),
       _multiEnumEntry<PreferredRunTime>(
         context: context,
         icon: Icons.wb_twilight_outlined,
-        label: 'Favorite run times',
+        label: 'Favorite event times',
         values: PreferredRunTime.values,
         selected: user.preferredRunTimes,
         fieldName: 'preferredRunTimes',
-        placeholder: 'Favorite run times',
+        placeholder: 'Favorite event times',
       ),
     ];
     final prompts = defaultProfilePromptIds

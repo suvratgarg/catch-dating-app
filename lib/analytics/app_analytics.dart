@@ -192,12 +192,12 @@ abstract final class AnalyticsEvents {
   static const authCompleted = 'auth_completed';
   static const onboardingStarted = 'onboarding_started';
   static const onboardingCompleted = 'onboarding_completed';
-  static const runClubViewed = 'run_club_viewed';
-  static const runClubJoined = 'run_club_joined';
-  static const runViewed = 'run_viewed';
-  static const runBookingStarted = 'run_booking_started';
-  static const runBookingCompleted = 'run_booking_completed';
-  static const runBookingFailed = 'run_booking_failed';
+  static const clubViewed = 'club_viewed';
+  static const clubJoined = 'club_joined';
+  static const eventViewed = 'event_viewed';
+  static const eventBookingStarted = 'run_booking_started';
+  static const eventBookingCompleted = 'run_booking_completed';
+  static const eventBookingFailed = 'run_booking_failed';
   static const swipeSent = 'swipe_sent';
   static const matchViewed = 'match_viewed';
   static const chatMessageSent = 'chat_message_sent';
@@ -212,8 +212,8 @@ abstract final class AnalyticsParameters {
   static const buildNumber = 'build_number';
   static const authMethod = 'auth_method';
   static const onboardingStep = 'onboarding_step';
-  static const runClubId = 'run_club_id';
-  static const runId = 'run_id';
+  static const clubId = 'club_id';
+  static const eventId = 'event_id';
   static const matchId = 'match_id';
 
   // Backend error context. Values must be non-PII.

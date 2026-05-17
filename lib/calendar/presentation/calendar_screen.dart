@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -7,13 +8,12 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_club_name_lookup.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/run_agenda_list.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_tiles.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/saved_event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -34,12 +34,12 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final uid = ref.watch(uidProvider).asData?.value;
-    final signedUpRunsAsync = uid == null
-        ? const AsyncData(<Run>[])
-        : ref.watch(watchSignedUpRunsProvider(uid));
-    final savedRunsAsync = uid == null
-        ? const AsyncData(<Run>[])
-        : ref.watch(watchSavedRunDetailsForUserProvider(uid));
+    final signedUpEventsAsync = uid == null
+        ? const AsyncData(<Event>[])
+        : ref.watch(watchSignedUpEventsProvider(uid));
+    final savedEventsAsync = uid == null
+        ? const AsyncData(<Event>[])
+        : ref.watch(watchSavedEventDetailsForUserProvider(uid));
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -47,29 +47,30 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       body: SafeArea(
         child: Builder(
           builder: (context) {
-            if (signedUpRunsAsync.isLoading || savedRunsAsync.isLoading) {
+            if (signedUpEventsAsync.isLoading || savedEventsAsync.isLoading) {
               return const CatchLoadingIndicator();
             }
-            if (signedUpRunsAsync.hasError || savedRunsAsync.hasError) {
+            if (signedUpEventsAsync.hasError || savedEventsAsync.hasError) {
               return const _CalendarMessage(
                 title: 'Calendar unavailable',
-                body: 'Your planned runs could not be loaded.',
+                body: 'Your planned events could not be loaded.',
               );
             }
 
-            final signedUpRuns =
-                signedUpRunsAsync.asData?.value ?? const <Run>[];
-            final savedRuns = savedRunsAsync.asData?.value ?? const <Run>[];
-            final summary = _CalendarRunSummary.from(
-              signedUpRuns: signedUpRuns,
-              savedRuns: savedRuns,
+            final signedUpEvents =
+                signedUpEventsAsync.asData?.value ?? const <Event>[];
+            final savedEvents =
+                savedEventsAsync.asData?.value ?? const <Event>[];
+            final summary = _CalendarEventSummary.from(
+              signedUpEvents: signedUpEvents,
+              savedEvents: savedEvents,
               now: DateTime.now(),
             );
             final selectedDate = _selectedDate ?? summary.anchorDate;
             final clubNamesAsync = ref.watch(
-              runClubNameLookupProvider(
-                RunClubNameLookupQuery(
-                  summary.runs.map((run) => run.runClubId),
+              clubNameLookupProvider(
+                ClubNameLookupQuery(
+                  summary.events.map((event) => event.clubId),
                 ),
               ),
             );
@@ -83,7 +84,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                     onDateSelected: _selectDate,
                   ),
                 ),
-                ..._buildCalendarRunSlivers(
+                ..._buildCalendarEventSlivers(
                   context: context,
                   summary: summary,
                   clubNamesAsync: clubNamesAsync,
@@ -96,8 +97,8 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
-  void _openRunDetail(BuildContext context, Run run) {
-    GoRouter.of(context).push(_calendarRunDetailPath(run), extra: run);
+  void _openEventDetail(BuildContext context, Event event) {
+    GoRouter.of(context).push(_calendarEventDetailPath(event), extra: event);
   }
 
   void _selectDate(DateTime date) {
@@ -124,17 +125,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     );
   }
 
-  List<Widget> _buildCalendarRunSlivers({
+  List<Widget> _buildCalendarEventSlivers({
     required BuildContext context,
-    required _CalendarRunSummary summary,
+    required _CalendarEventSummary summary,
     required AsyncValue<Map<String, String>> clubNamesAsync,
   }) {
-    if (summary.runs.isEmpty) {
+    if (summary.events.isEmpty) {
       return const [
         SliverFillRemaining(
           child: _CalendarMessage(
-            title: 'No planned runs yet',
-            body: 'Runs you book or save will show up here by day and time.',
+            title: 'No planned events yet',
+            body: 'Events you book or save will show up here by day and time.',
           ),
         ),
       ];
@@ -147,7 +148,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
           child: clubNamesAsync.hasError
               ? const _CalendarMessage(
                   title: 'Calendar unavailable',
-                  body: 'Run club names could not be loaded.',
+                  body: 'Club names could not be loaded.',
                 )
               : const CatchLoadingIndicator(),
         ),
@@ -155,28 +156,28 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     }
 
     return [
-      RunAgendaSliverList(
-        runs: summary.agendaRuns,
+      EventAgendaSliverList(
+        events: summary.agendaEvents,
         showClubName: true,
-        clubNameBuilder: (run) => clubNames[run.runClubId],
-        badgeLabelBuilder: (run) =>
-            summary.isSavedOnly(run) ? 'SAVED' : 'JOINED',
-        statusBuilder: (run) => summary.isSavedOnly(run)
-            ? RunTileStatus.saved
-            : RunTileStatus.joined,
+        clubNameBuilder: (event) => clubNames[event.clubId],
+        badgeLabelBuilder: (event) =>
+            summary.isSavedOnly(event) ? 'SAVED' : 'JOINED',
+        statusBuilder: (event) => summary.isSavedOnly(event)
+            ? EventTileStatus.saved
+            : EventTileStatus.joined,
         today: summary.today,
         preserveInputOrder: true,
         dayKeyBuilder: _agendaDayKey,
-        onRunSelected: (run) => _openRunDetail(context, run),
+        onEventSelected: (event) => _openEventDetail(context, event),
       ),
     ];
   }
 }
 
-String _calendarRunDetailPath(Run run) {
-  final runClubId = Uri.encodeComponent(run.runClubId);
-  final runId = Uri.encodeComponent(run.id);
-  return '/calendar/run-clubs/$runClubId/runs/$runId';
+String _calendarEventDetailPath(Event event) {
+  final clubId = Uri.encodeComponent(event.clubId);
+  final eventId = Uri.encodeComponent(event.id);
+  return '/calendar/clubs/$clubId/events/$eventId';
 }
 
 class _CalendarHeader extends StatelessWidget {
@@ -186,7 +187,7 @@ class _CalendarHeader extends StatelessWidget {
     required this.onDateSelected,
   });
 
-  final _CalendarRunSummary summary;
+  final _CalendarEventSummary summary;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateSelected;
 
@@ -224,7 +225,7 @@ class _CalendarHeader extends StatelessWidget {
                 Expanded(
                   child: StatColumn(
                     label: 'Planned',
-                    value: '${summary.runs.length}',
+                    value: '${summary.events.length}',
                   ),
                 ),
                 const _StatDivider(),
@@ -238,9 +239,9 @@ class _CalendarHeader extends StatelessWidget {
                 Expanded(
                   child: StatColumn(
                     label: 'Next',
-                    value: summary.nextRun == null
+                    value: summary.nextEvent == null
                         ? 'None'
-                        : RunFormatters.time(summary.nextRun!.startTime),
+                        : EventFormatters.time(summary.nextEvent!.startTime),
                   ),
                 ),
               ],
@@ -263,7 +264,7 @@ class _WeekStrip extends StatelessWidget {
     required this.onDateSelected,
   });
 
-  final _CalendarRunSummary summary;
+  final _CalendarEventSummary summary;
   final DateTime selectedDate;
   final ValueChanged<DateTime> onDateSelected;
 
@@ -271,8 +272,8 @@ class _WeekStrip extends StatelessWidget {
   Widget build(BuildContext context) {
     final anchor = selectedDate;
     final monday = anchor.subtract(Duration(days: anchor.weekday - 1));
-    final runDays = summary.runs
-        .map((run) => DateUtils.dateOnly(run.startTime))
+    final eventDays = summary.events
+        .map((event) => DateUtils.dateOnly(event.startTime))
         .toSet();
 
     return Row(
@@ -286,7 +287,7 @@ class _WeekStrip extends StatelessWidget {
                   key: _calendarWeekDayKey(date),
                   date: date,
                   active: DateUtils.isSameDay(date, selectedDate),
-                  hasRun: runDays.contains(date),
+                  hasEvent: eventDays.contains(date),
                   onTap: () => onDateSelected(date),
                 );
               },
@@ -304,13 +305,13 @@ class _WeekDay extends StatelessWidget {
     super.key,
     required this.date,
     required this.active,
-    required this.hasRun,
+    required this.hasEvent,
     required this.onTap,
   });
 
   final DateTime date;
   final bool active;
-  final bool hasRun;
+  final bool hasEvent;
   final VoidCallback onTap;
 
   @override
@@ -355,7 +356,7 @@ class _WeekDay extends StatelessWidget {
                   width: 4,
                   height: 4,
                   decoration: BoxDecoration(
-                    color: hasRun ? t.primary : Colors.transparent,
+                    color: hasEvent ? t.primary : Colors.transparent,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -406,43 +407,43 @@ class _CalendarMessage extends StatelessWidget {
   }
 }
 
-class _CalendarRunSummary {
-  const _CalendarRunSummary({
-    required this.runs,
-    required this.agendaRuns,
-    required this.savedOnlyRunIds,
+class _CalendarEventSummary {
+  const _CalendarEventSummary({
+    required this.events,
+    required this.agendaEvents,
+    required this.savedOnlyEventIds,
     required this.today,
     required this.anchorDate,
     required this.totalDistance,
-    this.nextRun,
+    this.nextEvent,
   });
 
-  final List<Run> runs;
-  final List<Run> agendaRuns;
-  final Set<String> savedOnlyRunIds;
+  final List<Event> events;
+  final List<Event> agendaEvents;
+  final Set<String> savedOnlyEventIds;
   final DateTime today;
   final DateTime anchorDate;
   final double totalDistance;
-  final Run? nextRun;
+  final Event? nextEvent;
 
-  bool isSavedOnly(Run run) => savedOnlyRunIds.contains(run.id);
+  bool isSavedOnly(Event event) => savedOnlyEventIds.contains(event.id);
 
-  static _CalendarRunSummary from({
-    required List<Run> signedUpRuns,
-    List<Run> savedRuns = const <Run>[],
+  static _CalendarEventSummary from({
+    required List<Event> signedUpEvents,
+    List<Event> savedEvents = const <Event>[],
     required DateTime now,
   }) {
-    final signedUpIds = signedUpRuns.map((run) => run.id).toSet();
-    final savedOnlyRunIds = <String>{};
-    final byId = <String, Run>{};
+    final signedUpIds = signedUpEvents.map((event) => event.id).toSet();
+    final savedOnlyEventIds = <String>{};
+    final byId = <String, Event>{};
 
-    for (final run in savedRuns) {
-      if (run.isCancelled || !run.startTime.isAfter(now)) continue;
-      byId[run.id] = run;
-      if (!signedUpIds.contains(run.id)) savedOnlyRunIds.add(run.id);
+    for (final event in savedEvents) {
+      if (event.isCancelled || !event.startTime.isAfter(now)) continue;
+      byId[event.id] = event;
+      if (!signedUpIds.contains(event.id)) savedOnlyEventIds.add(event.id);
     }
-    for (final run in signedUpRuns) {
-      byId[run.id] = run;
+    for (final event in signedUpEvents) {
+      byId[event.id] = event;
     }
 
     final sorted = byId.values.toList()
@@ -450,32 +451,32 @@ class _CalendarRunSummary {
     final today = DateUtils.dateOnly(now);
     final totalDistance = sorted.fold<double>(
       0,
-      (sum, run) => sum + run.distanceKm,
+      (sum, event) => sum + event.distanceKm,
     );
 
-    final upcoming = <Run>[];
-    final past = <Run>[];
-    for (final run in sorted) {
-      if (run.startTime.isBefore(now)) {
-        past.add(run);
+    final upcoming = <Event>[];
+    final past = <Event>[];
+    for (final event in sorted) {
+      if (event.startTime.isBefore(now)) {
+        past.add(event);
       } else {
-        upcoming.add(run);
+        upcoming.add(event);
       }
     }
 
-    final nextRun = upcoming.isEmpty ? null : upcoming.first;
+    final nextEvent = upcoming.isEmpty ? null : upcoming.first;
     final latestPastFirst = [...past]
       ..sort((a, b) => b.startTime.compareTo(a.startTime));
-    final anchorDate = nextRun?.startTime ?? today;
+    final anchorDate = nextEvent?.startTime ?? today;
 
-    return _CalendarRunSummary(
-      runs: sorted,
-      agendaRuns: [...upcoming, ...latestPastFirst],
-      savedOnlyRunIds: savedOnlyRunIds,
+    return _CalendarEventSummary(
+      events: sorted,
+      agendaEvents: [...upcoming, ...latestPastFirst],
+      savedOnlyEventIds: savedOnlyEventIds,
       today: today,
       anchorDate: anchorDate,
       totalDistance: totalDistance,
-      nextRun: nextRun,
+      nextEvent: nextEvent,
     );
   }
 }

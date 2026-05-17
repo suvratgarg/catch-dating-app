@@ -1,0 +1,44 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/club_schedule_locks.schema.json",
+  "title": "ClubScheduleLockDocument",
+  "description": "Server-owned time-slot claim stored at clubScheduleLocks/{clubId_slot}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "clubScheduleLocks",
+  "x-firestore-path": "clubScheduleLocks/{lockId}",
+  "x-document-id-field": "lockId",
+  "x-owner": "event schedule conflict callables",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "ownerType",
+    "ownerId",
+    "slot",
+    "eventId",
+    "clubId",
+    "startTimeMillis",
+    "endTimeMillis"
+  ],
+  "properties": {
+    "ownerType": {"type": "string", "const": "club"},
+    "ownerId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "slot": {"type": "integer", "minimum": 0},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "startTimeMillis": {"type": "integer", "minimum": 0},
+    "endTimeMillis": {"type": "integer", "minimum": 0},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

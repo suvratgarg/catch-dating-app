@@ -80,7 +80,7 @@ class SwipeRepository {
       final payload = {
         'swiperId': swipe.swiperId,
         'targetId': swipe.targetId,
-        'runId': swipe.runId,
+        'eventId': swipe.eventId,
         'direction': swipe.direction.name,
         ...reactionFields,
         'createdAt': FieldValue.serverTimestamp(),

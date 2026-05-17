@@ -10,35 +10,35 @@ const profilePrompt = profilePromptCatalog.prompts[0];
 const photoPrompt = photoPromptCatalog.prompts[0];
 const dateOfBirthIso = "1990-01-01T00:00:00.000Z";
 
-test("seed document validation accepts valid profile and run docs", () => {
+test("seed document validation accepts valid profile and event docs", () => {
   const result = validateSeedDocuments({
     docs: [
       {path: "users/runner-1", data: validUserProfileDoc()},
       {path: "publicProfiles/runner-1", data: validPublicProfileDoc()},
-      {path: "runClubs/club-1", data: validRunClubDoc()},
+      {path: "clubs/club-1", data: validClubDoc()},
       {
-        path: "runClubMemberships/club-1_runner-1",
-        data: validRunClubMembershipDoc(),
+        path: "clubMemberships/club-1_runner-1",
+        data: validClubMembershipDoc(),
       },
-      {path: "runs/run-1", data: validRunDoc()},
+      {path: "events/event-1", data: validEventDoc()},
       {
-        path: "runParticipations/run-1_runner-1",
-        data: validRunParticipationDoc(),
+        path: "eventParticipations/event-1_runner-1",
+        data: validEventParticipationDoc(),
       },
-      {path: "savedRuns/runner-1_run-1", data: validSavedRunDoc()},
+      {path: "savedEvents/runner-1_run-1", data: validSavedEventDoc()},
     ],
   });
 
   assert.deepEqual(result, {
     users: 1,
     publicProfiles: 1,
-    runClubs: 1,
-    runClubMemberships: 1,
-    runs: 1,
-    runParticipations: 1,
-    runClubScheduleLocks: 0,
-    userRunScheduleLocks: 0,
-    savedRuns: 1,
+    clubs: 1,
+    clubMemberships: 1,
+    events: 1,
+    eventParticipations: 1,
+    clubScheduleLocks: 0,
+    userEventScheduleLocks: 0,
+    savedEvents: 1,
     payments: 0,
     swipes: 0,
     matches: 0,
@@ -117,17 +117,17 @@ test("seed profile validation rejects mismatched public projections", () => {
   );
 });
 
-test("seed run validation rejects stale enum values before writes", () => {
+test("seed event validation rejects stale enum values before writes", () => {
   assert.throws(
     () => validateSeedDocuments({
       docs: [
         {
-          path: "runs/run-1",
-          data: {...validRunDoc(), pace: "walk"},
+          path: "events/event-1",
+          data: {...validEventDoc(), pace: "walk"},
         },
       ],
     }),
-    /runs\/run-1 failed schema validation/
+    /events\/event-1 failed schema validation/
   );
 });
 
@@ -143,7 +143,7 @@ test("seed decision validation rejects stale reaction target types", () => {
             scenario: "schema-test",
             swiperId: "runner-1",
             targetId: "runner-2",
-            runId: "run-1",
+            eventId: "event-1",
             direction: "like",
             reactionTargetType: "genericCard",
             createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
@@ -165,7 +165,7 @@ test("seed document validation accepts valid social and payment docs", () => {
         path: "matches/runner-1_runner-2/messages/message-1",
         data: validChatMessageDoc(),
       },
-      {path: "reviews/run-1~runner-1", data: validReviewDoc()},
+      {path: "reviews/event-1~runner-1", data: validReviewDoc()},
       {
         path: "notifications/runner-1/items/match_runner-1_runner-2",
         data: validActivityNotificationDoc(),
@@ -185,19 +185,19 @@ test("seed document validation accepts schedule locks and seed manifests", () =>
   const result = validateSeedDocuments({
     docs: [
       {
-        path: "runClubScheduleLocks/club-1_494080",
-        data: validRunClubScheduleLockDoc(),
+        path: "clubScheduleLocks/club-1_494080",
+        data: validClubScheduleLockDoc(),
       },
       {
-        path: "userRunScheduleLocks/runner-1_494080",
-        data: validUserRunScheduleLockDoc(),
+        path: "userEventScheduleLocks/runner-1_494080",
+        data: validUserEventScheduleLockDoc(),
       },
     ],
-    manifest: validSeedRunManifestDoc(),
+    manifest: validSeedEventManifestDoc(),
   });
 
-  assert.equal(result.runClubScheduleLocks, 1);
-  assert.equal(result.userRunScheduleLocks, 1);
+  assert.equal(result.clubScheduleLocks, 1);
+  assert.equal(result.userEventScheduleLocks, 1);
   assert.equal(result.seedManifests, 1);
 });
 
@@ -206,12 +206,12 @@ test("seed document validation rejects stale schedule lock owners", () => {
     () => validateSeedDocuments({
       docs: [
         {
-          path: "runClubScheduleLocks/club-1_494080",
-          data: {...validRunClubScheduleLockDoc(), ownerType: "user"},
+          path: "clubScheduleLocks/club-1_494080",
+          data: {...validClubScheduleLockDoc(), ownerType: "user"},
         },
       ],
     }),
-    /runClubScheduleLocks\/club-1_494080 failed schema validation/
+    /clubScheduleLocks\/club-1_494080 failed schema validation/
   );
 });
 
@@ -223,7 +223,7 @@ function validPaymentDoc() {
     userId: "runner-1",
     orderId: "order-1",
     paymentId: "pay-1",
-    runId: "run-1",
+    eventId: "event-1",
     amount: 29900,
     currency: "INR",
     status: "completed",
@@ -239,13 +239,13 @@ function validSwipeDoc() {
     scenario: "schema-test",
     swiperId: "runner-1",
     targetId: "runner-2",
-    runId: "run-1",
+    eventId: "event-1",
     direction: "like",
     reactionTargetId: "prompt-perfectRun",
     reactionTargetType: "profilePrompt",
-    reactionTargetLabel: "A perfect run with me looks like...",
+    reactionTargetLabel: "A perfect event with me looks like...",
     reactionTargetPreview: "Easy kilometres and coffee after.",
-    comment: "This sounds like my kind of run.",
+    comment: "This sounds like my kind of event.",
     createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
   };
 }
@@ -257,7 +257,7 @@ function validMatchDoc() {
     scenario: "schema-test",
     user1Id: "runner-1",
     user2Id: "runner-2",
-    runIds: ["run-1"],
+    eventIds: ["event-1"],
     createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
     lastMessageAt: null,
     lastMessagePreview: null,
@@ -276,7 +276,7 @@ function validChatMessageDoc() {
     seedPrefix: "demo_test",
     scenario: "schema-test",
     senderId: "runner-1",
-    text: "Coffee after the weekend run?",
+    text: "Coffee after the weekend event?",
     imageUrl: null,
     sentAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
   };
@@ -287,12 +287,12 @@ function validReviewDoc() {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    runClubId: "club-1",
-    runId: "run-1",
+    clubId: "club-1",
+    eventId: "event-1",
     reviewerUserId: "runner-1",
     reviewerName: "Runner One",
     rating: 5,
-    comment: "Well organized run with clear pacing.",
+    comment: "Well organized event with clear pacing.",
     createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
     updatedAt: null,
   };
@@ -310,8 +310,8 @@ function validActivityNotificationDoc() {
     createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
     readAt: null,
     matchId: "runner-1_runner-2",
-    runId: "run-1",
-    runClubId: null,
+    eventId: "event-1",
+    clubId: null,
     actorUid: "runner-2",
     actorName: "Runner Two",
   };
@@ -361,7 +361,7 @@ function validUserProfileDoc() {
     preferredRunTimes: ["morning"],
     prefsNewCatches: true,
     prefsMessages: true,
-    prefsRunReminders: true,
+    prefsEventReminders: true,
     prefsRunStatusUpdates: true,
     prefsClubUpdates: true,
     prefsWeeklyDigest: false,
@@ -403,13 +403,13 @@ function validPublicProfileDoc() {
   };
 }
 
-function validRunClubDoc() {
+function validClubDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    name: "Race Course Run Collective",
-    description: "Social Indore runs for easy kilometres and coffee stops.",
+    name: "Race Course Event Collective",
+    description: "Social Indore events for easy kilometres and coffee stops.",
     location: "indore",
     area: "Race Course Road",
     hostUserId: "runner-1",
@@ -421,9 +421,9 @@ function validRunClubDoc() {
     memberCount: 1,
     rating: 0,
     reviewCount: 0,
-    nextRunAt: null,
-    nextRunLabel: null,
-    instagramHandle: "racecourseruns",
+    nextEventAt: null,
+    nextEventLabel: null,
+    instagramHandle: "racecourseevents",
     phoneNumber: "+918800000001",
     email: "race.course@example.test",
     status: "active",
@@ -433,7 +433,7 @@ function validRunClubDoc() {
   };
 }
 
-function validRunClubMembershipDoc() {
+function validClubMembershipDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
@@ -449,12 +449,12 @@ function validRunClubMembershipDoc() {
   };
 }
 
-function validRunDoc() {
+function validEventDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    runClubId: "club-1",
+    clubId: "club-1",
     startTime: fakeTimestamp("2026-05-20T01:30:00.000Z"),
     endTime: fakeTimestamp("2026-05-20T02:40:00.000Z"),
     meetingPoint: "Race Course Road gate",
@@ -484,13 +484,13 @@ function validRunDoc() {
   };
 }
 
-function validRunParticipationDoc() {
+function validEventParticipationDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    runId: "run-1",
-    runClubId: "club-1",
+    eventId: "event-1",
+    clubId: "club-1",
     uid: "runner-1",
     status: "signedUp",
     createdAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
@@ -505,33 +505,33 @@ function validRunParticipationDoc() {
   };
 }
 
-function validSavedRunDoc() {
+function validSavedEventDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
     uid: "runner-1",
-    runId: "run-1",
+    eventId: "event-1",
     savedAt: fakeTimestamp("2026-05-01T00:00:00.000Z"),
   };
 }
 
-function validRunClubScheduleLockDoc() {
+function validClubScheduleLockDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
     scenario: "schema-test",
-    ownerType: "runClub",
+    ownerType: "club",
     ownerId: "club-1",
     slot: 494080,
-    runId: "run-1",
-    runClubId: "club-1",
+    eventId: "event-1",
+    clubId: "club-1",
     startTimeMillis: 1778889600000,
     endTimeMillis: 1778893800000,
   };
 }
 
-function validUserRunScheduleLockDoc() {
+function validUserEventScheduleLockDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",
@@ -539,15 +539,15 @@ function validUserRunScheduleLockDoc() {
     ownerType: "user",
     ownerId: "runner-1",
     slot: 494080,
-    runId: "run-1",
-    runClubId: "club-1",
+    eventId: "event-1",
+    clubId: "club-1",
     uid: "runner-1",
     startTimeMillis: 1778889600000,
     endTimeMillis: 1778893800000,
   };
 }
 
-function validSeedRunManifestDoc() {
+function validSeedEventManifestDoc() {
   return {
     synthetic: true,
     seedPrefix: "demo_test",

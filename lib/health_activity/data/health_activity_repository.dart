@@ -57,7 +57,7 @@ class HealthActivityRepository {
     final weekStart = WeeklyActivitySummary.weekStartFor(now);
     final weekEnd = weekStart.add(const Duration(days: 7));
     try {
-      final activities = await _client.fetchRunningActivities(
+      final activities = await _client.fetchEventningActivities(
         startTime: weekStart,
         endTime: weekEnd,
       );

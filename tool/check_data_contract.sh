@@ -19,7 +19,7 @@ git diff -- functions/src/shared/firestore.ts >"$after_diff"
 if ! diff -u "$before_diff" "$after_diff"; then
   echo
   echo "Generated Firestore types are stale."
-  echo "Run: dart tool/generate_firestore_types.dart"
+  echo "Command: dart tool/generate_firestore_types.dart"
   exit 1
 fi
 
@@ -32,7 +32,7 @@ git diff -- lib/core/business_rules.dart functions/src/shared/businessRules.ts \
 if ! diff -u "$before_diff" "$after_diff"; then
   echo
   echo "Generated shared business constants are stale."
-  echo "Run: node tool/generate_business_rules.mjs"
+  echo "Command: node tool/generate_business_rules.mjs"
   exit 1
 fi
 
@@ -91,24 +91,24 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage \
 
 echo "==> Running focused Flutter analysis"
 flutter analyze \
-  lib/run_clubs/data/run_clubs_repository.dart \
-  lib/run_clubs/presentation/create/create_run_club_controller.dart \
+  lib/clubs/data/clubs_repository.dart \
+  lib/clubs/presentation/create/create_club_controller.dart \
   lib/reviews/data/reviews_repository.dart \
   lib/reviews/presentation/reviews_section.dart \
-  lib/runs/data/run_repository.dart \
+  lib/events/data/event_repository.dart \
   lib/user_profile/data/user_profile_repository.dart \
   test/core/schema_contracts_generated_test.dart \
-  test/run_clubs/run_clubs_repository_test.dart \
+  test/clubs/clubs_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
-  test/runs/run_repository_test.dart \
+  test/events/event_repository_test.dart \
   test/user_profile/user_profile_repository_test.dart
 
 echo "==> Running focused Flutter tests"
 flutter test \
   test/core/schema_contracts_generated_test.dart \
-  test/run_clubs/run_clubs_repository_test.dart \
+  test/clubs/clubs_repository_test.dart \
   test/reviews/reviews_repository_test.dart \
-  test/runs/run_repository_test.dart \
+  test/events/event_repository_test.dart \
   test/user_profile/user_profile_repository_test.dart
 
 echo "Data contract checks passed."

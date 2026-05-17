@@ -46,7 +46,7 @@ class MobileHealthActivityClient implements HealthActivityClient {
   }
 
   @override
-  Future<List<RunnerActivity>> fetchRunningActivities({
+  Future<List<RunnerActivity>> fetchEventningActivities({
     required DateTime startTime,
     required DateTime endTime,
   }) async {

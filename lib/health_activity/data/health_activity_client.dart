@@ -44,7 +44,7 @@ abstract class HealthActivityClient {
 
   Future<bool> requestRunningReadPermission();
 
-  Future<List<RunnerActivity>> fetchRunningActivities({
+  Future<List<RunnerActivity>> fetchEventningActivities({
     required DateTime startTime,
     required DateTime endTime,
   });

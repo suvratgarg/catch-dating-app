@@ -98,16 +98,16 @@ void main() {
       expect(external.retryable, isFalse);
     });
 
-    test('keeps payment and run booking product errors distinct', () {
+    test('keeps payment and event booking product errors distinct', () {
       expect(
         appErrorDescriptor(const PaymentVerificationFailedException()).title,
         'Payment verification failed',
       );
       expect(
         appErrorDescriptor(
-          const RunBookingFailedException('This run is full.'),
+          const EventBookingFailedException('This event is full.'),
         ).title,
-        'Run signup unavailable',
+        'Event signup unavailable',
       );
     });
   });

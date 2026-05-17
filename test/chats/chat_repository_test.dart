@@ -146,7 +146,7 @@ void main() {
       await firestore.collection('matches').doc('match-1').set({
         'user1Id': 'runner-1',
         'user2Id': 'runner-2',
-        'runIds': <String>[],
+        'eventIds': <String>[],
         'createdAt': Timestamp.fromDate(DateTime(2026, 5, 9)),
         'unreadCounts': {'runner-1': 4},
       });

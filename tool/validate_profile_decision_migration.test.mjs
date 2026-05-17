@@ -122,7 +122,7 @@ function validDecision(swiperId, targetId, overrides = {}) {
   return {
     swiperId,
     targetId,
-    runId: "run-1",
+    eventId: "event-1",
     direction: "like",
     createdAt: {_seconds: 1, _nanoseconds: 0},
     ...overrides,

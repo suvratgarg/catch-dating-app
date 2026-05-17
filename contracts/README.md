@@ -38,12 +38,12 @@ The current contract layer covers:
 - embedded photo prompt answers;
 - future embedded `ProfilePhoto` storage metadata objects;
 - profile and photo prompt catalogs;
-- run, run-club, relationship, social, payment, safety, operational, and demo
-  Firestore document contracts;
-- callable payloads for profile, run, run-club, review, safety, payment, and
+- event, event-success, club, relationship, social, payment, safety,
+  operational, and demo Firestore document contracts;
+- callable payloads for profile, event, club, review, safety, payment, and
   Places operations;
 - direct client-write operation payloads for contextual profile decisions,
-  chat messages, saved-run edges, notification read updates, and match unread
+  chat messages, saved-event edges, notification read updates, and match unread
   resets;
 - migration contracts for the future `profileDecisions` path and grouped
   `ProfilePhoto` storage object model;
@@ -67,13 +67,13 @@ The current contract layer covers:
 
 ## Validation
 
-For the full local contract gate, run:
+For the full local contract gate, event:
 
 ```bash
 ./tool/check_data_contract.sh
 ```
 
-For the fast contract-source check, run:
+For the fast contract-source check, event:
 
 ```bash
 node tool/validate_schema_contracts.mjs

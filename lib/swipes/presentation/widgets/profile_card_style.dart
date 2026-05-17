@@ -47,9 +47,7 @@ class ProfileCardPalette {
           ? Colors.white.withValues(alpha: 0.11)
           : const Color(0xFFEADDD0),
       textPrimary: isDark ? const Color(0xFFFFF8F0) : const Color(0xFF201712),
-      textSecondary: isDark
-          ? const Color(0xFFD8C8B6)
-          : const Color(0xFF665447),
+      textSecondary: isDark ? const Color(0xFFD8C8B6) : const Color(0xFF665447),
       textMuted: isDark ? const Color(0xFF9E8B79) : const Color(0xFF9A8777),
       chipFill: isDark
           ? Colors.white.withValues(alpha: 0.07)

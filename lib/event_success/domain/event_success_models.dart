@@ -1,13 +1,8 @@
-/// IN DEVELOPMENT: event success layer.
-///
-/// This feature is intentionally not wired into production routes, Firestore,
-/// Cloud Functions, booking, attendance, swipes, reviews, or chat yet. It is a
-/// product-modeling workspace for the future live event layer.
 const eventSuccessLayerDevelopmentStatus =
-    'in_development_not_wired_to_live_event_flows';
+    'live_wired_with_preview_lab_and_iterating';
 
 enum EventActivityType {
-  socialRun('Social run'),
+  socialRun('Social event'),
   pickleball('Pickleball'),
   spinClass('Spin class'),
   pubQuiz('Pub quiz'),

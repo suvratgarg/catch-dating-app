@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/update_club_payload.schema.json",
+  "title": "UpdateClubCallablePayload",
+  "description": "Callable payload accepted by updateClub.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clubId", "fields"],
+  "properties": {
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "fields": {
+      "type": "object",
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "name": {"type": "string", "minLength": 1, "maxLength": 120},
+        "description": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "location": {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
+        "area": {"type": "string", "minLength": 1, "maxLength": 120},
+        "hostName": {"type": "string", "minLength": 1, "maxLength": 120},
+        "hostAvatarUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+        "imageUrl": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+        "tags": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1, "maxLength": 40},
+          "maxItems": 12,
+          "uniqueItems": true
+        },
+        "instagramHandle": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+        "phoneNumber": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"},
+        "email": {"$ref": "../shared/event_common.schema.json#/definitions/contactString"}
+      }
+    }
+  }
+}

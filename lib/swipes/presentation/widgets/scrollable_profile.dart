@@ -361,7 +361,9 @@ class _RunningIdentityCard extends StatelessWidget {
             Wrap(
               spacing: CatchSpacing.s2,
               runSpacing: CatchSpacing.s2,
-              children: [for (final tag in tags) _RunIdentityTagPill(tag: tag)],
+              children: [
+                for (final tag in tags) _EventIdentityTagPill(tag: tag),
+              ],
             ),
           ],
           if (profile.runningReasons.isNotEmpty) ...[
@@ -382,8 +384,8 @@ class _RunningIdentityCard extends StatelessWidget {
   }
 }
 
-class _RunIdentityTagPill extends StatelessWidget {
-  const _RunIdentityTagPill({required this.tag});
+class _EventIdentityTagPill extends StatelessWidget {
+  const _EventIdentityTagPill({required this.tag});
 
   final EmotionalRunTag tag;
 
@@ -470,7 +472,7 @@ class _RunStatPill extends StatelessWidget {
 }
 
 String _formatDistanceSummary(PublicProfile profile) {
-  if (profile.preferredDistances.isEmpty) return 'Any run';
+  if (profile.preferredDistances.isEmpty) return 'Any event';
   return profile.preferredDistances.map((d) => d.label).take(2).join(', ');
 }
 

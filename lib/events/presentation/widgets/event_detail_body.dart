@@ -1,0 +1,395 @@
+import 'dart:async';
+
+import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/external_share.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
+import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
+import 'package:catch_dating_app/events/presentation/event_calendar_links.dart';
+import 'package:catch_dating_app/events/presentation/event_detail_controller.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_cta.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_hero_app_bar.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_overview_section.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_detail_social_section.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/exceptions/error_logger.dart';
+import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+
+typedef EventShareHandler =
+    Future<void> Function(BuildContext context, Event event);
+
+class EventDetailBody extends ConsumerWidget {
+  const EventDetailBody({
+    super.key,
+    required this.event,
+    required this.userProfile,
+    required this.clubId,
+    required this.reviews,
+    required this.isAuthenticated,
+    required this.isHost,
+    required this.isSaved,
+    required this.participation,
+    this.onShareEvent,
+    this.now,
+  });
+
+  final Event event;
+  final UserProfile? userProfile;
+  final String clubId;
+  final List<Review> reviews;
+  final bool isAuthenticated;
+  final bool isHost;
+  final bool isSaved;
+  final EventParticipation? participation;
+  final EventShareHandler? onShareEvent;
+  final DateTime? now;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final event = this.event;
+    final userProfile = this.userProfile;
+    final saveMutation = ref.watch(
+      EventDetailController.toggleSavedEventMutation,
+    );
+    final share = ref.watch(externalShareControllerProvider);
+    final calendar = ref.watch(eventCalendarControllerProvider);
+    final now = this.now ?? DateTime.now();
+
+    if (isAuthenticated) {
+      ref.listen(EventBookingController.bookMutation, (prev, next) {
+        if (prev?.isPending == true && next.isSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Booking confirmed!')));
+        }
+      });
+      ref.listen(EventBookingController.cancelMutation, (prev, next) {
+        if (prev?.isPending == true && next.isSuccess) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Booking cancelled.')));
+        }
+      });
+    }
+
+    return Scaffold(
+      backgroundColor: t.bg,
+      body: CustomScrollView(
+        slivers: [
+          EventDetailHeroAppBar(
+            event: event,
+            isSaved: isSaved,
+            savePending: saveMutation.isPending,
+            onBack: () => Navigator.of(context).pop(),
+            onShare: (buttonContext) => unawaited(
+              onShareEvent != null
+                  ? onShareEvent!(buttonContext, event)
+                  : _shareEvent(buttonContext, event, share),
+            ),
+            showAddToCalendar: _canAddEventToCalendar(
+              event: event,
+              participation: participation,
+              isHost: isHost,
+              now: now,
+            ),
+            onAddToCalendar: (buttonContext) =>
+                unawaited(_addEventToCalendar(buttonContext, event, calendar)),
+            onToggleSaved: () => _toggleSavedEvent(
+              context,
+              ref,
+              event: event,
+              clubId: clubId,
+              userProfile: userProfile,
+              isAuthenticated: isAuthenticated,
+              isSaved: isSaved,
+            ),
+          ),
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(
+              CatchSpacing.s5,
+              20,
+              CatchSpacing.s5,
+              32,
+            ),
+            sliver: SliverList.list(
+              children: [
+                EventDetailOverviewSection(
+                  event: event,
+                  onLocationTap: event.hasExactStartingPoint
+                      ? () => context.pushNamed(
+                          Routes.eventLocationMapScreen.name,
+                          pathParameters: {'eventId': event.id},
+                        )
+                      : null,
+                ),
+                if (_shouldShowCompanionCard(
+                  participation: participation,
+                  isHost: isHost,
+                )) ...[
+                  const SizedBox(height: 20),
+                  _EventCompanionCard(event: event, clubId: clubId),
+                ],
+                const SizedBox(height: 24),
+                Divider(color: t.line, height: 1),
+                const SizedBox(height: 24),
+                EventDetailSocialSection(
+                  event: event,
+                  clubId: clubId,
+                  reviews: reviews,
+                  userProfile: userProfile,
+                  isAuthenticated: isAuthenticated,
+                  participation: participation,
+                  now: now,
+                ),
+                const SizedBox(height: 16),
+              ],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: isAuthenticated && userProfile != null
+          ? EventDetailCta(
+              event: event,
+              userProfile: userProfile,
+              clubId: clubId,
+              isHost: isHost,
+              participation: participation,
+              now: now,
+            )
+          : _GuestBookCta(clubId: clubId, eventId: event.id),
+    );
+  }
+}
+
+bool _shouldShowCompanionCard({
+  required EventParticipation? participation,
+  required bool isHost,
+}) {
+  if (isHost) return false;
+  return switch (participation?.status) {
+    EventParticipationStatus.signedUp ||
+    EventParticipationStatus.attended => true,
+    EventParticipationStatus.waitlisted ||
+    EventParticipationStatus.cancelled ||
+    EventParticipationStatus.deleted ||
+    null => false,
+  };
+}
+
+class _EventCompanionCard extends StatelessWidget {
+  const _EventCompanionCard({required this.event, required this.clubId});
+
+  final Event event;
+  final String clubId;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      borderColor: t.line,
+      padding: const EdgeInsets.all(14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.auto_awesome_outlined, color: t.primary),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Event companion', style: CatchTextStyles.titleM(context)),
+                const SizedBox(height: 4),
+                Text(
+                  'Check in, see your social prompt, and handle private follow-up after the event.',
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                ),
+                const SizedBox(height: 12),
+                CatchButton(
+                  label: 'Open companion',
+                  variant: CatchButtonVariant.secondary,
+                  icon: const Icon(Icons.phone_iphone_rounded),
+                  onPressed: () => context.pushNamed(
+                    Routes.eventSuccessCompanionScreen.name,
+                    pathParameters: {'clubId': clubId, 'eventId': event.id},
+                    extra: event,
+                  ),
+                  fullWidth: true,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+void _toggleSavedEvent(
+  BuildContext context,
+  WidgetRef ref, {
+  required Event event,
+  required String clubId,
+  required UserProfile? userProfile,
+  required bool isAuthenticated,
+  required bool isSaved,
+}) {
+  if (!isAuthenticated || userProfile == null) {
+    context.go(
+      Uri(
+        path: Routes.authScreen.path,
+        queryParameters: {'from': '/clubs/$clubId/events/${event.id}'},
+      ).toString(),
+    );
+    return;
+  }
+
+  EventDetailController.toggleSavedEventMutation.run(ref, (tx) async {
+    final nowSaved = await tx
+        .get(eventDetailControllerProvider.notifier)
+        .toggleSavedEvent(
+          event: event,
+          userProfile: userProfile,
+          isSaved: isSaved,
+        );
+    if (!context.mounted) return nowSaved;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(nowSaved ? 'Event saved.' : 'Event removed.')),
+    );
+    return nowSaved;
+  });
+}
+
+Future<void> _shareEvent(
+  BuildContext context,
+  Event event,
+  ExternalShareController share,
+) async {
+  final box = context.findRenderObject() as RenderBox?;
+  final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
+  final uri = AppDeepLinks.event(clubId: event.clubId, eventId: event.id);
+
+  try {
+    await share.shareText(
+      text:
+          'Join me for ${event.title} at ${event.meetingPoint}: ${uri.toString()}',
+      subject: event.title,
+      origin: origin,
+    );
+  } on Object catch (error, stackTrace) {
+    final actionError = ExternalActionException(
+      'Failed to share event',
+      cause: error,
+      stackTrace: stackTrace,
+    );
+
+    if (context.mounted) {
+      ProviderScope.containerOf(context, listen: false)
+          .read(errorLoggerProvider)
+          .logAppException(
+            normalizeBackendError(
+              actionError,
+              stackTrace: stackTrace,
+              context: const BackendErrorContext(
+                service: BackendService.external,
+                action: 'share event',
+                resource: 'share_sheet',
+              ),
+            ),
+          );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open share sheet.')),
+      );
+    }
+  }
+}
+
+Future<void> _addEventToCalendar(
+  BuildContext context,
+  Event event,
+  EventCalendarController calendar,
+) async {
+  try {
+    final opened = await calendar.addToCalendar(event);
+    if (!context.mounted || opened) return;
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Could not open calendar.')));
+  } on Object catch (error, stackTrace) {
+    final actionError = ExternalActionException(
+      'Failed to add event to calendar',
+      cause: error,
+      stackTrace: stackTrace,
+    );
+
+    if (context.mounted) {
+      ProviderScope.containerOf(context, listen: false)
+          .read(errorLoggerProvider)
+          .logAppException(
+            normalizeBackendError(
+              actionError,
+              stackTrace: stackTrace,
+              context: const BackendErrorContext(
+                service: BackendService.external,
+                action: 'add event to calendar',
+                resource: 'calendar_link',
+              ),
+            ),
+          );
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Could not open calendar.')));
+    }
+  }
+}
+
+bool _canAddEventToCalendar({
+  required Event event,
+  required EventParticipation? participation,
+  required bool isHost,
+  required DateTime now,
+}) {
+  if (event.isCancelled || !event.startTime.isAfter(now)) return false;
+  if (isHost) return true;
+  return participation?.status == EventParticipationStatus.signedUp;
+}
+
+class _GuestBookCta extends StatelessWidget {
+  const _GuestBookCta({required this.clubId, required this.eventId});
+
+  final String clubId;
+  final String eventId;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
+        child: CatchButton(
+          label: 'Sign in to book this event',
+          onPressed: () => context.go(
+            Uri(
+              path: Routes.authScreen.path,
+              queryParameters: {'from': '/clubs/$clubId/events/$eventId'},
+            ).toString(),
+          ),
+          icon: Icon(Icons.lock_outline_rounded, size: 18, color: t.primary),
+          fullWidth: true,
+        ),
+      ),
+    );
+  }
+}

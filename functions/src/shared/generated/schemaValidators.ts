@@ -11,14 +11,16 @@ import {ConfigCitiesDocument} from "./configCitiesDocument";
 import {OnboardingDraftDocument} from "./onboardingDraftDocument";
 import {UserProfileDocument} from "./userProfileDocument";
 import {PublicProfileDocument} from "./publicProfileDocument";
-import {RunClubDocument} from "./runClubDocument";
-import {RunClubMembershipDocument} from "./runClubMembershipDocument";
-import {RunClubHostClaimDocument} from "./runClubHostClaimDocument";
-import {RunDocument} from "./runDocument";
-import {RunParticipationDocument} from "./runParticipationDocument";
-import {RunClubScheduleLockDocument} from "./runClubScheduleLockDocument";
-import {UserRunScheduleLockDocument} from "./userRunScheduleLockDocument";
-import {SavedRunDocument} from "./savedRunDocument";
+import {ClubDocument} from "./clubDocument";
+import {ClubMembershipDocument} from "./clubMembershipDocument";
+import {ClubHostClaimDocument} from "./clubHostClaimDocument";
+import {EventDocument} from "./eventDocument";
+import {EventParticipationDocument} from "./eventParticipationDocument";
+import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
+import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
+import {ClubScheduleLockDocument} from "./clubScheduleLockDocument";
+import {UserEventScheduleLockDocument} from "./userEventScheduleLockDocument";
+import {SavedEventDocument} from "./savedEventDocument";
 import {PaymentDocument} from "./paymentDocument";
 import {SwipeDocument} from "./swipeDocument";
 import {MatchDocument} from "./matchDocument";
@@ -31,24 +33,24 @@ import {ModerationFlagDocument} from "./moderationFlagDocument";
 import {DeletedUserTombstoneDocument} from "./deletedUserTombstoneDocument";
 import {RateLimitDocument} from "./rateLimitDocument";
 import {FunctionEventReceiptDocument} from "./functionEventReceiptDocument";
-import {SeedRunManifestDocument} from "./seedRunManifestDocument";
+import {SeedEventManifestDocument} from "./seedEventManifestDocument";
 import {UpdateUserProfileCallablePayload} from "./updateUserProfileCallablePayload";
-import {CreateRunClubCallablePayload} from "./createRunClubCallablePayload";
-import {UpdateRunClubCallablePayload} from "./updateRunClubCallablePayload";
-import {ArchiveRunClubCallablePayload} from "./archiveRunClubCallablePayload";
-import {DeleteRunClubCallablePayload} from "./deleteRunClubCallablePayload";
-import {RunClubMembershipCallablePayload} from "./runClubMembershipCallablePayload";
-import {SetRunClubNotificationPreferenceCallablePayload} from "./setRunClubNotificationPreferenceCallablePayload";
-import {CreateRunCallablePayload} from "./createRunCallablePayload";
-import {UpdateRunCallablePayload} from "./updateRunCallablePayload";
-import {CancelRunCallablePayload} from "./cancelRunCallablePayload";
-import {DeleteRunCallablePayload} from "./deleteRunCallablePayload";
-import {RunIdCallablePayload} from "./runIdCallablePayload";
-import {MarkRunAttendanceCallablePayload} from "./markRunAttendanceCallablePayload";
+import {CreateClubCallablePayload} from "./createClubCallablePayload";
+import {UpdateClubCallablePayload} from "./updateClubCallablePayload";
+import {ArchiveClubCallablePayload} from "./archiveClubCallablePayload";
+import {DeleteClubCallablePayload} from "./deleteClubCallablePayload";
+import {ClubMembershipCallablePayload} from "./clubMembershipCallablePayload";
+import {SetClubNotificationPreferenceCallablePayload} from "./setClubNotificationPreferenceCallablePayload";
+import {CreateEventCallablePayload} from "./createEventCallablePayload";
+import {UpdateEventCallablePayload} from "./updateEventCallablePayload";
+import {CancelEventCallablePayload} from "./cancelEventCallablePayload";
+import {DeleteEventCallablePayload} from "./deleteEventCallablePayload";
+import {EventIdCallablePayload} from "./eventIdCallablePayload";
+import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
 import {SelfCheckInAttendanceCallablePayload} from "./selfCheckInAttendanceCallablePayload";
-import {CreateRunReviewCallablePayload} from "./createRunReviewCallablePayload";
-import {UpdateRunReviewCallablePayload} from "./updateRunReviewCallablePayload";
-import {DeleteRunReviewCallablePayload} from "./deleteRunReviewCallablePayload";
+import {CreateEventReviewCallablePayload} from "./createEventReviewCallablePayload";
+import {UpdateEventReviewCallablePayload} from "./updateEventReviewCallablePayload";
+import {DeleteEventReviewCallablePayload} from "./deleteEventReviewCallablePayload";
 import {BlockUserCallablePayload} from "./blockUserCallablePayload";
 import {UnblockUserCallablePayload} from "./unblockUserCallablePayload";
 import {ReportUserCallablePayload} from "./reportUserCallablePayload";
@@ -57,8 +59,8 @@ import {PlacesAutocompleteCallablePayload} from "./placesAutocompleteCallablePay
 import {PlaceDetailsCallablePayload} from "./placeDetailsCallablePayload";
 import {CreateProfileDecisionClientWrite} from "./createProfileDecisionClientWrite";
 import {CreateChatMessageClientWrite} from "./createChatMessageClientWrite";
-import {CreateSavedRunClientWrite} from "./createSavedRunClientWrite";
-import {DeleteSavedRunClientWrite} from "./deleteSavedRunClientWrite";
+import {CreateSavedEventClientWrite} from "./createSavedEventClientWrite";
+import {DeleteSavedEventClientWrite} from "./deleteSavedEventClientWrite";
 import {MarkNotificationReadClientWrite} from "./markNotificationReadClientWrite";
 import {ResetMatchUnreadCountClientWrite} from "./resetMatchUnreadCountClientWrite";
 import {
@@ -69,14 +71,16 @@ import {
   onboardingDraftDocumentSchema,
   userProfileDocumentSchema,
   publicProfileDocumentSchema,
-  runClubDocumentSchema,
-  runClubMembershipDocumentSchema,
-  runClubHostClaimDocumentSchema,
-  runDocumentSchema,
-  runParticipationDocumentSchema,
-  runClubScheduleLockDocumentSchema,
-  userRunScheduleLockDocumentSchema,
-  savedRunDocumentSchema,
+  clubDocumentSchema,
+  clubMembershipDocumentSchema,
+  clubHostClaimDocumentSchema,
+  eventDocumentSchema,
+  eventParticipationDocumentSchema,
+  eventSuccessPlanDocumentSchema,
+  eventSuccessFeedbackDocumentSchema,
+  clubScheduleLockDocumentSchema,
+  userEventScheduleLockDocumentSchema,
+  savedEventDocumentSchema,
   paymentDocumentSchema,
   swipeDocumentSchema,
   matchDocumentSchema,
@@ -89,24 +93,24 @@ import {
   deletedUserTombstoneDocumentSchema,
   rateLimitDocumentSchema,
   functionEventReceiptDocumentSchema,
-  seedRunManifestDocumentSchema,
+  seedEventManifestDocumentSchema,
   updateUserProfileCallablePayloadSchema,
-  createRunClubCallablePayloadSchema,
-  updateRunClubCallablePayloadSchema,
-  archiveRunClubCallablePayloadSchema,
-  deleteRunClubCallablePayloadSchema,
-  runClubMembershipCallablePayloadSchema,
-  setRunClubNotificationPreferenceCallablePayloadSchema,
-  createRunCallablePayloadSchema,
-  updateRunCallablePayloadSchema,
-  cancelRunCallablePayloadSchema,
-  deleteRunCallablePayloadSchema,
-  runIdCallablePayloadSchema,
-  markRunAttendanceCallablePayloadSchema,
+  createClubCallablePayloadSchema,
+  updateClubCallablePayloadSchema,
+  archiveClubCallablePayloadSchema,
+  deleteClubCallablePayloadSchema,
+  clubMembershipCallablePayloadSchema,
+  setClubNotificationPreferenceCallablePayloadSchema,
+  createEventCallablePayloadSchema,
+  updateEventCallablePayloadSchema,
+  cancelEventCallablePayloadSchema,
+  deleteEventCallablePayloadSchema,
+  eventIdCallablePayloadSchema,
+  markEventAttendanceCallablePayloadSchema,
   selfCheckInAttendanceCallablePayloadSchema,
-  createRunReviewCallablePayloadSchema,
-  updateRunReviewCallablePayloadSchema,
-  deleteRunReviewCallablePayloadSchema,
+  createEventReviewCallablePayloadSchema,
+  updateEventReviewCallablePayloadSchema,
+  deleteEventReviewCallablePayloadSchema,
   blockUserCallablePayloadSchema,
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
@@ -115,8 +119,8 @@ import {
   placeDetailsCallablePayloadSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
-  createSavedRunClientWriteSchema,
-  deleteSavedRunClientWriteSchema,
+  createSavedEventClientWriteSchema,
+  deleteSavedEventClientWriteSchema,
   markNotificationReadClientWriteSchema,
   resetMatchUnreadCountClientWriteSchema,
 } from "./schemaRegistry";
@@ -152,38 +156,46 @@ export const validatePublicProfileDocument:
   ValidateFunction<PublicProfileDocument> =
     ajv.compile(publicProfileDocumentSchema) as
       ValidateFunction<PublicProfileDocument>;
-export const validateRunClubDocument:
-  ValidateFunction<RunClubDocument> =
-    ajv.compile(runClubDocumentSchema) as
-      ValidateFunction<RunClubDocument>;
-export const validateRunClubMembershipDocument:
-  ValidateFunction<RunClubMembershipDocument> =
-    ajv.compile(runClubMembershipDocumentSchema) as
-      ValidateFunction<RunClubMembershipDocument>;
-export const validateRunClubHostClaimDocument:
-  ValidateFunction<RunClubHostClaimDocument> =
-    ajv.compile(runClubHostClaimDocumentSchema) as
-      ValidateFunction<RunClubHostClaimDocument>;
-export const validateRunDocument:
-  ValidateFunction<RunDocument> =
-    ajv.compile(runDocumentSchema) as
-      ValidateFunction<RunDocument>;
-export const validateRunParticipationDocument:
-  ValidateFunction<RunParticipationDocument> =
-    ajv.compile(runParticipationDocumentSchema) as
-      ValidateFunction<RunParticipationDocument>;
-export const validateRunClubScheduleLockDocument:
-  ValidateFunction<RunClubScheduleLockDocument> =
-    ajv.compile(runClubScheduleLockDocumentSchema) as
-      ValidateFunction<RunClubScheduleLockDocument>;
-export const validateUserRunScheduleLockDocument:
-  ValidateFunction<UserRunScheduleLockDocument> =
-    ajv.compile(userRunScheduleLockDocumentSchema) as
-      ValidateFunction<UserRunScheduleLockDocument>;
-export const validateSavedRunDocument:
-  ValidateFunction<SavedRunDocument> =
-    ajv.compile(savedRunDocumentSchema) as
-      ValidateFunction<SavedRunDocument>;
+export const validateClubDocument:
+  ValidateFunction<ClubDocument> =
+    ajv.compile(clubDocumentSchema) as
+      ValidateFunction<ClubDocument>;
+export const validateClubMembershipDocument:
+  ValidateFunction<ClubMembershipDocument> =
+    ajv.compile(clubMembershipDocumentSchema) as
+      ValidateFunction<ClubMembershipDocument>;
+export const validateClubHostClaimDocument:
+  ValidateFunction<ClubHostClaimDocument> =
+    ajv.compile(clubHostClaimDocumentSchema) as
+      ValidateFunction<ClubHostClaimDocument>;
+export const validateEventDocument:
+  ValidateFunction<EventDocument> =
+    ajv.compile(eventDocumentSchema) as
+      ValidateFunction<EventDocument>;
+export const validateEventParticipationDocument:
+  ValidateFunction<EventParticipationDocument> =
+    ajv.compile(eventParticipationDocumentSchema) as
+      ValidateFunction<EventParticipationDocument>;
+export const validateEventSuccessPlanDocument:
+  ValidateFunction<EventSuccessPlanDocument> =
+    ajv.compile(eventSuccessPlanDocumentSchema) as
+      ValidateFunction<EventSuccessPlanDocument>;
+export const validateEventSuccessFeedbackDocument:
+  ValidateFunction<EventSuccessFeedbackDocument> =
+    ajv.compile(eventSuccessFeedbackDocumentSchema) as
+      ValidateFunction<EventSuccessFeedbackDocument>;
+export const validateClubScheduleLockDocument:
+  ValidateFunction<ClubScheduleLockDocument> =
+    ajv.compile(clubScheduleLockDocumentSchema) as
+      ValidateFunction<ClubScheduleLockDocument>;
+export const validateUserEventScheduleLockDocument:
+  ValidateFunction<UserEventScheduleLockDocument> =
+    ajv.compile(userEventScheduleLockDocumentSchema) as
+      ValidateFunction<UserEventScheduleLockDocument>;
+export const validateSavedEventDocument:
+  ValidateFunction<SavedEventDocument> =
+    ajv.compile(savedEventDocumentSchema) as
+      ValidateFunction<SavedEventDocument>;
 export const validatePaymentDocument:
   ValidateFunction<PaymentDocument> =
     ajv.compile(paymentDocumentSchema) as
@@ -232,78 +244,78 @@ export const validateFunctionEventReceiptDocument:
   ValidateFunction<FunctionEventReceiptDocument> =
     ajv.compile(functionEventReceiptDocumentSchema) as
       ValidateFunction<FunctionEventReceiptDocument>;
-export const validateSeedRunManifestDocument:
-  ValidateFunction<SeedRunManifestDocument> =
-    ajv.compile(seedRunManifestDocumentSchema) as
-      ValidateFunction<SeedRunManifestDocument>;
+export const validateSeedEventManifestDocument:
+  ValidateFunction<SeedEventManifestDocument> =
+    ajv.compile(seedEventManifestDocumentSchema) as
+      ValidateFunction<SeedEventManifestDocument>;
 export const validateUpdateUserProfileCallablePayload:
   ValidateFunction<UpdateUserProfileCallablePayload> =
     ajv.compile(updateUserProfileCallablePayloadSchema) as
       ValidateFunction<UpdateUserProfileCallablePayload>;
-export const validateCreateRunClubCallablePayload:
-  ValidateFunction<CreateRunClubCallablePayload> =
-    ajv.compile(createRunClubCallablePayloadSchema) as
-      ValidateFunction<CreateRunClubCallablePayload>;
-export const validateUpdateRunClubCallablePayload:
-  ValidateFunction<UpdateRunClubCallablePayload> =
-    ajv.compile(updateRunClubCallablePayloadSchema) as
-      ValidateFunction<UpdateRunClubCallablePayload>;
-export const validateArchiveRunClubCallablePayload:
-  ValidateFunction<ArchiveRunClubCallablePayload> =
-    ajv.compile(archiveRunClubCallablePayloadSchema) as
-      ValidateFunction<ArchiveRunClubCallablePayload>;
-export const validateDeleteRunClubCallablePayload:
-  ValidateFunction<DeleteRunClubCallablePayload> =
-    ajv.compile(deleteRunClubCallablePayloadSchema) as
-      ValidateFunction<DeleteRunClubCallablePayload>;
-export const validateRunClubMembershipCallablePayload:
-  ValidateFunction<RunClubMembershipCallablePayload> =
-    ajv.compile(runClubMembershipCallablePayloadSchema) as
-      ValidateFunction<RunClubMembershipCallablePayload>;
-export const validateSetRunClubNotificationPreferenceCallablePayload:
-  ValidateFunction<SetRunClubNotificationPreferenceCallablePayload> =
-    ajv.compile(setRunClubNotificationPreferenceCallablePayloadSchema) as
-      ValidateFunction<SetRunClubNotificationPreferenceCallablePayload>;
-export const validateCreateRunCallablePayload:
-  ValidateFunction<CreateRunCallablePayload> =
-    ajv.compile(createRunCallablePayloadSchema) as
-      ValidateFunction<CreateRunCallablePayload>;
-export const validateUpdateRunCallablePayload:
-  ValidateFunction<UpdateRunCallablePayload> =
-    ajv.compile(updateRunCallablePayloadSchema) as
-      ValidateFunction<UpdateRunCallablePayload>;
-export const validateCancelRunCallablePayload:
-  ValidateFunction<CancelRunCallablePayload> =
-    ajv.compile(cancelRunCallablePayloadSchema) as
-      ValidateFunction<CancelRunCallablePayload>;
-export const validateDeleteRunCallablePayload:
-  ValidateFunction<DeleteRunCallablePayload> =
-    ajv.compile(deleteRunCallablePayloadSchema) as
-      ValidateFunction<DeleteRunCallablePayload>;
-export const validateRunIdCallablePayload:
-  ValidateFunction<RunIdCallablePayload> =
-    ajv.compile(runIdCallablePayloadSchema) as
-      ValidateFunction<RunIdCallablePayload>;
-export const validateMarkRunAttendanceCallablePayload:
-  ValidateFunction<MarkRunAttendanceCallablePayload> =
-    ajv.compile(markRunAttendanceCallablePayloadSchema) as
-      ValidateFunction<MarkRunAttendanceCallablePayload>;
+export const validateCreateClubCallablePayload:
+  ValidateFunction<CreateClubCallablePayload> =
+    ajv.compile(createClubCallablePayloadSchema) as
+      ValidateFunction<CreateClubCallablePayload>;
+export const validateUpdateClubCallablePayload:
+  ValidateFunction<UpdateClubCallablePayload> =
+    ajv.compile(updateClubCallablePayloadSchema) as
+      ValidateFunction<UpdateClubCallablePayload>;
+export const validateArchiveClubCallablePayload:
+  ValidateFunction<ArchiveClubCallablePayload> =
+    ajv.compile(archiveClubCallablePayloadSchema) as
+      ValidateFunction<ArchiveClubCallablePayload>;
+export const validateDeleteClubCallablePayload:
+  ValidateFunction<DeleteClubCallablePayload> =
+    ajv.compile(deleteClubCallablePayloadSchema) as
+      ValidateFunction<DeleteClubCallablePayload>;
+export const validateClubMembershipCallablePayload:
+  ValidateFunction<ClubMembershipCallablePayload> =
+    ajv.compile(clubMembershipCallablePayloadSchema) as
+      ValidateFunction<ClubMembershipCallablePayload>;
+export const validateSetClubNotificationPreferenceCallablePayload:
+  ValidateFunction<SetClubNotificationPreferenceCallablePayload> =
+    ajv.compile(setClubNotificationPreferenceCallablePayloadSchema) as
+      ValidateFunction<SetClubNotificationPreferenceCallablePayload>;
+export const validateCreateEventCallablePayload:
+  ValidateFunction<CreateEventCallablePayload> =
+    ajv.compile(createEventCallablePayloadSchema) as
+      ValidateFunction<CreateEventCallablePayload>;
+export const validateUpdateEventCallablePayload:
+  ValidateFunction<UpdateEventCallablePayload> =
+    ajv.compile(updateEventCallablePayloadSchema) as
+      ValidateFunction<UpdateEventCallablePayload>;
+export const validateCancelEventCallablePayload:
+  ValidateFunction<CancelEventCallablePayload> =
+    ajv.compile(cancelEventCallablePayloadSchema) as
+      ValidateFunction<CancelEventCallablePayload>;
+export const validateDeleteEventCallablePayload:
+  ValidateFunction<DeleteEventCallablePayload> =
+    ajv.compile(deleteEventCallablePayloadSchema) as
+      ValidateFunction<DeleteEventCallablePayload>;
+export const validateEventIdCallablePayload:
+  ValidateFunction<EventIdCallablePayload> =
+    ajv.compile(eventIdCallablePayloadSchema) as
+      ValidateFunction<EventIdCallablePayload>;
+export const validateMarkEventAttendanceCallablePayload:
+  ValidateFunction<MarkEventAttendanceCallablePayload> =
+    ajv.compile(markEventAttendanceCallablePayloadSchema) as
+      ValidateFunction<MarkEventAttendanceCallablePayload>;
 export const validateSelfCheckInAttendanceCallablePayload:
   ValidateFunction<SelfCheckInAttendanceCallablePayload> =
     ajv.compile(selfCheckInAttendanceCallablePayloadSchema) as
       ValidateFunction<SelfCheckInAttendanceCallablePayload>;
-export const validateCreateRunReviewCallablePayload:
-  ValidateFunction<CreateRunReviewCallablePayload> =
-    ajv.compile(createRunReviewCallablePayloadSchema) as
-      ValidateFunction<CreateRunReviewCallablePayload>;
-export const validateUpdateRunReviewCallablePayload:
-  ValidateFunction<UpdateRunReviewCallablePayload> =
-    ajv.compile(updateRunReviewCallablePayloadSchema) as
-      ValidateFunction<UpdateRunReviewCallablePayload>;
-export const validateDeleteRunReviewCallablePayload:
-  ValidateFunction<DeleteRunReviewCallablePayload> =
-    ajv.compile(deleteRunReviewCallablePayloadSchema) as
-      ValidateFunction<DeleteRunReviewCallablePayload>;
+export const validateCreateEventReviewCallablePayload:
+  ValidateFunction<CreateEventReviewCallablePayload> =
+    ajv.compile(createEventReviewCallablePayloadSchema) as
+      ValidateFunction<CreateEventReviewCallablePayload>;
+export const validateUpdateEventReviewCallablePayload:
+  ValidateFunction<UpdateEventReviewCallablePayload> =
+    ajv.compile(updateEventReviewCallablePayloadSchema) as
+      ValidateFunction<UpdateEventReviewCallablePayload>;
+export const validateDeleteEventReviewCallablePayload:
+  ValidateFunction<DeleteEventReviewCallablePayload> =
+    ajv.compile(deleteEventReviewCallablePayloadSchema) as
+      ValidateFunction<DeleteEventReviewCallablePayload>;
 export const validateBlockUserCallablePayload:
   ValidateFunction<BlockUserCallablePayload> =
     ajv.compile(blockUserCallablePayloadSchema) as
@@ -336,14 +348,14 @@ export const validateCreateChatMessageClientWrite:
   ValidateFunction<CreateChatMessageClientWrite> =
     ajv.compile(createChatMessageClientWriteSchema) as
       ValidateFunction<CreateChatMessageClientWrite>;
-export const validateCreateSavedRunClientWrite:
-  ValidateFunction<CreateSavedRunClientWrite> =
-    ajv.compile(createSavedRunClientWriteSchema) as
-      ValidateFunction<CreateSavedRunClientWrite>;
-export const validateDeleteSavedRunClientWrite:
-  ValidateFunction<DeleteSavedRunClientWrite> =
-    ajv.compile(deleteSavedRunClientWriteSchema) as
-      ValidateFunction<DeleteSavedRunClientWrite>;
+export const validateCreateSavedEventClientWrite:
+  ValidateFunction<CreateSavedEventClientWrite> =
+    ajv.compile(createSavedEventClientWriteSchema) as
+      ValidateFunction<CreateSavedEventClientWrite>;
+export const validateDeleteSavedEventClientWrite:
+  ValidateFunction<DeleteSavedEventClientWrite> =
+    ajv.compile(deleteSavedEventClientWriteSchema) as
+      ValidateFunction<DeleteSavedEventClientWrite>;
 export const validateMarkNotificationReadClientWrite:
   ValidateFunction<MarkNotificationReadClientWrite> =
     ajv.compile(markNotificationReadClientWriteSchema) as

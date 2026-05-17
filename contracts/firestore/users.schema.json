@@ -34,7 +34,7 @@
     "preferredRunTimes",
     "prefsNewCatches",
     "prefsMessages",
-    "prefsRunReminders",
+    "prefsEventReminders",
     "prefsRunStatusUpdates",
     "prefsClubUpdates",
     "prefsWeeklyDigest",
@@ -261,7 +261,7 @@
     "prefsMessages": {
       "type": "boolean"
     },
-    "prefsRunReminders": {
+    "prefsEventReminders": {
       "type": "boolean"
     },
     "prefsRunStatusUpdates": {

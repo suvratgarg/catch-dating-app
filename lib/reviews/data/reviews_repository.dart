@@ -28,10 +28,10 @@ class ReviewsRepository {
 
   // ── Read ──────────────────────────────────────────────────────────────────
 
-  Stream<List<Review>> watchReviewsForClub(String runClubId) =>
+  Stream<List<Review>> watchReviewsForClub(String clubId) =>
       withBackendErrorStream(
         () => _reviewsRef
-            .where('runClubId', isEqualTo: runClubId)
+            .where('clubId', isEqualTo: clubId)
             .orderBy('createdAt', descending: true)
             .snapshots()
             .map((s) => s.docs.map((d) => d.data()).toList()),
@@ -42,16 +42,16 @@ class ReviewsRepository {
         ),
       );
 
-  Stream<List<Review>> watchReviewsForRun(String runId) =>
+  Stream<List<Review>> watchReviewsForEvent(String eventId) =>
       withBackendErrorStream(
         () => _reviewsRef
-            .where('runId', isEqualTo: runId)
+            .where('eventId', isEqualTo: eventId)
             .orderBy('createdAt', descending: true)
             .snapshots()
             .map((s) => s.docs.map((d) => d.data()).toList()),
         context: const BackendErrorContext(
           service: BackendService.firestore,
-          action: 'watch run reviews',
+          action: 'watch event reviews',
           resource: _collectionPath,
         ),
       );
@@ -70,18 +70,18 @@ class ReviewsRepository {
         ),
       );
 
-  /// Watches the review this user wrote for a specific run (null if none).
-  Stream<Review?> watchUserReviewForRun({
-    required String runId,
+  /// Watches the review this user wrote for a specific event (null if none).
+  Stream<Review?> watchUserReviewForEvent({
+    required String eventId,
     required String reviewerUserId,
   }) => withBackendErrorStream(
-    () => _reviewRefForRunUser(
-      runId: runId,
+    () => _reviewRefForEventUser(
+      eventId: eventId,
       reviewerUserId: reviewerUserId,
     ).snapshots().map((s) => s.exists ? s.data() : null),
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'watch user run review',
+      action: 'watch user event review',
       resource: _collectionPath,
     ),
   );
@@ -89,19 +89,19 @@ class ReviewsRepository {
   // ── Write ─────────────────────────────────────────────────────────────────
 
   Future<void> addReview(Review review) {
-    final runId = review.runId;
-    if (runId == null || runId.isEmpty) {
+    final eventId = review.eventId;
+    if (eventId == null || eventId.isEmpty) {
       throw ArgumentError.value(
-        runId,
-        'review.runId',
-        'Run reviews require a runId.',
+        eventId,
+        'review.eventId',
+        'Event reviews require a eventId.',
       );
     }
 
     return withBackendErrorContext(
-      () => _functions.httpsCallable('createRunReview').call({
-        'runClubId': review.runClubId,
-        'runId': runId,
+      () => _functions.httpsCallable('createEventReview').call({
+        'clubId': review.clubId,
+        'eventId': eventId,
         'rating': review.rating,
         'comment': review.comment,
       }),
@@ -114,7 +114,7 @@ class ReviewsRepository {
   }
 
   Future<void> updateReview(Review review) => withBackendErrorContext(
-    () => _functions.httpsCallable('updateRunReview').call({
+    () => _functions.httpsCallable('updateEventReview').call({
       'reviewId': review.id,
       'rating': review.rating,
       'comment': review.comment,
@@ -127,7 +127,7 @@ class ReviewsRepository {
   );
 
   Future<void> deleteReview(String reviewId) => withBackendErrorContext(
-    () => _functions.httpsCallable('deleteRunReview').call({
+    () => _functions.httpsCallable('deleteEventReview').call({
       'reviewId': reviewId,
     }),
     context: const BackendErrorContext(
@@ -137,19 +137,23 @@ class ReviewsRepository {
     ),
   );
 
-  DocumentReference<Review> _reviewRefForRunUser({
-    required String runId,
+  DocumentReference<Review> _reviewRefForEventUser({
+    required String eventId,
     required String reviewerUserId,
   }) => _reviewsRef.doc(
-    reviewIdForRunUser(runId: runId, reviewerUserId: reviewerUserId),
+    reviewIdForEventUser(eventId: eventId, reviewerUserId: reviewerUserId),
   );
 
-  static String reviewIdForRunUser({
-    required String runId,
+  static String reviewIdForEventUser({
+    required String eventId,
     required String reviewerUserId,
   }) {
-    if (runId.isEmpty) {
-      throw ArgumentError.value(runId, 'runId', 'Run id cannot be empty.');
+    if (eventId.isEmpty) {
+      throw ArgumentError.value(
+        eventId,
+        'eventId',
+        'Event id cannot be empty.',
+      );
     }
     if (reviewerUserId.isEmpty) {
       throw ArgumentError.value(
@@ -158,15 +162,15 @@ class ReviewsRepository {
         'Reviewer user id cannot be empty.',
       );
     }
-    if (runId.contains('/') || reviewerUserId.contains('/')) {
+    if (eventId.contains('/') || reviewerUserId.contains('/')) {
       throw ArgumentError.value(
-        '$runId:$reviewerUserId',
-        'runId/reviewerUserId',
+        '$eventId:$reviewerUserId',
+        'eventId/reviewerUserId',
         'Review id parts cannot contain path separators.',
       );
     }
 
-    return '$runId$_reviewIdSeparator$reviewerUserId';
+    return '$eventId$_reviewIdSeparator$reviewerUserId';
   }
 }
 
@@ -179,22 +183,22 @@ ReviewsRepository reviewsRepository(Ref ref) => ReviewsRepository(
 );
 
 @riverpod
-Stream<List<Review>> watchReviewsForClub(Ref ref, String runClubId) =>
-    ref.watch(reviewsRepositoryProvider).watchReviewsForClub(runClubId);
+Stream<List<Review>> watchReviewsForClub(Ref ref, String clubId) =>
+    ref.watch(reviewsRepositoryProvider).watchReviewsForClub(clubId);
 
 @riverpod
-Stream<List<Review>> watchReviewsForRun(Ref ref, String runId) =>
-    ref.watch(reviewsRepositoryProvider).watchReviewsForRun(runId);
+Stream<List<Review>> watchReviewsForEvent(Ref ref, String eventId) =>
+    ref.watch(reviewsRepositoryProvider).watchReviewsForEvent(eventId);
 
 @riverpod
 Stream<List<Review>> watchReviewsByUser(Ref ref, String reviewerUserId) =>
     ref.watch(reviewsRepositoryProvider).watchReviewsByUser(reviewerUserId);
 
 @riverpod
-Stream<Review?> watchUserReviewForRun(
+Stream<Review?> watchUserReviewForEvent(
   Ref ref, {
-  required String runId,
+  required String eventId,
   required String reviewerUserId,
 }) => ref
     .watch(reviewsRepositoryProvider)
-    .watchUserReviewForRun(runId: runId, reviewerUserId: reviewerUserId);
+    .watchUserReviewForEvent(eventId: eventId, reviewerUserId: reviewerUserId);

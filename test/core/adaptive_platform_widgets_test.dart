@@ -25,7 +25,7 @@ void main() {
                   initialDate: DateTime(2026, 5, 12),
                   firstDate: DateTime(2026, 5, 1),
                   lastDate: DateTime(2026, 5, 31),
-                  title: 'Run date',
+                  title: 'Event date',
                 );
               },
               child: const Text('Open date picker'),
@@ -38,7 +38,7 @@ void main() {
       await pumpFeatureUi(tester);
 
       expect(find.byType(CupertinoDatePicker), findsOneWidget);
-      expect(find.text('Run date'), findsOneWidget);
+      expect(find.text('Event date'), findsOneWidget);
       expect(find.text('OK'), findsNothing);
 
       await tester.tap(find.text('Done'));

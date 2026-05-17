@@ -93,7 +93,7 @@ final class SwipeQueueNotifierProvider
 }
 
 String _$swipeQueueNotifierHash() =>
-    r'9455f5c72f45f61c3327de406d25177c12c130d5';
+    r'392a4577dc9f631e9b340cfe57bebadbd582456f';
 
 /// **Pattern C: Async state controller**
 ///
@@ -144,10 +144,10 @@ final class SwipeQueueNotifierFamily extends $Family
   /// local filtering of fetched data).
 
   SwipeQueueNotifierProvider call(
-    String runId, {
+    String eventId, {
     Set<String> vibeIds = const {},
   }) => SwipeQueueNotifierProvider._(
-    argument: (runId, vibeIds: vibeIds),
+    argument: (eventId, vibeIds: vibeIds),
     from: this,
   );
 
@@ -173,11 +173,11 @@ final class SwipeQueueNotifierFamily extends $Family
 abstract class _$SwipeQueueNotifier
     extends $AsyncNotifier<List<PublicProfile>> {
   late final _$args = ref.$arg as (String, {Set<String> vibeIds});
-  String get runId => _$args.$1;
+  String get eventId => _$args.$1;
   Set<String> get vibeIds => _$args.vibeIds;
 
   FutureOr<List<PublicProfile>> build(
-    String runId, {
+    String eventId, {
     Set<String> vibeIds = const {},
   });
   @$mustCallSuper

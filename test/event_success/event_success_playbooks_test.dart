@@ -5,14 +5,14 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('EventSuccessPlaybookLibrary', () {
-    test('keeps the event success layer explicitly in development', () {
+    test('marks the event success layer as live-wired and iterating', () {
       expect(
         eventSuccessLayerDevelopmentStatus,
-        'in_development_not_wired_to_live_event_flows',
+        'live_wired_with_preview_lab_and_iterating',
       );
     });
 
-    test('includes playbooks beyond run clubs', () {
+    test('includes playbooks beyond clubs', () {
       final activities = EventSuccessPlaybookLibrary.all
           .map((playbook) => playbook.activityType)
           .toSet();
@@ -24,10 +24,10 @@ void main() {
     });
 
     test(
-      'social run playbook keeps live phone use away from the actual run',
+      'social event playbook keeps live phone use away from the actual event',
       () {
-        final run = EventSuccessPlaybookLibrary.socialRun;
-        final activitySteps = run.runOfShow.where(
+        final event = EventSuccessPlaybookLibrary.socialRun;
+        final activitySteps = event.runOfShow.where(
           (step) => step.stage == EventSuccessStage.activity,
         );
 
@@ -37,11 +37,11 @@ void main() {
           isNot(contains(EventSuccessModuleCatalog.checkIn.id)),
         );
         expect(
-          run.moduleIds,
+          event.moduleIds,
           contains(EventSuccessModuleCatalog.privateCrush.id),
         );
         expect(
-          run.moduleIds,
+          event.moduleIds,
           contains(EventSuccessModuleCatalog.safetyControls.id),
         );
       },

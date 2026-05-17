@@ -54,4 +54,43 @@ void main() {
       );
     });
   });
+
+  group('event success preview availability', () {
+    test(
+      'allows the preview in non-production environments when requested',
+      () {
+        expect(
+          AppConfig.isEventSuccessPreviewAvailable(
+            environment: AppEnvironment.dev,
+            requested: true,
+          ),
+          isTrue,
+        );
+        expect(
+          AppConfig.isEventSuccessPreviewAvailable(
+            environment: AppEnvironment.staging,
+            requested: true,
+          ),
+          isTrue,
+        );
+      },
+    );
+
+    test('blocks the preview in production or when not requested', () {
+      expect(
+        AppConfig.isEventSuccessPreviewAvailable(
+          environment: AppEnvironment.prod,
+          requested: true,
+        ),
+        isFalse,
+      );
+      expect(
+        AppConfig.isEventSuccessPreviewAvailable(
+          environment: AppEnvironment.dev,
+          requested: false,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

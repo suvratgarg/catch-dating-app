@@ -17,9 +17,9 @@ import 'package:flutter/material.dart';
 
 /// Read-only club review aggregate.
 ///
-/// Reviews are run-scoped, so club pages must never expose review creation.
-class RunClubReviewsSection extends StatelessWidget {
-  const RunClubReviewsSection({
+/// Reviews are event-scoped, so club pages must never expose review creation.
+class ClubReviewsSection extends StatelessWidget {
+  const ClubReviewsSection({
     super.key,
     required this.reviews,
     required this.currentUid,
@@ -41,12 +41,12 @@ class RunClubReviewsSection extends StatelessWidget {
   }
 }
 
-/// Run-scoped reviews with write/edit CTA for attended runners.
-class RunReviewsSection extends StatelessWidget {
-  const RunReviewsSection({
+/// Event-scoped reviews with write/edit CTA for attended attendees.
+class EventReviewsSection extends StatelessWidget {
+  const EventReviewsSection({
     super.key,
-    required this.runClubId,
-    required this.runId,
+    required this.clubId,
+    required this.eventId,
     required this.reviews,
     required this.currentUid,
     required this.userProfile,
@@ -54,8 +54,8 @@ class RunReviewsSection extends StatelessWidget {
     this.hasAttended = false,
   });
 
-  final String runClubId;
-  final String runId;
+  final String clubId;
+  final String eventId;
   final List<Review> reviews;
   final String? currentUid;
   final UserProfile? userProfile;
@@ -63,13 +63,13 @@ class RunReviewsSection extends StatelessWidget {
   /// True when the current user is the host — hides the write-review CTA.
   final bool isHost;
 
-  /// True when the current user attended the run — gates run-level reviews.
+  /// True when the current user attended the event — gates event-level reviews.
   final bool hasAttended;
 
   @override
   Widget build(BuildContext context) {
-    final canWriteRunReview = userProfile != null && !isHost && hasAttended;
-    final existingReview = canWriteRunReview && currentUid != null
+    final canWriteEventReview = userProfile != null && !isHost && hasAttended;
+    final existingReview = canWriteEventReview && currentUid != null
         ? reviews.where((r) => r.reviewerUserId == currentUid).firstOrNull
         : null;
 
@@ -81,19 +81,19 @@ class RunReviewsSection extends StatelessWidget {
           currentUid: currentUid,
           maxVisibleReviews: 3,
           showAllAction: reviews.length > 3,
-          onEditReview: canWriteRunReview
+          onEditReview: canWriteEventReview
               ? (review) => showWriteReviewSheet(
                   context: context,
-                  runClubId: runClubId,
-                  runId: runId,
+                  clubId: clubId,
+                  eventId: eventId,
                   reviewer: userProfile!,
                   existingReview: review,
                 )
               : null,
         ),
 
-        // Review writes are run-scoped so one user can review each run once.
-        if (canWriteRunReview) ...[
+        // Review writes are event-scoped so one user can review each event once.
+        if (canWriteEventReview) ...[
           gapH12,
           CatchButton(
             key: ReviewKeys.writeReviewButton,
@@ -102,8 +102,8 @@ class RunReviewsSection extends StatelessWidget {
                 : 'Write a review',
             onPressed: () => showWriteReviewSheet(
               context: context,
-              runClubId: runClubId,
-              runId: runId,
+              clubId: clubId,
+              eventId: eventId,
               reviewer: userProfile!,
               existingReview: existingReview,
             ),
@@ -197,7 +197,7 @@ class ReviewsPreviewSection extends StatelessWidget {
           CatchEmptyState(
             icon: Icons.rate_review_outlined,
             title: 'No reviews yet',
-            message: 'Reviews from runners will appear here after a run.',
+            message: 'Reviews from attendees will appear here after an event.',
             surface: false,
             iconSize: 28,
             padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),

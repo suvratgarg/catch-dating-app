@@ -6,7 +6,7 @@
  * Callable payload accepted by selfCheckInAttendance.
  */
 export interface SelfCheckInAttendanceCallablePayload {
-  runId: string;
+  eventId: string;
   latitude?: number | null;
   longitude?: number | null;
 }

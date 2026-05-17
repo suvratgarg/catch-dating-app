@@ -1,0 +1,32 @@
+{
+  "eventId": "event-1",
+  "clubId": "club-1",
+  "playbookId": "social_run_light",
+  "selectedModuleIds": [
+    "qr_check_in",
+    "host_script",
+    "micro_pods",
+    "private_crush",
+    "safety_controls"
+  ],
+  "targetAttendeeCount": 24,
+  "hostGoal": "Help attendees meet at least two new people.",
+  "privateCrushEnabled": true,
+  "contextualOpenersEnabled": true,
+  "activeStepIndex": 1,
+  "status": "live",
+  "attendeePrompt": "Find someone running your pace and ask what route they want to try next.",
+  "createdAt": {
+    "_seconds": 1778886000,
+    "_nanoseconds": 0
+  },
+  "updatedAt": {
+    "_seconds": 1778887800,
+    "_nanoseconds": 0
+  },
+  "frozenAt": {
+    "_seconds": 1778887800,
+    "_nanoseconds": 0
+  },
+  "completedAt": null
+}

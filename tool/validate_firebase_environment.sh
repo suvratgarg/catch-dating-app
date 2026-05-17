@@ -99,7 +99,7 @@ for spec in "${copy_specs[@]}"; do
 done
 
 if [[ $status -ne 0 ]]; then
-  echo "Run ./tool/use_firebase_environment.sh $environment to refresh active config files."
+  echo "Event ./tool/use_firebase_environment.sh $environment to refresh active config files."
   exit "$status"
 fi
 

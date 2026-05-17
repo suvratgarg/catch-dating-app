@@ -73,7 +73,7 @@ void main() {
           uidAsync: const AsyncData(null),
           userProfileAsync: const AsyncData(null),
           location: '/clubs',
-          matchedLocation: Routes.runClubsListScreen.path,
+          matchedLocation: Routes.clubsListScreen.path,
         ),
         null,
       );
@@ -91,6 +91,18 @@ void main() {
       );
     });
 
+    test('unauthenticated users can open the dev event success lab', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/dev/event-success-lab',
+          matchedLocation: Routes.eventSuccessLabScreen.path,
+        ),
+        null,
+      );
+    });
+
     test(
       'legacy unauthenticated onboarding links move to start and preserve from',
       () {
@@ -98,10 +110,10 @@ void main() {
           _redirect(
             uidAsync: const AsyncData(null),
             userProfileAsync: const AsyncData(null),
-            location: '/onboarding?from=%2Fclubs%2Frun-clubs%2Fclub-1',
+            location: '/onboarding?from=%2Fclubs%2Fclub-1',
             matchedLocation: Routes.onboardingScreen.path,
           ),
-          '/start?from=%2Fclubs%2Frun-clubs%2Fclub-1',
+          '/start?from=%2Fclubs%2Fclub-1',
         );
       },
     );
@@ -114,35 +126,32 @@ void main() {
             uidAsync: const AsyncData('user-1'),
             userProfileAsync: const AsyncData(null),
             location: '/clubs',
-            matchedLocation: Routes.runClubsListScreen.path,
+            matchedLocation: Routes.clubsListScreen.path,
           ),
           '/onboarding?from=%2Fclubs',
         );
       },
     );
 
-    test(
-      'run club detail deep links are accessible to unauthenticated users',
-      () {
-        expect(
-          _redirect(
-            uidAsync: const AsyncData(null),
-            userProfileAsync: const AsyncData(null),
-            location: '/clubs/run-clubs/club-1',
-            matchedLocation: Routes.runClubDetailScreen.path,
-          ),
-          null,
-        );
-      },
-    );
-
-    test('run detail deep links are accessible to unauthenticated users', () {
+    test('club detail deep links are accessible to unauthenticated users', () {
       expect(
         _redirect(
           uidAsync: const AsyncData(null),
           userProfileAsync: const AsyncData(null),
-          location: '/clubs/run-clubs/club-1/runs/run-1',
-          matchedLocation: Routes.runDetailScreen.path,
+          location: '/clubs/club-1',
+          matchedLocation: Routes.clubDetailScreen.path,
+        ),
+        null,
+      );
+    });
+
+    test('event detail deep links are accessible to unauthenticated users', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/clubs/club-1/events/event-1',
+          matchedLocation: Routes.eventDetailScreen.path,
         ),
         null,
       );
@@ -168,10 +177,10 @@ void main() {
         _redirect(
           uidAsync: const AsyncLoading(),
           userProfileAsync: const AsyncLoading(),
-          location: '/catches/run-1?tab=recent',
-          matchedLocation: Routes.swipeRunScreen.path,
+          location: '/catches/event-1?tab=recent',
+          matchedLocation: Routes.swipeEventScreen.path,
         ),
-        '/loading?from=%2Fcatches%2Frun-1%3Ftab%3Drecent',
+        '/loading?from=%2Fcatches%2Fevent-1%3Ftab%3Drecent',
       );
     });
 
@@ -209,10 +218,10 @@ void main() {
           _redirect(
             uidAsync: const AsyncData('user-1'),
             userProfileAsync: AsyncData(_completeUser()),
-            location: '/start?from=%2Fclubs%2Frun-clubs%2Fclub-1',
+            location: '/start?from=%2Fclubs%2Fclub-1',
             matchedLocation: Routes.startScreen.path,
           ),
-          '/clubs/run-clubs/club-1',
+          '/clubs/club-1',
         );
       },
     );

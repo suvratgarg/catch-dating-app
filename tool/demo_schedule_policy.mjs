@@ -9,49 +9,49 @@ const businessRules = JSON.parse(
 
 const MINUTE_MS = 60 * 1000;
 const USER_SCHEDULE_STATUSES = new Set(["signedUp", "waitlisted", "attended"]);
-const RUN_CLUB_LOCK_COLLECTION = "runClubScheduleLocks";
-const USER_RUN_LOCK_COLLECTION = "userRunScheduleLocks";
+const CLUB_LOCK_COLLECTION = "clubScheduleLocks";
+const USER_EVENT_LOCK_COLLECTION = "userEventScheduleLocks";
 
-export const RUN_MAX_DURATION_MINUTES =
-  businessRules.runScheduling.maxDurationMinutes;
-export const RUN_SCHEDULE_LOCK_SLOT_MINUTES =
-  businessRules.runScheduling.scheduleLockSlotMinutes;
+export const EVENT_MAX_DURATION_MINUTES =
+  businessRules.eventScheduling.maxDurationMinutes;
+export const EVENT_SCHEDULE_LOCK_SLOT_MINUTES =
+  businessRules.eventScheduling.scheduleLockSlotMinutes;
 
 export function scheduleComplianceIssues({
-  runs,
+  events,
   participations = [],
-  runClubScheduleLocks = [],
-  userRunScheduleLocks = [],
+  clubScheduleLocks = [],
+  userEventScheduleLocks = [],
   checkLocks = false,
 }) {
   const issues = [];
-  const runWindows = new Map();
-  for (const run of runs) {
+  const eventWindows = new Map();
+  for (const event of events) {
     try {
-      const window = runWindow(run);
-      runWindows.set(window.runId, window);
-      validateRunWindow(window, issues);
+      const window = eventWindow(event);
+      eventWindows.set(window.eventId, window);
+      validateEventWindow(window, issues);
     } catch (error) {
       issues.push({
-        code: "invalid-run-schedule-shape",
-        path: run.path ?? `runs/${run.id ?? "unknown"}`,
+        code: "invalid-event-schedule-shape",
+        path: event.path ?? `events/${event.id ?? "unknown"}`,
         message: error.message,
       });
     }
   }
 
-  const activeRunsByClub = groupBy(
-    [...runWindows.values()].filter((run) => run.status !== "cancelled"),
-    (run) => run.runClubId
+  const activeEventsByClub = groupBy(
+    [...eventWindows.values()].filter((event) => event.status !== "cancelled"),
+    (event) => event.clubId
   );
-  for (const clubRuns of activeRunsByClub.values()) {
-    forEachOverlappingPair(clubRuns, (first, second) => {
+  for (const clubEvents of activeEventsByClub.values()) {
+    forEachOverlappingPair(clubEvents, (first, second) => {
       issues.push({
-        code: "run-club-schedule-overlap",
-        path: `runs/${second.runId}`,
+        code: "club-schedule-overlap",
+        path: `events/${second.eventId}`,
         message:
-          `Run club ${second.runClubId} has overlapping runs ` +
-          `${first.runId} and ${second.runId}.`,
+          `Club ${second.clubId} has overlapping events ` +
+          `${first.eventId} and ${second.eventId}.`,
       });
     });
   }
@@ -60,30 +60,30 @@ export function scheduleComplianceIssues({
   for (const participation of participations) {
     const data = participation.data ?? participation.doc ?? participation;
     if (!USER_SCHEDULE_STATUSES.has(data.status)) continue;
-    const run = runWindows.get(data.runId);
-    if (!run) {
+    const event = eventWindows.get(data.eventId);
+    if (!event) {
       issues.push({
-        code: "missing-participation-run",
-        path: participation.path ?? `runParticipations/${participation.id ?? "unknown"}`,
-        message: `Participation references missing runs/${data.runId}.`,
+        code: "missing-participation-event",
+        path: participation.path ?? `eventParticipations/${participation.id ?? "unknown"}`,
+        message: `Participation references missing events/${data.eventId}.`,
       });
       continue;
     }
-    if (run.status === "cancelled") {
+    if (event.status === "cancelled") {
       issues.push({
-        code: "scheduled-participation-cancelled-run",
-        path: participation.path ?? `runParticipations/${participation.id ?? "unknown"}`,
-        message: `Scheduled participation references cancelled runs/${run.runId}.`,
+        code: "scheduled-participation-cancelled-event",
+        path: participation.path ?? `eventParticipations/${participation.id ?? "unknown"}`,
+        message: `Scheduled participation references cancelled events/${event.eventId}.`,
       });
       continue;
     }
     scheduledParticipations.push({
       uid: data.uid,
-      runId: data.runId,
-      runClubId: data.runClubId ?? run.runClubId,
-      startTimeMillis: run.startTimeMillis,
-      endTimeMillis: run.endTimeMillis,
-      path: participation.path ?? `runParticipations/${participation.id ?? `${data.runId}_${data.uid}`}`,
+      eventId: data.eventId,
+      clubId: data.clubId ?? event.clubId,
+      startTimeMillis: event.startTimeMillis,
+      endTimeMillis: event.endTimeMillis,
+      path: participation.path ?? `eventParticipations/${participation.id ?? `${data.eventId}_${data.uid}`}`,
     });
   }
 
@@ -91,21 +91,21 @@ export function scheduleComplianceIssues({
   for (const userParticipations of participationsByUser.values()) {
     forEachOverlappingPair(userParticipations, (first, second) => {
       issues.push({
-        code: "user-run-schedule-overlap",
+        code: "user-event-schedule-overlap",
         path: second.path,
         message:
-          `User ${second.uid} has overlapping run participations ` +
-          `${first.runId} and ${second.runId}.`,
+          `User ${second.uid} has overlapping event participations ` +
+          `${first.eventId} and ${second.eventId}.`,
       });
     });
   }
 
   if (checkLocks) {
     issues.push(...scheduleLockIssues({
-      runWindows,
+      eventWindows,
       scheduledParticipations,
-      runClubScheduleLocks,
-      userRunScheduleLocks,
+      clubScheduleLocks,
+      userEventScheduleLocks,
     }));
   }
 
@@ -116,46 +116,46 @@ export function assertScheduleCompliance(params) {
   const issues = scheduleComplianceIssues(params);
   if (issues.length > 0) {
     throw new Error(
-      "Demo schedule data violates run schedule policy:\n" +
+      "Demo schedule data violates event schedule policy:\n" +
       issues.map((issue) => `- ${issue.code}: ${issue.message}`).join("\n")
     );
   }
 }
 
-export function buildRunClubScheduleLockDocs({run}) {
-  const window = runWindow(run);
+export function buildClubScheduleLockDocs({event}) {
+  const window = eventWindow(event);
   if (window.status === "cancelled") return [];
-  validateRunWindow(window);
+  validateEventWindow(window);
   return scheduleSlots(window).map((slot) => ({
-    path: `${RUN_CLUB_LOCK_COLLECTION}/${window.runClubId}_${slot}`,
+    path: `${CLUB_LOCK_COLLECTION}/${window.clubId}_${slot}`,
     data: {
       ...demoMarkerFor(window.data),
-      ownerType: "runClub",
-      ownerId: window.runClubId,
+      ownerType: "club",
+      ownerId: window.clubId,
       slot,
-      runId: window.runId,
-      runClubId: window.runClubId,
+      eventId: window.eventId,
+      clubId: window.clubId,
       startTimeMillis: window.startTimeMillis,
       endTimeMillis: window.endTimeMillis,
     },
   }));
 }
 
-export function buildUserRunScheduleLockDocs({run, participation}) {
+export function buildUserEventScheduleLockDocs({event, participation}) {
   const data = participation.data ?? participation.doc ?? participation;
   if (!USER_SCHEDULE_STATUSES.has(data.status)) return [];
-  const window = runWindow(run);
+  const window = eventWindow(event);
   if (window.status === "cancelled") return [];
-  validateRunWindow(window);
+  validateEventWindow(window);
   return scheduleSlots(window).map((slot) => ({
-    path: `${USER_RUN_LOCK_COLLECTION}/${data.uid}_${slot}`,
+    path: `${USER_EVENT_LOCK_COLLECTION}/${data.uid}_${slot}`,
     data: {
       ...demoMarkerFor(data),
       ownerType: "user",
       ownerId: data.uid,
       slot,
-      runId: window.runId,
-      runClubId: data.runClubId ?? window.runClubId,
+      eventId: window.eventId,
+      clubId: data.clubId ?? window.clubId,
       uid: data.uid,
       startTimeMillis: window.startTimeMillis,
       endTimeMillis: window.endTimeMillis,
@@ -163,40 +163,40 @@ export function buildUserRunScheduleLockDocs({run, participation}) {
   }));
 }
 
-export function buildScheduleLockDocs({runs, participations}) {
-  const runById = new Map(runs.map((run) => [run.id, run]));
+export function buildScheduleLockDocs({events, participations}) {
+  const eventById = new Map(events.map((event) => [event.id, event]));
   const docs = [];
-  for (const run of runs) {
-    docs.push(...buildRunClubScheduleLockDocs({run}));
+  for (const event of events) {
+    docs.push(...buildClubScheduleLockDocs({event}));
   }
   for (const participation of participations) {
     const data = participation.data ?? participation.doc ?? participation;
-    const run = runById.get(data.runId);
-    if (run) docs.push(...buildUserRunScheduleLockDocs({run, participation}));
+    const event = eventById.get(data.eventId);
+    if (event) docs.push(...buildUserEventScheduleLockDocs({event, participation}));
   }
   return assertUniqueScheduleLockDocs(docs);
 }
 
-export async function assertNoUserRunScheduleConflictInFirestore({
+export async function assertNoUserEventScheduleConflictInFirestore({
   db,
   uid,
-  run,
+  event,
 }) {
-  const next = runWindow(run);
-  const participationSnap = await db.collection("runParticipations")
+  const next = eventWindow(event);
+  const participationSnap = await db.collection("eventParticipations")
     .where("uid", "==", uid)
     .get();
   for (const doc of participationSnap.docs) {
     const data = doc.data();
-    if (!USER_SCHEDULE_STATUSES.has(data.status) || data.runId === next.runId) {
+    if (!USER_SCHEDULE_STATUSES.has(data.status) || data.eventId === next.eventId) {
       continue;
     }
-    const runSnap = await db.collection("runs").doc(data.runId).get();
-    if (!runSnap.exists) continue;
-    const existing = runWindow({
-      id: runSnap.id,
-      path: runSnap.ref?.path ?? `runs/${runSnap.id}`,
-      data: runSnap.data(),
+    const eventSnap = await db.collection("events").doc(data.eventId).get();
+    if (!eventSnap.exists) continue;
+    const existing = eventWindow({
+      id: eventSnap.id,
+      path: eventSnap.ref?.path ?? `events/${eventSnap.id}`,
+      data: eventSnap.data(),
     });
     if (existing.status !== "cancelled" && intervalsOverlap(
       next.startTimeMillis,
@@ -206,45 +206,45 @@ export async function assertNoUserRunScheduleConflictInFirestore({
     )) {
       throw new Error(
         `User ${uid} already has a scheduled participation for ` +
-        `${existing.runId} during runs/${next.runId}.`
+        `${existing.eventId} during events/${next.eventId}.`
       );
     }
   }
 }
 
 function scheduleLockIssues({
-  runWindows,
+  eventWindows,
   scheduledParticipations,
-  runClubScheduleLocks,
-  userRunScheduleLocks,
+  clubScheduleLocks,
+  userEventScheduleLocks,
 }) {
   const issues = [];
   const expected = new Map();
-  for (const run of runWindows.values()) {
-    if (run.status === "cancelled") continue;
-    for (const slot of scheduleSlots(run)) {
-      expected.set(`${RUN_CLUB_LOCK_COLLECTION}/${run.runClubId}_${slot}`, {
-        ownerType: "runClub",
-        ownerId: run.runClubId,
+  for (const event of eventWindows.values()) {
+    if (event.status === "cancelled") continue;
+    for (const slot of scheduleSlots(event)) {
+      expected.set(`${CLUB_LOCK_COLLECTION}/${event.clubId}_${slot}`, {
+        ownerType: "club",
+        ownerId: event.clubId,
         slot,
-        runId: run.runId,
+        eventId: event.eventId,
       });
     }
   }
   for (const participation of scheduledParticipations) {
     for (const slot of scheduleSlots(participation)) {
-      expected.set(`${USER_RUN_LOCK_COLLECTION}/${participation.uid}_${slot}`, {
+      expected.set(`${USER_EVENT_LOCK_COLLECTION}/${participation.uid}_${slot}`, {
         ownerType: "user",
         ownerId: participation.uid,
         slot,
-        runId: participation.runId,
+        eventId: participation.eventId,
       });
     }
   }
 
   const actual = new Map([
-    ...runClubScheduleLocks.map((doc) => [doc.path, doc]),
-    ...userRunScheduleLocks.map((doc) => [doc.path, doc]),
+    ...clubScheduleLocks.map((doc) => [doc.path, doc]),
+    ...userEventScheduleLocks.map((doc) => [doc.path, doc]),
   ]);
   for (const [pathValue, expectedData] of expected.entries()) {
     const doc = actual.get(pathValue);
@@ -252,11 +252,11 @@ function scheduleLockIssues({
       issues.push({
         code: "missing-schedule-lock",
         path: pathValue,
-        message: `${pathValue} is missing for runs/${expectedData.runId}.`,
+        message: `${pathValue} is missing for events/${expectedData.eventId}.`,
       });
       continue;
     }
-    for (const field of ["ownerType", "ownerId", "slot", "runId"]) {
+    for (const field of ["ownerType", "ownerId", "slot", "eventId"]) {
       if (doc.data?.[field] !== expectedData[field]) {
         issues.push({
           code: "schedule-lock-field-mismatch",
@@ -271,53 +271,53 @@ function scheduleLockIssues({
       issues.push({
         code: "stale-schedule-lock",
         path: pathValue,
-        message: `${pathValue} does not correspond to an active run schedule.`,
+        message: `${pathValue} does not correspond to an active event schedule.`,
       });
     }
   }
   return issues;
 }
 
-function runWindow(run) {
-  const data = run.data ?? run.doc ?? run;
-  const runId = run.id ?? data.id;
-  const runClubId = run.clubId ?? data.runClubId;
-  if (typeof runId !== "string") throw new Error("run id must be a string.");
-  if (typeof runClubId !== "string") {
-    throw new Error(`runs/${runId} runClubId must be a string.`);
+function eventWindow(event) {
+  const data = event.data ?? event.doc ?? event;
+  const eventId = event.id ?? data.id;
+  const clubId = event.clubId ?? data.clubId;
+  if (typeof eventId !== "string") throw new Error("event id must be a string.");
+  if (typeof clubId !== "string") {
+    throw new Error(`events/${eventId} clubId must be a string.`);
   }
   return {
-    runId,
-    runClubId,
+    eventId,
+    clubId,
     status: data.status ?? "active",
     data,
-    path: run.path ?? `runs/${runId}`,
+    path: event.path ?? `events/${eventId}`,
     startTimeMillis: timestampMillis(data.startTime),
     endTimeMillis: timestampMillis(data.endTime),
   };
 }
 
-function validateRunWindow(window, issues = null) {
+function validateEventWindow(window, issues = null) {
   const add = (code, message) => {
     const issue = {code, path: window.path, message};
     if (issues) issues.push(issue);
     else throw new Error(message);
   };
   if (window.endTimeMillis <= window.startTimeMillis) {
-    add("invalid-run-time", `${window.path} endTime must be after startTime.`);
+    add("invalid-event-time", `${window.path} endTime must be after startTime.`);
   }
   const durationMinutes = (window.endTimeMillis - window.startTimeMillis) / MINUTE_MS;
-  if (durationMinutes > RUN_MAX_DURATION_MINUTES) {
+  if (durationMinutes > EVENT_MAX_DURATION_MINUTES) {
     add(
-      "run-duration-too-long",
+      "event-duration-too-long",
       `${window.path} lasts ${durationMinutes} minutes; max is ` +
-        `${RUN_MAX_DURATION_MINUTES}.`
+        `${EVENT_MAX_DURATION_MINUTES}.`
     );
   }
 }
 
 function scheduleSlots({startTimeMillis, endTimeMillis}) {
-  const slotMs = RUN_SCHEDULE_LOCK_SLOT_MINUTES * MINUTE_MS;
+  const slotMs = EVENT_SCHEDULE_LOCK_SLOT_MINUTES * MINUTE_MS;
   const firstSlot = Math.floor(startTimeMillis / slotMs);
   const lastSlot = Math.floor((endTimeMillis - 1) / slotMs);
   const slots = [];
@@ -384,10 +384,10 @@ function assertUniqueScheduleLockDocs(docs) {
   const byPath = new Map();
   for (const doc of docs) {
     const existing = byPath.get(doc.path);
-    if (existing && existing.data.runId !== doc.data.runId) {
+    if (existing && existing.data.eventId !== doc.data.eventId) {
       throw new Error(
         `Schedule lock collision at ${doc.path}: ` +
-        `${existing.data.runId} conflicts with ${doc.data.runId}.`
+        `${existing.data.eventId} conflicts with ${doc.data.eventId}.`
       );
     }
     byPath.set(doc.path, doc);

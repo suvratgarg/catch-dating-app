@@ -7,8 +7,8 @@ import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {
   ProfilePhoto,
-  RunClubMembershipDoc,
-  RunParticipationDoc,
+  ClubMembershipDoc,
+  EventParticipationDoc,
 } from "../shared/firestore";
 
 type StorageBucket = ReturnType<ReturnType<typeof admin.storage>["bucket"]>;
@@ -131,9 +131,9 @@ async function queueRelationshipCleanup(params: {
 }) {
   const {db, uid, now, writer} = params;
   await Promise.all([
-    queueRunClubMembershipCleanup(db, uid, now, writer),
-    queueRunParticipationCleanup(db, uid, now, writer),
-    queueSavedRunCleanup(db, uid, writer),
+    queueClubMembershipCleanup(db, uid, now, writer),
+    queueEventParticipationCleanup(db, uid, now, writer),
+    queueSavedEventCleanup(db, uid, writer),
     queueSwipeCleanup(db, uid, writer),
     queueMatchCleanup(db, uid, now, writer),
     queueReviewCleanup(db, uid, now, writer),
@@ -148,18 +148,18 @@ async function queueRelationshipCleanup(params: {
  * Marks the user's club membership edges deleted and updates aggregate
  * projections for active memberships.
  */
-async function queueRunClubMembershipCleanup(
+async function queueClubMembershipCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   now: FirebaseFirestore.FieldValue,
   writer: BatchQueue
 ) {
   const memberships = await db
-    .collection("runClubMemberships")
+    .collection("clubMemberships")
     .where("uid", "==", uid)
     .get();
   memberships.forEach((doc) => {
-    const membership = doc.data() as RunClubMembershipDoc;
+    const membership = doc.data() as ClubMembershipDoc;
     writer.set(doc.ref, {
       status: "deleted",
       deletedAt: now,
@@ -167,7 +167,7 @@ async function queueRunClubMembershipCleanup(
       pushNotificationsEnabled: false,
     }, {merge: true});
     if (membership.status === "active") {
-      writer.update(db.collection("runClubs").doc(membership.clubId), {
+      writer.update(db.collection("clubs").doc(membership.clubId), {
         memberCount: admin.firestore.FieldValue.increment(-1),
       });
     }
@@ -175,39 +175,42 @@ async function queueRunClubMembershipCleanup(
 }
 
 /**
- * Marks run participation edges deleted and removes active roster/count
- * projections from the run document.
+ * Marks event participation edges deleted and removes active roster/count
+ * projections from the event document.
  */
-async function queueRunParticipationCleanup(
+async function queueEventParticipationCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   now: FirebaseFirestore.FieldValue,
   writer: BatchQueue
 ) {
   const participations = await db
-    .collection("runParticipations")
+    .collection("eventParticipations")
     .where("uid", "==", uid)
     .get();
   participations.forEach((doc) => {
-    const participation = doc.data() as RunParticipationDoc;
+    const participation = doc.data() as EventParticipationDoc;
     writer.set(doc.ref, {
       status: "deleted",
       updatedAt: now,
       deletedAt: now,
     }, {merge: true});
-    const runPatch = runParticipationDeletionRunPatch(uid, participation);
-    if (Object.keys(runPatch).length > 0) {
-      writer.update(db.collection("runs").doc(participation.runId), runPatch);
+    const eventPatch = eventParticipationDeletionEventPatch(uid, participation);
+    if (Object.keys(eventPatch).length > 0) {
+      writer.update(
+        db.collection("events").doc(participation.eventId),
+        eventPatch
+      );
     }
   });
 }
 
 /**
- * Builds the run aggregate cleanup for a deleted participation.
+ * Builds the event aggregate cleanup for a deleted participation.
  */
-function runParticipationDeletionRunPatch(
+function eventParticipationDeletionEventPatch(
   uid: string,
-  participation: RunParticipationDoc
+  participation: EventParticipationDoc
 ): Record<string, unknown> {
   switch (participation.status) {
   case "signedUp": {
@@ -234,18 +237,18 @@ function runParticipationDeletionRunPatch(
 }
 
 /**
- * Deletes direct saved-run edges for the account.
+ * Deletes direct saved-event edges for the account.
  */
-async function queueSavedRunCleanup(
+async function queueSavedEventCleanup(
   db: FirebaseFirestore.Firestore,
   uid: string,
   writer: BatchQueue
 ) {
-  const savedRuns = await db
-    .collection("savedRuns")
+  const savedEvents = await db
+    .collection("savedEvents")
     .where("uid", "==", uid)
     .get();
-  savedRuns.forEach((doc) => writer.delete(doc.ref));
+  savedEvents.forEach((doc) => writer.delete(doc.ref));
 }
 
 /**

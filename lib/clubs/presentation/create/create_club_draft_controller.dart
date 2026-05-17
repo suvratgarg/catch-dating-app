@@ -1,0 +1,40 @@
+import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
+import 'package:catch_dating_app/clubs/data/club_draft_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club_draft.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'create_club_draft_controller.g.dart';
+
+/// **Pattern A: Action controller + static Mutations**
+///
+/// Owns local create-club draft persistence. The screen owns text
+/// controllers and restoration because those are UI mechanics.
+@riverpod
+class CreateClubDraftController extends _$CreateClubDraftController {
+  static final saveDraftMutation = Mutation<ClubDraft?>();
+  static final deleteDraftMutation = Mutation<void>();
+
+  @override
+  void build() {}
+
+  Future<ClubDraft?> loadDraft() {
+    final uid = requireSignedInUid(ref, action: 'load club draft');
+    return ref.read(clubDraftRepositoryProvider).loadDraft(userId: uid);
+  }
+
+  Future<ClubDraft?> saveDraft(ClubDraft draft) async {
+    if (draft.isEmpty) return null;
+
+    final uid = requireSignedInUid(ref, action: 'save club draft');
+    await ref
+        .read(clubDraftRepositoryProvider)
+        .saveDraft(userId: uid, draft: draft);
+    return draft;
+  }
+
+  Future<void> deleteDraft() {
+    final uid = requireSignedInUid(ref, action: 'delete club draft');
+    return ref.read(clubDraftRepositoryProvider).deleteDraft(userId: uid);
+  }
+}

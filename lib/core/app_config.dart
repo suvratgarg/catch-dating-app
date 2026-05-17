@@ -46,6 +46,14 @@ class AppConfig {
     return requested && !environment.isProduction;
   }
 
+  @visibleForTesting
+  static bool isEventSuccessPreviewAvailable({
+    required AppEnvironment environment,
+    required bool requested,
+  }) {
+    return requested && !environment.isProduction;
+  }
+
   static String get environmentName => environment.value;
 
   static String get appTitle => environment.appTitle;
@@ -107,6 +115,16 @@ class AppConfig {
   static bool get enableEventPolicyLab => isEventPolicyLabAvailable(
     environment: environment,
     requested: _eventPolicyLabRequested,
+  );
+
+  static const bool _eventSuccessPreviewRequested = bool.fromEnvironment(
+    'ENABLE_EVENT_SUCCESS_PREVIEW',
+    defaultValue: true,
+  );
+
+  static bool get enableEventSuccessPreview => isEventSuccessPreviewAvailable(
+    environment: environment,
+    requested: _eventSuccessPreviewRequested,
   );
 
   static const String firebaseAppCheckWebRecaptchaEnterpriseSiteKey =
