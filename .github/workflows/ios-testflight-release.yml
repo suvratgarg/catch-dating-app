@@ -23,8 +23,6 @@ jobs:
       ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
       ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
-      ASC_KEY_DIR: ${{ runner.temp }}/appstoreconnect/private_keys
-      ARCHIVE_PATH: ${{ runner.temp }}/Runner.xcarchive
       EXPORT_PATH: build/ios/export/prod
 
     steps:
@@ -58,9 +56,10 @@ jobs:
             echo "Missing App Store Connect API key secrets."
             exit 1
           fi
-          mkdir -p "$ASC_KEY_DIR"
-          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8"
-          chmod 600 "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8"
+          asc_key_dir="$RUNNER_TEMP/appstoreconnect/private_keys"
+          mkdir -p "$asc_key_dir"
+          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
+          chmod 600 "$asc_key_dir/AuthKey_${ASC_KEY_ID}.p8"
 
       - name: Prepare prod Flutter iOS configuration
         run: ./tool/flutter_with_env.sh prod build ios --release --config-only
@@ -73,9 +72,9 @@ jobs:
             -scheme prod \
             -configuration Release \
             -destination generic/platform=iOS \
-            -archivePath "$ARCHIVE_PATH" \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             -hideShellScriptEnvironment \
@@ -86,11 +85,11 @@ jobs:
           set -euo pipefail
           xcodebuild \
             -exportArchive \
-            -archivePath "$ARCHIVE_PATH" \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
             -exportPath "$EXPORT_PATH" \
             -exportOptionsPlist ios/ExportOptions.prod.plist \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
 
@@ -151,10 +150,10 @@ jobs:
 
           xcodebuild \
             -exportArchive \
-            -archivePath "$ARCHIVE_PATH" \
+            -archivePath "$RUNNER_TEMP/Runner.xcarchive" \
             -exportPath "$RUNNER_TEMP/testflight-upload" \
             -exportOptionsPlist "$upload_options" \
             -allowProvisioningUpdates \
-            -authenticationKeyPath "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyPath "$RUNNER_TEMP/appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8" \
             -authenticationKeyID "$ASC_KEY_ID" \
             -authenticationKeyIssuerID "$ASC_ISSUER_ID"
