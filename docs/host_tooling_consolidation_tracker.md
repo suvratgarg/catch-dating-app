@@ -1,7 +1,7 @@
 ---
 doc_id: host_tooling_consolidation_tracker
-version: 1.0.0
-updated: 2026-05-15
+version: 1.0.1
+updated: 2026-05-17
 owner: host_tooling
 status: active
 ---
@@ -35,9 +35,9 @@ The target state is:
 | Dashboard host tools model | `lib/dashboard/presentation/dashboard_full_view_model.dart` (`DashboardHostRunTool`) | Per hosted run | Derives attendance state and sorts open attendance first | Unbounded hosted runs | Logic is dashboard-owned even though the same availability rules are needed on run detail, club schedule, and possibly host manage. It intentionally suppresses the older host arrival card by passing `hostedRuns: const []` to `selectRunArrivalAction`. |
 | Run club detail host panel | `lib/run_clubs/presentation/detail/widgets/club_detail_body.dart` (`_HostActionPanel`) | Per club | Edit club, Add run | One hosted club by current product rule | Local panel duplicates the `HOST TOOLS` concept with different density and palette. It has club-level tools only; it does not help hosts browse/manage multiple runs from the club schedule beyond opening run detail. |
 | Run club host stats | `lib/run_clubs/presentation/detail/widgets/host_stats_bar.dart` (`HostStatsBar`) | Club aggregate | Upcoming booked, waitlist, revenue stats | Domain-bounded by upcoming runs | Uses an orange host treatment but through local `Container`/`BoxDecoration` instead of shared host stats primitives and `CatchSurface`. |
-| Club schedule section | `lib/run_clubs/presentation/detail/widgets/club_schedule_section.dart` | Per run in hosted club context | View run | Unbounded upcoming runs | Host-owned runs do not expose Manage or Attendance directly from the schedule, even though the host is already in an operational context. |
-| Run detail top actions | `lib/runs/presentation/widgets/run_detail_body.dart` and `run_detail_hero_app_bar.dart` | Per run | Share, save, add to calendar for future signed-up or hosted runs | Singleton per run | Add-to-calendar is now available for hosted runs, but no host management affordance appears in the top action set. |
-| Run detail bottom CTA | `lib/runs/presentation/widgets/run_detail_cta.dart` | Per run | Participant booking/waitlist/cancel states | Singleton per viewer/run | For hosts inside the attendance window this currently returns `SizedBox.shrink()`, leaving the detail page without a bottom host action even though attendance/manage are relevant. |
+| Club schedule section | `lib/run_clubs/presentation/detail/widgets/club_schedule_section.dart` | Per run in hosted club context | Hosted badge and run detail navigation | Unbounded upcoming runs | Resolved for first pass: host-owned runs use the `HOSTED` tile state without turning schedule rows into dense control clusters. Deeper operations remain in run detail / Host Manage. |
+| Run detail top actions | `lib/runs/presentation/widgets/run_detail_body.dart` and `run_detail_hero_app_bar.dart` | Per run | Share, save, add to calendar for future signed-up or hosted runs | Singleton per run | Top actions stay generic utilities. Host operations are intentionally in the bottom host CTA and Host Manage destination. |
+| Run detail bottom CTA | `lib/runs/presentation/widgets/run_detail_cta.dart` | Per run | Participant booking/waitlist/cancel states or host Manage/Attendance actions | Singleton per viewer/run | Resolved for first pass: hosted runs render shared `HostRunBottomActions` instead of an empty footer. |
 | Host run manage route | `lib/routing/go_router.dart` and `lib/runs/presentation/host_run_manage_screen.dart` (`HostRunManageRouteScreen`) | Per run | Host-gated route load and access check | Singleton per run | Route path is dashboard-shaped (`/dashboard/run-clubs/.../manage`) even when future entry points may come from club detail or run detail. |
 | Host run manage screen | `lib/runs/presentation/host_run_manage_screen.dart` (`HostRunManageScreen`) | Per run | Stats, run summary, roster, waitlist | Singleton per run | Mostly read-only. Missing edit/cancel/delete actions despite backend seams. Uses local stat cards, summary rows, section headers, and roster layout that should become host primitives if reused. |
 | Attendance sheet | `lib/runs/presentation/attendance_sheet_screen.dart` | Per run | Toggle attendance for signed-up/waitlisted attendees | One attendance decision per participant/run, repeatable as correction | Functionally implemented, but visual language is generic and not obviously part of the host tooling system. Access policy is enforced by the callable; route-level host affordance could be clearer. |
@@ -50,11 +50,11 @@ The target state is:
 | --- | --- | --- | --- |
 | Create run | Implemented through `createRun` | Exposed from run club host panel and create-run flow | Keep as club-level primary action. Move into shared club host panel. |
 | Edit club | Implemented through `updateRunClub` | Exposed from run club host panel | Keep as club-level secondary action. Move into shared club host panel. |
-| Manage run | Read-only screen implemented | Exposed from Dashboard and create success | Expose from Dashboard, run detail, and hosted club schedule through the same per-run host card/action model. |
+| Manage run | Operational screen implemented | Exposed from Dashboard, create success, run detail, and hosted club schedule | Keep as the per-run host operations destination for roster, waitlist, stats, cancellation, and unused-run deletion. |
 | Take attendance | Implemented through `markRunAttendance` | Exposed from Dashboard only when window is open | Expose consistently anywhere a host-owned run is in focus. Disabled state should explain open/closed windows. |
 | Edit run | `RunRepository.updateRunDetails` calls `updateRun` | No obvious host edit UI | Add to host manage after deciding which fields can be edited post-publish. Use a dedicated form route, not inline table edits. |
-| Cancel run | `cancelRun` backend-ready | UI/policy queued | Do not expose until cancellation copy, refund policy, and notification expectations are product-approved. Track as blocked rather than hiding in code comments. |
-| Delete unused run | `deleteRun` backend-ready | UI queued | Destructive secondary action only on host manage, guarded by backend rejection and confirmation copy. |
+| Cancel run | `cancelRun` implemented | Exposed from Host Manage | Host Manage shows destructive confirmation and history-retention copy. The callable cancels the run, releases schedule locks, attempts completed attendee refunds, refreshes club next-run projections, and notifies signed-up/waitlisted participants. |
+| Delete unused run | `deleteRun` implemented | Exposed from Host Manage when no visible activity exists | Destructive secondary action on Host Manage only, guarded by backend rejection and confirmation copy. Runs with bookings, waitlist, attendance, payments, or reviews should be cancelled instead. |
 | Archive club | `archiveRunClub` backend-ready | UI queued | Club settings/host panel action after browse/search archived filtering is confirmed. |
 | Delete unused club | `deleteRunClub` backend-ready | UI queued | Destructive club settings action only for never-used clubs, with backend rejection surfaced clearly. |
 | Add to calendar | Implemented platform seam | Exposed on run focus and run detail | Keep as runner/host utility action. It should not be styled as a host tool unless the surrounding card is host-specific. |
@@ -107,8 +107,9 @@ The target state is:
 - [x] Add host tools entry points to run detail for Manage and Attendance.
 - [x] Add hosted-run affordance to club schedule without overloading run tiles.
 - [x] Align Attendance Sheet visual treatment with the host palette.
-- [ ] Decide or explicitly block Edit run, Cancel run, Delete run, Archive club,
-  and Delete club UX.
+- [x] Expose Cancel run and Delete unused run from Host Manage with guardrails.
+- [ ] Decide or explicitly block Edit run UX.
+- [ ] Decide or explicitly block Archive club and Delete club UX.
 - [x] Update `docs/widget_catalog.md` after widget ownership changes.
 - [x] Add/adjust focused widget tests for dashboard, run detail, run club detail,
   host manage, and attendance.
@@ -117,12 +118,12 @@ The target state is:
 
 ## Open Product Decisions
 
-- What exact fields can hosts edit on a published run, and which edits should
-  notify signed-up/waitlisted users?
-- When a run is cancelled, what refund state should hosts see before and after
-  cancellation?
-- Should delete actions ever be visible, or should backend hard-delete remain an
-  admin/maintenance-only capability?
+- What exact fields can hosts edit on a published run, and should that use the
+  existing create-run form, a dedicated edit route, or a tighter host-manage
+  form?
+- Should club archive/delete actions be visible to hosts, or should those
+  backend callables remain admin/maintenance-only until archived-club browse and
+  search filtering is fully product-approved?
 - Should a hosted run tile in non-host contexts expose host actions only after
   opening detail, or should host-owned tiles have inline Manage shortcuts?
 - Should the host manage route remain dashboard-shaped for deep links, or should
@@ -144,12 +145,16 @@ The target state is:
 - 2026-05-15: Focused analysis and widget tests passed for changed host surfaces.
 - 2026-05-15: Stamped audit registry pass proof. New files were stamped after a
   follow-up inventory refresh.
+- 2026-05-17: Verified Host Manage now exposes Cancel run and Delete run with
+  focused widget coverage in `test/runs/create_run_screen_test.dart`. Remaining
+  open host-tooling product decisions are Edit run and club archive/delete UX.
 
 ## Resume Notes
 
-Start implementation by extracting the dashboard host card concerns first:
+Do not restart the dashboard/shared-widget consolidation; that work is already
+done. Resume from the remaining product decisions:
 
-1. Move attendance label/availability mapping out of `dashboard_full.dart`.
-2. Build a shared full-width `HostRunToolCard` and page indicator.
-3. Replace `HostToolsRail` without changing `DashboardFullViewModel` behavior.
-4. Then migrate run detail and run club detail to the same action/palette layer.
+1. Decide the published-run edit route and editable fields.
+2. Decide whether host-visible club archive/delete belongs in club settings.
+3. If those actions ship, update `docs/backend_operation_catalog.md`, focused
+   host widget tests, and the audit registry in the same pass.

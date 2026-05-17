@@ -1,5 +1,5 @@
 {
-  "version": "3.0.7",
+  "version": "3.0.8",
   "updated": "2026-05-17",
   "owner": "recursive_audit_loop",
   "summaries": {
@@ -45,6 +45,33 @@
       ],
       "skip_when": [
         "Only process rules are needed; use rules.json instead"
+      ]
+    },
+    "docs/host_tooling_consolidation_tracker.md": {
+      "purpose": "Temporary active tracker for remaining host-tooling product decisions after shared host surfaces were consolidated.",
+      "read_when": [
+        "Planning Edit run UX",
+        "Planning host-visible club archive or delete UX",
+        "Auditing host manage, attendance, hosted schedule, or host palette behavior"
+      ],
+      "skip_when": [
+        "Only checking implemented host widget ownership; use widget_catalog.md",
+        "Only checking callable ownership; use backend_operation_catalog.md"
+      ]
+    },
+    "docs/public_profile_overhaul_tracker.md": {
+      "purpose": "Temporary active tracker for remaining cardless public-profile UX work after ProfileSurface replaced the old deck/card path.",
+      "read_when": [
+        "Planning profile prompt picker UX",
+        "Expanding compatibility reasons",
+        "Adding profile quality coaching",
+        "Adding profile surface visual regression coverage",
+        "Doing device QA for Catches/ProfileSurface",
+        "Cleaning visible swipe-language copy"
+      ],
+      "skip_when": [
+        "Only checking schema contracts; use schema_contract_unification_tracker.md",
+        "Only checking widget inventory; use widget_catalog.md"
       ]
     },
     "docs/ui_layout_spacing.md": {
