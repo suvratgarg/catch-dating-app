@@ -10,14 +10,14 @@ import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_button.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_controller.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -32,7 +32,7 @@ class ActivitySignedOutState extends StatelessWidget {
       child: CatchEmptyState(
         icon: Icons.notifications_none_rounded,
         title: 'No activity yet',
-        message: 'Sign in and book a run to start seeing updates here.',
+        message: 'Sign in and book an event to start seeing updates here.',
         surface: false,
         iconStyle: CatchEmptyStateIconStyle.plain,
       ),
@@ -58,16 +58,16 @@ class ActivitySection extends ConsumerWidget {
     final notificationsAsync = ref.watch(
       watchActivityNotificationsProvider(uid),
     );
-    final runsAsync = ref.watch(watchSignedUpRunsProvider(uid));
+    final eventsAsync = ref.watch(watchSignedUpEventsProvider(uid));
 
-    final isLoading = notificationsAsync.isLoading || runsAsync.isLoading;
-    final error = notificationsAsync.error ?? runsAsync.error;
+    final isLoading = notificationsAsync.isLoading || eventsAsync.isLoading;
+    final error = notificationsAsync.error ?? eventsAsync.error;
     final notifications =
         notificationsAsync.asData?.value ?? const <ActivityNotification>[];
-    final runs = runsAsync.asData?.value ?? const <Run>[];
+    final events = eventsAsync.asData?.value ?? const <Event>[];
     final items = _ActivityItem.fromData(
       notifications: notifications,
-      runs: runs,
+      events: events,
     );
 
     final hasUnread = notifications.any(
@@ -112,7 +112,7 @@ class ActivitySection extends ConsumerWidget {
             compact: true,
             onRetry: () {
               ref.invalidate(watchActivityNotificationsProvider(uid));
-              ref.invalidate(watchSignedUpRunsProvider(uid));
+              ref.invalidate(watchSignedUpEventsProvider(uid));
             },
           ),
         ] else if (items.isEmpty) ...[
@@ -121,7 +121,7 @@ class ActivitySection extends ConsumerWidget {
               icon: Icons.notifications_none_rounded,
               title: 'No new activity',
               message:
-                  'New catches, bookings, and run reminders will collect here.',
+                  'New catches, bookings, and event reminders will collect here.',
               iconStyle: CatchEmptyStateIconStyle.plain,
               iconSize: 34,
               titleStyle: CatchTextStyles.titleL(context),
@@ -339,7 +339,7 @@ class _ActivityItem {
 
   static List<_ActivityItem> fromData({
     required List<ActivityNotification> notifications,
-    required List<Run> runs,
+    required List<Event> events,
   }) {
     final now = DateTime.now();
     final items = <_ActivityItem>[];
@@ -348,35 +348,35 @@ class _ActivityItem {
       items.add(_ActivityItem.fromNotification(notification, now));
     }
 
-    final durableReminderRunIds = notifications
+    final durableReminderEventIds = notifications
         .where(
           (notification) =>
-              notification.type == ActivityNotificationType.runReminder,
+              notification.type == ActivityNotificationType.eventReminder,
         )
-        .map((notification) => notification.runId)
+        .map((notification) => notification.eventId)
         .whereType<String>()
         .toSet();
 
-    for (final run
-        in runs
+    for (final event
+        in events
             .where(
-              (run) =>
-                  run.startTime.isAfter(now) &&
-                  !durableReminderRunIds.contains(run.id),
+              (event) =>
+                  event.startTime.isAfter(now) &&
+                  !durableReminderEventIds.contains(event.id),
             )
             .take(3)) {
-      final reminderAt = run.startTime.subtract(const Duration(minutes: 15));
+      final reminderAt = event.startTime.subtract(const Duration(minutes: 15));
       items.add(
         _ActivityItem(
-          title: _runReminderTitle(run.startTime, now),
+          title: _eventReminderTitle(event.startTime, now),
           subtitle:
-              '${run.meetingPoint} · ${RunFormatters.distanceKm(run.distanceKm)} · ${run.pace.label}',
+              '${event.meetingPoint} · ${EventFormatters.distanceKm(event.distanceKm)} · ${event.pace.label}',
           createdAt: reminderAt,
           icon: Icons.directions_run_rounded,
-          route: Routes.runDetailScreen.path
-              .replaceFirst(':runClubId', run.runClubId)
-              .replaceFirst(':runId', run.id),
-          timeLabel: RunFormatters.shortDate(run.startTime),
+          route: Routes.eventDetailScreen.path
+              .replaceFirst(':clubId', event.clubId)
+              .replaceFirst(':eventId', event.id),
+          timeLabel: EventFormatters.shortDate(event.startTime),
         ),
       );
     }
@@ -404,11 +404,11 @@ class _ActivityItem {
     return switch (type) {
       ActivityNotificationType.message => Icons.chat_bubble_outline_rounded,
       ActivityNotificationType.match => Icons.favorite_rounded,
-      ActivityNotificationType.runReminder ||
-      ActivityNotificationType.runSignup ||
+      ActivityNotificationType.eventReminder ||
+      ActivityNotificationType.eventSignup ||
       ActivityNotificationType.waitlistPromotion ||
-      ActivityNotificationType.runCancelled ||
-      ActivityNotificationType.runUpdated => Icons.directions_run_rounded,
+      ActivityNotificationType.eventCancelled ||
+      ActivityNotificationType.eventUpdated => Icons.directions_run_rounded,
       ActivityNotificationType.clubUpdate => Icons.groups_rounded,
     };
   }
@@ -417,26 +417,23 @@ class _ActivityItem {
     if (notification.matchId case final matchId?) {
       return Routes.chatScreen.path.replaceFirst(':matchId', matchId);
     }
-    if (notification.runId case final runId?
-        when notification.runClubId != null) {
-      return Routes.runDetailScreen.path
-          .replaceFirst(':runClubId', notification.runClubId!)
-          .replaceFirst(':runId', runId);
+    if (notification.eventId case final eventId?
+        when notification.clubId != null) {
+      return Routes.eventDetailScreen.path
+          .replaceFirst(':clubId', notification.clubId!)
+          .replaceFirst(':eventId', eventId);
     }
-    if (notification.runClubId case final runClubId?) {
-      return Routes.runClubDetailScreen.path.replaceFirst(
-        ':runClubId',
-        runClubId,
-      );
+    if (notification.clubId case final clubId?) {
+      return Routes.clubDetailScreen.path.replaceFirst(':clubId', clubId);
     }
     return null;
   }
 
-  static String _runReminderTitle(DateTime startTime, DateTime now) {
+  static String _eventReminderTitle(DateTime startTime, DateTime now) {
     final minutes = startTime.difference(now).inMinutes;
-    if (minutes <= 60) return 'Your run starts soon';
-    if (DateUtils.isSameDay(startTime, now)) return 'Run later today';
-    return 'Upcoming run';
+    if (minutes <= 60) return 'Your event starts soon';
+    if (DateUtils.isSameDay(startTime, now)) return 'Event later today';
+    return 'Upcoming event';
   }
 
   static String _relativeTime(DateTime time, DateTime now) {

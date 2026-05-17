@@ -35,7 +35,7 @@ function match(overrides = {}) {
   return {
     user1Id: "runner-1",
     user2Id: "runner-2",
-    runIds: ["run-1"],
+    eventIds: ["event-1"],
     createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
     lastMessageAt: null,
     lastMessagePreview: null,
@@ -48,7 +48,7 @@ function match(overrides = {}) {
   };
 }
 
-function runClub(overrides = {}) {
+function club(overrides = {}) {
   return {
     hostUserId: "host-1",
     ...overrides,
@@ -189,32 +189,32 @@ describe("storage.rules", () => {
     });
   });
 
-  describe("run photos", () => {
-    it("allows only the run club host to upload run photos", async () => {
-      await seedFirestore(["runClubs", "club-1"], runClub());
+  describe("event photos", () => {
+    it("allows only the club host to upload event photos", async () => {
+      await seedFirestore(["clubs", "club-1"], club());
 
       await assertSucceeds(
         uploadImage(
           authedStorage("host-1"),
-          "runClubs/club-1/runs/run-1/photo.jpg",
+          "clubs/club-1/events/event-1/photo.jpg",
         ),
       );
       await assertFails(
         uploadImage(
           authedStorage("runner-1"),
-          "runClubs/club-1/runs/run-1/photo.jpg",
+          "clubs/club-1/events/event-1/photo.jpg",
         ),
       );
       await assertFails(
         uploadImage(
           unauthenticatedStorage(),
-          "runClubs/club-1/runs/run-1/photo.jpg",
+          "clubs/club-1/events/event-1/photo.jpg",
         ),
       );
       await assertFails(
         uploadImage(
           authedStorage("host-1"),
-          "runClubs/club-1/runs/run-1/photo.txt",
+          "clubs/club-1/events/event-1/photo.txt",
           {contentType: "text/plain"},
         ),
       );

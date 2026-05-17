@@ -13,7 +13,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
@@ -126,6 +126,7 @@ void main() {
     expect(find.byKey(SettingsKeys.reviewHistoryRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.paymentHistoryRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.eventPolicyLabRow), findsOneWidget);
+    expect(find.byKey(SettingsKeys.eventSuccessLabRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.signOutRow), findsOneWidget);
 
     await tester.tap(find.byKey(SettingsKeys.signOutRow));

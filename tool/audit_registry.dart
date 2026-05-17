@@ -97,7 +97,7 @@ void _refresh() {
 void _report() {
   final entries = _readFileEntries().values.toList();
   if (entries.isEmpty) {
-    stdout.writeln('No file entries. Run refresh first.');
+    stdout.writeln('No file entries. Event refresh first.');
     return;
   }
 

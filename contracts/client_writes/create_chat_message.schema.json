@@ -13,10 +13,10 @@
       "required": ["matchId", "messageId"],
       "properties": {
         "matchId": {
-          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         },
         "messageId": {
-          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         }
       }
     },
@@ -26,17 +26,17 @@
       "required": ["senderId", "text", "sentAt"],
       "properties": {
         "senderId": {
-          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         },
         "text": {
           "type": "string",
           "maxLength": 2000
         },
         "imageUrl": {
-          "$ref": "../shared/run_common.schema.json#/definitions/urlOrNull"
+          "$ref": "../shared/event_common.schema.json#/definitions/urlOrNull"
         },
         "sentAt": {
-          "$ref": "../shared/run_common.schema.json#/definitions/timestamp"
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
         }
       },
       "anyOf": [

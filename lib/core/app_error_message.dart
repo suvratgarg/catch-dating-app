@@ -9,7 +9,7 @@ enum AppErrorContext {
   generic,
   dashboard,
   profile,
-  run,
+  event,
   club,
   chat,
   swipes,
@@ -104,8 +104,8 @@ String _titleFor(
   if (appException is PaidBookingUnsupportedException) {
     return 'Payment unavailable';
   }
-  if (appException is RunBookingFailedException) {
-    return 'Run signup unavailable';
+  if (appException is EventBookingFailedException) {
+    return 'Event signup unavailable';
   }
   if (appException is StorageException) return 'Upload failed';
   if (appException is ExternalActionException) return 'Action failed';
@@ -129,7 +129,7 @@ String _contextTitle(AppErrorContext context) {
   return switch (context) {
     AppErrorContext.dashboard => 'Dashboard unavailable',
     AppErrorContext.profile => 'Profile unavailable',
-    AppErrorContext.run => 'Run unavailable',
+    AppErrorContext.event => 'Event unavailable',
     AppErrorContext.club => 'Club unavailable',
     AppErrorContext.chat => 'Messages unavailable',
     AppErrorContext.swipes => 'Catches unavailable',
@@ -151,7 +151,7 @@ IconData _iconFor(Object error, AppException? appException) {
       appException is PaidBookingUnsupportedException) {
     return Icons.credit_card_off_rounded;
   }
-  if (appException is RunBookingFailedException) {
+  if (appException is EventBookingFailedException) {
     return Icons.directions_run_rounded;
   }
   if (appException is StorageException) return Icons.cloud_upload_outlined;
@@ -180,7 +180,7 @@ String _retryLabelFor(AppException? appException, AppErrorContext context) {
   return switch (context) {
     AppErrorContext.chat => 'Reload messages',
     AppErrorContext.profile => 'Reload profile',
-    AppErrorContext.run => 'Reload run',
+    AppErrorContext.event => 'Reload event',
     AppErrorContext.club => 'Reload club',
     AppErrorContext.swipes => 'Reload catches',
     AppErrorContext.payments => 'Reload payments',
@@ -225,7 +225,7 @@ bool _isNotFoundError(Object error, AppException? appException) =>
 String _notFoundTitle(AppErrorContext context) {
   return switch (context) {
     AppErrorContext.profile => 'Profile not found',
-    AppErrorContext.run => 'Run not found',
+    AppErrorContext.event => 'Event not found',
     AppErrorContext.club => 'Club not found',
     AppErrorContext.chat => 'Chat not found',
     AppErrorContext.swipes => 'Catches not found',

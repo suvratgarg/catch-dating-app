@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-enum CelebrationMomentKind { runCreated, runJoined, runCheckedIn, match }
+enum CelebrationMomentKind { eventCreated, eventJoined, eventCheckedIn, match }
 
 final celebrationEffectsControllerProvider =
     Provider<CelebrationEffectsController>(
@@ -13,11 +13,11 @@ class CelebrationEffectsController {
 
   Future<void> play(CelebrationMomentKind kind) async {
     switch (kind) {
-      case CelebrationMomentKind.runCreated:
-      case CelebrationMomentKind.runJoined:
+      case CelebrationMomentKind.eventCreated:
+      case CelebrationMomentKind.eventJoined:
         await HapticFeedback.mediumImpact();
         return;
-      case CelebrationMomentKind.runCheckedIn:
+      case CelebrationMomentKind.eventCheckedIn:
         await HapticFeedback.lightImpact();
         return;
       case CelebrationMomentKind.match:

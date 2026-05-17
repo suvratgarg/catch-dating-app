@@ -11,7 +11,7 @@ export interface MatchDocument {
   /**
    * @minItems 1
    */
-  runIds: string[];
+  eventIds: string[];
   /**
    * Serialized Firestore Timestamp fixture shape.
    */

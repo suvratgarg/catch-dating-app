@@ -1,0 +1,13 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/mark_event_attendance_payload.schema.json",
+  "title": "MarkEventAttendanceCallablePayload",
+  "description": "Callable payload accepted by markEventAttendance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId", "userId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "userId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

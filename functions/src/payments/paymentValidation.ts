@@ -1,5 +1,5 @@
 import {HttpsError} from "firebase-functions/v2/https";
-import {PaymentStatus, RunDoc} from "../shared/firestore";
+import {PaymentStatus, EventDoc} from "../shared/firestore";
 import {razorpayCurrency} from "./razorpay";
 
 interface RazorpayOrderNotes {
@@ -26,7 +26,7 @@ export interface RazorpayPaymentSnapshot {
 }
 
 export interface VerifiedPaymentBooking {
-  runId: string;
+  eventId: string;
   userId: string;
   amountInPaise: number;
   currency: string;
@@ -42,46 +42,46 @@ export interface PaymentRecordInput extends VerifiedPaymentBooking {
 const successfulPaymentStatuses = new Set(["authorized", "captured"]);
 
 /**
- * Builds the trusted Razorpay order payload for a paid run.
+ * Builds the trusted Razorpay order payload for a paid event.
  * @param {object} params Input parameters.
- * @param {string} params.runId Run id being booked.
- * @param {RunDoc} params.run Trusted Firestore run snapshot.
+ * @param {string} params.eventId Event id being booked.
+ * @param {EventDoc} params.event Trusted Firestore event snapshot.
  * @param {string} params.userId Authenticated user id.
  * @param {string|number} params.receiptToken Receipt uniqueness token.
  * @param {number=} params.amountInPaise Optional event-policy quoted amount.
  * @return {object} Razorpay order creation payload.
  */
 export function buildOrderCreatePayload({
-  runId,
-  run,
+  eventId,
+  event,
   userId,
   receiptToken,
   amountInPaise,
 }: {
-  runId: string;
-  run: RunDoc;
+  eventId: string;
+  event: EventDoc;
   userId: string;
   receiptToken: string | number;
   amountInPaise?: number;
 }) {
-  if (run.status === "cancelled") {
+  if (event.status === "cancelled") {
     throw new HttpsError(
       "failed-precondition",
-      "This run has been cancelled."
+      "This event has been cancelled."
     );
   }
 
   const trustedAmountInPaise = parsePositiveAmount(
-    amountInPaise ?? run.priceInPaise,
-    "Run price"
+    amountInPaise ?? event.priceInPaise,
+    "Event price"
   );
 
   return {
     amount: trustedAmountInPaise,
     currency: razorpayCurrency,
-    receipt: `run_${runId}_${receiptToken}`,
+    receipt: `event_${eventId}_${receiptToken}`,
     notes: {
-      runId,
+      eventId,
       userId,
       quotedAmountInPaise: trustedAmountInPaise,
     },
@@ -96,7 +96,7 @@ export function buildOrderCreatePayload({
  * @param {string} params.expectedUserId Authenticated user id.
  * @return {VerifiedPaymentBooking} Trusted booking details.
  */
-export function verifyPaidRunBooking({
+export function verifyPaidEventBooking({
   order,
   payment,
   expectedUserId,
@@ -165,7 +165,7 @@ export function verifyPaidRunBooking({
     );
   }
 
-  const runId = getRequiredNote(order.notes, "runId");
+  const eventId = getRequiredNote(order.notes, "eventId");
   const userId = getRequiredNote(order.notes, "userId");
 
   if (userId !== expectedUserId) {
@@ -176,7 +176,7 @@ export function verifyPaidRunBooking({
   }
 
   return {
-    runId,
+    eventId,
     userId,
     amountInPaise: orderAmount,
     currency: order.currency,
@@ -192,7 +192,7 @@ export function buildPaymentRecord({
   userId,
   orderId,
   paymentId,
-  runId,
+  eventId,
   amountInPaise,
   currency,
   status,
@@ -202,7 +202,7 @@ export function buildPaymentRecord({
     userId,
     orderId,
     paymentId,
-    runId,
+    eventId,
     amount: amountInPaise,
     currency,
     status,

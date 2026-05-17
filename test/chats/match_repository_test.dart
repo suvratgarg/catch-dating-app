@@ -24,7 +24,7 @@ Match _buildMatch({
   String id = 'match-1',
   String user1Id = 'runner-1',
   String user2Id = 'runner-2',
-  List<String> runIds = const ['run-1'],
+  List<String> eventIds = const ['event-1'],
   DateTime? createdAt,
   DateTime? lastMessageAt,
   String? lastMessagePreview,
@@ -36,7 +36,7 @@ Match _buildMatch({
     id: id,
     user1Id: user1Id,
     user2Id: user2Id,
-    runIds: runIds,
+    eventIds: eventIds,
     createdAt: createdAt ?? DateTime(2025, 1, 1, 7),
     lastMessageAt: lastMessageAt,
     lastMessagePreview: lastMessagePreview,
@@ -188,24 +188,24 @@ void main() {
     },
   );
 
-  test('Match reads legacy runId documents into runIds', () {
+  test('Match reads legacy eventId documents into eventIds', () {
     final match = Match.fromJson({
       'id': 'legacy-match',
       'user1Id': 'runner-1',
       'user2Id': 'runner-2',
-      'runId': 'legacy-run',
+      'eventId': 'legacy-event',
       'createdAt': Timestamp.fromDate(DateTime(2025, 1, 1, 7)),
     });
 
-    expect(match.runIds, const ['legacy-run']);
-    expect(match.latestRunId, 'legacy-run');
+    expect(match.eventIds, const ['legacy-event']);
+    expect(match.latestEventId, 'legacy-event');
   });
 
   test('collapseMatchesByOtherUser keeps one latest thread per person', () {
     final collapsed = collapseMatchesByOtherUser([
       _buildMatch(
         id: 'older',
-        runIds: const ['run-1'],
+        eventIds: const ['event-1'],
         createdAt: DateTime(2025, 1, 1, 7),
         lastMessageAt: DateTime(2025, 1, 1, 8),
         lastMessagePreview: 'Older message',
@@ -214,7 +214,7 @@ void main() {
       ),
       _buildMatch(
         id: 'newer',
-        runIds: const ['run-2'],
+        eventIds: const ['event-2'],
         createdAt: DateTime(2025, 1, 2, 7),
         lastMessageAt: DateTime(2025, 1, 2, 8),
         lastMessagePreview: 'Newer message',
@@ -227,8 +227,8 @@ void main() {
     expect(collapsed.single.id, 'newer');
     expect(collapsed.single.lastMessagePreview, 'Newer message');
     expect(collapsed.single.unreadCounts['runner-1'], 1);
-    expect(collapsed.single.runIds, const ['run-1', 'run-2']);
-    expect(collapsed.single.latestRunId, 'run-2');
+    expect(collapsed.single.eventIds, const ['event-1', 'event-2']);
+    expect(collapsed.single.latestEventId, 'event-2');
   });
 
   test(

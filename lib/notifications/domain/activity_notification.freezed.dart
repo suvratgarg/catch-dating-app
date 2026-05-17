@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ActivityNotification {
 
-@JsonKey(includeToJson: false) String get id; String get uid; ActivityNotificationType get type; String get title; String get body;@TimestampConverter() DateTime get createdAt;@NullableTimestampConverter() DateTime? get readAt; String? get matchId; String? get runId; String? get runClubId; String? get actorUid; String? get actorName;
+@JsonKey(includeToJson: false) String get id; String get uid; ActivityNotificationType get type; String get title; String get body;@TimestampConverter() DateTime get createdAt;@NullableTimestampConverter() DateTime? get readAt; String? get matchId; String? get eventId; String? get clubId; String? get actorUid; String? get actorName;
 /// Create a copy of ActivityNotification
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ActivityNotificationCopyWith<ActivityNotification> get copyWith => _$ActivityNo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActivityNotification&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.readAt, readAt) || other.readAt == readAt)&&(identical(other.matchId, matchId) || other.matchId == matchId)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.actorUid, actorUid) || other.actorUid == actorUid)&&(identical(other.actorName, actorName) || other.actorName == actorName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ActivityNotification&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.readAt, readAt) || other.readAt == readAt)&&(identical(other.matchId, matchId) || other.matchId == matchId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.actorUid, actorUid) || other.actorUid == actorUid)&&(identical(other.actorName, actorName) || other.actorName == actorName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,uid,type,title,body,createdAt,readAt,matchId,runId,runClubId,actorUid,actorName);
+int get hashCode => Object.hash(runtimeType,id,uid,type,title,body,createdAt,readAt,matchId,eventId,clubId,actorUid,actorName);
 
 @override
 String toString() {
-  return 'ActivityNotification(id: $id, uid: $uid, type: $type, title: $title, body: $body, createdAt: $createdAt, readAt: $readAt, matchId: $matchId, runId: $runId, runClubId: $runClubId, actorUid: $actorUid, actorName: $actorName)';
+  return 'ActivityNotification(id: $id, uid: $uid, type: $type, title: $title, body: $body, createdAt: $createdAt, readAt: $readAt, matchId: $matchId, eventId: $eventId, clubId: $clubId, actorUid: $actorUid, actorName: $actorName)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ActivityNotificationCopyWith<$Res>  {
   factory $ActivityNotificationCopyWith(ActivityNotification value, $Res Function(ActivityNotification) _then) = _$ActivityNotificationCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String uid, ActivityNotificationType type, String title, String body,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? readAt, String? matchId, String? runId, String? runClubId, String? actorUid, String? actorName
+@JsonKey(includeToJson: false) String id, String uid, ActivityNotificationType type, String title, String body,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? readAt, String? matchId, String? eventId, String? clubId, String? actorUid, String? actorName
 });
 
 
@@ -65,7 +65,7 @@ class _$ActivityNotificationCopyWithImpl<$Res>
 
 /// Create a copy of ActivityNotification
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? uid = null,Object? type = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? readAt = freezed,Object? matchId = freezed,Object? runId = freezed,Object? runClubId = freezed,Object? actorUid = freezed,Object? actorName = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? uid = null,Object? type = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? readAt = freezed,Object? matchId = freezed,Object? eventId = freezed,Object? clubId = freezed,Object? actorUid = freezed,Object? actorName = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
@@ -75,8 +75,8 @@ as String,body: null == body ? _self.body : body // ignore: cast_nullable_to_non
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,readAt: freezed == readAt ? _self.readAt : readAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,matchId: freezed == matchId ? _self.matchId : matchId // ignore: cast_nullable_to_non_nullable
-as String?,runId: freezed == runId ? _self.runId : runId // ignore: cast_nullable_to_non_nullable
-as String?,runClubId: freezed == runClubId ? _self.runClubId : runClubId // ignore: cast_nullable_to_non_nullable
+as String?,eventId: freezed == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
+as String?,clubId: freezed == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
 as String?,actorUid: freezed == actorUid ? _self.actorUid : actorUid // ignore: cast_nullable_to_non_nullable
 as String?,actorName: freezed == actorName ? _self.actorName : actorName // ignore: cast_nullable_to_non_nullable
 as String?,
@@ -164,10 +164,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String uid,  ActivityNotificationType type,  String title,  String body, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? readAt,  String? matchId,  String? runId,  String? runClubId,  String? actorUid,  String? actorName)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String uid,  ActivityNotificationType type,  String title,  String body, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? readAt,  String? matchId,  String? eventId,  String? clubId,  String? actorUid,  String? actorName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ActivityNotification() when $default != null:
-return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.createdAt,_that.readAt,_that.matchId,_that.runId,_that.runClubId,_that.actorUid,_that.actorName);case _:
+return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.createdAt,_that.readAt,_that.matchId,_that.eventId,_that.clubId,_that.actorUid,_that.actorName);case _:
   return orElse();
 
 }
@@ -185,10 +185,10 @@ return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.creat
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String uid,  ActivityNotificationType type,  String title,  String body, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? readAt,  String? matchId,  String? runId,  String? runClubId,  String? actorUid,  String? actorName)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String uid,  ActivityNotificationType type,  String title,  String body, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? readAt,  String? matchId,  String? eventId,  String? clubId,  String? actorUid,  String? actorName)  $default,) {final _that = this;
 switch (_that) {
 case _ActivityNotification():
-return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.createdAt,_that.readAt,_that.matchId,_that.runId,_that.runClubId,_that.actorUid,_that.actorName);case _:
+return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.createdAt,_that.readAt,_that.matchId,_that.eventId,_that.clubId,_that.actorUid,_that.actorName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -205,10 +205,10 @@ return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.creat
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String uid,  ActivityNotificationType type,  String title,  String body, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? readAt,  String? matchId,  String? runId,  String? runClubId,  String? actorUid,  String? actorName)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String uid,  ActivityNotificationType type,  String title,  String body, @TimestampConverter()  DateTime createdAt, @NullableTimestampConverter()  DateTime? readAt,  String? matchId,  String? eventId,  String? clubId,  String? actorUid,  String? actorName)?  $default,) {final _that = this;
 switch (_that) {
 case _ActivityNotification() when $default != null:
-return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.createdAt,_that.readAt,_that.matchId,_that.runId,_that.runClubId,_that.actorUid,_that.actorName);case _:
+return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.createdAt,_that.readAt,_that.matchId,_that.eventId,_that.clubId,_that.actorUid,_that.actorName);case _:
   return null;
 
 }
@@ -220,7 +220,7 @@ return $default(_that.id,_that.uid,_that.type,_that.title,_that.body,_that.creat
 @JsonSerializable()
 
 class _ActivityNotification extends ActivityNotification {
-  const _ActivityNotification({@JsonKey(includeToJson: false) required this.id, required this.uid, required this.type, required this.title, required this.body, @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.readAt, this.matchId, this.runId, this.runClubId, this.actorUid, this.actorName}): super._();
+  const _ActivityNotification({@JsonKey(includeToJson: false) required this.id, required this.uid, required this.type, required this.title, required this.body, @TimestampConverter() required this.createdAt, @NullableTimestampConverter() this.readAt, this.matchId, this.eventId, this.clubId, this.actorUid, this.actorName}): super._();
   factory _ActivityNotification.fromJson(Map<String, dynamic> json) => _$ActivityNotificationFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -231,8 +231,8 @@ class _ActivityNotification extends ActivityNotification {
 @override@TimestampConverter() final  DateTime createdAt;
 @override@NullableTimestampConverter() final  DateTime? readAt;
 @override final  String? matchId;
-@override final  String? runId;
-@override final  String? runClubId;
+@override final  String? eventId;
+@override final  String? clubId;
 @override final  String? actorUid;
 @override final  String? actorName;
 
@@ -249,16 +249,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActivityNotification&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.readAt, readAt) || other.readAt == readAt)&&(identical(other.matchId, matchId) || other.matchId == matchId)&&(identical(other.runId, runId) || other.runId == runId)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.actorUid, actorUid) || other.actorUid == actorUid)&&(identical(other.actorName, actorName) || other.actorName == actorName));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ActivityNotification&&(identical(other.id, id) || other.id == id)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.type, type) || other.type == type)&&(identical(other.title, title) || other.title == title)&&(identical(other.body, body) || other.body == body)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.readAt, readAt) || other.readAt == readAt)&&(identical(other.matchId, matchId) || other.matchId == matchId)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.actorUid, actorUid) || other.actorUid == actorUid)&&(identical(other.actorName, actorName) || other.actorName == actorName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,uid,type,title,body,createdAt,readAt,matchId,runId,runClubId,actorUid,actorName);
+int get hashCode => Object.hash(runtimeType,id,uid,type,title,body,createdAt,readAt,matchId,eventId,clubId,actorUid,actorName);
 
 @override
 String toString() {
-  return 'ActivityNotification(id: $id, uid: $uid, type: $type, title: $title, body: $body, createdAt: $createdAt, readAt: $readAt, matchId: $matchId, runId: $runId, runClubId: $runClubId, actorUid: $actorUid, actorName: $actorName)';
+  return 'ActivityNotification(id: $id, uid: $uid, type: $type, title: $title, body: $body, createdAt: $createdAt, readAt: $readAt, matchId: $matchId, eventId: $eventId, clubId: $clubId, actorUid: $actorUid, actorName: $actorName)';
 }
 
 
@@ -269,7 +269,7 @@ abstract mixin class _$ActivityNotificationCopyWith<$Res> implements $ActivityNo
   factory _$ActivityNotificationCopyWith(_ActivityNotification value, $Res Function(_ActivityNotification) _then) = __$ActivityNotificationCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String uid, ActivityNotificationType type, String title, String body,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? readAt, String? matchId, String? runId, String? runClubId, String? actorUid, String? actorName
+@JsonKey(includeToJson: false) String id, String uid, ActivityNotificationType type, String title, String body,@TimestampConverter() DateTime createdAt,@NullableTimestampConverter() DateTime? readAt, String? matchId, String? eventId, String? clubId, String? actorUid, String? actorName
 });
 
 
@@ -286,7 +286,7 @@ class __$ActivityNotificationCopyWithImpl<$Res>
 
 /// Create a copy of ActivityNotification
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? uid = null,Object? type = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? readAt = freezed,Object? matchId = freezed,Object? runId = freezed,Object? runClubId = freezed,Object? actorUid = freezed,Object? actorName = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? uid = null,Object? type = null,Object? title = null,Object? body = null,Object? createdAt = null,Object? readAt = freezed,Object? matchId = freezed,Object? eventId = freezed,Object? clubId = freezed,Object? actorUid = freezed,Object? actorName = freezed,}) {
   return _then(_ActivityNotification(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
@@ -296,8 +296,8 @@ as String,body: null == body ? _self.body : body // ignore: cast_nullable_to_non
 as String,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as DateTime,readAt: freezed == readAt ? _self.readAt : readAt // ignore: cast_nullable_to_non_nullable
 as DateTime?,matchId: freezed == matchId ? _self.matchId : matchId // ignore: cast_nullable_to_non_nullable
-as String?,runId: freezed == runId ? _self.runId : runId // ignore: cast_nullable_to_non_nullable
-as String?,runClubId: freezed == runClubId ? _self.runClubId : runClubId // ignore: cast_nullable_to_non_nullable
+as String?,eventId: freezed == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
+as String?,clubId: freezed == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
 as String?,actorUid: freezed == actorUid ? _self.actorUid : actorUid // ignore: cast_nullable_to_non_nullable
 as String?,actorName: freezed == actorName ? _self.actorName : actorName // ignore: cast_nullable_to_non_nullable
 as String?,

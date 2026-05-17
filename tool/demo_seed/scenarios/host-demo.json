@@ -1,15 +1,15 @@
 {
   "id": "host-demo",
   "label": "Host Demo",
-  "description": "State for demonstrating run-club ownership, host tools, roster management, and attendance.",
+  "description": "State for demonstrating club ownership, host tools, roster management, and attendance.",
   "recommendedCommands": [
     "create-host-account",
-    "make-run-full",
+    "make-event-full",
     "mark-attended"
   ],
   "readiness": {
     "hostClub": 1,
-    "upcomingRuns": 1,
+    "upcomingEvents": 1,
     "participants": 6
   }
 }

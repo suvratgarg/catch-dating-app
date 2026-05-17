@@ -15,7 +15,7 @@
   "profilePrompts": [
     {
       "promptId": "perfectRun",
-      "prompt": "A perfect run with me looks like...",
+      "prompt": "A perfect event with me looks like...",
       "answer": "Easy kilometres, low-pressure conversation, and coffee after."
     }
   ],
@@ -29,7 +29,7 @@
     {
       "photoIndex": 0,
       "promptId": "proofIRun",
-      "prompt": "Proof I actually run",
+      "prompt": "Proof I actually event",
       "caption": "First 10K finish, still smiling."
     }
   ],
@@ -58,7 +58,7 @@
   "preferredRunTimes": ["morning", "evening"],
   "prefsNewCatches": true,
   "prefsMessages": true,
-  "prefsRunReminders": true,
+  "prefsEventReminders": true,
   "prefsRunStatusUpdates": true,
   "prefsClubUpdates": true,
   "prefsWeeklyDigest": false,

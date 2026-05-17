@@ -4,10 +4,10 @@ import 'package:catch_dating_app/reviews/presentation/write_review_controller.da
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 void main() {
-  test('submit creates a trimmed run review', () async {
+  test('submit creates a trimmed event review', () async {
     final repository = _FakeReviewsRepository();
     final container = _reviewsContainer(repository);
     addTearDown(container.dispose);
@@ -15,16 +15,16 @@ void main() {
     await container
         .read(writeReviewControllerProvider.notifier)
         .submit(
-          runClubId: 'club-1',
-          runId: 'run-1',
+          clubId: 'club-1',
+          eventId: 'event-1',
           reviewerUserId: 'runner-1',
           reviewerName: 'Runner One',
           rating: 4,
           comment: '  Great hosts.  ',
         );
 
-    expect(repository.addedReview?.runClubId, 'club-1');
-    expect(repository.addedReview?.runId, 'run-1');
+    expect(repository.addedReview?.clubId, 'club-1');
+    expect(repository.addedReview?.eventId, 'event-1');
     expect(repository.addedReview?.rating, 4);
     expect(repository.addedReview?.comment, 'Great hosts.');
   });
@@ -38,8 +38,8 @@ void main() {
     await container
         .read(writeReviewControllerProvider.notifier)
         .submit(
-          runClubId: existing.runClubId,
-          runId: existing.runId!,
+          clubId: existing.clubId,
+          eventId: existing.eventId!,
           reviewerUserId: existing.reviewerUserId,
           reviewerName: existing.reviewerName,
           rating: 5,
@@ -60,8 +60,8 @@ void main() {
       container
           .read(writeReviewControllerProvider.notifier)
           .submit(
-            runClubId: 'club-1',
-            runId: 'run-1',
+            clubId: 'club-1',
+            eventId: 'event-1',
             reviewerUserId: 'runner-1',
             reviewerName: 'Runner One',
             rating: 0,

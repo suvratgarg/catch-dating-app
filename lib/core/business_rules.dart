@@ -4,15 +4,15 @@
 final class CatchBusinessRules {
   const CatchBusinessRules._();
 
-  static const runDefaultDurationMinutes = 60;
-  static const runMinDurationMinutes = 30;
-  static const runMaxDurationMinutes = 240;
-  static const runDurationStepMinutes = 15;
-  static const runScheduleLockSlotMinutes = 1;
+  static const eventDefaultDurationMinutes = 60;
+  static const eventMinDurationMinutes = 30;
+  static const eventMaxDurationMinutes = 240;
+  static const eventDurationStepMinutes = 15;
+  static const eventScheduleLockSlotMinutes = 1;
 
-  static const runSelfCheckInWindowBeforeMinutes = 10;
-  static const runSelfCheckInWindowAfterMinutes = 30;
-  static const runSelfCheckInMaxDistanceMeters = 200;
-  static const runHostAttendanceWindowBeforeMinutes = 10;
-  static const runHostAttendanceWindowAfterRunHours = 6;
+  static const eventSelfCheckInWindowBeforeMinutes = 10;
+  static const eventSelfCheckInWindowAfterMinutes = 30;
+  static const eventSelfCheckInMaxDistanceMeters = 200;
+  static const eventHostAttendanceWindowBeforeMinutes = 10;
+  static const eventHostAttendanceWindowAfterEventHours = 6;
 }

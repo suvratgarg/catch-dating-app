@@ -34,7 +34,7 @@ class ChatThreadPreview {
     required this.timestamp,
     required this.unreadCount,
     required this.hasConversation,
-    required this.runIds,
+    required this.eventIds,
   });
 
   final Match match;
@@ -46,9 +46,9 @@ class ChatThreadPreview {
   final DateTime timestamp;
   final int unreadCount;
   final bool hasConversation;
-  final List<String> runIds;
+  final List<String> eventIds;
 
-  String? get latestRunId => runIds.isEmpty ? null : runIds.last;
+  String? get latestEventId => eventIds.isEmpty ? null : eventIds.last;
 }
 
 @Riverpod(keepAlive: true)
@@ -140,6 +140,6 @@ ChatThreadPreview _previewForMatch(Ref ref, Match match, String uid) {
     timestamp: match.lastMessageAt ?? match.createdAt,
     unreadCount: match.unreadConversationCountFor(uid),
     hasConversation: hasConversation,
-    runIds: match.runIds,
+    eventIds: match.eventIds,
   );
 }

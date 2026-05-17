@@ -85,7 +85,7 @@ class MatchCelebrationDialog extends ConsumerWidget {
           value: '$name liked you back.',
         ),
       ],
-      note: 'Start with something specific from their profile or run history.',
+      note: 'Start with something specific from their profile or event history.',
       primaryAction: CelebrationAction(
         label: 'Send a message',
         onPressed: onSendMessage,

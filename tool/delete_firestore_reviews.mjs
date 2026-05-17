@@ -123,7 +123,7 @@ function printHelp() {
 Delete all Firestore reviews and reset derived review aggregates.
 
 This tool is intentionally destructive only with explicit confirmation. Without
---apply it performs a dry-run relationship map.
+--apply it performs a dry-event relationship map.
 
 Usage:
   node tool/delete_firestore_reviews.mjs --env dev
@@ -143,48 +143,48 @@ Options:
 }
 
 async function buildDeletionPlan(firestore, metadata) {
-  const [reviewDocs, runClubDocs, runDocs, userDocs] = await Promise.all([
+  const [reviewDocs, clubDocs, eventDocs, userDocs] = await Promise.all([
     readCollection(firestore.collection("reviews")),
-    readCollection(firestore.collection("runClubs")),
-    readCollection(firestore.collection("runs")),
+    readCollection(firestore.collection("clubs")),
+    readCollection(firestore.collection("events")),
     readCollection(firestore.collection("users")),
   ]);
 
-  const affectedRunClubIds = new Set();
-  const affectedRunIds = new Set();
+  const affectedClubIds = new Set();
+  const affectedEventIds = new Set();
   const affectedReviewerUserIds = new Set();
-  const missingRunIdReviewPaths = [];
+  const missingEventIdReviewPaths = [];
   const missingClubReviewPaths = [];
-  const missingRunReviewPaths = [];
+  const missingEventReviewPaths = [];
 
   for (const review of reviewDocs) {
     const data = review.data;
-    if (isNonEmptyString(data.runClubId)) {
-      affectedRunClubIds.add(data.runClubId);
+    if (isNonEmptyString(data.clubId)) {
+      affectedClubIds.add(data.clubId);
     } else {
       missingClubReviewPaths.push(review.path);
     }
-    if (isNonEmptyString(data.runId)) {
-      affectedRunIds.add(data.runId);
+    if (isNonEmptyString(data.eventId)) {
+      affectedEventIds.add(data.eventId);
     } else {
-      missingRunIdReviewPaths.push(review.path);
+      missingEventIdReviewPaths.push(review.path);
     }
     if (isNonEmptyString(data.reviewerUserId)) {
       affectedReviewerUserIds.add(data.reviewerUserId);
     }
   }
 
-  const runClubsById = byId(runClubDocs);
-  const runsById = byId(runDocs);
+  const clubsById = byId(clubDocs);
+  const eventsById = byId(eventDocs);
   const usersById = byId(userDocs);
 
-  for (const runId of affectedRunIds) {
-    if (!runsById.has(runId)) missingRunReviewPaths.push(`runs/${runId}`);
+  for (const eventId of affectedEventIds) {
+    if (!eventsById.has(eventId)) missingEventReviewPaths.push(`events/${eventId}`);
   }
 
-  const runClubAggregateResets = runClubDocs
+  const clubAggregateResets = clubDocs
     .filter((doc) =>
-      affectedRunClubIds.has(doc.id) ||
+      affectedClubIds.has(doc.id) ||
       numberOrZero(doc.data.rating) !== 0 ||
       numberOrZero(doc.data.reviewCount) !== 0
     )
@@ -195,17 +195,17 @@ async function buildDeletionPlan(firestore, metadata) {
         reviewCount: numberOrZero(doc.data.reviewCount),
       },
       after: {rating: 0, reviewCount: 0},
-      reason: affectedRunClubIds.has(doc.id) ?
+      reason: affectedClubIds.has(doc.id) ?
         "has-review-docs" :
         "stale-nonzero-aggregate",
     }));
 
-  const runReferenceFields = inspectReferenceFields(
-    [...affectedRunIds]
-      .map((id) => runsById.get(id))
+  const eventReferenceFields = inspectReferenceFields(
+    [...affectedEventIds]
+      .map((id) => eventsById.get(id))
       .filter(Boolean),
     reviewDocs,
-    "run"
+    "event"
   );
   const userReferenceFields = inspectReferenceFields(
     [...affectedReviewerUserIds]
@@ -219,45 +219,45 @@ async function buildDeletionPlan(firestore, metadata) {
     projectId: metadata.projectId,
     emulatorHost: metadata.emulatorHost ?? null,
     generatedAt: new Date().toISOString(),
-    mode: metadata.afterApply ? "post-apply-check" : "dry-run",
+    mode: metadata.afterApply ? "post-apply-check" : "dry-event",
     summary: {
       reviewDocumentsToDelete: reviewDocs.length,
-      affectedRunClubs: affectedRunClubIds.size,
-      affectedRuns: affectedRunIds.size,
+      affectedClubs: affectedClubIds.size,
+      affectedEvents: affectedEventIds.size,
       affectedReviewerUsers: affectedReviewerUserIds.size,
-      runClubAggregateResets: runClubAggregateResets.length,
-      missingRunIdReviews: missingRunIdReviewPaths.length,
-      runReferenceFieldsFound: runReferenceFields.length,
+      clubAggregateResets: clubAggregateResets.length,
+      missingEventIdReviews: missingEventIdReviewPaths.length,
+      eventReferenceFieldsFound: eventReferenceFields.length,
       userReferenceFieldsFound: userReferenceFields.length,
     },
     reviewDocuments: reviewDocs.map((doc) => ({
       path: doc.path,
-      runClubId: doc.data.runClubId ?? null,
-      runId: doc.data.runId ?? null,
+      clubId: doc.data.clubId ?? null,
+      eventId: doc.data.eventId ?? null,
       reviewerUserId: doc.data.reviewerUserId ?? null,
       rating: doc.data.rating ?? null,
     })),
-    affectedRunClubIds: [...affectedRunClubIds].sort(),
-    affectedRunIds: [...affectedRunIds].sort(),
+    affectedClubIds: [...affectedClubIds].sort(),
+    affectedEventIds: [...affectedEventIds].sort(),
     affectedReviewerUserIds: [...affectedReviewerUserIds].sort(),
-    runClubAggregateResets,
-    runReferenceFields,
+    clubAggregateResets,
+    eventReferenceFields,
     userReferenceFields,
     warnings: [
       ...missingClubReviewPaths.map((pathValue) => ({
         path: pathValue,
-        code: "review-missing-run-club-id",
-        message: "Review has no runClubId; deletion still removes it.",
+        code: "review-missing-club-id",
+        message: "Review has no clubId; deletion still removes it.",
       })),
-      ...missingRunIdReviewPaths.map((pathValue) => ({
+      ...missingEventIdReviewPaths.map((pathValue) => ({
         path: pathValue,
-        code: "legacy-review-without-run-id",
-        message: "Review has no runId; no run document reference can be cleared.",
+        code: "legacy-review-without-event-id",
+        message: "Review has no eventId; no event document reference can be cleared.",
       })),
-      ...missingRunReviewPaths.map((pathValue) => ({
+      ...missingEventReviewPaths.map((pathValue) => ({
         path: pathValue,
-        code: "review-run-missing",
-        message: "Review references a run document that does not exist.",
+        code: "review-event-missing",
+        message: "Review references an event document that does not exist.",
       })),
     ],
   };
@@ -270,7 +270,7 @@ async function applyDeletionPlan(firestore, plan) {
     writes.push((batch) => batch.delete(firestore.doc(review.path)));
   }
 
-  for (const reset of plan.runClubAggregateResets) {
+  for (const reset of plan.clubAggregateResets) {
     writes.push((batch) => batch.set(
       firestore.doc(reset.path),
       {rating: 0, reviewCount: 0},
@@ -279,7 +279,7 @@ async function applyDeletionPlan(firestore, plan) {
   }
 
   for (const field of [
-    ...plan.runReferenceFields,
+    ...plan.eventReferenceFields,
     ...plan.userReferenceFields,
   ]) {
     if (!field.safeReset) continue;
@@ -313,23 +313,23 @@ function byId(docs) {
 
 function inspectReferenceFields(docs, reviews, kind) {
   const reviewIds = new Set(reviews.map((doc) => doc.id));
-  const runIds = new Set(
+  const eventIds = new Set(
     reviews
-      .map((doc) => doc.data.runId)
+      .map((doc) => doc.data.eventId)
       .filter(isNonEmptyString)
   );
-  const runClubIds = new Set(
+  const clubIds = new Set(
     reviews
-      .map((doc) => doc.data.runClubId)
+      .map((doc) => doc.data.clubId)
       .filter(isNonEmptyString)
   );
 
-  const candidateFields = kind === "run" ?
+  const candidateFields = kind === "event" ?
     ["reviewIds", "reviewCount", "rating", "averageRating"] :
     [
       "reviewIds",
-      "reviewedRunIds",
-      "reviewedRunClubIds",
+      "reviewedEventIds",
+      "reviewedClubIds",
       "reviewCount",
       "rating",
       "averageRating",
@@ -348,8 +348,8 @@ function inspectReferenceFields(docs, reviews, kind) {
         safeReset: isSafelyResettableReferenceField(field, value),
         resetValue: resetValueForField(field, value, {
           reviewIds,
-          runIds,
-          runClubIds,
+          eventIds,
+          clubIds,
         }),
       });
     }
@@ -361,7 +361,7 @@ function isSafelyResettableReferenceField(field, value) {
   if (["reviewCount", "rating", "averageRating"].includes(field)) {
     return typeof value === "number";
   }
-  if (["reviewIds", "reviewedRunIds", "reviewedRunClubIds"].includes(field)) {
+  if (["reviewIds", "reviewedEventIds", "reviewedClubIds"].includes(field)) {
     return Array.isArray(value);
   }
   return false;
@@ -374,11 +374,11 @@ function resetValueForField(field, value, refs) {
   if (field === "reviewIds" && Array.isArray(value)) {
     return value.filter((item) => !refs.reviewIds.has(item));
   }
-  if (field === "reviewedRunIds" && Array.isArray(value)) {
-    return value.filter((item) => !refs.runIds.has(item));
+  if (field === "reviewedEventIds" && Array.isArray(value)) {
+    return value.filter((item) => !refs.eventIds.has(item));
   }
-  if (field === "reviewedRunClubIds" && Array.isArray(value)) {
-    return value.filter((item) => !refs.runClubIds.has(item));
+  if (field === "reviewedClubIds" && Array.isArray(value)) {
+    return value.filter((item) => !refs.clubIds.has(item));
   }
   return null;
 }
@@ -417,8 +417,8 @@ function printPlan(plan) {
     for (const review of plan.reviewDocuments) {
       console.log(
         `  - ${review.path} ` +
-        `(club=${review.runClubId ?? "none"}, ` +
-        `run=${review.runId ?? "none"}, ` +
+        `(club=${review.clubId ?? "none"}, ` +
+        `event=${review.eventId ?? "none"}, ` +
         `reviewer=${review.reviewerUserId ?? "none"}, ` +
         `rating=${review.rating ?? "none"})`
       );
@@ -426,9 +426,9 @@ function printPlan(plan) {
     console.log("");
   }
 
-  if (plan.runClubAggregateResets.length > 0) {
-    console.log("Run club aggregate resets:");
-    for (const reset of plan.runClubAggregateResets) {
+  if (plan.clubAggregateResets.length > 0) {
+    console.log("Club aggregate resets:");
+    for (const reset of plan.clubAggregateResets) {
       console.log(
         `  - ${reset.path}: ` +
         `${reset.before.rating}/${reset.before.reviewCount} -> 0/0 ` +
@@ -438,9 +438,9 @@ function printPlan(plan) {
     console.log("");
   }
 
-  if (plan.runReferenceFields.length > 0) {
-    console.log("Run review reference fields found:");
-    for (const field of plan.runReferenceFields) {
+  if (plan.eventReferenceFields.length > 0) {
+    console.log("Event review reference fields found:");
+    for (const field of plan.eventReferenceFields) {
       console.log(
         `  - ${field.path}.${field.field} ` +
         `type=${field.type} safeReset=${field.safeReset}`

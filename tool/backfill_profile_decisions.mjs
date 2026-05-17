@@ -27,7 +27,7 @@ export async function main(argv = process.argv.slice(2)) {
   if (args.apply && isProductionTarget(args, projectId) && !args.allowProd) {
     throw new Error(
       "Refusing to backfill prod without --allow-prod. " +
-      "Run a dry run first, then rerun with --apply --allow-prod."
+      "Event a dry event first, then rerun with --apply --allow-prod."
     );
   }
   if (args.emulatorHost) {
@@ -47,7 +47,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   if (!args.apply) {
-    console.log("\nDry run only. Re-run with --apply to write backfill docs.");
+    console.log("\nDry event only. Re-event with --apply to write backfill docs.");
     return;
   }
   if (backfillPlan.summary.validationErrorCount > 0) {
@@ -192,12 +192,12 @@ function printSummary(summary) {
 function printHelp() {
   console.log(`Usage: node tool/backfill_profile_decisions.mjs [options]
 
-Dry-run-first backfill for the swipes -> profileDecisions storage migration.
+Dry-event-first backfill for the swipes -> profileDecisions storage migration.
 The script copies missing or stale legacy swipes into profileDecisions. It never
 deletes either path.
 
 Options:
-  --apply                 Write missing/stale future docs. Default is dry-run.
+  --apply                 Write missing/stale future docs. Default is dry-event.
   --allow-prod            Required with --apply against prod.
   --json                  Print compact summary as JSON.
   --env <dev|staging|prod> Resolve project id from .firebaserc.

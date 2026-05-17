@@ -2,22 +2,22 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/fcm_service.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
-import '../run_clubs/run_clubs_test_helpers.dart' as run_club_helpers;
-import '../runs/runs_test_helpers.dart' as run_helpers;
+import '../clubs/clubs_test_helpers.dart' as club_helpers;
+import '../events/events_test_helpers.dart' as run_helpers;
 import '../test_pump_helpers.dart';
 
 class _FakeMatchRepository implements MatchRepository {
@@ -79,7 +79,7 @@ Match _buildMatch({
   id: id,
   user1Id: user1Id,
   user2Id: user2Id,
-  runIds: const ['run-1'],
+  eventIds: const ['event-1'],
   createdAt: DateTime(2026, 4, 23, 9),
 );
 
@@ -98,7 +98,7 @@ Future<(ProviderContainer, GoRouter)> _pumpRouterApp(
       conversationRepositoryProvider.overrideWithValue(
         _FakeConversationRepository(),
       ),
-      watchRunProvider('run-1').overrideWith((ref) => Stream.value(null)),
+      watchEventProvider('event-1').overrideWith((ref) => Stream.value(null)),
       if (streamedProfile != null)
         watchPublicProfileProvider(
           streamedProfile.uid,
@@ -148,44 +148,42 @@ Future<void> _settleRoute(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('create-run route fetches the club when no extra is available', (
-    tester,
-  ) async {
-    final club = run_club_helpers.buildRunClub(
-      id: 'club-1',
-      hostUserId: 'host-1',
-    );
-    final container = ProviderContainer(
-      overrides: [
-        uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-        fetchRunClubProvider('club-1').overrideWith((ref) async => club),
-      ],
-    );
-    addTearDown(container.dispose);
-    final uidSubscription = container.listen(
-      uidProvider,
-      (_, _) {},
-      fireImmediately: true,
-    );
-    addTearDown(uidSubscription.close);
-    await container.pump();
+  testWidgets(
+    'create-event route fetches the club when no extra is available',
+    (tester) async {
+      final club = club_helpers.buildClub(id: 'club-1', hostUserId: 'host-1');
+      final container = ProviderContainer(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          fetchClubProvider('club-1').overrideWith((ref) async => club),
+        ],
+      );
+      addTearDown(container.dispose);
+      final uidSubscription = container.listen(
+        uidProvider,
+        (_, _) {},
+        fireImmediately: true,
+      );
+      addTearDown(uidSubscription.close);
+      await container.pump();
 
-    await tester.pumpWidget(
-      UncontrolledProviderScope(
-        container: container,
-        child: MaterialApp(
-          theme: AppTheme.light,
-          home: const CreateRunRouteScreen(runClubId: 'club-1'),
+      await tester.pumpWidget(
+        UncontrolledProviderScope(
+          container: container,
+          child: MaterialApp(
+            theme: AppTheme.light,
+            home: const CreateEventRouteScreen(clubId: 'club-1'),
+          ),
         ),
-      ),
-    );
+      );
 
-    await tester.pump();
-    await tester.pump();
+      await tester.pump();
+      await tester.pump();
 
-    expect(find.text('Distance (km)'), findsOneWidget);
-    expect(find.text('Run club not found.'), findsNothing);
-  });
+      expect(find.text('Distance (km)'), findsOneWidget);
+      expect(find.text('Club not found.'), findsNothing);
+    },
+  );
 
   testWidgets('chat route hydrates the profile when extra is invalid', (
     tester,

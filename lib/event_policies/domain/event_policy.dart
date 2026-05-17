@@ -5,8 +5,8 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 /// IN DEVELOPMENT: parallel event policy engine.
 ///
 /// This domain layer owns the production policy snapshot shape while the
-/// migration from legacy RunConstraints/priceInPaise/capacityLimit is in
-/// progress. Keep backward-compatible fallbacks until older run documents are
+/// migration from legacy EventConstraints/priceInPaise/capacityLimit is in
+/// progress. Keep backward-compatible fallbacks until older event documents are
 /// migrated.
 const eventPolicyEngineDevelopmentStatus =
     'production_migration_policy_snapshot_v1';
@@ -833,7 +833,7 @@ class EventPolicyBundle {
 
   static const version = 1;
 
-  factory EventPolicyBundle.openRun({
+  factory EventPolicyBundle.openEvent({
     required int capacityLimit,
     required int basePriceInPaise,
     EventCancellationPolicy cancellationPolicy =
@@ -851,7 +851,7 @@ class EventPolicyBundle {
     );
   }
 
-  factory EventPolicyBundle.fixedCohortCapsRun({
+  factory EventPolicyBundle.fixedCohortCapsEvent({
     required int capacityLimit,
     required int basePriceInPaise,
     int? maxMenInterestedInWomen,
@@ -875,7 +875,7 @@ class EventPolicyBundle {
     );
   }
 
-  factory EventPolicyBundle.balancedSinglesRun({
+  factory EventPolicyBundle.balancedSinglesEvent({
     required int capacityLimit,
     required int basePriceInPaise,
     int maxSkew = 1,
@@ -901,21 +901,21 @@ class EventPolicyBundle {
     );
   }
 
-  factory EventPolicyBundle.legacyRun({
+  factory EventPolicyBundle.legacyEvent({
     required int capacityLimit,
     required int priceInPaise,
     int? maxMen,
     int? maxWomen,
   }) {
     if (maxMen != null || maxWomen != null) {
-      return EventPolicyBundle.fixedCohortCapsRun(
+      return EventPolicyBundle.fixedCohortCapsEvent(
         capacityLimit: capacityLimit,
         basePriceInPaise: priceInPaise,
         maxMenInterestedInWomen: maxMen,
         maxWomenInterestedInMen: maxWomen,
       );
     }
-    return EventPolicyBundle.openRun(
+    return EventPolicyBundle.openEvent(
       capacityLimit: capacityLimit,
       basePriceInPaise: priceInPaise,
     );

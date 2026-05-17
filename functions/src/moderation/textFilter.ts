@@ -3,7 +3,7 @@
  *
  * This module provides a lightweight, zero-dependency content filter that
  * checks text against a configurable list of banned terms. It is designed to
- * run inside Cloud Functions triggers (Firestore onCreate, onUpdate) and
+ * event inside Cloud Functions triggers (Firestore onCreate, onUpdate) and
  * callable handlers without calling an external API.
  *
  * ## Architecture

@@ -259,7 +259,7 @@ List<EmotionalRunTag> emotionalRunTagsForProfile(PublicProfile profile) {
       case RunReason.mindfulness:
         add(
           EmotionalRunTagKind.headspaceRunner,
-          'Runs for headspace',
+          'Events for headspace',
           source: EmotionalRunTagSource.selected,
         );
       case RunReason.raceTraining:
@@ -307,7 +307,7 @@ List<EmotionalRunTag> emotionalRunTagsForProfile(PublicProfile profile) {
   final distances = profile.preferredDistances.toSet();
   if (distances.contains(PreferredDistance.marathon) ||
       distances.contains(PreferredDistance.halfMarathon)) {
-    add(EmotionalRunTagKind.longRunPerson, 'Long-run person');
+    add(EmotionalRunTagKind.longRunPerson, 'Long-event person');
   } else if (distances.contains(PreferredDistance.tenK)) {
     add(EmotionalRunTagKind.tenKReady, '10K ready');
   } else if (distances.contains(PreferredDistance.fiveK)) {
@@ -344,9 +344,9 @@ List<CompatibilityReason> compatibilityReasonsForProfile({
     reasons.add(CompatibilityReason(kind: kind, label: label));
   }
 
-  final runTitle = _trimToNull(sharedRunTitle);
-  if (runTitle != null) {
-    add(CompatibilityReasonKind.sharedRun, 'You met at $runTitle');
+  final eventTitle = _trimToNull(sharedRunTitle);
+  if (eventTitle != null) {
+    add(CompatibilityReasonKind.sharedRun, 'You met at $eventTitle');
   }
 
   final viewer = viewerProfile;
@@ -386,7 +386,7 @@ List<CompatibilityReason> compatibilityReasonsForProfile({
   if (sharedRunTimes.isNotEmpty) {
     add(
       CompatibilityReasonKind.runTime,
-      'You both like ${_joinLabels(sharedRunTimes)} runs',
+      'You both like ${_joinLabels(sharedRunTimes)} events',
     );
   }
 
@@ -442,17 +442,17 @@ String _relationshipGoalReason(RelationshipGoal goal) {
 String _runningReasonCompatibilityLabel(List<RunReason> reasons) {
   if (reasons.length == 1) {
     return switch (reasons.single) {
-      RunReason.social => 'You both run to make friends',
-      RunReason.fitness => 'You both run to stay fit',
-      RunReason.challenge => 'You both run to push limits',
-      RunReason.community => 'You both run for community',
-      RunReason.mindfulness => 'You both run for headspace',
-      RunReason.weightLoss => 'You both run for fitness goals',
-      RunReason.raceTraining => 'You both run for race training',
+      RunReason.social => 'You both event to make friends',
+      RunReason.fitness => 'You both event to stay fit',
+      RunReason.challenge => 'You both event to push limits',
+      RunReason.community => 'You both event for community',
+      RunReason.mindfulness => 'You both event for headspace',
+      RunReason.weightLoss => 'You both event for fitness goals',
+      RunReason.raceTraining => 'You both event for race training',
     };
   }
 
-  return 'You both run for ${_joinLabels(reasons.map((reason) => reason.label.toLowerCase()))}';
+  return 'You both event for ${_joinLabels(reasons.map((reason) => reason.label.toLowerCase()))}';
 }
 
 List<ProfileConfidenceSignal> _confidenceSignals({
@@ -470,12 +470,12 @@ List<ProfileConfidenceSignal> _confidenceSignals({
     );
   }
 
-  final runTitle = _trimToNull(sharedRunTitle);
-  if (runTitle != null) {
+  final eventTitle = _trimToNull(sharedRunTitle);
+  if (eventTitle != null) {
     signals.add(
       ProfileConfidenceSignal(
         kind: ProfileConfidenceSignalKind.sharedRun,
-        label: 'Met at $runTitle',
+        label: 'Met at $eventTitle',
       ),
     );
   }

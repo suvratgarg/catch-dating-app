@@ -10,14 +10,16 @@ import {
   onboardingDraftDocumentSchema,
   userProfileDocumentSchema,
   publicProfileDocumentSchema,
-  runClubDocumentSchema,
-  runClubMembershipDocumentSchema,
-  runClubHostClaimDocumentSchema,
-  runDocumentSchema,
-  runParticipationDocumentSchema,
-  runClubScheduleLockDocumentSchema,
-  userRunScheduleLockDocumentSchema,
-  savedRunDocumentSchema,
+  clubDocumentSchema,
+  clubMembershipDocumentSchema,
+  clubHostClaimDocumentSchema,
+  eventDocumentSchema,
+  eventParticipationDocumentSchema,
+  eventSuccessPlanDocumentSchema,
+  eventSuccessFeedbackDocumentSchema,
+  clubScheduleLockDocumentSchema,
+  userEventScheduleLockDocumentSchema,
+  savedEventDocumentSchema,
   paymentDocumentSchema,
   swipeDocumentSchema,
   matchDocumentSchema,
@@ -30,24 +32,24 @@ import {
   deletedUserTombstoneDocumentSchema,
   rateLimitDocumentSchema,
   functionEventReceiptDocumentSchema,
-  seedRunManifestDocumentSchema,
+  seedEventManifestDocumentSchema,
   updateUserProfileCallablePayloadSchema,
-  createRunClubCallablePayloadSchema,
-  updateRunClubCallablePayloadSchema,
-  archiveRunClubCallablePayloadSchema,
-  deleteRunClubCallablePayloadSchema,
-  runClubMembershipCallablePayloadSchema,
-  setRunClubNotificationPreferenceCallablePayloadSchema,
-  createRunCallablePayloadSchema,
-  updateRunCallablePayloadSchema,
-  cancelRunCallablePayloadSchema,
-  deleteRunCallablePayloadSchema,
-  runIdCallablePayloadSchema,
-  markRunAttendanceCallablePayloadSchema,
+  createClubCallablePayloadSchema,
+  updateClubCallablePayloadSchema,
+  archiveClubCallablePayloadSchema,
+  deleteClubCallablePayloadSchema,
+  clubMembershipCallablePayloadSchema,
+  setClubNotificationPreferenceCallablePayloadSchema,
+  createEventCallablePayloadSchema,
+  updateEventCallablePayloadSchema,
+  cancelEventCallablePayloadSchema,
+  deleteEventCallablePayloadSchema,
+  eventIdCallablePayloadSchema,
+  markEventAttendanceCallablePayloadSchema,
   selfCheckInAttendanceCallablePayloadSchema,
-  createRunReviewCallablePayloadSchema,
-  updateRunReviewCallablePayloadSchema,
-  deleteRunReviewCallablePayloadSchema,
+  createEventReviewCallablePayloadSchema,
+  updateEventReviewCallablePayloadSchema,
+  deleteEventReviewCallablePayloadSchema,
   blockUserCallablePayloadSchema,
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
@@ -56,8 +58,8 @@ import {
   placeDetailsCallablePayloadSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
-  createSavedRunClientWriteSchema,
-  deleteSavedRunClientWriteSchema,
+  createSavedEventClientWriteSchema,
+  deleteSavedEventClientWriteSchema,
   markNotificationReadClientWriteSchema,
   resetMatchUnreadCountClientWriteSchema,
 } from "./schema_contract_registry.mjs";
@@ -78,14 +80,16 @@ export const validateConfigCitiesDocument = ajv.compile(configCitiesDocumentSche
 export const validateOnboardingDraftDocument = ajv.compile(onboardingDraftDocumentSchema);
 export const validateUserProfileDocument = ajv.compile(userProfileDocumentSchema);
 export const validatePublicProfileDocument = ajv.compile(publicProfileDocumentSchema);
-export const validateRunClubDocument = ajv.compile(runClubDocumentSchema);
-export const validateRunClubMembershipDocument = ajv.compile(runClubMembershipDocumentSchema);
-export const validateRunClubHostClaimDocument = ajv.compile(runClubHostClaimDocumentSchema);
-export const validateRunDocument = ajv.compile(runDocumentSchema);
-export const validateRunParticipationDocument = ajv.compile(runParticipationDocumentSchema);
-export const validateRunClubScheduleLockDocument = ajv.compile(runClubScheduleLockDocumentSchema);
-export const validateUserRunScheduleLockDocument = ajv.compile(userRunScheduleLockDocumentSchema);
-export const validateSavedRunDocument = ajv.compile(savedRunDocumentSchema);
+export const validateClubDocument = ajv.compile(clubDocumentSchema);
+export const validateClubMembershipDocument = ajv.compile(clubMembershipDocumentSchema);
+export const validateClubHostClaimDocument = ajv.compile(clubHostClaimDocumentSchema);
+export const validateEventDocument = ajv.compile(eventDocumentSchema);
+export const validateEventParticipationDocument = ajv.compile(eventParticipationDocumentSchema);
+export const validateEventSuccessPlanDocument = ajv.compile(eventSuccessPlanDocumentSchema);
+export const validateEventSuccessFeedbackDocument = ajv.compile(eventSuccessFeedbackDocumentSchema);
+export const validateClubScheduleLockDocument = ajv.compile(clubScheduleLockDocumentSchema);
+export const validateUserEventScheduleLockDocument = ajv.compile(userEventScheduleLockDocumentSchema);
+export const validateSavedEventDocument = ajv.compile(savedEventDocumentSchema);
 export const validatePaymentDocument = ajv.compile(paymentDocumentSchema);
 export const validateSwipeDocument = ajv.compile(swipeDocumentSchema);
 export const validateMatchDocument = ajv.compile(matchDocumentSchema);
@@ -98,24 +102,24 @@ export const validateModerationFlagDocument = ajv.compile(moderationFlagDocument
 export const validateDeletedUserTombstoneDocument = ajv.compile(deletedUserTombstoneDocumentSchema);
 export const validateRateLimitDocument = ajv.compile(rateLimitDocumentSchema);
 export const validateFunctionEventReceiptDocument = ajv.compile(functionEventReceiptDocumentSchema);
-export const validateSeedRunManifestDocument = ajv.compile(seedRunManifestDocumentSchema);
+export const validateSeedEventManifestDocument = ajv.compile(seedEventManifestDocumentSchema);
 export const validateUpdateUserProfileCallablePayload = ajv.compile(updateUserProfileCallablePayloadSchema);
-export const validateCreateRunClubCallablePayload = ajv.compile(createRunClubCallablePayloadSchema);
-export const validateUpdateRunClubCallablePayload = ajv.compile(updateRunClubCallablePayloadSchema);
-export const validateArchiveRunClubCallablePayload = ajv.compile(archiveRunClubCallablePayloadSchema);
-export const validateDeleteRunClubCallablePayload = ajv.compile(deleteRunClubCallablePayloadSchema);
-export const validateRunClubMembershipCallablePayload = ajv.compile(runClubMembershipCallablePayloadSchema);
-export const validateSetRunClubNotificationPreferenceCallablePayload = ajv.compile(setRunClubNotificationPreferenceCallablePayloadSchema);
-export const validateCreateRunCallablePayload = ajv.compile(createRunCallablePayloadSchema);
-export const validateUpdateRunCallablePayload = ajv.compile(updateRunCallablePayloadSchema);
-export const validateCancelRunCallablePayload = ajv.compile(cancelRunCallablePayloadSchema);
-export const validateDeleteRunCallablePayload = ajv.compile(deleteRunCallablePayloadSchema);
-export const validateRunIdCallablePayload = ajv.compile(runIdCallablePayloadSchema);
-export const validateMarkRunAttendanceCallablePayload = ajv.compile(markRunAttendanceCallablePayloadSchema);
+export const validateCreateClubCallablePayload = ajv.compile(createClubCallablePayloadSchema);
+export const validateUpdateClubCallablePayload = ajv.compile(updateClubCallablePayloadSchema);
+export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallablePayloadSchema);
+export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
+export const validateClubMembershipCallablePayload = ajv.compile(clubMembershipCallablePayloadSchema);
+export const validateSetClubNotificationPreferenceCallablePayload = ajv.compile(setClubNotificationPreferenceCallablePayloadSchema);
+export const validateCreateEventCallablePayload = ajv.compile(createEventCallablePayloadSchema);
+export const validateUpdateEventCallablePayload = ajv.compile(updateEventCallablePayloadSchema);
+export const validateCancelEventCallablePayload = ajv.compile(cancelEventCallablePayloadSchema);
+export const validateDeleteEventCallablePayload = ajv.compile(deleteEventCallablePayloadSchema);
+export const validateEventIdCallablePayload = ajv.compile(eventIdCallablePayloadSchema);
+export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);
 export const validateSelfCheckInAttendanceCallablePayload = ajv.compile(selfCheckInAttendanceCallablePayloadSchema);
-export const validateCreateRunReviewCallablePayload = ajv.compile(createRunReviewCallablePayloadSchema);
-export const validateUpdateRunReviewCallablePayload = ajv.compile(updateRunReviewCallablePayloadSchema);
-export const validateDeleteRunReviewCallablePayload = ajv.compile(deleteRunReviewCallablePayloadSchema);
+export const validateCreateEventReviewCallablePayload = ajv.compile(createEventReviewCallablePayloadSchema);
+export const validateUpdateEventReviewCallablePayload = ajv.compile(updateEventReviewCallablePayloadSchema);
+export const validateDeleteEventReviewCallablePayload = ajv.compile(deleteEventReviewCallablePayloadSchema);
 export const validateBlockUserCallablePayload = ajv.compile(blockUserCallablePayloadSchema);
 export const validateUnblockUserCallablePayload = ajv.compile(unblockUserCallablePayloadSchema);
 export const validateReportUserCallablePayload = ajv.compile(reportUserCallablePayloadSchema);
@@ -124,8 +128,8 @@ export const validatePlacesAutocompleteCallablePayload = ajv.compile(placesAutoc
 export const validatePlaceDetailsCallablePayload = ajv.compile(placeDetailsCallablePayloadSchema);
 export const validateCreateProfileDecisionClientWrite = ajv.compile(createProfileDecisionClientWriteSchema);
 export const validateCreateChatMessageClientWrite = ajv.compile(createChatMessageClientWriteSchema);
-export const validateCreateSavedRunClientWrite = ajv.compile(createSavedRunClientWriteSchema);
-export const validateDeleteSavedRunClientWrite = ajv.compile(deleteSavedRunClientWriteSchema);
+export const validateCreateSavedEventClientWrite = ajv.compile(createSavedEventClientWriteSchema);
+export const validateDeleteSavedEventClientWrite = ajv.compile(deleteSavedEventClientWriteSchema);
 export const validateMarkNotificationReadClientWrite = ajv.compile(markNotificationReadClientWriteSchema);
 export const validateResetMatchUnreadCountClientWrite = ajv.compile(resetMatchUnreadCountClientWriteSchema);
 

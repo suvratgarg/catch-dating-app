@@ -30,11 +30,11 @@
 export type ActivityNotificationType =
   | "message"
   | "match"
-  | "runReminder"
-  | "runSignup"
+  | "eventReminder"
+  | "eventSignup"
   | "waitlistPromotion"
-  | "runCancelled"
-  | "runUpdated"
+  | "eventCancelled"
+  | "eventUpdated"
   | "clubUpdate";
 
 export type ChildrenStatus =
@@ -43,6 +43,12 @@ export type ChildrenStatus =
   | "haveNoMore"
   | "wantSomeday"
   | "dontWant";
+
+export type ClubLifecycleStatus = "active" | "archived";
+
+export type ClubMembershipRole = "host" | "member";
+
+export type ClubMembershipStatus = "active" | "left" | "deleted";
 
 export type DietaryPreference =
   | "omnivore"
@@ -61,6 +67,15 @@ export type EducationLevel =
   | "phd"
   | "tradeSchool"
   | "other";
+
+export type EventLifecycleStatus = "active" | "cancelled";
+
+export type EventParticipationStatus =
+  | "signedUp"
+  | "waitlisted"
+  | "attended"
+  | "cancelled"
+  | "deleted";
 
 export type Gender = "man" | "woman" | "nonBinary" | "other";
 
@@ -109,21 +124,6 @@ export type Religion =
   | "buddhist"
   | "other"
   | "nonReligious";
-
-export type RunClubLifecycleStatus = "active" | "archived";
-
-export type RunClubMembershipRole = "host" | "member";
-
-export type RunClubMembershipStatus = "active" | "left" | "deleted";
-
-export type RunLifecycleStatus = "active" | "cancelled";
-
-export type RunParticipationStatus =
-  | "signedUp"
-  | "waitlisted"
-  | "attended"
-  | "cancelled"
-  | "deleted";
 
 export type RunReason =
   | "fitness"
@@ -198,7 +198,7 @@ export interface UserProfileDoc {
   preferredRunTimes: PreferredRunTime[];
   prefsNewCatches: boolean;
   prefsMessages: boolean;
-  prefsRunReminders: boolean;
+  prefsEventReminders: boolean;
   prefsRunStatusUpdates: boolean;
   prefsClubUpdates: boolean;
   prefsWeeklyDigest: boolean;
@@ -254,11 +254,11 @@ export interface PublicProfileDoc {
 }
 
 /**
- * /runClubs/{clubId}
- * Dart: lib/run_clubs/domain/run_club.dart — RunClub
+ * /clubs/{clubId}
+ * Dart: lib/clubs/domain/club.dart — Club
  * Note: "id" is the document ID, not stored in the document data.
  */
-export interface RunClubDoc {
+export interface ClubDoc {
   name: string;
   description: string;
   location: string;
@@ -275,31 +275,31 @@ export interface RunClubDoc {
   rating: number;
   reviewCount: number;
   /** nullable in Firestore */
-  nextRunAt?: FirebaseFirestore.Timestamp | null;
+  nextEventAt?: FirebaseFirestore.Timestamp | null;
   /** nullable in Firestore */
-  nextRunLabel?: string | null;
+  nextEventLabel?: string | null;
   /** nullable in Firestore */
   instagramHandle?: string | null;
   /** nullable in Firestore */
   phoneNumber?: string | null;
   /** nullable in Firestore */
   email?: string | null;
-  status: RunClubLifecycleStatus;
+  status: ClubLifecycleStatus;
   archived: boolean;
   archivedAt?: FirebaseFirestore.Timestamp | null;
   archiveReason?: string | null;
 }
 
 /**
- * /runClubMemberships/{membershipId}
- * Dart: lib/run_clubs/domain/run_club_membership.dart — RunClubMembership
+ * /clubMemberships/{membershipId}
+ * Dart: lib/clubs/domain/club_membership.dart — ClubMembership
  * Note: "id" is the document ID, not stored in the document data.
  */
-export interface RunClubMembershipDoc {
+export interface ClubMembershipDoc {
   clubId: string;
   uid: string;
-  role: RunClubMembershipRole;
-  status: RunClubMembershipStatus;
+  role: ClubMembershipRole;
+  status: ClubMembershipStatus;
   pushNotificationsEnabled: boolean;
   joinedAt: FirebaseFirestore.Timestamp;
   leftAt?: FirebaseFirestore.Timestamp | null;
@@ -307,9 +307,9 @@ export interface RunClubMembershipDoc {
 }
 
 /**
- * Dart: lib/runs/domain/run_constraints.dart — RunConstraints
+ * Dart: lib/events/domain/event_constraints.dart — EventConstraints
  */
-export interface RunConstraints {
+export interface EventConstraints {
   minAge: number;
   maxAge: number;
   maxMen?: number | null;
@@ -317,12 +317,12 @@ export interface RunConstraints {
 }
 
 /**
- * /runs/{runId}
- * Dart: lib/runs/domain/run.dart — Run
+ * /events/{eventId}
+ * Dart: lib/events/domain/event.dart — Event
  * Note: "id" is the document ID, not stored in the document data.
  */
-export interface RunDoc {
-  runClubId: string;
+export interface EventDoc {
+  clubId: string;
   startTime: FirebaseFirestore.Timestamp;
   endTime: FirebaseFirestore.Timestamp;
   meetingPoint: string;
@@ -337,15 +337,15 @@ export interface RunDoc {
   pace: PaceLevel;
   capacityLimit: number;
   description: string;
-  /** in paise (INR subunit). 0 = free run */
+  /** in paise (INR subunit). 0 = free event */
   priceInPaise: number;
   bookedCount?: number | null;
   checkedInCount?: number | null;
   waitlistedCount?: number | null;
-  status: RunLifecycleStatus;
+  status: EventLifecycleStatus;
   cancelledAt?: FirebaseFirestore.Timestamp | null;
   cancellationReason?: string | null;
-  constraints: RunConstraints;
+  constraints: EventConstraints;
   /**
    * Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
    * Denormalized counts maintained atomically by Cloud Functions.
@@ -353,22 +353,22 @@ export interface RunDoc {
   genderCounts: Record<string, number>;
   cohortCounts: Record<string, number>;
   /**
-   * Production event-policy snapshot; legacy runs may fall back to
+   * Production event-policy snapshot; legacy events may fall back to
    * capacityLimit, priceInPaise, and constraints
    */
   eventPolicy?: EventPolicyBundleDoc | null;
 }
 
 /**
- * /runParticipations/{participationId}
- * Dart: lib/runs/domain/run_participation.dart — RunParticipation
+ * /eventParticipations/{participationId}
+ * Dart: lib/events/domain/event_participation.dart — EventParticipation
  * Note: "id" is the document ID, not stored in the document data.
  */
-export interface RunParticipationDoc {
-  runId: string;
-  runClubId: string;
+export interface EventParticipationDoc {
+  eventId: string;
+  clubId: string;
   uid: string;
-  status: RunParticipationStatus;
+  status: EventParticipationStatus;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
   signedUpAt?: FirebaseFirestore.Timestamp | null;
@@ -382,13 +382,13 @@ export interface RunParticipationDoc {
 }
 
 /**
- * /savedRuns/{savedRunId}
- * Dart: lib/runs/domain/saved_run.dart — SavedRun
+ * /savedEvents/{savedEventId}
+ * Dart: lib/events/domain/saved_event.dart — SavedEvent
  * Note: "id" is the document ID, not stored in the document data.
  */
-export interface SavedRunDoc {
+export interface SavedEventDoc {
   uid: string;
-  runId: string;
+  eventId: string;
   savedAt: FirebaseFirestore.Timestamp;
 }
 
@@ -401,7 +401,7 @@ export interface PaymentDoc {
   userId: string;
   orderId: string;
   paymentId: string;
-  runId: string;
+  eventId: string;
   /** in paise */
   amount: number;
   currency: string;
@@ -418,7 +418,7 @@ export interface PaymentDoc {
 export interface SwipeDoc {
   swiperId: string;
   targetId: string;
-  runId: string;
+  eventId: string;
   direction: SwipeDirection;
   reactionTargetId?: string | null;
   reactionTargetType?: SwipeReactionTargetType | null;
@@ -437,7 +437,7 @@ export interface SwipeDoc {
 export interface MatchDoc {
   user1Id: string;
   user2Id: string;
-  runIds: string[];
+  eventIds: string[];
   createdAt: FirebaseFirestore.Timestamp;
   lastMessageAt?: FirebaseFirestore.Timestamp | null;
   lastMessagePreview?: string | null;
@@ -476,8 +476,8 @@ export interface ActivityNotificationDoc {
   createdAt: FirebaseFirestore.Timestamp;
   readAt?: FirebaseFirestore.Timestamp | null;
   matchId?: string | null;
-  runId?: string | null;
-  runClubId?: string | null;
+  eventId?: string | null;
+  clubId?: string | null;
   actorUid?: string | null;
   actorName?: string | null;
 }
@@ -487,15 +487,15 @@ export interface ActivityNotificationDoc {
  * Dart: lib/reviews/domain/review.dart — Review
  * Note: "id" is the document ID, not stored in the document data.
  * Written by review Cloud Functions using one deterministic document per
- * (runId, reviewerUserId) pair.
+ * (eventId, reviewerUserId) pair.
  */
 export interface ReviewDoc {
-  runClubId: string;
+  clubId: string;
   /**
    * Required for new callable-created reviews; nullable only for legacy review
    * documents until migration.
    */
-  runId?: string | null;
+  eventId?: string | null;
   reviewerUserId: string;
   reviewerName: string;
   rating: number;
@@ -558,7 +558,7 @@ export interface ProfilePhoto {
 
 /**
  * embedded event policy snapshot
- * Stored inside runs/{runId}.eventPolicy for production booking, pricing,
+ * Stored inside events/{eventId}.eventPolicy for production booking, pricing,
  * cancellation, and settlement behavior.
  */
 export interface EventPolicyBundleDoc {
@@ -571,7 +571,7 @@ export interface EventPolicyBundleDoc {
 
 /**
  * embedded event policy admission
- * Nested inside runs/{runId}.eventPolicy.admission.
+ * Nested inside events/{eventId}.eventPolicy.admission.
  */
 export interface EventPolicyAdmissionDoc {
   format:
@@ -592,7 +592,7 @@ export interface EventPolicyAdmissionDoc {
 
 /**
  * embedded event policy waitlist
- * Nested inside runs/{runId}.eventPolicy.admission.waitlistPolicy.
+ * Nested inside events/{eventId}.eventPolicy.admission.waitlistPolicy.
  */
 export interface EventPolicyWaitlistDoc {
   mode:
@@ -605,7 +605,7 @@ export interface EventPolicyWaitlistDoc {
 
 /**
  * embedded event policy balanced ratio
- * Nested inside runs/{runId}.eventPolicy.admission.balancedRatioPolicy.
+ * Nested inside events/{eventId}.eventPolicy.admission.balancedRatioPolicy.
  */
 export interface EventPolicyBalancedRatioDoc {
   leftCohortId: string;
@@ -621,7 +621,7 @@ export interface EventPolicyBalancedRatioDoc {
 
 /**
  * embedded event policy pricing
- * Nested inside runs/{runId}.eventPolicy.pricing.
+ * Nested inside events/{eventId}.eventPolicy.pricing.
  */
 export interface EventPolicyPricingDoc {
   basePriceInPaise: number;
@@ -631,7 +631,7 @@ export interface EventPolicyPricingDoc {
 
 /**
  * embedded event policy demand pricing rule
- * Nested inside runs/{runId}.eventPolicy.pricing.demandPricingRules.
+ * Nested inside events/{eventId}.eventPolicy.pricing.demandPricingRules.
  */
 export interface EventPolicyDemandPricingRuleDoc {
   pricedCohortId: string;

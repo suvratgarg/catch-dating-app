@@ -9,11 +9,11 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/section_header.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
-import 'package:catch_dating_app/swipes/presentation/widgets/attended_run_tile.dart';
+import 'package:catch_dating_app/swipes/presentation/widgets/attended_event_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -37,23 +37,23 @@ class SwipeHubScreen extends ConsumerWidget {
         data: (uid) {
           if (uid == null) return const SizedBox.shrink();
 
-          final runsAsync = ref.watch(watchAttendedRunsProvider(uid));
+          final eventsAsync = ref.watch(watchAttendedEventsProvider(uid));
 
-          return runsAsync.when(
+          return eventsAsync.when(
             loading: () => const CatchSkeletonList(count: 3),
             error: (e, _) => CatchErrorState.fromError(
               e,
-              context: AppErrorContext.run,
-              onRetry: () => ref.invalidate(watchAttendedRunsProvider(uid)),
+              context: AppErrorContext.event,
+              onRetry: () => ref.invalidate(watchAttendedEventsProvider(uid)),
             ),
-            data: (runs) {
-              final activeRuns = runsWithOpenSwipeWindow(runs);
+            data: (events) {
+              final activeEvents = eventsWithOpenSwipeWindow(events);
 
-              if (activeRuns.isEmpty) {
+              if (activeEvents.isEmpty) {
                 return const _CatchesEmptyState();
               }
 
-              return _CatchesHubContent(activeRuns: activeRuns);
+              return _CatchesHubContent(activeEvents: activeEvents);
             },
           );
         },
@@ -63,14 +63,14 @@ class SwipeHubScreen extends ConsumerWidget {
 }
 
 class _CatchesHubContent extends StatelessWidget {
-  const _CatchesHubContent({required this.activeRuns});
+  const _CatchesHubContent({required this.activeEvents});
 
-  final List<Run> activeRuns;
+  final List<Event> activeEvents;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final featuredRun = activeRuns.first;
+    final featuredRun = activeEvents.first;
     final remaining = swipeWindowClosesAt(
       featuredRun,
     ).difference(DateTime.now());
@@ -87,11 +87,11 @@ class _CatchesHubContent extends StatelessWidget {
           const _CatchesHeader(),
           gapH16,
           _CatchesIntroCard(
-            run: featuredRun,
+            event: featuredRun,
             remaining: remaining,
             onTap: () => context.pushNamed(
-              Routes.swipeRunScreen.name,
-              pathParameters: {'runId': featuredRun.id},
+              Routes.swipeEventScreen.name,
+              pathParameters: {'eventId': featuredRun.id},
             ),
           ),
           const SizedBox(height: 22),
@@ -104,15 +104,15 @@ class _CatchesHubContent extends StatelessWidget {
                 ),
               ),
               Text(
-                '${activeRuns.length}',
+                '${activeEvents.length}',
                 style: CatchTextStyles.mono(context, color: t.primary),
               ),
             ],
           ),
           gapH12,
-          for (final run in activeRuns) ...[
-            AttendedRunTile(run: run),
-            if (run != activeRuns.last) gapH12,
+          for (final event in activeEvents) ...[
+            AttendedEventTile(event: event),
+            if (event != activeEvents.last) gapH12,
           ],
         ],
       ),
@@ -135,7 +135,7 @@ class _CatchesHeader extends StatelessWidget {
             children: [
               SectionHeader(title: 'CATCHES', heavy: true),
               gapH2,
-              Text('After the run', style: CatchTextStyles.displayL(context)),
+              Text('After the event', style: CatchTextStyles.displayL(context)),
             ],
           ),
         ),
@@ -155,12 +155,12 @@ class _CatchesHeader extends StatelessWidget {
 
 class _CatchesIntroCard extends StatelessWidget {
   const _CatchesIntroCard({
-    required this.run,
+    required this.event,
     required this.remaining,
     required this.onTap,
   });
 
-  final Run run;
+  final Event event;
   final Duration remaining;
   final VoidCallback onTap;
 
@@ -205,7 +205,7 @@ class _CatchesIntroCard extends StatelessWidget {
               ),
               gapH10,
               Text(
-                'Only checked-in runners from ${run.title} are here.',
+                'Only checked-in runners from ${event.title} are here.',
                 style: CatchTextStyles.bodyS(
                   context,
                   color: Colors.white.withValues(alpha: 0.9),
@@ -219,7 +219,7 @@ class _CatchesIntroCard extends StatelessWidget {
                     value: _formatCountdown(remaining),
                   ),
                   gapW10,
-                  _PillStat(label: 'Roster', value: '${run.attendedCount}'),
+                  _PillStat(label: 'Roster', value: '${event.attendedCount}'),
                 ],
               ),
               gapH18,
@@ -303,10 +303,10 @@ class _CatchesEmptyState extends StatelessWidget {
             icon: Icons.directions_run_rounded,
             title: 'No active catches',
             message:
-                'Book a group run, show up, and your 24-hour catch window opens here after check-in.',
+                'Book a group event, show up, and your 24-hour catch window opens here after check-in.',
             action: CatchButton(
-              label: 'Find a run',
-              onPressed: () => context.go(Routes.runClubsListScreen.path),
+              label: 'Find an event',
+              onPressed: () => context.go(Routes.clubsListScreen.path),
               variant: CatchButtonVariant.secondary,
             ),
           ),
@@ -322,7 +322,7 @@ class _CatchesEmptyState extends StatelessWidget {
                 gapW10,
                 Expanded(
                   child: Text(
-                    'Dating stays locked until you actually run together. No cold swiping strangers.',
+                    'Dating stays locked until you actually event together. No cold swiping strangers.',
                     style: CatchTextStyles.bodyS(context, color: t.ink2),
                   ),
                 ),

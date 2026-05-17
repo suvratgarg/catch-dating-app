@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -6,14 +7,13 @@ import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/quick_actions.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/recommendations.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/run_focus_rail.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/stride_card.dart';
-import 'package:catch_dating_app/host_tools/presentation/host_run_tools.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/host_tools/presentation/host_event_tools.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/run_clubs/presentation/run_club_name_lookup.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -24,14 +24,14 @@ class DashboardFull extends ConsumerWidget {
   const DashboardFull({
     super.key,
     required this.user,
-    required this.signedUpRuns,
+    required this.signedUpEvents,
     required this.followedClubIds,
   });
 
   static const scrollViewKey = ValueKey('dashboard-full-scroll-view');
 
   final UserProfile user;
-  final List<Run> signedUpRuns;
+  final List<Event> signedUpEvents;
   final List<String> followedClubIds;
 
   static String greeting() {
@@ -52,7 +52,7 @@ class DashboardFull extends ConsumerWidget {
     final firstName = user.greetingDisplayName;
     final viewModel = ref.watch(
       dashboardFullViewModelProvider(
-        signedUpRuns: signedUpRuns,
+        signedUpEvents: signedUpEvents,
         user: user,
         uid: user.uid,
         followedClubIds: followedClubIds,
@@ -89,14 +89,14 @@ class DashboardFullSliverBody extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final focusRuns = [
-      ...viewModel.upcomingRuns,
-      if (viewModel.activeSwipeRun != null) viewModel.activeSwipeRun!,
-      if (viewModel.pendingReviewRun != null) viewModel.pendingReviewRun!,
+    final focusEvents = [
+      ...viewModel.upcomingEvents,
+      if (viewModel.activeSwipeEvent != null) viewModel.activeSwipeEvent!,
+      if (viewModel.pendingReviewEvent != null) viewModel.pendingReviewEvent!,
     ];
     final clubNamesAsync = ref.watch(
-      runClubNameLookupProvider(
-        RunClubNameLookupQuery(focusRuns.map((run) => run.runClubId)),
+      clubNameLookupProvider(
+        ClubNameLookupQuery(focusEvents.map((event) => event.clubId)),
       ),
     );
     final clubNames = clubNamesAsync.asData?.value;
@@ -110,25 +110,25 @@ class DashboardFullSliverBody extends ConsumerWidget {
       ),
       sliver: SliverList(
         delegate: SliverChildListDelegate([
-          if (focusRuns.isNotEmpty) ...[
-            RunFocusRail(
-              upcomingRuns: viewModel.upcomingRuns,
+          if (focusEvents.isNotEmpty) ...[
+            EventFocusRail(
+              upcomingEvents: viewModel.upcomingEvents,
               arrivalAction: viewModel.arrivalAction,
-              activeSwipeRun: viewModel.activeSwipeRun,
-              pendingReviewRun: viewModel.pendingReviewRun,
+              activeSwipeEvent: viewModel.activeSwipeEvent,
+              pendingReviewEvent: viewModel.pendingReviewEvent,
               reviewer: user,
-              clubNameBuilder: (run) => clubNames?[run.runClubId],
+              clubNameBuilder: (event) => clubNames?[event.clubId],
             ),
             gapH18,
           ],
-          if (viewModel.hostRunTools.isNotEmpty) ...[
-            HostToolsRail(tools: viewModel.hostRunTools),
+          if (viewModel.hostEventTools.isNotEmpty) ...[
+            HostToolsRail(tools: viewModel.hostEventTools),
             gapH18,
           ],
           DashboardStrideSection(section: viewModel.weeklyActivitySection),
           gapH18,
           const QuickActions(),
-          ..._buildRecommendedRunsSection(
+          ..._buildRecommendedEventsSection(
             recommendationsSection: viewModel.recommendationsSection,
           ),
         ]),
@@ -136,15 +136,15 @@ class DashboardFullSliverBody extends ConsumerWidget {
     );
   }
 
-  List<Widget> _buildRecommendedRunsSection({
-    required DashboardSectionModel<List<DashboardRunRecommendation>>
+  List<Widget> _buildRecommendedEventsSection({
+    required DashboardSectionModel<List<DashboardEventRecommendation>>
     recommendationsSection,
   }) {
     if (recommendationsSection.isLoading) {
       return const [
         gapH18,
         _DashboardSectionStateCard(
-          message: 'Loading recommended runs...',
+          message: 'Loading recommended events...',
           isLoading: true,
         ),
       ];
@@ -153,12 +153,14 @@ class DashboardFullSliverBody extends ConsumerWidget {
     if (recommendationsSection.hasError) {
       return const [
         gapH18,
-        _DashboardSectionStateCard(message: 'Unable to load recommended runs.'),
+        _DashboardSectionStateCard(
+          message: 'Unable to load recommended events.',
+        ),
       ];
     }
 
     final recommendations =
-        recommendationsSection.data ?? const <DashboardRunRecommendation>[];
+        recommendationsSection.data ?? const <DashboardEventRecommendation>[];
     return recommendations.isEmpty
         ? const []
         : [gapH18, Recommendations(recommendations: recommendations)];
@@ -168,39 +170,39 @@ class DashboardFullSliverBody extends ConsumerWidget {
 class HostToolsRail extends StatelessWidget {
   const HostToolsRail({super.key, required this.tools});
 
-  final List<DashboardHostRunTool> tools;
+  final List<DashboardHostEventTool> tools;
 
   @override
   Widget build(BuildContext context) {
-    return HostRunToolsCarousel(
+    return HostEventToolsCarousel(
       tools: tools
           .map(
-            (tool) => HostRunToolItem(
-              run: tool.run,
+            (tool) => HostEventToolItem(
+              event: tool.event,
               attendanceState: _hostAttendanceState(tool.attendanceState),
             ),
           )
           .toList(growable: false),
-      onManageRun: (run) => context.pushNamed(
-        Routes.hostRunManageScreen.name,
-        pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+      onManageEvent: (event) => context.pushNamed(
+        Routes.hostEventManageScreen.name,
+        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
       ),
-      onTakeAttendance: (run) => context.pushNamed(
+      onTakeAttendance: (event) => context.pushNamed(
         Routes.attendanceSheet.name,
-        pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+        pathParameters: {'clubId': event.clubId, 'eventId': event.id},
       ),
     );
   }
 }
 
-HostRunAttendanceState _hostAttendanceState(
+HostEventAttendanceState _hostAttendanceState(
   DashboardHostAttendanceState state,
 ) {
   return switch (state) {
-    DashboardHostAttendanceState.open => HostRunAttendanceState.open,
+    DashboardHostAttendanceState.open => HostEventAttendanceState.open,
     DashboardHostAttendanceState.opensLater =>
-      HostRunAttendanceState.opensLater,
-    DashboardHostAttendanceState.closed => HostRunAttendanceState.closed,
+      HostEventAttendanceState.opensLater,
+    DashboardHostAttendanceState.closed => HostEventAttendanceState.closed,
   };
 }
 

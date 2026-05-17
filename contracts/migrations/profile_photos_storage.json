@@ -71,7 +71,7 @@
     {
       "id": "backfill",
       "status": "complete",
-      "description": "Dry-run-first tooling derives profilePhotos from parallel arrays, validates storage paths where available, reports index gaps before apply, and has been applied to dev and prod."
+      "description": "Dry-event-first tooling derives profilePhotos from parallel arrays, validates storage paths where available, reports index gaps before apply, and has been applied to dev and prod."
     },
     {
       "id": "new_primary",
@@ -99,7 +99,7 @@
     "Generated Dart and TypeScript ProfilePhoto types exist.",
     "Projection parity tests cover profilePhotos -> publicProfiles.",
     "Thumbnail generation updates the matching ProfilePhoto by storagePath/position rather than relying on legacy URL array writes only.",
-    "Backfill dry run reports legacy array length mismatches and missing storage paths.",
+    "Backfill dry event reports legacy array length mismatches and missing storage paths.",
     "Profile preview, public profile, and catches surfaces render through the same ProfilePhoto domain getter."
   ],
   "liveApply": {

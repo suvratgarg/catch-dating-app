@@ -51,7 +51,7 @@ abstract class Swipe with _$Swipe {
   const factory Swipe({
     required String swiperId,
     required String targetId,
-    required String runId,
+    required String eventId,
     required SwipeDirection direction,
     String? reactionTargetId,
     @JsonKey(unknownEnumValue: null)

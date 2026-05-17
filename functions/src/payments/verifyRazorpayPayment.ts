@@ -6,8 +6,8 @@ import {
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
 import Razorpay from "razorpay";
-import {signUpUserForRun} from "../runs/signUpUserForRun";
-import {buildPaymentRecord, verifyPaidRunBooking} from "./paymentValidation";
+import {signUpUserForEvent} from "../events/signUpUserForEvent";
+import {buildPaymentRecord, verifyPaidEventBooking} from "./paymentValidation";
 import {
   createRazorpayClient,
   razorpayKeyId,
@@ -28,7 +28,7 @@ interface VerifyRazorpayPaymentDeps {
   createClient: () => Razorpay;
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => unknown;
-  signUpForRun: typeof signUpUserForRun;
+  signUpForEvent: typeof signUpUserForEvent;
   verifySignature: typeof verifyPaymentSignature;
   checkRateLimit?: (
     db: FirebaseFirestore.Firestore,
@@ -41,7 +41,7 @@ const defaultDeps: VerifyRazorpayPaymentDeps = {
   createClient: createRazorpayClient,
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
-  signUpForRun: signUpUserForRun,
+  signUpForEvent: signUpUserForEvent,
   verifySignature: verifyPaymentSignature,
   checkRateLimit: defaultCheckRateLimit,
 };
@@ -50,7 +50,7 @@ const defaultDeps: VerifyRazorpayPaymentDeps = {
  * Verifies Razorpay payment truth, signs up the user, and records payment.
  * @param {CallableRequest<Partial<VerifyPaymentData> | null>} request Callable.
  * @param {VerifyRazorpayPaymentDeps} deps Injectable service dependencies.
- * @return {Promise<{verified: boolean, runId: string}>} Verification result.
+ * @return {Promise<{verified: boolean, eventId: string}>} Verification result.
  */
 export async function verifyRazorpayPaymentHandler(
   request: CallableRequest<unknown>,
@@ -80,17 +80,17 @@ export async function verifyRazorpayPaymentHandler(
     razorpay.orders.fetch(orderId),
     razorpay.payments.fetch(paymentId),
   ]);
-  const booking = verifyPaidRunBooking({
+  const booking = verifyPaidEventBooking({
     order,
     payment,
     expectedUserId: userId,
   });
 
-  // Sign the user up for the run. If this fails (e.g. run filled up in a
+  // Sign the user up for the event. If this fails (e.g. event filled up in a
   // race condition between order creation and payment), issue an immediate
   // refund so the user is never charged for a spot they didn't get.
   try {
-    await deps.signUpForRun(db, booking.runId, userId, paymentId);
+    await deps.signUpForEvent(db, booking.eventId, userId, paymentId);
   } catch (signUpError) {
     let refundSucceeded = false;
     try {
@@ -107,7 +107,7 @@ export async function verifyRazorpayPaymentHandler(
         userId,
         orderId,
         paymentId,
-        runId: booking.runId,
+        eventId: booking.eventId,
         amountInPaise: booking.amountInPaise,
         currency: booking.currency,
         status: refundSucceeded ? "refunded" : "completed",
@@ -125,7 +125,7 @@ export async function verifyRazorpayPaymentHandler(
       userId,
       orderId,
       paymentId,
-      runId: booking.runId,
+      eventId: booking.eventId,
       amountInPaise: booking.amountInPaise,
       currency: booking.currency,
       status: "completed",
@@ -133,7 +133,7 @@ export async function verifyRazorpayPaymentHandler(
     createdAt: deps.serverTimestamp(),
   });
 
-  return {verified: true, runId: booking.runId};
+  return {verified: true, eventId: booking.eventId};
 }
 
 /**

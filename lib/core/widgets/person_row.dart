@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 /// View-model for a single person row.
 ///
 /// [metaLine] — secondary text: "5:30 /km · 26", "1.4 km away", etc.
-/// [contextLine] — tertiary text: run name (shown with a route icon), or
+/// [contextLine] — tertiary text: event name (shown with a route icon), or
 ///   last message text.
 /// [lastMessage] — if supplied, the row enters chat-thread layout with the
 ///   message, timestamp, and optional unread badge.
@@ -35,7 +35,7 @@ class PersonRowData {
   /// Secondary info line — pace, distance, age, proximity, etc.
   final String? metaLine;
 
-  /// Tertiary line shown with a small route icon — typically the shared run name.
+  /// Tertiary line shown with a small route icon — typically the shared event name.
   final String? contextLine;
 
   /// When non-null switches to chat-thread layout.
@@ -71,7 +71,7 @@ class PersonRowData {
 /// // Roster row
 /// PersonRow(
 ///   data: PersonRowData(name: 'Riya', metaLine: '5:30 /km · 26'),
-///   trailing: StatusChip(status: RunStatus.joined),
+///   trailing: StatusChip(status: EventStatus.joined),
 /// )
 /// ```
 class PersonRow extends StatelessWidget {
@@ -160,7 +160,7 @@ class _ChatLayout extends StatelessWidget {
               Text(data.timestamp!, style: CatchTextStyles.bodyS(context)),
           ],
         ),
-        // Run context with route icon
+        // Event context with route icon
         if (data.contextLine != null) ...[
           const SizedBox(height: 2),
           Row(

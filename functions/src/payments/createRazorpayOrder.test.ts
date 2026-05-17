@@ -4,18 +4,18 @@ import test from "node:test";
 import {HttpsError, type CallableRequest} from "firebase-functions/v2/https";
 import Razorpay from "razorpay";
 import {createRazorpayOrderHandler} from "./createRazorpayOrder";
-import {RunDoc} from "../shared/firestore";
+import {EventDoc} from "../shared/firestore";
 
-function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
+function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
   return {
-    runClubId: "club-1",
+    clubId: "club-1",
     startTime: timestamp("2026-05-02T01:30:00.000Z"),
     endTime: timestamp("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Carter Road",
     distanceKm: 5,
     pace: "easy",
     capacityLimit: 20,
-    description: "Easy paced seaside run.",
+    description: "Easy paced seaside event.",
     priceInPaise: 25000,
     status: "active",
     cancelledAt: null,
@@ -34,11 +34,11 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
   let capturedPayload: Record<string, unknown> | undefined;
   const order = await createRazorpayOrderHandler(
     buildRequest({
-      data: {runId: "run-1"},
+      data: {eventId: "event-1"},
       auth: {uid: "runner-1"},
     }),
     {
-      firestore: () => createRunFirestore(buildRunDoc()),
+      firestore: () => createEventFirestore(buildEventDoc()),
       createClient: () => ({
         orders: {
           create: async (payload: Record<string, unknown>) => {
@@ -58,9 +58,9 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
   assert.deepEqual(capturedPayload, {
     amount: 25000,
     currency: "INR",
-    receipt: "run_run-1_123",
+    receipt: "event_event-1_123",
     notes: {
-      runId: "run-1",
+      eventId: "event-1",
       userId: "runner-1",
       quotedAmountInPaise: 25000,
     },
@@ -73,36 +73,36 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
 });
 
 test(
-  "createRazorpayOrderHandler rejects duplicate bookings and full runs",
+  "createRazorpayOrderHandler rejects duplicate bookings and full events",
   async () => {
     await assert.rejects(
       createRazorpayOrderHandler(
         buildRequest({
-          data: {runId: "run-1"},
+          data: {eventId: "event-1"},
           auth: {uid: "runner-1"},
         }),
         {
           firestore: () =>
-            createRunFirestore(buildRunDoc(), [
+            createEventFirestore(buildEventDoc(), [
               {uid: "runner-1", status: "signedUp"},
             ]),
           createClient: failOnClientUse,
           now: () => 0,
         }
       ),
-      isHttpsError("already-exists", "You are already booked for this run.")
+      isHttpsError("already-exists", "You are already booked for this event.")
     );
 
     await assert.rejects(
       createRazorpayOrderHandler(
         buildRequest({
-          data: {runId: "run-1"},
+          data: {eventId: "event-1"},
           auth: {uid: "runner-1"},
         }),
         {
           firestore: () =>
-            createRunFirestore(
-              buildRunDoc({
+            createEventFirestore(
+              buildEventDoc({
                 capacityLimit: 1,
                 bookedCount: 1,
               })
@@ -113,7 +113,7 @@ test(
       ),
       isHttpsError(
         "failed-precondition",
-        "This run is full. You can join the waitlist instead."
+        "This event is full. You can join the waitlist instead."
       )
     );
   }
@@ -125,12 +125,12 @@ test(
     await assert.rejects(
       createRazorpayOrderHandler(
         buildRequest({
-          data: {runId: "run-1"},
+          data: {eventId: "event-1"},
           auth: {uid: "runner-1"},
         }),
         {
           firestore: () =>
-            createRunFirestore(buildRunDoc({
+            createEventFirestore(buildEventDoc({
               bookedCount: 11,
               cohortCounts: {
                 menInterestedInWomen: 10,
@@ -195,18 +195,18 @@ function buildRequest({
   };
 }
 
-function createRunFirestore(
-  run: RunDoc | null,
+function createEventFirestore(
+  event: EventDoc | null,
   participations: Array<{uid: string; status: string}> = []
 ): FirebaseFirestore.Firestore {
   return {
     collection: (collectionName: string) => {
-      if (collectionName === "runs") {
+      if (collectionName === "events") {
         return {
           doc: () => ({
             get: async () => ({
-              exists: run !== null,
-              data: () => run,
+              exists: event !== null,
+              data: () => event,
             }),
           }),
         };
@@ -224,7 +224,7 @@ function createRunFirestore(
           }),
         };
       }
-      if (collectionName === "runParticipations") {
+      if (collectionName === "eventParticipations") {
         return {
           doc: (id: string) => ({
             get: async () => {
@@ -247,7 +247,7 @@ function createRunFirestore(
           }),
         };
       }
-      if (collectionName === "userRunScheduleLocks") {
+      if (collectionName === "userEventScheduleLocks") {
         return {
           doc: () => ({
             get: async () => ({

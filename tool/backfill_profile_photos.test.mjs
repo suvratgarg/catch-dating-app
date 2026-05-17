@@ -121,7 +121,7 @@ function photoPrompt() {
   return {
     photoIndex: 0,
     promptId: "proofIRun",
-    prompt: "Proof I actually run",
+    prompt: "Proof I actually event",
     caption: "Race morning.",
   };
 }

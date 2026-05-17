@@ -11,11 +11,11 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/detail_row.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -76,7 +76,7 @@ class _PaymentList extends ConsumerWidget {
             child: CatchEmptyState(
               icon: Icons.receipt_long_outlined,
               title: 'No payments yet',
-              message: 'Run bookings and refunds will appear here.',
+              message: 'Event bookings and refunds will appear here.',
               surface: false,
               iconStyle: CatchEmptyStateIconStyle.plain,
             ),
@@ -105,19 +105,19 @@ class _PaymentTile extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final runAsync = ref.watch(watchRunProvider(payment.runId));
-    final runTitle = runAsync.asData?.value?.title ?? 'Run booking';
+    final eventAsync = ref.watch(watchEventProvider(payment.eventId));
+    final eventTitle = eventAsync.asData?.value?.title ?? 'Event booking';
     final statusPresentation = _statusPresentation(payment);
 
     return Semantics(
       button: true,
-      label: 'Payment for $runTitle',
+      label: 'Payment for $eventTitle',
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: CatchSpacing.s3),
         child: InkWell(
           key: PaymentHistoryKeys.paymentTile(payment.id),
           borderRadius: BorderRadius.circular(CatchRadius.md),
-          onTap: () => _showDetailSheet(context, ref, runTitle),
+          onTap: () => _showDetailSheet(context, ref, eventTitle),
           child: Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: CatchSpacing.s1,
@@ -129,7 +129,7 @@ class _PaymentTile extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(runTitle, style: CatchTextStyles.bodyM(context)),
+                      Text(eventTitle, style: CatchTextStyles.bodyM(context)),
                       gapH4,
                       Text(
                         AppTimeFormatters.dateTime(payment.createdAt),
@@ -149,7 +149,7 @@ class _PaymentTile extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      RunFormatters.priceInPaise(payment.amount),
+                      EventFormatters.priceInPaise(payment.amount),
                       style: CatchTextStyles.bodyM(
                         context,
                       ).copyWith(fontWeight: FontWeight.w600),
@@ -169,7 +169,11 @@ class _PaymentTile extends ConsumerWidget {
     );
   }
 
-  void _showDetailSheet(BuildContext context, WidgetRef ref, String runTitle) {
+  void _showDetailSheet(
+    BuildContext context,
+    WidgetRef ref,
+    String eventTitle,
+  ) {
     final t = CatchTokens.of(context);
     final bottomPadding = MediaQuery.paddingOf(context).bottom;
     final statusPresentation = _statusPresentation(payment);
@@ -186,7 +190,7 @@ class _PaymentTile extends ConsumerWidget {
         return SafeArea(
           child: SingleChildScrollView(
             child: CatchBottomSheetScaffold(
-              title: runTitle,
+              title: eventTitle,
               padding: EdgeInsets.fromLTRB(
                 CatchSpacing.s5,
                 CatchSpacing.s3,
@@ -206,7 +210,7 @@ class _PaymentTile extends ConsumerWidget {
                       ),
                       const Spacer(),
                       Text(
-                        RunFormatters.priceInPaise(payment.amount),
+                        EventFormatters.priceInPaise(payment.amount),
                         style: CatchTextStyles.displayS(context),
                       ),
                     ],
@@ -218,7 +222,7 @@ class _PaymentTile extends ConsumerWidget {
                   gapH12,
                   DetailRow(label: 'Order ID', value: payment.orderId),
                   gapH12,
-                  DetailRow(label: 'Run ID', value: payment.runId),
+                  DetailRow(label: 'Event ID', value: payment.eventId),
                   gapH12,
                   DetailRow(
                     label: 'Date',

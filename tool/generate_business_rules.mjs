@@ -10,20 +10,20 @@ const dartPath = path.join(repoRoot, "lib/core/business_rules.dart");
 const tsPath = path.join(repoRoot, "functions/src/shared/businessRules.ts");
 
 const source = JSON.parse(fs.readFileSync(sourcePath, "utf8"));
-const runScheduling = source.runScheduling ?? {};
-const runAttendance = source.runAttendance ?? {};
+const eventScheduling = source.eventScheduling ?? {};
+const eventAttendance = source.eventAttendance ?? {};
 
 const requiredNumbers = [
-  ["runScheduling.defaultDurationMinutes", runScheduling.defaultDurationMinutes],
-  ["runScheduling.minDurationMinutes", runScheduling.minDurationMinutes],
-  ["runScheduling.maxDurationMinutes", runScheduling.maxDurationMinutes],
-  ["runScheduling.durationStepMinutes", runScheduling.durationStepMinutes],
-  ["runScheduling.scheduleLockSlotMinutes", runScheduling.scheduleLockSlotMinutes],
-  ["runAttendance.selfCheckInWindowBeforeMinutes", runAttendance.selfCheckInWindowBeforeMinutes],
-  ["runAttendance.selfCheckInWindowAfterMinutes", runAttendance.selfCheckInWindowAfterMinutes],
-  ["runAttendance.selfCheckInMaxDistanceMeters", runAttendance.selfCheckInMaxDistanceMeters],
-  ["runAttendance.hostAttendanceWindowBeforeMinutes", runAttendance.hostAttendanceWindowBeforeMinutes],
-  ["runAttendance.hostAttendanceWindowAfterRunHours", runAttendance.hostAttendanceWindowAfterRunHours],
+  ["eventScheduling.defaultDurationMinutes", eventScheduling.defaultDurationMinutes],
+  ["eventScheduling.minDurationMinutes", eventScheduling.minDurationMinutes],
+  ["eventScheduling.maxDurationMinutes", eventScheduling.maxDurationMinutes],
+  ["eventScheduling.durationStepMinutes", eventScheduling.durationStepMinutes],
+  ["eventScheduling.scheduleLockSlotMinutes", eventScheduling.scheduleLockSlotMinutes],
+  ["eventAttendance.selfCheckInWindowBeforeMinutes", eventAttendance.selfCheckInWindowBeforeMinutes],
+  ["eventAttendance.selfCheckInWindowAfterMinutes", eventAttendance.selfCheckInWindowAfterMinutes],
+  ["eventAttendance.selfCheckInMaxDistanceMeters", eventAttendance.selfCheckInMaxDistanceMeters],
+  ["eventAttendance.hostAttendanceWindowBeforeMinutes", eventAttendance.hostAttendanceWindowBeforeMinutes],
+  ["eventAttendance.hostAttendanceWindowAfterEventHours", eventAttendance.hostAttendanceWindowAfterEventHours],
 ];
 
 for (const [key, value] of requiredNumbers) {
@@ -32,16 +32,16 @@ for (const [key, value] of requiredNumbers) {
   }
 }
 
-if (runScheduling.minDurationMinutes > runScheduling.defaultDurationMinutes) {
-  throw new Error("runScheduling.minDurationMinutes cannot exceed defaultDurationMinutes.");
+if (eventScheduling.minDurationMinutes > eventScheduling.defaultDurationMinutes) {
+  throw new Error("eventScheduling.minDurationMinutes cannot exceed defaultDurationMinutes.");
 }
-if (runScheduling.defaultDurationMinutes > runScheduling.maxDurationMinutes) {
-  throw new Error("runScheduling.defaultDurationMinutes cannot exceed maxDurationMinutes.");
+if (eventScheduling.defaultDurationMinutes > eventScheduling.maxDurationMinutes) {
+  throw new Error("eventScheduling.defaultDurationMinutes cannot exceed maxDurationMinutes.");
 }
-if (runScheduling.maxDurationMinutes % runScheduling.scheduleLockSlotMinutes !== 0) {
-  throw new Error("runScheduling.maxDurationMinutes must divide cleanly by scheduleLockSlotMinutes.");
+if (eventScheduling.maxDurationMinutes % eventScheduling.scheduleLockSlotMinutes !== 0) {
+  throw new Error("eventScheduling.maxDurationMinutes must divide cleanly by scheduleLockSlotMinutes.");
 }
-if (runScheduling.maxDurationMinutes / runScheduling.scheduleLockSlotMinutes > 450) {
+if (eventScheduling.maxDurationMinutes / eventScheduling.scheduleLockSlotMinutes > 450) {
   throw new Error("Schedule lock slots exceed a safe Firestore transaction write budget.");
 }
 
@@ -55,31 +55,31 @@ const header = [
 const dart = `${header}final class CatchBusinessRules {
   const CatchBusinessRules._();
 
-  static const runDefaultDurationMinutes = ${runScheduling.defaultDurationMinutes};
-  static const runMinDurationMinutes = ${runScheduling.minDurationMinutes};
-  static const runMaxDurationMinutes = ${runScheduling.maxDurationMinutes};
-  static const runDurationStepMinutes = ${runScheduling.durationStepMinutes};
-  static const runScheduleLockSlotMinutes = ${runScheduling.scheduleLockSlotMinutes};
+  static const eventDefaultDurationMinutes = ${eventScheduling.defaultDurationMinutes};
+  static const eventMinDurationMinutes = ${eventScheduling.minDurationMinutes};
+  static const eventMaxDurationMinutes = ${eventScheduling.maxDurationMinutes};
+  static const eventDurationStepMinutes = ${eventScheduling.durationStepMinutes};
+  static const eventScheduleLockSlotMinutes = ${eventScheduling.scheduleLockSlotMinutes};
 
-  static const runSelfCheckInWindowBeforeMinutes = ${runAttendance.selfCheckInWindowBeforeMinutes};
-  static const runSelfCheckInWindowAfterMinutes = ${runAttendance.selfCheckInWindowAfterMinutes};
-  static const runSelfCheckInMaxDistanceMeters = ${runAttendance.selfCheckInMaxDistanceMeters};
-  static const runHostAttendanceWindowBeforeMinutes = ${runAttendance.hostAttendanceWindowBeforeMinutes};
-  static const runHostAttendanceWindowAfterRunHours = ${runAttendance.hostAttendanceWindowAfterRunHours};
+  static const eventSelfCheckInWindowBeforeMinutes = ${eventAttendance.selfCheckInWindowBeforeMinutes};
+  static const eventSelfCheckInWindowAfterMinutes = ${eventAttendance.selfCheckInWindowAfterMinutes};
+  static const eventSelfCheckInMaxDistanceMeters = ${eventAttendance.selfCheckInMaxDistanceMeters};
+  static const eventHostAttendanceWindowBeforeMinutes = ${eventAttendance.hostAttendanceWindowBeforeMinutes};
+  static const eventHostAttendanceWindowAfterEventHours = ${eventAttendance.hostAttendanceWindowAfterEventHours};
 }
 `;
 
-const ts = `${header}export const RUN_DEFAULT_DURATION_MINUTES = ${runScheduling.defaultDurationMinutes};
-export const RUN_MIN_DURATION_MINUTES = ${runScheduling.minDurationMinutes};
-export const RUN_MAX_DURATION_MINUTES = ${runScheduling.maxDurationMinutes};
-export const RUN_DURATION_STEP_MINUTES = ${runScheduling.durationStepMinutes};
-export const RUN_SCHEDULE_LOCK_SLOT_MINUTES = ${runScheduling.scheduleLockSlotMinutes};
+const ts = `${header}export const EVENT_DEFAULT_DURATION_MINUTES = ${eventScheduling.defaultDurationMinutes};
+export const EVENT_MIN_DURATION_MINUTES = ${eventScheduling.minDurationMinutes};
+export const EVENT_MAX_DURATION_MINUTES = ${eventScheduling.maxDurationMinutes};
+export const EVENT_DURATION_STEP_MINUTES = ${eventScheduling.durationStepMinutes};
+export const EVENT_SCHEDULE_LOCK_SLOT_MINUTES = ${eventScheduling.scheduleLockSlotMinutes};
 
-export const RUN_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES = ${runAttendance.selfCheckInWindowBeforeMinutes};
-export const RUN_SELF_CHECK_IN_WINDOW_AFTER_MINUTES = ${runAttendance.selfCheckInWindowAfterMinutes};
-export const RUN_SELF_CHECK_IN_MAX_DISTANCE_METERS = ${runAttendance.selfCheckInMaxDistanceMeters};
-export const RUN_HOST_ATTENDANCE_WINDOW_BEFORE_MINUTES = ${runAttendance.hostAttendanceWindowBeforeMinutes};
-export const RUN_HOST_ATTENDANCE_WINDOW_AFTER_RUN_HOURS = ${runAttendance.hostAttendanceWindowAfterRunHours};
+export const EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES = ${eventAttendance.selfCheckInWindowBeforeMinutes};
+export const EVENT_SELF_CHECK_IN_WINDOW_AFTER_MINUTES = ${eventAttendance.selfCheckInWindowAfterMinutes};
+export const EVENT_SELF_CHECK_IN_MAX_DISTANCE_METERS = ${eventAttendance.selfCheckInMaxDistanceMeters};
+export const EVENT_HOST_ATTENDANCE_WINDOW_BEFORE_MINUTES = ${eventAttendance.hostAttendanceWindowBeforeMinutes};
+export const EVENT_HOST_ATTENDANCE_WINDOW_AFTER_EVENT_HOURS = ${eventAttendance.hostAttendanceWindowAfterEventHours};
 `;
 
 fs.writeFileSync(dartPath, dart);

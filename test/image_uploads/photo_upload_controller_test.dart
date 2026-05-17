@@ -11,7 +11,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 class FakePhotoUserProfileRepository extends Fake
     implements UserProfileRepository {
@@ -102,7 +102,7 @@ void main() {
   PhotoPromptAnswer prompt(int index, String caption) => PhotoPromptAnswer(
     photoIndex: index,
     promptId: 'proofIRun',
-    prompt: 'Proof I actually run',
+    prompt: 'Proof I actually event',
     caption: caption,
   );
 
@@ -111,11 +111,11 @@ void main() {
     expect(ImageUploadRepository.profilePhotoPolicy.quality, 85);
     expect(ImageUploadRepository.chatImagePolicy.maxWidth, 1440);
     expect(ImageUploadRepository.chatImagePolicy.quality, 78);
-    expect(ImageUploadRepository.runClubCoverPolicy.maxHeight, 1200);
-    expect(ImageUploadRepository.runPhotoPolicy.maxWidth, 1800);
+    expect(ImageUploadRepository.clubCoverPolicy.maxHeight, 1200);
+    expect(ImageUploadRepository.eventPhotoPolicy.maxWidth, 1800);
     expect(
       ImageUploadRepository.policyForPurpose(
-        ImageUploadPurpose.runPhoto,
+        ImageUploadPurpose.eventPhoto,
       ).quality,
       82,
     );

@@ -1,27 +1,28 @@
-import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:collection/collection.dart';
 
 const swipeWindowDuration = Duration(hours: 24);
 
-DateTime swipeWindowClosesAt(Run run) => run.endTime.add(swipeWindowDuration);
+DateTime swipeWindowClosesAt(Event event) =>
+    event.endTime.add(swipeWindowDuration);
 
-bool hasOpenSwipeWindow(Run run, {DateTime? now}) {
+bool hasOpenSwipeWindow(Event event, {DateTime? now}) {
   final currentTime = now ?? DateTime.now();
-  if (run.endTime.isAfter(currentTime)) return false;
-  return !swipeWindowClosesAt(run).isBefore(currentTime);
+  if (event.endTime.isAfter(currentTime)) return false;
+  return !swipeWindowClosesAt(event).isBefore(currentTime);
 }
 
-List<Run> runsWithOpenSwipeWindow(Iterable<Run> runs, {DateTime? now}) {
+List<Event> eventsWithOpenSwipeWindow(Iterable<Event> events, {DateTime? now}) {
   final currentTime = now ?? DateTime.now();
-  return runs
-      .where((run) => hasOpenSwipeWindow(run, now: currentTime))
+  return events
+      .where((event) => hasOpenSwipeWindow(event, now: currentTime))
       .toList();
 }
 
-Run? latestRunWithOpenSwipeWindow(Iterable<Run> runs, {DateTime? now}) {
+Event? latestEventWithOpenSwipeWindow(Iterable<Event> events, {DateTime? now}) {
   final currentTime = now ?? DateTime.now();
   return maxBy(
-    runs.where((run) => hasOpenSwipeWindow(run, now: currentTime)),
-    (run) => run.endTime,
+    events.where((event) => hasOpenSwipeWindow(event, now: currentTime)),
+    (event) => event.endTime,
   );
 }

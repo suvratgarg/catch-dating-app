@@ -1,0 +1,8 @@
+{
+  "eventId": "event-1",
+  "fields": {
+    "meetingPoint": "Updated meeting point",
+    "locationDetails": null,
+    "pace": "moderate"
+  }
+}

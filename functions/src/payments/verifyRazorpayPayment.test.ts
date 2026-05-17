@@ -6,10 +6,10 @@ import Razorpay from "razorpay";
 import {verifyRazorpayPaymentHandler} from "./verifyRazorpayPayment";
 
 test(
-  "verifyRazorpayPaymentHandler books trusted run from Razorpay metadata",
+  "verifyRazorpayPaymentHandler books trusted event from Razorpay metadata",
   async () => {
     const paymentDoc = createPaymentDocRecorder();
-    const signUpCalls: Array<{runId: string; userId: string}> = [];
+    const signUpCalls: Array<{eventId: string; userId: string}> = [];
     const result = await verifyRazorpayPaymentHandler(
       buildRequest({
         auth: {uid: "runner-1"},
@@ -31,7 +31,7 @@ test(
               amount_paid: 25000,
               amount_due: 0,
               notes: {
-                runId: "trusted-run",
+                eventId: "trusted-event",
                 userId: "runner-1",
               },
             }),
@@ -51,20 +51,23 @@ test(
           },
         }) as unknown as Razorpay,
         serverTimestamp: () => "server-now",
-        signUpForRun: async (_db, runId, userId) => {
-          signUpCalls.push({runId, userId});
+        signUpForEvent: async (_db, eventId, userId) => {
+          signUpCalls.push({eventId, userId});
         },
         verifySignature: () => true,
       }
     );
 
-    assert.deepEqual(signUpCalls, [{runId: "trusted-run", userId: "runner-1"}]);
+    assert.deepEqual(signUpCalls, [{
+      eventId: "trusted-event",
+      userId: "runner-1",
+    }]);
     assert.deepEqual(paymentDoc.setCalls, [
       {
         userId: "runner-1",
         orderId: "order_123",
         paymentId: "pay_123",
-        runId: "trusted-run",
+        eventId: "trusted-event",
         amount: 25000,
         currency: "INR",
         status: "completed",
@@ -72,7 +75,7 @@ test(
         createdAt: "server-now",
       },
     ]);
-    assert.deepEqual(result, {verified: true, runId: "trusted-run"});
+    assert.deepEqual(result, {verified: true, eventId: "trusted-event"});
   }
 );
 
@@ -104,7 +107,7 @@ test(
                 amount_paid: 25000,
                 amount_due: 0,
                 notes: {
-                  runId: "trusted-run",
+                  eventId: "trusted-event",
                   userId: "runner-1",
                 },
               }),
@@ -124,16 +127,16 @@ test(
             },
           }) as unknown as Razorpay,
           serverTimestamp: () => "server-now",
-          signUpForRun: async () => {
+          signUpForEvent: async () => {
             throw new HttpsError(
               "failed-precondition",
-              "This run is now full."
+              "This event is now full."
             );
           },
           verifySignature: () => true,
         }
       ),
-      isHttpsError("failed-precondition", "This run is now full.")
+      isHttpsError("failed-precondition", "This event is now full.")
     );
 
     assert.deepEqual(refundCalls, [{paymentId: "pay_123", amount: 25000}]);
@@ -142,7 +145,7 @@ test(
         userId: "runner-1",
         orderId: "order_123",
         paymentId: "pay_123",
-        runId: "trusted-run",
+        eventId: "trusted-event",
         amount: 25000,
         currency: "INR",
         status: "refunded",
@@ -172,7 +175,7 @@ test(
           firestore: () => createPaymentsFirestore(paymentDoc),
           createClient: failOnClientUse,
           serverTimestamp: () => "server-now",
-          signUpForRun: async () => undefined,
+          signUpForEvent: async () => undefined,
           verifySignature: () => false,
         }
       ),
@@ -205,7 +208,7 @@ test(
           firestore: () => createPaymentsFirestore(paymentDoc),
           createClient: failOnClientUse,
           serverTimestamp: () => "server-now",
-          signUpForRun: async () => undefined,
+          signUpForEvent: async () => undefined,
           verifySignature: () => {
             throw new Error("Signature should not be checked.");
           },

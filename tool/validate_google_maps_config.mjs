@@ -169,7 +169,7 @@ function readSecretValue({env, projectId, secretName}) {
   if (result.status !== 0) {
     errors.push(
       `Could not read ${env} ${secretName} from Secret Manager. ` +
-        `Run gcloud auth login or check project ${projectId}.`
+        `Event gcloud auth login or check project ${projectId}.`
     );
     return "";
   }

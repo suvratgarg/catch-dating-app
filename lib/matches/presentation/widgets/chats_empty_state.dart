@@ -8,8 +8,8 @@ class ChatsEmptyState extends StatelessWidget {
     super.key,
     this.title = 'No catches yet',
     this.message =
-        'When someone catches you back after a shared run, '
-        'the conversation opens here with that run as context.',
+        'When someone catches you back after a shared event, '
+        'the conversation opens here with that event as context.',
   });
 
   const ChatsEmptyState.noSearchResults({super.key})

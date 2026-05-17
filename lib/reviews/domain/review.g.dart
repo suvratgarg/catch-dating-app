@@ -8,8 +8,8 @@ part of 'review.dart';
 
 _Review _$ReviewFromJson(Map<String, dynamic> json) => _Review(
   id: json['id'] as String,
-  runClubId: json['runClubId'] as String,
-  runId: json['runId'] as String?,
+  clubId: json['clubId'] as String,
+  eventId: json['eventId'] as String?,
   reviewerUserId: json['reviewerUserId'] as String,
   reviewerName: json['reviewerName'] as String,
   rating: (json['rating'] as num).toInt(),
@@ -23,8 +23,8 @@ _Review _$ReviewFromJson(Map<String, dynamic> json) => _Review(
 );
 
 Map<String, dynamic> _$ReviewToJson(_Review instance) => <String, dynamic>{
-  'runClubId': instance.runClubId,
-  'runId': instance.runId,
+  'clubId': instance.clubId,
+  'eventId': instance.eventId,
   'reviewerUserId': instance.reviewerUserId,
   'reviewerName': instance.reviewerName,
   'rating': instance.rating,

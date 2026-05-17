@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -5,22 +6,21 @@ import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
-import 'package:catch_dating_app/host_tools/presentation/host_run_tools.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/host_tools/presentation/host_event_tools.dart';
 import 'package:flutter/material.dart';
 
 class HostClubToolsPanel extends StatelessWidget {
   const HostClubToolsPanel({
     super.key,
-    required this.runClub,
+    required this.club,
     required this.onEditClub,
-    required this.onCreateRun,
+    required this.onCreateEvent,
   });
 
-  final RunClub runClub;
+  final Club club;
   final VoidCallback onEditClub;
-  final VoidCallback onCreateRun;
+  final VoidCallback onCreateEvent;
 
   @override
   Widget build(BuildContext context) {
@@ -68,14 +68,14 @@ class HostClubToolsPanel extends StatelessWidget {
                 ),
                 gapH8,
                 Text(
-                  runClub.name,
+                  club.name,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: CatchTextStyles.titleM(context),
                 ),
                 gapH4,
                 Text(
-                  'Manage this club and publish upcoming runs.',
+                  'Manage this club and publish upcoming events.',
                   style: CatchTextStyles.bodyS(
                     context,
                     color: CatchTokens.of(context).ink2,
@@ -83,8 +83,8 @@ class HostClubToolsPanel extends StatelessWidget {
                 ),
                 gapH12,
                 CatchButton(
-                  label: 'Add run',
-                  onPressed: onCreateRun,
+                  label: 'Add event',
+                  onPressed: onCreateEvent,
                   icon: const Icon(Icons.add_rounded, size: 18),
                   fullWidth: true,
                 ),
@@ -106,18 +106,18 @@ class HostClubToolsPanel extends StatelessWidget {
 }
 
 class HostStatsStrip extends StatelessWidget {
-  const HostStatsStrip({super.key, required this.runs});
+  const HostStatsStrip({super.key, required this.events});
 
-  final List<Run> runs;
+  final List<Event> events;
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final palette = HostToolPalette.defaultPanel(context);
 
-    final totalBooked = runs.fold(0, (sum, r) => sum + r.signedUpCount);
-    final totalWaitlist = runs.fold(0, (sum, r) => sum + r.waitlistCount);
-    final revenueRupees = runs.fold(
+    final totalBooked = events.fold(0, (sum, r) => sum + r.signedUpCount);
+    final totalWaitlist = events.fold(0, (sum, r) => sum + r.waitlistCount);
+    final revenueRupees = events.fold(
       0,
       (sum, r) => sum + r.signedUpCount * (r.priceInPaise ~/ 100),
     );
@@ -135,7 +135,7 @@ class HostStatsStrip extends StatelessWidget {
               Icon(Icons.bar_chart_rounded, size: 16, color: t.primary),
               gapW6,
               Text(
-                'Your upcoming runs',
+                'Your upcoming events',
                 style: CatchTextStyles.labelL(context, color: t.primary),
               ),
             ],

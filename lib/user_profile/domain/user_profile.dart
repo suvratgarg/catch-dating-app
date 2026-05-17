@@ -252,7 +252,7 @@ abstract class UserProfile with _$UserProfile {
     // Notification / discovery preferences
     @Default(true) bool prefsNewCatches,
     @Default(true) bool prefsMessages,
-    @Default(true) bool prefsRunReminders,
+    @Default(true) bool prefsEventReminders,
     @Default(true) bool prefsRunStatusUpdates,
     @Default(true) bool prefsClubUpdates,
     @Default(false) bool prefsWeeklyDigest,

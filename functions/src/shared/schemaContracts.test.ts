@@ -6,26 +6,26 @@ import test from "node:test";
 import {
   schemaErrorMessages,
   validateActivityNotificationDocument,
-  validateArchiveRunClubCallablePayload,
+  validateArchiveClubCallablePayload,
   validateBlockUserCallablePayload,
   validateBlockDocument,
-  validateCancelRunCallablePayload,
+  validateCancelEventCallablePayload,
   validateChatMessageDocument,
   validateConfigCitiesDocument,
-  validateCreateRunCallablePayload,
-  validateCreateRunClubCallablePayload,
-  validateCreateRunReviewCallablePayload,
+  validateCreateEventCallablePayload,
+  validateCreateClubCallablePayload,
+  validateCreateEventReviewCallablePayload,
   validateCreateChatMessageClientWrite,
   validateCreateProfileDecisionClientWrite,
-  validateCreateSavedRunClientWrite,
-  validateDeleteRunCallablePayload,
-  validateDeleteRunClubCallablePayload,
-  validateDeleteRunReviewCallablePayload,
-  validateDeleteSavedRunClientWrite,
+  validateCreateSavedEventClientWrite,
+  validateDeleteEventCallablePayload,
+  validateDeleteClubCallablePayload,
+  validateDeleteEventReviewCallablePayload,
+  validateDeleteSavedEventClientWrite,
   validateDeletedUserTombstoneDocument,
   validateFunctionEventReceiptDocument,
   validateMarkNotificationReadClientWrite,
-  validateMarkRunAttendanceCallablePayload,
+  validateMarkEventAttendanceCallablePayload,
   validateMatchDocument,
   validateModerationFlagDocument,
   validateOnboardingDraftDocument,
@@ -41,25 +41,25 @@ import {
   validateReportUserCallablePayload,
   validateReviewDocument,
   validateResetMatchUnreadCountClientWrite,
-  validateRunClubHostClaimDocument,
-  validateRunClubScheduleLockDocument,
-  validateRunIdCallablePayload,
-  validateRunClubDocument,
-  validateRunClubMembershipDocument,
-  validateRunDocument,
-  validateRunParticipationDocument,
-  validateSavedRunDocument,
-  validateSeedRunManifestDocument,
-  validateRunClubMembershipCallablePayload,
+  validateClubHostClaimDocument,
+  validateClubScheduleLockDocument,
+  validateEventIdCallablePayload,
+  validateClubDocument,
+  validateClubMembershipDocument,
+  validateEventDocument,
+  validateEventParticipationDocument,
+  validateSavedEventDocument,
+  validateSeedEventManifestDocument,
+  validateClubMembershipCallablePayload,
   validateSelfCheckInAttendanceCallablePayload,
-  validateSetRunClubNotificationPreferenceCallablePayload,
+  validateSetClubNotificationPreferenceCallablePayload,
   validateSwipeDocument,
   validateUpdateUserProfileCallablePayload,
-  validateUpdateRunCallablePayload,
-  validateUpdateRunClubCallablePayload,
-  validateUpdateRunReviewCallablePayload,
+  validateUpdateEventCallablePayload,
+  validateUpdateClubCallablePayload,
+  validateUpdateEventReviewCallablePayload,
   validateUnblockUserCallablePayload,
-  validateUserRunScheduleLockDocument,
+  validateUserEventScheduleLockDocument,
   validateUserProfileDocument,
   validateVerifyRazorpayPaymentCallablePayload,
 } from "./generated/schemaValidators";
@@ -118,36 +118,36 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/public_profile_doc.json")
   );
   assertValid(
-    validateRunClubDocument as Validator,
-    readFixture("fixtures/valid/run_club_doc.json")
+    validateClubDocument as Validator,
+    readFixture("fixtures/valid/club_doc.json")
   );
   assertValid(
-    validateRunClubMembershipDocument as Validator,
-    readFixture("fixtures/valid/run_club_membership_doc.json")
+    validateClubMembershipDocument as Validator,
+    readFixture("fixtures/valid/club_membership_doc.json")
   );
   assertValid(
-    validateRunClubHostClaimDocument as Validator,
-    readFixture("fixtures/valid/run_club_host_claim_doc.json")
+    validateClubHostClaimDocument as Validator,
+    readFixture("fixtures/valid/club_host_claim_doc.json")
   );
   assertValid(
-    validateRunDocument as Validator,
-    readFixture("fixtures/valid/run_doc.json")
+    validateEventDocument as Validator,
+    readFixture("fixtures/valid/event_doc.json")
   );
   assertValid(
-    validateRunParticipationDocument as Validator,
-    readFixture("fixtures/valid/run_participation_doc.json")
+    validateEventParticipationDocument as Validator,
+    readFixture("fixtures/valid/event_participation_doc.json")
   );
   assertValid(
-    validateRunClubScheduleLockDocument as Validator,
-    readFixture("fixtures/valid/run_club_schedule_lock_doc.json")
+    validateClubScheduleLockDocument as Validator,
+    readFixture("fixtures/valid/club_schedule_lock_doc.json")
   );
   assertValid(
-    validateUserRunScheduleLockDocument as Validator,
-    readFixture("fixtures/valid/user_run_schedule_lock_doc.json")
+    validateUserEventScheduleLockDocument as Validator,
+    readFixture("fixtures/valid/user_event_schedule_lock_doc.json")
   );
   assertValid(
-    validateSavedRunDocument as Validator,
-    readFixture("fixtures/valid/saved_run_doc.json")
+    validateSavedEventDocument as Validator,
+    readFixture("fixtures/valid/saved_event_doc.json")
   );
   assertValid(
     validatePaymentDocument as Validator,
@@ -198,78 +198,78 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/function_event_receipt_doc.json")
   );
   assertValid(
-    validateSeedRunManifestDocument as Validator,
-    readFixture("fixtures/valid/seed_run_manifest_doc.json")
+    validateSeedEventManifestDocument as Validator,
+    readFixture("fixtures/valid/seed_event_manifest_doc.json")
   );
   assertValid(
     validateUpdateUserProfileCallablePayload as Validator,
     readFixture("fixtures/valid/update_user_profile_patch.json")
   );
   assertValid(
-    validateCreateRunClubCallablePayload as Validator,
-    readFixture("fixtures/valid/create_run_club_payload.json")
+    validateCreateClubCallablePayload as Validator,
+    readFixture("fixtures/valid/create_club_payload.json")
   );
   assertValid(
-    validateUpdateRunClubCallablePayload as Validator,
-    readFixture("fixtures/valid/update_run_club_payload.json")
+    validateUpdateClubCallablePayload as Validator,
+    readFixture("fixtures/valid/update_club_payload.json")
   );
   assertValid(
-    validateArchiveRunClubCallablePayload as Validator,
-    readFixture("fixtures/valid/archive_run_club_payload.json")
+    validateArchiveClubCallablePayload as Validator,
+    readFixture("fixtures/valid/archive_club_payload.json")
   );
   assertValid(
-    validateDeleteRunClubCallablePayload as Validator,
-    readFixture("fixtures/valid/delete_run_club_payload.json")
+    validateDeleteClubCallablePayload as Validator,
+    readFixture("fixtures/valid/delete_club_payload.json")
   );
   assertValid(
-    validateRunClubMembershipCallablePayload as Validator,
-    readFixture("fixtures/valid/run_club_membership_payload.json")
+    validateClubMembershipCallablePayload as Validator,
+    readFixture("fixtures/valid/club_membership_payload.json")
   );
   assertValid(
-    validateSetRunClubNotificationPreferenceCallablePayload as Validator,
+    validateSetClubNotificationPreferenceCallablePayload as Validator,
     readFixture(
-      "fixtures/valid/set_run_club_notification_preference_payload.json"
+      "fixtures/valid/set_club_notification_preference_payload.json"
     )
   );
   assertValid(
-    validateCreateRunCallablePayload as Validator,
-    readFixture("fixtures/valid/create_run_payload.json")
+    validateCreateEventCallablePayload as Validator,
+    readFixture("fixtures/valid/create_event_payload.json")
   );
   assertValid(
-    validateUpdateRunCallablePayload as Validator,
-    readFixture("fixtures/valid/update_run_payload.json")
+    validateUpdateEventCallablePayload as Validator,
+    readFixture("fixtures/valid/update_event_payload.json")
   );
   assertValid(
-    validateCancelRunCallablePayload as Validator,
-    readFixture("fixtures/valid/cancel_run_payload.json")
+    validateCancelEventCallablePayload as Validator,
+    readFixture("fixtures/valid/cancel_event_payload.json")
   );
   assertValid(
-    validateDeleteRunCallablePayload as Validator,
-    readFixture("fixtures/valid/delete_run_payload.json")
+    validateDeleteEventCallablePayload as Validator,
+    readFixture("fixtures/valid/delete_event_payload.json")
   );
   assertValid(
-    validateRunIdCallablePayload as Validator,
-    readFixture("fixtures/valid/run_id_payload.json")
+    validateEventIdCallablePayload as Validator,
+    readFixture("fixtures/valid/event_id_payload.json")
   );
   assertValid(
-    validateMarkRunAttendanceCallablePayload as Validator,
-    readFixture("fixtures/valid/mark_run_attendance_payload.json")
+    validateMarkEventAttendanceCallablePayload as Validator,
+    readFixture("fixtures/valid/mark_event_attendance_payload.json")
   );
   assertValid(
     validateSelfCheckInAttendanceCallablePayload as Validator,
     readFixture("fixtures/valid/self_check_in_attendance_payload.json")
   );
   assertValid(
-    validateCreateRunReviewCallablePayload as Validator,
-    readFixture("fixtures/valid/create_run_review_payload.json")
+    validateCreateEventReviewCallablePayload as Validator,
+    readFixture("fixtures/valid/create_event_review_payload.json")
   );
   assertValid(
-    validateUpdateRunReviewCallablePayload as Validator,
-    readFixture("fixtures/valid/update_run_review_payload.json")
+    validateUpdateEventReviewCallablePayload as Validator,
+    readFixture("fixtures/valid/update_event_review_payload.json")
   );
   assertValid(
-    validateDeleteRunReviewCallablePayload as Validator,
-    readFixture("fixtures/valid/delete_run_review_payload.json")
+    validateDeleteEventReviewCallablePayload as Validator,
+    readFixture("fixtures/valid/delete_event_review_payload.json")
   );
   assertValid(
     validateBlockUserCallablePayload as Validator,
@@ -304,12 +304,12 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/create_chat_message_client_write.json")
   );
   assertValid(
-    validateCreateSavedRunClientWrite as Validator,
-    readFixture("fixtures/valid/create_saved_run_client_write.json")
+    validateCreateSavedEventClientWrite as Validator,
+    readFixture("fixtures/valid/create_saved_event_client_write.json")
   );
   assertValid(
-    validateDeleteSavedRunClientWrite as Validator,
-    readFixture("fixtures/valid/delete_saved_run_client_write.json")
+    validateDeleteSavedEventClientWrite as Validator,
+    readFixture("fixtures/valid/delete_saved_event_client_write.json")
   );
   assertValid(
     validateMarkNotificationReadClientWrite as Validator,
@@ -347,28 +347,28 @@ test("generated schema validators reject invalid contract fixtures", () => {
     readFixture("fixtures/invalid/update_user_profile_invalid_email.json")
   );
   assertInvalid(
-    validateRunDocument as Validator,
-    readFixture("fixtures/invalid/run_doc_invalid_pace.json")
+    validateEventDocument as Validator,
+    readFixture("fixtures/invalid/event_doc_invalid_pace.json")
   );
   assertInvalid(
     validateSwipeDocument as Validator,
     readFixture("fixtures/invalid/swipe_doc_invalid_reaction_target.json")
   );
   assertInvalid(
-    validateRunClubScheduleLockDocument as Validator,
-    readFixture("fixtures/invalid/run_club_schedule_lock_invalid_owner.json")
+    validateClubScheduleLockDocument as Validator,
+    readFixture("fixtures/invalid/club_schedule_lock_invalid_owner.json")
   );
   assertInvalid(
-    validateUpdateRunClubCallablePayload as Validator,
-    readFixture("fixtures/invalid/update_run_club_empty_fields.json")
+    validateUpdateClubCallablePayload as Validator,
+    readFixture("fixtures/invalid/update_club_empty_fields.json")
   );
   assertInvalid(
-    validateUpdateRunCallablePayload as Validator,
-    readFixture("fixtures/invalid/update_run_empty_fields.json")
+    validateUpdateEventCallablePayload as Validator,
+    readFixture("fixtures/invalid/update_event_empty_fields.json")
   );
   assertInvalid(
-    validateCreateRunReviewCallablePayload as Validator,
-    readFixture("fixtures/invalid/create_run_review_invalid_rating.json")
+    validateCreateEventReviewCallablePayload as Validator,
+    readFixture("fixtures/invalid/create_event_review_invalid_rating.json")
   );
   assertInvalid(
     validatePlacesAutocompleteCallablePayload as Validator,

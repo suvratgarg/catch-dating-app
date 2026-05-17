@@ -8,7 +8,7 @@
 export interface SwipeDocument {
   swiperId: string;
   targetId: string;
-  runId: string;
+  eventId: string;
   direction: "like" | "pass";
   reactionTargetId?: string | null;
   reactionTargetType?:

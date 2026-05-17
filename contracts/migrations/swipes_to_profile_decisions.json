@@ -25,7 +25,7 @@
     {
       "id": "backfill",
       "status": "verified_noop_2026_05_15",
-      "description": "Dry-run-first tooling copies historical swipes into profileDecisions and compares source/target counts before apply. Dev, staging, and prod had zero current and future decisions on 2026-05-15, so no writes were needed. Rerun before any trigger cutover while legacy clients can still write swipes."
+      "description": "Dry-event-first tooling copies historical swipes into profileDecisions and compares source/target counts before apply. Dev, staging, and prod had zero current and future decisions on 2026-05-15, so no writes were needed. Rerun before any trigger cutover while legacy clients can still write swipes."
     },
     {
       "id": "new_primary",
@@ -45,7 +45,7 @@
   ],
   "guards": [
     "tool/check_schema_path_literals.mjs blocks new production raw swipes collection and trigger literals.",
-    "./tool/check_data_contract.sh runs the path literal scanner before seed and rules checks.",
+    "./tool/check_data_contract.sh events the path literal scanner before seed and rules checks.",
     "tool/validate_profile_decision_migration.mjs compares current and future storage paths, validates both sides against the generated decision schema, and can fail with --require-parity before a primary cutover.",
     "No live storage rename is allowed until a count-comparison backfill tool exists."
   ]

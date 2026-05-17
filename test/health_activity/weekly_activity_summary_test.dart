@@ -29,7 +29,7 @@ void main() {
         _activity(startTime: DateTime(2026, 5, 11), distanceMeters: 0),
       ], referenceDate: DateTime(2026, 5, 13));
 
-      expect(summary.hasRuns, isFalse);
+      expect(summary.hasEvents, isFalse);
       expect(summary.runCount, 0);
       expect(summary.totalDistanceMeters, 0);
     });

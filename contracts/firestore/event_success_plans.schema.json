@@ -1,0 +1,88 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_plans.schema.json",
+  "title": "EventSuccessPlanDocument",
+  "description": "Host-owned live event-success setup stored at eventSuccessPlans/{eventId}. The event id is the document id and is also stored for cheap validation and reads.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessPlans",
+  "x-firestore-path": "eventSuccessPlans/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "club host direct write; event participants read",
+  "required": [
+    "eventId",
+    "clubId",
+    "playbookId",
+    "selectedModuleIds",
+    "targetAttendeeCount",
+    "hostGoal",
+    "privateCrushEnabled",
+    "contextualOpenersEnabled",
+    "activeStepIndex",
+    "status",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "playbookId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 120
+    },
+    "selectedModuleIds": {
+      "type": "array",
+      "maxItems": 24,
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 120
+      }
+    },
+    "targetAttendeeCount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 1000
+    },
+    "hostGoal": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "privateCrushEnabled": {
+      "type": "boolean"
+    },
+    "contextualOpenersEnabled": {
+      "type": "boolean"
+    },
+    "activeStepIndex": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "status": {
+      "type": "string",
+      "enum": ["setup", "live", "complete"]
+    },
+    "attendeePrompt": {
+      "type": ["string", "null"],
+      "maxLength": 300
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "frozenAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    },
+    "completedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"
+    }
+  }
+}

@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/firestore/reviews.schema.json",
   "title": "ReviewDocument",
-  "description": "Canonical attended-run review stored at reviews/{reviewId}.",
+  "description": "Canonical attended-event review stored at reviews/{reviewId}.",
   "type": "object",
   "additionalProperties": false,
   "x-firestore-collection": "reviews",
@@ -18,7 +18,7 @@
     "demoOpsCommand"
   ],
   "required": [
-    "runClubId",
+    "clubId",
     "reviewerUserId",
     "reviewerName",
     "rating",
@@ -26,19 +26,19 @@
     "createdAt"
   ],
   "properties": {
-    "runClubId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "runId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
-    "reviewerUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"type": ["string", "null"], "minLength": 1, "maxLength": 180},
+    "reviewerUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "reviewerName": {"type": "string", "minLength": 1, "maxLength": 120},
     "rating": {"type": "integer", "minimum": 1, "maximum": 5},
     "comment": {"type": "string", "maxLength": 1000},
-    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
-    "updatedAt": {"$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"},
-    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "updatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
   }
 }

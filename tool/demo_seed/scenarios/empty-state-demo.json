@@ -1,7 +1,7 @@
 {
   "id": "empty-state-demo",
   "label": "Empty State Demo",
-  "description": "Sparse world for checking first-run, no-results, expired-run, waitlist, and cancelled states.",
+  "description": "Sparse world for checking first-event, no-results, expired-event, waitlist, and cancelled states.",
   "recommendedCommands": [
     "seed-world --scenario empty-edge-cases",
     "validate-demo-state"

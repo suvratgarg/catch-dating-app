@@ -125,7 +125,7 @@ export async function assertNoBlockingRelationshipInTransaction(
   if (await hasBlockingRelationshipInTransaction(tx, db, userId, peerIds)) {
     throw new HttpsError(
       "failed-precondition",
-      "This run is unavailable."
+      "This event is unavailable."
     );
   }
 }

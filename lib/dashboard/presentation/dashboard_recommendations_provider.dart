@@ -1,7 +1,7 @@
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:flutter/foundation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -29,14 +29,14 @@ class DashboardRecommendationsQuery {
   int get hashCode => Object.hash(userId, Object.hashAll(followedClubIds));
 }
 
-class DashboardRunRecommendationCandidate {
-  const DashboardRunRecommendationCandidate({
-    required this.run,
+class DashboardEventRecommendationCandidate {
+  const DashboardEventRecommendationCandidate({
+    required this.event,
     required this.clubName,
     this.clubLocation,
   });
 
-  final Run run;
+  final Event event;
   final String clubName;
   final String? clubLocation;
 }
@@ -47,19 +47,19 @@ class DashboardRunRecommendationCandidate {
 /// presentation provider follows the same declaration style as the rest of the
 /// app.
 @riverpod
-Future<List<DashboardRunRecommendationCandidate>> dashboardRecommendedRuns(
+Future<List<DashboardEventRecommendationCandidate>> dashboardRecommendedEvents(
   Ref ref,
   DashboardRecommendationsQuery query,
 ) async {
-  final runs = await ref
-      .watch(runRepositoryProvider)
-      .fetchUpcomingRunsForClubs(query.followedClubIds);
-  if (runs.isEmpty) return const [];
+  final events = await ref
+      .watch(eventRepositoryProvider)
+      .fetchUpcomingEventsForClubs(query.followedClubIds);
+  if (events.isEmpty) return const [];
 
-  final runClubsRepository = ref.watch(runClubsRepositoryProvider);
-  final clubIds = runs.map((run) => run.runClubId).toSet().toList()..sort();
-  final clubs = await Future.wait(clubIds.map(runClubsRepository.fetchRunClub));
-  final clubsById = <String, RunClub>{};
+  final clubsRepository = ref.watch(clubsRepositoryProvider);
+  final clubIds = events.map((event) => event.clubId).toSet().toList()..sort();
+  final clubs = await Future.wait(clubIds.map(clubsRepository.fetchClub));
+  final clubsById = <String, Club>{};
   for (final club in clubs) {
     if (club != null) {
       clubsById[club.id] = club;
@@ -67,11 +67,11 @@ Future<List<DashboardRunRecommendationCandidate>> dashboardRecommendedRuns(
   }
 
   return [
-    for (final run in runs)
-      DashboardRunRecommendationCandidate(
-        run: run,
-        clubName: clubsById[run.runClubId]?.name ?? 'Your run club',
-        clubLocation: clubsById[run.runClubId]?.location,
+    for (final event in events)
+      DashboardEventRecommendationCandidate(
+        event: event,
+        clubName: clubsById[event.clubId]?.name ?? 'Your club',
+        clubLocation: clubsById[event.clubId]?.location,
       ),
   ];
 }

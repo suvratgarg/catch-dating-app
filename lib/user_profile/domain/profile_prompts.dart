@@ -10,8 +10,8 @@ part 'profile_prompts.g.dart';
 ///
 /// Add, remove, or reorder prompts in `contracts/catalogs/`. The stored
 /// profile documents keep stable ids; display copy resolves through this file.
-const profilePromptPerfectRunId =
-    schema_contracts.schemaProfilePromptPerfectRunId;
+const profilePromptPerfectEventId =
+    schema_contracts.schemaProfilePromptPerfectEventId;
 const maxProfilePromptAnswers = schema_contracts.schemaMaxProfilePromptAnswers;
 const maxPhotoPromptCaptions = schema_contracts.schemaMaxPhotoPromptCaptions;
 
@@ -181,7 +181,7 @@ List<ProfilePromptAnswer> normalizeProfilePromptAnswers(
   if (byPromptId.isEmpty) {
     final migratedBio = normalizeProfilePromptAnswer(legacyBio ?? '');
     if (migratedBio.isNotEmpty) {
-      final definition = profilePromptDefinition(profilePromptPerfectRunId);
+      final definition = profilePromptDefinition(profilePromptPerfectEventId);
       byPromptId[definition.id] = profilePromptAnswerFor(
         definition: definition,
         answer: migratedBio,

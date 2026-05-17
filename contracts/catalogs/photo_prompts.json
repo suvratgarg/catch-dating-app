@@ -9,7 +9,7 @@
   "prompts": [
     {
       "id": "proofIRun",
-      "title": "Proof I actually run",
+      "title": "Proof I actually event",
       "placeholder": "Add a caption for this running photo."
     },
     {

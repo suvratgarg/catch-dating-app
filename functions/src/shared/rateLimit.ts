@@ -15,7 +15,7 @@
  * await checkRateLimit(
  *   admin.firestore(),
  *   request.auth!.uid,
- *   "createRunClub",
+ *   "createClub",
  *   {maxRequests: 5, windowMs: 60 * 60 * 1000}  // 5 per hour
  * );
  * ```
@@ -62,20 +62,20 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   // 10/min
   createRazorpayOrder: {maxRequests: 10, windowMs: 60 * 1000},
   verifyRazorpayPayment: {maxRequests: 10, windowMs: 60 * 1000},
-  createRun: {maxRequests: 10, windowMs: 60 * 1000},
-  updateRun: {maxRequests: 30, windowMs: 60 * 1000},
-  cancelRun: {maxRequests: 10, windowMs: 60 * 1000},
-  deleteRun: {maxRequests: 10, windowMs: 60 * 1000},
-  signUpForFreeRun: {maxRequests: 10, windowMs: 60 * 1000},
-  cancelRunSignUp: {maxRequests: 10, windowMs: 60 * 1000},
-  joinRunWaitlist: {maxRequests: 10, windowMs: 60 * 1000},
-  leaveRunWaitlist: {maxRequests: 10, windowMs: 60 * 1000},
-  joinRunClub: {maxRequests: 30, windowMs: 60 * 1000},
-  leaveRunClub: {maxRequests: 30, windowMs: 60 * 1000},
-  archiveRunClub: {maxRequests: 10, windowMs: 60 * 1000},
-  deleteRunClub: {maxRequests: 10, windowMs: 60 * 1000},
+  createEvent: {maxRequests: 10, windowMs: 60 * 1000},
+  updateEvent: {maxRequests: 30, windowMs: 60 * 1000},
+  cancelEvent: {maxRequests: 10, windowMs: 60 * 1000},
+  deleteEvent: {maxRequests: 10, windowMs: 60 * 1000},
+  signUpForFreeEvent: {maxRequests: 10, windowMs: 60 * 1000},
+  cancelEventSignUp: {maxRequests: 10, windowMs: 60 * 1000},
+  joinEventWaitlist: {maxRequests: 10, windowMs: 60 * 1000},
+  leaveEventWaitlist: {maxRequests: 10, windowMs: 60 * 1000},
+  joinClub: {maxRequests: 30, windowMs: 60 * 1000},
+  leaveClub: {maxRequests: 30, windowMs: 60 * 1000},
+  archiveClub: {maxRequests: 10, windowMs: 60 * 1000},
+  deleteClub: {maxRequests: 10, windowMs: 60 * 1000},
   // 30/min (host toggling attendance for a group)
-  markRunAttendance: {maxRequests: 30, windowMs: 60 * 1000},
+  markEventAttendance: {maxRequests: 30, windowMs: 60 * 1000},
   // 5/min
   selfCheckInAttendance: {maxRequests: 5, windowMs: 60 * 1000},
   // Places is keystroke-driven, so it needs a higher cap than mutations.
@@ -88,7 +88,7 @@ export const RATE_LIMITS: Record<string, RateLimitConfig> = {
   // 60/min because profile editing can save one field per sheet interaction.
   updateUserProfile: {maxRequests: 60, windowMs: 60 * 1000},
   // 3/hour
-  createRunClub: {maxRequests: 3, windowMs: 60 * 60 * 1000},
+  createClub: {maxRequests: 3, windowMs: 60 * 60 * 1000},
   requestAccountDeletion: {maxRequests: 3, windowMs: 60 * 60 * 1000},
 };
 

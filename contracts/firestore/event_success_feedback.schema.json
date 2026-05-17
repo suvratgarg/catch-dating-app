@@ -1,0 +1,66 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_success_feedback.schema.json",
+  "title": "EventSuccessFeedbackDocument",
+  "description": "Attendee-owned decomposed post-event feedback stored at eventSuccessFeedback/{eventId_uid}. Hosts can read aggregate-relevant fields for their event report.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventSuccessFeedback",
+  "x-firestore-path": "eventSuccessFeedback/{feedbackId}",
+  "x-document-id-field": "id",
+  "x-owner": "attendee direct write after attended event; host read",
+  "required": [
+    "eventId",
+    "clubId",
+    "uid",
+    "welcomeRating",
+    "structureRating",
+    "metNewPeopleCount",
+    "markedPrivateCrush",
+    "safetyConcern",
+    "createdAt",
+    "updatedAt"
+  ],
+  "properties": {
+    "eventId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "clubId": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "uid": {
+      "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+    },
+    "welcomeRating": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "structureRating": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "metNewPeopleCount": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 100
+    },
+    "markedPrivateCrush": {
+      "type": "boolean"
+    },
+    "safetyConcern": {
+      "type": "boolean"
+    },
+    "privateNote": {
+      "type": ["string", "null"],
+      "maxLength": 500
+    },
+    "createdAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    },
+    "updatedAt": {
+      "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+    }
+  }
+}

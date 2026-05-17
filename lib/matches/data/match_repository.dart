@@ -161,15 +161,15 @@ List<Match> collapseMatchesByOtherUser(List<Match> matches, String uid) {
       (match) => match.hasUnreadIncomingFor(uid),
     );
 
-    final mergedRunIds = <String>[];
+    final mergedEventIds = <String>[];
     for (final match in bucket.reversed) {
-      for (final runId in match.runIds) {
-        if (!mergedRunIds.contains(runId)) mergedRunIds.add(runId);
+      for (final eventId in match.eventIds) {
+        if (!mergedEventIds.contains(eventId)) mergedEventIds.add(eventId);
       }
     }
 
     return selected.copyWith(
-      runIds: mergedRunIds,
+      eventIds: mergedEventIds,
       unreadCounts: {...selected.unreadCounts, uid: hasUnreadIncoming ? 1 : 0},
     );
   }).toList();

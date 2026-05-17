@@ -6,7 +6,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 class TestFirebaseFunctions extends Fake implements FirebaseFunctions {
   final callables = <String, TestHttpsCallable>{};
@@ -60,7 +60,7 @@ void main() {
             photoUrls: const ['https://img.example/1.jpg'],
             profilePrompts: normalizeProfilePromptAnswers(
               const [],
-              legacyBio: 'Long runs, coffee, and easy Sunday plans.',
+              legacyBio: 'Long events, coffee, and easy Sunday plans.',
             ),
           ).copyWith(
             occupation: 'Product Designer',

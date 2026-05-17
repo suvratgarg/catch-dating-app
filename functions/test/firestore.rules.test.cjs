@@ -37,7 +37,7 @@ function authedDb(uid) {
   return testEnv.authenticatedContext(uid).firestore();
 }
 
-function runClub(overrides = {}) {
+function club(overrides = {}) {
   return {
     name: "Sunset Striders",
     description: "Easy city loops.",
@@ -52,15 +52,15 @@ function runClub(overrides = {}) {
     memberCount: 1,
     rating: 0,
     reviewCount: 0,
-    nextRunAt: null,
-    nextRunLabel: null,
+    nextEventAt: null,
+    nextEventLabel: null,
     ...overrides,
   };
 }
 
-function run(overrides = {}) {
+function event(overrides = {}) {
   return {
-    runClubId: "club-1",
+    clubId: "club-1",
     startTime: Timestamp.fromDate(new Date("2026-05-02T01:30:00.000Z")),
     endTime: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
     meetingPoint: "Carter Road",
@@ -70,7 +70,7 @@ function run(overrides = {}) {
     distanceKm: 5,
     pace: "easy",
     capacityLimit: 20,
-    description: "Easy seaside run.",
+    description: "Easy seaside event.",
     priceInPaise: 0,
     constraints: {},
     genderCounts: {},
@@ -78,10 +78,10 @@ function run(overrides = {}) {
   };
 }
 
-function runParticipation(overrides = {}) {
+function eventParticipation(overrides = {}) {
   return {
-    runId: "run-1",
-    runClubId: "club-1",
+    eventId: "event-1",
+    clubId: "club-1",
     uid: "runner-1",
     status: "attended",
     createdAt: Timestamp.fromDate(new Date("2026-05-02T01:30:00.000Z")),
@@ -132,7 +132,7 @@ function userProfile(overrides = {}) {
     preferredRunTimes: [],
     prefsNewCatches: true,
     prefsMessages: true,
-    prefsRunReminders: true,
+    prefsEventReminders: true,
     prefsRunStatusUpdates: true,
     prefsClubUpdates: true,
     prefsWeeklyDigest: false,
@@ -146,7 +146,7 @@ function match(overrides = {}) {
     user1Id: "runner-1",
     user2Id: "runner-2",
     participantIds: ["runner-1", "runner-2"],
-    runId: "run-1",
+    eventId: "event-1",
     createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
     lastMessageAt: null,
     lastMessagePreview: null,
@@ -163,7 +163,7 @@ function swipe(overrides = {}) {
   return {
     swiperId: "runner-1",
     targetId: "runner-2",
-    runId: "run-1",
+    eventId: "event-1",
     direction: "like",
     createdAt: serverTimestamp(),
     ...overrides,
@@ -172,18 +172,18 @@ function swipe(overrides = {}) {
 
 function review(overrides = {}) {
   return {
-    runClubId: "club-1",
-    runId: "run-1",
+    clubId: "club-1",
+    eventId: "event-1",
     reviewerUserId: "runner-1",
     reviewerName: "Runner One",
     rating: 5,
-    comment: "Great run.",
+    comment: "Great event.",
     createdAt: Timestamp.fromDate(new Date("2026-05-02T05:00:00.000Z")),
     ...overrides,
   };
 }
 
-function runClubMembership(overrides = {}) {
+function clubMembership(overrides = {}) {
   return {
     clubId: "club-1",
     uid: "runner-1",
@@ -196,10 +196,10 @@ function runClubMembership(overrides = {}) {
   };
 }
 
-function runParticipation(overrides = {}) {
+function eventParticipation(overrides = {}) {
   return {
-    runId: "run-1",
-    runClubId: "club-1",
+    eventId: "event-1",
+    clubId: "club-1",
     uid: "runner-1",
     status: "signedUp",
     createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
@@ -215,10 +215,10 @@ function runParticipation(overrides = {}) {
   };
 }
 
-function savedRun(overrides = {}) {
+function savedEvent(overrides = {}) {
   return {
     uid: "runner-1",
-    runId: "run-1",
+    eventId: "event-1",
     savedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
     ...overrides,
   };
@@ -233,16 +233,54 @@ function activityNotification(overrides = {}) {
     createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
     readAt: null,
     matchId: "match-1",
-    runId: "run-1",
-    runClubId: null,
+    eventId: "event-1",
+    clubId: null,
     actorUid: "runner-2",
     actorName: "Runner Two",
     ...overrides,
   };
 }
 
-function runReviewId(runId, reviewerUserId) {
-  return `${runId}~${reviewerUserId}`;
+function eventSuccessPlan(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    playbookId: "run_social",
+    selectedModuleIds: ["arrival", "private_crush"],
+    targetAttendeeCount: 20,
+    hostGoal: "Help everyone meet three new people.",
+    privateCrushEnabled: true,
+    contextualOpenersEnabled: true,
+    activeStepIndex: 0,
+    status: "setup",
+    attendeePrompt: "Look for someone who runs your pace.",
+    createdAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-01T10:00:00.000Z")),
+    frozenAt: null,
+    completedAt: null,
+    ...overrides,
+  };
+}
+
+function eventSuccessFeedback(overrides = {}) {
+  return {
+    eventId: "event-1",
+    clubId: "club-1",
+    uid: "runner-1",
+    welcomeRating: 5,
+    structureRating: 4,
+    metNewPeopleCount: 3,
+    markedPrivateCrush: true,
+    safetyConcern: false,
+    privateNote: "Good pacing and useful prompts.",
+    createdAt: Timestamp.fromDate(new Date("2026-05-02T04:00:00.000Z")),
+    updatedAt: Timestamp.fromDate(new Date("2026-05-02T04:00:00.000Z")),
+    ...overrides,
+  };
+}
+
+function eventReviewId(eventId, reviewerUserId) {
+  return `${eventId}~${reviewerUserId}`;
 }
 
 async function seed(pathSegments, data) {
@@ -271,18 +309,18 @@ describe("firestore.rules", () => {
     await testEnv.cleanup();
   });
 
-  describe("runClubs", () => {
+  describe("clubs", () => {
     it("denies direct club creates because creation is callable-owned", async () => {
       await assertFails(
-        setDoc(doc(authedDb("host-1"), "runClubs", "club-1"), runClub()),
+        setDoc(doc(authedDb("host-1"), "clubs", "club-1"), club()),
       );
     });
 
     it("denies direct host profile edits because updates are callable-owned", async () => {
-      await seed(["runClubs", "club-1"], runClub());
+      await seed(["clubs", "club-1"], club());
 
       await assertFails(
-        updateDoc(doc(authedDb("host-1"), "runClubs", "club-1"), {
+        updateDoc(doc(authedDb("host-1"), "clubs", "club-1"), {
           description: "Updated city loops.",
           tags: ["easy"],
           instagramHandle: "@sunsetstriders",
@@ -290,7 +328,7 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("rejects the older incomplete RunClub schema", async () => {
+    it("rejects the older incomplete Club schema", async () => {
       const legacyClub = {
         name: "Legacy Club",
         description: "Old shape.",
@@ -303,17 +341,17 @@ describe("firestore.rules", () => {
       };
 
       await assertFails(
-        setDoc(doc(authedDb("host-1"), "runClubs", "club-legacy"), legacyClub),
+        setDoc(doc(authedDb("host-1"), "clubs", "club-legacy"), legacyClub),
       );
     });
 
     it("denies direct member joins because membership is callable-owned", async () => {
-      await seed(["runClubs", "club-1"], runClub());
+      await seed(["clubs", "club-1"], club());
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "runClubs", "club-1"),
-          runClub({
+          doc(authedDb("runner-1"), "clubs", "club-1"),
+          club({
             memberCount: 2,
           }),
         ),
@@ -321,12 +359,12 @@ describe("firestore.rules", () => {
     });
 
     it("rejects member updates that tamper with club profile fields", async () => {
-      await seed(["runClubs", "club-1"], runClub());
+      await seed(["clubs", "club-1"], club());
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "runClubs", "club-1"),
-          runClub({
+          doc(authedDb("runner-1"), "clubs", "club-1"),
+          club({
             hostName: "Mallory",
             memberCount: 2,
           }),
@@ -335,12 +373,12 @@ describe("firestore.rules", () => {
     });
 
     it("denies direct member count repairs", async () => {
-      await seed(["runClubs", "club-1"], runClub());
+      await seed(["clubs", "club-1"], club());
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "runClubs", "club-1"),
-          runClub({
+          doc(authedDb("runner-1"), "clubs", "club-1"),
+          club({
             memberCount: 2,
           }),
         ),
@@ -349,16 +387,16 @@ describe("firestore.rules", () => {
 
     it("denies direct member leaves because membership is callable-owned", async () => {
       await seed(
-        ["runClubs", "club-1"],
-        runClub({
+        ["clubs", "club-1"],
+        club({
           memberCount: 3,
         }),
       );
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "runClubs", "club-1"),
-          runClub({
+          doc(authedDb("runner-1"), "clubs", "club-1"),
+          club({
             memberCount: 2,
           }),
         ),
@@ -367,16 +405,16 @@ describe("firestore.rules", () => {
 
     it("rejects members changing aggregate membership count", async () => {
       await seed(
-        ["runClubs", "club-1"],
-        runClub({
+        ["clubs", "club-1"],
+        club({
           memberCount: 3,
         }),
       );
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "runClubs", "club-1"),
-          runClub({
+          doc(authedDb("runner-1"), "clubs", "club-1"),
+          club({
             memberCount: 2,
           }),
         ),
@@ -384,10 +422,10 @@ describe("firestore.rules", () => {
     });
 
     it("denies joining via direct aggregate updates", async () => {
-      await seed(["runClubs", "club-1"], runClub());
+      await seed(["clubs", "club-1"], club());
 
       await assertFails(
-        updateDoc(doc(authedDb("runner-1"), "runClubs", "club-1"), {
+        updateDoc(doc(authedDb("runner-1"), "clubs", "club-1"), {
           memberCount: increment(1),
         }),
       );
@@ -395,41 +433,41 @@ describe("firestore.rules", () => {
 
     it("denies leaving via direct aggregate updates", async () => {
       await seed(
-        ["runClubs", "club-1"],
-        runClub({
+        ["clubs", "club-1"],
+        club({
           memberCount: 3,
         }),
       );
 
       await assertFails(
-        updateDoc(doc(authedDb("runner-1"), "runClubs", "club-1"), {
+        updateDoc(doc(authedDb("runner-1"), "clubs", "club-1"), {
           memberCount: increment(-1),
         }),
       );
     });
 
     it("denies direct club deletes", async () => {
-      await seed(["runClubs", "club-1"], runClub());
+      await seed(["clubs", "club-1"], club());
 
       await assertFails(
-        deleteDoc(doc(authedDb("host-1"), "runClubs", "club-1")),
+        deleteDoc(doc(authedDb("host-1"), "clubs", "club-1")),
       );
     });
   });
 
   describe("relationship documents", () => {
-    it("keeps run club host claims server-only", async () => {
-      await seed(["runClubHostClaims", "host-1"], {
+    it("keeps club host claims server-only", async () => {
+      await seed(["clubHostClaims", "host-1"], {
         uid: "host-1",
         clubId: "club-1",
         createdAt: Timestamp.fromDate(new Date("2026-05-08T00:00:00.000Z")),
       });
 
       await assertFails(
-        getDoc(doc(authedDb("host-1"), "runClubHostClaims", "host-1")),
+        getDoc(doc(authedDb("host-1"), "clubHostClaims", "host-1")),
       );
       await assertFails(
-        setDoc(doc(authedDb("host-1"), "runClubHostClaims", "host-1"), {
+        setDoc(doc(authedDb("host-1"), "clubHostClaims", "host-1"), {
           uid: "host-1",
           clubId: "club-2",
         }),
@@ -438,12 +476,12 @@ describe("firestore.rules", () => {
 
     it("allows active club membership reads but keeps writes callable-owned", async () => {
       await seed(
-        ["runClubMemberships", "club-1_runner-1"],
-        runClubMembership(),
+        ["clubMemberships", "club-1_runner-1"],
+        clubMembership(),
       );
       await seed(
-        ["runClubMemberships", "club-1_runner-2"],
-        runClubMembership({
+        ["clubMemberships", "club-1_runner-2"],
+        clubMembership({
           uid: "runner-2",
           status: "left",
           leftAt: Timestamp.fromDate(new Date("2026-05-02T10:00:00.000Z")),
@@ -451,18 +489,18 @@ describe("firestore.rules", () => {
       );
 
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-3"), "runClubMemberships", "club-1_runner-1")),
+        getDoc(doc(authedDb("runner-3"), "clubMemberships", "club-1_runner-1")),
       );
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-2"), "runClubMemberships", "club-1_runner-2")),
+        getDoc(doc(authedDb("runner-2"), "clubMemberships", "club-1_runner-2")),
       );
       await assertFails(
-        getDoc(doc(authedDb("runner-3"), "runClubMemberships", "club-1_runner-2")),
+        getDoc(doc(authedDb("runner-3"), "clubMemberships", "club-1_runner-2")),
       );
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "runClubMemberships", "club-1_runner-1"),
-          runClubMembership(),
+          doc(authedDb("runner-1"), "clubMemberships", "club-1_runner-1"),
+          clubMembership(),
         ),
       );
     });
@@ -471,7 +509,7 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         getDocs(
           query(
-            collection(authedDb("runner-1"), "runClubMemberships"),
+            collection(authedDb("runner-1"), "clubMemberships"),
             where("clubId", "==", "club-1"),
             where("uid", "==", "runner-1"),
             limit(1),
@@ -480,53 +518,53 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("allows participants, hosts, and authenticated roster viewers to read active run participation edges", async () => {
-      await seed(["runClubs", "club-1"], runClub());
-      await seed(["runs", "run-1"], run());
+    it("allows participants, hosts, and authenticated roster viewers to read active event participation edges", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
       await seed(
-        ["runParticipations", "run-1_runner-1"],
-        runParticipation(),
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation(),
       );
 
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1")),
+        getDoc(doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1")),
       );
       await assertSucceeds(
-        getDoc(doc(authedDb("host-1"), "runParticipations", "run-1_runner-1")),
+        getDoc(doc(authedDb("host-1"), "eventParticipations", "event-1_runner-1")),
       );
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-3"), "runParticipations", "run-1_runner-1")),
+        getDoc(doc(authedDb("runner-3"), "eventParticipations", "event-1_runner-1")),
       );
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1"),
-          runParticipation(),
+          doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1"),
+          eventParticipation(),
         ),
       );
     });
 
-    it("allows users to query their own missing run participation edge", async () => {
+    it("allows users to query their own missing event participation edge", async () => {
       await assertSucceeds(
         getDocs(
           query(
-            collection(authedDb("runner-1"), "runParticipations"),
-            where("runId", "==", "run-404"),
+            collection(authedDb("runner-1"), "eventParticipations"),
+            where("eventId", "==", "event-404"),
             where("uid", "==", "runner-1"),
           ),
         ),
       );
     });
 
-    it("allows authenticated users to query active run rosters", async () => {
-      await seed(["runClubs", "club-1"], runClub());
-      await seed(["runs", "run-1"], run());
+    it("allows authenticated users to query active event rosters", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
       await seed(
-        ["runParticipations", "run-1_runner-1"],
-        runParticipation({uid: "runner-1", status: "signedUp"}),
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({uid: "runner-1", status: "signedUp"}),
       );
       await seed(
-        ["runParticipations", "run-1_runner-2"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({
           uid: "runner-2",
           status: "waitlisted",
           signedUpAt: null,
@@ -537,20 +575,20 @@ describe("firestore.rules", () => {
       await assertSucceeds(
         getDocs(
           query(
-            collection(authedDb("runner-3"), "runParticipations"),
-            where("runId", "==", "run-1"),
+            collection(authedDb("runner-3"), "eventParticipations"),
+            where("eventId", "==", "event-1"),
             where("status", "in", ["signedUp", "waitlisted", "attended"]),
           ),
         ),
       );
     });
 
-    it("keeps cancelled run participation edges private", async () => {
-      await seed(["runClubs", "club-1"], runClub());
-      await seed(["runs", "run-1"], run());
+    it("keeps cancelled event participation edges private", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
       await seed(
-        ["runParticipations", "run-1_runner-1"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({
           status: "cancelled",
           signedUpAt: null,
           cancelledAt: Timestamp.fromDate(new Date("2026-05-01T11:00:00.000Z")),
@@ -558,71 +596,71 @@ describe("firestore.rules", () => {
       );
 
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1")),
+        getDoc(doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1")),
       );
       await assertFails(
-        getDoc(doc(authedDb("runner-3"), "runParticipations", "run-1_runner-1")),
+        getDoc(doc(authedDb("runner-3"), "eventParticipations", "event-1_runner-1")),
       );
       await assertFails(
         getDocs(
           query(
-            collection(authedDb("runner-3"), "runParticipations"),
-            where("runId", "==", "run-1"),
+            collection(authedDb("runner-3"), "eventParticipations"),
+            where("eventId", "==", "event-1"),
           ),
         ),
       );
     });
 
-    it("lets users own saved-run edges with deterministic document ids", async () => {
-      await seed(["runs", "run-1"], run());
+    it("lets users own saved-event edges with deterministic document ids", async () => {
+      await seed(["events", "event-1"], event());
 
       await assertSucceeds(
         setDoc(
-          doc(authedDb("runner-1"), "savedRuns", "runner-1_run-1"),
+          doc(authedDb("runner-1"), "savedEvents", "runner-1_event-1"),
           {
             uid: "runner-1",
-            runId: "run-1",
+            eventId: "event-1",
             savedAt: serverTimestamp(),
           },
         ),
       );
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "savedRuns", "runner-2_run-1"),
+          doc(authedDb("runner-1"), "savedEvents", "runner-2_event-1"),
           {
             uid: "runner-2",
-            runId: "run-1",
+            eventId: "event-1",
             savedAt: serverTimestamp(),
           },
         ),
       );
 
-      await seed(["savedRuns", "runner-1_run-2"], savedRun({runId: "run-2"}));
+      await seed(["savedEvents", "runner-1_event-2"], savedEvent({eventId: "event-2"}));
 
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "savedRuns", "runner-1_run-2")),
+        getDoc(doc(authedDb("runner-1"), "savedEvents", "runner-1_event-2")),
       );
       await assertFails(
-        getDoc(doc(authedDb("runner-2"), "savedRuns", "runner-1_run-2")),
+        getDoc(doc(authedDb("runner-2"), "savedEvents", "runner-1_event-2")),
       );
       await assertSucceeds(
-        deleteDoc(doc(authedDb("runner-1"), "savedRuns", "runner-1_run-2")),
+        deleteDoc(doc(authedDb("runner-1"), "savedEvents", "runner-1_event-2")),
       );
-      await seed(["savedRuns", "runner-1_run-3"], savedRun({runId: "run-3"}));
+      await seed(["savedEvents", "runner-1_event-3"], savedEvent({eventId: "event-3"}));
       await assertFails(
-        updateDoc(doc(authedDb("runner-1"), "savedRuns", "runner-1_run-3"), {
+        updateDoc(doc(authedDb("runner-1"), "savedEvents", "runner-1_event-3"), {
           savedAt: serverTimestamp(),
         }),
       );
     });
 
-    it("allows users to query their own missing saved-run edge", async () => {
+    it("allows users to query their own missing saved-event edge", async () => {
       await assertSucceeds(
         getDocs(
           query(
-            collection(authedDb("runner-1"), "savedRuns"),
+            collection(authedDb("runner-1"), "savedEvents"),
             where("uid", "==", "runner-1"),
-            where("runId", "==", "run-404"),
+            where("eventId", "==", "event-404"),
           ),
         ),
       );
@@ -1058,24 +1096,24 @@ describe("firestore.rules", () => {
   describe("swipes", () => {
     it("allows attended users to create valid outgoing swipes", async () => {
       await seed(["publicProfiles", "runner-2"], {name: "Runner Two"});
-      await seed(["runs", "run-1"], run());
+      await seed(["events", "event-1"], event());
       await seed(
-        ["runParticipations", "run-1_runner-1"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await seed(
-        ["runParticipations", "run-1_runner-2"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({
           uid: "runner-2",
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1")),
+        getDoc(doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1")),
       );
 
       await assertSucceeds(
@@ -1098,8 +1136,8 @@ describe("firestore.rules", () => {
       );
       await seed(["publicProfiles", "runner-2-reaction"], {name: "Runner R"});
       await seed(
-        ["runParticipations", "run-1_runner-2-reaction"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-2-reaction"],
+        eventParticipation({
           uid: "runner-2-reaction",
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
@@ -1118,16 +1156,16 @@ describe("firestore.rules", () => {
             targetId: "runner-2-reaction",
             reactionTargetId: "profile-prompt-perfectRun",
             reactionTargetType: "profilePrompt",
-            reactionTargetLabel: "A perfect run with me looks like...",
-            reactionTargetPreview: "Always up for a sunrise run.",
+            reactionTargetLabel: "A perfect event with me looks like...",
+            reactionTargetPreview: "Always up for a sunrise event.",
             comment: "Same here.",
           }),
         ),
       );
       await seed(["publicProfiles", "runner-2-compatibility"], {name: "Runner C"});
       await seed(
-        ["runParticipations", "run-1_runner-2-compatibility"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-2-compatibility"],
+        eventParticipation({
           uid: "runner-2-compatibility",
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
@@ -1155,20 +1193,20 @@ describe("firestore.rules", () => {
 
     it("denies malformed swipe payloads", async () => {
       await seed(["publicProfiles", "runner-2"], {name: "Runner Two"});
-      await seed(["runs", "run-1"], run());
+      await seed(["events", "event-1"], event());
       await seed(
-        ["runParticipations", "run-1_runner-1"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await assertSucceeds(
-        getDoc(doc(authedDb("runner-1"), "runParticipations", "run-1_runner-1")),
+        getDoc(doc(authedDb("runner-1"), "eventParticipations", "event-1_runner-1")),
       );
       await seed(
-        ["runParticipations", "run-1_runner-2"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({
           uid: "runner-2",
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
@@ -1186,7 +1224,7 @@ describe("firestore.rules", () => {
       await assertFails(setDoc(swipeRef, swipe({swiperId: "runner-3"})));
       await assertFails(setDoc(swipeRef, swipe({targetId: "runner-3"})));
       await assertFails(setDoc(swipeRef, swipe({direction: "superlike"})));
-      await assertFails(setDoc(swipeRef, swipe({runId: 123})));
+      await assertFails(setDoc(swipeRef, swipe({eventId: 123})));
       await assertFails(
         setDoc(swipeRef, swipe({reactionTargetType: "superlike"})),
       );
@@ -1196,31 +1234,31 @@ describe("firestore.rules", () => {
       await assertFails(setDoc(swipeRef, {...swipe(), extraField: true}));
     });
 
-    it("denies swipes outside the eligible run candidate relationship", async () => {
+    it("denies swipes outside the eligible event candidate relationship", async () => {
       await seed(["publicProfiles", "runner-1"], {name: "Runner One"});
       await seed(["publicProfiles", "runner-2"], {name: "Runner Two"});
       await seed(["publicProfiles", "runner-3"], {name: "Runner Three"});
-      await seed(["runs", "run-1"], run());
-      await seed(["runs", "run-2"], run());
+      await seed(["events", "event-1"], event());
+      await seed(["events", "event-2"], event());
       await seed(
-        ["runParticipations", "run-1_runner-1"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await seed(
-        ["runParticipations", "run-1_runner-2"],
-        runParticipation({
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({
           uid: "runner-2",
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
       );
       await seed(
-        ["runParticipations", "run-2_runner-1"],
-        runParticipation({
-          runId: "run-2",
+        ["eventParticipations", "event-2_runner-1"],
+        eventParticipation({
+          eventId: "event-2",
           status: "attended",
           attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
         }),
@@ -1241,7 +1279,7 @@ describe("firestore.rules", () => {
       await assertFails(
         setDoc(
           doc(authedDb("runner-1"), "swipes", "runner-1", "outgoing", "runner-2"),
-          swipe({runId: "run-2"}),
+          swipe({eventId: "event-2"}),
         ),
       );
 
@@ -1261,33 +1299,33 @@ describe("firestore.rules", () => {
   describe("reviews", () => {
     it("allows authenticated users to read reviews", async () => {
       await seed(
-        ["reviews", runReviewId("run-1", "runner-1")],
+        ["reviews", eventReviewId("event-1", "runner-1")],
         review(),
       );
 
       await assertSucceeds(getDoc(doc(
         authedDb("runner-1"),
         "reviews",
-        runReviewId("run-1", "runner-1"),
+        eventReviewId("event-1", "runner-1"),
       )));
     });
 
     it("denies direct review writes because reviews are callable-owned", async () => {
       await seed(
-        ["reviews", runReviewId("run-1", "runner-1")],
+        ["reviews", eventReviewId("event-1", "runner-1")],
         review(),
       );
 
       const ownReviewRef = doc(
         authedDb("runner-1"),
         "reviews",
-        runReviewId("run-1", "runner-1"),
+        eventReviewId("event-1", "runner-1"),
       );
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "reviews", "run-2~runner-1"),
-          review({runId: "run-2"}),
+          doc(authedDb("runner-1"), "reviews", "event-2~runner-1"),
+          review({eventId: "event-2"}),
         ),
       );
       await assertFails(updateDoc(ownReviewRef, {
@@ -1299,21 +1337,21 @@ describe("firestore.rules", () => {
     });
   });
 
-  describe("runs", () => {
-    it("denies direct run creates because creation is callable-owned", async () => {
-      await seed(["runClubs", "club-1"], runClub());
+  describe("events", () => {
+    it("denies direct event creates because creation is callable-owned", async () => {
+      await seed(["clubs", "club-1"], club());
 
       await assertFails(
-        setDoc(doc(authedDb("host-1"), "runs", "run-new"), run()),
+        setDoc(doc(authedDb("host-1"), "events", "event-new"), event()),
       );
     });
 
-    it("denies direct host run detail edits because updates are callable-owned", async () => {
-      await seed(["runClubs", "club-1"], runClub());
-      await seed(["runs", "run-1"], run());
+    it("denies direct host event detail edits because updates are callable-owned", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
 
       await assertFails(
-        updateDoc(doc(authedDb("host-1"), "runs", "run-1"), {
+        updateDoc(doc(authedDb("host-1"), "events", "event-1"), {
           startTime: Timestamp.fromDate(new Date("2026-05-02T02:00:00.000Z")),
           endTime: Timestamp.fromDate(new Date("2026-05-02T03:00:00.000Z")),
           meetingPoint: "Joggers Park gate",
@@ -1327,13 +1365,13 @@ describe("firestore.rules", () => {
       );
     });
 
-    it("denies hosts changing booking-sensitive or ownership run fields", async () => {
-      await seed(["runClubs", "club-1"], runClub());
-      await seed(["runs", "run-1"], run());
+    it("denies hosts changing booking-sensitive or ownership event fields", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
 
-      const runRef = doc(authedDb("host-1"), "runs", "run-1");
+      const runRef = doc(authedDb("host-1"), "events", "event-1");
 
-      await assertFails(updateDoc(runRef, {runClubId: "club-2"}));
+      await assertFails(updateDoc(runRef, {clubId: "club-2"}));
       await assertFails(updateDoc(runRef, {capacityLimit: 50}));
       await assertFails(updateDoc(runRef, {priceInPaise: 10000}));
       await assertFails(updateDoc(runRef, {constraints: {gender: "woman"}}));
@@ -1343,23 +1381,185 @@ describe("firestore.rules", () => {
       await assertFails(updateDoc(runRef, {genderCounts: {woman: 1}}));
     });
 
-    it("denies direct run aggregate rewrites because roster actions are callable-owned", async () => {
-      await seed(["runs", "run-1"], run());
+    it("denies direct event aggregate rewrites because roster actions are callable-owned", async () => {
+      await seed(["events", "event-1"], event());
 
       await assertFails(
         setDoc(
-          doc(authedDb("runner-1"), "runs", "run-1"),
-          run({bookedCount: 1, waitlistedCount: 1}),
+          doc(authedDb("runner-1"), "events", "event-1"),
+          event({bookedCount: 1, waitlistedCount: 1}),
         ),
       );
     });
 
-    it("denies direct run deletes", async () => {
-      await seed(["runClubs", "club-1"], runClub());
-      await seed(["runs", "run-1"], run());
+    it("denies direct event deletes", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
 
       await assertFails(
-        deleteDoc(doc(authedDb("host-1"), "runs", "run-1")),
+        deleteDoc(doc(authedDb("host-1"), "events", "event-1")),
+      );
+    });
+  });
+
+  describe("event success", () => {
+    it("allows only the event club host to create and update event success plans", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+
+      const planRef = doc(authedDb("host-1"), "eventSuccessPlans", "event-1");
+
+      await assertSucceeds(setDoc(planRef, eventSuccessPlan()));
+      await assertSucceeds(updateDoc(planRef, {
+        activeStepIndex: 1,
+        status: "live",
+        updatedAt: serverTimestamp(),
+        frozenAt: serverTimestamp(),
+      }));
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "eventSuccessPlans", "event-1"),
+          eventSuccessPlan(),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("host-1"), "eventSuccessPlans", "event-2"),
+          eventSuccessPlan({eventId: "event-1"}),
+        ),
+      );
+      await assertFails(
+        updateDoc(planRef, {
+          selectedModuleIds: Array.from({length: 25}, (_, index) => `m-${index}`),
+          updatedAt: serverTimestamp(),
+        }),
+      );
+    });
+
+    it("allows hosts and active participants to read event success plans", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(["eventSuccessPlans", "event-1"], eventSuccessPlan());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({
+          uid: "runner-2",
+          status: "cancelled",
+          cancelledAt: Timestamp.fromDate(new Date("2026-05-01T11:00:00.000Z")),
+        }),
+      );
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("host-1"), "eventSuccessPlans", "event-1")),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "eventSuccessPlans", "event-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-2"), "eventSuccessPlans", "event-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-3"), "eventSuccessPlans", "event-1")),
+      );
+    });
+
+    it("allows attended users to submit feedback only after the event has ended", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2026-05-02T02:30:00.000Z")),
+        }),
+      );
+      await seed(
+        ["eventParticipations", "event-1_runner-2"],
+        eventParticipation({
+          uid: "runner-2",
+          status: "signedUp",
+        }),
+      );
+
+      await assertSucceeds(
+        setDoc(
+          doc(authedDb("runner-1"), "eventSuccessFeedback", "event-1_runner-1"),
+          eventSuccessFeedback(),
+        ),
+      );
+      await assertSucceeds(
+        updateDoc(
+          doc(authedDb("runner-1"), "eventSuccessFeedback", "event-1_runner-1"),
+          {
+            privateNote: "Even better after the second loop.",
+            updatedAt: serverTimestamp(),
+          },
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-2"), "eventSuccessFeedback", "event-1_runner-2"),
+          eventSuccessFeedback({uid: "runner-2"}),
+        ),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "eventSuccessFeedback", "event-1_runner-2"),
+          eventSuccessFeedback(),
+        ),
+      );
+
+      await seed(
+        ["events", "event-future"],
+        event({
+          startTime: Timestamp.fromDate(new Date("2099-05-02T01:30:00.000Z")),
+          endTime: Timestamp.fromDate(new Date("2099-05-02T02:30:00.000Z")),
+        }),
+      );
+      await seed(
+        ["eventParticipations", "event-future_runner-1"],
+        eventParticipation({
+          eventId: "event-future",
+          status: "attended",
+          attendedAt: Timestamp.fromDate(new Date("2099-05-02T02:30:00.000Z")),
+        }),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("runner-1"), "eventSuccessFeedback", "event-future_runner-1"),
+          eventSuccessFeedback({eventId: "event-future"}),
+        ),
+      );
+    });
+
+    it("allows hosts to read feedback for their event without exposing it to unrelated users", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventSuccessFeedback", "event-1_runner-1"],
+        eventSuccessFeedback(),
+      );
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "eventSuccessFeedback", "event-1_runner-1")),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("host-1"), "eventSuccessFeedback", "event-1_runner-1")),
+      );
+      await assertSucceeds(
+        getDocs(
+          query(
+            collection(authedDb("host-1"), "eventSuccessFeedback"),
+            where("eventId", "==", "event-1"),
+          ),
+        ),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-2"), "eventSuccessFeedback", "event-1_runner-1")),
       );
     });
   });

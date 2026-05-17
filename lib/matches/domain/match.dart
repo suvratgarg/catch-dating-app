@@ -15,7 +15,7 @@ abstract class Match with _$Match {
     @JsonKey(includeToJson: false) required String id,
     required String user1Id,
     required String user2Id,
-    @JsonKey(readValue: _readRunIds) @Default(<String>[]) List<String> runIds,
+    @JsonKey(readValue: _readEventIds) @Default(<String>[]) List<String> eventIds,
     @TimestampConverter() required DateTime createdAt,
     @NullableTimestampConverter() DateTime? lastMessageAt,
     String? lastMessagePreview,
@@ -31,8 +31,8 @@ abstract class Match with _$Match {
   /// Returns the UID of the other participant in this match.
   String otherId(String myUid) => user1Id == myUid ? user2Id : user1Id;
 
-  /// Latest shared run context for legacy call sites and notification copy.
-  String? get latestRunId => runIds.isEmpty ? null : runIds.last;
+  /// Latest shared event context for legacy call sites and notification copy.
+  String? get latestEventId => eventIds.isEmpty ? null : eventIds.last;
 
   bool get isBlocked => status == MatchStatus.blocked;
 
@@ -47,13 +47,13 @@ abstract class Match with _$Match {
       hasUnreadIncomingFor(uid) ? 1 : 0;
 }
 
-Object? _readRunIds(Map json, String key) {
-  final runIds = json[key];
-  if (runIds is List) return runIds;
+Object? _readEventIds(Map json, String key) {
+  final eventIds = json[key];
+  if (eventIds is List) return eventIds;
 
-  final legacyRunId = json['runId'];
-  if (legacyRunId is String && legacyRunId.isNotEmpty) {
-    return [legacyRunId];
+  final legacyEventId = json['eventId'];
+  if (legacyEventId is String && legacyEventId.isNotEmpty) {
+    return [legacyEventId];
   }
 
   return null;

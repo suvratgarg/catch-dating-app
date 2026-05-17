@@ -291,15 +291,15 @@ abstract final class EventSuccessMetricCatalog {
 abstract final class EventSuccessPlaybookLibrary {
   static const socialRun = EventSuccessPlaybook(
     id: 'social_run_light',
-    title: 'Social Run Lite',
+    title: 'Social Event Lite',
     activityType: EventActivityType.socialRun,
     socialIntensity: EventSocialIntensity.light,
     summary:
-        'A run-first format that adds arrival structure, pace pods, optional prompts, and a post-run crush loop.',
+        'A event-first format that adds arrival structure, pace pods, optional prompts, and a post-event crush loop.',
     attendeePromise:
-        'You can run naturally, meet people at your pace, and follow up privately afterward.',
+        'You can event naturally, meet people at your pace, and follow up privately afterward.',
     hostPromise:
-        'Use check-in, pace pods, and a short cooldown prompt without turning the run into speed dating.',
+        'Use check-in, pace pods, and a short cooldown prompt without turning the event into speed dating.',
     capacity: EventCapacityGuidance(
       min: 8,
       max: 36,
@@ -339,8 +339,8 @@ abstract final class EventSuccessPlaybookLibrary {
         stage: EventSuccessStage.activity,
         title: 'Run in pace pods',
         durationMinutes: 35,
-        hostInstruction: 'Keep pods visible and avoid mid-run phone use.',
-        attendeeExperience: 'Run with a small group that matches your pace.',
+        hostInstruction: 'Keep pods visible and avoid mid-event phone use.',
+        attendeeExperience: 'Event with a small group that matches your pace.',
         moduleIds: ['micro_pods'],
       ),
       EventRunOfShowStep(
@@ -356,15 +356,16 @@ abstract final class EventSuccessPlaybookLibrary {
         stage: EventSuccessStage.after,
         title: 'Private follow-up',
         durationMinutes: 3,
-        hostInstruction: 'Remind attendees that post-run crushes are private.',
+        hostInstruction:
+            'Remind attendees that post-event crushes are private.',
         attendeeExperience: 'Mark interest without public rejection risk.',
         moduleIds: ['private_crush', 'contextual_openers'],
       ),
     ],
     metrics: EventSuccessMetricCatalog.core,
     antiPatterns: [
-      'Do not interrupt the actual run with phone-heavy prompts.',
-      'Do not make one-to-one romantic pairing the headline for beginner runs.',
+      'Do not interrupt the actual event with phone-heavy prompts.',
+      'Do not make one-to-one romantic pairing the headline for beginner events.',
       'Do not publish attendee interest unless it is mutual.',
     ],
     iterationQuestions: [
@@ -374,7 +375,7 @@ abstract final class EventSuccessPlaybookLibrary {
     ],
     wiringNotes: [
       'Could reuse booking and attendance once approved.',
-      'Should not change current run booking until check-in behavior is validated.',
+      'Should not change current event booking until check-in behavior is validated.',
     ],
   );
 
@@ -577,7 +578,7 @@ abstract final class EventSuccessPlaybookLibrary {
         stage: EventSuccessStage.mixing,
         title: 'Rounds and reveal',
         durationMinutes: 45,
-        hostInstruction: 'Run two or three rounds before any match reveal.',
+        hostInstruction: 'Event two or three rounds before any match reveal.',
         attendeeExperience:
             'Meet people before seeing algorithmic suggestions.',
         moduleIds: ['guided_rotations', 'social_missions'],
@@ -618,6 +619,9 @@ abstract final class EventSuccessPlaybookLibrary {
 
   static Iterable<EventSuccessPlaybook> forActivity(EventActivityType type) =>
       all.where((playbook) => playbook.activityType == type);
+
+  static EventSuccessPlaybook byIdOrDefault(String id) =>
+      all.firstWhere((playbook) => playbook.id == id, orElse: () => socialRun);
 
   static EventSuccessPlaybook recommendedFor({
     required EventActivityType activityType,

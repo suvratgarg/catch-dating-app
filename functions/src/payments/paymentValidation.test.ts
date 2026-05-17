@@ -2,23 +2,23 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {HttpsError} from "firebase-functions/v2/https";
-import {RunDoc} from "../shared/firestore";
+import {EventDoc} from "../shared/firestore";
 import {
   buildOrderCreatePayload,
   buildPaymentRecord,
-  verifyPaidRunBooking,
+  verifyPaidEventBooking,
 } from "./paymentValidation";
 
-function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
+function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
   return {
-    runClubId: "club-1",
+    clubId: "club-1",
     startTime: {} as FirebaseFirestore.Timestamp,
     endTime: {} as FirebaseFirestore.Timestamp,
     meetingPoint: "Carter Road",
     distanceKm: 5,
     pace: "easy",
     capacityLimit: 20,
-    description: "Easy paced seaside run.",
+    description: "Easy paced seaside event.",
     priceInPaise: 25000,
     status: "active",
     cancelledAt: null,
@@ -35,8 +35,8 @@ function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
 
 test("buildOrderCreatePayload derives trusted amount and notes", () => {
   const payload = buildOrderCreatePayload({
-    runId: "run-1",
-    run: buildRunDoc(),
+    eventId: "event-1",
+    event: buildEventDoc(),
     userId: "runner-1",
     receiptToken: 123,
   });
@@ -44,45 +44,45 @@ test("buildOrderCreatePayload derives trusted amount and notes", () => {
   assert.deepEqual(payload, {
     amount: 25000,
     currency: "INR",
-    receipt: "run_run-1_123",
+    receipt: "event_event-1_123",
     notes: {
-      runId: "run-1",
+      eventId: "event-1",
       userId: "runner-1",
       quotedAmountInPaise: 25000,
     },
   });
 });
 
-test("buildOrderCreatePayload rejects free runs", () => {
+test("buildOrderCreatePayload rejects free events", () => {
   assert.throws(
     () =>
       buildOrderCreatePayload({
-        runId: "run-1",
-        run: buildRunDoc({priceInPaise: 0}),
+        eventId: "event-1",
+        event: buildEventDoc({priceInPaise: 0}),
         userId: "runner-1",
         receiptToken: 123,
       }),
-    isHttpsError("invalid-argument", "Run price must be a positive integer.")
+    isHttpsError("invalid-argument", "Event price must be a positive integer.")
   );
 });
 
-test("buildOrderCreatePayload rejects cancelled runs", () => {
+test("buildOrderCreatePayload rejects cancelled events", () => {
   assert.throws(
     () =>
       buildOrderCreatePayload({
-        runId: "run-1",
-        run: buildRunDoc({status: "cancelled"}),
+        eventId: "event-1",
+        event: buildEventDoc({status: "cancelled"}),
         userId: "runner-1",
         receiptToken: 123,
       }),
-    isHttpsError("failed-precondition", "This run has been cancelled.")
+    isHttpsError("failed-precondition", "This event has been cancelled.")
   );
 });
 
 test(
-  "verifyPaidRunBooking returns booking details from trusted Razorpay data",
+  "verifyPaidEventBooking returns booking details from trusted Razorpay data",
   () => {
-    const booking = verifyPaidRunBooking({
+    const booking = verifyPaidEventBooking({
       order: {
         id: "order_123",
         amount: 25000,
@@ -90,7 +90,7 @@ test(
         amount_paid: 25000,
         amount_due: 0,
         notes: {
-          runId: "run-1",
+          eventId: "event-1",
           userId: "runner-1",
         },
       },
@@ -106,7 +106,7 @@ test(
     });
 
     assert.deepEqual(booking, {
-      runId: "run-1",
+      eventId: "event-1",
       userId: "runner-1",
       amountInPaise: 25000,
       currency: "INR",
@@ -115,11 +115,11 @@ test(
 );
 
 test(
-  "verifyPaidRunBooking rejects mismatched users and refunded payments",
+  "verifyPaidEventBooking rejects mismatched users and refunded payments",
   () => {
     assert.throws(
       () =>
-        verifyPaidRunBooking({
+        verifyPaidEventBooking({
           order: {
             id: "order_123",
             amount: 25000,
@@ -127,7 +127,7 @@ test(
             amount_paid: 25000,
             amount_due: 0,
             notes: {
-              runId: "run-1",
+              eventId: "event-1",
               userId: "runner-2",
             },
           },
@@ -149,7 +149,7 @@ test(
 
     assert.throws(
       () =>
-        verifyPaidRunBooking({
+        verifyPaidEventBooking({
           order: {
             id: "order_123",
             amount: 25000,
@@ -157,7 +157,7 @@ test(
             amount_paid: 25000,
             amount_due: 0,
             notes: {
-              runId: "run-1",
+              eventId: "event-1",
               userId: "runner-1",
             },
           },
@@ -186,7 +186,7 @@ test("buildPaymentRecord always writes signUpFailed explicitly", () => {
       userId: "runner-1",
       orderId: "order_123",
       paymentId: "pay_123",
-      runId: "run-1",
+      eventId: "event-1",
       amountInPaise: 25000,
       currency: "INR",
       status: "completed",
@@ -195,7 +195,7 @@ test("buildPaymentRecord always writes signUpFailed explicitly", () => {
       userId: "runner-1",
       orderId: "order_123",
       paymentId: "pay_123",
-      runId: "run-1",
+      eventId: "event-1",
       amount: 25000,
       currency: "INR",
       status: "completed",

@@ -27,7 +27,7 @@
   "preferredRunTimes": [],
   "prefsNewCatches": true,
   "prefsMessages": true,
-  "prefsRunReminders": true,
+  "prefsEventReminders": true,
   "prefsRunStatusUpdates": true,
   "prefsClubUpdates": true,
   "prefsWeeklyDigest": false,

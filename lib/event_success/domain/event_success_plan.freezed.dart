@@ -1,0 +1,624 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+// coverage:ignore-file
+// ignore_for_file: type=lint
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
+
+part of 'event_success_plan.dart';
+
+// **************************************************************************
+// FreezedGenerator
+// **************************************************************************
+
+// dart format off
+T _$identity<T>(T value) => value;
+
+/// @nodoc
+mixin _$EventSuccessPlan {
+
+@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get playbookId; List<String> get selectedModuleIds; int get targetAttendeeCount; String get hostGoal; bool get privateCrushEnabled; bool get contextualOpenersEnabled; int get activeStepIndex; EventSuccessPlanStatus get status; String? get attendeePrompt;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;@NullableTimestampConverter() DateTime? get frozenAt;@NullableTimestampConverter() DateTime? get completedAt;
+/// Create a copy of EventSuccessPlan
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$EventSuccessPlanCopyWith<EventSuccessPlan> get copyWith => _$EventSuccessPlanCopyWithImpl<EventSuccessPlan>(this as EventSuccessPlan, _$identity);
+
+  /// Serializes this EventSuccessPlan to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other.selectedModuleIds, selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.privateCrushEnabled, privateCrushEnabled) || other.privateCrushEnabled == privateCrushEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,eventId,clubId,playbookId,const DeepCollectionEquality().hash(selectedModuleIds),targetAttendeeCount,hostGoal,privateCrushEnabled,contextualOpenersEnabled,activeStepIndex,status,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt);
+
+@override
+String toString() {
+  return 'EventSuccessPlan(id: $id, eventId: $eventId, clubId: $clubId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, hostGoal: $hostGoal, privateCrushEnabled: $privateCrushEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, activeStepIndex: $activeStepIndex, status: $status, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $EventSuccessPlanCopyWith<$Res>  {
+  factory $EventSuccessPlanCopyWith(EventSuccessPlan value, $Res Function(EventSuccessPlan) _then) = _$EventSuccessPlanCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, String hostGoal, bool privateCrushEnabled, bool contextualOpenersEnabled, int activeStepIndex, EventSuccessPlanStatus status, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$EventSuccessPlanCopyWithImpl<$Res>
+    implements $EventSuccessPlanCopyWith<$Res> {
+  _$EventSuccessPlanCopyWithImpl(this._self, this._then);
+
+  final EventSuccessPlan _self;
+  final $Res Function(EventSuccessPlan) _then;
+
+/// Create a copy of EventSuccessPlan
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? hostGoal = null,Object? privateCrushEnabled = null,Object? contextualOpenersEnabled = null,Object? activeStepIndex = null,Object? status = null,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
+as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,playbookId: null == playbookId ? _self.playbookId : playbookId // ignore: cast_nullable_to_non_nullable
+as String,selectedModuleIds: null == selectedModuleIds ? _self.selectedModuleIds : selectedModuleIds // ignore: cast_nullable_to_non_nullable
+as List<String>,targetAttendeeCount: null == targetAttendeeCount ? _self.targetAttendeeCount : targetAttendeeCount // ignore: cast_nullable_to_non_nullable
+as int,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
+as String,privateCrushEnabled: null == privateCrushEnabled ? _self.privateCrushEnabled : privateCrushEnabled // ignore: cast_nullable_to_non_nullable
+as bool,contextualOpenersEnabled: null == contextualOpenersEnabled ? _self.contextualOpenersEnabled : contextualOpenersEnabled // ignore: cast_nullable_to_non_nullable
+as bool,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
+as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EventSuccessPlanStatus,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,frozenAt: freezed == frozenAt ? _self.frozenAt : frozenAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,completedAt: freezed == completedAt ? _self.completedAt : completedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [EventSuccessPlan].
+extension EventSuccessPlanPatterns on EventSuccessPlan {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _EventSuccessPlan value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _EventSuccessPlan() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _EventSuccessPlan value)  $default,){
+final _that = this;
+switch (_that) {
+case _EventSuccessPlan():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _EventSuccessPlan value)?  $default,){
+final _that = this;
+switch (_that) {
+case _EventSuccessPlan() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  int activeStepIndex,  EventSuccessPlanStatus status,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _EventSuccessPlan() when $default != null:
+return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.activeStepIndex,_that.status,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  int activeStepIndex,  EventSuccessPlanStatus status,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)  $default,) {final _that = this;
+switch (_that) {
+case _EventSuccessPlan():
+return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.activeStepIndex,_that.status,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String playbookId,  List<String> selectedModuleIds,  int targetAttendeeCount,  String hostGoal,  bool privateCrushEnabled,  bool contextualOpenersEnabled,  int activeStepIndex,  EventSuccessPlanStatus status,  String? attendeePrompt, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt, @NullableTimestampConverter()  DateTime? frozenAt, @NullableTimestampConverter()  DateTime? completedAt)?  $default,) {final _that = this;
+switch (_that) {
+case _EventSuccessPlan() when $default != null:
+return $default(_that.id,_that.eventId,_that.clubId,_that.playbookId,_that.selectedModuleIds,_that.targetAttendeeCount,_that.hostGoal,_that.privateCrushEnabled,_that.contextualOpenersEnabled,_that.activeStepIndex,_that.status,_that.attendeePrompt,_that.createdAt,_that.updatedAt,_that.frozenAt,_that.completedAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _EventSuccessPlan extends EventSuccessPlan {
+  const _EventSuccessPlan({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.playbookId, required final  List<String> selectedModuleIds, required this.targetAttendeeCount, required this.hostGoal, this.privateCrushEnabled = true, this.contextualOpenersEnabled = true, this.activeStepIndex = 0, this.status = EventSuccessPlanStatus.setup, this.attendeePrompt, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt, @NullableTimestampConverter() this.frozenAt, @NullableTimestampConverter() this.completedAt}): _selectedModuleIds = selectedModuleIds,super._();
+  factory _EventSuccessPlan.fromJson(Map<String, dynamic> json) => _$EventSuccessPlanFromJson(json);
+
+@override@JsonKey(includeToJson: false) final  String id;
+@override final  String eventId;
+@override final  String clubId;
+@override final  String playbookId;
+ final  List<String> _selectedModuleIds;
+@override List<String> get selectedModuleIds {
+  if (_selectedModuleIds is EqualUnmodifiableListView) return _selectedModuleIds;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(_selectedModuleIds);
+}
+
+@override final  int targetAttendeeCount;
+@override final  String hostGoal;
+@override@JsonKey() final  bool privateCrushEnabled;
+@override@JsonKey() final  bool contextualOpenersEnabled;
+@override@JsonKey() final  int activeStepIndex;
+@override@JsonKey() final  EventSuccessPlanStatus status;
+@override final  String? attendeePrompt;
+@override@TimestampConverter() final  DateTime createdAt;
+@override@TimestampConverter() final  DateTime updatedAt;
+@override@NullableTimestampConverter() final  DateTime? frozenAt;
+@override@NullableTimestampConverter() final  DateTime? completedAt;
+
+/// Create a copy of EventSuccessPlan
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$EventSuccessPlanCopyWith<_EventSuccessPlan> get copyWith => __$EventSuccessPlanCopyWithImpl<_EventSuccessPlan>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$EventSuccessPlanToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessPlan&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.playbookId, playbookId) || other.playbookId == playbookId)&&const DeepCollectionEquality().equals(other._selectedModuleIds, _selectedModuleIds)&&(identical(other.targetAttendeeCount, targetAttendeeCount) || other.targetAttendeeCount == targetAttendeeCount)&&(identical(other.hostGoal, hostGoal) || other.hostGoal == hostGoal)&&(identical(other.privateCrushEnabled, privateCrushEnabled) || other.privateCrushEnabled == privateCrushEnabled)&&(identical(other.contextualOpenersEnabled, contextualOpenersEnabled) || other.contextualOpenersEnabled == contextualOpenersEnabled)&&(identical(other.activeStepIndex, activeStepIndex) || other.activeStepIndex == activeStepIndex)&&(identical(other.status, status) || other.status == status)&&(identical(other.attendeePrompt, attendeePrompt) || other.attendeePrompt == attendeePrompt)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.frozenAt, frozenAt) || other.frozenAt == frozenAt)&&(identical(other.completedAt, completedAt) || other.completedAt == completedAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,eventId,clubId,playbookId,const DeepCollectionEquality().hash(_selectedModuleIds),targetAttendeeCount,hostGoal,privateCrushEnabled,contextualOpenersEnabled,activeStepIndex,status,attendeePrompt,createdAt,updatedAt,frozenAt,completedAt);
+
+@override
+String toString() {
+  return 'EventSuccessPlan(id: $id, eventId: $eventId, clubId: $clubId, playbookId: $playbookId, selectedModuleIds: $selectedModuleIds, targetAttendeeCount: $targetAttendeeCount, hostGoal: $hostGoal, privateCrushEnabled: $privateCrushEnabled, contextualOpenersEnabled: $contextualOpenersEnabled, activeStepIndex: $activeStepIndex, status: $status, attendeePrompt: $attendeePrompt, createdAt: $createdAt, updatedAt: $updatedAt, frozenAt: $frozenAt, completedAt: $completedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$EventSuccessPlanCopyWith<$Res> implements $EventSuccessPlanCopyWith<$Res> {
+  factory _$EventSuccessPlanCopyWith(_EventSuccessPlan value, $Res Function(_EventSuccessPlan) _then) = __$EventSuccessPlanCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String playbookId, List<String> selectedModuleIds, int targetAttendeeCount, String hostGoal, bool privateCrushEnabled, bool contextualOpenersEnabled, int activeStepIndex, EventSuccessPlanStatus status, String? attendeePrompt,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt,@NullableTimestampConverter() DateTime? frozenAt,@NullableTimestampConverter() DateTime? completedAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$EventSuccessPlanCopyWithImpl<$Res>
+    implements _$EventSuccessPlanCopyWith<$Res> {
+  __$EventSuccessPlanCopyWithImpl(this._self, this._then);
+
+  final _EventSuccessPlan _self;
+  final $Res Function(_EventSuccessPlan) _then;
+
+/// Create a copy of EventSuccessPlan
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? playbookId = null,Object? selectedModuleIds = null,Object? targetAttendeeCount = null,Object? hostGoal = null,Object? privateCrushEnabled = null,Object? contextualOpenersEnabled = null,Object? activeStepIndex = null,Object? status = null,Object? attendeePrompt = freezed,Object? createdAt = null,Object? updatedAt = null,Object? frozenAt = freezed,Object? completedAt = freezed,}) {
+  return _then(_EventSuccessPlan(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
+as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,playbookId: null == playbookId ? _self.playbookId : playbookId // ignore: cast_nullable_to_non_nullable
+as String,selectedModuleIds: null == selectedModuleIds ? _self._selectedModuleIds : selectedModuleIds // ignore: cast_nullable_to_non_nullable
+as List<String>,targetAttendeeCount: null == targetAttendeeCount ? _self.targetAttendeeCount : targetAttendeeCount // ignore: cast_nullable_to_non_nullable
+as int,hostGoal: null == hostGoal ? _self.hostGoal : hostGoal // ignore: cast_nullable_to_non_nullable
+as String,privateCrushEnabled: null == privateCrushEnabled ? _self.privateCrushEnabled : privateCrushEnabled // ignore: cast_nullable_to_non_nullable
+as bool,contextualOpenersEnabled: null == contextualOpenersEnabled ? _self.contextualOpenersEnabled : contextualOpenersEnabled // ignore: cast_nullable_to_non_nullable
+as bool,activeStepIndex: null == activeStepIndex ? _self.activeStepIndex : activeStepIndex // ignore: cast_nullable_to_non_nullable
+as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as EventSuccessPlanStatus,attendeePrompt: freezed == attendeePrompt ? _self.attendeePrompt : attendeePrompt // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,frozenAt: freezed == frozenAt ? _self.frozenAt : frozenAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,completedAt: freezed == completedAt ? _self.completedAt : completedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
+  ));
+}
+
+
+}
+
+
+/// @nodoc
+mixin _$EventSuccessFeedback {
+
+@JsonKey(includeToJson: false) String get id; String get eventId; String get clubId; String get uid; int get welcomeRating; int get structureRating; int get metNewPeopleCount; bool get markedPrivateCrush; bool get safetyConcern; String? get privateNote;@TimestampConverter() DateTime get createdAt;@TimestampConverter() DateTime get updatedAt;
+/// Create a copy of EventSuccessFeedback
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$EventSuccessFeedbackCopyWith<EventSuccessFeedback> get copyWith => _$EventSuccessFeedbackCopyWithImpl<EventSuccessFeedback>(this as EventSuccessFeedback, _$identity);
+
+  /// Serializes this EventSuccessFeedback to a JSON map.
+  Map<String, dynamic> toJson();
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.markedPrivateCrush, markedPrivateCrush) || other.markedPrivateCrush == markedPrivateCrush)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,welcomeRating,structureRating,metNewPeopleCount,markedPrivateCrush,safetyConcern,privateNote,createdAt,updatedAt);
+
+@override
+String toString() {
+  return 'EventSuccessFeedback(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, markedPrivateCrush: $markedPrivateCrush, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $EventSuccessFeedbackCopyWith<$Res>  {
+  factory $EventSuccessFeedbackCopyWith(EventSuccessFeedback value, $Res Function(EventSuccessFeedback) _then) = _$EventSuccessFeedbackCopyWithImpl;
+@useResult
+$Res call({
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, int welcomeRating, int structureRating, int metNewPeopleCount, bool markedPrivateCrush, bool safetyConcern, String? privateNote,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
+});
+
+
+
+
+}
+/// @nodoc
+class _$EventSuccessFeedbackCopyWithImpl<$Res>
+    implements $EventSuccessFeedbackCopyWith<$Res> {
+  _$EventSuccessFeedbackCopyWithImpl(this._self, this._then);
+
+  final EventSuccessFeedback _self;
+  final $Res Function(EventSuccessFeedback) _then;
+
+/// Create a copy of EventSuccessFeedback
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? welcomeRating = null,Object? structureRating = null,Object? metNewPeopleCount = null,Object? markedPrivateCrush = null,Object? safetyConcern = null,Object? privateNote = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+  return _then(_self.copyWith(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
+as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
+as String,welcomeRating: null == welcomeRating ? _self.welcomeRating : welcomeRating // ignore: cast_nullable_to_non_nullable
+as int,structureRating: null == structureRating ? _self.structureRating : structureRating // ignore: cast_nullable_to_non_nullable
+as int,metNewPeopleCount: null == metNewPeopleCount ? _self.metNewPeopleCount : metNewPeopleCount // ignore: cast_nullable_to_non_nullable
+as int,markedPrivateCrush: null == markedPrivateCrush ? _self.markedPrivateCrush : markedPrivateCrush // ignore: cast_nullable_to_non_nullable
+as bool,safetyConcern: null == safetyConcern ? _self.safetyConcern : safetyConcern // ignore: cast_nullable_to_non_nullable
+as bool,privateNote: freezed == privateNote ? _self.privateNote : privateNote // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [EventSuccessFeedback].
+extension EventSuccessFeedbackPatterns on EventSuccessFeedback {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _EventSuccessFeedback value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _EventSuccessFeedback() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _EventSuccessFeedback value)  $default,){
+final _that = this;
+switch (_that) {
+case _EventSuccessFeedback():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _EventSuccessFeedback value)?  $default,){
+final _that = this;
+switch (_that) {
+case _EventSuccessFeedback() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool markedPrivateCrush,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _EventSuccessFeedback() when $default != null:
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.markedPrivateCrush,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool markedPrivateCrush,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)  $default,) {final _that = this;
+switch (_that) {
+case _EventSuccessFeedback():
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.markedPrivateCrush,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String eventId,  String clubId,  String uid,  int welcomeRating,  int structureRating,  int metNewPeopleCount,  bool markedPrivateCrush,  bool safetyConcern,  String? privateNote, @TimestampConverter()  DateTime createdAt, @TimestampConverter()  DateTime updatedAt)?  $default,) {final _that = this;
+switch (_that) {
+case _EventSuccessFeedback() when $default != null:
+return $default(_that.id,_that.eventId,_that.clubId,_that.uid,_that.welcomeRating,_that.structureRating,_that.metNewPeopleCount,_that.markedPrivateCrush,_that.safetyConcern,_that.privateNote,_that.createdAt,_that.updatedAt);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+@JsonSerializable()
+
+class _EventSuccessFeedback implements EventSuccessFeedback {
+  const _EventSuccessFeedback({@JsonKey(includeToJson: false) required this.id, required this.eventId, required this.clubId, required this.uid, required this.welcomeRating, required this.structureRating, required this.metNewPeopleCount, this.markedPrivateCrush = false, this.safetyConcern = false, this.privateNote, @TimestampConverter() required this.createdAt, @TimestampConverter() required this.updatedAt});
+  factory _EventSuccessFeedback.fromJson(Map<String, dynamic> json) => _$EventSuccessFeedbackFromJson(json);
+
+@override@JsonKey(includeToJson: false) final  String id;
+@override final  String eventId;
+@override final  String clubId;
+@override final  String uid;
+@override final  int welcomeRating;
+@override final  int structureRating;
+@override final  int metNewPeopleCount;
+@override@JsonKey() final  bool markedPrivateCrush;
+@override@JsonKey() final  bool safetyConcern;
+@override final  String? privateNote;
+@override@TimestampConverter() final  DateTime createdAt;
+@override@TimestampConverter() final  DateTime updatedAt;
+
+/// Create a copy of EventSuccessFeedback
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$EventSuccessFeedbackCopyWith<_EventSuccessFeedback> get copyWith => __$EventSuccessFeedbackCopyWithImpl<_EventSuccessFeedback>(this, _$identity);
+
+@override
+Map<String, dynamic> toJson() {
+  return _$EventSuccessFeedbackToJson(this, );
+}
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _EventSuccessFeedback&&(identical(other.id, id) || other.id == id)&&(identical(other.eventId, eventId) || other.eventId == eventId)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.uid, uid) || other.uid == uid)&&(identical(other.welcomeRating, welcomeRating) || other.welcomeRating == welcomeRating)&&(identical(other.structureRating, structureRating) || other.structureRating == structureRating)&&(identical(other.metNewPeopleCount, metNewPeopleCount) || other.metNewPeopleCount == metNewPeopleCount)&&(identical(other.markedPrivateCrush, markedPrivateCrush) || other.markedPrivateCrush == markedPrivateCrush)&&(identical(other.safetyConcern, safetyConcern) || other.safetyConcern == safetyConcern)&&(identical(other.privateNote, privateNote) || other.privateNote == privateNote)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
+}
+
+@JsonKey(includeFromJson: false, includeToJson: false)
+@override
+int get hashCode => Object.hash(runtimeType,id,eventId,clubId,uid,welcomeRating,structureRating,metNewPeopleCount,markedPrivateCrush,safetyConcern,privateNote,createdAt,updatedAt);
+
+@override
+String toString() {
+  return 'EventSuccessFeedback(id: $id, eventId: $eventId, clubId: $clubId, uid: $uid, welcomeRating: $welcomeRating, structureRating: $structureRating, metNewPeopleCount: $metNewPeopleCount, markedPrivateCrush: $markedPrivateCrush, safetyConcern: $safetyConcern, privateNote: $privateNote, createdAt: $createdAt, updatedAt: $updatedAt)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$EventSuccessFeedbackCopyWith<$Res> implements $EventSuccessFeedbackCopyWith<$Res> {
+  factory _$EventSuccessFeedbackCopyWith(_EventSuccessFeedback value, $Res Function(_EventSuccessFeedback) _then) = __$EventSuccessFeedbackCopyWithImpl;
+@override @useResult
+$Res call({
+@JsonKey(includeToJson: false) String id, String eventId, String clubId, String uid, int welcomeRating, int structureRating, int metNewPeopleCount, bool markedPrivateCrush, bool safetyConcern, String? privateNote,@TimestampConverter() DateTime createdAt,@TimestampConverter() DateTime updatedAt
+});
+
+
+
+
+}
+/// @nodoc
+class __$EventSuccessFeedbackCopyWithImpl<$Res>
+    implements _$EventSuccessFeedbackCopyWith<$Res> {
+  __$EventSuccessFeedbackCopyWithImpl(this._self, this._then);
+
+  final _EventSuccessFeedback _self;
+  final $Res Function(_EventSuccessFeedback) _then;
+
+/// Create a copy of EventSuccessFeedback
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? eventId = null,Object? clubId = null,Object? uid = null,Object? welcomeRating = null,Object? structureRating = null,Object? metNewPeopleCount = null,Object? markedPrivateCrush = null,Object? safetyConcern = null,Object? privateNote = freezed,Object? createdAt = null,Object? updatedAt = null,}) {
+  return _then(_EventSuccessFeedback(
+id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as String,eventId: null == eventId ? _self.eventId : eventId // ignore: cast_nullable_to_non_nullable
+as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
+as String,uid: null == uid ? _self.uid : uid // ignore: cast_nullable_to_non_nullable
+as String,welcomeRating: null == welcomeRating ? _self.welcomeRating : welcomeRating // ignore: cast_nullable_to_non_nullable
+as int,structureRating: null == structureRating ? _self.structureRating : structureRating // ignore: cast_nullable_to_non_nullable
+as int,metNewPeopleCount: null == metNewPeopleCount ? _self.metNewPeopleCount : metNewPeopleCount // ignore: cast_nullable_to_non_nullable
+as int,markedPrivateCrush: null == markedPrivateCrush ? _self.markedPrivateCrush : markedPrivateCrush // ignore: cast_nullable_to_non_nullable
+as bool,safetyConcern: null == safetyConcern ? _self.safetyConcern : safetyConcern // ignore: cast_nullable_to_non_nullable
+as bool,privateNote: freezed == privateNote ? _self.privateNote : privateNote // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: null == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime,updatedAt: null == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime,
+  ));
+}
+
+
+}
+
+// dart format on

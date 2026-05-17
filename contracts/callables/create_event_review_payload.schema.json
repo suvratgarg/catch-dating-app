@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/create_event_review_payload.schema.json",
+  "title": "CreateEventReviewCallablePayload",
+  "description": "Callable payload accepted by createEventReview.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["clubId", "eventId", "rating", "comment"],
+  "properties": {
+    "clubId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "rating": {"type": "integer", "minimum": 1, "maximum": 5},
+    "comment": {"type": "string", "maxLength": 1000}
+  }
+}

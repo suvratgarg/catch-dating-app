@@ -27,13 +27,13 @@ function completeUser(overrides: Partial<UserProfileDoc> = {}): UserProfileDoc {
     email: "asha@example.test",
     profilePrompts: [{
       promptId: " perfectRun ",
-      prompt: " A perfect run with me looks like... ",
+      prompt: " A perfect event with me looks like... ",
       answer: "Morning runner\n\n\nCoffee after.",
     }],
     photoPrompts: [{
       photoIndex: 0,
       promptId: " proofIRun ",
-      prompt: " Proof I actually run ",
+      prompt: " Proof I actually event ",
       caption: "Race morning\n\n\nFinish-line smile.",
     }],
     photoUrls: ["https://example.test/full.jpg"],
@@ -50,7 +50,7 @@ function completeUser(overrides: Partial<UserProfileDoc> = {}): UserProfileDoc {
     preferredRunTimes: ["morning"],
     prefsNewCatches: true,
     prefsMessages: true,
-    prefsRunReminders: true,
+    prefsEventReminders: true,
     prefsRunStatusUpdates: true,
     prefsClubUpdates: true,
     prefsWeeklyDigest: false,
@@ -132,13 +132,13 @@ test(
     assert.equal(Object.hasOwn(profile, "demoOps"), false);
     assert.deepEqual(profile.profilePrompts, [{
       promptId: "perfectRun",
-      prompt: "A perfect run with me looks like...",
+      prompt: "A perfect event with me looks like...",
       answer: "Morning runner\n\nCoffee after.",
     }]);
     assert.deepEqual(profile.photoPrompts, [{
       photoIndex: 0,
       promptId: "proofIRun",
-      prompt: "Proof I actually run",
+      prompt: "Proof I actually event",
       caption: "Race morning\n\nFinish-line smile.",
     }]);
     assert.equal(profile.height, 168);

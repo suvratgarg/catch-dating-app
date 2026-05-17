@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -8,10 +9,9 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_mode
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -40,29 +40,30 @@ class DashboardScreen extends ConsumerWidget {
         }
 
         final membershipsAsync = ref.watch(
-          watchActiveRunClubMembershipsForUserProvider(user.uid),
+          watchActiveClubMembershipsForUserProvider(user.uid),
         );
-        final signedUpRunsAsync = ref.watch(
-          watchSignedUpRunsProvider(user.uid),
+        final signedUpEventsAsync = ref.watch(
+          watchSignedUpEventsProvider(user.uid),
         );
-        if (membershipsAsync.isLoading || signedUpRunsAsync.isLoading) {
+        if (membershipsAsync.isLoading || signedUpEventsAsync.isLoading) {
           return const _DashboardLoadingScreen();
         }
         if (membershipsAsync.hasError) {
           return _DashboardErrorScreen(
             message: 'Unable to load your clubs.',
             onRetry: () => ref.invalidate(
-              watchActiveRunClubMembershipsForUserProvider(user.uid),
+              watchActiveClubMembershipsForUserProvider(user.uid),
             ),
           );
         }
-        return signedUpRunsAsync.when(
+        return signedUpEventsAsync.when(
           loading: () => const _DashboardLoadingScreen(),
           error: (e, _) => _DashboardErrorScreen(
-            message: 'Unable to load your booked runs.',
-            onRetry: () => ref.invalidate(watchSignedUpRunsProvider(user.uid)),
+            message: 'Unable to load your booked events.',
+            onRetry: () =>
+                ref.invalidate(watchSignedUpEventsProvider(user.uid)),
           ),
-          data: (signedUpRuns) {
+          data: (signedUpEvents) {
             final followedClubIds =
                 membershipsAsync.asData?.value
                     .map((membership) => membership.clubId)
@@ -70,7 +71,7 @@ class DashboardScreen extends ConsumerWidget {
                 const <String>[];
             final viewModel = ref.watch(
               dashboardFullViewModelProvider(
-                signedUpRuns: signedUpRuns,
+                signedUpEvents: signedUpEvents,
                 user: user,
                 uid: user.uid,
                 followedClubIds: followedClubIds,
@@ -78,7 +79,7 @@ class DashboardScreen extends ConsumerWidget {
             );
 
             final showEmptyDashboard =
-                signedUpRuns.isEmpty && viewModel.arrivalAction == null;
+                signedUpEvents.isEmpty && viewModel.arrivalAction == null;
 
             return _DashboardHomeScreen(
               header: showEmptyDashboard
@@ -144,7 +145,7 @@ class _DashboardHeaderModel {
   factory _DashboardHeaderModel.empty() {
     return _DashboardHeaderModel(
       eyebrow: 'WELCOME TO CATCH',
-      title: "Let's find your first run",
+      title: "Let's find your first event",
     );
   }
 

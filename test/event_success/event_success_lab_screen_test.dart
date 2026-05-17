@@ -17,7 +17,7 @@ void main() {
     expect(find.text('Event Success Layer'), findsOneWidget);
     expect(find.text('Work in progress'), findsOneWidget);
     expect(find.text('Preview only'), findsOneWidget);
-    expect(find.text('No app route'), findsOneWidget);
+    expect(find.text('Dev/staging route'), findsOneWidget);
     expect(find.text('No Firestore writes'), findsOneWidget);
     expect(find.text('No booking changes'), findsOneWidget);
   });
@@ -96,7 +96,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Social Run Lite'), findsOneWidget);
+    expect(find.text('Social Event Lite'), findsOneWidget);
     await tester.tap(find.text('Pickleball'));
     await tester.pumpAndSettle();
 

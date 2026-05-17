@@ -6,8 +6,8 @@
     "fieldOverrides.UserProfileDoc.profilePhotos": "Override the Dart-derived nullable type so Functions use the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
     "fieldOverrides.PublicProfileDoc.languages": "Overlay the public-profile language field while the transitional facade is still Dart-derived.",
     "fieldOverrides.PublicProfileDoc.profilePhotos": "Override the Dart-derived nullable type so Functions use the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
-    "extraFields.RunDoc.eventPolicy": "Transitional Admin SDK facade field. JSON Schema owns runs.eventPolicy, while Functions need the hand-written EventPolicyBundleDoc shape until nested schema-derived TypeScript types are generated.",
-    "fieldOverrides.RunDoc.eventPolicy": "Override the Dart-derived loose map type so Functions use the explicit EventPolicyBundleDoc snapshot owned by the runs JSON Schema.",
+    "extraFields.EventDoc.eventPolicy": "Transitional Admin SDK facade field. JSON Schema owns events.eventPolicy, while Functions need the hand-written EventPolicyBundleDoc shape until nested schema-derived TypeScript types are generated.",
+    "fieldOverrides.EventDoc.eventPolicy": "Override the Dart-derived loose map type so Functions use the explicit EventPolicyBundleDoc snapshot owned by the events JSON Schema.",
     "extraInterfaces.ProfilePromptAnswer": "Duplicated only for the transitional Admin SDK facade; the canonical embedded schema remains contracts/embedded/profile_prompt_answer.schema.json.",
     "extraInterfaces.PhotoPromptAnswer": "Duplicated only for the transitional Admin SDK facade; the canonical embedded schema remains contracts/embedded/photo_prompt_answer.schema.json.",
     "extraInterfaces.ProfilePhoto": "Duplicated only for the transitional Admin SDK facade because generated schema types model serialized fixture timestamps, while Functions need FirebaseFirestore.Timestamp."
@@ -27,15 +27,15 @@
       { "name": "languages", "tsType": "Language[]", "optional": true },
       { "name": "profilePhotos", "tsType": "ProfilePhoto[]", "optional": true, "comment": "Migration field; legacy projections may still only have parallel photo arrays" }
     ],
-    "RunDoc": [
-      { "name": "eventPolicy", "tsType": "EventPolicyBundleDoc | null", "optional": true, "comment": "Production event-policy snapshot; legacy runs may fall back to capacityLimit, priceInPaise, and constraints" }
+    "EventDoc": [
+      { "name": "eventPolicy", "tsType": "EventPolicyBundleDoc | null", "optional": true, "comment": "Production event-policy snapshot; legacy events may fall back to capacityLimit, priceInPaise, and constraints" }
     ]
   },
 
   "fieldOverrides": {
     "UserProfileDoc": ["profilePhotos"],
     "PublicProfileDoc": ["languages", "profilePhotos"],
-    "RunDoc": ["eventPolicy"]
+    "EventDoc": ["eventPolicy"]
   },
 
   "extraInterfaces": [
@@ -90,7 +90,7 @@
     {
       "name": "EventPolicyBundleDoc",
       "collectionPath": "embedded event policy snapshot",
-      "comment": "Stored inside runs/{runId}.eventPolicy for production booking, pricing, cancellation, and settlement behavior.",
+      "comment": "Stored inside events/{eventId}.eventPolicy for production booking, pricing, cancellation, and settlement behavior.",
       "fields": [
         { "name": "version", "tsType": "number" },
         { "name": "admission", "tsType": "EventPolicyAdmissionDoc" },
@@ -102,7 +102,7 @@
     {
       "name": "EventPolicyAdmissionDoc",
       "collectionPath": "embedded event policy admission",
-      "comment": "Nested inside runs/{runId}.eventPolicy.admission.",
+      "comment": "Nested inside events/{eventId}.eventPolicy.admission.",
       "fields": [
         { "name": "format", "tsType": "\"open\" | \"inviteOnly\" | \"manualApproval\" | \"fixedCohortCaps\" | \"balancedRatio\" | \"membersOnly\"" },
         { "name": "capacityLimit", "tsType": "number" },
@@ -117,7 +117,7 @@
     {
       "name": "EventPolicyWaitlistDoc",
       "collectionPath": "embedded event policy waitlist",
-      "comment": "Nested inside runs/{runId}.eventPolicy.admission.waitlistPolicy.",
+      "comment": "Nested inside events/{eventId}.eventPolicy.admission.waitlistPolicy.",
       "fields": [
         { "name": "mode", "tsType": "\"disabled\" | \"rankedOffer\" | \"broadcastFirstComeFirstServed\" | \"manualReview\"" },
         { "name": "offerWindowMinutes", "tsType": "number" }
@@ -126,7 +126,7 @@
     {
       "name": "EventPolicyBalancedRatioDoc",
       "collectionPath": "embedded event policy balanced ratio",
-      "comment": "Nested inside runs/{runId}.eventPolicy.admission.balancedRatioPolicy.",
+      "comment": "Nested inside events/{eventId}.eventPolicy.admission.balancedRatioPolicy.",
       "fields": [
         { "name": "leftCohortId", "tsType": "string" },
         { "name": "rightCohortId", "tsType": "string" },
@@ -138,7 +138,7 @@
     {
       "name": "EventPolicyPricingDoc",
       "collectionPath": "embedded event policy pricing",
-      "comment": "Nested inside runs/{runId}.eventPolicy.pricing.",
+      "comment": "Nested inside events/{eventId}.eventPolicy.pricing.",
       "fields": [
         { "name": "basePriceInPaise", "tsType": "number" },
         { "name": "cohortAdjustmentsInPaise", "tsType": "Record<string, number>", "optional": true },
@@ -148,7 +148,7 @@
     {
       "name": "EventPolicyDemandPricingRuleDoc",
       "collectionPath": "embedded event policy demand pricing rule",
-      "comment": "Nested inside runs/{runId}.eventPolicy.pricing.demandPricingRules.",
+      "comment": "Nested inside events/{eventId}.eventPolicy.pricing.demandPricingRules.",
       "fields": [
         { "name": "pricedCohortId", "tsType": "string" },
         { "name": "balancingCohortId", "tsType": "string" },
@@ -208,7 +208,7 @@
   "interfaceComments": {
     "PublicProfileDoc": "Written exclusively by syncPublicProfile Cloud Function.",
     "MatchDoc": "Written exclusively by onSwipeCreated Cloud Function.",
-    "ReviewDoc": "Written by review Cloud Functions using one deterministic document per (runId, reviewerUserId) pair."
+    "ReviewDoc": "Written by review Cloud Functions using one deterministic document per (eventId, reviewerUserId) pair."
   },
 
   "fieldComments": {
@@ -216,17 +216,17 @@
       "phoneNumber": "Authentication is phone-only",
       "email": "Optional profile/contact field"
     },
-    "RunClubDoc": {
+    "ClubDoc": {
       "hostAvatarUrl": "nullable in Firestore",
       "imageUrl": "nullable in Firestore",
-      "nextRunAt": "nullable in Firestore",
-      "nextRunLabel": "nullable in Firestore",
+      "nextEventAt": "nullable in Firestore",
+      "nextEventLabel": "nullable in Firestore",
       "instagramHandle": "nullable in Firestore",
       "phoneNumber": "nullable in Firestore",
       "email": "nullable in Firestore"
     },
-    "RunDoc": {
-      "priceInPaise": "in paise (INR subunit). 0 = free run",
+    "EventDoc": {
+      "priceInPaise": "in paise (INR subunit). 0 = free event",
       "startingPointLat": "nullable in Firestore",
       "startingPointLng": "nullable in Firestore",
       "locationDetails": "nullable in Firestore",
@@ -238,7 +238,7 @@
       "id": "Razorpay paymentId for paid, auto-id for free"
     },
     "ReviewDoc": {
-      "runId": "Required for new callable-created reviews; nullable only for legacy review documents until migration."
+      "eventId": "Required for new callable-created reviews; nullable only for legacy review documents until migration."
     }
   }
 }

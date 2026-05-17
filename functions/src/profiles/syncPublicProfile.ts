@@ -71,7 +71,7 @@ export async function syncUserProfileProjectionsHandler(
   logger.info("Syncing public profile", {userId});
   await Promise.all([
     publicProfileRef.set(publicProfile),
-    syncHostedRunClubHostProfile(userId, {
+    syncHostedClubHostProfile(userId, {
       hostName: publicProfile.name,
       hostAvatarUrl: publicAvatarUrl(user),
     }, deps),
@@ -82,7 +82,7 @@ export async function syncUserProfileProjectionsHandler(
 }
 
 /**
- * Updates hosted run-club denormalized host profile fields.
+ * Updates hosted club denormalized host profile fields.
  * @param {string} userId Host user id.
  * @param {object} patch Host projection patch.
  * @param {string} patch.hostName Public host display name.
@@ -90,14 +90,14 @@ export async function syncUserProfileProjectionsHandler(
  * @param {SyncPublicProfileDeps} deps Injectable Firebase dependencies.
  * @return {Promise<void>}
  */
-export async function syncHostedRunClubHostProfile(
+export async function syncHostedClubHostProfile(
   userId: string,
   patch: {hostName: string; hostAvatarUrl: string | null},
   deps: SyncPublicProfileDeps = defaultDeps
 ): Promise<void> {
   const db = deps.firestore();
   const clubsSnap = await db
-    .collection("runClubs")
+    .collection("clubs")
     .where("hostUserId", "==", userId)
     .get();
   if (clubsSnap.empty) return;

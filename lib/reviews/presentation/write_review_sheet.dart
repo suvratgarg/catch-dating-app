@@ -19,8 +19,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 /// Pass [existingReview] to pre-fill and switch to edit mode.
 Future<void> showWriteReviewSheet({
   required BuildContext context,
-  required String runClubId,
-  required String runId,
+  required String clubId,
+  required String eventId,
   required UserProfile reviewer,
   Review? existingReview,
 }) {
@@ -29,8 +29,8 @@ Future<void> showWriteReviewSheet({
     isScrollControlled: true,
     useSafeArea: true,
     builder: (_) => _WriteReviewSheet(
-      runClubId: runClubId,
-      runId: runId,
+      clubId: clubId,
+      eventId: eventId,
       reviewer: reviewer,
       existingReview: existingReview,
     ),
@@ -39,14 +39,14 @@ Future<void> showWriteReviewSheet({
 
 class _WriteReviewSheet extends ConsumerStatefulWidget {
   const _WriteReviewSheet({
-    required this.runClubId,
-    required this.runId,
+    required this.clubId,
+    required this.eventId,
     required this.reviewer,
     this.existingReview,
   });
 
-  final String runClubId;
-  final String runId;
+  final String clubId;
+  final String eventId;
   final UserProfile reviewer;
   final Review? existingReview;
 
@@ -92,8 +92,8 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
         await tx
             .get(writeReviewControllerProvider.notifier)
             .submit(
-              runClubId: widget.runClubId,
-              runId: widget.runId,
+              clubId: widget.clubId,
+              eventId: widget.eventId,
               reviewerUserId: widget.reviewer.uid,
               reviewerName: widget.reviewer.name,
               rating: _rating,
@@ -113,7 +113,7 @@ class _WriteReviewSheetState extends ConsumerState<_WriteReviewSheet> {
     final confirmed = await showConfirmDangerDialog(
       context: context,
       title: 'Delete review?',
-      message: 'This removes your review from this run.',
+      message: 'This removes your review from this event.',
       confirmLabel: 'Delete',
     );
     if (confirmed != true || !mounted) return;

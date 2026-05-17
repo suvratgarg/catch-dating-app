@@ -1,75 +1,75 @@
 import * as admin from "firebase-admin";
 
-export type RunClubMembershipRole = "host" | "member";
-export type RunClubMembershipStatus = "active" | "left" | "deleted";
-export type RunParticipationStatus =
+export type ClubMembershipRole = "host" | "member";
+export type ClubMembershipStatus = "active" | "left" | "deleted";
+export type EventParticipationStatus =
   "signedUp" | "waitlisted" | "attended" | "cancelled" | "deleted";
 
-export interface RunParticipationSnapshot {
+export interface EventParticipationSnapshot {
   ref: FirebaseFirestore.DocumentReference;
   data: {
-    runId: string;
-    runClubId: string;
+    eventId: string;
+    clubId: string;
     uid: string;
-    status: RunParticipationStatus;
+    status: EventParticipationStatus;
     genderAtSignup?: string;
     cohortAtSignup?: string;
   };
 }
 
 /**
- * Builds the deterministic run-club membership document id.
- * @param {string} clubId Run club id.
+ * Builds the deterministic club membership document id.
+ * @param {string} clubId Club id.
  * @param {string} uid User id.
  * @return {string} Membership document id.
  */
-export function runClubMembershipId(clubId: string, uid: string): string {
+export function clubMembershipId(clubId: string, uid: string): string {
   return `${clubId}_${uid}`;
 }
 
 /**
- * Builds the deterministic run participation document id.
- * @param {string} runId Run id.
+ * Builds the deterministic event participation document id.
+ * @param {string} eventId Event id.
  * @param {string} uid User id.
  * @return {string} Participation document id.
  */
-export function runParticipationId(runId: string, uid: string): string {
-  return `${runId}_${uid}`;
+export function eventParticipationId(eventId: string, uid: string): string {
+  return `${eventId}_${uid}`;
 }
 
 /**
- * Builds the deterministic saved-run document id.
+ * Builds the deterministic saved-event document id.
  * @param {string} uid User id.
- * @param {string} runId Run id.
- * @return {string} Saved-run document id.
+ * @param {string} eventId Event id.
+ * @return {string} Saved-event document id.
  */
-export function savedRunId(uid: string, runId: string): string {
-  return `${uid}_${runId}`;
+export function savedEventId(uid: string, eventId: string): string {
+  return `${uid}_${eventId}`;
 }
 
 /**
- * Reads run participation edges by status inside a transaction.
+ * Reads event participation edges by status inside a transaction.
  * @param {FirebaseFirestore.Transaction} tx Transaction.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} runId Run id.
- * @param {RunParticipationStatus[]} statuses Statuses to include.
- * @return {Promise<RunParticipationSnapshot[]>} Matching edge docs.
+ * @param {string} eventId Event id.
+ * @param {EventParticipationStatus[]} statuses Statuses to include.
+ * @return {Promise<EventParticipationSnapshot[]>} Matching edge docs.
  */
-export async function runParticipationsByStatusInTransaction(
+export async function eventParticipationsByStatusInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
-  runId: string,
-  statuses: RunParticipationStatus[]
-): Promise<RunParticipationSnapshot[]> {
+  eventId: string,
+  statuses: EventParticipationStatus[]
+): Promise<EventParticipationSnapshot[]> {
   if (statuses.length === 0) return [];
   const query = db
-    .collection("runParticipations")
-    .where("runId", "==", runId)
+    .collection("eventParticipations")
+    .where("eventId", "==", eventId)
     .where("status", "in", statuses);
   const snap = await tx.get(query);
   return snap.docs.map((doc) => ({
     ref: doc.ref,
-    data: doc.data() as RunParticipationSnapshot["data"],
+    data: doc.data() as EventParticipationSnapshot["data"],
   }));
 }
 
@@ -77,34 +77,34 @@ export async function runParticipationsByStatusInTransaction(
  * Reads waitlisted participation edges in promotion order.
  * @param {FirebaseFirestore.Transaction} tx Transaction.
  * @param {FirebaseFirestore.Firestore} db Firestore instance.
- * @param {string} runId Run id.
- * @return {Promise<RunParticipationSnapshot[]>} Waitlist edges.
+ * @param {string} eventId Event id.
+ * @return {Promise<EventParticipationSnapshot[]>} Waitlist edges.
  */
-export async function waitlistedRunParticipationsInTransaction(
+export async function waitlistedEventParticipationsInTransaction(
   tx: FirebaseFirestore.Transaction,
   db: FirebaseFirestore.Firestore,
-  runId: string
-): Promise<RunParticipationSnapshot[]> {
+  eventId: string
+): Promise<EventParticipationSnapshot[]> {
   const query = db
-    .collection("runParticipations")
-    .where("runId", "==", runId)
+    .collection("eventParticipations")
+    .where("eventId", "==", eventId)
     .where("status", "==", "waitlisted")
     .orderBy("waitlistedAt", "asc");
   const snap = await tx.get(query);
   return snap.docs.map((doc) => ({
     ref: doc.ref,
-    data: doc.data() as RunParticipationSnapshot["data"],
+    data: doc.data() as EventParticipationSnapshot["data"],
   }));
 }
 
 /**
  * Returns active peer ids for block checks.
- * @param {RunParticipationSnapshot[]} participations Participation edges.
+ * @param {EventParticipationSnapshot[]} participations Participation edges.
  * @param {string=} exceptUid Optional user id to exclude.
  * @return {string[]} Unique participant user ids.
  */
 export function participantUids(
-  participations: RunParticipationSnapshot[],
+  participations: EventParticipationSnapshot[],
   exceptUid?: string
 ): string[] {
   return [...new Set(
@@ -117,15 +117,15 @@ export function participantUids(
 /**
  * Creates the patch used when a membership is active.
  * @param {object} params Membership fields.
- * @param {string} params.clubId Run club id.
+ * @param {string} params.clubId Club id.
  * @param {string} params.uid User id.
- * @param {RunClubMembershipRole} params.role Membership role.
+ * @param {ClubMembershipRole} params.role Membership role.
  * @return {Record<string, unknown>} Firestore patch.
  */
-export function activeRunClubMembershipPatch(params: {
+export function activeClubMembershipPatch(params: {
   clubId: string;
   uid: string;
-  role: RunClubMembershipRole;
+  role: ClubMembershipRole;
 }) {
   return {
     clubId: params.clubId,
@@ -143,7 +143,7 @@ export function activeRunClubMembershipPatch(params: {
  * Creates the patch used when a membership is left.
  * @return {Record<string, unknown>} Firestore patch.
  */
-export function leftRunClubMembershipPatch() {
+export function leftClubMembershipPatch() {
   return {
     status: "left" as const,
     leftAt: admin.firestore.FieldValue.serverTimestamp(),
@@ -151,32 +151,32 @@ export function leftRunClubMembershipPatch() {
 }
 
 /**
- * Creates a status-specific run participation patch.
+ * Creates a status-specific event participation patch.
  * @param {object} params Participation fields.
  * @param {boolean} params.exists Whether the edge document already exists.
- * @param {string} params.runId Run id.
- * @param {string} params.runClubId Run club id.
+ * @param {string} params.eventId Event id.
+ * @param {string} params.clubId Club id.
  * @param {string} params.uid User id.
- * @param {RunParticipationStatus} params.status New participation status.
+ * @param {EventParticipationStatus} params.status New participation status.
  * @param {string=} params.genderAtSignup Optional signup-time gender snapshot.
  * @param {string=} params.cohortAtSignup Optional signup-time policy cohort.
  * @param {string=} params.paymentId Optional linked payment document id.
  * @return {Record<string, unknown>} Firestore patch.
  */
-export function runParticipationPatch(params: {
+export function eventParticipationPatch(params: {
   exists: boolean;
-  runId: string;
-  runClubId: string;
+  eventId: string;
+  clubId: string;
   uid: string;
-  status: RunParticipationStatus;
+  status: EventParticipationStatus;
   genderAtSignup?: string;
   cohortAtSignup?: string;
   paymentId?: string;
 }) {
   const now = admin.firestore.FieldValue.serverTimestamp();
   const patch: Record<string, unknown> = {
-    runId: params.runId,
-    runClubId: params.runClubId,
+    eventId: params.eventId,
+    clubId: params.clubId,
     uid: params.uid,
     status: params.status,
     updatedAt: now,

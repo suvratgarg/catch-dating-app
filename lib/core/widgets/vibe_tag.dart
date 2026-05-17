@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:flutter/material.dart';
 
-/// Uppercase tiny badge used to describe a run's vibe or club character.
+/// Uppercase tiny badge used to describe an event's vibe or club character.
 ///
 /// Delegates to [CatchBadge] so metadata tags share the same tone scale as
 /// status badges.

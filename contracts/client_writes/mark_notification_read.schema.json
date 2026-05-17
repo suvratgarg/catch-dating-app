@@ -13,10 +13,10 @@
       "required": ["uid", "notificationId"],
       "properties": {
         "uid": {
-          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         },
         "notificationId": {
-          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         }
       }
     },
@@ -26,7 +26,7 @@
       "required": ["readAt"],
       "properties": {
         "readAt": {
-          "$ref": "../shared/run_common.schema.json#/definitions/timestamp"
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
         }
       }
     }

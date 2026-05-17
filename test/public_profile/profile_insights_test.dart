@@ -3,7 +3,7 @@ import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 void main() {
   group('profileQualitySummary', () {
@@ -23,7 +23,7 @@ void main() {
               PhotoPromptAnswer(
                 photoIndex: 0,
                 promptId: 'proofIRun',
-                prompt: 'Proof I actually run',
+                prompt: 'Proof I actually event',
                 caption: 'Morning miles.',
               ),
               PhotoPromptAnswer(
@@ -72,15 +72,15 @@ void main() {
       final tags = emotionalRunTagsForProfile(profile);
 
       expect(tags.map((tag) => tag.label), [
-        'Runs for headspace',
+        'Events for headspace',
         'Social miles',
-        'Long-run person',
+        'Long-event person',
         'Easy miles',
       ]);
       expect(tags.first.source, EmotionalRunTagSource.selected);
     });
 
-    test('turns preferred run times into emotional tags', () {
+    test('turns preferred event times into emotional tags', () {
       final profile = buildPublicProfile().copyWith(
         preferredRunTimes: const [
           PreferredRunTime.earlyMorning,
@@ -98,7 +98,7 @@ void main() {
   });
 
   group('compatibilityReasonsForProfile', () {
-    test('ranks shared run and concrete overlaps', () {
+    test('ranks shared event and concrete overlaps', () {
       final viewer = buildUser().copyWith(
         relationshipGoal: RelationshipGoal.relationship,
         preferredDistances: const [PreferredDistance.fiveK],
@@ -117,13 +117,13 @@ void main() {
       final reasons = compatibilityReasonsForProfile(
         targetProfile: target,
         viewerProfile: viewer,
-        sharedRunTitle: 'Thursday Morning Run',
+        sharedRunTitle: 'Thursday Morning Event',
       );
 
       expect(reasons.map((reason) => reason.label), [
-        'You met at Thursday Morning Run',
+        'You met at Thursday Morning Event',
         'You are both looking for long-term relationship',
-        'You both run for community',
+        'You both event for community',
       ]);
     });
 
@@ -148,7 +148,7 @@ void main() {
           viewerProfile: viewer,
         );
 
-        expect(reasons.first.label, 'You both like morning and evening runs');
+        expect(reasons.first.label, 'You both like morning and evening events');
         expect(reasons.first.kind, CompatibilityReasonKind.runTime);
       },
     );

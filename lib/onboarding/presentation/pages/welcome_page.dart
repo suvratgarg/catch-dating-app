@@ -54,7 +54,7 @@ class WelcomePage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 16),
                     Text(
-                      'Meet someone on a group run. Swipe on people you '
+                      'Meet someone on a group event. Swipe on people you '
                       'actually ran with - not strangers 30 miles away.',
                       style: CatchTextStyles.bodyM(context).copyWith(
                         color: Colors.white.withValues(alpha: 0.88),
@@ -63,7 +63,7 @@ class WelcomePage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 26),
                     CatchButton(
-                      label: 'Browse run clubs',
+                      label: 'Browse clubs',
                       onPressed: () => context.go('/clubs'),
                       variant: CatchButtonVariant.light,
                       size: CatchButtonSize.lg,

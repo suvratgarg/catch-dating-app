@@ -1,0 +1,103 @@
+import 'package:catch_dating_app/core/business_rules.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+
+enum EventArrivalActionKind { selfCheckIn, takeAttendance }
+
+class EventArrivalAction {
+  const EventArrivalAction({required this.kind, required this.event});
+
+  final EventArrivalActionKind kind;
+  final Event event;
+}
+
+EventArrivalAction? selectEventArrivalAction({
+  required List<Event> signedUpEvents,
+  required List<Event> hostedEvents,
+  required String uid,
+  required DateTime now,
+}) {
+  final candidates = <EventArrivalAction>[
+    for (final event in signedUpEvents)
+      if (isSelfCheckInOpenForParticipationStatus(
+        event: event,
+        status: EventParticipationStatus.signedUp,
+        now: now,
+      ))
+        EventArrivalAction(
+          kind: EventArrivalActionKind.selfCheckIn,
+          event: event,
+        ),
+    for (final event in hostedEvents)
+      if (isHostAttendanceOpen(event: event, now: now))
+        EventArrivalAction(
+          kind: EventArrivalActionKind.takeAttendance,
+          event: event,
+        ),
+  ];
+
+  candidates.sort((a, b) {
+    final time = a.event.startTime.compareTo(b.event.startTime);
+    if (time != 0) return time;
+    return a.kind.index.compareTo(b.kind.index);
+  });
+
+  return candidates.firstOrNull;
+}
+
+bool isSelfCheckInOpenForParticipationStatus({
+  required Event event,
+  required EventParticipationStatus? status,
+  required DateTime now,
+}) {
+  return _isSelfCheckInOpen(
+    event: event,
+    isSignedUp: status == EventParticipationStatus.signedUp,
+    hasAttended: status == EventParticipationStatus.attended,
+    now: now,
+  );
+}
+
+bool _isSelfCheckInOpen({
+  required Event event,
+  required bool isSignedUp,
+  required bool hasAttended,
+  required DateTime now,
+}) {
+  final startsAt = event.startTime.subtract(
+    const Duration(
+      minutes: CatchBusinessRules.eventSelfCheckInWindowBeforeMinutes,
+    ),
+  );
+  final endsAt = event.startTime.add(
+    const Duration(
+      minutes: CatchBusinessRules.eventSelfCheckInWindowAfterMinutes,
+    ),
+  );
+  return isSignedUp &&
+      !hasAttended &&
+      now.isAfter(startsAt) &&
+      now.isBefore(endsAt);
+}
+
+bool isHostAttendanceOpen({required Event event, required DateTime now}) {
+  final startsAt = hostAttendanceWindowStartsAt(event);
+  final endsAt = hostAttendanceWindowEndsAt(event);
+  return now.isAfter(startsAt) && now.isBefore(endsAt);
+}
+
+DateTime hostAttendanceWindowStartsAt(Event event) {
+  return event.startTime.subtract(
+    const Duration(
+      minutes: CatchBusinessRules.eventHostAttendanceWindowBeforeMinutes,
+    ),
+  );
+}
+
+DateTime hostAttendanceWindowEndsAt(Event event) {
+  return event.endTime.add(
+    const Duration(
+      hours: CatchBusinessRules.eventHostAttendanceWindowAfterEventHours,
+    ),
+  );
+}

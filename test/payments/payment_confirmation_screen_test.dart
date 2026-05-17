@@ -1,16 +1,16 @@
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_confirmation_screen.dart';
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 void main() {
   group('PaymentConfirmationScreen', () {
@@ -18,23 +18,23 @@ void main() {
       paymentId: 'pay_ABC123',
       orderId: 'order_XYZ789',
       amountInPaise: 29900,
-      runId: 'run-1',
+      eventId: 'event-1',
     );
 
     testWidgets('renders joined celebration with payment details', (
       tester,
     ) async {
-      final run = buildRun(
-        id: 'run-1',
-        runClubId: 'club-1',
+      final event = buildEvent(
+        id: 'event-1',
+        clubId: 'club-1',
         priceInPaise: 29900,
       );
-      final club = buildRunClub(id: 'club-1', name: 'Bandra Breakers');
+      final club = buildClub(id: 'club-1', name: 'Bandra Breakers');
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
-        run: run,
+        event: event,
         club: club,
       );
 
@@ -42,23 +42,23 @@ void main() {
       expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
       expect(find.text('Payment ID'), findsOneWidget);
       expect(find.text('pay_ABC123'), findsOneWidget);
-      expect(find.textContaining(run.title), findsAtLeastNWidgets(1));
+      expect(find.textContaining(event.title), findsAtLeastNWidgets(1));
       expect(find.text('₹299'), findsOneWidget);
     });
 
-    testWidgets('renders run details inside the celebration', (tester) async {
-      final run = buildRun(
-        id: 'run-1',
-        runClubId: 'club-1',
+    testWidgets('renders event details inside the celebration', (tester) async {
+      final event = buildEvent(
+        id: 'event-1',
+        clubId: 'club-1',
         priceInPaise: 29900,
         meetingPoint: 'Carter Road Promenade',
       );
-      final club = buildRunClub(id: 'club-1', name: 'Bandra Breakers');
+      final club = buildClub(id: 'club-1', name: 'Bandra Breakers');
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
-        run: run,
+        event: event,
         club: club,
       );
 
@@ -66,20 +66,20 @@ void main() {
       expect(find.text('Where'), findsOneWidget);
       expect(find.text('Carter Road Promenade'), findsOneWidget);
       expect(find.text('When'), findsOneWidget);
-      expect(find.text('Run'), findsOneWidget);
+      expect(find.text('Event'), findsOneWidget);
       expect(find.text('Paid'), findsOneWidget);
     });
 
     testWidgets('renders quick actions, heads up, and referral', (
       tester,
     ) async {
-      final run = buildRun(id: 'run-1', runClubId: 'club-1');
-      final club = buildRunClub(id: 'club-1');
+      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final club = buildClub(id: 'club-1');
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
-        run: run,
+        event: event,
         club: club,
       );
 
@@ -94,30 +94,32 @@ void main() {
       expect(find.textContaining('Bring a water bottle'), findsOneWidget);
 
       expect(find.byKey(PaymentConfirmationKeys.referralShare), findsOneWidget);
-      expect(find.text('Bring a friend, run together'), findsOneWidget);
+      expect(find.text('Bring a friend, event together'), findsOneWidget);
     });
 
     testWidgets('Back to home button pops to root', (tester) async {
-      final run = buildRun(id: 'run-1', runClubId: 'club-1');
-      final club = buildRunClub(id: 'club-1');
+      final event = buildEvent(id: 'event-1', clubId: 'club-1');
+      final club = buildClub(id: 'club-1');
 
       await _pumpPaymentConfirmation(
         tester,
         data: confirmationData,
-        run: run,
+        event: event,
         club: club,
       );
 
       expect(find.byKey(PaymentConfirmationKeys.backHome), findsOneWidget);
     });
 
-    testWidgets('shows loading indicator while run is loading', (tester) async {
+    testWidgets('shows loading indicator while event is loading', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchRunProvider(
-              'run-1',
-            ).overrideWith((ref) => const Stream<Run?>.empty()),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => const Stream<Event?>.empty()),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -130,13 +132,13 @@ void main() {
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
     });
 
-    testWidgets('shows not found when run is null', (tester) async {
+    testWidgets('shows not found when event is null', (tester) async {
       await tester.pumpWidget(
         ProviderScope(
           overrides: [
-            watchRunProvider(
-              'run-1',
-            ).overrideWith((ref) => Stream<Run?>.value(null)),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream<Event?>.value(null)),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -146,8 +148,8 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('Run not found'), findsOneWidget);
-      expect(find.text('This run is no longer available.'), findsOneWidget);
+      expect(find.text('Event not found'), findsOneWidget);
+      expect(find.text('This event is no longer available.'), findsOneWidget);
     });
   });
 }
@@ -155,15 +157,17 @@ void main() {
 Future<void> _pumpPaymentConfirmation(
   WidgetTester tester, {
   required PaymentConfirmationData data,
-  required Run run,
-  required RunClub club,
+  required Event event,
+  required Club club,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
       overrides: [
-        watchRunProvider(data.runId).overrideWith((ref) => Stream.value(run)),
-        watchRunClubProvider(
-          run.runClubId,
+        watchEventProvider(
+          data.eventId,
+        ).overrideWith((ref) => Stream.value(event)),
+        watchClubProvider(
+          event.clubId,
         ).overrideWith((ref) => Stream.value(club)),
       ],
       child: MaterialApp(

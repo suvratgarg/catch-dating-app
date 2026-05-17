@@ -40,7 +40,7 @@ void main() {
               mainAxisSize: MainAxisSize.min,
               children: [
                 CatchButton(
-                  label: 'Join run',
+                  label: 'Join event',
                   onPressed: () => taps++,
                   size: CatchButtonSize.lg,
                   fullWidth: true,
@@ -58,15 +58,15 @@ void main() {
       );
 
       expect(
-        tester.getSize(find.widgetWithText(CatchButton, 'Join run')).height,
+        tester.getSize(find.widgetWithText(CatchButton, 'Join event')).height,
         56,
       );
       expect(
-        tester.getSize(find.widgetWithText(CatchButton, 'Join run')).width,
+        tester.getSize(find.widgetWithText(CatchButton, 'Join event')).width,
         240,
       );
 
-      await tester.tap(find.text('Join run'));
+      await tester.tap(find.text('Join event'));
       await tester.pump();
       expect(taps, 1);
 
@@ -731,9 +731,9 @@ void main() {
           Form(
             key: formKey,
             child: CatchTextField(
-              label: 'Run title',
+              label: 'Event title',
               hintText: 'Short and memorable',
-              helperText: 'Shows on run cards',
+              helperText: 'Shows on event cards',
               validator: (value) => value == null || value.isEmpty
                   ? "Title can't be empty"
                   : null,
@@ -743,9 +743,9 @@ void main() {
         ),
       );
 
-      expect(find.text('Run title'), findsOneWidget);
+      expect(find.text('Event title'), findsOneWidget);
       expect(find.text('Short and memorable'), findsOneWidget);
-      expect(find.text('Shows on run cards'), findsOneWidget);
+      expect(find.text('Shows on event cards'), findsOneWidget);
 
       expect(formKey.currentState!.validate(), isFalse);
       await tester.pump();

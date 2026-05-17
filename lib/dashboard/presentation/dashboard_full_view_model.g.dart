@@ -8,13 +8,13 @@ part of 'dashboard_full_view_model.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
-/// Combines signed-up runs, attended runs, and recommended runs into a single
+/// Combines signed-up events, attended events, and recommended events into a single
 /// [DashboardFullViewModel] for the dashboard screen.
 
 @ProviderFor(dashboardFullViewModel)
 final dashboardFullViewModelProvider = DashboardFullViewModelFamily._();
 
-/// Combines signed-up runs, attended runs, and recommended runs into a single
+/// Combines signed-up events, attended events, and recommended events into a single
 /// [DashboardFullViewModel] for the dashboard screen.
 
 final class DashboardFullViewModelProvider
@@ -25,12 +25,12 @@ final class DashboardFullViewModelProvider
           DashboardFullViewModel
         >
     with $Provider<DashboardFullViewModel> {
-  /// Combines signed-up runs, attended runs, and recommended runs into a single
+  /// Combines signed-up events, attended events, and recommended events into a single
   /// [DashboardFullViewModel] for the dashboard screen.
   DashboardFullViewModelProvider._({
     required DashboardFullViewModelFamily super.from,
     required ({
-      List<Run> signedUpRuns,
+      List<Event> signedUpEvents,
       UserProfile user,
       String uid,
       List<String> followedClubIds,
@@ -65,14 +65,14 @@ final class DashboardFullViewModelProvider
     final argument =
         this.argument
             as ({
-              List<Run> signedUpRuns,
+              List<Event> signedUpEvents,
               UserProfile user,
               String uid,
               List<String> followedClubIds,
             });
     return dashboardFullViewModel(
       ref,
-      signedUpRuns: argument.signedUpRuns,
+      signedUpEvents: argument.signedUpEvents,
       user: argument.user,
       uid: argument.uid,
       followedClubIds: argument.followedClubIds,
@@ -100,9 +100,9 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'd5660f027390d03835b9cc8f02acf5922b4eaa77';
+    r'129fdf40dc4fc526290c9c848b72167dca516e60';
 
-/// Combines signed-up runs, attended runs, and recommended runs into a single
+/// Combines signed-up events, attended events, and recommended events into a single
 /// [DashboardFullViewModel] for the dashboard screen.
 
 final class DashboardFullViewModelFamily extends $Family
@@ -110,7 +110,7 @@ final class DashboardFullViewModelFamily extends $Family
         $FunctionalFamilyOverride<
           DashboardFullViewModel,
           ({
-            List<Run> signedUpRuns,
+            List<Event> signedUpEvents,
             UserProfile user,
             String uid,
             List<String> followedClubIds,
@@ -125,17 +125,17 @@ final class DashboardFullViewModelFamily extends $Family
         isAutoDispose: true,
       );
 
-  /// Combines signed-up runs, attended runs, and recommended runs into a single
+  /// Combines signed-up events, attended events, and recommended events into a single
   /// [DashboardFullViewModel] for the dashboard screen.
 
   DashboardFullViewModelProvider call({
-    required List<Run> signedUpRuns,
+    required List<Event> signedUpEvents,
     required UserProfile user,
     required String uid,
     required List<String> followedClubIds,
   }) => DashboardFullViewModelProvider._(
     argument: (
-      signedUpRuns: signedUpRuns,
+      signedUpEvents: signedUpEvents,
       user: user,
       uid: uid,
       followedClubIds: followedClubIds,
