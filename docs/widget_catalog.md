@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.74
-updated: 2026-05-16
+version: 2.5.76
+updated: 2026-05-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,23 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.76
+
+- `CreateRunScreen` now uses an `Event policy` step for capacity, base price,
+  admission format, age bounds, cohort caps, cancellation policy, and host
+  payout timing. The old Run details step now stays focused on distance, pace,
+  photo, and description.
+- `RunDetailCta` prices the current viewer through the run event-policy
+  snapshot, and `RunDetailOverviewSection` shows booking, cancellation, and
+  settlement policy details.
+
+### 2.5.75
+
+- `EventPolicyLabScreen` now previews cancellation outcomes alongside
+  admission and pricing. The lab shows bounded attendee cancellation policies,
+  host-cancellation make-complete behavior, and host payout timing held until
+  event completion.
 
 ### 2.5.74
 
