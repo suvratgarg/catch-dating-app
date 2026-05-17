@@ -36,6 +36,14 @@ import {
   releaseUserRunScheduleInTransaction,
 } from "./scheduleConflicts";
 import {normalizeRunIdPayload} from "./runPayloadNormalization";
+import {
+  assertPolicyAllowsSignup,
+  cohortIdForUser,
+  decrementCount,
+  eventPolicyFromRun,
+  incrementCount,
+  rosterFromRun,
+} from "./eventPolicy";
 
 interface PromotionPush {
   token: string;
@@ -112,7 +120,7 @@ export const cancelRunSignUp = onCall(
       const run = requireDoc<RunDoc>(runSnap, "RunDoc");
       const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
       const participation = participationSnap.exists ?
-        participationSnap.data() as {status?: string} :
+        participationSnap.data() as {status?: string; cohortAtSignup?: string} :
         null;
 
       // Idempotent — already not signed up.
@@ -121,6 +129,8 @@ export const cancelRunSignUp = onCall(
       }
 
       const cancellerGender = user.gender;
+      const cancellerCohort =
+        participation?.cohortAtSignup ?? cohortIdForUser(user);
 
       const currentSignedUpCount = run.bookedCount ??
         activeParticipations.filter((edge) =>
@@ -132,6 +142,10 @@ export const cancelRunSignUp = onCall(
       const newGenderCounts = {...run.genderCounts};
       newGenderCounts[cancellerGender] =
         Math.max(0, (newGenderCounts[cancellerGender] ?? 1) - 1);
+      let newCohortCounts = decrementCount(
+        run.cohortCounts ?? {},
+        cancellerCohort
+      );
       let promotedParticipationRef:
         FirebaseFirestore.DocumentReference | null = null;
       let promotedParticipationPatch: Record<string, unknown> | null = null;
@@ -160,14 +174,18 @@ export const cancelRunSignUp = onCall(
           waitlistUserSnap, "UserProfileDoc (waitlist)"
         );
         const wGender = waitlistUser.gender;
-        const currentCount = newGenderCounts[wGender] ?? 0;
-
-        if (wGender === "man" && run.constraints.maxMen != null &&
-            currentCount >= run.constraints.maxMen) continue;
-        if (wGender === "woman" && run.constraints.maxWomen != null &&
-            currentCount >= run.constraints.maxWomen) continue;
+        const wCohort = waitlistedParticipation.data.cohortAtSignup ??
+          cohortIdForUser(waitlistUser);
 
         try {
+          assertPolicyAllowsSignup({
+            policy: eventPolicyFromRun(run),
+            cohortId: wCohort,
+            roster: {
+              ...rosterFromRun({...run, cohortCounts: newCohortCounts}),
+              totalBooked: nextBookedCount,
+            },
+          });
           await claimUserRunScheduleInTransaction(tx, db, {
             uid: waitlistUserId,
             runId,
@@ -187,6 +205,7 @@ export const cancelRunSignUp = onCall(
         nextBookedCount += 1;
         nextWaitlistedCount = Math.max(0, nextWaitlistedCount - 1);
         newGenderCounts[wGender] = (newGenderCounts[wGender] ?? 0) + 1;
+        newCohortCounts = incrementCount(newCohortCounts, wCohort);
         promotedParticipationRef = waitlistedParticipation.ref;
         promotedParticipationPatch = runParticipationPatch({
           exists: true,
@@ -195,6 +214,7 @@ export const cancelRunSignUp = onCall(
           uid: waitlistUserId,
           status: "signedUp",
           genderAtSignup: wGender,
+          cohortAtSignup: wCohort,
         });
         const notificationCopy = runActivityNotificationCopy(
           "waitlistPromotion",
@@ -215,6 +235,7 @@ export const cancelRunSignUp = onCall(
         bookedCount: nextBookedCount,
         waitlistedCount: nextWaitlistedCount,
         genderCounts: newGenderCounts,
+        cohortCounts: newCohortCounts,
       });
       tx.set(participationRef, runParticipationPatch({
         exists: participationSnap.exists,
@@ -223,6 +244,7 @@ export const cancelRunSignUp = onCall(
         uid: userId,
         status: "cancelled",
         genderAtSignup: cancellerGender,
+        cohortAtSignup: cancellerCohort,
       }), {merge: true});
       releaseUserRunScheduleInTransaction(tx, db, {
         uid: userId,

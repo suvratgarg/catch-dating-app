@@ -79,6 +79,18 @@ void main() {
       );
     });
 
+    test('unauthenticated users can open the dev event policy lab', () {
+      expect(
+        _redirect(
+          uidAsync: const AsyncData(null),
+          userProfileAsync: const AsyncData(null),
+          location: '/dev/event-policy-lab',
+          matchedLocation: Routes.eventPolicyLabScreen.path,
+        ),
+        null,
+      );
+    });
+
     test(
       'legacy unauthenticated onboarding links move to start and preserve from',
       () {

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -38,7 +39,7 @@ void main() {
       await _tapPrimaryButton(tester, 'Next');
       await tester.pump();
 
-      expect(find.text('Required'), findsNWidgets(3));
+      expect(find.text('Required'), findsOneWidget);
       expect(find.text('Select a pace'), findsOneWidget);
     });
 
@@ -86,7 +87,10 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
-        expect(find.text('Review & rules'), findsOneWidget);
+        expect(find.text('Event policy'), findsOneWidget);
+        await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
+        await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
+        await _tapAdmissionPreset(tester, 'fixedCohortCaps');
         await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '40');
         await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '30');
         await _pumpTestAnimation(tester);
@@ -132,6 +136,19 @@ void main() {
         expect(fakeRunRepository.createdRun!.constraints.maxAge, 35);
         expect(fakeRunRepository.createdRun!.constraints.maxMen, 9);
         expect(fakeRunRepository.createdRun!.constraints.maxWomen, 9);
+        expect(fakeRunRepository.createdRun!.eventPolicy, isNotNull);
+        expect(
+          fakeRunRepository
+              .createdRun!
+              .eventPolicy!
+              .admissionPolicy
+              .cohortCapacityLimits,
+          {'menInterestedInWomen': 9, 'womenInterestedInMen': 9},
+        );
+        expect(
+          fakeRunRepository.createdRun!.eventPolicy!.cancellationPolicy.id,
+          EventCancellationPolicyId.standard,
+        );
 
         final manageRunButton = find.text('Manage run');
         await tester.ensureVisible(manageRunButton);
@@ -190,7 +207,7 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
-        expect(find.text('Review & rules'), findsOneWidget);
+        expect(find.text('Event policy'), findsOneWidget);
       },
     );
 
@@ -467,7 +484,6 @@ void main() {
 
       expect(find.text('Your drafts'), findsNothing);
       expect(find.text('9'), findsOneWidget);
-      expect(find.text('18'), findsOneWidget);
     });
   });
 }
@@ -565,6 +581,9 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await _tapPrimaryButton(tester, 'Next');
   await _pumpTestAnimation(tester);
 
+  await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
+  await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
+  await _tapAdmissionPreset(tester, 'fixedCohortCaps');
   await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '21');
   await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '35');
   await _enterCreateRunText(tester, CreateRunFormKeys.maxMen, '9');
@@ -592,8 +611,6 @@ Future<void> _pickMapPoint(WidgetTester tester) async {
 
 Future<void> _fillBasicsStep(WidgetTester tester) async {
   await _enterCreateRunText(tester, CreateRunFormKeys.distance, '7.5');
-  await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
-  await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
   await tester.tap(find.text('MODERATE'));
   await _enterCreateRunText(
     tester,
@@ -615,6 +632,13 @@ Future<void> _enterCreateRunText(
   await tester.ensureVisible(field);
   await tester.pump();
   await tester.enterText(field, text);
+}
+
+Future<void> _tapAdmissionPreset(WidgetTester tester, String presetName) async {
+  final finder = find.byKey(CreateRunFormKeys.admissionPreset(presetName));
+  await tester.ensureVisible(finder);
+  await tester.tap(finder);
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {

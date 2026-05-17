@@ -3,12 +3,14 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_screen.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
 import 'package:catch_dating_app/chats/presentation/chat_screen.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_startup_loading_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/activity_screen.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
+import 'package:catch_dating_app/event_policies/presentation/event_policy_lab_screen.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart'; // ChatsListScreen
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
@@ -85,7 +87,8 @@ enum Routes {
   publicProfileScreen('/profiles/:uid'),
   settingsScreen('/settings'),
   paymentHistoryScreen('/payment-history'),
-  paymentConfirmationScreen('/payment-confirmation');
+  paymentConfirmationScreen('/payment-confirmation'),
+  eventPolicyLabScreen('/dev/event-policy-lab');
 
   const Routes(this.path);
   final String path;
@@ -233,6 +236,12 @@ GoRouter goRouter(Ref ref) {
           return PaymentConfirmationScreen(data: data);
         },
       ),
+      if (AppConfig.enableEventPolicyLab)
+        GoRoute(
+          path: Routes.eventPolicyLabScreen.path,
+          name: Routes.eventPolicyLabScreen.name,
+          builder: (context, state) => const EventPolicyLabScreen(),
+        ),
       GoRoute(
         path: Routes.settingsScreen.path,
         name: Routes.settingsScreen.name,
@@ -432,6 +441,10 @@ GoRouter goRouter(Ref ref) {
 
 /// Routes that unauthenticated users may access for read-only browsing.
 bool _isPublicRoute(String matchedLocation) {
+  if (AppConfig.enableEventPolicyLab &&
+      matchedLocation == Routes.eventPolicyLabScreen.path) {
+    return true;
+  }
   if (matchedLocation == Routes.startScreen.path) return true;
   if (matchedLocation == Routes.authScreen.path) return true;
   if (matchedLocation == Routes.runClubsListScreen.path) return true;

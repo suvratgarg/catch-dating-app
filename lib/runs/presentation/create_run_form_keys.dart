@@ -15,6 +15,9 @@ abstract final class CreateRunFormKeys {
   static const maxMen = ValueKey('create-run-max-men-field');
   static const maxWomen = ValueKey('create-run-max-women-field');
 
+  static ValueKey<String> admissionPreset(String presetName) =>
+      ValueKey('create-run-admission-preset-$presetName');
+
   static ValueKey<String> deleteDraft(String draftId) =>
       ValueKey('create-run-delete-draft-$draftId');
 }

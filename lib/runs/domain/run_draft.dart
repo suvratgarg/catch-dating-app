@@ -33,6 +33,8 @@ abstract class RunDraft with _$RunDraft {
     String? maxAge,
     String? maxMen,
     String? maxWomen,
+    String? admissionPreset,
+    String? cancellationPolicy,
   }) = _RunDraft;
 
   factory RunDraft.fromJson(Map<String, dynamic> json) =>
@@ -65,7 +67,9 @@ extension RunDraftX on RunDraft {
       minAge == null &&
       maxAge == null &&
       maxMen == null &&
-      maxWomen == null;
+      maxWomen == null &&
+      admissionPreset == null &&
+      cancellationPolicy == null;
 
   String get summary {
     final parts = <String>[];

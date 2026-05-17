@@ -111,7 +111,16 @@
     "constraints": {
       "$ref": "../shared/run_common.schema.json#/definitions/runConstraints"
     },
+    "eventPolicy": {
+      "$ref": "../shared/run_common.schema.json#/definitions/eventPolicyBundle"
+    },
     "genderCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "../shared/run_common.schema.json#/definitions/nonNegativeInteger"
+      }
+    },
+    "cohortCounts": {
       "type": "object",
       "additionalProperties": {
         "$ref": "../shared/run_common.schema.json#/definitions/nonNegativeInteger"

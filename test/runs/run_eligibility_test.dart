@@ -100,17 +100,17 @@ void main() {
     expect((result as AgeTooOld).maxAge, 40);
   });
 
-  // ── #17: GenderCapacityReached ────────────────────────────────────────────
+  // ── #17: Cohort cap reached ───────────────────────────────────────────────
 
   test(
-    '#17 eligibilityFor returns GenderCapacityReached when gender slot is full',
+    '#17 eligibilityFor returns RunFull when a waitlistable cohort slot is full',
     () {
       final user = buildUser(gender: Gender.man);
       final run = buildRun(
         constraints: const RunConstraints(maxMen: 2),
         genderCounts: {'man': 2}, // at cap
       );
-      expect(run.eligibilityFor(user), isA<GenderCapacityReached>());
+      expect(run.eligibilityFor(user), isA<RunFull>());
     },
   );
 
@@ -168,13 +168,13 @@ void main() {
       expect(run.statusFor(user), RunSignUpStatus.eligible);
     });
 
-    test('GenderCapacityReached → RunSignUpStatus.ineligible', () {
+    test('Waitlistable cohort cap → RunSignUpStatus.full', () {
       final user = buildUser(gender: Gender.man);
       final run = buildRun(
         constraints: const RunConstraints(maxMen: 1),
         genderCounts: {'man': 1},
       );
-      expect(run.statusFor(user), RunSignUpStatus.ineligible);
+      expect(run.statusFor(user), RunSignUpStatus.full);
     });
   });
 }

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/auth/presentation/auth_session_controller.dart';
+import 'package:catch_dating_app/core/app_config.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -200,6 +201,23 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                   gapH20,
+                  if (AppConfig.enableEventPolicyLab) ...[
+                    _SettingsSection(
+                      title: 'Development',
+                      children: [
+                        SettingsRow(
+                          key: SettingsKeys.eventPolicyLabRow,
+                          label: 'Event policy lab',
+                          value: 'Static booking policy previews',
+                          icon: Icons.science_outlined,
+                          onTap: () => context.pushNamed(
+                            Routes.eventPolicyLabScreen.name,
+                          ),
+                        ),
+                      ],
+                    ),
+                    gapH20,
+                  ],
                   _SettingsSection(
                     title: 'Discovery',
                     children: [

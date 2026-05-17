@@ -284,6 +284,7 @@ function run(overrides: FakeData = {}): FakeData {
     cancellationReason: null,
     constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
     genderCounts: {},
+    cohortCounts: {},
     ...overrides,
   };
 }
@@ -348,7 +349,28 @@ test("createRunHandler creates a server-owned run for the club host",
       cancelledAt: null,
       cancellationReason: null,
       constraints: {minAge: 21, maxAge: 35, maxMen: 10, maxWomen: null},
+      eventPolicy: {
+        version: 1,
+        admission: {
+          format: "fixedCohortCaps",
+          capacityLimit: 20,
+          waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+          inviteRequired: false,
+          membershipRequired: false,
+          manualApprovalRequired: false,
+          cohortCapacityLimits: {menInterestedInWomen: 10},
+          balancedRatioPolicy: null,
+        },
+        pricing: {
+          basePriceInPaise: 0,
+          cohortAdjustmentsInPaise: {},
+          demandPricingRules: [],
+        },
+        cancellation: {policyId: "standard"},
+        settlement: {hostPayoutTiming: "afterEventCompletion"},
+      },
       genderCounts: {},
+      cohortCounts: {},
     });
   }
 );

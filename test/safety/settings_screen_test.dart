@@ -125,6 +125,7 @@ void main() {
 
     expect(find.byKey(SettingsKeys.reviewHistoryRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.paymentHistoryRow), findsOneWidget);
+    expect(find.byKey(SettingsKeys.eventPolicyLabRow), findsOneWidget);
     expect(find.byKey(SettingsKeys.signOutRow), findsOneWidget);
 
     await tester.tap(find.byKey(SettingsKeys.signOutRow));

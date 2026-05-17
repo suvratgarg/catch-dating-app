@@ -33,6 +33,9 @@
     "capacityLimit": {"type": "integer", "minimum": 1, "maximum": 1000},
     "description": {"type": "string", "maxLength": 2000},
     "priceInPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
+    "eventPolicy": {
+      "$ref": "../shared/run_common.schema.json#/definitions/eventPolicyBundle"
+    },
     "constraints": {
       "type": "object",
       "additionalProperties": false,

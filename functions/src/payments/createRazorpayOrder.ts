@@ -5,7 +5,7 @@ import {
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import Razorpay from "razorpay";
-import {RunDoc} from "../shared/firestore";
+import {RunDoc, UserProfileDoc} from "../shared/firestore";
 import {buildOrderCreatePayload} from "./paymentValidation";
 import {
   createRazorpayClient,
@@ -24,6 +24,12 @@ import {normalizeSingleIdPayload} from
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {runParticipationId} from "../shared/relationshipDocuments";
 import {assertNoUserRunScheduleConflict} from "../runs/scheduleConflicts";
+import {
+  cohortIdForUser,
+  eventPolicyFromRun,
+  quotePriceInPaise,
+  rosterFromRun,
+} from "../runs/eventPolicy";
 
 interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
@@ -55,9 +61,10 @@ export async function createRazorpayOrderHandler(
   );
 
   const db = deps.firestore();
-  const [runSnap, participationSnap, activeParticipationsSnap] =
+  const [runSnap, userSnap, participationSnap, activeParticipationsSnap] =
     await Promise.all([
       db.collection("runs").doc(runId).get(),
+      db.collection("users").doc(uid).get(),
       db.collection("runParticipations")
         .doc(runParticipationId(runId, uid))
         .get(),
@@ -70,8 +77,12 @@ export async function createRazorpayOrderHandler(
   if (!runSnap.exists) {
     throw new HttpsError("not-found", "Run not found.");
   }
+  if (!userSnap.exists) {
+    throw new HttpsError("not-found", "User profile not found.");
+  }
 
   const run = requireDoc<RunDoc>(runSnap, "RunDoc");
+  const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
   const participation = participationSnap.exists ?
     participationSnap.data() as {status?: string} :
     null;
@@ -117,12 +128,18 @@ export async function createRazorpayOrderHandler(
   }
 
   const razorpay = deps.createClient();
+  const amountInPaise = quotePriceInPaise({
+    policy: eventPolicyFromRun(run),
+    cohortId: cohortIdForUser(user),
+    roster: rosterFromRun(run),
+  });
   const order = await razorpay.orders.create(
     buildOrderCreatePayload({
       runId,
       run,
       userId: uid,
       receiptToken: deps.now(),
+      amountInPaise,
     })
   );
 

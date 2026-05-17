@@ -28,6 +28,7 @@ function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
       maxAge: 99,
     },
     genderCounts: {},
+    cohortCounts: {},
     ...overrides,
   };
 }
@@ -47,6 +48,7 @@ test("buildOrderCreatePayload derives trusted amount and notes", () => {
     notes: {
       runId: "run-1",
       userId: "runner-1",
+      quotedAmountInPaise: 25000,
     },
   });
 });

@@ -2,9 +2,17 @@ import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import * as logger from "firebase-functions/logger";
-import {appCheckCallableOptions} from "../shared/callableOptions";
+import {
+  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets,
+} from "../shared/callableOptions";
 import {requireAuth} from "../shared/auth";
-import {RunClubDoc, RunDoc, RunConstraints} from "../shared/firestore";
+import {
+  PaymentDoc,
+  RunClubDoc,
+  RunDoc,
+  RunConstraints,
+} from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {CancelRunCallablePayload} from
   "../shared/generated/cancelRunCallablePayload";
@@ -46,6 +54,15 @@ import {
   normalizeRunIdPayload,
   normalizeUpdateRunPayload,
 } from "./runPayloadNormalization";
+import {
+  EventPolicyBundleDoc,
+  normalizePolicy,
+} from "./eventPolicy";
+import {
+  createRazorpayClient,
+  razorpayKeyId,
+  razorpayKeySecret,
+} from "../payments/razorpay";
 
 interface RunMutationDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -64,11 +81,15 @@ interface RunMutationDeps {
       nowTimestamp: () => FirebaseFirestore.Timestamp;
     }
   ) => Promise<void>;
+  refundPayment?: (paymentId: string, amount: number) => Promise<void>;
 }
 
 type ParsedRunConstraints = NonNullable<
   CreateRunCallablePayload["constraints"]
 >;
+type CreateRunPayloadWithPolicy = CreateRunCallablePayload & {
+  eventPolicy?: EventPolicyBundleDoc;
+};
 type RunHostUpdateFields = UpdateRunCallablePayload["fields"];
 
 type NotificationUserDoc = {
@@ -91,6 +112,9 @@ const defaultDeps: RunMutationDeps = {
   sendNotification: sendFcmNotification,
   checkRateLimit: defaultCheckRateLimit,
   refreshRunClubNextRun: defaultRefreshRunClubNextRun,
+  refundPayment: async (paymentId, amount) => {
+    await createRazorpayClient().payments.refund(paymentId, {amount});
+  },
 };
 
 /**
@@ -362,6 +386,7 @@ export async function cancelRunHandler(
   });
 
   if (cancelledRun && shouldNotifyParticipants) {
+    await refundCompletedPaymentsForCancelledRun(db, deps, data.runId);
     await notifyRunParticipants({
       db,
       deps,
@@ -378,6 +403,42 @@ export async function cancelRunHandler(
   }
 
   return {cancelled: true};
+}
+
+/**
+ * Refunds completed attendee payments after a host/platform cancellation.
+ *
+ * Host payout is not modeled as a remitted transfer in this codebase yet; the
+ * important invariant here is that attendee money is returned before any future
+ * host-settlement process can consider the event payable.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {RunMutationDeps} deps Injectable dependencies.
+ * @param {string} runId Cancelled run id.
+ */
+async function refundCompletedPaymentsForCancelledRun(
+  db: FirebaseFirestore.Firestore,
+  deps: RunMutationDeps,
+  runId: string
+) {
+  const payments = await db
+    .collection("payments")
+    .where("runId", "==", runId)
+    .where("status", "==", "completed")
+    .get();
+
+  await Promise.all(payments.docs.map(async (paymentDoc) => {
+    const payment = requireDoc<PaymentDoc>(paymentDoc, "PaymentDoc");
+    try {
+      await deps.refundPayment?.(payment.paymentId, payment.amount);
+      await paymentDoc.ref.update({status: "refunded"});
+    } catch (error) {
+      logger.error("Host cancellation refund failed", {
+        runId,
+        paymentId: payment.paymentId,
+        error,
+      });
+    }
+  }));
 }
 
 /**
@@ -477,6 +538,28 @@ function buildCreateRunDoc(
   deps: RunMutationDeps
 ): Omit<RunDoc, "runClubId" | "genderCounts" |
   "status" | "cancelledAt" | "cancellationReason"> {
+  const maxMen = data.constraints?.maxMen;
+  const maxWomen = data.constraints?.maxWomen;
+  const hasLegacyCaps = maxMen != null || maxWomen != null;
+  const eventPolicy = normalizePolicy(
+    (data as CreateRunPayloadWithPolicy).eventPolicy ?? {
+      version: 1,
+      admission: {
+        format: hasLegacyCaps ? "fixedCohortCaps" : "open",
+        capacityLimit: data.capacityLimit,
+        waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+        cohortCapacityLimits: {
+          ...(maxMen != null ? {menInterestedInWomen: maxMen} : {}),
+          ...(maxWomen != null ? {womenInterestedInMen: maxWomen} : {}),
+        },
+      },
+      pricing: {
+        basePriceInPaise: data.priceInPaise,
+      },
+      cancellation: {policyId: "standard"},
+      settlement: {hostPayoutTiming: "afterEventCompletion"},
+    }
+  );
   return {
     startTime: deps.timestampFromMillis(data.startTimeMillis),
     endTime: deps.timestampFromMillis(data.endTimeMillis),
@@ -487,10 +570,12 @@ function buildCreateRunDoc(
     photoUrl: data.photoUrl ?? null,
     distanceKm: data.distanceKm,
     pace: data.pace,
-    capacityLimit: data.capacityLimit,
+    capacityLimit: eventPolicy.admission.capacityLimit,
     description: data.description,
-    priceInPaise: data.priceInPaise,
+    priceInPaise: eventPolicy.pricing.basePriceInPaise,
     constraints: normalizeConstraints(data.constraints),
+    eventPolicy,
+    cohortCounts: {},
   };
 }
 
@@ -892,7 +977,7 @@ export const updateRun = onCall(
   (request) => updateRunHandler(request)
 );
 export const cancelRun = onCall(
-  appCheckCallableOptions,
+  appCheckCallableOptionsWithSecrets([razorpayKeyId, razorpayKeySecret]),
   (request) => cancelRunHandler(request)
 );
 export const deleteRun = onCall(

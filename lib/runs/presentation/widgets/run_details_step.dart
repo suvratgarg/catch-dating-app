@@ -15,8 +15,6 @@ class RunDetailsStep extends StatelessWidget {
     required this.photoImageBytes,
     required this.onPickPhoto,
     required this.distanceController,
-    required this.capacityController,
-    required this.priceController,
     required this.descriptionController,
     required this.selectedPace,
     required this.onPaceChanged,
@@ -26,8 +24,6 @@ class RunDetailsStep extends StatelessWidget {
   final Uint8List? photoImageBytes;
   final VoidCallback? onPickPhoto;
   final TextEditingController distanceController;
-  final TextEditingController capacityController;
-  final TextEditingController priceController;
   final TextEditingController descriptionController;
   final PaceLevel? selectedPace;
   final ValueChanged<PaceLevel?> onPaceChanged;
@@ -52,59 +48,12 @@ class RunDetailsStep extends StatelessWidget {
               onTap: onPickPhoto,
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(
-                  child: CatchTextField(
-                    key: CreateRunFormKeys.distance,
-                    label: 'Distance (km)',
-                    controller: distanceController,
-                    hintText: '10',
-                    prefixIcon: const Icon(Icons.straighten_outlined),
-                    keyboardType: const TextInputType.numberWithOptions(
-                      decimal: true,
-                    ),
-                    inputFormatters: [
-                      FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-                    ],
-                    textInputAction: TextInputAction.next,
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Required';
-                      final distance = double.tryParse(v.trim());
-                      if (distance == null) return 'Invalid';
-                      if (distance <= 0) return 'Must be > 0';
-                      return null;
-                    },
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: CatchTextField(
-                    key: CreateRunFormKeys.capacity,
-                    label: 'Max runners',
-                    controller: capacityController,
-                    hintText: '20',
-                    prefixIcon: const Icon(Icons.people_outline),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                    textInputAction: TextInputAction.next,
-                    validator: (v) {
-                      if (v == null || v.trim().isEmpty) return 'Required';
-                      final n = int.tryParse(v.trim());
-                      if (n == null || n < 1) return 'Min 1';
-                      return null;
-                    },
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
             CatchTextField(
-              key: CreateRunFormKeys.price,
-              label: 'Price (₹) — enter 0 for free',
-              controller: priceController,
-              hintText: '0',
-              prefixIcon: const Icon(Icons.currency_rupee_outlined),
+              key: CreateRunFormKeys.distance,
+              label: 'Distance (km)',
+              controller: distanceController,
+              hintText: '10',
+              prefixIcon: const Icon(Icons.straighten_outlined),
               keyboardType: const TextInputType.numberWithOptions(
                 decimal: true,
               ),
@@ -114,7 +63,9 @@ class RunDetailsStep extends StatelessWidget {
               textInputAction: TextInputAction.next,
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return 'Required';
-                if (double.tryParse(v.trim()) == null) return 'Invalid';
+                final distance = double.tryParse(v.trim());
+                if (distance == null) return 'Invalid';
+                if (distance <= 0) return 'Must be > 0';
                 return null;
               },
             ),

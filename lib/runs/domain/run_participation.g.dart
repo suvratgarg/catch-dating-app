@@ -38,6 +38,7 @@ _RunParticipation _$RunParticipationFromJson(Map<String, dynamic> json) =>
         _$GenderEnumMap,
         json['genderAtSignup'],
       ),
+      cohortAtSignup: json['cohortAtSignup'] as String?,
       paymentId: json['paymentId'] as String?,
     );
 
@@ -60,6 +61,7 @@ Map<String, dynamic> _$RunParticipationToJson(
   ),
   'deletedAt': const NullableTimestampConverter().toJson(instance.deletedAt),
   'genderAtSignup': _$GenderEnumMap[instance.genderAtSignup],
+  'cohortAtSignup': instance.cohortAtSignup,
   'paymentId': instance.paymentId,
 };
 

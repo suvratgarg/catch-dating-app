@@ -53,8 +53,9 @@ class RunBookingController extends _$RunBookingController {
   }) async {
     _requireSignedIn(action: 'book a run');
     final paymentRepo = ref.read(paymentRepositoryProvider);
+    final quotedPriceInPaise = run.priceInPaiseFor(user);
 
-    if (run.isFree) {
+    if (quotedPriceInPaise == 0) {
       await paymentRepo.bookFreeRun(runId: run.id);
       return null;
     } else {

@@ -2,6 +2,7 @@ import 'dart:math' as math;
 
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:catch_dating_app/runs/domain/run_eligibility.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -75,9 +76,13 @@ abstract class Run with _$Run {
     @NullableTimestampConverter() DateTime? cancelledAt,
     String? cancellationReason,
     @Default(RunConstraints()) RunConstraints constraints,
+    @JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy,
     // Denormalized gender counts maintained atomically by Cloud Functions.
     // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
     @Default({}) Map<String, int> genderCounts,
+    // Denormalized event-policy cohort counts maintained by Cloud Functions.
+    // Keys are EventCohortIds values.
+    @Default({}) Map<String, int> cohortCounts,
   }) = _Run;
 
   factory Run.fromJson(Map<String, dynamic> json) => _$RunFromJson(json);
@@ -95,6 +100,44 @@ abstract class Run with _$Run {
   bool get hasRequirements => constraints.hasRequirements;
   bool get hasExactStartingPoint =>
       startingPointLat != null && startingPointLng != null;
+  EventPolicyBundle get effectiveEventPolicy =>
+      eventPolicy ??
+      EventPolicyBundle.legacyRun(
+        capacityLimit: capacityLimit,
+        priceInPaise: priceInPaise,
+        maxMen: constraints.maxMen,
+        maxWomen: constraints.maxWomen,
+      );
+
+  Map<String, int> get effectiveCohortCounts {
+    if (cohortCounts.isNotEmpty) return cohortCounts;
+    final nonBinaryOrOther =
+        (genderCounts[Gender.nonBinary.name] ?? 0) +
+        (genderCounts[Gender.other.name] ?? 0);
+    return {
+      if ((genderCounts[Gender.man.name] ?? 0) > 0)
+        EventCohortIds.menInterestedInWomen: genderCounts[Gender.man.name]!,
+      if ((genderCounts[Gender.woman.name] ?? 0) > 0)
+        EventCohortIds.womenInterestedInMen: genderCounts[Gender.woman.name]!,
+      if (nonBinaryOrOther > 0)
+        EventCohortIds.nonBinaryOrOther: nonBinaryOrOther,
+    };
+  }
+
+  int priceInPaiseFor(UserProfile user) {
+    final policy = effectiveEventPolicy;
+    final attendee = EventAttendeeProfile.fromUserProfile(user);
+    final cohort = policy.cohortResolver.resolve(attendee);
+    return policy.pricingPolicy
+        .quoteFor(
+          cohort: cohort,
+          roster: EventRosterSnapshot(
+            bookedCountsByCohort: effectiveCohortCounts,
+          ),
+        )
+        .finalAmount
+        .inPaise;
+  }
 
   /// Returns fresh-viewer eligibility of [user] for this run.
   ///
@@ -106,12 +149,29 @@ abstract class Run with _$Run {
     if (!isUpcomingAt(referenceNow)) return const RunPast();
     if (user.age < constraints.minAge) return AgeTooYoung(constraints.minAge);
     if (user.age > constraints.maxAge) return AgeTooOld(constraints.maxAge);
-    final cap = constraints.maxForGender(user.gender);
-    if (cap != null && (genderCounts[user.gender.name] ?? 0) >= cap) {
+
+    final policy = effectiveEventPolicy;
+    if (signedUpCount >= policy.capacityLimit) return const RunFull();
+
+    final decision = const EventPolicyEngine().decideAdmission(
+      policy: policy,
+      request: EventAdmissionRequest(
+        attendee: EventAttendeeProfile.fromUserProfile(user),
+      ),
+      roster: EventRosterSnapshot(bookedCountsByCohort: effectiveCohortCounts),
+    );
+
+    if (decision.isBookable) return const Eligible();
+    if (decision.isWaitlisted) return const RunFull();
+    if (decision.reason == EventAdmissionDecisionReason.cohortCapReached ||
+        decision.reason ==
+            EventAdmissionDecisionReason.balancedRatioLimitReached) {
       return const GenderCapacityReached();
     }
-    if (isFull) return const RunFull();
-    return const Eligible();
+    if (decision.reason == EventAdmissionDecisionReason.capacityFull) {
+      return const RunFull();
+    }
+    return const GenderCapacityReached();
   }
 
   /// Returns the fresh-viewer booking status for [user].

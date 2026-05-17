@@ -36,8 +36,16 @@ _Run _$RunFromJson(Map<String, dynamic> json) => _Run(
   constraints: json['constraints'] == null
       ? const RunConstraints()
       : RunConstraints.fromJson(json['constraints'] as Map<String, dynamic>),
+  eventPolicy: json['eventPolicy'] == null
+      ? null
+      : EventPolicyBundle.fromJson(json['eventPolicy'] as Map<String, dynamic>),
   genderCounts:
       (json['genderCounts'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toInt()),
+      ) ??
+      const {},
+  cohortCounts:
+      (json['cohortCounts'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ) ??
       const {},
@@ -66,7 +74,9 @@ Map<String, dynamic> _$RunToJson(_Run instance) => <String, dynamic>{
   ),
   'cancellationReason': instance.cancellationReason,
   'constraints': instance.constraints.toJson(),
+  'eventPolicy': ?instance.eventPolicy?.toJson(),
   'genderCounts': instance.genderCounts,
+  'cohortCounts': instance.cohortCounts,
 };
 
 const _$PaceLevelEnumMap = {

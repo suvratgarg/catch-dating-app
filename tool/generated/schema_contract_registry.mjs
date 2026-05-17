@@ -674,7 +674,7 @@ export const userProfileDocumentSchema = {
     },
     "photoUrls": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "type": "string",
         "format": "uri",
@@ -683,7 +683,7 @@ export const userProfileDocumentSchema = {
     },
     "photoThumbnailUrls": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "type": "string",
         "format": "uri",
@@ -1370,7 +1370,7 @@ export const publicProfileDocumentSchema = {
     },
     "photoUrls": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "type": "string",
         "format": "uri",
@@ -1379,7 +1379,7 @@ export const publicProfileDocumentSchema = {
     },
     "photoThumbnailUrls": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "type": "string",
         "format": "uri",
@@ -2605,7 +2605,252 @@ export const runDocumentSchema = {
         }
       }
     },
+    "eventPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "admission",
+        "pricing",
+        "cancellation",
+        "settlement"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1
+        },
+        "admission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "format",
+            "capacityLimit",
+            "waitlistPolicy",
+            "inviteRequired",
+            "membershipRequired",
+            "manualApprovalRequired",
+            "cohortCapacityLimits",
+            "balancedRatioPolicy"
+          ],
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": [
+                "open",
+                "inviteOnly",
+                "manualApproval",
+                "fixedCohortCaps",
+                "balancedRatio",
+                "membersOnly"
+              ]
+            },
+            "capacityLimit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "waitlistPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "offerWindowMinutes"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "rankedOffer",
+                    "broadcastFirstComeFirstServed",
+                    "manualReview"
+                  ]
+                },
+                "offerWindowMinutes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10080
+                }
+              }
+            },
+            "inviteRequired": {
+              "type": "boolean"
+            },
+            "membershipRequired": {
+              "type": "boolean"
+            },
+            "manualApprovalRequired": {
+              "type": "boolean"
+            },
+            "cohortCapacityLimits": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "balancedRatioPolicy": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "leftCohortId",
+                "rightCohortId",
+                "maxSkew",
+                "openingBufferPerCohort",
+                "outOfRatioCohortPolicy"
+              ],
+              "properties": {
+                "leftCohortId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "rightCohortId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "maxSkew": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "openingBufferPerCohort": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "outOfRatioCohortPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "admitWithinGeneralCapacity",
+                    "waitlist",
+                    "manualReview",
+                    "reject"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "basePriceInPaise",
+            "cohortAdjustmentsInPaise",
+            "demandPricingRules"
+          ],
+          "properties": {
+            "basePriceInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "cohortAdjustmentsInPaise": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": -100000000,
+                "maximum": 100000000
+              }
+            },
+            "demandPricingRules": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pricedCohortId",
+                  "balancingCohortId",
+                  "stepAdjustmentInPaise",
+                  "maxAdjustmentInPaise",
+                  "freeSkew",
+                  "demandStep"
+                ],
+                "properties": {
+                  "pricedCohortId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "balancingCohortId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "stepAdjustmentInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "maxAdjustmentInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "freeSkew": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "demandStep": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cancellation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyId"
+          ],
+          "properties": {
+            "policyId": {
+              "type": "string",
+              "enum": [
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        },
+        "settlement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hostPayoutTiming"
+          ],
+          "properties": {
+            "hostPayoutTiming": {
+              "type": "string",
+              "enum": [
+                "afterEventCompletion"
+              ]
+            }
+          }
+        }
+      }
+    },
     "genderCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "cohortCounts": {
       "type": "object",
       "additionalProperties": {
         "type": "integer",
@@ -2897,6 +3142,14 @@ export const runParticipationDocumentSchema = {
           "type": "null"
         }
       ]
+    },
+    "cohortAtSignup": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
     },
     "paymentId": {
       "type": [
@@ -4836,7 +5089,7 @@ export const updateUserProfileCallablePayloadSchema = {
         },
         "photoUrls": {
           "type": "array",
-          "maxItems": 12,
+          "maxItems": 6,
           "items": {
             "type": "string",
             "format": "uri",
@@ -4845,7 +5098,7 @@ export const updateUserProfileCallablePayloadSchema = {
         },
         "photoThumbnailUrls": {
           "type": "array",
-          "maxItems": 12,
+          "maxItems": 6,
           "items": {
             "type": "string",
             "format": "uri",
@@ -4938,6 +5191,8 @@ export const updateUserProfileCallablePayloadSchema = {
               "prompt": {
                 "anyOf": [
                   {
+                    "title": "PhotoPromptAnswer",
+                    "description": "One optional caption prompt for a profile photo slot.",
                     "type": "object",
                     "additionalProperties": false,
                     "required": [
@@ -4954,24 +5209,20 @@ export const updateUserProfileCallablePayloadSchema = {
                       },
                       "promptId": {
                         "type": "string",
-                        "enum": [
-                          "proofIRun",
-                          "postRunRitual",
-                          "favoriteRoute",
-                          "raceDayEnergy",
-                          "runningBuddy"
-                        ]
+                        "minLength": 1,
+                        "maxLength": 80
                       },
                       "prompt": {
                         "type": "string",
                         "minLength": 1,
-                        "maxLength": 120
+                        "maxLength": 140
                       },
                       "caption": {
                         "type": "string",
-                        "maxLength": 160
+                        "maxLength": 140
                       }
-                    }
+                    },
+                    "x-catch-catalog": "../catalogs/photo_prompts.json"
                   },
                   {
                     "type": "null"
@@ -5687,6 +5938,244 @@ export const createRunCallablePayloadSchema = {
       "type": "integer",
       "minimum": 0,
       "maximum": 100000000
+    },
+    "eventPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "admission",
+        "pricing",
+        "cancellation",
+        "settlement"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1
+        },
+        "admission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "format",
+            "capacityLimit",
+            "waitlistPolicy",
+            "inviteRequired",
+            "membershipRequired",
+            "manualApprovalRequired",
+            "cohortCapacityLimits",
+            "balancedRatioPolicy"
+          ],
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": [
+                "open",
+                "inviteOnly",
+                "manualApproval",
+                "fixedCohortCaps",
+                "balancedRatio",
+                "membersOnly"
+              ]
+            },
+            "capacityLimit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "waitlistPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "offerWindowMinutes"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "rankedOffer",
+                    "broadcastFirstComeFirstServed",
+                    "manualReview"
+                  ]
+                },
+                "offerWindowMinutes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10080
+                }
+              }
+            },
+            "inviteRequired": {
+              "type": "boolean"
+            },
+            "membershipRequired": {
+              "type": "boolean"
+            },
+            "manualApprovalRequired": {
+              "type": "boolean"
+            },
+            "cohortCapacityLimits": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "balancedRatioPolicy": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "leftCohortId",
+                "rightCohortId",
+                "maxSkew",
+                "openingBufferPerCohort",
+                "outOfRatioCohortPolicy"
+              ],
+              "properties": {
+                "leftCohortId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "rightCohortId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "maxSkew": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "openingBufferPerCohort": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "outOfRatioCohortPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "admitWithinGeneralCapacity",
+                    "waitlist",
+                    "manualReview",
+                    "reject"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "basePriceInPaise",
+            "cohortAdjustmentsInPaise",
+            "demandPricingRules"
+          ],
+          "properties": {
+            "basePriceInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "cohortAdjustmentsInPaise": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": -100000000,
+                "maximum": 100000000
+              }
+            },
+            "demandPricingRules": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pricedCohortId",
+                  "balancingCohortId",
+                  "stepAdjustmentInPaise",
+                  "maxAdjustmentInPaise",
+                  "freeSkew",
+                  "demandStep"
+                ],
+                "properties": {
+                  "pricedCohortId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "balancingCohortId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "stepAdjustmentInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "maxAdjustmentInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "freeSkew": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "demandStep": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cancellation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyId"
+          ],
+          "properties": {
+            "policyId": {
+              "type": "string",
+              "enum": [
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        },
+        "settlement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hostPayoutTiming"
+          ],
+          "properties": {
+            "hostPayoutTiming": {
+              "type": "string",
+              "enum": [
+                "afterEventCompletion"
+              ]
+            }
+          }
+        }
+      }
     },
     "constraints": {
       "type": "object",
@@ -6774,10 +7263,10 @@ export const photoPromptCatalog = {
   "schemaVersion": 1,
   "kind": "photoPrompts",
   "limits": {
-    "maxCaptions": 6,
     "maxPromptIdLength": 80,
     "maxPromptTitleLength": 140,
-    "maxCaptionLength": 140
+    "maxCaptionLength": 140,
+    "maxCaptions": 6
   },
   "prompts": [
     {
@@ -6821,10 +7310,23 @@ export const profilePromptLimits = {
 };
 
 export const photoPromptLimits = {
-  "maxCaptions": 6,
   "maxPromptIdLength": 80,
   "maxPromptTitleLength": 140,
-  "maxCaptionLength": 140
+  "maxCaptionLength": 140,
+  "maxCaptions": 6
+};
+
+export const profilePhotoPolicy = {
+  "schemaVersion": 1,
+  "kind": "profilePhotoPolicy",
+  "minPhotos": 2,
+  "maxPhotos": 6,
+  "displayAspectRatio": {
+    "width": 3,
+    "height": 4
+  },
+  "thumbnailSize": 160,
+  "maxUploadBytes": 8388608
 };
 
 export const defaultProfilePromptIds = [

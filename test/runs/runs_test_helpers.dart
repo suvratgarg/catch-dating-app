@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -39,7 +40,9 @@ Run buildRun({
   int? waitlistedCount,
   RunLifecycleStatus status = RunLifecycleStatus.active,
   RunConstraints constraints = const RunConstraints(),
+  EventPolicyBundle? eventPolicy,
   Map<String, int> genderCounts = const {},
+  Map<String, int> cohortCounts = const {},
 }) {
   final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
   return Run(
@@ -62,7 +65,9 @@ Run buildRun({
     waitlistedCount: waitlistedCount,
     status: status,
     constraints: constraints,
+    eventPolicy: eventPolicy,
     genderCounts: genderCounts,
+    cohortCounts: cohortCounts,
   );
 }
 
@@ -71,6 +76,7 @@ RunParticipation buildRunParticipation({
   required String uid,
   RunParticipationStatus status = RunParticipationStatus.signedUp,
   DateTime? createdAt,
+  String? cohortAtSignup,
 }) {
   final timestamp = createdAt ?? DateTime(2026, 5, 6, 7);
   return RunParticipation(
@@ -92,6 +98,7 @@ RunParticipation buildRunParticipation({
         : null,
     cancelledAt: status == RunParticipationStatus.cancelled ? timestamp : null,
     deletedAt: status == RunParticipationStatus.deleted ? timestamp : null,
+    cohortAtSignup: cohortAtSignup,
   );
 }
 
@@ -105,6 +112,7 @@ UserProfile buildUser({
   String bio = 'Here for the run.',
   List<ProfilePromptAnswer>? profilePrompts,
   Gender gender = Gender.man,
+  List<Gender> interestedInGenders = const [Gender.woman],
   DateTime? dateOfBirth,
   String phoneNumber = '+910000000000',
   List<String> photoUrls = const [],
@@ -125,7 +133,7 @@ UserProfile buildUser({
     gender: gender,
     phoneNumber: phoneNumber,
     profileComplete: true,
-    interestedInGenders: const [Gender.woman],
+    interestedInGenders: interestedInGenders,
     photoUrls: photoUrls,
   );
 }

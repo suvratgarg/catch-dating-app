@@ -1,7 +1,7 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {RunDoc} from "../shared/firestore";
+import {RunDoc, UserProfileDoc} from "../shared/firestore";
 import {signUpUserForRun} from "./signUpUserForRun";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
@@ -11,6 +11,12 @@ import {validateRunIdCallablePayload} from
   "../shared/generated/schemaValidators";
 import {validateCallableWithAjv} from "../shared/validation";
 import {normalizeRunIdPayload} from "./runPayloadNormalization";
+import {
+  cohortIdForUser,
+  eventPolicyFromRun,
+  quotePriceInPaise,
+  rosterFromRun,
+} from "./eventPolicy";
 
 interface SignUpForFreeRunDeps {
   firestore: () => FirebaseFirestore.Firestore;
@@ -53,15 +59,27 @@ export async function signUpForFreeRunHandler(
   await deps.checkRateLimit(db, uid, "signUpForFreeRun");
 
   // Verify the run exists and is actually free.
-  const runSnap = await db.collection("runs").doc(runId).get();
+  const [runSnap, userSnap] = await Promise.all([
+    db.collection("runs").doc(runId).get(),
+    db.collection("users").doc(uid).get(),
+  ]);
 
   if (!runSnap.exists) {
     throw new HttpsError("not-found", "Run not found.");
   }
+  if (!userSnap.exists) {
+    throw new HttpsError("not-found", "User profile not found.");
+  }
 
   const run = runSnap.data() as RunDoc;
+  const user = userSnap.data() as UserProfileDoc;
+  const priceInPaise = quotePriceInPaise({
+    policy: eventPolicyFromRun(run),
+    cohortId: cohortIdForUser(user),
+    roster: rosterFromRun(run),
+  });
 
-  if (run.priceInPaise !== 0) {
+  if (priceInPaise !== 0) {
     throw new HttpsError(
       "permission-denied",
       "This run requires payment. Use the payment flow instead."

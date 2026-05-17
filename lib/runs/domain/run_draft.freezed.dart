@@ -19,7 +19,7 @@ mixin _$RunDraft {
  String? get distance; String? get capacity; String? get price; String? get description; String? get paceName;// Where step
  String? get meetingPoint; String? get locationDetails; double? get startingPointLat; double? get startingPointLng;// When step
  int? get selectedDateMillis; int? get selectedStartHour; int? get selectedStartMinute; int get durationMinutes;// Rules step
- String? get minAge; String? get maxAge; String? get maxMen; String? get maxWomen;
+ String? get minAge; String? get maxAge; String? get maxMen; String? get maxWomen; String? get admissionPreset; String? get cancellationPolicy;
 /// Create a copy of RunDraft
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -32,16 +32,16 @@ $RunDraftCopyWith<RunDraft> get copyWith => _$RunDraftCopyWithImpl<RunDraft>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.capacity, capacity) || other.capacity == capacity)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.paceName, paceName) || other.paceName == paceName)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.selectedDateMillis, selectedDateMillis) || other.selectedDateMillis == selectedDateMillis)&&(identical(other.selectedStartHour, selectedStartHour) || other.selectedStartHour == selectedStartHour)&&(identical(other.selectedStartMinute, selectedStartMinute) || other.selectedStartMinute == selectedStartMinute)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RunDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.capacity, capacity) || other.capacity == capacity)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.paceName, paceName) || other.paceName == paceName)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.selectedDateMillis, selectedDateMillis) || other.selectedDateMillis == selectedDateMillis)&&(identical(other.selectedStartHour, selectedStartHour) || other.selectedStartHour == selectedStartHour)&&(identical(other.selectedStartMinute, selectedStartMinute) || other.selectedStartMinute == selectedStartMinute)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.cancellationPolicy, cancellationPolicy) || other.cancellationPolicy == cancellationPolicy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,runClubId,savedAt,distance,capacity,price,description,paceName,meetingPoint,locationDetails,startingPointLat,startingPointLng,selectedDateMillis,selectedStartHour,selectedStartMinute,durationMinutes,minAge,maxAge,maxMen,maxWomen]);
+int get hashCode => Object.hashAll([runtimeType,id,runClubId,savedAt,distance,capacity,price,description,paceName,meetingPoint,locationDetails,startingPointLat,startingPointLng,selectedDateMillis,selectedStartHour,selectedStartMinute,durationMinutes,minAge,maxAge,maxMen,maxWomen,admissionPreset,cancellationPolicy]);
 
 @override
 String toString() {
-  return 'RunDraft(id: $id, runClubId: $runClubId, savedAt: $savedAt, distance: $distance, capacity: $capacity, price: $price, description: $description, paceName: $paceName, meetingPoint: $meetingPoint, locationDetails: $locationDetails, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, selectedDateMillis: $selectedDateMillis, selectedStartHour: $selectedStartHour, selectedStartMinute: $selectedStartMinute, durationMinutes: $durationMinutes, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen)';
+  return 'RunDraft(id: $id, runClubId: $runClubId, savedAt: $savedAt, distance: $distance, capacity: $capacity, price: $price, description: $description, paceName: $paceName, meetingPoint: $meetingPoint, locationDetails: $locationDetails, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, selectedDateMillis: $selectedDateMillis, selectedStartHour: $selectedStartHour, selectedStartMinute: $selectedStartMinute, durationMinutes: $durationMinutes, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, admissionPreset: $admissionPreset, cancellationPolicy: $cancellationPolicy)';
 }
 
 
@@ -52,7 +52,7 @@ abstract mixin class $RunDraftCopyWith<$Res>  {
   factory $RunDraftCopyWith(RunDraft value, $Res Function(RunDraft) _then) = _$RunDraftCopyWithImpl;
 @useResult
 $Res call({
- String id, String runClubId, DateTime savedAt, String? distance, String? capacity, String? price, String? description, String? paceName, String? meetingPoint, String? locationDetails, double? startingPointLat, double? startingPointLng, int? selectedDateMillis, int? selectedStartHour, int? selectedStartMinute, int durationMinutes, String? minAge, String? maxAge, String? maxMen, String? maxWomen
+ String id, String runClubId, DateTime savedAt, String? distance, String? capacity, String? price, String? description, String? paceName, String? meetingPoint, String? locationDetails, double? startingPointLat, double? startingPointLng, int? selectedDateMillis, int? selectedStartHour, int? selectedStartMinute, int durationMinutes, String? minAge, String? maxAge, String? maxMen, String? maxWomen, String? admissionPreset, String? cancellationPolicy
 });
 
 
@@ -69,7 +69,7 @@ class _$RunDraftCopyWithImpl<$Res>
 
 /// Create a copy of RunDraft
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? runClubId = null,Object? savedAt = null,Object? distance = freezed,Object? capacity = freezed,Object? price = freezed,Object? description = freezed,Object? paceName = freezed,Object? meetingPoint = freezed,Object? locationDetails = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? selectedDateMillis = freezed,Object? selectedStartHour = freezed,Object? selectedStartMinute = freezed,Object? durationMinutes = null,Object? minAge = freezed,Object? maxAge = freezed,Object? maxMen = freezed,Object? maxWomen = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? runClubId = null,Object? savedAt = null,Object? distance = freezed,Object? capacity = freezed,Object? price = freezed,Object? description = freezed,Object? paceName = freezed,Object? meetingPoint = freezed,Object? locationDetails = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? selectedDateMillis = freezed,Object? selectedStartHour = freezed,Object? selectedStartMinute = freezed,Object? durationMinutes = null,Object? minAge = freezed,Object? maxAge = freezed,Object? maxMen = freezed,Object? maxWomen = freezed,Object? admissionPreset = freezed,Object? cancellationPolicy = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,runClubId: null == runClubId ? _self.runClubId : runClubId // ignore: cast_nullable_to_non_nullable
@@ -91,6 +91,8 @@ as int,minAge: freezed == minAge ? _self.minAge : minAge // ignore: cast_nullabl
 as String?,maxAge: freezed == maxAge ? _self.maxAge : maxAge // ignore: cast_nullable_to_non_nullable
 as String?,maxMen: freezed == maxMen ? _self.maxMen : maxMen // ignore: cast_nullable_to_non_nullable
 as String?,maxWomen: freezed == maxWomen ? _self.maxWomen : maxWomen // ignore: cast_nullable_to_non_nullable
+as String?,admissionPreset: freezed == admissionPreset ? _self.admissionPreset : admissionPreset // ignore: cast_nullable_to_non_nullable
+as String?,cancellationPolicy: freezed == cancellationPolicy ? _self.cancellationPolicy : cancellationPolicy // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -176,10 +178,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String runClubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String runClubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? cancellationPolicy)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RunDraft() when $default != null:
-return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen);case _:
+return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.cancellationPolicy);case _:
   return orElse();
 
 }
@@ -197,10 +199,10 @@ return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capa
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String runClubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String runClubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? cancellationPolicy)  $default,) {final _that = this;
 switch (_that) {
 case _RunDraft():
-return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen);case _:
+return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.cancellationPolicy);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -217,10 +219,10 @@ return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capa
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String runClubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String runClubId,  DateTime savedAt,  String? distance,  String? capacity,  String? price,  String? description,  String? paceName,  String? meetingPoint,  String? locationDetails,  double? startingPointLat,  double? startingPointLng,  int? selectedDateMillis,  int? selectedStartHour,  int? selectedStartMinute,  int durationMinutes,  String? minAge,  String? maxAge,  String? maxMen,  String? maxWomen,  String? admissionPreset,  String? cancellationPolicy)?  $default,) {final _that = this;
 switch (_that) {
 case _RunDraft() when $default != null:
-return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen);case _:
+return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capacity,_that.price,_that.description,_that.paceName,_that.meetingPoint,_that.locationDetails,_that.startingPointLat,_that.startingPointLng,_that.selectedDateMillis,_that.selectedStartHour,_that.selectedStartMinute,_that.durationMinutes,_that.minAge,_that.maxAge,_that.maxMen,_that.maxWomen,_that.admissionPreset,_that.cancellationPolicy);case _:
   return null;
 
 }
@@ -232,7 +234,7 @@ return $default(_that.id,_that.runClubId,_that.savedAt,_that.distance,_that.capa
 @JsonSerializable()
 
 class _RunDraft implements RunDraft {
-  const _RunDraft({required this.id, required this.runClubId, required this.savedAt, this.distance, this.capacity, this.price, this.description, this.paceName, this.meetingPoint, this.locationDetails, this.startingPointLat, this.startingPointLng, this.selectedDateMillis, this.selectedStartHour, this.selectedStartMinute, this.durationMinutes = CatchBusinessRules.runDefaultDurationMinutes, this.minAge, this.maxAge, this.maxMen, this.maxWomen});
+  const _RunDraft({required this.id, required this.runClubId, required this.savedAt, this.distance, this.capacity, this.price, this.description, this.paceName, this.meetingPoint, this.locationDetails, this.startingPointLat, this.startingPointLng, this.selectedDateMillis, this.selectedStartHour, this.selectedStartMinute, this.durationMinutes = CatchBusinessRules.runDefaultDurationMinutes, this.minAge, this.maxAge, this.maxMen, this.maxWomen, this.admissionPreset, this.cancellationPolicy});
   factory _RunDraft.fromJson(Map<String, dynamic> json) => _$RunDraftFromJson(json);
 
 @override final  String id;
@@ -259,6 +261,8 @@ class _RunDraft implements RunDraft {
 @override final  String? maxAge;
 @override final  String? maxMen;
 @override final  String? maxWomen;
+@override final  String? admissionPreset;
+@override final  String? cancellationPolicy;
 
 /// Create a copy of RunDraft
 /// with the given fields replaced by the non-null parameter values.
@@ -273,16 +277,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.capacity, capacity) || other.capacity == capacity)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.paceName, paceName) || other.paceName == paceName)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.selectedDateMillis, selectedDateMillis) || other.selectedDateMillis == selectedDateMillis)&&(identical(other.selectedStartHour, selectedStartHour) || other.selectedStartHour == selectedStartHour)&&(identical(other.selectedStartMinute, selectedStartMinute) || other.selectedStartMinute == selectedStartMinute)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RunDraft&&(identical(other.id, id) || other.id == id)&&(identical(other.runClubId, runClubId) || other.runClubId == runClubId)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.distance, distance) || other.distance == distance)&&(identical(other.capacity, capacity) || other.capacity == capacity)&&(identical(other.price, price) || other.price == price)&&(identical(other.description, description) || other.description == description)&&(identical(other.paceName, paceName) || other.paceName == paceName)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.selectedDateMillis, selectedDateMillis) || other.selectedDateMillis == selectedDateMillis)&&(identical(other.selectedStartHour, selectedStartHour) || other.selectedStartHour == selectedStartHour)&&(identical(other.selectedStartMinute, selectedStartMinute) || other.selectedStartMinute == selectedStartMinute)&&(identical(other.durationMinutes, durationMinutes) || other.durationMinutes == durationMinutes)&&(identical(other.minAge, minAge) || other.minAge == minAge)&&(identical(other.maxAge, maxAge) || other.maxAge == maxAge)&&(identical(other.maxMen, maxMen) || other.maxMen == maxMen)&&(identical(other.maxWomen, maxWomen) || other.maxWomen == maxWomen)&&(identical(other.admissionPreset, admissionPreset) || other.admissionPreset == admissionPreset)&&(identical(other.cancellationPolicy, cancellationPolicy) || other.cancellationPolicy == cancellationPolicy));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,runClubId,savedAt,distance,capacity,price,description,paceName,meetingPoint,locationDetails,startingPointLat,startingPointLng,selectedDateMillis,selectedStartHour,selectedStartMinute,durationMinutes,minAge,maxAge,maxMen,maxWomen]);
+int get hashCode => Object.hashAll([runtimeType,id,runClubId,savedAt,distance,capacity,price,description,paceName,meetingPoint,locationDetails,startingPointLat,startingPointLng,selectedDateMillis,selectedStartHour,selectedStartMinute,durationMinutes,minAge,maxAge,maxMen,maxWomen,admissionPreset,cancellationPolicy]);
 
 @override
 String toString() {
-  return 'RunDraft(id: $id, runClubId: $runClubId, savedAt: $savedAt, distance: $distance, capacity: $capacity, price: $price, description: $description, paceName: $paceName, meetingPoint: $meetingPoint, locationDetails: $locationDetails, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, selectedDateMillis: $selectedDateMillis, selectedStartHour: $selectedStartHour, selectedStartMinute: $selectedStartMinute, durationMinutes: $durationMinutes, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen)';
+  return 'RunDraft(id: $id, runClubId: $runClubId, savedAt: $savedAt, distance: $distance, capacity: $capacity, price: $price, description: $description, paceName: $paceName, meetingPoint: $meetingPoint, locationDetails: $locationDetails, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, selectedDateMillis: $selectedDateMillis, selectedStartHour: $selectedStartHour, selectedStartMinute: $selectedStartMinute, durationMinutes: $durationMinutes, minAge: $minAge, maxAge: $maxAge, maxMen: $maxMen, maxWomen: $maxWomen, admissionPreset: $admissionPreset, cancellationPolicy: $cancellationPolicy)';
 }
 
 
@@ -293,7 +297,7 @@ abstract mixin class _$RunDraftCopyWith<$Res> implements $RunDraftCopyWith<$Res>
   factory _$RunDraftCopyWith(_RunDraft value, $Res Function(_RunDraft) _then) = __$RunDraftCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String runClubId, DateTime savedAt, String? distance, String? capacity, String? price, String? description, String? paceName, String? meetingPoint, String? locationDetails, double? startingPointLat, double? startingPointLng, int? selectedDateMillis, int? selectedStartHour, int? selectedStartMinute, int durationMinutes, String? minAge, String? maxAge, String? maxMen, String? maxWomen
+ String id, String runClubId, DateTime savedAt, String? distance, String? capacity, String? price, String? description, String? paceName, String? meetingPoint, String? locationDetails, double? startingPointLat, double? startingPointLng, int? selectedDateMillis, int? selectedStartHour, int? selectedStartMinute, int durationMinutes, String? minAge, String? maxAge, String? maxMen, String? maxWomen, String? admissionPreset, String? cancellationPolicy
 });
 
 
@@ -310,7 +314,7 @@ class __$RunDraftCopyWithImpl<$Res>
 
 /// Create a copy of RunDraft
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? runClubId = null,Object? savedAt = null,Object? distance = freezed,Object? capacity = freezed,Object? price = freezed,Object? description = freezed,Object? paceName = freezed,Object? meetingPoint = freezed,Object? locationDetails = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? selectedDateMillis = freezed,Object? selectedStartHour = freezed,Object? selectedStartMinute = freezed,Object? durationMinutes = null,Object? minAge = freezed,Object? maxAge = freezed,Object? maxMen = freezed,Object? maxWomen = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? runClubId = null,Object? savedAt = null,Object? distance = freezed,Object? capacity = freezed,Object? price = freezed,Object? description = freezed,Object? paceName = freezed,Object? meetingPoint = freezed,Object? locationDetails = freezed,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? selectedDateMillis = freezed,Object? selectedStartHour = freezed,Object? selectedStartMinute = freezed,Object? durationMinutes = null,Object? minAge = freezed,Object? maxAge = freezed,Object? maxMen = freezed,Object? maxWomen = freezed,Object? admissionPreset = freezed,Object? cancellationPolicy = freezed,}) {
   return _then(_RunDraft(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,runClubId: null == runClubId ? _self.runClubId : runClubId // ignore: cast_nullable_to_non_nullable
@@ -332,6 +336,8 @@ as int,minAge: freezed == minAge ? _self.minAge : minAge // ignore: cast_nullabl
 as String?,maxAge: freezed == maxAge ? _self.maxAge : maxAge // ignore: cast_nullable_to_non_nullable
 as String?,maxMen: freezed == maxMen ? _self.maxMen : maxMen // ignore: cast_nullable_to_non_nullable
 as String?,maxWomen: freezed == maxWomen ? _self.maxWomen : maxWomen // ignore: cast_nullable_to_non_nullable
+as String?,admissionPreset: freezed == admissionPreset ? _self.admissionPreset : admissionPreset // ignore: cast_nullable_to_non_nullable
+as String?,cancellationPolicy: freezed == cancellationPolicy ? _self.cancellationPolicy : cancellationPolicy // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

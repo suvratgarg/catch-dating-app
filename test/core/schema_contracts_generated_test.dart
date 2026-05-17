@@ -12,6 +12,12 @@ void main() {
     expect(schemaProfilePromptPerfectRunId, 'perfectRun');
     expect(schemaMaxProfilePromptAnswers, 3);
     expect(schemaMaxPhotoPromptCaptions, 6);
+    expect(schemaMinimumProfilePhotos, 2);
+    expect(schemaMaximumProfilePhotos, 6);
+    expect(schemaProfilePhotoAspectRatioWidth, 3);
+    expect(schemaProfilePhotoAspectRatioHeight, 4);
+    expect(schemaProfilePhotoThumbnailSize, 160);
+    expect(schemaProfilePhotoMaxUploadBytes, 8388608);
     expect(schemaMaximumProfilePromptAnswerLength, 300);
     expect(schemaMaximumPhotoPromptCaptionLength, 140);
     expect(schemaMinimumHeightCm, 120);

@@ -69,6 +69,11 @@
     "genderAtSignup": {
       "$ref": "../shared/run_common.schema.json#/definitions/genderAtSignup"
     },
+    "cohortAtSignup": {
+      "type": ["string", "null"],
+      "minLength": 1,
+      "maxLength": 120
+    },
     "paymentId": {
       "type": ["string", "null"],
       "minLength": 1,

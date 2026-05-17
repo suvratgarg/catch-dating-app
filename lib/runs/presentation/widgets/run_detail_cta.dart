@@ -73,6 +73,8 @@ class RunDetailCta extends ConsumerWidget {
     final supportsPaid = ref
         .watch(paymentRepositoryProvider)
         .supportsPaidBookings;
+    final quotedPriceInPaise = run.priceInPaiseFor(userProfile);
+    final isFreeForViewer = quotedPriceInPaise == 0;
 
     final bookMutation = ref.watch(RunBookingController.bookMutation);
     final cancelMutation = ref.watch(RunBookingController.cancelMutation);
@@ -100,12 +102,13 @@ class RunDetailCta extends ConsumerWidget {
           ),
         switch (status) {
           RunSignUpStatus.eligible => BottomCTA(
-            label: run.isFree
+            label: isFreeForViewer
                 ? 'Join run — ${run.spotsRemaining} spots left'
                 : supportsPaid
                 ? 'Book run'
                 : 'Unavailable on this platform',
-            onPressed: bookMutation.isPending || (!run.isFree && !supportsPaid)
+            onPressed:
+                bookMutation.isPending || (!isFreeForViewer && !supportsPaid)
                 ? null
                 : () {
                     final router = GoRouter.maybeOf(context);
@@ -149,10 +152,10 @@ class RunDetailCta extends ConsumerWidget {
                     });
                   },
             isLoading: bookMutation.isPending,
-            leadingContent: run.isFree
+            leadingContent: isFreeForViewer
                 ? null
                 : PriceLeading(
-                    price: RunFormatters.priceInPaise(run.priceInPaise),
+                    price: RunFormatters.priceInPaise(quotedPriceInPaise),
                   ),
           ),
           RunSignUpStatus.signedUp => (() {

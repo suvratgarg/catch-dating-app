@@ -1,6 +1,6 @@
 import {onCall, HttpsError} from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
-import {RunDoc} from "../shared/firestore";
+import {RunDoc, UserProfileDoc} from "../shared/firestore";
 import {requireAuth} from "../shared/auth";
 import {assertNoBlockingRelationshipInTransaction} from "../safety/blocking";
 import {appCheckCallableOptions} from "../shared/callableOptions";
@@ -20,6 +20,7 @@ import {
   releaseUserRunScheduleInTransaction,
 } from "./scheduleConflicts";
 import {normalizeRunIdPayload} from "./runPayloadNormalization";
+import {cohortIdForUser} from "./eventPolicy";
 
 /**
  * Adds a user to a run waitlist after applying the same block boundary as
@@ -44,9 +45,10 @@ export const joinRunWaitlist = onCall(appCheckCallableOptions, async (
     .doc(runParticipationId(runId, userId));
 
   await db.runTransaction(async (tx) => {
-    const [runSnap, participationSnap, activeParticipations] =
+    const [runSnap, userSnap, participationSnap, activeParticipations] =
       await Promise.all([
         tx.get(runRef),
+        tx.get(db.collection("users").doc(userId)),
         tx.get(participationRef),
         runParticipationsByStatusInTransaction(tx, db, runId, [
           "signedUp",
@@ -56,8 +58,12 @@ export const joinRunWaitlist = onCall(appCheckCallableOptions, async (
     if (!runSnap.exists) {
       throw new HttpsError("not-found", "Run not found.");
     }
+    if (!userSnap.exists) {
+      throw new HttpsError("not-found", "User profile not found.");
+    }
 
     const run = runSnap.data() as RunDoc;
+    const user = userSnap.data() as UserProfileDoc;
     if (run.status === "cancelled") {
       throw new HttpsError(
         "failed-precondition",
@@ -105,6 +111,8 @@ export const joinRunWaitlist = onCall(appCheckCallableOptions, async (
       runClubId: run.runClubId,
       uid: userId,
       status: "waitlisted",
+      genderAtSignup: user.gender,
+      cohortAtSignup: cohortIdForUser(user),
     }), {merge: true});
   });
 

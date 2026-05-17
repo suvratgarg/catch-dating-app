@@ -351,6 +351,12 @@ export interface RunDoc {
    * Denormalized counts maintained atomically by Cloud Functions.
    */
   genderCounts: Record<string, number>;
+  cohortCounts: Record<string, number>;
+  /**
+   * Production event-policy snapshot; legacy runs may fall back to
+   * capacityLimit, priceInPaise, and constraints
+   */
+  eventPolicy?: EventPolicyBundleDoc | null;
 }
 
 /**
@@ -371,6 +377,7 @@ export interface RunParticipationDoc {
   cancelledAt?: FirebaseFirestore.Timestamp | null;
   deletedAt?: FirebaseFirestore.Timestamp | null;
   genderAtSignup?: Gender | null;
+  cohortAtSignup?: string | null;
   paymentId?: string | null;
 }
 
@@ -547,6 +554,92 @@ export interface ProfilePhoto {
   position: number;
   createdAt: FirebaseFirestore.Timestamp;
   updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * embedded event policy snapshot
+ * Stored inside runs/{runId}.eventPolicy for production booking, pricing,
+ * cancellation, and settlement behavior.
+ */
+export interface EventPolicyBundleDoc {
+  version: number;
+  admission: EventPolicyAdmissionDoc;
+  pricing: EventPolicyPricingDoc;
+  cancellation: { policyId: "flexible" | "standard" | "strict" };
+  settlement: { hostPayoutTiming: "afterEventCompletion" };
+}
+
+/**
+ * embedded event policy admission
+ * Nested inside runs/{runId}.eventPolicy.admission.
+ */
+export interface EventPolicyAdmissionDoc {
+  format:
+    | "open"
+    | "inviteOnly"
+    | "manualApproval"
+    | "fixedCohortCaps"
+    | "balancedRatio"
+    | "membersOnly";
+  capacityLimit: number;
+  waitlistPolicy?: EventPolicyWaitlistDoc;
+  inviteRequired?: boolean;
+  membershipRequired?: boolean;
+  manualApprovalRequired?: boolean;
+  cohortCapacityLimits?: Record<string, number>;
+  balancedRatioPolicy?: EventPolicyBalancedRatioDoc | null;
+}
+
+/**
+ * embedded event policy waitlist
+ * Nested inside runs/{runId}.eventPolicy.admission.waitlistPolicy.
+ */
+export interface EventPolicyWaitlistDoc {
+  mode:
+    | "disabled"
+    | "rankedOffer"
+    | "broadcastFirstComeFirstServed"
+    | "manualReview";
+  offerWindowMinutes: number;
+}
+
+/**
+ * embedded event policy balanced ratio
+ * Nested inside runs/{runId}.eventPolicy.admission.balancedRatioPolicy.
+ */
+export interface EventPolicyBalancedRatioDoc {
+  leftCohortId: string;
+  rightCohortId: string;
+  maxSkew: number;
+  openingBufferPerCohort: number;
+  outOfRatioCohortPolicy:
+    | "admitWithinGeneralCapacity"
+    | "waitlist"
+    | "manualReview"
+    | "reject";
+}
+
+/**
+ * embedded event policy pricing
+ * Nested inside runs/{runId}.eventPolicy.pricing.
+ */
+export interface EventPolicyPricingDoc {
+  basePriceInPaise: number;
+  cohortAdjustmentsInPaise?: Record<string, number>;
+  demandPricingRules?: EventPolicyDemandPricingRuleDoc[];
+}
+
+/**
+ * embedded event policy demand pricing rule
+ * Nested inside runs/{runId}.eventPolicy.pricing.demandPricingRules.
+ */
+export interface EventPolicyDemandPricingRuleDoc {
+  pricedCohortId: string;
+  balancingCohortId: string;
+  stepAdjustmentInPaise: number;
+  maxAdjustmentInPaise: number;
+  freeSkew: number;
+  demandStep: number;
 }
 
 /**

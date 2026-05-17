@@ -9,6 +9,7 @@ final class CreateRunCallableRequest {
     required this.capacityLimit,
     required this.priceInPaise,
     required this.constraints,
+    required this.eventPolicy,
   });
 
   factory CreateRunCallableRequest.fromRun(Run run) => CreateRunCallableRequest(
@@ -18,6 +19,7 @@ final class CreateRunCallableRequest {
     capacityLimit: run.capacityLimit,
     priceInPaise: run.priceInPaise,
     constraints: RunConstraintsCallableDto.fromDomain(run.constraints),
+    eventPolicy: run.eventPolicy?.toJson(),
   );
 
   final String runId;
@@ -26,6 +28,7 @@ final class CreateRunCallableRequest {
   final int capacityLimit;
   final int priceInPaise;
   final RunConstraintsCallableDto constraints;
+  final Map<String, Object?>? eventPolicy;
 
   Map<String, Object?> toJson() => {
     'runId': runId,
@@ -34,6 +37,7 @@ final class CreateRunCallableRequest {
     'capacityLimit': capacityLimit,
     'priceInPaise': priceInPaise,
     'constraints': constraints.toJson(),
+    'eventPolicy': ?eventPolicy,
   };
 }
 

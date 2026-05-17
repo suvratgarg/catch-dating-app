@@ -25,6 +25,7 @@ function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
       maxAge: 99,
     },
     genderCounts: {},
+    cohortCounts: {},
     ...overrides,
   };
 }
@@ -61,6 +62,7 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
     notes: {
       runId: "run-1",
       userId: "runner-1",
+      quotedAmountInPaise: 25000,
     },
   });
   assert.deepEqual(order, {
@@ -146,6 +148,19 @@ function createRunFirestore(
             get: async () => ({
               exists: run !== null,
               data: () => run,
+            }),
+          }),
+        };
+      }
+      if (collectionName === "users") {
+        return {
+          doc: () => ({
+            get: async () => ({
+              exists: true,
+              data: () => ({
+                gender: "man",
+                interestedInGenders: ["woman"],
+              }),
             }),
           }),
         };

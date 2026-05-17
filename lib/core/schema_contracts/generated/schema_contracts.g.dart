@@ -687,7 +687,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
     },
     'photoUrls': <String, Object?>{
       'type': 'array',
-      'maxItems': 12,
+      'maxItems': 6,
       'items': <String, Object?>{
         'type': 'string',
         'format': 'uri',
@@ -696,7 +696,7 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
     },
     'photoThumbnailUrls': <String, Object?>{
       'type': 'array',
-      'maxItems': 12,
+      'maxItems': 6,
       'items': <String, Object?>{
         'type': 'string',
         'format': 'uri',
@@ -1383,7 +1383,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
     },
     'photoUrls': <String, Object?>{
       'type': 'array',
-      'maxItems': 12,
+      'maxItems': 6,
       'items': <String, Object?>{
         'type': 'string',
         'format': 'uri',
@@ -1392,7 +1392,7 @@ const schemaPublicProfileDocumentSchema = <String, Object?>{
     },
     'photoThumbnailUrls': <String, Object?>{
       'type': 'array',
-      'maxItems': 12,
+      'maxItems': 6,
       'items': <String, Object?>{
         'type': 'string',
         'format': 'uri',
@@ -2618,7 +2618,252 @@ const schemaRunDocumentSchema = <String, Object?>{
         },
       },
     },
+    'eventPolicy': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'version',
+        'admission',
+        'pricing',
+        'cancellation',
+        'settlement',
+      ],
+      'properties': <String, Object?>{
+        'version': <String, Object?>{
+          'type': 'integer',
+          'const': 1,
+        },
+        'admission': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'format',
+            'capacityLimit',
+            'waitlistPolicy',
+            'inviteRequired',
+            'membershipRequired',
+            'manualApprovalRequired',
+            'cohortCapacityLimits',
+            'balancedRatioPolicy',
+          ],
+          'properties': <String, Object?>{
+            'format': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'open',
+                'inviteOnly',
+                'manualApproval',
+                'fixedCohortCaps',
+                'balancedRatio',
+                'membersOnly',
+              ],
+            },
+            'capacityLimit': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 1000,
+            },
+            'waitlistPolicy': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'mode',
+                'offerWindowMinutes',
+              ],
+              'properties': <String, Object?>{
+                'mode': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'disabled',
+                    'rankedOffer',
+                    'broadcastFirstComeFirstServed',
+                    'manualReview',
+                  ],
+                },
+                'offerWindowMinutes': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 10080,
+                },
+              },
+            },
+            'inviteRequired': <String, Object?>{
+              'type': 'boolean',
+            },
+            'membershipRequired': <String, Object?>{
+              'type': 'boolean',
+            },
+            'manualApprovalRequired': <String, Object?>{
+              'type': 'boolean',
+            },
+            'cohortCapacityLimits': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+            'balancedRatioPolicy': <String, Object?>{
+              'type': <Object?>[
+                'object',
+                'null',
+              ],
+              'additionalProperties': false,
+              'required': <Object?>[
+                'leftCohortId',
+                'rightCohortId',
+                'maxSkew',
+                'openingBufferPerCohort',
+                'outOfRatioCohortPolicy',
+              ],
+              'properties': <String, Object?>{
+                'leftCohortId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'rightCohortId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'maxSkew': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 1000,
+                },
+                'openingBufferPerCohort': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 1000,
+                },
+                'outOfRatioCohortPolicy': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'admitWithinGeneralCapacity',
+                    'waitlist',
+                    'manualReview',
+                    'reject',
+                  ],
+                },
+              },
+            },
+          },
+        },
+        'pricing': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'basePriceInPaise',
+            'cohortAdjustmentsInPaise',
+            'demandPricingRules',
+          ],
+          'properties': <String, Object?>{
+            'basePriceInPaise': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 100000000,
+            },
+            'cohortAdjustmentsInPaise': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': <String, Object?>{
+                'type': 'integer',
+                'minimum': -100000000,
+                'maximum': 100000000,
+              },
+            },
+            'demandPricingRules': <String, Object?>{
+              'type': 'array',
+              'maxItems': 20,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'pricedCohortId',
+                  'balancingCohortId',
+                  'stepAdjustmentInPaise',
+                  'maxAdjustmentInPaise',
+                  'freeSkew',
+                  'demandStep',
+                ],
+                'properties': <String, Object?>{
+                  'pricedCohortId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'balancingCohortId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'stepAdjustmentInPaise': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 100000000,
+                  },
+                  'maxAdjustmentInPaise': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 100000000,
+                  },
+                  'freeSkew': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 1000,
+                  },
+                  'demandStep': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 1000,
+                  },
+                },
+              },
+            },
+          },
+        },
+        'cancellation': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'policyId',
+          ],
+          'properties': <String, Object?>{
+            'policyId': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'flexible',
+                'standard',
+                'strict',
+              ],
+            },
+          },
+        },
+        'settlement': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'hostPayoutTiming',
+          ],
+          'properties': <String, Object?>{
+            'hostPayoutTiming': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'afterEventCompletion',
+              ],
+            },
+          },
+        },
+      },
+    },
     'genderCounts': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': <String, Object?>{
+        'type': 'integer',
+        'minimum': 0,
+      },
+    },
+    'cohortCounts': <String, Object?>{
       'type': 'object',
       'additionalProperties': <String, Object?>{
         'type': 'integer',
@@ -2910,6 +3155,14 @@ const schemaRunParticipationDocumentSchema = <String, Object?>{
           'type': 'null',
         },
       ],
+    },
+    'cohortAtSignup': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 1,
+      'maxLength': 120,
     },
     'paymentId': <String, Object?>{
       'type': <Object?>[
@@ -4849,7 +5102,7 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
         },
         'photoUrls': <String, Object?>{
           'type': 'array',
-          'maxItems': 12,
+          'maxItems': 6,
           'items': <String, Object?>{
             'type': 'string',
             'format': 'uri',
@@ -4858,7 +5111,7 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
         },
         'photoThumbnailUrls': <String, Object?>{
           'type': 'array',
-          'maxItems': 12,
+          'maxItems': 6,
           'items': <String, Object?>{
             'type': 'string',
             'format': 'uri',
@@ -4951,6 +5204,8 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
               'prompt': <String, Object?>{
                 'anyOf': <Object?>[
                   <String, Object?>{
+                    'title': 'PhotoPromptAnswer',
+                    'description': 'One optional caption prompt for a profile photo slot.',
                     'type': 'object',
                     'additionalProperties': false,
                     'required': <Object?>[
@@ -4967,24 +5222,20 @@ const schemaUpdateUserProfileCallablePayloadSchema = <String, Object?>{
                       },
                       'promptId': <String, Object?>{
                         'type': 'string',
-                        'enum': <Object?>[
-                          'proofIRun',
-                          'postRunRitual',
-                          'favoriteRoute',
-                          'raceDayEnergy',
-                          'runningBuddy',
-                        ],
+                        'minLength': 1,
+                        'maxLength': 80,
                       },
                       'prompt': <String, Object?>{
                         'type': 'string',
                         'minLength': 1,
-                        'maxLength': 120,
+                        'maxLength': 140,
                       },
                       'caption': <String, Object?>{
                         'type': 'string',
-                        'maxLength': 160,
+                        'maxLength': 140,
                       },
                     },
+                    'x-catch-catalog': '../catalogs/photo_prompts.json',
                   },
                   <String, Object?>{
                     'type': 'null',
@@ -5700,6 +5951,244 @@ const schemaCreateRunCallablePayloadSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100000000,
+    },
+    'eventPolicy': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'version',
+        'admission',
+        'pricing',
+        'cancellation',
+        'settlement',
+      ],
+      'properties': <String, Object?>{
+        'version': <String, Object?>{
+          'type': 'integer',
+          'const': 1,
+        },
+        'admission': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'format',
+            'capacityLimit',
+            'waitlistPolicy',
+            'inviteRequired',
+            'membershipRequired',
+            'manualApprovalRequired',
+            'cohortCapacityLimits',
+            'balancedRatioPolicy',
+          ],
+          'properties': <String, Object?>{
+            'format': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'open',
+                'inviteOnly',
+                'manualApproval',
+                'fixedCohortCaps',
+                'balancedRatio',
+                'membersOnly',
+              ],
+            },
+            'capacityLimit': <String, Object?>{
+              'type': 'integer',
+              'minimum': 1,
+              'maximum': 1000,
+            },
+            'waitlistPolicy': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'mode',
+                'offerWindowMinutes',
+              ],
+              'properties': <String, Object?>{
+                'mode': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'disabled',
+                    'rankedOffer',
+                    'broadcastFirstComeFirstServed',
+                    'manualReview',
+                  ],
+                },
+                'offerWindowMinutes': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 10080,
+                },
+              },
+            },
+            'inviteRequired': <String, Object?>{
+              'type': 'boolean',
+            },
+            'membershipRequired': <String, Object?>{
+              'type': 'boolean',
+            },
+            'manualApprovalRequired': <String, Object?>{
+              'type': 'boolean',
+            },
+            'cohortCapacityLimits': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
+            'balancedRatioPolicy': <String, Object?>{
+              'type': <Object?>[
+                'object',
+                'null',
+              ],
+              'additionalProperties': false,
+              'required': <Object?>[
+                'leftCohortId',
+                'rightCohortId',
+                'maxSkew',
+                'openingBufferPerCohort',
+                'outOfRatioCohortPolicy',
+              ],
+              'properties': <String, Object?>{
+                'leftCohortId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'rightCohortId': <String, Object?>{
+                  'type': 'string',
+                  'minLength': 1,
+                  'maxLength': 120,
+                },
+                'maxSkew': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 1000,
+                },
+                'openingBufferPerCohort': <String, Object?>{
+                  'type': 'integer',
+                  'minimum': 0,
+                  'maximum': 1000,
+                },
+                'outOfRatioCohortPolicy': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'admitWithinGeneralCapacity',
+                    'waitlist',
+                    'manualReview',
+                    'reject',
+                  ],
+                },
+              },
+            },
+          },
+        },
+        'pricing': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'basePriceInPaise',
+            'cohortAdjustmentsInPaise',
+            'demandPricingRules',
+          ],
+          'properties': <String, Object?>{
+            'basePriceInPaise': <String, Object?>{
+              'type': 'integer',
+              'minimum': 0,
+              'maximum': 100000000,
+            },
+            'cohortAdjustmentsInPaise': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': <String, Object?>{
+                'type': 'integer',
+                'minimum': -100000000,
+                'maximum': 100000000,
+              },
+            },
+            'demandPricingRules': <String, Object?>{
+              'type': 'array',
+              'maxItems': 20,
+              'items': <String, Object?>{
+                'type': 'object',
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'pricedCohortId',
+                  'balancingCohortId',
+                  'stepAdjustmentInPaise',
+                  'maxAdjustmentInPaise',
+                  'freeSkew',
+                  'demandStep',
+                ],
+                'properties': <String, Object?>{
+                  'pricedCohortId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'balancingCohortId': <String, Object?>{
+                    'type': 'string',
+                    'minLength': 1,
+                    'maxLength': 120,
+                  },
+                  'stepAdjustmentInPaise': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 100000000,
+                  },
+                  'maxAdjustmentInPaise': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 100000000,
+                  },
+                  'freeSkew': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 0,
+                    'maximum': 1000,
+                  },
+                  'demandStep': <String, Object?>{
+                    'type': 'integer',
+                    'minimum': 1,
+                    'maximum': 1000,
+                  },
+                },
+              },
+            },
+          },
+        },
+        'cancellation': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'policyId',
+          ],
+          'properties': <String, Object?>{
+            'policyId': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'flexible',
+                'standard',
+                'strict',
+              ],
+            },
+          },
+        },
+        'settlement': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': false,
+          'required': <Object?>[
+            'hostPayoutTiming',
+          ],
+          'properties': <String, Object?>{
+            'hostPayoutTiming': <String, Object?>{
+              'type': 'string',
+              'enum': <Object?>[
+                'afterEventCompletion',
+              ],
+            },
+          },
+        },
+      },
     },
     'constraints': <String, Object?>{
       'type': 'object',

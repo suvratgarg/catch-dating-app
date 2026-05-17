@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -58,14 +59,18 @@ void main() {
             locationDetails: '   ',
             distanceKm: 7.5,
             pace: PaceLevel.moderate,
-            capacityLimit: 18,
             description: '  Steady social run  ',
-            priceInPaise: 25000,
             constraints: const RunConstraints(
               minAge: 21,
               maxAge: 35,
               maxMen: 9,
               maxWomen: 9,
+            ),
+            eventPolicy: EventPolicyBundle.fixedCohortCapsRun(
+              capacityLimit: 18,
+              basePriceInPaise: 25000,
+              maxMenInterestedInWomen: 9,
+              maxWomenInterestedInMen: 9,
             ),
             photoImage: photo,
           );
@@ -89,6 +94,7 @@ void main() {
       expect(createdRun.capacityLimit, 18);
       expect(createdRun.description, 'Steady social run');
       expect(createdRun.priceInPaise, 25000);
+      expect(createdRun.eventPolicy, isNotNull);
       expect(
         createdRun.constraints,
         const RunConstraints(minAge: 21, maxAge: 35, maxMen: 9, maxWomen: 9),
@@ -116,10 +122,9 @@ void main() {
             meetingPoint: 'Marine Drive',
             distanceKm: 5,
             pace: PaceLevel.easy,
-            capacityLimit: 10,
             description: 'Run',
-            priceInPaise: 0,
             constraints: const RunConstraints(),
+            eventPolicy: _eventPolicy(),
           ),
           throwsArgumentError,
         );
@@ -132,10 +137,9 @@ void main() {
             meetingPoint: 'Marine Drive',
             distanceKm: 5,
             pace: PaceLevel.easy,
-            capacityLimit: 10,
             description: 'Run',
-            priceInPaise: 0,
             constraints: const RunConstraints(),
+            eventPolicy: _eventPolicy(),
           ),
           throwsArgumentError,
         );
@@ -148,10 +152,9 @@ void main() {
             meetingPoint: 'Marine Drive',
             distanceKm: 5,
             pace: PaceLevel.easy,
-            capacityLimit: 10,
             description: 'Run',
-            priceInPaise: 0,
             constraints: const RunConstraints(),
+            eventPolicy: _eventPolicy(),
           ),
           throwsArgumentError,
         );
@@ -164,10 +167,9 @@ void main() {
             meetingPoint: '   ',
             distanceKm: 5,
             pace: PaceLevel.easy,
-            capacityLimit: 10,
             description: 'Run',
-            priceInPaise: 0,
             constraints: const RunConstraints(),
+            eventPolicy: _eventPolicy(),
           ),
           throwsArgumentError,
         );
@@ -180,10 +182,9 @@ void main() {
             meetingPoint: 'Marine Drive',
             distanceKm: 0,
             pace: PaceLevel.easy,
-            capacityLimit: 10,
             description: 'Run',
-            priceInPaise: 0,
             constraints: const RunConstraints(),
+            eventPolicy: _eventPolicy(),
           ),
           throwsArgumentError,
         );
@@ -196,10 +197,9 @@ void main() {
             meetingPoint: 'Marine Drive',
             distanceKm: 5,
             pace: PaceLevel.easy,
-            capacityLimit: 0,
             description: 'Run',
-            priceInPaise: 0,
             constraints: const RunConstraints(),
+            eventPolicy: _eventPolicy(capacityLimit: 0),
           ),
           throwsArgumentError,
         );
@@ -212,10 +212,9 @@ void main() {
             meetingPoint: 'Marine Drive',
             distanceKm: 5,
             pace: PaceLevel.easy,
-            capacityLimit: 10,
             description: 'Run',
-            priceInPaise: -1,
             constraints: const RunConstraints(),
+            eventPolicy: _eventPolicy(basePriceInPaise: -1),
           ),
           throwsArgumentError,
         );
@@ -230,10 +229,9 @@ void main() {
             startingPointLng: 181,
             distanceKm: 5,
             pace: PaceLevel.easy,
-            capacityLimit: 10,
             description: 'Run',
-            priceInPaise: 0,
             constraints: const RunConstraints(),
+            eventPolicy: _eventPolicy(),
           ),
           throwsArgumentError,
         );
@@ -242,4 +240,14 @@ void main() {
       },
     );
   });
+}
+
+EventPolicyBundle _eventPolicy({
+  int capacityLimit = 10,
+  int basePriceInPaise = 0,
+}) {
+  return EventPolicyBundle.openRun(
+    capacityLimit: capacityLimit,
+    basePriceInPaise: basePriceInPaise,
+  );
 }

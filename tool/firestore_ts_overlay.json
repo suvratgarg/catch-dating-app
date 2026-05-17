@@ -6,6 +6,8 @@
     "fieldOverrides.UserProfileDoc.profilePhotos": "Override the Dart-derived nullable type so Functions use the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
     "fieldOverrides.PublicProfileDoc.languages": "Overlay the public-profile language field while the transitional facade is still Dart-derived.",
     "fieldOverrides.PublicProfileDoc.profilePhotos": "Override the Dart-derived nullable type so Functions use the non-null profilePhotos array shape owned by JSON Schema when the field exists.",
+    "extraFields.RunDoc.eventPolicy": "Transitional Admin SDK facade field. JSON Schema owns runs.eventPolicy, while Functions need the hand-written EventPolicyBundleDoc shape until nested schema-derived TypeScript types are generated.",
+    "fieldOverrides.RunDoc.eventPolicy": "Override the Dart-derived loose map type so Functions use the explicit EventPolicyBundleDoc snapshot owned by the runs JSON Schema.",
     "extraInterfaces.ProfilePromptAnswer": "Duplicated only for the transitional Admin SDK facade; the canonical embedded schema remains contracts/embedded/profile_prompt_answer.schema.json.",
     "extraInterfaces.PhotoPromptAnswer": "Duplicated only for the transitional Admin SDK facade; the canonical embedded schema remains contracts/embedded/photo_prompt_answer.schema.json.",
     "extraInterfaces.ProfilePhoto": "Duplicated only for the transitional Admin SDK facade because generated schema types model serialized fixture timestamps, while Functions need FirebaseFirestore.Timestamp."
@@ -24,12 +26,16 @@
     "PublicProfileDoc": [
       { "name": "languages", "tsType": "Language[]", "optional": true },
       { "name": "profilePhotos", "tsType": "ProfilePhoto[]", "optional": true, "comment": "Migration field; legacy projections may still only have parallel photo arrays" }
+    ],
+    "RunDoc": [
+      { "name": "eventPolicy", "tsType": "EventPolicyBundleDoc | null", "optional": true, "comment": "Production event-policy snapshot; legacy runs may fall back to capacityLimit, priceInPaise, and constraints" }
     ]
   },
 
   "fieldOverrides": {
     "UserProfileDoc": ["profilePhotos"],
-    "PublicProfileDoc": ["languages", "profilePhotos"]
+    "PublicProfileDoc": ["languages", "profilePhotos"],
+    "RunDoc": ["eventPolicy"]
   },
 
   "extraInterfaces": [
@@ -79,6 +85,77 @@
         { "name": "position", "tsType": "number" },
         { "name": "createdAt", "tsType": "FirebaseFirestore.Timestamp" },
         { "name": "updatedAt", "tsType": "FirebaseFirestore.Timestamp" }
+      ]
+    },
+    {
+      "name": "EventPolicyBundleDoc",
+      "collectionPath": "embedded event policy snapshot",
+      "comment": "Stored inside runs/{runId}.eventPolicy for production booking, pricing, cancellation, and settlement behavior.",
+      "fields": [
+        { "name": "version", "tsType": "number" },
+        { "name": "admission", "tsType": "EventPolicyAdmissionDoc" },
+        { "name": "pricing", "tsType": "EventPolicyPricingDoc" },
+        { "name": "cancellation", "tsType": "{ policyId: \"flexible\" | \"standard\" | \"strict\" }" },
+        { "name": "settlement", "tsType": "{ hostPayoutTiming: \"afterEventCompletion\" }" }
+      ]
+    },
+    {
+      "name": "EventPolicyAdmissionDoc",
+      "collectionPath": "embedded event policy admission",
+      "comment": "Nested inside runs/{runId}.eventPolicy.admission.",
+      "fields": [
+        { "name": "format", "tsType": "\"open\" | \"inviteOnly\" | \"manualApproval\" | \"fixedCohortCaps\" | \"balancedRatio\" | \"membersOnly\"" },
+        { "name": "capacityLimit", "tsType": "number" },
+        { "name": "waitlistPolicy", "tsType": "EventPolicyWaitlistDoc", "optional": true },
+        { "name": "inviteRequired", "tsType": "boolean", "optional": true },
+        { "name": "membershipRequired", "tsType": "boolean", "optional": true },
+        { "name": "manualApprovalRequired", "tsType": "boolean", "optional": true },
+        { "name": "cohortCapacityLimits", "tsType": "Record<string, number>", "optional": true },
+        { "name": "balancedRatioPolicy", "tsType": "EventPolicyBalancedRatioDoc | null", "optional": true }
+      ]
+    },
+    {
+      "name": "EventPolicyWaitlistDoc",
+      "collectionPath": "embedded event policy waitlist",
+      "comment": "Nested inside runs/{runId}.eventPolicy.admission.waitlistPolicy.",
+      "fields": [
+        { "name": "mode", "tsType": "\"disabled\" | \"rankedOffer\" | \"broadcastFirstComeFirstServed\" | \"manualReview\"" },
+        { "name": "offerWindowMinutes", "tsType": "number" }
+      ]
+    },
+    {
+      "name": "EventPolicyBalancedRatioDoc",
+      "collectionPath": "embedded event policy balanced ratio",
+      "comment": "Nested inside runs/{runId}.eventPolicy.admission.balancedRatioPolicy.",
+      "fields": [
+        { "name": "leftCohortId", "tsType": "string" },
+        { "name": "rightCohortId", "tsType": "string" },
+        { "name": "maxSkew", "tsType": "number" },
+        { "name": "openingBufferPerCohort", "tsType": "number" },
+        { "name": "outOfRatioCohortPolicy", "tsType": "\"admitWithinGeneralCapacity\" | \"waitlist\" | \"manualReview\" | \"reject\"" }
+      ]
+    },
+    {
+      "name": "EventPolicyPricingDoc",
+      "collectionPath": "embedded event policy pricing",
+      "comment": "Nested inside runs/{runId}.eventPolicy.pricing.",
+      "fields": [
+        { "name": "basePriceInPaise", "tsType": "number" },
+        { "name": "cohortAdjustmentsInPaise", "tsType": "Record<string, number>", "optional": true },
+        { "name": "demandPricingRules", "tsType": "EventPolicyDemandPricingRuleDoc[]", "optional": true }
+      ]
+    },
+    {
+      "name": "EventPolicyDemandPricingRuleDoc",
+      "collectionPath": "embedded event policy demand pricing rule",
+      "comment": "Nested inside runs/{runId}.eventPolicy.pricing.demandPricingRules.",
+      "fields": [
+        { "name": "pricedCohortId", "tsType": "string" },
+        { "name": "balancingCohortId", "tsType": "string" },
+        { "name": "stepAdjustmentInPaise", "tsType": "number" },
+        { "name": "maxAdjustmentInPaise", "tsType": "number" },
+        { "name": "freeSkew", "tsType": "number" },
+        { "name": "demandStep", "tsType": "number" }
       ]
     },
     {

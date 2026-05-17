@@ -16,6 +16,13 @@ import {
   setActivityNotificationInTransaction,
 } from "../shared/notifications";
 import {claimUserRunScheduleInTransaction} from "./scheduleConflicts";
+import {
+  assertPolicyAllowsSignup,
+  cohortIdForUser,
+  eventPolicyFromRun,
+  incrementCount,
+  rosterFromRun,
+} from "./eventPolicy";
 
 /**
  * Core sign-up business logic — shared by verifyRazorpayPayment (paid runs)
@@ -125,36 +132,18 @@ export async function signUpUserForRun(
       }
     }
 
-    // Gender cap check.
     const gender = user.gender;
-    const genderCap =
-      gender === "man" ?
-        constraints.maxMen :
-        gender === "woman" ?
-          constraints.maxWomen :
-          undefined;
-
-    if (genderCap !== undefined && genderCap !== null) {
-      const currentCount = (run.genderCounts ?? {})[gender] ?? 0;
-      if (currentCount >= genderCap) {
-        throw new HttpsError(
-          "failed-precondition",
-          "Spots for your gender are full for this run."
-        );
-      }
-    }
-
-    // Overall capacity check.
+    const policy = eventPolicyFromRun(run);
+    const cohortId = cohortIdForUser(user);
     const signedUpCount = activeParticipations
       .filter((participation) => participation.data.status === "signedUp")
       .length;
     const currentBookedCount = run.bookedCount ?? signedUpCount;
-    if (currentBookedCount >= run.capacityLimit) {
-      throw new HttpsError(
-        "failed-precondition",
-        "This run is now full."
-      );
-    }
+    assertPolicyAllowsSignup({
+      policy,
+      cohortId,
+      roster: {...rosterFromRun(run), totalBooked: currentBookedCount},
+    });
 
     await claimUserRunScheduleInTransaction(tx, db, {
       uid: userId,
@@ -173,6 +162,7 @@ export async function signUpUserForRun(
     const runUpdate: Record<string, unknown> = {
       bookedCount: admin.firestore.FieldValue.increment(1),
       [`genderCounts.${gender}`]: admin.firestore.FieldValue.increment(1),
+      cohortCounts: incrementCount(run.cohortCounts ?? {}, cohortId),
     };
     if (wasWaitlisted) {
       runUpdate.waitlistedCount = admin.firestore.FieldValue.increment(-1);
@@ -186,6 +176,7 @@ export async function signUpUserForRun(
       uid: userId,
       status: "signedUp",
       genderAtSignup: gender,
+      cohortAtSignup: cohortId,
       paymentId,
     }), {merge: true});
     setActivityNotificationInTransaction(tx, db, {

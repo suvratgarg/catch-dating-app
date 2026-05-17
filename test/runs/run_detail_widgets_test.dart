@@ -517,7 +517,7 @@ void main() {
       expect(find.text('Cancel booking'), findsOneWidget);
     });
 
-    testWidgets('renders ineligible reasons for age and gender caps', (
+    testWidgets('renders ineligible ages and waitlistable cohort caps', (
       tester,
     ) async {
       final tooYoungUser = buildUser(
@@ -571,7 +571,7 @@ void main() {
 
       expect(find.text('Must be 18+ to join'), findsOneWidget);
       expect(find.text('Must be 40 or younger'), findsOneWidget);
-      expect(find.text('Spots for your gender are full'), findsOneWidget);
+      expect(find.text('Join waitlist'), findsOneWidget);
     });
   });
 
