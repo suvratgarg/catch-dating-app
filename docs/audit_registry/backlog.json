@@ -1,6 +1,6 @@
 {
-  "version": "2.6.1",
-  "updated": "2026-05-16",
+  "version": "2.6.2",
+  "updated": "2026-05-17",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Do not reread archived markdown history unless a debt id points there.",
   "scanner_snapshot": {
@@ -78,7 +78,7 @@
         "docs/action_cardinality_policy.md",
         "docs/audit_registry/rules.json",
         "lib/runs/presentation/widgets/run_detail_cta.dart",
-        "lib/dashboard/presentation/widgets/run_arrival_action_card.dart",
+        "lib/dashboard/presentation/widgets/run_focus_rail.dart",
         "lib/run_clubs/presentation/list/run_clubs_list_view_model.dart",
         "lib/swipes/presentation/swipe_screen.dart",
         "lib/chats/presentation/chat_screen.dart",
@@ -174,7 +174,7 @@
     },
     {
       "id": "PROFILE-CARD-POLISH-001",
-      "title": "Polish shared public-facing profile card",
+      "title": "Polish shared public-facing profile surface",
       "status": "needs_device_confirmation",
       "area": "swipes,user_profile,public_profile",
       "priority": "high",
@@ -184,9 +184,10 @@
         "WIDGET-CATALOG-001",
         "WIDGET-TEST-001"
       ],
-      "summary": "Implementation polish pass completed on 2026-05-06. Swipes, Profile Preview, and Public Profile still share one `ProfileCard` rendering path. The card remains dark and immersive in both light and dark app themes through `ProfileCardPalette`, shows display name + age + optional city on the hero, moves relationship goal into detail chips, promotes the bio prompt ahead of running stats, and uses a branded missing-photo fallback. `_RunningIdentityCard` is now the single canonical `RUN PROFILE` section; the redundant lower `ProfileRunningSection` was removed. Non-hero photos are inset and rounded inside the card while the hero remains full-bleed. Remaining work is physical-device visual review before deciding whether to continue more opinionated refinements.",
+      "summary": "The older shared `ProfileCard` path has been replaced by `ProfileSurface`, a cardless renderer shared by Catches, Profile Preview, and Public Profile. Catches passes contextual section reactions and the floating pass action; Preview/Public Profile render the same content without reaction controls. The next polish pass should use docs/public_profile_overhaul_tracker.md as the temporary product tracker, verify on device, add visual regression coverage, and avoid reintroducing deck/card chrome unless product explicitly reverses the current direction.",
       "paths": [
-        "lib/swipes/presentation/profile_card.dart",
+        "docs/public_profile_overhaul_tracker.md",
+        "lib/swipes/presentation/profile_surface.dart",
         "lib/swipes/presentation/profile_card_content.dart",
         "lib/swipes/presentation/widgets/card_photo_section.dart",
         "lib/swipes/presentation/widgets/name_overlay.dart",
@@ -258,7 +259,7 @@
         "FIRESTORE-RULES-TEST-001",
         "CODEGEN-001"
       ],
-      "summary": "Core producer work is complete and this queue is now watch-only. Durable in-app activity lives in backend-owned `notifications/{uid}/items/{notificationId}` docs. Match, message, new-club-run, run signup, waitlist-promotion, upcoming run reminder, run schedule/location update, and run cancellation producers are implemented through Functions/callables. Activity reads `watchActivityNotificationsProvider(uid)`, users can only read own timeline plus mark items read, and push delivery is gated by granular user preferences. Club updates use a two-tier model: active membership receives Activity updates, while per-club `runClubMemberships/{clubId_uid}.pushNotificationsEnabled` plus `prefsClubUpdates` gates FCM pushes. Remaining notification work is product/UI policy backfill owned by `RUN-CANCELLATION-UI-POLICY-001`, settings/permission UX refinement, and device QA, not a missing core fan-out gap.",
+      "summary": "Core producer work is complete and this queue is now watch-only. Durable in-app activity lives in backend-owned `notifications/{uid}/items/{notificationId}` docs. Match, message, new-club-run, run signup, waitlist-promotion, upcoming run reminder, run schedule/location update, and run cancellation producers are implemented through Functions/callables. Activity reads `watchActivityNotificationsProvider(uid)`, users can only read own timeline plus mark items read, and push delivery is gated by granular user preferences. Club updates use a two-tier model: active membership receives Activity updates, while per-club `runClubMemberships/{clubId_uid}.pushNotificationsEnabled` plus `prefsClubUpdates` gates FCM pushes. Remaining notification work is cancelled-run display/copy QA, settings/permission UX refinement, and device QA, not a missing core fan-out gap.",
       "paths": [
         "docs/backend_operation_catalog.md",
         "docs/firestore_functions_data_contract_tracker.md",
@@ -298,7 +299,7 @@
     {
       "id": "RUN-CANCELLATION-UI-POLICY-001",
       "title": "Define run cancellation policy and host UI",
-      "status": "identified",
+      "status": "watch",
       "area": "runs,payments,notifications",
       "priority": "high",
       "rules": [
@@ -306,14 +307,15 @@
         "ERROR-UI-001",
         "FIRESTORE-RULES-TEST-001"
       ],
-      "summary": "`cancelRun` now exists as a host-only backend callable: it writes `runs/{runId}.status/cancelledAt/cancellationReason` and sends durable/push cancellation notifications to signed-up and waitlisted participants. Do not expose it in the app until product defines cancellation windows, refund behavior, participant copy, host confirmation/error UI, and how cancelled runs appear on list/detail/calendar/activity surfaces.",
+      "summary": "`cancelRun` and `deleteRun` are now exposed from Host Manage with confirmation UI. `cancelRun` writes cancellation state, releases schedule locks, attempts completed attendee refunds, refreshes next-run projections, and sends durable/push cancellation notifications to signed-up and waitlisted participants. `deleteRun` is visible only when no activity is known and is still rejected by the backend for runs with participations, payments, or reviews. Keep this item on watch for payment/refund edge cases, cancelled-run display QA across list/detail/calendar/activity surfaces, and copy refinements.",
       "paths": [
         "functions/src/runs/mutateRun.ts",
         "functions/src/payments/paymentValidation.ts",
-        "lib/runs/presentation/run_detail_screen.dart",
-        "lib/runs/presentation/widgets/run_detail_body.dart",
+        "lib/runs/presentation/host_run_manage_screen.dart",
+        "lib/runs/presentation/run_booking_controller.dart",
         "lib/calendar/presentation/calendar_screen.dart",
         "lib/dashboard/presentation/widgets/activity_section.dart",
+        "test/runs/create_run_screen_test.dart",
         "docs/backend_operation_catalog.md"
       ]
     },
@@ -372,7 +374,7 @@
     {
       "id": "MIGRATION-VALIDATION-001",
       "title": "Add seeded tests and count validation for relationship migration apply",
-      "status": "identified",
+      "status": "watch",
       "area": "tooling,firestore",
       "priority": "medium",
       "rules": [
@@ -394,7 +396,7 @@
       "rules": [
         "FIRESTORE-RULES-TEST-001"
       ],
-      "summary": "Relationship docs make deletes query-driven. Rewrite account deletion to query runClubMemberships by uid, runParticipations by uid, savedRuns by uid, reviews/payments by user, matches by participant, swipes by source/target, public profile, private profile, Storage, and Auth. Add run deletion and club deletion plans that use runParticipations/runClubMemberships instead of scanning parent arrays.",
+      "summary": "Core deletion/anonymization is now relationship-doc aware. Account deletion queries runClubMemberships, runParticipations, savedRuns, reviews/payments, matches, swipes, public/private profiles, Storage, notifications, blocks/reports, and Auth. Run cancellation/delete and run-club archive/delete policies exist through backend callables. Keep this item on watch for product requests to delete historical runs/clubs beyond the currently implemented cancel/archive/delete-unused policies.",
       "paths": [
         "functions/src/safety/accountDeletion.ts",
         "functions/src/safety/accountDeletion.test.ts",

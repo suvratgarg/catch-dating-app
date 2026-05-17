@@ -1,7 +1,7 @@
 ---
 doc_id: schema_contract_unification
-version: 0.8.5
-updated: 2026-05-16
+version: 0.8.6
+updated: 2026-05-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -151,8 +151,8 @@ contracts/
     users.schema.json
     public_profiles.schema.json
     swipe_decisions.schema.json
-    runs.schema.json
-    run_clubs.schema.json
+    events.schema.json
+    clubs.schema.json
   embedded/
     profile_prompt_answer.schema.json
     photo_prompt_answer.schema.json
@@ -288,7 +288,7 @@ Target behavior:
 - Seed builders use generated constants/catalog helpers.
 - Every planned document is validated against the generated schema before it is
   written.
-- Dry runs report schema violations with document path, field path, expected
+- Dry events report schema violations with document path, field path, expected
   constraint, and the builder that emitted the bad value.
 - Seed plans fail on legacy fields like `bio` after the profile-prompt migration
   is complete.
@@ -296,7 +296,7 @@ Target behavior:
   projection helper used by `syncPublicProfile`, or by a generated projection
   helper that is tested against the trigger behavior.
 - Demo ops validation should report schema drift separately from missing demo
-  state, stale run references, and expected operational gaps.
+  state, stale event references, and expected operational gaps.
 
 ## Firestore Rules Strategy
 
@@ -359,7 +359,7 @@ node tool/validate_schema_contracts.mjs
 node --test tool/schema_contracts/*.test.mjs
 dart test test/schema_contracts
 node tool/seed_demo_data.mjs --scenario beta-full --json
-firebase emulators:exec --only firestore "npm --prefix functions run test:rules"
+firebase emulators:exec --only firestore "npm --prefix functions event test:rules"
 ```
 
 Exact command names may change, but CI must prove:
@@ -369,7 +369,7 @@ Exact command names may change, but CI must prove:
 - TypeScript validators/types compile,
 - Dart generated constants/validators compile,
 - golden fixtures pass in both language surfaces where applicable,
-- seed dry runs cannot emit invalid documents,
+- seed dry events cannot emit invalid documents,
 - Firestore contract metadata and rules field sets remain aligned.
 
 ## Implementation Phases
@@ -489,8 +489,8 @@ Verification:
 
 ```bash
 node tool/generate_schema_contracts.mjs --check
-npm --prefix functions run build
-npm --prefix functions run lint
+npm --prefix functions event build
+npm --prefix functions event lint
 node --test functions/lib/shared/schemaContracts.test.js
 flutter test test/core/schema_contracts_generated_test.dart
 ./tool/check_data_contract.sh
@@ -554,8 +554,8 @@ Verification:
 ```bash
 node tool/generate_schema_contracts.mjs --check
 node tool/validate_schema_contracts.mjs
-npm --prefix functions run build
-npm --prefix functions run lint
+npm --prefix functions event build
+npm --prefix functions event lint
 node --test functions/lib/profiles/updateUserProfile.test.js functions/lib/shared/schemaContracts.test.js
 flutter analyze lib/user_profile/domain/profile_validation.dart lib/user_profile/domain/profile_prompts.dart test/core/schema_contracts_generated_test.dart test/user_profile/user_profile_domain_test.dart
 flutter test test/core/schema_contracts_generated_test.dart test/user_profile/user_profile_domain_test.dart
@@ -566,7 +566,7 @@ Result: all focused Phase 3 checks passed on 2026-05-15.
 Auxiliary work identified during Phase 3:
 
 - Firestore rules semantic drift is now checked for `users`, contextual profile
-  decisions, and saved runs. Further rules work should add schema-derived
+  decisions, and saved events. Further rules work should add schema-derived
   checks for any new direct-write surface before it is opened to clients.
 - The broad generated Dart schema registry is intentionally kept separate from
   the lightweight profile constants file used by production UI. If it grows much
@@ -599,8 +599,8 @@ Moved demo profile seeding onto the generated contract layer:
 - `tool/seed_demo_data_schema.test.mjs` covers valid seeded profile docs,
   legacy `bio` rejection, stale prompt id rejection, and overlong prompt answer
   rejection.
-- `tool/check_data_contract.sh` now runs seed schema tests plus a smoke
-  scenario dry run so profile-shaped seed drift fails locally and in CI.
+- `tool/check_data_contract.sh` now events seed schema tests plus a smoke
+  scenario dry event so profile-shaped seed drift fails locally and in CI.
 
 Verification:
 
@@ -653,14 +653,14 @@ checks:
 - `functions/src/shared/profileProjection.test.ts` covers display-name
   fallbacks, prompt/photo normalization, legacy-bio migration, and demo metadata
   propagation.
-- `tool/check_data_contract.sh` now runs projection parity after Functions
+- `tool/check_data_contract.sh` now events projection parity after Functions
   build/tests.
 
 Verification:
 
 ```bash
-npm --prefix functions run build
-npm --prefix functions run lint
+npm --prefix functions event build
+npm --prefix functions event lint
 node --test functions/lib/profiles/syncPublicProfile.test.js functions/lib/shared/profileProjection.test.js functions/lib/shared/schemaContracts.test.js
 node --test tool/seed_demo_data_append.test.mjs tool/seed_demo_data_schema.test.mjs
 node --test tool/profile_projection_parity.test.mjs
@@ -677,11 +677,11 @@ Auxiliary work identified during Phase 5:
 - If we later want the seed tool to directly import the Functions projection
   helper instead of parity-testing a mirrored JS helper, we need a source-level
   shared JS/TS packaging boundary. The current approach avoids requiring a
-  Functions build before ordinary seed dry runs.
+  Functions build before ordinary seed dry events.
 
 ### 2026-05-15: Phase 5 Public Profile Repair Tooling
 
-Added the dry-run-first repair surface for existing public profile drift:
+Added the dry-event-first repair surface for existing public profile drift:
 
 - `tool/recompute_public_profiles.mjs` scans `users` and `publicProfiles`,
   projects each complete active user through the compiled Functions
@@ -697,7 +697,7 @@ Added the dry-run-first repair surface for existing public profile drift:
 - `tool/recompute_public_profiles.test.mjs` covers stale projection repair,
   missing projection creation, deleted-user cleanup, incomplete/orphan
   warnings, and batch apply behavior.
-- `tool/check_data_contract.sh` now syntax-checks the repair tool and runs its
+- `tool/check_data_contract.sh` now syntax-checks the repair tool and events its
   tests.
 
 Verification:
@@ -709,10 +709,10 @@ node --test tool/recompute_public_profiles.test.mjs
 
 Result: focused repair-tool checks passed on 2026-05-15.
 
-How to run the repair manually:
+How to event the repair manually:
 
 ```bash
-npm --prefix functions run build
+npm --prefix functions event build
 node tool/recompute_public_profiles.mjs --env dev --json
 node tool/recompute_public_profiles.mjs --env dev --apply
 node tool/recompute_public_profiles.mjs --env staging --json
@@ -772,7 +772,7 @@ scoped:
 - Updated photo prompt edits, thumbnail generation, moderation deletion,
   public-profile projection, seed generation, and projection repair tooling to
   keep grouped photos and legacy arrays in sync.
-- Added `tool/backfill_profile_photos.mjs`, a dry-run-first migration tool that
+- Added `tool/backfill_profile_photos.mjs`, a dry-event-first migration tool that
   derives grouped photos from legacy arrays, validates each `ProfilePhoto`
   against the generated schema, and can repair `users/{uid}` plus
   `publicProfiles/{uid}` with `--apply`.
@@ -795,16 +795,16 @@ Follow-up closed on 2026-05-16:
 - Edit Profile photo grid and photo-caption rows now render through
   `effectiveProfilePhotos` instead of reading `photoUrls` directly.
 - `tool/check_data_contract.sh` now syntax-checks the thumbnail backfill script
-  and runs the profile-photo backfill tests.
+  and events the profile-photo backfill tests.
 - `tool/backfill_profile_photos.mjs` now resolves Firebase project aliases from
   `.firebaserc` through a shared resolver, instead of hardcoding invented dev,
   staging, and prod project ids.
 - Live migration was applied after deploying the updated profile Functions:
   - dev: 74 users scanned, 74 grouped-photo users after apply, 0 repairs and
-    0 warnings on the final dry run.
+    0 warnings on the final dry event.
   - staging: 0 users scanned, 0 repairs and 0 warnings after Functions deploy.
   - prod: 86 users scanned, 86 grouped-photo users after apply, 0 repairs and
-    0 warnings on the final dry run.
+    0 warnings on the final dry event.
 - Important sequencing rule: deploy the updated `syncPublicProfile` projection
   before applying the user backfill. Otherwise, the currently deployed trigger
   can rewrite `publicProfiles/{uid}` back to the legacy projection after the
@@ -813,8 +813,8 @@ Follow-up closed on 2026-05-16:
 Proof:
 
 ```bash
-npm --prefix functions run build
-npm --prefix functions run lint
+npm --prefix functions event build
+npm --prefix functions event lint
 dart analyze lib/user_profile/domain/profile_photo.dart lib/user_profile/domain/user_profile.dart lib/public_profile/domain/public_profile.dart lib/image_uploads/data/image_upload_repository.dart lib/image_uploads/presentation/photo_upload_controller.dart lib/swipes/presentation/profile_card_content.dart lib/user_profile/presentation/widgets/profile_tab.dart lib/user_profile/presentation/widgets/profile_inline_editors.dart
 node tool/validate_schema_contracts.mjs
 node tool/check_firestore_contract.mjs
@@ -830,6 +830,32 @@ node tool/backfill_profile_photos.mjs --env staging
 node tool/backfill_profile_photos.mjs --env prod --apply --allow-prod
 node tool/backfill_profile_photos.mjs --env prod
 ```
+
+### 2026-05-17: Profile Photo Grid Editing Completion
+
+Closed the temporary photo-grid implementation tracker after verifying the live
+code paths:
+
+- `ProfilePhoto` remains the app-facing grouped photo object while
+  `photoUrls`, `photoThumbnailUrls`, and `photoPrompts` continue as
+  compatibility writes.
+- `PhotoGrid` now renders normalized grouped photos, enforces the generated
+  six-photo maximum, supports guarded delete below the completed-profile
+  minimum, and allows long-press reorder without detaching captions/prompts from
+  the moved photo.
+- Onboarding and Edit Profile open `ProfilePhotoEditorScreen` for add/replace
+  and per-photo caption/prompt editing instead of maintaining a separate
+  photo-caption row editor.
+- Public profile, profile preview, and Catches surfaces render photo
+  prompts/captions through the shared `ProfileSurface` path.
+- `updateUserProfile`, thumbnail generation, moderation deletion, and public
+  profile projection all keep grouped photos and legacy arrays in sync.
+
+The only verification caveat from the tracker was emulator-environment noise:
+Firestore rules passed under `firebase emulators:exec`, while pre-existing
+Storage rules tests failed on unrelated Firestore lookup null errors in
+chat/event image rules. That Storage-rules issue is not a blocker for deleting
+the photo-grid tracker.
 
 ### 2026-05-15: Generator Boundary Cleanup
 
@@ -901,7 +927,7 @@ Closed the focused Phase 6 emulator gap for schema-owned profile bounds:
 
 - Added Firestore rules helpers for optional list size limits.
 - Tightened direct `users/{uid}` create shape checks for profile prompt, photo,
-  interest, language, preferred distance, running reason, preferred run-time,
+  interest, language, preferred distance, running reason, preferred event-time,
   and age preference bounds.
 - Added rules emulator coverage for the new profile list and age-preference
   limits. The tests intentionally split max-size success cases across small
@@ -913,7 +939,7 @@ Proof:
 ```bash
 node --check functions/test/firestore.rules.test.cjs
 node tool/check_firestore_contract.mjs
-firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
+firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions event test:rules"
 ```
 
 Result: 61 Firestore/storage rules tests passed on 2026-05-16.
@@ -925,7 +951,7 @@ before closing the loop:
 
 - Added `tool/check_firestore_rules_semantics.mjs`, a schema-derived Firestore
   Rules semantic checker for the direct-write surfaces that rules still own:
-  owner profile create, contextual profile decision create, and saved-run
+  owner profile create, contextual profile decision create, and saved-event
   create.
 - Wired that checker into `./tool/check_data_contract.sh` so stale rules
   literals fail the same gate as stale generated outputs.
@@ -974,30 +1000,30 @@ node tool/check_firestore_contract.mjs
 
 Result: focused ownership/rules drift check passed on 2026-05-15.
 
-### 2026-05-15: Phase 7 Run Domain Contract Slice
+### 2026-05-15: Phase 7 Event Domain Contract Slice
 
-Expanded the contract layer beyond profiles into the core run domain:
+Expanded the contract layer beyond profiles into the core event domain:
 
-- Added run-domain schemas:
+- Added event-domain schemas:
   - `contracts/shared/run_common.schema.json`
-  - `contracts/firestore/run_clubs.schema.json`
-  - `contracts/firestore/run_club_memberships.schema.json`
-  - `contracts/firestore/runs.schema.json`
-  - `contracts/firestore/run_participations.schema.json`
-  - `contracts/firestore/saved_runs.schema.json`
-- Added valid fixtures for run clubs, memberships, runs, run participations,
-  and saved runs.
-- Added an invalid run fixture for stale pace enum drift.
+  - `contracts/firestore/clubs.schema.json`
+  - `contracts/firestore/club_memberships.schema.json`
+  - `contracts/firestore/events.schema.json`
+  - `contracts/firestore/event_participations.schema.json`
+  - `contracts/firestore/saved_events.schema.json`
+- Added valid fixtures for clubs, memberships, events, event participations,
+  and saved events.
+- Added an invalid event fixture for stale pace enum drift.
 - Extended `tool/generate_schema_contracts.mjs` so the generated TypeScript and
-  tool-side Ajv validators include run-domain document validators.
+  tool-side Ajv validators include event-domain document validators.
 - Generalized `tool/check_firestore_contract.mjs` so every schema under
   `contracts/firestore` with `x-firestore-collection` is compared against
   `tool/firestore_contract.json`.
-- Added internal demo metadata to the run-domain ownership contract so seeded
+- Added internal demo metadata to the event-domain ownership contract so seeded
   documents remain valid while app model field lists stay clean.
-- Extended seed validation from profile-only checks to run-domain checks:
-  `runClubs`, `runClubMemberships`, `runs`, `runParticipations`, and
-  `savedRuns` are validated before write plans can be applied.
+- Extended seed validation from profile-only checks to event-domain checks:
+  `clubs`, `clubMemberships`, `events`, `eventParticipations`, and
+  `savedEvents` are validated before write plans can be applied.
 
 Verification:
 
@@ -1005,12 +1031,12 @@ Verification:
 node tool/validate_schema_contracts.mjs
 node tool/check_firestore_contract.mjs
 node tool/seed_demo_data.mjs --scenario smoke --json
-npm --prefix functions run build
+npm --prefix functions event build
 node --test functions/lib/shared/schemaContracts.test.js
 node --test tool/seed_demo_data_append.test.mjs tool/seed_demo_data_schema.test.mjs tool/recompute_public_profiles.test.mjs
 ```
 
-Result: focused Phase 7 run-domain checks passed on 2026-05-15.
+Result: focused Phase 7 event-domain checks passed on 2026-05-15.
 
 ### 2026-05-15: Phase 7 Social, Payment, And Safety Contract Slice
 
@@ -1042,7 +1068,7 @@ Verification:
 ```bash
 node tool/validate_schema_contracts.mjs
 node tool/check_firestore_contract.mjs
-npm --prefix functions run build
+npm --prefix functions event build
 node --test functions/lib/shared/schemaContracts.test.js
 node --test tool/seed_demo_data_schema.test.mjs
 node tool/seed_demo_data.mjs --scenario smoke --json
@@ -1058,15 +1084,15 @@ data graph and demo tooling:
 - Added schemas and fixtures for:
   - `config/cities`
   - `onboarding_drafts/{uid}`
-  - `runClubHostClaims/{uid}`
-  - `runClubScheduleLocks/{lockId}`
-  - `userRunScheduleLocks/{lockId}`
+  - `clubHostClaims/{uid}`
+  - `clubScheduleLocks/{lockId}`
+  - `userEventScheduleLocks/{lockId}`
   - `deletedUsers/{uid}`
   - `rateLimits/{docId}`
   - `functionEventReceipts/{receiptId}`
-  - `seedRuns/{manifestId}`
-- Added explicit server-only Firestore rules match blocks for `seedRuns`,
-  `runClubScheduleLocks`, and `userRunScheduleLocks`; this preserves existing
+  - `seedEvents/{manifestId}`
+- Added explicit server-only Firestore rules match blocks for `seedEvents`,
+  `clubScheduleLocks`, and `userEventScheduleLocks`; this preserves existing
   default-deny behavior while making the ownership contract explicit.
 - Updated `tool/firestore_contract.json` so every Firestore schema with
   `x-firestore-collection` has matching ownership metadata and field sets.
@@ -1077,7 +1103,7 @@ data graph and demo tooling:
   validators are derived from the schema spec list instead of a hand-maintained
   export list.
 - Extended seed validation to cover schedule lock write plans and the
-  `seedRuns/{manifestId}` manifest before apply.
+  `seedEvents/{manifestId}` manifest before apply.
 
 Verification:
 
@@ -1085,7 +1111,7 @@ Verification:
 node tool/validate_schema_contracts.mjs
 node tool/check_firestore_contract.mjs
 node --test tool/seed_demo_data_schema.test.mjs
-npm --prefix functions run build
+npm --prefix functions event build
 node --test functions/lib/shared/schemaContracts.test.js
 ```
 
@@ -1098,10 +1124,10 @@ generated JSON Schema/Ajv contract layer:
 
 - Added callable payload schemas and valid/invalid fixtures for:
   - `updateUserProfile` (already completed in Phase 3)
-  - run-club create/update/archive/delete
-  - run-club join/leave and per-club notification preference
-  - run create/update/cancel/delete
-  - run signup, signup cancellation, waitlist join/leave, attendance, and
+  - event-club create/update/archive/delete
+  - event-club join/leave and per-club notification preference
+  - event create/update/cancel/delete
+  - event signup, signup cancellation, waitlist join/leave, attendance, and
     self-check-in payloads
   - review create/update/delete
   - block/unblock/report safety actions
@@ -1120,9 +1146,9 @@ Verification:
 ```bash
 node tool/generate_schema_contracts.mjs --check
 node tool/validate_schema_contracts.mjs
-npm --prefix functions run build
-npm --prefix functions run lint
-node --test functions/lib/runClubs/*.test.js functions/lib/runs/*.test.js functions/lib/reviews/*.test.js functions/lib/safety/*.test.js functions/lib/payments/*.test.js functions/lib/shared/schemaContracts.test.js
+npm --prefix functions event build
+npm --prefix functions event lint
+node --test functions/lib/clubs/*.test.js functions/lib/events/*.test.js functions/lib/reviews/*.test.js functions/lib/safety/*.test.js functions/lib/payments/*.test.js functions/lib/shared/schemaContracts.test.js
 ```
 
 Result: focused callable payload checks passed on 2026-05-15.
@@ -1135,7 +1161,7 @@ writes that are intentionally not callables:
 - Added direct client-write schemas and valid fixtures for:
   - contextual profile decision create on the current `swipes` storage path,
   - chat message create,
-  - saved-run create/delete,
+  - saved-event create/delete,
   - activity notification read-state update,
   - match unread-count reset.
 - Added invalid fixtures for an empty text-only chat message and an unread
@@ -1153,10 +1179,10 @@ Verification:
 ```bash
 node tool/generate_schema_contracts.mjs
 node tool/validate_schema_contracts.mjs
-npm --prefix functions run build
-npm --prefix functions run lint
+npm --prefix functions event build
+npm --prefix functions event lint
 node --test functions/lib/shared/schemaContracts.test.js
-firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
+firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions event test:rules"
 ```
 
 Result: focused direct client-write operation checks passed on 2026-05-15.
@@ -1195,7 +1221,7 @@ Result: focused path-literal guard checks passed on 2026-05-15.
 Closed the pre-apply validation gap for the eventual `swipes` ->
 `profileDecisions` storage rename without moving live data:
 
-- Added `tool/validate_profile_decision_migration.mjs`, a dry-run-only validator
+- Added `tool/validate_profile_decision_migration.mjs`, a dry-event-only validator
   that reads the current and future profile-decision storage paths, validates
   both sides against the generated `SwipeDocument` schema, and compares missing,
   stale, and extra future documents.
@@ -1228,7 +1254,7 @@ Advanced the profile-decision rename from observe-only to dual-write support:
   using the same validation and eligibility logic as legacy `swipes`.
 - Kept `onSwipeCreated` attached to the legacy `swipes` trigger path so mirrored
   future writes do not duplicate match creation.
-- Added `tool/backfill_profile_decisions.mjs`, a dry-run-first migration tool
+- Added `tool/backfill_profile_decisions.mjs`, a dry-event-first migration tool
   that copies missing or stale legacy decisions into `profileDecisions` without
   deleting either path.
 
@@ -1349,7 +1375,7 @@ Tasks:
 - [x] Replace duplicated prompt length constants with generated constants.
 - [x] Align Dart and Functions height bounds. Current evidence shows Dart
   accepts 120-220 cm while `updateUserProfile` accepts 90-260 cm.
-- [x] Align optional email, Instagram, age preference, run preference, and
+- [x] Align optional email, Instagram, age preference, event preference, and
   prompt validation semantics.
 - [x] Add golden validation vectors shared by Dart and TypeScript tests.
 - [x] Migrate `updateUserProfile` from handwritten Zod to generated Ajv
@@ -1382,17 +1408,17 @@ Tasks:
   prompt ids, and overlong prompts.
 - [x] Add projection-equivalence tests for mismatched public profile data in
   Phase 5 once the pure projection helper exists.
-- [x] Add a dry-run schema gate to `tool/check_data_contract.sh`.
+- [x] Add a dry-event schema gate to `tool/check_data_contract.sh`.
 
 Exit criteria:
 
-- Seed dry runs cannot silently create schema-drifted profile documents.
+- Seed dry events cannot silently create schema-drifted profile documents.
 - Demo ops cannot warm accounts with stale prompt/profile shapes if future
   demo-profile writes use the shared seed validator.
 
 ### Phase 5: Projection And Backfill Repair
 
-Status: projection helper, parity, dry-run repair tooling, and live environment
+Status: projection helper, parity, dry-event repair tooling, and live environment
 repair execution complete.
 
 Tasks:
@@ -1402,13 +1428,13 @@ Tasks:
 - [x] Reuse or mirror that projection helper in seeding.
 - [x] Add validation that compares seeded public profiles to canonical user
   projections where appropriate.
-- [x] Write dry-run-first repair tooling for legacy `bio` and stale profile
+- [x] Write dry-event-first repair tooling for legacy `bio` and stale profile
   prompt data in dev/staging/prod.
 - [x] Design and scope a future `ProfilePhoto` storage migration for grouped
   photo URL, thumbnail URL, prompt, storage-path, and moderation metadata. This
   should be dual-read/backfill-first because upload, thumbnail, moderation,
   deletion, and avatar code all currently use the parallel arrays.
-- [x] Run repair in dev first, then staging/prod only with explicit apply and
+- [x] Event repair in dev first, then staging/prod only with explicit apply and
   environment safeguards.
 
 Exit criteria:
@@ -1439,18 +1465,18 @@ Exit criteria:
 
 ### Phase 7: Expand Beyond Profiles
 
-Status: run-domain, social/payment/safety, moderation flag, lightweight
+Status: event-domain, social/payment/safety, moderation flag, lightweight
 operational document, callable payload, and direct client-write operation
 slices complete. Future storage-object metadata contracts are tracked under the
 `ProfilePhoto` migration.
 
 Candidate next collections:
 
-- [x] run clubs,
-- [x] run club memberships,
-- [x] runs,
-- [x] run participations,
-- [x] saved runs,
+- [x] clubs,
+- [x] club memberships,
+- [x] events,
+- [x] event participations,
+- [x] saved events,
 - [x] payments,
 - [x] matches and messages,
 - [x] notifications,
@@ -1459,19 +1485,19 @@ Candidate next collections:
 
 Remaining secondary candidates:
 
-- [x] run club host claims,
+- [x] club host claims,
 - [x] schedule locks,
 - [x] deleted-user tombstones,
-- [x] seed run manifests,
+- [x] seed event manifests,
 - [x] config, onboarding draft, rate-limit, and function-receipt operational
   documents,
-- [x] callable payload schemas for run, run club, review, safety, payment, and
+- [x] callable payload schemas for event, club, review, safety, payment, and
   Places operations,
 - [x] moderation flag documents,
 - [x] storage-object metadata contracts to introduce with the future
   `ProfilePhoto` migration,
 - [x] direct client-write operation schemas for contextual profile decisions,
-  chat messages, saved-run edges, notification read updates, and match unread
+  chat messages, saved-event edges, notification read updates, and match unread
   resets.
 
 Ordering rule:
@@ -1488,8 +1514,8 @@ operation schemas.
 Tasks:
 
 - [x] Add generated schemas for profile update payloads.
-- [x] Add generated schemas for run-club lifecycle and membership callables.
-- [x] Add generated schemas for run lifecycle and participant action
+- [x] Add generated schemas for event-club lifecycle and membership callables.
+- [x] Add generated schemas for event lifecycle and participant action
   callables.
 - [x] Add generated schemas for review callables.
 - [x] Add generated schemas for safety callables.
@@ -1502,7 +1528,7 @@ Related follow-up:
 
 - [x] Direct client writes now have generated operation schemas where the
   write surface is stable enough to contract: contextual profile decisions,
-  chat message create, saved-run create/delete, notification read update, and
+  chat message create, saved-event create/delete, notification read update, and
   match unread reset.
 
 Exit criteria:
@@ -1532,11 +1558,11 @@ Tasks:
 - [x] Add migration tests and count validation before any production apply.
 - [x] Implement dual-read/dual-write while keeping `swipes` as the trigger
   source of truth.
-- [x] Add dry-run-first tooling to backfill historical `swipes` into
+- [x] Add dry-event-first tooling to backfill historical `swipes` into
   `profileDecisions`.
 - [x] Verify historical `swipes` -> `profileDecisions` parity in dev, staging,
   and prod with `tool/validate_profile_decision_migration.mjs --require-parity`
-  after a dry-run backfill found no writes needed.
+  after a dry-event backfill found no writes needed.
 - [ ] Cut over the trigger path only after a release containing dual-write
   clients is deployed, platform Remote Config `min_build_*` gates are raised to
   the compatible build, and a final parity check passes.
@@ -1566,7 +1592,7 @@ backfill/parity tooling were all in place.
 | Freezed model generation fights contract generation. | Keep Freezed as the app model layer initially; generate constants/validators first. |
 | Generated schema types and Admin SDK facade types diverge. | Keep JSON Schema canonical and document `functions/src/shared/firestore.ts` as a transitional runtime facade until a schema-driven Admin SDK generator replaces it. |
 | Seed validation slows down demo operations. | Compile validators once and validate planned docs before network writes. |
-| Live production data has legacy shape. | Use dry-run-first repair scripts and environment gates before tightening rules. |
+| Live production data has legacy shape. | Use dry-event-first repair scripts and environment gates before tightening rules. |
 | Contract files become another stale source of truth. | CI must fail stale generated output and schema fixture drift. |
 
 ## First Migration Slice Recommendation
@@ -1600,7 +1626,7 @@ collection or a risky storage rename at once.
 
 When resuming this migration:
 
-1. Run `git status --short` and preserve unrelated dirty work.
+1. Event `git status --short` and preserve unrelated dirty work.
 2. Read this file, then the current relevant sections of:
    - `docs/firestore_functions_data_contract_tracker.md`
    - `docs/demo_data_seeding.md`

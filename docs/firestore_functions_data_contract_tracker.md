@@ -1,7 +1,7 @@
 ---
 doc_id: firestore_contract_tracker
-version: 2.3.1
-updated: 2026-05-12
+version: 2.3.2
+updated: 2026-05-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -41,14 +41,14 @@ If the conversation context closes, restart from this file, `PROJECT_CONTEXT.md`
   triggers.
 - Keep Dart models, generated Functions TypeScript interfaces, Firestore rules,
   rules tests, callable validation, and docs aligned in the same pass.
-- Run Firestore rules tests under the Firestore emulator. From the repo root,
+- Event Firestore rules tests under the Firestore emulator. From the repo root,
   use:
 
   ```bash
-  firebase emulators:exec --only firestore "npm --prefix functions run test:rules"
+  firebase emulators:exec --only firestore "npm --prefix functions event test:rules"
   ```
 
-  The standalone `npm run test:rules` / `node --test
+  The standalone `npm event test:rules` / `node --test
   test/firestore.rules.test.cjs` command expects a Firestore emulator already
   listening on `127.0.0.1:8080`. If it fails with `connect ECONNREFUSED
   127.0.0.1:8080`, treat that as an emulator-workflow failure first, not a
@@ -57,7 +57,7 @@ If the conversation context closes, restart from this file, `PROJECT_CONTEXT.md`
   - what changed,
   - what was verified,
   - what failed or remains risky,
-  - what task should run next.
+  - what task should event next.
 - Add migration notes before tightening rules around data that may already
   exist in production.
 
@@ -84,10 +84,10 @@ Functions document interface changes:
 
 ```bash
 dart tool/generate_firestore_types.dart
-npm --prefix functions run build
+npm --prefix functions event build
 ```
 
-CI also runs the generator and fails if `functions/src/shared/firestore.ts`
+CI also events the generator and fails if `functions/src/shared/firestore.ts`
 differs from the committed output. Do not hand-edit the generated TypeScript
 file. Add server-only fields or interfaces to `tool/firestore_ts_overlay.json`
 instead.
@@ -97,27 +97,27 @@ consolidation pass; this tracker now owns that workflow.
 
 ## 2026-05-07 Relationship Rules And Deletion Slice
 
-- Added callable-owned `leaveRunWaitlist` and removed the last direct client
-  run update path. Direct `runs/{runId}` updates are now denied.
-- Removed saved-run profile projection writes. `SavedRunRepository` writes only
-  `savedRuns/{uid_runId}` and rules deny direct private-profile projection
+- Added callable-owned `leaveEventWaitlist` and removed the last direct client
+  event update path. Direct `events/{eventId}` updates are now denied.
+- Removed saved-event profile projection writes. `SavedEventRepository` writes only
+  `savedEvents/{uid_eventId}` and rules deny direct private-profile projection
   changes.
-- Swipes and reviews now use `runParticipations/{runId_uid}` attendance edges
-  for eligibility instead of run roster projections. Private `users/{uid}`
+- Swipes and reviews now use `eventParticipations/{eventId_uid}` attendance edges
+  for eligibility instead of event roster projections. Private `users/{uid}`
   reads are owner-only; app-facing discovery should use `publicProfiles`.
 - `requestAccountDeletion` now performs query-driven cleanup across
-  memberships, participations, saved runs, swipes, matches, reviews, payments,
+  memberships, participations, saved events, swipes, matches, reviews, payments,
   notifications, blocks, and reports before anonymizing the private profile and
   deleting Auth.
 - Added backend lifecycle surfaces:
-  - `deleteRun` hard-deletes only unused hosted runs with no participations,
+  - `deleteEvent` hard-deletes only unused hosted events with no participations,
     payments, or reviews.
-  - `archiveRunClub` marks clubs archived.
-  - `deleteRunClub` hard-deletes only never-used clubs with no runs, payments,
+  - `archiveClub` marks clubs archived.
+  - `deleteClub` hard-deletes only never-used clubs with no events, payments,
     reviews, or non-host members.
-- Added `RunClubLifecycleStatus`, `archived`, `archivedAt`, and
+- Added `ClubLifecycleStatus`, `archived`, `archivedAt`, and
   `archiveReason` to the Dart/Functions schema contract.
-- Relationship participant/member/saved-run arrays have been retired from
+- Relationship participant/member/saved-event arrays have been retired from
   generated models, Functions write paths, Firestore rules, active tooling, and
   active tests. Relationship state now lives only in edge documents plus
   callable-owned aggregate counts on canonical parent documents.
@@ -129,35 +129,35 @@ operation ownership drift.
 
 ## Recent Contract Notes
 
-### 2026-05-12: Edge-Owned Run-Club Projection Slice
+### 2026-05-12: Edge-Owned Event-Club Projection Slice
 
-- Added `syncRunClubMemberStats`, a Firestore trigger on
-  `runClubMemberships/{membershipId}` writes. It recomputes
-  `runClubs/{clubId}.memberCount` from active membership edge documents so
+- Added `syncClubMemberStats`, a Firestore trigger on
+  `clubMemberships/{membershipId}` writes. It recomputes
+  `clubs/{clubId}.memberCount` from active membership edge documents so
   duplicate trigger delivery and stale callable-era parent projections are
   corrected from the source of truth.
-- Added `syncRunClubNextRun`, a Firestore trigger on `runs/{runId}` writes.
-  It recomputes `runClubs/{clubId}.nextRunAt` and `nextRunLabel` from active
-  future runs. `createRun`, `updateRun`, `cancelRun`, and `deleteRun` also
+- Added `syncClubNextEvent`, a Firestore trigger on `events/{eventId}` writes.
+  It recomputes `clubs/{clubId}.nextEventAt` and `nextEventLabel` from active
+  future events. `createEvent`, `updateEvent`, `cancelEvent`, and `deleteEvent` also
   refresh this projection after their transaction commits so manual UI flows do
   not wait on eventual trigger delivery.
-- `createRunClub` now initializes lifecycle fields (`status`, `archived`,
+- `createClub` now initializes lifecycle fields (`status`, `archived`,
   `archivedAt`, `archiveReason`) so newly created clubs match the generated
   Dart/Functions schema contract.
-- Updated `firestore.indexes.json` with the run projection query index:
-  `runs(runClubId ASC, status ASC, startTime ASC)`.
+- Updated `firestore.indexes.json` with the event projection query index:
+  `events(clubId ASC, status ASC, startTime ASC)`.
 - Decision retained: membership, booking, waitlist, attendance, payments,
-  reviews, run lifecycle, and club lifecycle remain callable-owned because
+  reviews, event lifecycle, and club lifecycle remain callable-owned because
   they enforce multi-document product invariants. Direct client edge writes are
-  still reserved for narrow owner-scoped actions such as swipes, saved runs,
+  still reserved for narrow owner-scoped actions such as swipes, saved events,
   and chat messages.
 
-### 2026-05-08: Chat Thread Preview And Match Run History Slice
+### 2026-05-08: Chat Thread Preview And Match Event History Slice
 
-- Replaced the app-facing match run pointer with `runIds`, while preserving
-  Dart reads for legacy `runId` documents during the cleanup window.
-- Functions matching/message notifications now derive the latest shared run
-  from `runIds`, and demo data writes deterministic `runIds` so seeded chats do
+- Replaced the app-facing match event pointer with `eventIds`, while preserving
+  Dart reads for legacy `eventId` documents during the cleanup window.
+- Functions matching/message notifications now derive the latest shared event
+  from `eventIds`, and demo data writes deterministic `eventIds` so seeded chats do
   not imply a separate conversation per message.
 - `ChatsListViewModel` is the collapse boundary for duplicated active match
   documents. It renders one thread preview per other user, aggregates unread
@@ -179,107 +179,107 @@ operation ownership drift.
 - Changed Razorpay signature verification to use `crypto.timingSafeEqual`
   through `verifyPaymentSignatureWithSecret`, with tests for valid and malformed
   signatures.
-- Added a testable `signUpForFreeRunHandler` seam. The callable now trims and
-  rejects blank `runId` values, rate-limits before reading run docs, verifies
-  the run is free, and delegates booking to the shared sign-up helper.
+- Added a testable `signUpForFreeEventHandler` seam. The callable now trims and
+  rejects blank `eventId` values, rate-limits before reading event docs, verifies
+  the event is free, and delegates booking to the shared sign-up helper.
 - Report writes now trim bounded optional fields and omit blank optional notes
   instead of storing raw whitespace.
-- Added a testable `syncRunClubReviewStatsHandler` seam. The review aggregate
+- Added a testable `syncClubReviewStatsHandler` seam. The review aggregate
   trigger now remains a thin adapter while focused tests cover rating/count
   recompute, last-review deletion reset, and review moves between clubs.
 - Fixed the Functions test entrypoint to include compiled review tests through
   `lib/reviews/*.test.js`, so review trigger coverage is part of the normal
   `npm --prefix functions test` command.
 - Added aggregate repair tooling for post-relationship-migration data:
-  - `tool/recompute_run_club_member_counts.mjs` recomputes
-    `runClubs/{clubId}.memberCount` from active
-    `runClubMemberships/{clubId_uid}` edge documents.
+  - `tool/recompute_club_member_counts.mjs` recomputes
+    `clubs/{clubId}.memberCount` from active
+    `clubMemberships/{clubId_uid}` edge documents.
   - `tool/recompute_run_aggregate_counts.mjs` recomputes
-    `runs/{runId}.bookedCount`, `checkedInCount`, `waitlistedCount`, and
-    `genderCounts` from `runParticipations/{runId_uid}` edge documents.
-  - `tool/validate_firestore_data.mjs` now reports member/run aggregate drift
+    `events/{eventId}.bookedCount`, `checkedInCount`, `waitlistedCount`, and
+    `genderCounts` from `eventParticipations/{eventId_uid}` edge documents.
+  - `tool/validate_firestore_data.mjs` now reports member/event aggregate drift
     by comparing parent projections to the current edge-document source of
     truth.
 - Dev data repair completed after the edge-document migration:
-  - `node tool/recompute_run_club_member_counts.mjs --env dev --json` found 2
-    stale run-club count projections and 0 membership edges.
-  - `node tool/recompute_run_club_member_counts.mjs --env dev --apply`
+  - `node tool/recompute_club_member_counts.mjs --env dev --json` found 2
+    stale event-club count projections and 0 membership edges.
+  - `node tool/recompute_club_member_counts.mjs --env dev --apply`
     reset both stale `memberCount` projections to 0.
   - `node tool/recompute_run_aggregate_counts.mjs --env dev --json` found 4
-    stale run aggregate projections and 0 participation edges.
+    stale event aggregate projections and 0 participation edges.
   - `node tool/recompute_run_aggregate_counts.mjs --env dev --apply`
-    reset those run count projections and `genderCounts` from the edge source.
+    reset those event count projections and `genderCounts` from the edge source.
   - `node tool/validate_firestore_data.mjs --env dev --json` then scanned 10
     docs with 0 errors and 0 warnings.
-- Verification: `npm --prefix functions run lint` and
+- Verification: `npm --prefix functions event lint` and
   `npm --prefix functions test` passed, focused review tests passed through
   `node --test functions/lib/reviews/*.test.js`, aggregate repair tool tests
-  passed through `node --test tool/recompute_run_club_member_counts.test.mjs
+  passed through `node --test tool/recompute_club_member_counts.test.mjs
   tool/recompute_run_aggregate_counts.test.mjs`, and dev live-data validation
   passed with 0 errors / 0 warnings.
 - Next Functions queue: add handler seams and focused tests for remaining
   trigger/direct callable files that are not yet covered by the normal suite,
   starting with `syncPublicProfile`, `moderateChatMessage`,
-  `moderatePhotoOnUpload`, `joinRunWaitlist` / `leaveRunWaitlist`,
-  `cancelRunSignUp`, `markRunAttendance`, and `selfCheckInAttendance`.
+  `moderatePhotoOnUpload`, `joinEventWaitlist` / `leaveEventWaitlist`,
+  `cancelEventSignUp`, `markEventAttendance`, and `selfCheckInAttendance`.
 
 ### 2026-05-07: Relationship Array Retirement
 
-- Removed run-club membership arrays, run participation arrays, and saved-run
+- Removed event-club membership arrays, event participation arrays, and saved-event
   arrays from Dart domain models, generated Functions types, Cloud Functions
   writes, Firestore rules, active validation tooling, and active tests.
 - Booking, waitlist, cancellation, attendance, and self-check-in Functions now
-  read roster state from `runParticipations` and maintain only
+  read roster state from `eventParticipations` and maintain only
   `bookedCount`, `waitlistedCount`, `checkedInCount`, and `genderCounts` on
-  `runs/{runId}`.
-- Run-club create/join/leave Functions now read membership state from
-  `runClubMemberships` and maintain only `memberCount` on
-  `runClubs/{clubId}`.
-- `users/{uid}` no longer carries run-club membership or saved-run projections.
+  `events/{eventId}`.
+- Event-club create/join/leave Functions now read membership state from
+  `clubMemberships` and maintain only `memberCount` on
+  `clubs/{clubId}`.
+- `users/{uid}` no longer carries event-club membership or saved-event projections.
 
-### 2026-05-07: Notification Preferences, Club Bell, And Run Reminders
+### 2026-05-07: Notification Preferences, Club Bell, And Event Reminders
 
 - Added granular user notification preferences to `users/{uid}`:
   `prefsMessages`, `prefsRunStatusUpdates`, and `prefsClubUpdates`, while
-  retaining `prefsNewCatches`, `prefsRunReminders`, and `prefsWeeklyDigest`.
-- Added `runClubMemberships/{clubId_uid}.pushNotificationsEnabled` as the
+  retaining `prefsNewCatches`, `prefsEventReminders`, and `prefsWeeklyDigest`.
+- Added `clubMemberships/{clubId_uid}.pushNotificationsEnabled` as the
   per-club bell opt-in. Active membership still means club updates appear in
   Activity; the bell gates FCM push for non-critical club updates.
-- Added `setRunClubNotificationPreference` callable so the client does not
+- Added `setClubNotificationPreference` callable so the client does not
   write membership-edge notification flags directly.
-- Added scheduled `sendRunReminders`, which creates deterministic
-  `runReminder_${runId}` durable items and pushes roughly 15 minutes before a
-  signed-up run starts. Existing durable reminder docs suppress duplicate local
+- Added scheduled `sendEventReminders`, which creates deterministic
+  `runReminder_${eventId}` durable items and pushes roughly 15 minutes before a
+  signed-up event starts. Existing durable reminder docs suppress duplicate local
   derived rows in the Activity tab.
 - Updated push policy: matches use `prefsNewCatches`, messages use
-  `prefsMessages`, reminders use `prefsRunReminders`, schedule/cancellation and
+  `prefsMessages`, reminders use `prefsEventReminders`, schedule/cancellation and
   waitlist promotion use `prefsRunStatusUpdates`, and club updates require both
   `prefsClubUpdates` and the per-club bell.
 
-### 2026-05-07: Run Schedule-Change And Cancellation Notifications
+### 2026-05-07: Event Schedule-Change And Cancellation Notifications
 
-- Added canonical run lifecycle fields to `Run`: `status`, `cancelledAt`, and
+- Added canonical event lifecycle fields to `Event`: `status`, `cancelledAt`, and
   `cancellationReason`. Existing reads default missing `status` to `active` in
   Dart for legacy/beta data tolerance.
-- `createRun` initializes lifecycle fields as active. `cancelRun` is now a
-  host-only callable that marks the run cancelled and fans out deterministic
-  `runCancelled_${runId}` durable activity items plus push notifications to
+- `createEvent` initializes lifecycle fields as active. `cancelEvent` is now a
+  host-only callable that marks the event cancelled and fans out deterministic
+  `runCancelled_${eventId}` durable activity items plus push notifications to
   signed-up and waitlisted participants.
-- `updateRun` now fans out deterministic `runUpdated_${runId}` activity items
+- `updateEvent` now fans out deterministic `runUpdated_${eventId}` activity items
   and push notifications only when schedule/location fields change. Copy-only
   edits stay quiet.
-- Cancelled runs are blocked from new free signups, paid order creation,
+- Cancelled events are blocked from new free signups, paid order creation,
   waitlist joins, host attendance toggles, and self-check-in.
 - Remaining product debt: define cancellation/refund policy, add host-facing
-  cancellation UI, and decide how cancelled runs should render on list/detail
+  cancellation UI, and decide how cancelled events should render on list/detail
   surfaces.
 
-### 2026-05-07: Club Hosted-Run Notifications
+### 2026-05-07: Club Hosted-Event Notifications
 
-- Extended `NOTIFICATIONS-QUEUE` to new runs posted by followed clubs.
-- `createRun` now performs best-effort fan-out after the run document commits:
-  active `runClubMemberships` members receive deterministic
-  `clubUpdate_${runId}` activity items, while the host is excluded.
+- Extended `NOTIFICATIONS-QUEUE` to new events posted by followed clubs.
+- `createEvent` now performs best-effort fan-out after the event document commits:
+  active `clubMemberships` members receive deterministic
+  `clubUpdate_${eventId}` activity items, while the host is excluded.
 - Push is now sent only to active members with an FCM token, global
   `prefsClubUpdates != false`, and per-membership
   `pushNotificationsEnabled == true`; the durable in-app item is written
@@ -287,13 +287,13 @@ operation ownership drift.
 - Remaining notification producers from this note were completed in the
   notification preferences/reminder pass above.
 
-### 2026-05-07: Run Signup And Waitlist Promotion Notifications
+### 2026-05-07: Event Signup And Waitlist Promotion Notifications
 
-- Extended the durable activity timeline to run booking state changes.
-- `signUpUserForRun` now writes a deterministic `runSignup_${runId}` activity
-  item for normal booking confirmations and a `waitlistPromotion_${runId}` item
+- Extended the durable activity timeline to event booking state changes.
+- `signUpUserForEvent` now writes a deterministic `runSignup_${eventId}` activity
+  item for normal booking confirmations and a `waitlistPromotion_${eventId}` item
   when the user was waitlisted before the successful signup.
-- `cancelRunSignUp` now writes a `waitlistPromotion_${runId}` activity item
+- `cancelEventSignUp` now writes a `waitlistPromotion_${eventId}` activity item
   for the waitlisted user it promotes, and sends a push notification to that
   user when an FCM token is available.
 - Self-initiated booking confirmations remain in-app only to avoid a redundant
@@ -312,14 +312,14 @@ operation ownership drift.
 - `onMessageCreated` now writes deterministic recipient activity items in the
   same transaction that updates unread counts and event receipts.
 - The Home Activity tab now reads `watchActivityNotificationsProvider(uid)`
-  for durable match/message activity and keeps deriving upcoming run reminders
-  locally until run producers are implemented.
+  for durable match/message activity and keeps deriving upcoming event reminders
+  locally until event producers are implemented.
 - Firestore rules allow users to read only their own notification timeline and
   update only `readAt`; client-created notification items and content edits are
   denied.
-- Remaining notification producers after this foundation pass were upcoming run
-  reminders, signup/waitlist promotion, run cancellation/schedule changes, and
-  club/hosted-run updates. Signup/waitlist promotion was implemented in the
+- Remaining notification producers after this foundation pass were upcoming event
+  reminders, signup/waitlist promotion, event cancellation/schedule changes, and
+  club/hosted-event updates. Signup/waitlist promotion was implemented in the
   following slice above.
 
 ### 2026-05-06: Callable Rate Limit Enforcement
@@ -327,8 +327,8 @@ operation ownership drift.
 - Closed `FUNCTIONS-RATE-LIMIT-001`: every callable named in the Functions
   audit now enforces its declared shared rate limit before expensive or
   destructive work.
-- Added enforcement to `verifyRazorpayPayment`, `cancelRunSignUp`,
-  `joinRunWaitlist`, `blockUser`, `unblockUser`, and
+- Added enforcement to `verifyRazorpayPayment`, `cancelEventSignUp`,
+  `joinEventWaitlist`, `blockUser`, `unblockUser`, and
   `requestAccountDeletion`.
 - Added `updateUserProfile` to `RATE_LIMITS` at 60 requests/minute. This keeps
   profile edit sheets responsive for field-by-field saves while preventing an
@@ -356,7 +356,7 @@ operation ownership drift.
 Follow-up debt:
 
 - `NOTIFICATIONS-QUEUE`: durable activity timeline exists for match/message
-  events; add the remaining run and club producers through the same
+  events; add the remaining event and club producers through the same
   backend-owned helper.
 
 ### 2026-05-06: UserProfile.displayName
@@ -378,41 +378,41 @@ Follow-up debt:
 - Added `docs/firestore_relationship_documents_migration.md` as the active
   tracker for relationship/action docs, match-scoped messages, migration
   tooling, and deletion/anonymization payoff.
-- Added generated Dart/TypeScript models for `RunClubMembership`,
-  `RunParticipation`, and `SavedRun`.
+- Added generated Dart/TypeScript models for `ClubMembership`,
+  `EventParticipation`, and `SavedEvent`.
 - `ChatMessage` now lives under
   `matches/{matchId}/messages/{messageId}` instead of the legacy
   `chats/{matchId}/messages/{messageId}` namespace.
-- Cloud Functions now write `runClubMemberships` for club create/join/leave and
-  `runParticipations` for signup, waitlist, cancellation, host attendance, and
+- Cloud Functions now write `clubMemberships` for club create/join/leave and
+  `eventParticipations` for signup, waitlist, cancellation, host attendance, and
   participant self-check-in.
-- Dashboard, Run Clubs list/detail, and Run Map membership reads now use
-  `runClubMemberships`.
-- `savedRuns/{uid_runId}` is now the owner-owned saved-run edge. Run detail
+- Dashboard, Clubs list/detail, and Event Map membership reads now use
+  `clubMemberships`.
+- `savedEvents/{uid_eventId}` is now the owner-owned saved-event edge. Event detail
   reads saved state from the edge document; save/unsave do not mirror to the
   private user profile.
-- Run detail reads the current viewer's booking, waitlist, attendance, and
-  review-gate state from `runParticipations/{runId_uid}`. The run participant
+- Event detail reads the current viewer's booking, waitlist, attendance, and
+  review-gate state from `eventParticipations/{eventId_uid}`. The event participant
   aggregate fields are count projections only.
-- `watchSignedUpRunsProvider` and `watchAttendedRunsProvider` now read
-  `runParticipations` by user/status and then watch matching run documents by
-  ID. Dashboard, Calendar, Run Map, Activity, and Swipe Hub use those
+- `watchSignedUpEventsProvider` and `watchAttendedEventsProvider` now read
+  `eventParticipations` by user/status and then watch matching event documents by
+  ID. Dashboard, Calendar, Event Map, Activity, and Swipe Hub use those
   edge-backed streams without changing their screen-level provider contracts.
 - Host attendance management now reads roster and checked-in state from
-  `runParticipations` through `AttendanceSheetViewModel`.
-- Swipe candidate generation, swipe empty-state attendance gating, and run
-  recap attendee/checked-in state now read `runParticipations`.
-- Swipe and review Firestore rules now use `runParticipations` for attendance
+  `eventParticipations` through `AttendanceSheetViewModel`.
+- Swipe candidate generation, swipe empty-state attendance gating, and event
+  recap attendee/checked-in state now read `eventParticipations`.
+- Swipe and review Firestore rules now use `eventParticipations` for attendance
   eligibility. `users/{uid}` private reads are owner-only; app-facing discovery
   must use `publicProfiles/{uid}`.
-- Run participation count projections are now explicit `runs/{runId}` fields:
+- Event participation count projections are now explicit `events/{eventId}` fields:
   `bookedCount`, `waitlistedCount`, and `checkedInCount`. Create/signup,
   payment verification, waitlist, cancellation, host attendance, and self
   check-in Functions maintain these fields. `WhoIsRunning` and
   `HostRunManageScreen` use
-  `runParticipations` for exact rosters; list/stat surfaces use count
+  `eventParticipations` for exact rosters; list/stat surfaces use count
   projections. Production UI grep for direct participant-array reads is clean
-  apart from generated `Run` serialization.
+  apart from generated `Event` serialization.
 - Firestore rules and emulator tests now cover relationship-doc read/write
   ownership and match-scoped message creation.
 - `tool/firestore_relationship_migration.mjs` now only copies legacy
@@ -425,7 +425,7 @@ Follow-up debt:
 
 - `RELATIONSHIP-DOC-MIGRATION`: keep on watch for regressions; do not re-add
   relationship arrays to models, Functions, rules, active tooling, or tests.
-- `DELETE-METHODOLOGY-QUEUE`: rewrite account/run/club deletion around
+- `DELETE-METHODOLOGY-QUEUE`: rewrite account/event/club deletion around
   relationship-doc queries.
 - `MIGRATION-VALIDATION-001`: add migration apply count validation and seeded
   fixture tests before running apply on shared beta data.
@@ -437,39 +437,39 @@ Follow-up debt:
 - [x] Create this tracker.
 - [x] Record current dirty-worktree boundaries before editing implementation
   files.
-- [x] Run or record focused baseline checks for the current Firestore/Functions
+- [x] Event or record focused baseline checks for the current Firestore/Functions
   surface.
 - [x] Update stale docs references from `functions/src/types/firestore.ts` to
   `functions/src/shared/firestore.ts`.
 
-### Phase 1: Move Run Club Membership To Cloud Functions
+### Phase 1: Move Club Membership To Cloud Functions
 
-- [x] Add `createRunClub` callable so initial club creation and host membership
+- [x] Add `createClub` callable so initial club creation and host membership
   projection are server-owned.
-- [x] Add `joinRunClub` callable.
-- [x] Add `leaveRunClub` callable.
+- [x] Add `joinClub` callable.
+- [x] Add `leaveClub` callable.
 - [x] Use shared callable App Check options.
 - [x] Use shared auth and validation helpers.
 - [x] Use shared callable rate limiting for create/join/leave club operations.
 - [x] Make both callables idempotent.
-- [x] Create/update `runClubMemberships/{clubId_uid}`.
-- [x] Update `runClubs/{clubId}.memberCount`.
+- [x] Create/update `clubMemberships/{clubId_uid}`.
+- [x] Update `clubs/{clubId}.memberCount`.
 - [x] Retire profile and club membership arrays.
 - [x] Reject deleted users and missing/incomplete profiles.
 - [x] Add Function unit tests for success, idempotency, missing docs, and
   invalid input.
 - [x] Update Flutter repository/client methods to call Functions.
 - [x] Update Flutter tests.
-- [x] Tighten Firestore rules so `runClubs` creation and membership state are
+- [x] Tighten Firestore rules so `clubs` creation and membership state are
   callable-owned.
 - [x] Fully retire direct profile membership projection updates.
 - [x] Update rules tests for denied direct membership writes and allowed
   callable-admin effects via seeded data.
 - [x] Verify:
-  - [x] `npm --prefix functions run lint`
-  - [x] `npm --prefix functions run build`
+  - [x] `npm --prefix functions event lint`
+  - [x] `npm --prefix functions event build`
   - [x] `npm --prefix functions test`
-  - [x] `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`
+  - [x] `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`
   - [x] Focused `flutter analyze`
   - [x] Focused `flutter test`
 
@@ -479,9 +479,9 @@ Follow-up debt:
 - [x] Classify each as client-owned, callable-owned, trigger-owned, or legacy.
 - [x] Remove or deprecate legacy direct write methods that are no longer used.
 - [x] Decide whether `leaveWaitlist` should move to a callable.
-- [x] Decide whether `createRun`, and host edits should remain client-direct
+- [x] Decide whether `createEvent`, and host edits should remain client-direct
   or move to callables.
-- [x] Move run-club profile edits and review mutations to callables so rules
+- [x] Move event-club profile edits and review mutations to callables so rules
   no longer duplicate those validation contracts.
 - [x] Document final mutation ownership in this file and `PROJECT_CONTEXT.md`.
 - [x] Verify focused analyze/tests after each migrated mutation.
@@ -492,7 +492,7 @@ Client-owned and acceptable for now:
 
 - `lib/user_profile/data/user_profile_repository.dart`
   - `setUserProfile`, profile field updates, photo URLs, profile-complete flag,
-    saved-run array changes, and notification preferences.
+    saved-event array changes, and notification preferences.
   - Rationale: owner-only profile/preference writes are narrow and rules
     validate shape/field ownership.
 - `lib/onboarding/data/onboarding_draft_repository.dart`
@@ -515,38 +515,38 @@ Client-owned and acceptable for now:
 
 Callable-owned after Phase 1:
 
-- `lib/run_clubs/data/run_clubs_repository.dart`
-  - `createRunClub`, `updateRunClub`, `joinClub`, `leaveClub`.
+- `lib/clubs/data/clubs_repository.dart`
+  - `createClub`, `updateClub`, `joinClub`, `leaveClub`.
   - Rationale: each writes server-derived fields, aggregate projections, or
     host-authorized profile data that should be Zod-validated server-side.
 - `lib/reviews/data/reviews_repository.dart`
-  - `createRunReview`, `updateRunReview`, `deleteRunReview`.
+  - `createEventReview`, `updateEventReview`, `deleteEventReview`.
   - Rationale: review mutations derive public reviewer name, verify attended
-    run participation, enforce ownership, and leave aggregate stats to the
+    event participation, enforce ownership, and leave aggregate stats to the
     recompute trigger.
 
 Resolved mutation boundaries:
 
-- `lib/run_clubs/data/run_clubs_repository.dart`
-  - `updateRunClub`.
+- `lib/clubs/data/clubs_repository.dart`
+  - `updateClub`.
   - Decision: keep direct for now. It is host-owned, single-document, and rules
     freeze membership/rating/derived fields.
-- `lib/runs/data/run_repository.dart`
-  - `createRun`, host run details update, `leaveWaitlist`.
-  - Decision: `createRun` and host run details updates moved to callables in
-    Phase 9 so host authority, run/club consistency, and server-owned booking
+- `lib/events/data/event_repository.dart`
+  - `createEvent`, host event details update, `leaveWaitlist`.
+  - Decision: `createEvent` and host event details updates moved to callables in
+    Phase 9 so host authority, event/club consistency, and server-owned booking
     state are enforced on the backend. `leaveWaitlist` is now callable-owned
-    as well, so clients no longer update `runs/{runId}` directly for waitlist
+    as well, so clients no longer update `events/{eventId}` directly for waitlist
     state.
 
 Removed or denied:
 
-- `lib/runs/data/run_repository.dart`
+- `lib/events/data/event_repository.dart`
   - `signUpForRun`.
   - Decision: removed. Direct `signedUpUserIds` updates bypass capacity, gender
     counts, payments, block checks, and server validation.
-- `runClubs` and `runs` direct deletes.
-  - Decision: denied in rules and removed from the run-clubs repository API
+- `clubs` and `events` direct deletes.
+  - Decision: denied in rules and removed from the event-clubs repository API
     where present. Deletes need backend cleanup/refund behavior before they are
     safe to expose.
 
@@ -561,12 +561,12 @@ Removed or denied:
 - [x] Extend or complement `tool/generate_firestore_types.dart` so contract
   checks cover rules-sensitive schema metadata.
 - [x] Add `tool/check_data_contract.sh`.
-- [x] Make the checker run:
+- [x] Make the checker event:
   - [x] Dart-to-TypeScript generation drift check.
   - [x] Firestore rules tests.
   - [x] Functions build/lint/tests.
   - [x] Focused Flutter checks where practical.
-- [x] Add CI triggers so model/domain/schema changes run Firestore rules tests.
+- [x] Add CI triggers so model/domain/schema changes event Firestore rules tests.
 - [x] Verify CI-relevant commands locally.
 
 ### Phase 4: Rules Simplification And Shape Validation Strategy
@@ -589,7 +589,7 @@ Notes:
   updates now validate field ownership instead of the entire document. This
   avoids Firestore's rules expression ceiling and prevents server-owned retained
   fields such as `deleted`/`deletedAt` from breaking unrelated profile edits.
-- `runClubs/{clubId}` direct writes are denied; create/update/archive/delete
+- `clubs/{clubId}` direct writes are denied; create/update/archive/delete
   and membership remain callable-owned.
 - `onboarding_drafts/{uid}` is intentionally forward-compatible because it is
   private owner-only draft state and changes quickly with onboarding.
@@ -609,7 +609,7 @@ Notes:
 - `onMessageCreated` now writes `functionEventReceipts/{receiptId}` in the same
   transaction as the match preview/unread-count update so trigger retries do
   not double-increment unread counts.
-- `syncRunClubReviewStats` and `syncPublicProfile` recompute/set final state,
+- `syncClubReviewStats` and `syncPublicProfile` recompute/set final state,
   so duplicate events are naturally idempotent.
 - `onSwipeCreated` uses deterministic match IDs and `create()`, so duplicate
   trigger execution does not duplicate matches.
@@ -621,24 +621,26 @@ Notes:
 - [x] Decide whether current arrays are acceptable for expected production
   scale.
 - [x] If arrays remain, document limits and monitoring signals.
-- [ ] If edge docs are needed, design:
-  - [ ] `runClubMemberships/{clubId_uid}`,
-  - [ ] `runSignups/{runId_uid}` or equivalent,
-  - [ ] backfill scripts,
-  - [ ] dual-read/write rollout,
-  - [ ] final rules tightening.
-- [ ] Do not tighten production rules until migration safety is documented and
+- [x] If edge docs are needed, design and implement:
+  - [x] `clubMemberships/{clubId_uid}`,
+  - [x] `eventParticipations/{eventId_uid}`,
+  - [x] `savedEvents/{uid_eventId}`,
+  - [x] match-scoped `matches/{matchId}/messages/{messageId}`,
+  - [x] validation tooling and beta-reset fallback notes,
+  - [x] final rules tightening for retired relationship arrays.
+- [x] Do not tighten production rules until migration safety is documented and
   verified against live-like fixtures.
 
 Decision:
 
-- Keep membership/sign-up arrays for this pass now that multi-document
-  mutations are callable-owned and idempotent. This is acceptable for MVP-scale
-  clubs/runs where member and attendee counts are modest.
-- Revisit edge documents before large clubs, high-churn events, or anything
-  approaching Firestore's 1 MiB document limit or sustained contention on the
-  same run/club document. Monitor document size, transaction contention, and
-  permission-denied/write-failed Analytics spikes.
+- The original "keep arrays for this pass" decision has been superseded by the
+  relationship-document migration. `docs/firestore_relationship_documents_migration.md`
+  is now the durable owner for the edge-doc model, beta reset strategy,
+  validation tooling, and deletion/anonymization payoff.
+- Parent `clubs` and `events` retain aggregate projections only, such as
+  `memberCount`, `bookedCount`, `waitlistedCount`, `checkedInCount`, and
+  `genderCounts`. Do not reintroduce relationship arrays to active models,
+  Functions, rules, validation tooling, or tests.
 
 ### Phase 7: Operational Cleanup
 
@@ -646,16 +648,16 @@ Decision:
 - [x] Decide whether debug tokens should be removed from checked-in
   `tool/dart_defines/dev.json`.
 - [x] Ensure deploy runbooks mention required data seeds and rollback order.
-- [x] Ensure rules deploy predeploy checks actually run rules tests, not only
+- [x] Ensure rules deploy predeploy checks actually event rules tests, not only
   Functions tests.
 - [x] Add a production smoke-test checklist for:
   - [x] profile update,
   - [x] create club,
   - [x] join club,
   - [x] leave club,
-  - [x] create run,
-  - [x] book free run,
-  - [x] paid run payment verification,
+  - [x] create event,
+  - [x] book free event,
+  - [x] paid event payment verification,
   - [x] chat send,
   - [x] unread reset,
   - [x] block/report/account deletion.
@@ -664,7 +666,7 @@ Notes:
 
 - Removed the checked-in dev App Check debug token. Local device debug tokens
   should be exported via `FIREBASE_APP_CHECK_DEBUG_TOKEN`.
-- Firestore deploy predeploy now runs the rules emulator suite, not only
+- Firestore deploy predeploy now events the rules emulator suite, not only
   Functions tests.
 
 ### Phase 8: Extended Contract Hardening Review
@@ -673,18 +675,18 @@ These tasks come from the second-pass contract review after the basic
 Firestore/Functions cleanup passed. They should be handled incrementally with
 focused tests after each slice, then a final `./tool/check_data_contract.sh`.
 
-- [x] P1: Tighten `runs/{runId}` host updates. The current host update branch
+- [x] P1: Tighten `events/{eventId}` host updates. The current host update branch
   only blocks `signedUpUserIds`, `attendedUserIds`, and `genderCounts`, which
-  still lets hosts directly change `waitlistUserIds`, `runClubId`,
+  still lets hosts directly change `waitlistUserIds`, `clubId`,
   `capacityLimit`, `priceInPaise`, and `constraints` after creation. That
   weakens the callable-owned booking/waitlist contract and makes direct
   waitlist self-removal less meaningful. Follow-up complete: waitlist
-  self-removal is now callable-owned too, and direct `runs/{runId}` updates are
+  self-removal is now callable-owned too, and direct `events/{eventId}` updates are
   denied.
 - [x] P1: Validate `swipes/{userId}/outgoing/{targetId}` create payloads. Rules
   currently check owner, deleted-target state, and block state, but not
-  `direction`, `runId`, path/data identity, allowed fields, or extra fields. The
-  `onSwipeCreated` trigger trusts `direction` and `runId`, so malformed client
+  `direction`, `eventId`, path/data identity, allowed fields, or extra fields. The
+  `onSwipeCreated` trigger trusts `direction` and `eventId`, so malformed client
   data can create malformed or surprising match records.
 - [x] P1: Revisit `users/{uid}` owner profile update validation. The current
   update path validates changed field names but not changed value types. That
@@ -701,13 +703,13 @@ focused tests after each slice, then a final `./tool/check_data_contract.sh`.
   only `step` for forward-compatible owner-private draft state. Either the
   contract should encode the document as extensible or the rules should enforce
   the fixed field set.
-- [x] P2: Clean the run-club creation Flutter API. `RunClubsRepository` still
+- [x] P2: Clean the event-club creation Flutter API. `ClubsRepository` still
   accepts `hostUserId`, `hostName`, and `hostAvatarUrl` even though the
-  `createRunClub` callable ignores client host identity and derives host fields
+  `createClub` callable ignores client host identity and derives host fields
   from `users/{uid}`. The server behavior is correct, but the Dart API contract
   is misleading.
-- [x] P2: Include moderation tests in `npm test`. The package test script runs
-  matching, payments, run-clubs, safety, waitlist, and callable App Check tests,
+- [x] P2: Include moderation tests in `npm test`. The package test script events
+  matching, payments, event-clubs, safety, waitlist, and callable App Check tests,
   but omits compiled moderation tests even though
   `functions/src/moderation/textFilter.test.ts` exists.
 
@@ -727,39 +729,39 @@ These decisions were approved after the Phase 8 review. Work through them in
 small slices because they touch backend authorization, UI affordances, rules,
 client repository contracts, and live-data readiness.
 
-- [x] Block hosts from leaving their own run club.
-  - [x] Reject host leave attempts in the `leaveRunClub` callable.
+- [x] Block hosts from leaving their own club.
+  - [x] Reject host leave attempts in the `leaveClub` callable.
   - [x] Verify the host detail UI does not expose a leave-club action.
   - [x] Add/adjust tests for both backend rejection and UI hiding.
-- [x] Enforce one review per user per run.
-  - [x] Use deterministic review IDs derived from `runId` and
+- [x] Enforce one review per user per event.
+  - [x] Use deterministic review IDs derived from `eventId` and
     `reviewerUserId`.
   - [x] Update the repository read/write path so it no longer needs a query to
-    find the current user's review for a run.
+    find the current user's review for a event.
   - [x] Tighten Firestore rules so review document IDs match the deterministic
-    contract and review creates require a run-scoped review.
+    contract and review creates require a event-scoped review.
   - [x] Add rules and Dart tests for allowed deterministic creates and denied
     malformed/random-ID creates.
-- [x] Move run creation and host run edits toward callable-owned mutation
+- [x] Move event creation and host event edits toward callable-owned mutation
   contracts.
-  - [x] Design/implement `createRun` callable validation that derives host
+  - [x] Design/implement `createEvent` callable validation that derives host
     authority from the authenticated user and their hosted club.
-  - [x] Design/implement host run edit callable validation for schedule and
+  - [x] Design/implement host event edit callable validation for schedule and
     descriptive fields while keeping booking, payment, eligibility, attendance,
     and ownership fields server-owned.
-  - [x] Update `RunRepository`, controllers, tests, and Firestore rules so
-    clients do not directly mutate sensitive run state.
+  - [x] Update `EventRepository`, controllers, tests, and Firestore rules so
+    clients do not directly mutate sensitive event state.
 - [x] Add live-data validation tooling before migration.
   - [x] Add a read-only Firestore validation script that checks document shape,
     required fields, array lengths, approximate document size, and edge-case
-    values across users, run clubs, runs, reviews, swipes, matches, chats, and
+    values across users, clubs, events, reviews, swipes, matches, chats, and
     onboarding drafts.
   - [x] Support dev/staging project selection and emulator mode without
     hard-coding production credentials.
-  - [x] Document how to run the validator and how to interpret failures before
+  - [x] Document how to event the validator and how to interpret failures before
     tightening production/staging rules.
 - [x] Prepare but do not rush live migration.
-  - [x] Run validation against dev/staging first.
+  - [x] Event validation against dev/staging first.
   - [x] Inspect the small current production dataset before writing migration
     code.
   - [x] Add migration scripts only after validation output identifies the
@@ -770,8 +772,8 @@ Approved decisions:
 
 - Hosts cannot leave clubs they host, and the app should not show hosts a
   leave-club button.
-- Reviews should be one per user per run; deterministic IDs are acceptable.
-- Run creation and host run edits should move to callable-owned contracts.
+- Reviews should be one per user per event; deterministic IDs are acceptable.
+- Event creation and host event edits should move to callable-owned contracts.
 - Validation, size, and array-length scripts should be added now; real-data
   migration can follow once the current data drift is known.
 - Dev and staging are acceptable deployment targets for this cleanup after local
@@ -782,19 +784,19 @@ Approved decisions:
 Append newest entries at the top.
 
 - 2026-05-05: Deleted all live review test data after mapping dependencies.
-  Added `tool/delete_firestore_reviews.mjs`, a dry-run-first Admin SDK cleanup
-  tool that maps all `reviews/{id}` docs, affected `runClubs`, affected `runs`,
+  Added `tool/delete_firestore_reviews.mjs`, a dry-event-first Admin SDK cleanup
+  tool that maps all `reviews/{id}` docs, affected `clubs`, affected `events`,
   reviewer `users`, detected review-reference fields, and required
-  `runClubs.rating`/`reviewCount` resets before applying deletion with
-  `--apply --confirm-delete-all-reviews`. Live dry-runs showed that all current
-  dev/prod reviews were legacy club-scoped reviews without `runId`; no affected
-  run documents or user documents contained review reference fields. Applied
+  `clubs.rating`/`reviewCount` resets before applying deletion with
+  `--apply --confirm-delete-all-reviews`. Live dry-events showed that all current
+  dev/prod reviews were legacy club-scoped reviews without `eventId`; no affected
+  event documents or user documents contained review reference fields. Applied
   cleanup to dev and prod. Dev deleted 3 reviews and reset
-  `runClubs/frrOLITIukUcUCFFFACS` from rating 3.6666666666666665/reviewCount 3
+  `clubs/frrOLITIukUcUCFFFACS` from rating 3.6666666666666665/reviewCount 3
   to 0/0. Prod deleted 5 reviews and reset
-  `runClubs/CPEXusszu0gnrZANT8fE`, `runClubs/Zvm256jqQmL5de98KIoj`,
-  `runClubs/fJlZbx9BewUXsOZwQKv3`, and
-  `runClubs/kqadT73GGy1o0VRlo98I` to rating 0/reviewCount 0. Staging had no
+  `clubs/CPEXusszu0gnrZANT8fE`, `clubs/Zvm256jqQmL5de98KIoj`,
+  `clubs/fJlZbx9BewUXsOZwQKv3`, and
+  `clubs/kqadT73GGy1o0VRlo98I` to rating 0/reviewCount 0. Staging had no
   reviews. Post-cleanup validation passed:
   `node tool/validate_firestore_data.mjs --env dev --json` scanned 9 docs with
   0 errors and 0 warnings;
@@ -815,7 +817,7 @@ Append newest entries at the top.
   with 0 errors and 0 warnings;
   `node tool/validate_firestore_data.mjs --env prod --json` scanned 34 docs
   with 0 errors and 5 legacy review warnings. The only live-data migration
-  surface found so far is old club-scoped reviews without `runId`.
+  surface found so far is old club-scoped reviews without `eventId`.
 - 2026-05-05: Attempted read-only live validation for dev with
   `node tool/validate_firestore_data.mjs --env dev --json`. The Firebase CLI is
   logged in and can list dev/staging/prod projects, but the Admin SDK validator
@@ -823,59 +825,59 @@ Append newest entries at the top.
   `GOOGLE_APPLICATION_CREDENTIALS` nor
   `~/.config/gcloud/application_default_credentials.json` is configured in this
   shell. `firebase/README.md` now documents the credential requirement. Next
-  step: configure ADC or a read-only service account, then run dev and staging
+  step: configure ADC or a read-only service account, then event dev and staging
   validation before migration or deploy.
 - 2026-05-05: Phase 9 final full data-contract verification passed:
   `./tool/check_data_contract.sh` completed generated TypeScript drift check,
   generator analysis, operation-aware Firestore contract metadata check,
   Firestore data validator syntax check, Functions lint, Functions tests
-  including run mutation tests, Firestore rules emulator tests, focused Flutter
+  including event mutation tests, Firestore rules emulator tests, focused Flutter
   analysis, and focused Flutter repository tests.
 - 2026-05-05: Phase 9 live-data validation tooling added. The read-only
   `tool/validate_firestore_data.mjs` script resolves project aliases from
   `.firebaserc`, supports emulator mode, checks required field types,
   approximate document size, high-growth array lengths, deterministic review
   IDs, path/data identity, and cross-document references across users,
-  public profiles, run clubs, runs, reviews, swipes, matches, chat messages,
+  public profiles, clubs, events, reviews, swipes, matches, chat messages,
   and onboarding drafts. `firebase/README.md` now documents the commands.
   Verification passed:
   `node --check tool/validate_firestore_data.mjs`;
   `node tool/validate_firestore_data.mjs --help`;
   `firebase emulators:exec --only firestore "node tool/validate_firestore_data.mjs --env dev --emulator --json"`.
-- 2026-05-05: Phase 9 run mutation callable migration completed. Added
-  `createRun` and `updateRun` callables with Zod validation, host authority
+- 2026-05-05: Phase 9 event mutation callable migration completed. Added
+  `createEvent` and `updateEvent` callables with Zod validation, host authority
   checks, rate limiting, server-owned booking arrays, and transport-safe epoch
-  millis for timestamps. `RunRepository.createRun` now calls `createRun`, and
-  `updateRunDetails` calls `updateRun`. Firestore rules now deny direct run
+  millis for timestamps. `EventRepository.createEvent` now calls `createEvent`, and
+  `updateEventDetails` calls `updateEvent`. Firestore rules now deny direct event
   creates and direct host detail edits. A later relationship-doc slice moved
-  waitlist self-removal behind `leaveRunWaitlist` as well. Verification passed:
-  `npm --prefix functions run build`;
-  `npm --prefix functions run lint`;
-  `node --test functions/lib/runs/mutateRun.test.js`;
+  waitlist self-removal behind `leaveEventWaitlist` as well. Verification passed:
+  `npm --prefix functions event build`;
+  `npm --prefix functions event lint`;
+  `node --test functions/lib/events/mutateRun.test.js`;
   `node tool/check_firestore_contract.mjs`;
-  `flutter analyze lib/runs/data/run_repository.dart lib/runs/presentation/create_run_controller.dart test/runs/run_repository_test.dart test/runs/create_run_controller_test.dart`;
-  `flutter test test/runs/run_repository_test.dart test/runs/create_run_controller_test.dart`;
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
+  `flutter analyze lib/events/data/event_repository.dart lib/events/presentation/create_event_controller.dart test/events/event_repository_test.dart test/events/create_event_controller_test.dart`;
+  `flutter test test/events/event_repository_test.dart test/events/create_event_controller_test.dart`;
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
   `npm --prefix functions test`.
-- 2026-05-05: Phase 9 deterministic run reviews completed. Review creates now
-  use `runId~reviewerUserId` document IDs, `watchUserReviewForRun` reads the
+- 2026-05-05: Phase 9 deterministic event reviews completed. Review creates now
+  use `eventId~reviewerUserId` document IDs, `watchUserReviewForRun` reads the
   deterministic document directly, club pages show read-only review aggregates,
-  and Firestore rules require deterministic run-scoped review creates from
+  and Firestore rules require deterministic event-scoped review creates from
   attended users with matching user names. Verification passed:
   `node tool/check_firestore_contract.mjs`;
-  `flutter analyze lib/reviews/data/reviews_repository.dart lib/reviews/presentation/reviews_section.dart test/reviews/reviews_repository_test.dart test/runs/run_detail_widgets_test.dart test/run_clubs/run_clubs_widgets_test.dart`;
+  `flutter analyze lib/reviews/data/reviews_repository.dart lib/reviews/presentation/reviews_section.dart test/reviews/reviews_repository_test.dart test/events/event_detail_widgets_test.dart test/clubs/clubs_widgets_test.dart`;
   `flutter test test/reviews/reviews_repository_test.dart`;
-  `flutter test test/run_clubs/run_clubs_widgets_test.dart --plain-name "ClubDetailBody keeps club review aggregate read-only"`;
-  `flutter test test/runs/run_detail_widgets_test.dart --plain-name "renders detail sections and review CTA when attended"`;
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
-- 2026-05-05: Phase 9 host leave guard completed. The `leaveRunClub`
+  `flutter test test/clubs/clubs_widgets_test.dart --plain-name "ClubDetailBody keeps club review aggregate read-only"`;
+  `flutter test test/events/event_detail_widgets_test.dart --plain-name "renders detail sections and review CTA when attended"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`.
+- 2026-05-05: Phase 9 host leave guard completed. The `leaveClub`
   callable now rejects attempts by `hostUserId`, and the host club detail
   widget test explicitly verifies that hosts do not see `Leave club`.
   Verification passed:
-  `npm --prefix functions run build`;
-  `node --test functions/lib/runClubs/membership.test.js`;
-  `flutter analyze lib/run_clubs/presentation/detail/widgets/club_detail_body.dart test/run_clubs/run_clubs_widgets_test.dart`;
-  `flutter test test/run_clubs/run_clubs_widgets_test.dart --plain-name "ClubDetailBody host view exposes edit and create navigation"`.
+  `npm --prefix functions event build`;
+  `node --test functions/lib/clubs/membership.test.js`;
+  `flutter analyze lib/clubs/presentation/detail/widgets/club_detail_body.dart test/clubs/clubs_widgets_test.dart`;
+  `flutter test test/clubs/clubs_widgets_test.dart --plain-name "ClubDetailBody host view exposes edit and create navigation"`.
 - 2026-05-05: Phase 8 final full data-contract verification passed:
   `./tool/check_data_contract.sh` completed generated TypeScript drift check,
   generator analysis, operation-aware Firestore contract metadata check,
@@ -885,14 +887,14 @@ Append newest entries at the top.
   `npm --prefix functions test` now includes compiled moderation tests and the
   new profile callable tests. Verification passed:
   `npm --prefix functions test` (50 tests).
-- 2026-05-05: Phase 8 run-club creation Flutter API cleanup completed.
-  `RunClubsRepository.createRunClub` no longer accepts client-provided
+- 2026-05-05: Phase 8 event-club creation Flutter API cleanup completed.
+  `ClubsRepository.createClub` no longer accepts client-provided
   `hostUserId`, `hostName`, or `hostAvatarUrl`; the create controller no longer
   reads the current user profile just to pass ignored host fields; server-side
-  `createRunClub` remains the authority for host identity/projection fields.
+  `createClub` remains the authority for host identity/projection fields.
   Verification passed:
-  `flutter analyze lib/run_clubs/data/run_clubs_repository.dart lib/run_clubs/presentation/create/create_run_club_controller.dart test/run_clubs/run_clubs_repository_test.dart test/run_clubs/run_clubs_test_helpers.dart`;
-  `flutter test test/run_clubs/run_clubs_repository_test.dart`.
+  `flutter analyze lib/clubs/data/clubs_repository.dart lib/clubs/presentation/create/create_club_controller.dart test/clubs/clubs_repository_test.dart test/clubs/clubs_test_helpers.dart`;
+  `flutter test test/clubs/clubs_repository_test.dart`.
 - 2026-05-05: Phase 8 operation-aware contract tooling and onboarding contract
   alignment completed. `tool/firestore_contract.json` is now schema version 2
   and records operation ownership, callable names, allowed/denied fields,
@@ -910,40 +912,40 @@ Append newest entries at the top.
   only. Flutter `UserProfileRepository`
   now delegates profile patches/photo updates/profile completion to the callable
   and normalizes timestamp values for callable transport. Verification passed:
-  `npm --prefix functions run build`;
-  `npm --prefix functions run lint`;
+  `npm --prefix functions event build`;
+  `npm --prefix functions event lint`;
   `node --test functions/lib/profiles/updateUserProfile.test.js`;
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
   `flutter analyze lib/user_profile/data/user_profile_repository.dart test/user_profile/user_profile_repository_test.dart`;
   `flutter test test/user_profile/user_profile_repository_test.dart`.
 - 2026-05-05: Phase 8 swipe contract hardening completed. Direct swipe creates
   now require exact payload keys, path/data identity, valid `like`/`pass`
   direction, timestamp `createdAt`, a non-deleted target with a public profile,
-  an existing run, both users with attended `runParticipations`, and no block
+  an existing event, both users with attended `eventParticipations`, and no block
   edge between them. Verification passed:
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
-- 2026-05-05: Phase 8 run host update hardening completed. Host direct edits are
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`.
+- 2026-05-05: Phase 8 event host update hardening completed. Host direct edits are
   now limited to schedule/descriptive fields; booking-sensitive fields
   (`waitlistUserIds`, `signedUpUserIds`, `attendedUserIds`, `genderCounts`),
-  ownership fields (`runClubId`), and payment/eligibility fields
+  ownership fields (`clubId`), and payment/eligibility fields
   (`capacityLimit`, `priceInPaise`, `constraints`) are denied for direct host
   updates. Verification passed:
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`.
 - 2026-05-05: Final full data-contract verification passed after all Phase
   4-7 edits: `./tool/check_data_contract.sh` completed generator drift check,
   generator analyze, Firestore contract check, Functions lint/tests, Firestore
   rules emulator tests, focused Flutter analyze, and focused Flutter tests.
 - 2026-05-05: Phase 4-7 hardening completed for the current pass. Simplified
-  user, run-club, and onboarding-draft rules to avoid brittle full-shape
+  user, event-club, and onboarding-draft rules to avoid brittle full-shape
   validation on rapidly evolving owner-owned updates; added lifecycle-field,
   forward-compatible draft, host club update, and server-owned receipt rules
   tests; added idempotency receipts for `onMessageCreated`; made chat-message
   moderation flags deterministic; removed the checked-in App Check debug token;
-  fixed Firestore predeploy to run emulator rules tests; and expanded the deploy
+  fixed Firestore predeploy to event emulator rules tests; and expanded the deploy
   smoke checklist. Verification passed:
-  `npm --prefix functions run lint`;
+  `npm --prefix functions event lint`;
   `npm --prefix functions test`;
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
   `node tool/check_firestore_contract.mjs`;
   JSON parse checks for `firebase.json`, `tool/dart_defines/dev.json`, and
   `tool/firestore_contract.json`.
@@ -952,10 +954,10 @@ Append newest entries at the top.
   added `tool/check_firestore_contract.mjs` to verify rules path matches,
   generated TS interfaces, Dart model paths, exported Functions, and ownership
   field groups, wired the checker into `tool/check_data_contract.sh`, and made
-  Firestore rules CI run the contract checker plus emulator rules tests for
+  Firestore rules CI event the contract checker plus emulator rules tests for
   schema/tooling changes. Also added shared callable rate limiting to
-  `createRunClub`, `joinRunClub`, and `leaveRunClub`. Verification passed:
-  `npm --prefix functions run lint`;
+  `createClub`, `joinClub`, and `leaveClub`. Verification passed:
+  `npm --prefix functions event lint`;
   `npm --prefix functions test`;
   `node tool/check_firestore_contract.mjs`;
   `./tool/check_data_contract.sh` (generator drift, generator analyze,
@@ -963,43 +965,43 @@ Append newest entries at the top.
   Flutter analyze, focused Flutter tests).
 - 2026-05-05: Tracker created. No implementation verification required yet.
 - 2026-05-05: Phase 2 direct mutation audit completed for current high-risk
-  surfaces. Removed legacy `RunRepository.signUpForRun`, denied direct
-  `runClubs`/`runs` deletes in rules, removed `RunClubsRepository.deleteRunClub`,
-  and documented the then-current direct-write boundaries. `createRun` and
-  `leaveWaitlist` have since moved to callables; `updateRunClub` remains the
+  surfaces. Removed legacy `EventRepository.signUpForRun`, denied direct
+  `clubs`/`events` deletes in rules, removed `ClubsRepository.deleteClub`,
+  and documented the then-current direct-write boundaries. `createEvent` and
+  `leaveWaitlist` have since moved to callables; `updateClub` remains the
   intentional direct host-owned edit seam. Verification passed:
-  `flutter analyze lib/runs/data/run_repository.dart test/runs/run_repository_test.dart lib/run_clubs/data/run_clubs_repository.dart test/run_clubs/run_clubs_repository_test.dart test/run_clubs/run_clubs_test_helpers.dart`;
-  `flutter test test/runs/run_repository_test.dart test/run_clubs/run_clubs_repository_test.dart`;
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
-- 2026-05-05: Phase 1 run-club membership callable migration completed.
-  Added `createRunClub`, `joinRunClub`, and `leaveRunClub` callables under
-  `functions/src/runClubs/`, exported them from Functions, added unit tests,
-  changed Flutter `RunClubsRepository` create/join/leave methods to call
-  Functions, updated run-clubs controller/widget/repository tests, and denied
-  direct `runClubs` create/membership writes plus direct
-  `users.joinedRunClubIds` updates in rules.
+  `flutter analyze lib/events/data/event_repository.dart test/events/event_repository_test.dart lib/clubs/data/clubs_repository.dart test/clubs/clubs_repository_test.dart test/clubs/clubs_test_helpers.dart`;
+  `flutter test test/events/event_repository_test.dart test/clubs/clubs_repository_test.dart`;
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`.
+- 2026-05-05: Phase 1 event-club membership callable migration completed.
+  Added `createClub`, `joinClub`, and `leaveClub` callables under
+  `functions/src/clubs/`, exported them from Functions, added unit tests,
+  changed Flutter `ClubsRepository` create/join/leave methods to call
+  Functions, updated event-clubs controller/widget/repository tests, and denied
+  direct `clubs` create/membership writes plus direct
+  `users.joinedClubIds` updates in rules.
   Verification passed:
-  `npm --prefix functions run lint`;
-  `npm --prefix functions run build`;
+  `npm --prefix functions event lint`;
+  `npm --prefix functions event build`;
   `npm --prefix functions test`;
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
   focused `flutter analyze`;
   focused `flutter test`.
   Deploy-order note: deploy Functions and the Flutter client path before or
   together with the tightened Firestore rules. The new rules deny the old
-  direct client `runClubs` create/join/leave path.
+  direct client `clubs` create/join/leave path.
 - 2026-05-05: Phase 0 baseline passed after fixing generated TS lint output.
   Commands:
   `dart tool/generate_firestore_types.dart`;
   `dart analyze tool/generate_firestore_types.dart`;
-  `npm --prefix functions run lint`;
-  `npm --prefix functions run build`;
+  `npm --prefix functions event lint`;
+  `npm --prefix functions event build`;
   `npm --prefix functions test`;
-  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
-  `flutter analyze lib/run_clubs/data/run_clubs_repository.dart lib/run_clubs/presentation/detail/run_club_membership_controller.dart lib/run_clubs/presentation/list/run_clubs_list_controller.dart test/run_clubs/run_clubs_repository_test.dart test/run_clubs/run_clubs_list_controller_test.dart`;
-  `flutter test test/run_clubs/run_clubs_repository_test.dart test/run_clubs/run_clubs_list_controller_test.dart`.
+  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
+  `flutter analyze lib/clubs/data/clubs_repository.dart lib/clubs/presentation/detail/club_membership_controller.dart lib/clubs/presentation/list/clubs_list_controller.dart test/clubs/clubs_repository_test.dart test/clubs/clubs_list_controller_test.dart`;
+  `flutter test test/clubs/clubs_repository_test.dart test/clubs/clubs_list_controller_test.dart`.
 - 2026-05-05: Baseline initially failed at
-  `npm --prefix functions run lint` because `tool/generate_firestore_types.dart`
+  `npm --prefix functions event lint` because `tool/generate_firestore_types.dart`
   generated max-len violations in `functions/src/shared/firestore.ts`.
   Fixed the generator to wrap long JSDoc/property union lines, regenerated the
   TS file, and verified lint/build/tests/rules.
@@ -1015,7 +1017,7 @@ Append newest entries at the top.
 
 - Decision: relationship arrays are retired; edge documents own many-to-many
   state.
-- Decision: `updateRunClub` is callable-owned. Direct run-club writes are
+- Decision: `updateClub` is callable-owned. Direct event-club writes are
   denied in Firestore rules.
 - Decision: checked-in App Check debug tokens are removed; use local
   `FIREBASE_APP_CHECK_DEBUG_TOKEN` environment variables instead.

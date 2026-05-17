@@ -1,6 +1,6 @@
 # Event Policy Engine In Development
 
-Status: in production migration, wired into create-run and booking while the
+Status: in production migration, wired into create-event and booking while the
 lab remains available for product review.
 
 Owner intent:
@@ -8,8 +8,8 @@ Owner intent:
 - Keep `lib/event_policies/**` and `test/event_policies/**` even though the
   migration is still in progress and some formats remain preview-only.
 - Do not delete this code as dead code during cleanup/audit passes.
-- Production run creation now writes an `EventPolicyBundle` snapshot while
-  keeping `Run.capacityLimit`, `Run.priceInPaise`, and `RunConstraints` as
+- Production event creation now writes an `EventPolicyBundle` snapshot while
+  keeping `Event.capacityLimit`, `Event.priceInPaise`, and `EventConstraints` as
   backward-compatible projections for legacy surfaces and documents.
 - Booking/payment callables use backend-owned policy helpers for admission,
   cohort counts, viewer-specific price quotes, waitlist movement, and
@@ -29,9 +29,9 @@ Migration rule:
 
 1. Keep the lab read-only/static; it must not write drafts, Firestore, callables,
    Razorpay, attendance, swipes, reviews, or chat.
-2. Keep the live migration backward-compatible with legacy run documents that
-   only have capacity, price, and `RunConstraints`.
-3. Treat the policy snapshot as the source for new run admission, pricing,
+2. Keep the live migration backward-compatible with legacy event documents that
+   only have capacity, price, and `EventConstraints`.
+3. Treat the policy snapshot as the source for new event admission, pricing,
    cancellation, and settlement behavior, with server-side helpers as the
    backend authority.
 4. Paid waitlist promotion must use an offer/quote/payment step before moving a
@@ -54,9 +54,9 @@ Current proof:
 - `test/core/app_config_test.dart`, `test/routing/router_redirect_test.dart`,
   and `test/safety/settings_screen_test.dart` cover the dev-only availability
   gate, public static route behavior, and Settings entry.
-- `test/runs/create_run_screen_test.dart`,
-  `test/runs/create_run_controller_test.dart`,
-  `test/runs/run_detail_widgets_test.dart`, and Functions run/payment tests
+- `test/events/create_event_screen_test.dart`,
+  `test/events/create_event_controller_test.dart`,
+  `test/events/event_detail_widgets_test.dart`, and Functions event/payment tests
   cover the first production migration path.
 
 Preview fixture catalog:
@@ -73,8 +73,8 @@ Preview fixture catalog:
 
 Manual testing:
 
-- Run the app against `dev` or `staging`.
+- Event the app against `dev` or `staging`.
 - Open Settings and tap `Event policy lab`, or navigate directly to
   `/dev/event-policy-lab`.
 - The lab is read-only/static. Production migration testing should happen
-  through the normal create-run flow, run detail CTA, and Functions tests.
+  through the normal create-event flow, event detail CTA, and Functions tests.

@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 3.0.2
-updated: 2026-05-15
+version: 3.0.3
+updated: 2026-05-17
 owner: recursive_audit_loop
 status: active
 ---
@@ -51,6 +51,21 @@ section unless the task requires a full historical audit.
 | Location stack | `location_stack_plan.md` | Google Maps/Places, location permissions, run coordinates, check-in geofencing, map navigation, and current map/demo readiness. |
 | Demo data seeding | `demo_data_seeding.md` | Demo seeding scenarios, warm account workflows, demo ops, cleanup/reset commands, and validation workflow. |
 | Recursive audit registry | `audit_registry/` | Machine-readable file inventory, pass receipts, active rules, backlog, compact doc summaries, and doc versions for repeated cleanup loops. |
+
+## Temporary Active Trackers
+
+These are intentionally still present because live-code verification found
+remaining work. Delete them only after the remaining items are migrated into the
+durable owners above or closed in code.
+
+| Tracker | Why It Remains |
+|---|---|
+| `host_tooling_consolidation_tracker.md` | Host tooling is mostly consolidated, but Edit run and club archive/delete UX are still open product decisions. |
+| `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
+
+Completed temporary trackers removed on 2026-05-17 after code verification:
+`dashboard_run_focus_tracker.md`, `run_tile_consolidation_tracker.md`, and
+`photo_grid_editing_tracker.md`.
 
 ## Before Adding A New Doc
 
