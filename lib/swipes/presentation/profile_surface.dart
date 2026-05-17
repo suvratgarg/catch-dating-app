@@ -12,6 +12,7 @@ class ProfileSurface extends StatelessWidget {
     required this.profile,
     this.mode = ProfileSurfaceMode.preview,
     this.scrollController,
+    this.scrollPhysics,
     this.onLeadingOverscroll,
     this.bottomPadding = 24,
     this.onReact,
@@ -22,6 +23,7 @@ class ProfileSurface extends StatelessWidget {
   final PublicProfile profile;
   final ProfileSurfaceMode mode;
   final ScrollController? scrollController;
+  final ScrollPhysics? scrollPhysics;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
   final ProfileReactionCallback? onReact;
@@ -48,6 +50,7 @@ class ProfileSurface extends StatelessWidget {
             profile: profile,
             surfaceHeight: viewportHeight,
             scrollController: scrollController,
+            scrollPhysics: scrollPhysics,
             onLeadingOverscroll: onLeadingOverscroll,
             bottomPadding: bottomPadding,
             onReact: effectiveOnReact,

@@ -12,11 +12,17 @@ import '../../onboarding/onboarding_test_helpers.dart';
 Future<void> pumpAuthScreen(
   WidgetTester tester, {
   required ProviderContainer container,
+  ThemeMode themeMode = ThemeMode.light,
 }) async {
   await tester.pumpWidget(
     UncontrolledProviderScope(
       container: container,
-      child: MaterialApp(theme: AppTheme.light, home: const AuthScreen()),
+      child: MaterialApp(
+        theme: AppTheme.light,
+        darkTheme: AppTheme.dark,
+        themeMode: themeMode,
+        home: const AuthScreen(),
+      ),
     ),
   );
   await tester.pump();
@@ -36,6 +42,40 @@ void main() {
 
       expect(find.text("What's your number?"), findsOneWidget);
       expect(find.text('Send code'), findsOneWidget);
+    });
+
+    testWidgets('defaults the country picker to India', (tester) async {
+      final repository = FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      await pumpAuthScreen(tester, container: container);
+
+      expect(find.text('+91'), findsOneWidget);
+    });
+
+    testWidgets('country picker opens with dark theme styles', (tester) async {
+      final repository = FakeAuthRepository();
+      final container = ProviderContainer(
+        overrides: [authRepositoryProvider.overrideWithValue(repository)],
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      await pumpAuthScreen(
+        tester,
+        container: container,
+        themeMode: ThemeMode.dark,
+      );
+
+      await tester.tap(find.text('+91'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Select Country'), findsOneWidget);
+      expect(find.byType(Dialog), findsOneWidget);
     });
 
     testWidgets('switch between phone and OTP views', (tester) async {

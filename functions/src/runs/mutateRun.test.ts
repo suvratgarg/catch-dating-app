@@ -284,6 +284,7 @@ function run(overrides: FakeData = {}): FakeData {
     cancellationReason: null,
     constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
     genderCounts: {},
+    cohortCounts: {},
     ...overrides,
   };
 }
@@ -335,6 +336,7 @@ test("createRunHandler creates a server-owned run for the club host",
       startingPointLat: 19.07,
       startingPointLng: 72.82,
       locationDetails: null,
+      photoUrl: null,
       distanceKm: 5,
       pace: "easy",
       capacityLimit: 20,
@@ -347,10 +349,93 @@ test("createRunHandler creates a server-owned run for the club host",
       cancelledAt: null,
       cancellationReason: null,
       constraints: {minAge: 21, maxAge: 35, maxMen: 10, maxWomen: null},
+      eventPolicy: {
+        version: 1,
+        admission: {
+          format: "fixedCohortCaps",
+          capacityLimit: 20,
+          waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+          inviteRequired: false,
+          membershipRequired: false,
+          manualApprovalRequired: false,
+          cohortCapacityLimits: {menInterestedInWomen: 10},
+          balancedRatioPolicy: null,
+        },
+        pricing: {
+          basePriceInPaise: 0,
+          cohortAdjustmentsInPaise: {},
+          demandPricingRules: [],
+        },
+        cancellation: {policyId: "standard"},
+        settlement: {hostPayoutTiming: "afterEventCompletion"},
+      },
       genderCounts: {},
+      cohortCounts: {},
     });
   }
 );
+
+test("createRunHandler accepts client event-policy snapshots", async () => {
+  const h = harness({"runClubs/club-1": club()});
+
+  const eventPolicy = {
+    version: 1,
+    admission: {
+      format: "balancedRatio",
+      capacityLimit: 20,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: false,
+      membershipRequired: false,
+      manualApprovalRequired: false,
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: {
+        leftCohortId: "menInterestedInWomen",
+        rightCohortId: "womenInterestedInMen",
+        maxSkew: 1,
+        openingBufferPerCohort: 1,
+        outOfRatioCohortPolicy: "admitWithinGeneralCapacity",
+      },
+    },
+    pricing: {
+      basePriceInPaise: 40000,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId: "strict"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
+
+  const result = await createRunHandler(
+    request("host-1", payload({
+      capacityLimit: 20,
+      priceInPaise: 40000,
+      constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
+      eventPolicy,
+    })),
+    h.deps
+  );
+
+  assert.deepEqual(result, {runId: "run-1"});
+  assert.deepEqual(h.firestore.get("runs/run-1")?.eventPolicy, eventPolicy);
+  assert.equal(h.firestore.get("runs/run-1")?.priceInPaise, 40000);
+  assert.equal(h.firestore.get("runs/run-1")?.capacityLimit, 20);
+});
+
+test("createRunHandler accepts an uploaded run photo URL", async () => {
+  const h = harness({"runClubs/club-1": club()});
+
+  await createRunHandler(
+    request("host-1", payload({
+      photoUrl: "https://img.example/runs/run-1.jpg",
+    })),
+    h.deps
+  );
+
+  assert.equal(
+    h.firestore.get("runs/run-1")?.photoUrl,
+    "https://img.example/runs/run-1.jpg"
+  );
+});
 
 test("createRunHandler notifies active club members about a new run",
   async () => {
@@ -506,6 +591,7 @@ test("updateRunHandler updates only host-editable run fields", async () => {
         startTimeMillis: Date.parse("2026-05-02T02:00:00.000Z"),
         endTimeMillis: Date.parse("2026-05-02T03:00:00.000Z"),
         meetingPoint: "Joggers Park",
+        photoUrl: "https://img.example/runs/run-1.jpg",
         description: "Updated route.",
       },
     }),
@@ -516,6 +602,7 @@ test("updateRunHandler updates only host-editable run fields", async () => {
   assert.deepEqual(result, {updated: true});
   assert.deepEqual(h.rateLimitCalls, ["host-1:updateRun"]);
   assert.equal(updated?.meetingPoint, "Joggers Park");
+  assert.equal(updated?.photoUrl, "https://img.example/runs/run-1.jpg");
   assert.equal(updated?.description, "Updated route.");
   assert.equal(updated?.capacityLimit, 12);
 });

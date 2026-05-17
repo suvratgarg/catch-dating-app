@@ -1,6 +1,6 @@
 {
-  "version": "2.6.0",
-  "updated": "2026-05-12",
+  "version": "2.6.1",
+  "updated": "2026-05-16",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Do not reread archived markdown history unless a debt id points there.",
   "scanner_snapshot": {
@@ -123,7 +123,7 @@
       "rules": [
         "SLIVER-001"
       ],
-      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. Normal Edit Profile field edits now expand inline inside the profile list instead of opening bottom sheets; the old profile field bottom-sheet file was removed, nullable single-choice editors keep no chip selected for null values, and regression tests cover inline save/error/pending states. Normal text Profile rows now edit in the row value slot instead of stacking a separate text field below the row, using ProfileInlineEditableText so active values preserve closed-row typography and position with cursor plus text-width underline feedback rather than a boxed field. Profile inline chip editors no longer repeat their row label, nullable single-choice chips can be cleared by tapping the selected chip again, single-choice chip changes now wait for the shared Cancel/Done footer before saving, and selected enum chips now render in the row value slot while expanded so the option list only shows available alternatives. Inline profile drawers now open/close through the shared animated disclosure shell, including dynamic body-height changes for chip edits. The drawer body now preserves full width while animating vertical reveal/fade so action rows do not slide sideways, and the shared inline editor panel owns padding, save errors, and trailing Cancel/Done placement. The Profile header now exposes only Settings; review history, payment history, and sign out live in Settings account rows. The Profile NestedScrollView overlap contract is explicit in code, but physical testing still shows an unresolved bug: when the user scrolls upward from the Preview tab at the top of the internal profile card, the outer Profile header does not reliably return unless the gesture starts near the tab row. Do not mark this complete until the preview-card leading overscroll expands the outer header continuously on device.",
+      "summary": "The null-profile blank branch now renders an explicit missing-profile state, profile canonical spacing is migrated, and ProfileScreen currently uses NestedScrollView with native TabBarView paging for the Edit/Preview tabs. Normal Edit Profile field edits now expand inline inside the profile list instead of opening bottom sheets; the old profile field bottom-sheet file was removed, nullable single-choice editors keep no chip selected for null values, and regression tests cover inline save/error/pending states. Normal text Profile rows now edit in the row value slot instead of stacking a separate text field below the row, using ProfileInlineEditableText so active values preserve closed-row typography and position with cursor plus text-width underline feedback rather than a boxed field. Profile inline chip editors no longer repeat their row label, nullable single-choice chips can be cleared by tapping the selected chip again, single-choice chip changes now wait for the shared Cancel/Done footer before saving, and selected enum chips now render in the row value slot while expanded so the option list only shows available alternatives. Inline profile drawers now open/close through the shared animated disclosure shell, including dynamic body-height changes for chip edits. The drawer body now preserves full width while animating vertical reveal/fade so action rows do not slide sideways, and the shared inline editor panel owns padding, save errors, and trailing Cancel/Done placement. The Profile header now exposes only Settings; review history, payment history, and sign out live in Settings account rows. The Profile NestedScrollView overlap contract is explicit in code. Profile Preview now bridges both upward scroll from the internal profile card and leading overscroll at the card top back to the outer Profile header, so upward drags pin the Edit/Preview tabs before the card scrolls and downward overscroll reveals the Profile header again. Keep PROFILE-001 on watch pending live device confirmation.",
       "paths": [
         "lib/user_profile/presentation/profile_screen.dart",
         "lib/user_profile/presentation/widgets/profile_tab.dart",
@@ -663,7 +663,20 @@
         "WIDGET-CATALOG-001",
         "WIDGET-TEST-001"
       ],
-      "summary": "Home now follows the Profile-style tab architecture. `DashboardScreen` owns the route-local `TabController`, `NestedScrollView`, collapsible Home header, pinned `Dashboard`/`Activity` tab row, and native `TabBarView` paging. Existing dashboard widgets were extracted into dashboard sliver bodies, Activity moved out of Dashboard content, and the Activity tab renders a timeline-style feed with branded inline retry errors."
+      "summary": "Home previously followed the Profile-style tab architecture. `DashboardScreen` owned the route-local `TabController`, `NestedScrollView`, collapsible Home header, pinned `Dashboard`/`Activity` tab row, and native `TabBarView` paging. This was superseded on 2026-05-16 by `HOME-NOTIFICATIONS-001`, which removed the Home tabs and promoted Activity to a Notifications route."
+    },
+    {
+      "id": "HOME-NOTIFICATIONS-001",
+      "title": "Replace Home activity tab with Notifications screen",
+      "completed": "2026-05-16",
+      "rules": [
+        "SLIVER-001",
+        "DESIGN-PRIMITIVES-001",
+        "WIDGET-CATALOG-001",
+        "WIDGET-TEST-001",
+        "STREAM-LIFECYCLE-001"
+      ],
+      "summary": "Removed the Dashboard/Activity tab row from Home. `DashboardScreen` now renders a single sliver-owned Home surface with a top-right Notifications bell and red unread badge. The former Activity timeline is available as a Home-branch child route titled `Notifications`, keeps the app bottom navigation visible, hides the manual `Mark all read` action, and marks unread notifications read automatically when opened."
     },
     {
       "id": "WIDGET-SEMANTICS-QUEUE",

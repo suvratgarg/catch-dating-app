@@ -332,7 +332,13 @@ const generatedFiles = [];
 
 async function main() {
   const profileCatalog = readContractJson("catalogs/profile_prompts.json");
-  const photoCatalog = readContractJson("catalogs/photo_prompts.json");
+  const profilePhotoPolicy = readContractJson(
+    "catalogs/profile_photo_policy.json"
+  );
+  const photoCatalog = withProfilePhotoPolicy(
+    readContractJson("catalogs/photo_prompts.json"),
+    profilePhotoPolicy
+  );
   const profileDecisionMigration = readContractJson(
     "migrations/swipes_to_profile_decisions.json"
   );
@@ -340,7 +346,10 @@ async function main() {
 
   for (const spec of schemaSpecs) {
     const file = path.join(contractRoot, spec.source);
-    const schema = bundleSchema(file);
+    const schema = applyProfilePhotoPolicy(
+      bundleSchema(file),
+      profilePhotoPolicy
+    );
     bundledSchemas.set(spec.name, schema);
     await addTypeOutput(spec, schema);
   }
@@ -351,6 +360,7 @@ async function main() {
       schemaMap: bundledSchemas,
       profileCatalog,
       photoCatalog,
+      profilePhotoPolicy,
     })
   );
   addTextOutput(
@@ -370,6 +380,7 @@ async function main() {
       schemaMap: bundledSchemas,
       profileCatalog,
       photoCatalog,
+      profilePhotoPolicy,
     })
   );
   addTextOutput(
@@ -381,6 +392,7 @@ async function main() {
     renderDartContracts({
       profileCatalog,
       photoCatalog,
+      profilePhotoPolicy,
       profilePromptSchema: bundledSchemas.get("ProfilePromptAnswer"),
       photoPromptSchema: bundledSchemas.get("PhotoPromptAnswer"),
       profilePhotoSchema: bundledSchemas.get("ProfilePhoto"),
@@ -391,6 +403,10 @@ async function main() {
       profileDecisionMigration,
       commonSchema: readContractJson("shared/profile_common.schema.json"),
     })
+  );
+  addTextOutput(
+    "lib/core/schema_contracts/generated/schema_contracts.g.dart",
+    renderDartSchemaContracts({schemaMap: bundledSchemas})
   );
 
   const staleFiles = [];
@@ -422,8 +438,44 @@ async function main() {
   );
 }
 
+function withProfilePhotoPolicy(photoCatalog, profilePhotoPolicy) {
+  return {
+    ...photoCatalog,
+    limits: {
+      ...photoCatalog.limits,
+      maxCaptions: profilePhotoPolicy.maxPhotos,
+    },
+  };
+}
+
+function applyProfilePhotoPolicy(schema, profilePhotoPolicy) {
+  const cloned = structuredClone(schema);
+  applyDerivedProfilePhotoPolicyValues(cloned, profilePhotoPolicy);
+  return cloned;
+}
+
+function applyDerivedProfilePhotoPolicyValues(value, profilePhotoPolicy) {
+  if (Array.isArray(value)) {
+    for (const item of value) {
+      applyDerivedProfilePhotoPolicyValues(item, profilePhotoPolicy);
+    }
+    return;
+  }
+  if (!value || typeof value !== "object") return;
+  if (
+    value["x-catch-maximumFrom"] ===
+    "profilePhotoPolicy.maxPhotosMinusOne"
+  ) {
+    value.maximum = profilePhotoPolicy.maxPhotos - 1;
+    delete value["x-catch-maximumFrom"];
+  }
+  for (const child of Object.values(value)) {
+    applyDerivedProfilePhotoPolicyValues(child, profilePhotoPolicy);
+  }
+}
+
 async function addTypeOutput(spec, schema) {
-  const types = await compile(schema, spec.name, {
+  let types = await compile(schema, spec.name, {
     bannerComment: "",
     cwd: repoRoot,
     declareExternallyReferenced: false,
@@ -440,11 +492,24 @@ async function addTypeOutput(spec, schema) {
       useTabs: false,
     },
   });
+  types = normalizeExternalTypeReferences(spec.name, types);
   const imports = tsTypeImports(spec.name, types);
   addTextOutput(
     spec.typeOutput,
     `${tsGeneratedHeader()}${imports}${types.trim()}\n`
   );
+}
+
+function normalizeExternalTypeReferences(currentTypeName, source) {
+  let normalized = source;
+  for (const spec of schemaSpecs) {
+    if (currentTypeName === spec.name) continue;
+    normalized = normalized.replace(
+      new RegExp(`\\b${spec.name}\\d+\\b`, "g"),
+      spec.name
+    );
+  }
+  return normalized;
 }
 
 function tsTypeImports(currentTypeName, source) {
@@ -481,13 +546,19 @@ function typeImportPath(spec) {
   return `./${path.basename(spec.typeOutput, ".ts")}`;
 }
 
-function renderTsSchemaRegistry({schemaMap, profileCatalog, photoCatalog}) {
+function renderTsSchemaRegistry({
+  schemaMap,
+  profileCatalog,
+  photoCatalog,
+  profilePhotoPolicy,
+}) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
+    ["profilePhotoPolicy", profilePhotoPolicy],
     ["defaultProfilePromptIds", profileCatalog.defaultPromptIds],
   ];
   return `${tsGeneratedHeader()}${entries.map(([name, schema]) =>
@@ -559,13 +630,19 @@ export const schemaProfileDecisionFutureOutgoingSubcollectionPath =
 `;
 }
 
-function renderToolSchemaRegistry({schemaMap, profileCatalog, photoCatalog}) {
+function renderToolSchemaRegistry({
+  schemaMap,
+  profileCatalog,
+  photoCatalog,
+  profilePhotoPolicy,
+}) {
   const entries = schemaRegistryEntries(schemaMap);
   const catalogEntries = [
     ["profilePromptCatalog", profileCatalog],
     ["photoPromptCatalog", photoCatalog],
     ["profilePromptLimits", profileCatalog.limits],
     ["photoPromptLimits", photoCatalog.limits],
+    ["profilePhotoPolicy", profilePhotoPolicy],
     ["defaultProfilePromptIds", profileCatalog.defaultPromptIds],
   ];
   return `${mjsGeneratedHeader()}${entries.map(([name, schema]) =>
@@ -617,6 +694,7 @@ export function assertValidSchemaPayload(validator, payload, label) {
 function renderDartContracts({
   profileCatalog,
   photoCatalog,
+  profilePhotoPolicy,
   profilePromptSchema,
   photoPromptSchema,
   profilePhotoSchema,
@@ -682,6 +760,14 @@ const schemaProfilePromptPerfectRunId = ${dartString(
 )};
 const schemaMaxProfilePromptAnswers = ${profileLimits.maxAnswers};
 const schemaMaxPhotoPromptCaptions = ${photoLimits.maxCaptions};
+const schemaMinimumProfilePhotos = ${profilePhotoPolicy.minPhotos};
+const schemaMaximumProfilePhotos = ${profilePhotoPolicy.maxPhotos};
+const schemaProfilePhotoAspectRatioWidth =
+    ${profilePhotoPolicy.displayAspectRatio.width};
+const schemaProfilePhotoAspectRatioHeight =
+    ${profilePhotoPolicy.displayAspectRatio.height};
+const schemaProfilePhotoThumbnailSize = ${profilePhotoPolicy.thumbnailSize};
+const schemaProfilePhotoMaxUploadBytes = ${profilePhotoPolicy.maxUploadBytes};
 const schemaMaximumProfilePromptAnswerLength =
     ${profileLimits.maxAnswerLength};
 const schemaMaximumPhotoPromptCaptionLength = ${photoLimits.maxCaptionLength};
@@ -725,6 +811,59 @@ const schemaProfilePhotoSchema = ${dartLiteral(profilePhotoSchema)};
 const schemaUpdateUserProfileCallablePayloadSchema =
     ${dartLiteral(updateUserProfileSchema)};
 `;
+}
+
+function renderDartSchemaContracts({schemaMap}) {
+  const schemaConstants = schemaSpecs.map((spec) => {
+    const name = dartSchemaConstName(spec.name);
+    return `const ${name} = ${dartLiteral(schemaMap.get(spec.name))};`;
+  }).join("\n\n");
+  const definitions = schemaSpecs.map((spec) => {
+    const schemaName = dartSchemaConstName(spec.name);
+    return `  SchemaContractDefinition(
+    name: ${dartString(spec.name)},
+    source: ${dartString(spec.source)},
+    schema: ${schemaName},
+  ),`;
+  }).join("\n");
+  const byName = schemaSpecs.map((spec) =>
+    `  ${dartString(spec.name)}: ${dartSchemaConstName(spec.name)},`
+  ).join("\n");
+  const bySource = schemaSpecs.map((spec) =>
+    `  ${dartString(spec.source)}: ${dartSchemaConstName(spec.name)},`
+  ).join("\n");
+
+  return `${dartGeneratedHeader()}
+class SchemaContractDefinition {
+  const SchemaContractDefinition({
+    required this.name,
+    required this.source,
+    required this.schema,
+  });
+
+  final String name;
+  final String source;
+  final Map<String, Object?> schema;
+}
+
+${schemaConstants}
+
+const schemaContractDefinitions = <SchemaContractDefinition>[
+${definitions}
+];
+
+const schemaContractsByName = <String, Map<String, Object?>>{
+${byName}
+};
+
+const schemaContractsBySource = <String, Map<String, Object?>>{
+${bySource}
+};
+`;
+}
+
+function dartSchemaConstName(name) {
+  return `schema${name}Schema`;
 }
 
 function profileDecisionPathParts(schemaOrPath) {

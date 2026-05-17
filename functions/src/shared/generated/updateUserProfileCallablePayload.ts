@@ -26,13 +26,36 @@ export interface UpdateUserProfileCallablePayload {
     gender?: "man" | "woman" | "nonBinary" | "other";
     profileComplete?: boolean;
     /**
-     * @maxItems 12
+     * @maxItems 6
      */
     photoUrls?: string[];
     /**
      * @maxItems 6
      */
+    photoThumbnailUrls?: string[];
+    /**
+     * @maxItems 6
+     */
     photoPrompts?: PhotoPromptAnswer[];
+    /**
+     * @maxItems 6
+     */
+    profilePhotos?: {
+      id: string;
+      url: string;
+      thumbnailUrl: string;
+      storagePath: string;
+      thumbnailStoragePath: string;
+      prompt?: PhotoPromptAnswer | null;
+      moderation?: {
+        status: "pending" | "approved" | "rejected";
+        reason?: string | null;
+        reviewedAt?: number | null;
+      } | null;
+      position: number;
+      createdAt: number;
+      updatedAt: number;
+    }[];
     city?: string | null;
     latitude?: number | null;
     longitude?: number | null;

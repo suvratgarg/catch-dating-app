@@ -8,56 +8,26 @@ class DashboardSliverHeader extends CatchSliverHeader {
   DashboardSliverHeader({
     required String eyebrow,
     required String title,
-    Widget? avatar,
-    TabController? controller,
+    List<Widget> actions = const <Widget>[],
   }) : super(
          title: _DashboardHeaderContent(
            eyebrow: eyebrow,
            title: title,
-           avatar: avatar,
+           actions: actions,
          ),
-         bottomHeight: 48,
-         bottom: controller == null ? null : _DashboardTabBar(controller),
        );
-}
-
-class _DashboardTabBar extends StatelessWidget {
-  const _DashboardTabBar(this.controller);
-
-  final TabController controller;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return Material(
-      color: t.bg,
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: t.line)),
-        ),
-        child: CatchTopBarTabBar(
-          controller: controller,
-          tabs: const [
-            Tab(text: 'Dashboard'),
-            Tab(text: 'Activity'),
-          ],
-        ),
-      ),
-    );
-  }
 }
 
 class _DashboardHeaderContent extends StatelessWidget {
   const _DashboardHeaderContent({
     required this.eyebrow,
     required this.title,
-    this.avatar,
+    required this.actions,
   });
 
   final String eyebrow;
   final String title;
-  final Widget? avatar;
+  final List<Widget> actions;
 
   @override
   Widget build(BuildContext context) {
@@ -98,9 +68,12 @@ class _DashboardHeaderContent extends StatelessWidget {
                 ],
               ),
             ),
-            if (avatar != null) ...[
+            if (actions.isNotEmpty) ...[
               const SizedBox(width: CatchSpacing.s3),
-              avatar!,
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [for (final action in actions) action],
+              ),
             ],
           ],
         ),

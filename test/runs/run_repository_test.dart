@@ -262,9 +262,34 @@ void main() {
       },
     );
 
+    test(
+      'fetchUpcomingRunsForClubs queries beyond the whereIn club cap',
+      () async {
+        final early = buildRun(
+          id: 'early',
+          runClubId: 'club-1',
+          startTime: DateTime.now().add(const Duration(hours: 2)),
+        );
+        final late = buildRun(
+          id: 'late',
+          runClubId: 'club-12',
+          startTime: DateTime.now().add(const Duration(hours: 4)),
+        );
+        await _seedRun(firestore, early);
+        await _seedRun(firestore, late);
+
+        final results = await repository.fetchUpcomingRunsForClubs([
+          for (var i = 1; i <= 12; i += 1) 'club-$i',
+        ]);
+
+        expect(results, [early, late]);
+      },
+    );
+
     test('createRun calls the server-owned createRun Cloud Function', () async {
       final run = buildRun(
         id: 'run-42',
+        photoUrl: 'https://img.example/runs/run-42.jpg',
         constraints: const RunConstraints(minAge: 21, maxAge: 35),
       );
 
@@ -280,6 +305,7 @@ void main() {
           'startingPointLat': run.startingPointLat,
           'startingPointLng': run.startingPointLng,
           'locationDetails': run.locationDetails,
+          'photoUrl': run.photoUrl,
           'distanceKm': run.distanceKm,
           'pace': run.pace.name,
           'description': run.description,
@@ -298,7 +324,10 @@ void main() {
     test(
       'updateRunDetails calls the server-owned updateRun Cloud Function',
       () async {
-        final run = buildRun(id: 'run-42');
+        final run = buildRun(
+          id: 'run-42',
+          photoUrl: 'https://img.example/runs/run-42.jpg',
+        );
 
         await repository.updateRunDetails(run: run);
 
@@ -312,6 +341,7 @@ void main() {
               'startingPointLat': run.startingPointLat,
               'startingPointLng': run.startingPointLng,
               'locationDetails': run.locationDetails,
+              'photoUrl': run.photoUrl,
               'distanceKm': run.distanceKm,
               'pace': run.pace.name,
               'description': run.description,
@@ -320,6 +350,30 @@ void main() {
         ]);
       },
     );
+
+    test('cancelRun calls the server-owned cancelRun Cloud Function', () async {
+      await repository.cancelRun(runId: 'run-42', reason: 'Weather warning');
+
+      expect(functions.callables['cancelRun']!.calls, [
+        {'runId': 'run-42', 'reason': 'Weather warning'},
+      ]);
+    });
+
+    test('cancelRun omits a missing reason', () async {
+      await repository.cancelRun(runId: 'run-42');
+
+      expect(functions.callables['cancelRun']!.calls, [
+        {'runId': 'run-42'},
+      ]);
+    });
+
+    test('deleteRun calls the server-owned deleteRun Cloud Function', () async {
+      await repository.deleteRun(runId: 'run-42');
+
+      expect(functions.callables['deleteRun']!.calls, [
+        {'runId': 'run-42'},
+      ]);
+    });
 
     test('joinWaitlistViaFunction calls the matching Cloud Function', () async {
       await repository.joinWaitlistViaFunction(runId: 'run-1');

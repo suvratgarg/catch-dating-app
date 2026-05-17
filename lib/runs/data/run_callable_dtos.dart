@@ -9,6 +9,7 @@ final class CreateRunCallableRequest {
     required this.capacityLimit,
     required this.priceInPaise,
     required this.constraints,
+    required this.eventPolicy,
   });
 
   factory CreateRunCallableRequest.fromRun(Run run) => CreateRunCallableRequest(
@@ -18,6 +19,7 @@ final class CreateRunCallableRequest {
     capacityLimit: run.capacityLimit,
     priceInPaise: run.priceInPaise,
     constraints: RunConstraintsCallableDto.fromDomain(run.constraints),
+    eventPolicy: run.eventPolicy?.toJson(),
   );
 
   final String runId;
@@ -26,6 +28,7 @@ final class CreateRunCallableRequest {
   final int capacityLimit;
   final int priceInPaise;
   final RunConstraintsCallableDto constraints;
+  final Map<String, Object?>? eventPolicy;
 
   Map<String, Object?> toJson() => {
     'runId': runId,
@@ -34,6 +37,7 @@ final class CreateRunCallableRequest {
     'capacityLimit': capacityLimit,
     'priceInPaise': priceInPaise,
     'constraints': constraints.toJson(),
+    'eventPolicy': ?eventPolicy,
   };
 }
 
@@ -59,6 +63,7 @@ final class RunDetailsCallableFields {
     required this.startingPointLat,
     required this.startingPointLng,
     required this.locationDetails,
+    required this.photoUrl,
     required this.distanceKm,
     required this.pace,
     required this.description,
@@ -71,6 +76,7 @@ final class RunDetailsCallableFields {
     startingPointLat: run.startingPointLat,
     startingPointLng: run.startingPointLng,
     locationDetails: run.locationDetails,
+    photoUrl: run.photoUrl,
     distanceKm: run.distanceKm,
     pace: run.pace.name,
     description: run.description,
@@ -82,6 +88,7 @@ final class RunDetailsCallableFields {
   final double? startingPointLat;
   final double? startingPointLng;
   final String? locationDetails;
+  final String? photoUrl;
   final double distanceKm;
   final String pace;
   final String description;
@@ -93,6 +100,7 @@ final class RunDetailsCallableFields {
     'startingPointLat': startingPointLat,
     'startingPointLng': startingPointLng,
     'locationDetails': locationDetails,
+    'photoUrl': photoUrl,
     'distanceKm': distanceKm,
     'pace': pace,
     'description': description,
@@ -134,6 +142,15 @@ final class RunIdCallableRequest {
   final String runId;
 
   Map<String, Object?> toJson() => {'runId': runId};
+}
+
+final class CancelRunCallableRequest {
+  const CancelRunCallableRequest({required this.runId, this.reason});
+
+  final String runId;
+  final String? reason;
+
+  Map<String, Object?> toJson() => {'runId': runId, 'reason': ?reason};
 }
 
 final class MarkRunAttendanceCallableRequest {

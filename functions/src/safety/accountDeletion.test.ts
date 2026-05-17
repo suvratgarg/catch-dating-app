@@ -38,6 +38,21 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
           "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
             "users%2Frunner-1%2Fthumbnails%2F0_123.jpg?alt=media&token=abc",
         ],
+        profilePhotos: [{
+          id: "grouped-photo",
+          url:
+            "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
+            "profilePhotos%2Frunner-1%2Fphotos%2Fgrouped.jpg" +
+            "?alt=media&token=abc",
+          thumbnailUrl:
+            "https://firebasestorage.googleapis.com/v0/b/demo.appspot.com/o/" +
+            "profilePhotos%2Frunner-1%2Fphotos%2Fgrouped_thumb.jpg" +
+            "?alt=media&token=abc",
+          storagePath: "profilePhotos/runner-1/photos/grouped.jpg",
+          thumbnailStoragePath:
+            "profilePhotos/runner-1/photos/grouped_thumb.jpg",
+          position: 0,
+        }],
         name: "Asha Runner",
         dateOfBirth: admin.firestore.Timestamp.fromDate(
           new Date("1995-01-01T00:00:00.000Z")
@@ -118,8 +133,10 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.equal(data.phoneNumber, "");
   assert.deepEqual(data.photoUrls, []);
   assert.deepEqual(data.photoThumbnailUrls, []);
+  assert.deepEqual(data.profilePhotos, []);
   assert.deepEqual(data.preferredDistances, []);
   assert.deepEqual(data.runningReasons, []);
+  assert.deepEqual(data.preferredRunTimes, []);
   assert.equal(data.paceMinSecsPerKm, 300);
   assert.equal(data.paceMaxSecsPerKm, 420);
 
@@ -207,6 +224,8 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.deepEqual(harness.deletedAuthUsers, ["runner-1"]);
   assert.deepEqual(harness.deletedStorageFiles, [
+    "profilePhotos/runner-1/photos/grouped.jpg",
+    "profilePhotos/runner-1/photos/grouped_thumb.jpg",
     "users/runner-1/photos/0_123.jpg",
     "users/runner-1/thumbnails/0_123.jpg",
   ]);

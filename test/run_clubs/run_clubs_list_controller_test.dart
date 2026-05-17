@@ -1,12 +1,10 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
-import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -279,51 +277,5 @@ void main() {
         expect(subscription.read().error, isA<StateError>());
       },
     );
-  });
-
-  group('RunClubsListController', () {
-    test('joinClub joins the selected club for the signed-in user', () async {
-      final fakeRepository = FakeRunClubsRepository();
-      final container = ProviderContainer(
-        overrides: [
-          runClubsRepositoryProvider.overrideWith((ref) => fakeRepository),
-          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-        ],
-      );
-      addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
-      await container
-          .read(runClubsListControllerProvider.notifier)
-          .joinClub('club-123');
-
-      expect(fakeRepository.joinedClubId, 'club-123');
-    });
-
-    test('joinClub throws when there is no signed-in user', () async {
-      final container = ProviderContainer(
-        overrides: [uidProvider.overrideWith((ref) => Stream.value(null))],
-      );
-      addTearDown(container.dispose);
-      final uidSubscription = container.listen(
-        uidProvider,
-        (_, _) {},
-        fireImmediately: true,
-      );
-      addTearDown(uidSubscription.close);
-      await container.pump();
-
-      expect(
-        () => container
-            .read(runClubsListControllerProvider.notifier)
-            .joinClub('club-123'),
-        throwsA(isA<SignInRequiredException>()),
-      );
-    });
   });
 }

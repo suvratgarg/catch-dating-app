@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_validation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -210,6 +211,7 @@ abstract class UserProfile with _$UserProfile {
     @Default([]) List<String> photoUrls,
     @Default([]) List<String> photoThumbnailUrls,
     @Default([]) List<PhotoPromptAnswer> photoPrompts,
+    @Default([]) List<ProfilePhoto> profilePhotos,
 
     // Location
     String? city,
@@ -287,13 +289,23 @@ abstract class UserProfile with _$UserProfile {
   /// Tiny first-photo URL for avatar-scale UI. Falls back to the full photo
   /// until the backend thumbnail generation queue has backfilled old profiles.
   String? get primaryPhotoThumbnailUrl {
-    final thumbnailUrl = photoThumbnailUrls
-        .where((url) => url.isNotEmpty)
-        .firstOrNull;
-    if (thumbnailUrl != null) return thumbnailUrl;
-    final photoUrl = photoUrls.where((url) => url.isNotEmpty).firstOrNull;
-    if (photoUrl != null) return photoUrl;
+    final photo = effectiveProfilePhotos.firstOrNull;
+    if (photo != null) {
+      if (photo.thumbnailUrl.trim().isNotEmpty) return photo.thumbnailUrl;
+      if (photo.url.trim().isNotEmpty) return photo.url;
+    }
     return null;
+  }
+
+  List<ProfilePhoto> get effectiveProfilePhotos {
+    final normalized = normalizeProfilePhotos(profilePhotos);
+    if (normalized.isNotEmpty) return normalized;
+    return profilePhotosFromLegacyArrays(
+      uid: uid,
+      photoUrls: photoUrls,
+      photoThumbnailUrls: photoThumbnailUrls,
+      photoPrompts: photoPrompts,
+    );
   }
 }
 

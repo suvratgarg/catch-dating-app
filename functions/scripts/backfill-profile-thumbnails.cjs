@@ -33,20 +33,26 @@ async function main() {
   for (const userDoc of usersSnap.docs) {
     scanned += 1;
     const data = userDoc.data();
-    const photoUrls = asStringArray(data.photoUrls);
-    const thumbnailUrls = asStringArray(data.photoThumbnailUrls);
-    if (photoUrls.length === 0) continue;
+    const entries = profilePhotoEntries(data);
+    if (entries.length === 0) continue;
 
-    const updated = [...thumbnailUrls];
+    const thumbnailUrls = asStringArray(data.photoThumbnailUrls);
+    const updatedThumbnailUrls = [...thumbnailUrls];
+    const updatedProfilePhotos = Array.isArray(data.profilePhotos) ?
+      data.profilePhotos.map((photo) => isRecord(photo) ? {...photo} : photo) :
+      null;
     let changed = false;
 
-    for (let index = 0; index < photoUrls.length; index += 1) {
-      if (updated[index]) continue;
+    for (const entry of entries) {
+      if (entry.thumbnailUrl) continue;
       missing += 1;
-      const sourcePath = storagePathFromDownloadUrl(photoUrls[index]);
+      const sourcePath = entry.storagePath ??
+        storagePathFromDownloadUrl(entry.url);
       if (!sourcePath) {
         skipped += 1;
-        console.warn(`[skip] ${userDoc.id} photo ${index}: unsupported URL`);
+        console.warn(
+          `[skip] ${userDoc.id} photo ${entry.position}: unsupported URL`
+        );
         continue;
       }
 
@@ -54,11 +60,14 @@ async function main() {
       const [exists] = await sourceFile.exists();
       if (!exists) {
         skipped += 1;
-        console.warn(`[skip] ${userDoc.id} photo ${index}: source missing`);
+        console.warn(
+          `[skip] ${userDoc.id} photo ${entry.position}: source missing`
+        );
         continue;
       }
 
-      const thumbnailPath = thumbnailPathFor(userDoc.id, index, sourcePath);
+      const thumbnailPath = entry.thumbnailStoragePath ??
+        thumbnailPathFor(userDoc.id, entry.position, sourcePath);
       if (!apply) {
         console.log(
           `[dry-run] ${userDoc.id} ${sourcePath} -> ${thumbnailPath}`
@@ -70,7 +79,9 @@ async function main() {
         const [sourceBuffer] = await sourceFile.download();
         if (sourceBuffer.length === 0) {
           skipped += 1;
-          console.warn(`[skip] ${userDoc.id} photo ${index}: empty source`);
+          console.warn(
+            `[skip] ${userDoc.id} photo ${entry.position}: empty source`
+          );
           continue;
         }
 
@@ -90,12 +101,27 @@ async function main() {
             metadata: {
               firebaseStorageDownloadTokens: token,
               sourceObject: sourcePath,
-              profilePhotoIndex: String(index),
+              profilePhotoIndex: String(entry.position),
             },
           },
         });
-        while (updated.length <= index) updated.push("");
-        updated[index] = downloadUrl(bucket.name, thumbnailPath, token);
+        const thumbnailUrl = downloadUrl(bucket.name, thumbnailPath, token);
+        while (updatedThumbnailUrls.length <= entry.position) {
+          updatedThumbnailUrls.push("");
+        }
+        updatedThumbnailUrls[entry.position] = thumbnailUrl;
+        if (
+          updatedProfilePhotos &&
+          entry.profilePhotoArrayIndex !== null &&
+          isRecord(updatedProfilePhotos[entry.profilePhotoArrayIndex])
+        ) {
+          updatedProfilePhotos[entry.profilePhotoArrayIndex] = {
+            ...updatedProfilePhotos[entry.profilePhotoArrayIndex],
+            thumbnailUrl,
+            thumbnailStoragePath: thumbnailPath,
+            updatedAt: admin.firestore.Timestamp.now(),
+          };
+        }
         changed = true;
         written += 1;
         console.log(
@@ -104,13 +130,16 @@ async function main() {
       } catch (error) {
         skipped += 1;
         console.warn(
-          `[skip] ${userDoc.id} photo ${index}: ${error.message}`
+          `[skip] ${userDoc.id} photo ${entry.position}: ${error.message}`
         );
       }
     }
 
     if (apply && changed) {
-      await userDoc.ref.update({photoThumbnailUrls: updated});
+      await userDoc.ref.update({
+        photoThumbnailUrls: updatedThumbnailUrls,
+        ...(updatedProfilePhotos && {profilePhotos: updatedProfilePhotos}),
+      });
     }
   }
 
@@ -123,6 +152,49 @@ function asStringArray(value) {
   return Array.isArray(value) ?
     value.filter((item) => typeof item === "string") :
     [];
+}
+
+function profilePhotoEntries(data) {
+  if (Array.isArray(data.profilePhotos) && data.profilePhotos.length > 0) {
+    return data.profilePhotos
+      .map((photo, arrayIndex) => {
+        if (!isRecord(photo)) return null;
+        const position = Number.isInteger(photo.position) ?
+          photo.position :
+          arrayIndex;
+        const legacyThumbnail =
+          asStringArray(data.photoThumbnailUrls)[position] ?? "";
+        return {
+          profilePhotoArrayIndex: arrayIndex,
+          position,
+          url: typeof photo.url === "string" ? photo.url : "",
+          thumbnailUrl: typeof photo.thumbnailUrl === "string" ?
+            photo.thumbnailUrl :
+            legacyThumbnail,
+          storagePath: typeof photo.storagePath === "string" ?
+            photo.storagePath :
+            null,
+          thumbnailStoragePath:
+            typeof photo.thumbnailStoragePath === "string" ?
+              photo.thumbnailStoragePath :
+              null,
+        };
+      })
+      .filter((entry) => entry && entry.url);
+  }
+
+  return asStringArray(data.photoUrls).map((url, position) => ({
+    profilePhotoArrayIndex: null,
+    position,
+    url,
+    thumbnailUrl: asStringArray(data.photoThumbnailUrls)[position] ?? "",
+    storagePath: null,
+    thumbnailStoragePath: null,
+  }));
+}
+
+function isRecord(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
 }
 
 function storagePathFromDownloadUrl(url) {

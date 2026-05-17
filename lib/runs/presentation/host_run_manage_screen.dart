@@ -1,13 +1,19 @@
+import 'dart:async';
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/icon_btn.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
 import 'package:catch_dating_app/host_tools/presentation/host_club_tools.dart';
@@ -17,8 +23,10 @@ import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_participation_roster.dart';
+import 'package:catch_dating_app/runs/presentation/run_booking_controller.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/who_is_running.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class HostRunManageRouteScreen extends ConsumerWidget {
@@ -101,9 +109,18 @@ class HostRunManageScreen extends ConsumerWidget {
     final t = CatchTokens.of(context);
     final rosterAsync = ref.watch(watchRunParticipationRosterProvider(run.id));
     final roster = rosterAsync.asData?.value;
-    final bookedCount = roster?.bookedCount ?? run.signedUpCount;
-    final waitlistCount = roster?.waitlistedCount ?? run.waitlistCount;
+    final bookedCount = math.max(roster?.bookedCount ?? 0, run.signedUpCount);
+    final checkedInCount = math.max(
+      roster?.checkedInCount ?? 0,
+      run.attendedCount,
+    );
+    final waitlistCount = math.max(
+      roster?.waitlistedCount ?? 0,
+      run.waitlistCount,
+    );
     final revenueRupees = bookedCount * (run.priceInPaise ~/ 100);
+    final hasKnownActivity =
+        bookedCount > 0 || checkedInCount > 0 || waitlistCount > 0;
 
     return Scaffold(
       backgroundColor: t.bg,
@@ -195,6 +212,12 @@ class HostRunManageScreen extends ConsumerWidget {
             gapH20,
             _HostRunSummaryCard(runClub: runClub, run: run),
             gapH20,
+            _HostRunActionsCard(
+              run: run,
+              hasKnownActivity: hasKnownActivity,
+              onDeleted: onBackToSuccess,
+            ),
+            gapH20,
             _HostRosterHeader(
               icon: Icons.groups_2_outlined,
               title: 'Roster',
@@ -227,6 +250,175 @@ class HostRunManageScreen extends ConsumerWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _HostRunActionsCard extends ConsumerWidget {
+  const _HostRunActionsCard({
+    required this.run,
+    required this.hasKnownActivity,
+    required this.onDeleted,
+  });
+
+  final Run run;
+  final bool hasKnownActivity;
+  final VoidCallback onDeleted;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final cancelMutation = ref.watch(
+      RunBookingController.hostCancelRunMutation,
+    );
+    final deleteMutation = ref.watch(RunBookingController.deleteRunMutation);
+    final errorMutation = [
+      cancelMutation,
+      deleteMutation,
+    ].firstWhere((mutation) => mutation.hasError, orElse: () => cancelMutation);
+    final isMutating = cancelMutation.isPending || deleteMutation.isPending;
+
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      borderColor: t.line,
+      radius: CatchRadius.lg,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.admin_panel_settings_outlined, color: t.ink2),
+              gapW10,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Host actions',
+                      style: CatchTextStyles.titleM(context),
+                    ),
+                    gapH4,
+                    Text(
+                      run.isCancelled
+                          ? 'This run has already been cancelled.'
+                          : 'Cancel runs that have activity. Delete only unused drafts or accidental runs.',
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
+                  ],
+                ),
+              ),
+              if (run.isCancelled)
+                const CatchBadge(
+                  label: 'Cancelled',
+                  tone: CatchBadgeTone.danger,
+                ),
+            ],
+          ),
+          if (errorMutation.hasError) ...[
+            gapH12,
+            ErrorBanner.fromError(
+              (errorMutation as MutationError).error,
+              context: AppErrorContext.run,
+            ),
+          ],
+          gapH14,
+          if (!run.isCancelled)
+            CatchButton(
+              label: 'Cancel run',
+              onPressed: isMutating
+                  ? null
+                  : () => _confirmCancelRun(context, ref),
+              variant: CatchButtonVariant.danger,
+              icon: const Icon(Icons.cancel_outlined),
+              isLoading: cancelMutation.isPending,
+              fullWidth: true,
+            ),
+          if (!run.isCancelled) gapH10,
+          if (hasKnownActivity)
+            Text(
+              'Delete is unavailable once a run has bookings, waitlist, attendance, payments, or reviews. Cancel it instead.',
+              style: CatchTextStyles.bodyS(context, color: t.ink3),
+            )
+          else
+            CatchButton(
+              label: 'Delete run',
+              onPressed: isMutating
+                  ? null
+                  : () => _confirmDeleteRun(context, ref),
+              variant: CatchButtonVariant.secondary,
+              icon: const Icon(Icons.delete_outline_rounded),
+              isLoading: deleteMutation.isPending,
+              fullWidth: true,
+              foregroundColor: t.danger,
+              borderColor: t.danger.withValues(alpha: 0.45),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmCancelRun(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: 'Cancel this run?',
+      message: hasKnownActivity
+          ? 'Booked and waitlisted runners will be notified. Attendance, payment, and review history will stay attached to this run.'
+          : 'This removes the run from upcoming schedules while keeping a history record. If it was created by mistake and has no activity, you can delete it instead.',
+      actions: const [
+        CatchDialogAction(label: 'Keep run', value: false, isDefault: true),
+        CatchDialogAction(
+          label: 'Cancel run',
+          value: true,
+          isDestructive: true,
+        ),
+      ],
+    );
+    if (confirmed != true) return;
+
+    if (!context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    unawaited(
+      RunBookingController.hostCancelRunMutation.run(ref, (tx) async {
+        await tx
+            .get(runBookingControllerProvider.notifier)
+            .cancelHostedRun(run: run);
+        ref.invalidate(watchRunProvider(run.id));
+        ref.invalidate(watchRunParticipationRosterProvider(run.id));
+        messenger.showSnackBar(const SnackBar(content: Text('Run cancelled.')));
+      }),
+    );
+  }
+
+  Future<void> _confirmDeleteRun(BuildContext context, WidgetRef ref) async {
+    final confirmed = await showCatchAdaptiveDialog<bool>(
+      context: context,
+      title: 'Delete this run?',
+      message:
+          'Only runs with no bookings, waitlist, attendance, payments, or reviews can be deleted. This permanently removes the run.',
+      actions: const [
+        CatchDialogAction(label: 'Keep run', value: false, isDefault: true),
+        CatchDialogAction(
+          label: 'Delete run',
+          value: true,
+          isDestructive: true,
+        ),
+      ],
+    );
+    if (confirmed != true) return;
+
+    if (!context.mounted) return;
+    final messenger = ScaffoldMessenger.of(context);
+    unawaited(
+      RunBookingController.deleteRunMutation.run(ref, (tx) async {
+        await tx
+            .get(runBookingControllerProvider.notifier)
+            .deleteHostedRun(run: run);
+        ref.invalidate(watchRunProvider(run.id));
+        ref.invalidate(watchRunParticipationRosterProvider(run.id));
+        messenger.showSnackBar(const SnackBar(content: Text('Run deleted.')));
+        onDeleted();
+      }),
     );
   }
 }

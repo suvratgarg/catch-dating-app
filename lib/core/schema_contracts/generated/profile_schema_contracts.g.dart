@@ -29,6 +29,14 @@ class SchemaPhotoPromptDefinition {
 const schemaProfilePromptPerfectRunId = 'perfectRun';
 const schemaMaxProfilePromptAnswers = 3;
 const schemaMaxPhotoPromptCaptions = 6;
+const schemaMinimumProfilePhotos = 2;
+const schemaMaximumProfilePhotos = 6;
+const schemaProfilePhotoAspectRatioWidth =
+    3;
+const schemaProfilePhotoAspectRatioHeight =
+    4;
+const schemaProfilePhotoThumbnailSize = 160;
+const schemaProfilePhotoMaxUploadBytes = 8388608;
 const schemaMaximumProfilePromptAnswerLength =
     300;
 const schemaMaximumPhotoPromptCaptionLength = 140;
@@ -451,7 +459,16 @@ const schemaUpdateUserProfileCallablePayloadSchema =
         },
         'photoUrls': <String, Object?>{
           'type': 'array',
-          'maxItems': 12,
+          'maxItems': 6,
+          'items': <String, Object?>{
+            'type': 'string',
+            'format': 'uri',
+            'maxLength': 2048,
+          },
+        },
+        'photoThumbnailUrls': <String, Object?>{
+          'type': 'array',
+          'maxItems': 6,
           'items': <String, Object?>{
             'type': 'string',
             'format': 'uri',
@@ -494,6 +511,142 @@ const schemaUpdateUserProfileCallablePayloadSchema =
               },
             },
             'x-catch-catalog': '../catalogs/photo_prompts.json',
+          },
+        },
+        'profilePhotos': <String, Object?>{
+          'type': 'array',
+          'maxItems': 6,
+          'items': <String, Object?>{
+            'type': 'object',
+            'additionalProperties': false,
+            'required': <Object?>[
+              'id',
+              'url',
+              'thumbnailUrl',
+              'storagePath',
+              'thumbnailStoragePath',
+              'position',
+              'createdAt',
+              'updatedAt',
+            ],
+            'properties': <String, Object?>{
+              'id': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 80,
+                'pattern': '^[A-Za-z0-9_-]+\$',
+              },
+              'url': <String, Object?>{
+                'type': 'string',
+                'format': 'uri',
+                'maxLength': 2048,
+              },
+              'thumbnailUrl': <String, Object?>{
+                'type': 'string',
+                'format': 'uri',
+                'maxLength': 2048,
+              },
+              'storagePath': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 512,
+                'pattern': '^[^/\\u0000][^\\u0000]*\$',
+              },
+              'thumbnailStoragePath': <String, Object?>{
+                'type': 'string',
+                'minLength': 1,
+                'maxLength': 512,
+                'pattern': '^[^/\\u0000][^\\u0000]*\$',
+              },
+              'prompt': <String, Object?>{
+                'anyOf': <Object?>[
+                  <String, Object?>{
+                    'title': 'PhotoPromptAnswer',
+                    'description': 'One optional caption prompt for a profile photo slot.',
+                    'type': 'object',
+                    'additionalProperties': false,
+                    'required': <Object?>[
+                      'photoIndex',
+                      'promptId',
+                      'prompt',
+                      'caption',
+                    ],
+                    'properties': <String, Object?>{
+                      'photoIndex': <String, Object?>{
+                        'type': 'integer',
+                        'minimum': 0,
+                        'maximum': 5,
+                      },
+                      'promptId': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 80,
+                      },
+                      'prompt': <String, Object?>{
+                        'type': 'string',
+                        'minLength': 1,
+                        'maxLength': 140,
+                      },
+                      'caption': <String, Object?>{
+                        'type': 'string',
+                        'maxLength': 140,
+                      },
+                    },
+                    'x-catch-catalog': '../catalogs/photo_prompts.json',
+                  },
+                  <String, Object?>{
+                    'type': 'null',
+                  },
+                ],
+              },
+              'moderation': <String, Object?>{
+                'type': <Object?>[
+                  'object',
+                  'null',
+                ],
+                'additionalProperties': false,
+                'required': <Object?>[
+                  'status',
+                ],
+                'properties': <String, Object?>{
+                  'status': <String, Object?>{
+                    'type': 'string',
+                    'enum': <Object?>[
+                      'pending',
+                      'approved',
+                      'rejected',
+                    ],
+                  },
+                  'reason': <String, Object?>{
+                    'type': <Object?>[
+                      'string',
+                      'null',
+                    ],
+                    'maxLength': 240,
+                  },
+                  'reviewedAt': <String, Object?>{
+                    'type': <Object?>[
+                      'integer',
+                      'null',
+                    ],
+                    'minimum': 0,
+                  },
+                },
+              },
+              'position': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+                'maximum': 11,
+              },
+              'createdAt': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+              'updatedAt': <String, Object?>{
+                'type': 'integer',
+                'minimum': 0,
+              },
+            },
           },
         },
         'city': <String, Object?>{
@@ -787,7 +940,6 @@ const schemaUpdateUserProfileCallablePayloadSchema =
   'x-intentionally-excluded-fields': <Object?>[
     'firstName',
     'lastName',
-    'photoThumbnailUrls',
     'fcmToken',
     'deleted',
     'deletedAt',

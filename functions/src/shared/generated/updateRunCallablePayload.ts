@@ -14,6 +14,7 @@ export interface UpdateRunCallablePayload {
     startingPointLat?: (number | null) | null;
     startingPointLng?: (number | null) | null;
     locationDetails?: string | null;
+    photoUrl?: string | null;
     distanceKm?: number;
     pace?: "easy" | "moderate" | "fast" | "competitive";
     description?: string;

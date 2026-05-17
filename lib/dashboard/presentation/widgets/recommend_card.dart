@@ -49,6 +49,7 @@ class RecommendCard extends StatelessWidget {
       onTap: () => context.pushNamed(
         Routes.dashboardRunDetailScreen.name,
         pathParameters: {'runClubId': data.runClubId, 'runId': data.runId},
+        extra: data.run,
       ),
     );
   }

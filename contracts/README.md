@@ -60,15 +60,26 @@ The current contract layer covers:
 - `tool/firestore_ts_overlay.json` makes public profile `languages` optional
   while Dart has a default empty list. The contract keeps it optional because
   the backend projection currently omits empty language arrays.
+- `functions/src/shared/firestore.ts` is still generated from Dart models as a
+  transitional Cloud Functions Admin SDK facade. It should not be treated as the
+  canonical schema source; JSON Schema contracts own persisted field shape and
+  callable payload validation.
 
 ## Validation
 
-For the current no-dependency contract-source check, run:
+For the full local contract gate, run:
+
+```bash
+./tool/check_data_contract.sh
+```
+
+For the fast contract-source check, run:
 
 ```bash
 node tool/validate_schema_contracts.mjs
 ```
 
 This checks JSON syntax, schema metadata, local `$ref` targets, prompt catalog
-uniqueness, catalog/schema limit alignment, and fixture placement. Full Ajv and
-Dart validation are Phase 2 work.
+uniqueness, catalog/schema limit alignment, and fixture placement. Generated
+TypeScript/Ajv/Dart output is checked by `node tool/generate_schema_contracts.mjs
+--check` and by the full data-contract script.

@@ -22,25 +22,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class ActivitySliverBody extends StatelessWidget {
-  const ActivitySliverBody({super.key, required this.uid});
-
-  final String uid;
-
-  @override
-  Widget build(BuildContext context) {
-    return SliverPadding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s2,
-        CatchSpacing.s5,
-        CatchSpacing.s6,
-      ),
-      sliver: SliverToBoxAdapter(child: ActivitySection(uid: uid)),
-    );
-  }
-}
-
 class ActivitySignedOutState extends StatelessWidget {
   const ActivitySignedOutState({super.key});
 
@@ -64,10 +45,12 @@ class ActivitySection extends ConsumerWidget {
     super.key,
     required this.uid,
     this.showEmptyState = true,
+    this.showMarkAllReadAction = true,
   });
 
   final String uid;
   final bool showEmptyState;
+  final bool showMarkAllReadAction;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -94,7 +77,7 @@ class ActivitySection extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (hasUnread && items.isNotEmpty) ...[
+        if (showMarkAllReadAction && hasUnread && items.isNotEmpty) ...[
           Align(
             alignment: Alignment.centerRight,
             child: CatchTextButton(

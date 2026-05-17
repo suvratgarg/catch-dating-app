@@ -90,12 +90,19 @@ function request(
 
 function deps({
   runs = {},
+  users = {
+    "runner-1": {
+      gender: "man",
+      interestedInGenders: ["woman"],
+    },
+  },
   signUpCalls = [],
   rateLimitCalls = [],
   onRunRead,
   checkRateLimit,
 }: {
   runs?: Record<string, Record<string, unknown>>;
+  users?: Record<string, Record<string, unknown>>;
   signUpCalls?: Array<{runId: string; userId: string}>;
   rateLimitCalls?: Array<{uid: string; action: string}>;
   onRunRead?: () => void;
@@ -107,12 +114,12 @@ function deps({
 }) {
   const firestore = {
     collection: (path: string) => {
-      assert.equal(path, "runs");
+      assert.match(path, /^(runs|users)$/);
       return {
-        doc: (runId: string) => ({
+        doc: (id: string) => ({
           get: async () => {
-            onRunRead?.();
-            const data = runs[runId];
+            if (path === "runs") onRunRead?.();
+            const data = path === "runs" ? runs[id] : users[id];
             return {
               exists: data !== undefined,
               data: () => data,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
@@ -38,7 +39,7 @@ void main() {
       await _tapPrimaryButton(tester, 'Next');
       await tester.pump();
 
-      expect(find.text('Required'), findsNWidgets(3));
+      expect(find.text('Required'), findsOneWidget);
       expect(find.text('Select a pace'), findsOneWidget);
     });
 
@@ -86,7 +87,10 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
-        expect(find.text('Review & rules'), findsOneWidget);
+        expect(find.text('Event policy'), findsOneWidget);
+        await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
+        await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
+        await _tapAdmissionPreset(tester, 'fixedCohortCaps');
         await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '40');
         await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '30');
         await _pumpTestAnimation(tester);
@@ -132,6 +136,19 @@ void main() {
         expect(fakeRunRepository.createdRun!.constraints.maxAge, 35);
         expect(fakeRunRepository.createdRun!.constraints.maxMen, 9);
         expect(fakeRunRepository.createdRun!.constraints.maxWomen, 9);
+        expect(fakeRunRepository.createdRun!.eventPolicy, isNotNull);
+        expect(
+          fakeRunRepository
+              .createdRun!
+              .eventPolicy!
+              .admissionPolicy
+              .cohortCapacityLimits,
+          {'menInterestedInWomen': 9, 'womenInterestedInMen': 9},
+        );
+        expect(
+          fakeRunRepository.createdRun!.eventPolicy!.cancellationPolicy.id,
+          EventCancellationPolicyId.standard,
+        );
 
         final manageRunButton = find.text('Manage run');
         await tester.ensureVisible(manageRunButton);
@@ -139,6 +156,8 @@ void main() {
         await _pumpTestAnimation(tester);
 
         expect(find.text('HOST MANAGE'), findsOneWidget);
+        await tester.drag(find.byType(ListView), const Offset(0, -500));
+        await _pumpTestAnimation(tester);
         expect(find.text('Roster'), findsOneWidget);
       },
     );
@@ -188,7 +207,7 @@ void main() {
         await _tapPrimaryButton(tester, 'Next');
         await _pumpTestAnimation(tester);
 
-        expect(find.text('Review & rules'), findsOneWidget);
+        expect(find.text('Event policy'), findsOneWidget);
       },
     );
 
@@ -283,26 +302,23 @@ void main() {
         ),
       ];
 
-      await tester.pumpWidget(
-        ProviderScope(
-          overrides: [
-            publicProfileRepositoryProvider.overrideWith(
-              (ref) => publicProfiles,
-            ),
-            runParticipationRepositoryProvider.overrideWith(
-              (ref) => participationRepository,
-            ),
-          ],
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: HostRunManageScreen(
-              runClub: buildRunClub(),
-              run: run,
-              onBackToSuccess: () {},
-            ),
-          ),
+      await pumpRunsTestApp(
+        tester,
+        HostRunManageScreen(
+          runClub: buildRunClub(),
+          run: run,
+          onBackToSuccess: () {},
         ),
+        overrides: [
+          publicProfileRepositoryProvider.overrideWith((ref) => publicProfiles),
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
       );
+      await _pumpTestAnimation(tester);
+
+      await tester.drag(find.byType(ListView), const Offset(0, -500));
       await _pumpTestAnimation(tester);
 
       expect(find.text('Taylor'), findsOneWidget);
@@ -311,6 +327,110 @@ void main() {
       expect(find.text('runner-3'), findsNothing);
       expect(find.text('PAID'), findsOneWidget);
       expect(find.text('WAITLIST'), findsOneWidget);
+    });
+
+    testWidgets('host manage confirms and cancels an active run', (
+      tester,
+    ) async {
+      final fakeRunRepository = FakeRunRepository();
+      final participationRepository = FakeRunParticipationRepository();
+      final run = buildRun(id: 'run-cancel', bookedCount: 1);
+
+      await pumpRunsTestApp(
+        tester,
+        HostRunManageScreen(
+          runClub: buildRunClub(hostUserId: 'host-1'),
+          run: run,
+          onBackToSuccess: () {},
+        ),
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+
+      final cancelButton = find.widgetWithText(CatchButton, 'Cancel run');
+      await tester.ensureVisible(cancelButton);
+      await tester.tap(cancelButton);
+      await _pumpHostActionFrame(tester);
+
+      expect(find.text('Cancel this run?'), findsOneWidget);
+      await tester.tap(_dialogAction('Cancel run'));
+      await _pumpHostActionFrame(tester);
+
+      expect(fakeRunRepository.hostCancelledRunId, 'run-cancel');
+      expect(find.text('Run cancelled.'), findsOneWidget);
+    });
+
+    testWidgets('host manage confirms and deletes an unused run', (
+      tester,
+    ) async {
+      final fakeRunRepository = FakeRunRepository();
+      final participationRepository = FakeRunParticipationRepository();
+      final run = buildRun(id: 'run-delete');
+      var returned = false;
+
+      await pumpRunsTestApp(
+        tester,
+        HostRunManageScreen(
+          runClub: buildRunClub(hostUserId: 'host-1'),
+          run: run,
+          onBackToSuccess: () => returned = true,
+        ),
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+
+      final deleteButton = find.widgetWithText(CatchButton, 'Delete run');
+      await tester.ensureVisible(deleteButton);
+      await tester.tap(deleteButton);
+      await _pumpHostActionFrame(tester);
+
+      expect(find.text('Delete this run?'), findsOneWidget);
+      await tester.tap(_dialogAction('Delete run'));
+      await _pumpHostActionFrame(tester);
+
+      expect(fakeRunRepository.deletedRunId, 'run-delete');
+      expect(returned, isTrue);
+    });
+
+    testWidgets('host manage hides delete when run activity is visible', (
+      tester,
+    ) async {
+      final participationRepository = FakeRunParticipationRepository();
+      final run = buildRun(id: 'run-with-activity', bookedCount: 1);
+
+      await pumpRunsTestApp(
+        tester,
+        HostRunManageScreen(
+          runClub: buildRunClub(hostUserId: 'host-1'),
+          run: run,
+          onBackToSuccess: () {},
+        ),
+        overrides: [
+          runParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+
+      expect(find.widgetWithText(CatchButton, 'Delete run'), findsNothing);
+      expect(
+        find.textContaining('Delete is unavailable once a run has bookings'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('draft picker deletes persisted drafts and resumes another', (
@@ -364,7 +484,6 @@ void main() {
 
       expect(find.text('Your drafts'), findsNothing);
       expect(find.text('9'), findsOneWidget);
-      expect(find.text('18'), findsOneWidget);
     });
   });
 }
@@ -462,6 +581,9 @@ Future<void> _submitValidRun(WidgetTester tester) async {
   await _tapPrimaryButton(tester, 'Next');
   await _pumpTestAnimation(tester);
 
+  await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
+  await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
+  await _tapAdmissionPreset(tester, 'fixedCohortCaps');
   await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '21');
   await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '35');
   await _enterCreateRunText(tester, CreateRunFormKeys.maxMen, '9');
@@ -489,8 +611,6 @@ Future<void> _pickMapPoint(WidgetTester tester) async {
 
 Future<void> _fillBasicsStep(WidgetTester tester) async {
   await _enterCreateRunText(tester, CreateRunFormKeys.distance, '7.5');
-  await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
-  await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
   await tester.tap(find.text('MODERATE'));
   await _enterCreateRunText(
     tester,
@@ -505,10 +625,20 @@ Future<void> _enterCreateRunText(
   Key fieldKey,
   String text,
 ) async {
-  await tester.enterText(
-    find.descendant(of: find.byKey(fieldKey), matching: find.byType(TextField)),
-    text,
+  final field = find.descendant(
+    of: find.byKey(fieldKey),
+    matching: find.byType(TextField),
   );
+  await tester.ensureVisible(field);
+  await tester.pump();
+  await tester.enterText(field, text);
+}
+
+Future<void> _tapAdmissionPreset(WidgetTester tester, String presetName) async {
+  final finder = find.byKey(CreateRunFormKeys.admissionPreset(presetName));
+  await tester.ensureVisible(finder);
+  await tester.tap(finder);
+  await _pumpTestAnimation(tester);
 }
 
 Future<void> _tapPrimaryButton(WidgetTester tester, String label) async {
@@ -573,4 +703,16 @@ Future<void> _acceptInitialTime(WidgetTester tester) async {
 
 Future<void> _pumpTestAnimation(WidgetTester tester) async {
   await pumpFeatureUi(tester);
+}
+
+Future<void> _pumpHostActionFrame(WidgetTester tester) async {
+  await tester.pump();
+  await tester.pump(const Duration(milliseconds: 300));
+}
+
+Finder _dialogAction(String label) {
+  return find.descendant(
+    of: find.byType(AlertDialog),
+    matching: find.text(label),
+  );
 }

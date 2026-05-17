@@ -71,6 +71,15 @@ service firebase.storage {
         ).data.hostUserId == request.auth.uid;
     }
 
+    match /runClubs/{clubId}/runs/{runId}/{fileName} {
+      allow read: if true;
+      allow write: if isSignedIn()
+        && isImage()
+        && firestore.get(
+          /databases/(default)/documents/runClubs/$(clubId)
+        ).data.hostUserId == request.auth.uid;
+    }
+
     match /{allPaths=**} {
       allow read, write: if false;
     }

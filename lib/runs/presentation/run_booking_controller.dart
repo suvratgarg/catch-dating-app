@@ -33,6 +33,8 @@ class RunBookingController extends _$RunBookingController {
   static final leaveWaitlistMutation = Mutation<void>();
   static final markAttendanceMutation = Mutation<void>();
   static final selfCheckInMutation = Mutation<void>();
+  static final hostCancelRunMutation = Mutation<void>();
+  static final deleteRunMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -51,8 +53,9 @@ class RunBookingController extends _$RunBookingController {
   }) async {
     _requireSignedIn(action: 'book a run');
     final paymentRepo = ref.read(paymentRepositoryProvider);
+    final quotedPriceInPaise = run.priceInPaiseFor(user);
 
-    if (run.isFree) {
+    if (quotedPriceInPaise == 0) {
       await paymentRepo.bookFreeRun(runId: run.id);
       return null;
     } else {
@@ -74,6 +77,26 @@ class RunBookingController extends _$RunBookingController {
     await ref
         .read(runRepositoryProvider)
         .cancelSignUpViaFunction(runId: run.id);
+  }
+
+  /// Cancels a run hosted by the signed-in user.
+  ///
+  /// The Cloud Function enforces host ownership and keeps audit/history
+  /// records intact.
+  Future<void> cancelHostedRun({required Run run, String? reason}) async {
+    _requireSignedIn(action: 'cancel a hosted run');
+    await ref
+        .read(runRepositoryProvider)
+        .cancelRun(runId: run.id, reason: reason);
+  }
+
+  /// Permanently deletes an unused hosted run.
+  ///
+  /// The Cloud Function rejects runs with bookings, payments, reviews, or other
+  /// activity. Those runs should be cancelled instead.
+  Future<void> deleteHostedRun({required Run run}) async {
+    _requireSignedIn(action: 'delete a hosted run');
+    await ref.read(runRepositoryProvider).deleteRun(runId: run.id);
   }
 
   /// Adds the user to the waitlist for a full run.

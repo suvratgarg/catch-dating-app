@@ -42,20 +42,28 @@ node tool/validate_schema_contracts.mjs
 echo "==> Checking generated schema contract outputs"
 node tool/generate_schema_contracts.mjs --check
 node --check tool/generated/schema_contract_validators.mjs
+node tool/check_schema_type_boundaries.mjs
 
 echo "==> Checking schema path literals"
 node tool/check_schema_path_literals.mjs
+
+echo "==> Checking Firestore rules semantics against schemas"
+node tool/check_firestore_rules_semantics.mjs
 
 echo "==> Checking demo seed contract validation"
 node --check tool/seed_demo_data.mjs
 node --check tool/recompute_public_profiles.mjs
 node --check tool/validate_profile_decision_migration.mjs
 node --check tool/backfill_profile_decisions.mjs
+node --check tool/backfill_profile_photos.mjs
+node --check functions/scripts/backfill-profile-thumbnails.cjs
 node --test tool/seed_demo_data_append.test.mjs \
   tool/seed_demo_data_schema.test.mjs \
+  tool/firebase_project_resolver.test.mjs \
   tool/recompute_public_profiles.test.mjs \
   tool/validate_profile_decision_migration.test.mjs \
-  tool/backfill_profile_decisions.test.mjs
+  tool/backfill_profile_decisions.test.mjs \
+  tool/backfill_profile_photos.test.mjs
 node tool/seed_demo_data.mjs --scenario smoke --json >/dev/null
 
 echo "==> Analyzing Firestore type generator"

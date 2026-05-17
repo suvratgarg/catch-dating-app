@@ -146,6 +146,64 @@ void main() {
       expect(fakeRunRepository.cancelledRunId, 'run-9');
     });
 
+    test('cancelHostedRun delegates to the run repository', () async {
+      final fakeRunRepository = FakeRunRepository();
+      final container = ProviderContainer(
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await container
+          .read(runBookingControllerProvider.notifier)
+          .cancelHostedRun(
+            run: buildRun(id: 'run-10'),
+            reason: 'Weather warning',
+          );
+
+      expect(fakeRunRepository.hostCancelledRunId, 'run-10');
+      expect(fakeRunRepository.hostCancelReason, 'Weather warning');
+    });
+
+    test('deleteHostedRun delegates to the run repository', () async {
+      final fakeRunRepository = FakeRunRepository();
+      final container = ProviderContainer(
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => fakeRunRepository),
+          uidProvider.overrideWith((ref) => Stream.value('host-1')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await container
+          .read(runBookingControllerProvider.notifier)
+          .deleteHostedRun(run: buildRun(id: 'run-11'));
+
+      expect(fakeRunRepository.deletedRunId, 'run-11');
+    });
+
+    test('deleteHostedRun throws when the user is not signed in', () async {
+      final container = ProviderContainer(
+        overrides: [
+          runRepositoryProvider.overrideWith((ref) => FakeRunRepository()),
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await expectLater(
+        container
+            .read(runBookingControllerProvider.notifier)
+            .deleteHostedRun(run: buildRun()),
+        throwsA(isA<SignInRequiredException>()),
+      );
+    });
+
     test(
       'joinWaitlist delegates to the server-side waitlist function',
       () async {

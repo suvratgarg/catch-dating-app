@@ -4,6 +4,9 @@ import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo_policy.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -11,8 +14,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 part 'photo_upload_controller.g.dart';
 
 typedef PhotoUploadState = ({Set<int> loadingIndices, Object? uploadError});
-
-const maxProfilePhotoCount = 6;
 
 /// **Pattern B: State controller with record state + Mutation**
 ///
@@ -39,7 +40,7 @@ class PhotoUploadController extends _$PhotoUploadController {
     RangeError.checkValueInInterval(
       index,
       0,
-      maxProfilePhotoCount - 1,
+      maximumProfilePhotoCount - 1,
       'index',
     );
     if (_isPickingImage || state.loadingIndices.contains(index)) return;
@@ -65,7 +66,7 @@ class PhotoUploadController extends _$PhotoUploadController {
 
     try {
       final uid = requireSignedInUid(ref, action: 'upload photos');
-      final url = await repo.uploadUserPhoto(
+      final upload = await repo.uploadUserProfilePhoto(
         uid: uid,
         index: index,
         image: photo,
@@ -74,7 +75,7 @@ class PhotoUploadController extends _$PhotoUploadController {
         userProfileRepository: userProfileRepository,
         uid: uid,
         index: index,
-        url: url,
+        upload: upload,
       );
 
       if (!ref.mounted) return;
@@ -83,6 +84,112 @@ class PhotoUploadController extends _$PhotoUploadController {
       if (!ref.mounted) return;
       _failUploading(index, e, st);
     }
+  }
+
+  Future<XFile?> pickPhoto() async {
+    if (_isPickingImage) return null;
+    return _pickImage(ref.read(imageUploadRepositoryProvider));
+  }
+
+  Future<void> savePhoto({
+    required int index,
+    XFile? image,
+    PhotoPromptAnswer? prompt,
+  }) async {
+    RangeError.checkValueInInterval(
+      index,
+      0,
+      maximumProfilePhotoCount - 1,
+      'index',
+    );
+    if (image == null) {
+      await _persistPhotoPrompt(index: index, prompt: prompt);
+      return;
+    }
+
+    if (state.loadingIndices.contains(index)) return;
+    _markUploading(index);
+    try {
+      final uid = requireSignedInUid(ref, action: 'upload photos');
+      final upload = await ref
+          .read(imageUploadRepositoryProvider)
+          .uploadUserProfilePhoto(uid: uid, index: index, image: image);
+      await _persistUploadedPhoto(
+        userProfileRepository: ref.read(userProfileRepositoryProvider),
+        uid: uid,
+        index: index,
+        upload: upload,
+        prompt: prompt,
+      );
+
+      if (!ref.mounted) return;
+      _finishUploading(index);
+    } catch (e, st) {
+      if (!ref.mounted) return;
+      _failUploading(index, e, st);
+    }
+  }
+
+  Future<void> deletePhoto(int index) {
+    RangeError.checkValueInInterval(
+      index,
+      0,
+      maximumProfilePhotoCount - 1,
+      'index',
+    );
+    return _serializePhotoWrite(() async {
+      final uid = requireSignedInUid(ref, action: 'delete profile photo');
+      final userProfileRepository = ref.read(userProfileRepositoryProvider);
+      final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
+      if (latestUser == null) throw const DocumentNotFoundException('users');
+      final basePhotos = latestUser.effectiveProfilePhotos;
+      if (latestUser.profileComplete &&
+          basePhotos.length <= minimumProfilePhotoCount) {
+        throw StateError(
+          'Keep at least $minimumProfilePhotoCount profile photos.',
+        );
+      }
+      final updatedPhotos = removeProfilePhotoAtPosition(
+        profilePhotos: basePhotos,
+        position: index,
+      );
+      await userProfileRepository.updateProfilePhotos(
+        uid: uid,
+        profilePhotos: updatedPhotos,
+        photoUrls: profilePhotoUrls(updatedPhotos),
+      );
+    });
+  }
+
+  Future<void> reorderPhoto({required int fromIndex, required int toIndex}) {
+    RangeError.checkValueInInterval(
+      fromIndex,
+      0,
+      maximumProfilePhotoCount - 1,
+      'fromIndex',
+    );
+    RangeError.checkValueInInterval(
+      toIndex,
+      0,
+      maximumProfilePhotoCount - 1,
+      'toIndex',
+    );
+    return _serializePhotoWrite(() async {
+      final uid = requireSignedInUid(ref, action: 'reorder profile photos');
+      final userProfileRepository = ref.read(userProfileRepositoryProvider);
+      final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
+      if (latestUser == null) throw const DocumentNotFoundException('users');
+      final updatedPhotos = reorderProfilePhoto(
+        profilePhotos: latestUser.effectiveProfilePhotos,
+        fromPosition: fromIndex,
+        toPosition: toIndex,
+      );
+      await userProfileRepository.updateProfilePhotos(
+        uid: uid,
+        profilePhotos: updatedPhotos,
+        photoUrls: profilePhotoUrls(updatedPhotos),
+      );
+    });
   }
 
   Future<XFile?> _pickImage(ImageUploadRepository repo) async {
@@ -132,19 +239,61 @@ class PhotoUploadController extends _$PhotoUploadController {
     required UserProfileRepository userProfileRepository,
     required String uid,
     required int index,
-    required String url,
+    required UploadedImage upload,
+    PhotoPromptAnswer? prompt,
   }) {
     return _serializePhotoWrite(() async {
       final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
-      final updatedUrls = _replacePhotoUrlAtIndex(
-        photoUrls: latestUser?.photoUrls ?? const [],
-        index: index,
-        url: url,
+      if (latestUser == null) throw const DocumentNotFoundException('users');
+      final basePhotos = latestUser.effectiveProfilePhotos;
+      final existingPrompt = basePhotos
+          .where((photo) => photo.position == index)
+          .firstOrNull
+          ?.prompt;
+      final uploadedPhoto = ProfilePhoto.uploaded(
+        position: index,
+        url: upload.url,
+        storagePath: upload.storagePath,
+        prompt: prompt ?? existingPrompt,
+      );
+      final updatedPhotos = replaceProfilePhotoAtPosition(
+        profilePhotos: basePhotos,
+        position: index,
+        photo: uploadedPhoto,
       );
 
-      await userProfileRepository.updatePhotoUrls(
+      await userProfileRepository.updateProfilePhotos(
         uid: uid,
-        photoUrls: updatedUrls,
+        profilePhotos: updatedPhotos,
+        photoUrls: profilePhotoUrls(updatedPhotos),
+      );
+    });
+  }
+
+  Future<void> _persistPhotoPrompt({
+    required int index,
+    required PhotoPromptAnswer? prompt,
+  }) {
+    return _serializePhotoWrite(() async {
+      final uid = requireSignedInUid(ref, action: 'update photo caption');
+      final userProfileRepository = ref.read(userProfileRepositoryProvider);
+      final latestUser = await userProfileRepository.fetchUserProfile(uid: uid);
+      if (latestUser == null) throw const DocumentNotFoundException('users');
+      final now = DateTime.now();
+      final updatedPhotos = [
+        for (final photo in latestUser.effectiveProfilePhotos)
+          if (photo.position == index)
+            photo.copyWith(
+              prompt: prompt?.copyWith(photoIndex: index),
+              updatedAt: now,
+            )
+          else
+            photo,
+      ];
+      await userProfileRepository.updateProfilePhotos(
+        uid: uid,
+        profilePhotos: updatedPhotos,
+        photoUrls: profilePhotoUrls(updatedPhotos),
       );
     });
   }
@@ -170,19 +319,5 @@ class PhotoUploadController extends _$PhotoUploadController {
       },
     );
     return nextWrite;
-  }
-
-  static List<String> _replacePhotoUrlAtIndex({
-    required List<String> photoUrls,
-    required int index,
-    required String url,
-  }) {
-    final updatedUrls = List<String>.from(photoUrls);
-    if (index < updatedUrls.length) {
-      updatedUrls[index] = url;
-    } else {
-      updatedUrls.add(url);
-    }
-    return updatedUrls;
   }
 }

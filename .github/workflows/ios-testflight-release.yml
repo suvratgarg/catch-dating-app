@@ -1,0 +1,160 @@
+name: iOS TestFlight Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      upload_to_testflight:
+        description: Upload the exported build to TestFlight after verification.
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  prod-ios:
+    name: Prod iOS archive
+    runs-on: macos-26
+    environment: prod
+    timeout-minutes: 60
+
+    env:
+      ASC_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      ASC_KEY_BASE64: ${{ secrets.APP_STORE_CONNECT_API_KEY_BASE64 }}
+      ASC_KEY_DIR: ${{ runner.temp }}/appstoreconnect/private_keys
+      ARCHIVE_PATH: ${{ runner.temp }}/Runner.xcarchive
+      EXPORT_PATH: build/ios/export/prod
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.41.x'
+          channel: stable
+          cache: true
+
+      - run: flutter pub get
+
+      - name: Write prod iOS Maps key
+        env:
+          GOOGLE_MAPS_IOS_API_KEY_PROD: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_PROD }}
+          GOOGLE_MAPS_IOS_API_KEY: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY }}
+        run: |
+          set -euo pipefail
+          key="${GOOGLE_MAPS_IOS_API_KEY_PROD:-${GOOGLE_MAPS_IOS_API_KEY:-}}"
+          if [[ -z "$key" ]]; then
+            echo "Missing GOOGLE_MAPS_IOS_API_KEY_PROD or GOOGLE_MAPS_IOS_API_KEY secret."
+            exit 1
+          fi
+          printf 'GOOGLE_MAPS_IOS_API_KEY_PROD=%s\n' "$key" > ios/Flutter/GoogleMapsKeys.xcconfig
+
+      - name: Write App Store Connect API key
+        run: |
+          set -euo pipefail
+          if [[ -z "${ASC_KEY_ID:-}" || -z "${ASC_ISSUER_ID:-}" || -z "${ASC_KEY_BASE64:-}" ]]; then
+            echo "Missing App Store Connect API key secrets."
+            exit 1
+          fi
+          mkdir -p "$ASC_KEY_DIR"
+          /usr/bin/printf '%s' "$ASC_KEY_BASE64" | /usr/bin/base64 -D > "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8"
+          chmod 600 "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8"
+
+      - name: Prepare prod Flutter iOS configuration
+        run: ./tool/flutter_with_env.sh prod build ios --release --config-only
+
+      - name: Archive prod iOS app
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme prod \
+            -configuration Release \
+            -destination generic/platform=iOS \
+            -archivePath "$ARCHIVE_PATH" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            -hideShellScriptEnvironment \
+            archive
+
+      - name: Export prod IPA
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$EXPORT_PATH" \
+            -exportOptionsPlist ios/ExportOptions.prod.plist \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+
+      - name: Verify exported entitlements
+        run: |
+          set -euo pipefail
+          ipa_path="$EXPORT_PATH/Catch.ipa"
+          extract_dir="$RUNNER_TEMP/catch-ipa"
+          profile_plist="$RUNNER_TEMP/catch-profile.plist"
+
+          test -f "$ipa_path"
+          rm -rf "$extract_dir"
+          mkdir -p "$extract_dir"
+          ditto -x -k "$ipa_path" "$extract_dir"
+
+          openssl cms -inform DER -verify -noverify \
+            -in "$extract_dir/Payload/Runner.app/embedded.mobileprovision" \
+            -out "$profile_plist"
+
+          profile_name="$(/usr/libexec/PlistBuddy -c 'Print :Name' "$profile_plist")"
+          healthkit="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:com.apple.developer.healthkit' "$profile_plist")"
+          app_id="$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' "$profile_plist")"
+
+          if [[ "$healthkit" != "true" ]]; then
+            echo "Exported provisioning profile is missing HealthKit."
+            exit 1
+          fi
+
+          codesign -d --entitlements - "$extract_dir/Payload/Runner.app" > "$RUNNER_TEMP/catch-entitlements.txt" 2>/dev/null
+          grep -q 'com.apple.developer.healthkit' "$RUNNER_TEMP/catch-entitlements.txt"
+          grep -q 'applinks:catchdates.com' "$RUNNER_TEMP/catch-entitlements.txt"
+
+          {
+            echo "## iOS export verification"
+            echo
+            echo "- IPA: \`$ipa_path\`"
+            echo "- Profile: \`$profile_name\`"
+            echo "- App ID: \`$app_id\`"
+            echo "- HealthKit entitlement: \`$healthkit\`"
+            echo "- Associated Domains entitlement: verified"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: catch-ios-prod-ipa
+          path: build/ios/export/prod/Catch.ipa
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload to TestFlight
+        if: ${{ inputs.upload_to_testflight }}
+        run: |
+          set -euo pipefail
+          upload_options="$RUNNER_TEMP/ExportOptions.upload.plist"
+          cp ios/ExportOptions.prod.plist "$upload_options"
+          /usr/libexec/PlistBuddy -c 'Set :destination upload' "$upload_options"
+
+          xcodebuild \
+            -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportPath "$RUNNER_TEMP/testflight-upload" \
+            -exportOptionsPlist "$upload_options" \
+            -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_DIR/AuthKey_${ASC_KEY_ID}.p8" \
+            -authenticationKeyID "$ASC_KEY_ID" \
+            -authenticationKeyIssuerID "$ASC_ISSUER_ID"

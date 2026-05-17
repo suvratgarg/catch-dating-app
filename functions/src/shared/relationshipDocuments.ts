@@ -13,6 +13,7 @@ export interface RunParticipationSnapshot {
     uid: string;
     status: RunParticipationStatus;
     genderAtSignup?: string;
+    cohortAtSignup?: string;
   };
 }
 
@@ -158,6 +159,7 @@ export function leftRunClubMembershipPatch() {
  * @param {string} params.uid User id.
  * @param {RunParticipationStatus} params.status New participation status.
  * @param {string=} params.genderAtSignup Optional signup-time gender snapshot.
+ * @param {string=} params.cohortAtSignup Optional signup-time policy cohort.
  * @param {string=} params.paymentId Optional linked payment document id.
  * @return {Record<string, unknown>} Firestore patch.
  */
@@ -168,6 +170,7 @@ export function runParticipationPatch(params: {
   uid: string;
   status: RunParticipationStatus;
   genderAtSignup?: string;
+  cohortAtSignup?: string;
   paymentId?: string;
 }) {
   const now = admin.firestore.FieldValue.serverTimestamp();
@@ -184,6 +187,9 @@ export function runParticipationPatch(params: {
   }
   if (params.genderAtSignup !== undefined) {
     patch.genderAtSignup = params.genderAtSignup;
+  }
+  if (params.cohortAtSignup !== undefined) {
+    patch.cohortAtSignup = params.cohortAtSignup;
   }
   if (params.paymentId !== undefined) {
     patch.paymentId = params.paymentId;

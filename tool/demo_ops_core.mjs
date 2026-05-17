@@ -532,7 +532,6 @@ export async function buildWarmUserPlan({
         uid: user.uid,
         runId: run.id,
         savedAt: timestampFromDate(admin, offsetDate(now, {hours: -2})),
-        removedAt: null,
       },
     });
   }

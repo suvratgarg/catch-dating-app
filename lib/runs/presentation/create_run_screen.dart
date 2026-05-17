@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/widgets/catch_adaptive_dialog.dart';
 import 'package:catch_dating_app/core/widgets/catch_adaptive_picker.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
@@ -19,7 +20,7 @@ import 'package:catch_dating_app/runs/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/create_run_step_header.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/draft_picker_sheet.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/eligibility_step.dart';
+import 'package:catch_dating_app/runs/presentation/widgets/event_policy_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/run_details_step.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/stepper_footer.dart';
 import 'package:catch_dating_app/runs/presentation/widgets/when_step.dart';
@@ -58,14 +59,15 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
 
   // Draft support
   String? _activeDraftId;
+  Object? _lastSavedDraftSignature;
   bool _checkedDrafts = false;
 
-  final _step0Key = GlobalKey<FormState>();
-  final _step1Key = GlobalKey<FormState>();
-  final _step2Key = GlobalKey<FormState>();
-  final _step3Key = GlobalKey<FormState>();
+  final _runDetailsFormKey = GlobalKey<FormState>();
+  final _whereFormKey = GlobalKey<FormState>();
+  final _whenFormKey = GlobalKey<FormState>();
+  final _eventPolicyFormKey = GlobalKey<FormState>();
 
-  // Step 0 — When
+  // Step 2 — When
   final _dateController = TextEditingController();
   final _startTimeController = TextEditingController();
   DateTime? _selectedDate;
@@ -80,24 +82,29 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   final _locationDetailsController = TextEditingController();
   LocationCoordinate? _startingPoint;
 
-  // Step 2 — The run
+  // Step 0 — Run details
   final _distanceController = TextEditingController();
   final _capacityController = TextEditingController();
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
   PaceLevel? _selectedPace;
+  PickedRunPhoto? _runPhoto;
 
   // Step 3 — Rules
   final _minAgeController = TextEditingController();
   final _maxAgeController = TextEditingController();
   final _maxMenController = TextEditingController();
   final _maxWomenController = TextEditingController();
+  RunEventAdmissionPreset _selectedAdmissionPreset =
+      RunEventAdmissionPreset.openCapacity;
+  EventCancellationPolicyId _selectedCancellationPolicyId =
+      EventCancellationPolicyId.standard;
 
   GlobalKey<FormState> get _currentStepKey => switch (_currentStep) {
-    0 => _step2Key,
-    1 => _step1Key,
-    2 => _step0Key,
-    _ => _step3Key,
+    0 => _runDetailsFormKey,
+    1 => _whereFormKey,
+    2 => _whenFormKey,
+    _ => _eventPolicyFormKey,
   };
 
   DateTime? get _selectedStartDateTime {
@@ -110,9 +117,56 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
   RunConstraints get _constraints => RunConstraints(
     minAge: int.tryParse(_minAgeController.text.trim()) ?? 0,
     maxAge: int.tryParse(_maxAgeController.text.trim()) ?? 99,
-    maxMen: int.tryParse(_maxMenController.text.trim()),
-    maxWomen: int.tryParse(_maxWomenController.text.trim()),
+    maxMen: _selectedAdmissionPreset == RunEventAdmissionPreset.fixedCohortCaps
+        ? int.tryParse(_maxMenController.text.trim())
+        : null,
+    maxWomen:
+        _selectedAdmissionPreset == RunEventAdmissionPreset.fixedCohortCaps
+        ? int.tryParse(_maxWomenController.text.trim())
+        : null,
   );
+
+  EventPolicyBundle get _eventPolicy {
+    final capacityLimit = int.parse(_capacityController.text.trim());
+    final basePriceInPaise = (double.parse(_priceController.text.trim()) * 100)
+        .round();
+    final cancellationPolicy = _selectedCancellationPolicy;
+
+    return switch (_selectedAdmissionPreset) {
+      RunEventAdmissionPreset.openCapacity => EventPolicyBundle.openRun(
+        capacityLimit: capacityLimit,
+        basePriceInPaise: basePriceInPaise,
+        cancellationPolicy: cancellationPolicy,
+      ),
+      RunEventAdmissionPreset.balancedSingles =>
+        EventPolicyBundle.balancedSinglesRun(
+          capacityLimit: capacityLimit,
+          basePriceInPaise: basePriceInPaise,
+          cancellationPolicy: cancellationPolicy,
+        ),
+      RunEventAdmissionPreset.fixedCohortCaps =>
+        EventPolicyBundle.fixedCohortCapsRun(
+          capacityLimit: capacityLimit,
+          basePriceInPaise: basePriceInPaise,
+          maxMenInterestedInWomen: int.tryParse(_maxMenController.text.trim()),
+          maxWomenInterestedInMen: int.tryParse(
+            _maxWomenController.text.trim(),
+          ),
+          cancellationPolicy: cancellationPolicy,
+        ),
+    };
+  }
+
+  EventCancellationPolicy get _selectedCancellationPolicy {
+    return switch (_selectedCancellationPolicyId) {
+      EventCancellationPolicyId.flexible =>
+        const EventCancellationPolicy.flexible(),
+      EventCancellationPolicyId.standard =>
+        const EventCancellationPolicy.standard(),
+      EventCancellationPolicyId.strict =>
+        const EventCancellationPolicy.strict(),
+    };
+  }
 
   VoidCallback? get _decreaseDurationCallback =>
       _durationMinutes > CatchBusinessRules.runMinDurationMinutes
@@ -219,6 +273,14 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     }
   }
 
+  Future<void> _pickRunPhoto() async {
+    final picked = await ref
+        .read(createRunControllerProvider.notifier)
+        .pickRunPhoto();
+    if (!mounted || picked == null) return;
+    setState(() => _runPhoto = picked);
+  }
+
   void _back() {
     if (_currentStep > 0) {
       _goToStep(_currentStep - 1);
@@ -301,11 +363,10 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
             locationDetails: _trimmedTextOrNull(_locationDetailsController),
             distanceKm: double.parse(_distanceController.text.trim()),
             pace: _selectedPace!,
-            capacityLimit: int.parse(_capacityController.text.trim()),
             description: _descriptionController.text.trim(),
-            priceInPaise: (double.parse(_priceController.text.trim()) * 100)
-                .round(),
             constraints: _constraints,
+            eventPolicy: _eventPolicy,
+            photoImage: _runPhoto?.image,
           );
       if (mounted) {
         setState(() => _createdRun = createdRun);
@@ -326,23 +387,57 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     });
   }
 
-  bool get _hasUnsavedChanges =>
-      _activeDraftId == null &&
-      (_trimmedTextOrNull(_distanceController) != null ||
-          _trimmedTextOrNull(_capacityController) != null ||
-          _trimmedTextOrNull(_priceController) != null ||
-          _trimmedTextOrNull(_descriptionController) != null ||
-          _selectedPace != null ||
-          _trimmedTextOrNull(_meetingPointController) != null ||
-          _trimmedTextOrNull(_locationDetailsController) != null ||
-          _startingPoint != null ||
-          _selectedDate != null ||
-          _selectedStartTime != null ||
-          _durationMinutes != CatchBusinessRules.runDefaultDurationMinutes ||
-          _trimmedTextOrNull(_minAgeController) != null ||
-          _trimmedTextOrNull(_maxAgeController) != null ||
-          _trimmedTextOrNull(_maxMenController) != null ||
-          _trimmedTextOrNull(_maxWomenController) != null);
+  bool get _hasUnsavedChanges {
+    final currentSignature = _currentDraftContentSignature;
+    if (_activeDraftId != null) {
+      return currentSignature != _lastSavedDraftSignature;
+    }
+    return currentSignature != _emptyDraftContentSignature;
+  }
+
+  Object get _currentDraftContentSignature => (
+    distance: _trimmedTextOrNull(_distanceController),
+    capacity: _trimmedTextOrNull(_capacityController),
+    price: _trimmedTextOrNull(_priceController),
+    description: _trimmedTextOrNull(_descriptionController),
+    paceName: _selectedPace?.name,
+    meetingPoint: _trimmedTextOrNull(_meetingPointController),
+    locationDetails: _trimmedTextOrNull(_locationDetailsController),
+    startingPointLat: _startingPoint?.latitude,
+    startingPointLng: _startingPoint?.longitude,
+    selectedDateMillis: _selectedDate?.millisecondsSinceEpoch,
+    selectedStartHour: _selectedStartTime?.hour,
+    selectedStartMinute: _selectedStartTime?.minute,
+    durationMinutes: _durationMinutes,
+    minAge: _trimmedTextOrNull(_minAgeController),
+    maxAge: _trimmedTextOrNull(_maxAgeController),
+    maxMen: _trimmedTextOrNull(_maxMenController),
+    maxWomen: _trimmedTextOrNull(_maxWomenController),
+    admissionPreset: _selectedAdmissionPreset.name,
+    cancellationPolicy: _selectedCancellationPolicyId.name,
+  );
+
+  static const Object _emptyDraftContentSignature = (
+    distance: null,
+    capacity: null,
+    price: null,
+    description: null,
+    paceName: null,
+    meetingPoint: null,
+    locationDetails: null,
+    startingPointLat: null,
+    startingPointLng: null,
+    selectedDateMillis: null,
+    selectedStartHour: null,
+    selectedStartMinute: null,
+    durationMinutes: CatchBusinessRules.runDefaultDurationMinutes,
+    minAge: null,
+    maxAge: null,
+    maxMen: null,
+    maxWomen: null,
+    admissionPreset: 'openCapacity',
+    cancellationPolicy: 'standard',
+  );
 
   Future<void> _checkForDrafts() async {
     final drafts = await ref
@@ -433,7 +528,14 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       if (draft.maxWomen != null) {
         _maxWomenController.text = draft.maxWomen!;
       }
+      _selectedAdmissionPreset = _admissionPresetFromName(
+        draft.admissionPreset,
+      );
+      _selectedCancellationPolicyId = _cancellationPolicyFromName(
+        draft.cancellationPolicy,
+      );
     });
+    _lastSavedDraftSignature = _currentDraftContentSignature;
   }
 
   Future<void> _deleteDraftFromPicker(RunDraft draft) {
@@ -467,6 +569,8 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
       maxAge: _trimmedTextOrNull(_maxAgeController),
       maxMen: _trimmedTextOrNull(_maxMenController),
       maxWomen: _trimmedTextOrNull(_maxWomenController),
+      admissionPreset: _selectedAdmissionPreset.name,
+      cancellationPolicy: _selectedCancellationPolicyId.name,
     );
 
     final wasUpdate = _activeDraftId != null;
@@ -478,6 +582,7 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     if (savedDraft == null) return;
 
     _activeDraftId = savedDraft.id;
+    _lastSavedDraftSignature = _currentDraftContentSignature;
 
     if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
@@ -517,11 +622,28 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
     0 => 'Run basics',
     1 => 'Route & meet point',
     2 => 'When is the run?',
-    _ => 'Review & rules',
+    3 => 'Event policy',
+    _ => throw RangeError.range(step, 0, _totalSteps - 1, 'step'),
   };
 
   static String _formatClockTime(TimeOfDay time) {
     return AppTimeFormatters.clockTime(hour: time.hour, minute: time.minute);
+  }
+
+  static RunEventAdmissionPreset _admissionPresetFromName(String? name) {
+    if (name == null) return RunEventAdmissionPreset.openCapacity;
+    return RunEventAdmissionPreset.values.firstWhere(
+      (preset) => preset.name == name,
+      orElse: () => RunEventAdmissionPreset.openCapacity,
+    );
+  }
+
+  static EventCancellationPolicyId _cancellationPolicyFromName(String? name) {
+    if (name == null) return EventCancellationPolicyId.standard;
+    return EventCancellationPolicyId.values.firstWhere(
+      (policyId) => policyId.name == name,
+      orElse: () => EventCancellationPolicyId.standard,
+    );
   }
 
   @override
@@ -564,23 +686,23 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 children: [
                   RunDetailsStep(
-                    formKey: _step2Key,
+                    formKey: _runDetailsFormKey,
+                    photoImageBytes: _runPhoto?.bytes,
+                    onPickPhoto: _pickRunPhoto,
                     distanceController: _distanceController,
-                    capacityController: _capacityController,
-                    priceController: _priceController,
                     descriptionController: _descriptionController,
                     selectedPace: _selectedPace,
                     onPaceChanged: (p) => setState(() => _selectedPace = p),
                   ),
                   WhereStep(
-                    formKey: _step1Key,
+                    formKey: _whereFormKey,
                     meetingPointController: _meetingPointController,
                     locationDetailsController: _locationDetailsController,
                     startingPoint: _startingPoint,
                     onPickLocation: _pickLocation,
                   ),
                   WhenStep(
-                    formKey: _step0Key,
+                    formKey: _whenFormKey,
                     dateController: _dateController,
                     startTimeController: _startTimeController,
                     durationMinutes: _durationMinutes,
@@ -591,12 +713,21 @@ class _CreateRunScreenState extends ConsumerState<CreateRunScreen> {
                     formatDuration: RunFormatters.durationMinutes,
                     scheduleErrorText: _scheduleErrorText,
                   ),
-                  EligibilityStep(
-                    formKey: _step3Key,
+                  EventPolicyStep(
+                    formKey: _eventPolicyFormKey,
+                    capacityController: _capacityController,
+                    priceController: _priceController,
                     minAgeController: _minAgeController,
                     maxAgeController: _maxAgeController,
                     maxMenController: _maxMenController,
                     maxWomenController: _maxWomenController,
+                    admissionPreset: _selectedAdmissionPreset,
+                    onAdmissionPresetChanged: (preset) =>
+                        setState(() => _selectedAdmissionPreset = preset),
+                    cancellationPolicyId: _selectedCancellationPolicyId,
+                    onCancellationPolicyChanged: (policyId) => setState(
+                      () => _selectedCancellationPolicyId = policyId,
+                    ),
                   ),
                 ],
               ),

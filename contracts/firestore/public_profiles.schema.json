@@ -88,6 +88,13 @@
         "$ref": "../embedded/photo_prompt_answer.schema.json"
       }
     },
+    "profilePhotos": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "$ref": "../embedded/profile_photo.schema.json"
+      }
+    },
     "city": {
       "$ref": "../shared/profile_common.schema.json#/definitions/citySlug"
     },

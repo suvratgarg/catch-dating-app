@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
@@ -50,6 +52,23 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
       position.maxScrollExtent,
     );
     _outerScrollController.jumpTo(nextOffset);
+  }
+
+  double _handlePreviewForwardScroll(double scrollDelta) {
+    if (!_outerScrollController.hasClients || scrollDelta <= 0) return 0;
+
+    final position = _outerScrollController.position;
+    final remainingOuterScroll = position.maxScrollExtent - position.pixels;
+    if (remainingOuterScroll <= 0) return 0;
+
+    final consumedByHeader = math.min(scrollDelta, remainingOuterScroll);
+    _outerScrollController.jumpTo(
+      (position.pixels + consumedByHeader).clamp(
+        position.minScrollExtent,
+        position.maxScrollExtent,
+      ),
+    );
+    return consumedByHeader;
   }
 
   @override
@@ -129,6 +148,7 @@ class _ProfileScreenState extends ConsumerState<ProfileScreen>
                         _PreviewTabSliverBody(
                           profile: publicProfileFromUserProfile(user),
                           scrollController: _previewScrollController,
+                          onForwardScroll: _handlePreviewForwardScroll,
                           onLeadingOverscroll: _handlePreviewLeadingOverscroll,
                         ),
                       ],
@@ -185,11 +205,13 @@ class _PreviewTabSliverBody extends StatelessWidget {
   const _PreviewTabSliverBody({
     required this.profile,
     required this.scrollController,
+    required this.onForwardScroll,
     required this.onLeadingOverscroll,
   });
 
   final PublicProfile profile;
   final ScrollController scrollController;
+  final double Function(double scrollDelta) onForwardScroll;
   final ValueChanged<double> onLeadingOverscroll;
 
   @override
@@ -200,9 +222,41 @@ class _PreviewTabSliverBody extends StatelessWidget {
         child: PreviewTab(
           profile: profile,
           scrollController: scrollController,
+          scrollPhysics: _PreviewHeaderBridgeScrollPhysics(
+            onForwardScroll: onForwardScroll,
+          ),
+          bottomPadding: 0,
           onLeadingOverscroll: onLeadingOverscroll,
         ),
       ),
     );
+  }
+}
+
+class _PreviewHeaderBridgeScrollPhysics extends ClampingScrollPhysics {
+  const _PreviewHeaderBridgeScrollPhysics({
+    required this.onForwardScroll,
+    super.parent,
+  });
+
+  final double Function(double scrollDelta) onForwardScroll;
+
+  @override
+  _PreviewHeaderBridgeScrollPhysics applyTo(ScrollPhysics? ancestor) {
+    return _PreviewHeaderBridgeScrollPhysics(
+      onForwardScroll: onForwardScroll,
+      parent: buildParent(ancestor),
+    );
+  }
+
+  @override
+  double applyPhysicsToUserOffset(ScrollMetrics position, double offset) {
+    final childOffset = super.applyPhysicsToUserOffset(position, offset);
+    if (childOffset >= 0) return childOffset;
+
+    final consumedByHeader = onForwardScroll(-childOffset);
+    if (consumedByHeader <= 0) return childOffset;
+
+    return childOffset + math.min(consumedByHeader, -childOffset);
   }
 }

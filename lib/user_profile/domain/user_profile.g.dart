@@ -38,6 +38,11 @@ _UserProfile _$UserProfileFromJson(Map<String, dynamic> json) => _UserProfile(
           ?.map((e) => PhotoPromptAnswer.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  profilePhotos:
+      (json['profilePhotos'] as List<dynamic>?)
+          ?.map((e) => ProfilePhoto.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   city: json['city'] as String?,
   latitude: (json['latitude'] as num?)?.toDouble(),
   longitude: (json['longitude'] as num?)?.toDouble(),
@@ -111,6 +116,7 @@ Map<String, dynamic> _$UserProfileToJson(
   'photoUrls': instance.photoUrls,
   'photoThumbnailUrls': instance.photoThumbnailUrls,
   'photoPrompts': instance.photoPrompts.map((e) => e.toJson()).toList(),
+  'profilePhotos': instance.profilePhotos.map((e) => e.toJson()).toList(),
   'city': instance.city,
   'latitude': instance.latitude,
   'longitude': instance.longitude,

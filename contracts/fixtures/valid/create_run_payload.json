@@ -7,6 +7,7 @@
   "startingPointLat": 22.7196,
   "startingPointLng": 75.8577,
   "locationDetails": "Meet near the main gate.",
+  "photoUrl": "https://img.example/runs/run-1.jpg",
   "distanceKm": 5,
   "pace": "easy",
   "capacityLimit": 12,

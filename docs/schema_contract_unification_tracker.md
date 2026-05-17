@@ -1,7 +1,7 @@
 ---
 doc_id: schema_contract_unification
-version: 0.8.2
-updated: 2026-05-15
+version: 0.8.5
+updated: 2026-05-16
 owner: recursive_audit_loop
 status: active
 ---
@@ -28,8 +28,9 @@ operational drag. The same concepts are currently declared in several places:
 - Dart Freezed/json_serializable domain models.
 - Dart profile validation helpers.
 - Dart prompt catalogs.
-- Generated TypeScript interfaces in `functions/src/shared/firestore.ts`.
-- Handwritten Zod schemas inside Cloud Functions.
+- Transitional TypeScript Admin SDK interfaces in
+  `functions/src/shared/firestore.ts`.
+- Generated Ajv validators inside Cloud Functions.
 - `tool/firestore_contract.json` ownership and field metadata.
 - Firestore rules shape checks.
 - Rules emulator fixtures.
@@ -44,9 +45,12 @@ Functions, rules, data validation, and seed tooling.
 
 Existing useful pieces:
 
-- `tool/generate_firestore_types.dart` already generates
-  `functions/src/shared/firestore.ts` from selected Dart models plus
-  `tool/firestore_ts_overlay.json`.
+- `tool/generate_firestore_types.dart` still generates the transitional
+  Cloud Functions Admin SDK facade at `functions/src/shared/firestore.ts` from
+  selected Dart models plus `tool/firestore_ts_overlay.json`.
+- `tool/generate_schema_contracts.mjs` generates schema-owned TypeScript
+  interfaces, Ajv validators, Dart constants, schema registries, and
+  tool-time validators from `contracts/`.
 - `tool/check_data_contract.sh` already checks generated Firestore TS types,
   generated business constants, Firestore contract metadata, validator syntax,
   Functions lint/tests, Firestore rules tests, and focused Flutter tests.
@@ -55,7 +59,7 @@ Existing useful pieces:
 - `tool/business_rules.json` generates shared Dart and TypeScript constants.
 - `lib/user_profile/domain/profile_validation.dart` owns app-side profile
   constraints today.
-- `functions/src/profiles/updateUserProfile.ts` owns handwritten Zod patch
+- `functions/src/profiles/updateUserProfile.ts` consumes generated Ajv patch
   validation today.
 - `lib/user_profile/domain/profile_prompts.dart` owns the current profile/photo
   prompt catalog today.
@@ -64,14 +68,18 @@ Existing useful pieces:
 
 Current gaps:
 
-- Dart validation and Zod validation can disagree.
+- Flutter production validation still consumes generated schema constants
+  selectively; broad Dart schema validation is now available for contract tests,
+  but app write paths are not all runtime-validated against JSON Schema.
 - Full document schemas and partial update schemas are not generated from one
   contract.
 - Prompt catalogs are Dart-only even though Functions and seed tools need the
   same prompt ids and limits.
 - Seed data can drift into legacy or invalid shapes unless each script manually
   remembers current fields.
-- Firestore rules and schema metadata are related but independently edited.
+- Firestore rules and schema metadata are related but not generated from one
+  rules compiler. Schema-derived semantic checks now cover the highest-risk
+  direct-write surfaces.
 - Storage/API naming migrations, such as replacing the user-facing swiping
   model with contextual catch/profile decisions, do not yet have a standard
   dual-read/dual-write migration pattern.
@@ -88,8 +96,9 @@ Recommended canonical format:
 - Ajv in Node/Functions/tooling for runtime validation.
 - `json-schema-to-typescript` for generated TypeScript types where useful.
 - Dart `json_schema` package for tool/test-time validation and golden fixtures.
-- Keep Zod temporarily only as a migration bridge where replacing it would add
-  too much churn in one pass.
+- Zod has been removed from Functions validation. New callable validation must
+  be described in `contracts/callables` or `contracts/patches` and consumed via
+  generated Ajv validators.
 
 Why draft-07:
 
@@ -175,6 +184,7 @@ functions/src/shared/generated/
 
 lib/core/schema_contracts/generated/
   profile_schema_contracts.g.dart
+  schema_contracts.g.dart
 
 tool/generated/
   schema_contract_registry.mjs
@@ -555,12 +565,13 @@ Result: all focused Phase 3 checks passed on 2026-05-15.
 
 Auxiliary work identified during Phase 3:
 
-- Firestore rules still enforce only a subset of schema-level profile
-  semantics. Phase 6 should compare generated field sets and scalar limits
-  against rules helpers.
-- The generated Dart schema file is intentionally broad but not yet split into
-  smaller generated files. If it grows much further, split generated prompt
-  catalog, validation limits, and schema maps into separate files.
+- Firestore rules semantic drift is now checked for `users`, contextual profile
+  decisions, and saved runs. Further rules work should add schema-derived
+  checks for any new direct-write surface before it is opened to clients.
+- The broad generated Dart schema registry is intentionally kept separate from
+  the lightweight profile constants file used by production UI. If it grows much
+  further, split generated prompt catalogs, validation limits, and schema maps
+  into separate generated files.
 - `updateUserProfile` now rejects malformed non-empty emails and invalid enum
   strings server-side. Any old seeded/demo data with invalid non-empty email
   values should be repaired before production enforcement is broadened to full
@@ -744,6 +755,200 @@ migration without switching live reads or writes:
   `ProfilePhoto` contract.
 
 Result: design/scope complete; no live model migration has started.
+
+### 2026-05-15: Phase 10 Profile Photo Dual-Read/Dual-Write Migration
+
+Started the live `ProfilePhoto` migration that had previously only been
+scoped:
+
+- Added a Dart `ProfilePhoto` domain object and threaded optional
+  `profilePhotos` through `UserProfile` and `PublicProfile` while preserving
+  the legacy `photoUrls`, `photoThumbnailUrls`, and `photoPrompts` arrays.
+- Added effective-photo getters so profile rendering and avatar-scale reads
+  prefer grouped `profilePhotos` and synthesize grouped objects from legacy
+  arrays for old documents.
+- Updated uploads to write grouped `profilePhotos` plus the legacy arrays in
+  the same profile update callable payload.
+- Updated photo prompt edits, thumbnail generation, moderation deletion,
+  public-profile projection, seed generation, and projection repair tooling to
+  keep grouped photos and legacy arrays in sync.
+- Added `tool/backfill_profile_photos.mjs`, a dry-run-first migration tool that
+  derives grouped photos from legacy arrays, validates each `ProfilePhoto`
+  against the generated schema, and can repair `users/{uid}` plus
+  `publicProfiles/{uid}` with `--apply`.
+- Updated `contracts/migrations/profile_photos_storage.json` from
+  design-scoped to `dual_write_backfill_ready`.
+
+Result: `profilePhotos` is now a real optional document field with
+dual-read/dual-write support. Legacy arrays remain intentionally present for
+the current app build and can be retired only after forced-update coverage is
+acceptable.
+
+Follow-up closed on 2026-05-16:
+
+- Account deletion now deletes Storage objects referenced by grouped
+  `profilePhotos`, clears the grouped field, and still clears the legacy photo
+  arrays.
+- The legacy thumbnail backfill script now updates grouped `profilePhotos` when
+  it generates missing thumbnails, while continuing to maintain
+  `photoThumbnailUrls` for compatibility.
+- Edit Profile photo grid and photo-caption rows now render through
+  `effectiveProfilePhotos` instead of reading `photoUrls` directly.
+- `tool/check_data_contract.sh` now syntax-checks the thumbnail backfill script
+  and runs the profile-photo backfill tests.
+- `tool/backfill_profile_photos.mjs` now resolves Firebase project aliases from
+  `.firebaserc` through a shared resolver, instead of hardcoding invented dev,
+  staging, and prod project ids.
+- Live migration was applied after deploying the updated profile Functions:
+  - dev: 74 users scanned, 74 grouped-photo users after apply, 0 repairs and
+    0 warnings on the final dry run.
+  - staging: 0 users scanned, 0 repairs and 0 warnings after Functions deploy.
+  - prod: 86 users scanned, 86 grouped-photo users after apply, 0 repairs and
+    0 warnings on the final dry run.
+- Important sequencing rule: deploy the updated `syncPublicProfile` projection
+  before applying the user backfill. Otherwise, the currently deployed trigger
+  can rewrite `publicProfiles/{uid}` back to the legacy projection after the
+  user document update.
+
+Proof:
+
+```bash
+npm --prefix functions run build
+npm --prefix functions run lint
+dart analyze lib/user_profile/domain/profile_photo.dart lib/user_profile/domain/user_profile.dart lib/public_profile/domain/public_profile.dart lib/image_uploads/data/image_upload_repository.dart lib/image_uploads/presentation/photo_upload_controller.dart lib/swipes/presentation/profile_card_content.dart lib/user_profile/presentation/widgets/profile_tab.dart lib/user_profile/presentation/widgets/profile_inline_editors.dart
+node tool/validate_schema_contracts.mjs
+node tool/check_firestore_contract.mjs
+node --test tool/backfill_profile_photos.test.mjs tool/recompute_public_profiles.test.mjs tool/profile_projection_parity.test.mjs tool/seed_demo_data_schema.test.mjs tool/seed_demo_data_append.test.mjs
+node --test functions/lib/safety/accountDeletion.test.js
+./tool/check_data_contract.sh
+./tool/firebase_with_env.sh dev deploy --only functions:syncPublicProfile,functions:updateUserProfile,functions:generateProfilePhotoThumbnail,functions:moderatePhotoOnUpload,functions:requestAccountDeletion --non-interactive
+./tool/firebase_with_env.sh staging deploy --only functions:syncPublicProfile,functions:updateUserProfile,functions:generateProfilePhotoThumbnail,functions:moderatePhotoOnUpload,functions:requestAccountDeletion --non-interactive
+./tool/firebase_with_env.sh prod deploy --only functions:syncPublicProfile,functions:updateUserProfile,functions:generateProfilePhotoThumbnail,functions:moderatePhotoOnUpload,functions:requestAccountDeletion --non-interactive
+node tool/backfill_profile_photos.mjs --env dev --apply
+node tool/backfill_profile_photos.mjs --env dev
+node tool/backfill_profile_photos.mjs --env staging
+node tool/backfill_profile_photos.mjs --env prod --apply --allow-prod
+node tool/backfill_profile_photos.mjs --env prod
+```
+
+### 2026-05-15: Generator Boundary Cleanup
+
+Resolved the immediate duplicate-generator ambiguity without pretending the
+Admin SDK typing facade can be deleted in the same step:
+
+- `contracts/` and `tool/generate_schema_contracts.mjs` are the canonical
+  source for persisted field shape, callable payload schemas, prompt catalogs,
+  generated Ajv validators, generated schema registries, and Dart schema
+  constants.
+- `functions/src/shared/firestore.ts` is now documented as a transitional
+  Cloud Functions Admin SDK facade for code that reads and writes live
+  `FirebaseFirestore.Timestamp` values.
+- `tool/firestore_ts_overlay.json` should only carry transitional Admin SDK or
+  server-only typing gaps. New persisted fields should start in JSON Schema and
+  be projected into this facade only while Functions code still imports it.
+- `functions/README.md` now points new callable validation work to generated
+  Ajv validators instead of the removed Zod path.
+
+Remaining work: replace the Dart-driven Admin SDK facade with a schema-driven
+Admin SDK type generator, or migrate Function imports to generated schema types
+plus explicit Firestore runtime adapters. That is a separate refactor because
+the current generated document types intentionally model serialized fixture
+timestamps rather than live Admin SDK timestamp instances.
+
+Follow-up closed on 2026-05-16:
+
+- Added `tool/check_schema_type_boundaries.mjs` and wired it into
+  `tool/check_data_contract.sh`.
+- `tool/firestore_ts_overlay.json` now has `schemaOwnedExceptions`; any
+  schema-owned field override or embedded type duplicated for the transitional
+  Admin SDK facade must carry a concrete reason.
+- `functions/src/shared/firestore.ts` now describes itself in the generated
+  header as a transitional Admin SDK typing facade, not canonical schema truth.
+
+Remaining work stays the same: generate this Admin SDK facade from contracts or
+delete it after Function imports stop depending on live `FirebaseFirestore`
+timestamp-oriented document interfaces.
+
+### 2026-05-16: Firestore Contract Shape Slimming
+
+Moved `tool/firestore_contract.json` closer to the intended boundary:
+
+- Removed duplicated `allFields` lists from every collection entry now covered
+  by `contracts/firestore/*.schema.json`.
+- Updated `tool/check_firestore_contract.mjs` so effective collection fields are
+  derived from JSON Schema properties minus schema-owned internal demo fields.
+- Kept operation/ownership field groups such as `clientWritableFields`,
+  `callableOwnedFields`, `triggerOwnedFields`, and `serverOwnedFields` in
+  `tool/firestore_contract.json`, because JSON Schema does not express those
+  write-boundary semantics directly yet.
+- Kept the rules allow-list drift check, but it now compares
+  `firestore.rules` against schema-derived fields instead of a duplicated
+  contract-side `allFields` array.
+
+Proof:
+
+```bash
+node tool/check_firestore_contract.mjs
+```
+
+Remaining work: derive more of the ownership/write-boundary metadata from
+schema annotations if the schemas gain explicit `x-client-writable`,
+`x-callable-owned`, or `x-trigger-owned` metadata.
+
+### 2026-05-16: Profile Rules Bound Tightening
+
+Closed the focused Phase 6 emulator gap for schema-owned profile bounds:
+
+- Added Firestore rules helpers for optional list size limits.
+- Tightened direct `users/{uid}` create shape checks for profile prompt, photo,
+  interest, language, preferred distance, running reason, preferred run-time,
+  and age preference bounds.
+- Added rules emulator coverage for the new profile list and age-preference
+  limits. The tests intentionally split max-size success cases across small
+  documents to avoid the Firestore rules expression ceiling while still proving
+  each tightened boundary.
+
+Proof:
+
+```bash
+node --check functions/test/firestore.rules.test.cjs
+node tool/check_firestore_contract.mjs
+firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm --prefix functions run test:rules"
+```
+
+Result: 61 Firestore/storage rules tests passed on 2026-05-16.
+
+### 2026-05-16: Phase 6 Rules Semantics And Dart Schema Symmetry
+
+Closed the two asymmetric schema-governance gaps that were still worth handling
+before closing the loop:
+
+- Added `tool/check_firestore_rules_semantics.mjs`, a schema-derived Firestore
+  Rules semantic checker for the direct-write surfaces that rules still own:
+  owner profile create, contextual profile decision create, and saved-run
+  create.
+- Wired that checker into `./tool/check_data_contract.sh` so stale rules
+  literals fail the same gate as stale generated outputs.
+- Tightened `users/{uid}` direct create rules so schema-required fields
+  (`firstName`, `lastName`, `photoThumbnailUrls`, `photoPrompts`, and
+  `preferredRunTimes`) are required in rules, not only in JSON Schema/Dart.
+- Generated a broad Dart schema registry at
+  `lib/core/schema_contracts/generated/schema_contracts.g.dart`, while keeping
+  the existing lightweight `profile_schema_contracts.g.dart` file for
+  production profile constants.
+- Expanded `test/core/schema_contracts_generated_test.dart` to validate
+  representative Firestore documents, callable payloads, and direct client
+  writes through the generated Dart registry.
+
+Proof:
+
+```bash
+node tool/check_firestore_rules_semantics.mjs
+flutter test test/core/schema_contracts_generated_test.dart
+./tool/check_data_contract.sh
+```
+
+Result: full data-contract gate passed on 2026-05-16.
 
 ### 2026-05-15: Phase 6 Ownership/Rules Drift Checks
 
@@ -1213,9 +1418,10 @@ Exit criteria:
 
 ### Phase 6: Firestore Rules And Ownership Metadata
 
-Status: profile field ownership, user rules allow-list drift checks, and
-focused emulator coverage for the tightened profile fields are complete; deeper
-rules semantic generation remains pending.
+Status: profile field ownership, user rules allow-list drift checks, focused
+emulator coverage for tightened profile fields, and schema-derived rules
+semantic drift checks for current direct-write surfaces are complete. A full
+Firestore Rules compiler remains intentionally out of scope.
 
 Tasks:
 
@@ -1224,6 +1430,7 @@ Tasks:
   `tool/firestore_contract.json`.
 - [x] Add checks for rules field allowlists against schema field sets.
 - [x] Add rules emulator tests for any newly tightened profile fields.
+- [x] Add schema-derived semantic checks for rules-owned direct writes.
 - [x] Document any fields intentionally tolerated for legacy reads.
 
 Exit criteria:
@@ -1357,7 +1564,7 @@ backfill/parity tooling were all in place.
 | Full document and patch semantics get conflated. | Keep separate full-document and operation-specific patch schemas. |
 | Firestore rules are over-generated and become unreadable. | Start with metadata checks and generated constants, not a full rules compiler. |
 | Freezed model generation fights contract generation. | Keep Freezed as the app model layer initially; generate constants/validators first. |
-| Zod and Ajv coexist too long. | Track each callable migration and require either generated Ajv usage or parity tests. |
+| Generated schema types and Admin SDK facade types diverge. | Keep JSON Schema canonical and document `functions/src/shared/firestore.ts` as a transitional runtime facade until a schema-driven Admin SDK generator replaces it. |
 | Seed validation slows down demo operations. | Compile validators once and validate planned docs before network writes. |
 | Live production data has legacy shape. | Use dry-run-first repair scripts and environment gates before tightening rules. |
 | Contract files become another stale source of truth. | CI must fail stale generated output and schema fixture drift. |
@@ -1385,7 +1592,8 @@ collection or a risky storage rename at once.
 | --- | --- |
 | 2026-05-15 | Use contract-first JSON Schema governance rather than Dart-only, Zod-only, or seeder-local schemas. |
 | 2026-05-15 | Keep TypeScript Cloud Functions for production because Dart Functions support is experimental and does not deploy Firestore triggers yet. |
-| 2026-05-15 | Prefer Ajv for Node/runtime contract validation; keep Zod only as a transitional bridge or parity-checked wrapper. |
+| 2026-05-15 | Prefer Ajv for Node/runtime contract validation; remove Zod from Functions once callables are contract-generated. |
+| 2026-05-15 | Keep `functions/src/shared/firestore.ts` only as a transitional Admin SDK typing facade; do not use it as canonical schema truth. |
 | 2026-05-15 | Start migration with profiles/prompts/seeding before broader Firestore collection coverage. |
 
 ## Resume Notes

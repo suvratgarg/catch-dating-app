@@ -28,9 +28,6 @@
     "savedAt": {
       "$ref": "../shared/run_common.schema.json#/definitions/timestamp"
     },
-    "removedAt": {
-      "$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"
-    },
     "synthetic": {
       "$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"
     },

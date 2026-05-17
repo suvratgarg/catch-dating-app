@@ -145,6 +145,7 @@ Standalone routes:
 - `/payment-history`
 - `/payment-confirmation` → post-payment status (uses extra data)
 - `/settings` → safety/settings/account controls
+- `/dev/event-policy-lab` → dev/staging-only static event policy lab
 - `/profiles/:uid` → public profile of any user
 
 Tabbed shell routes:
@@ -256,17 +257,58 @@ Run creation:
 
 - Host-only through the `createRun` callable.
 - 4-step wizard:
-  1. When
+  1. Run details
   2. Where
-  3. Run details
-  4. Eligibility rules
+  3. When
+  4. Event policy
 
-Eligibility constraints:
+Event policy:
 
-- `minAge`
-- `maxAge`
-- `maxMen`
-- `maxWomen`
+- `lib/event_policies/**` is the in-progress policy engine for the singles
+  event-platform model. It is now wired into the first production migration
+  path and should not be removed as dead code.
+- New run creation writes an `EventPolicyBundle` snapshot with admission,
+  waitlist, pricing, cancellation, and settlement policy. The wizard currently
+  supports open capacity, balanced singles, and fixed cohort caps, plus bounded
+  cancellation policies.
+- `Run.capacityLimit`, `Run.priceInPaise`, and `RunConstraints` remain
+  backward-compatible projections for legacy documents and UI surfaces during
+  migration. Do not remove them until the backend, rules, and client have a
+  completed migration plan.
+- Booking/payment Cloud Functions use backend-owned policy helpers for
+  admission, cohort counts, viewer-specific price quotes, waitlist movement,
+  and host-cancellation refunds. Pricing/admission truth must stay server-side.
+- `lib/event_policies/domain/event_policy_preview.dart` contains deterministic
+  preview fixtures for host configuration testing. It renders sample attendee
+  cohorts into admission, waitlist, manual-review, price-quote, cancellation,
+  and host-payout settlement outcomes.
+- Keep the model boundaries explicit: `EventPolicyBundle` owns admission,
+  pricing, cancellation, and settlement policy axes for new runs. Host
+  cancellation always makes attendees complete, and platform settlement is
+  modeled as host payout after event completion.
+- `lib/event_policies/presentation/event_policy_lab_screen.dart` renders those
+  fixtures behind the dev/staging-only `/dev/event-policy-lab` route. The
+  Settings screen links to it only when `AppConfig.enableEventPolicyLab` is true.
+  The lab remains read-only/static; production testing should use the normal
+  create-run flow.
+- The development tracker is
+  [`codex_audit/event_policy_engine_in_development.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/event_policy_engine_in_development.md).
+
+Parallel event-success work:
+
+- `lib/event_success/**` is an in-development live event success layer for the
+  future event-platform model. It is intentionally not wired into production
+  routes, Firestore, Cloud Functions, booking, attendance, swipes, reviews, or
+  chat yet and should not be removed as dead code.
+- The first pass models host playbooks, social intensity, check-in, crowd
+  balance, micro-pods, social missions, rotations, private crushes, contextual
+  openers, decomposed feedback, host analytics, and safety controls.
+- This layer should stay isolated until product, safety, privacy, and backend
+  ownership decisions are approved. Movement-heavy events like runs should keep
+  live structure light; stationary formats can support more guided or
+  algorithmic modules.
+- The development tracker is
+  [`codex_audit/event_success_layer_in_development.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/codex_audit/event_success_layer_in_development.md).
 
 Run detail CTA states are derived from `run.statusFor(userProfile)`:
 

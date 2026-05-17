@@ -18,4 +18,40 @@ void main() {
       expect(() => AppEnvironment.fromValue('qa'), throwsArgumentError);
     });
   });
+
+  group('event policy lab availability', () {
+    test('allows the lab in non-production environments when requested', () {
+      expect(
+        AppConfig.isEventPolicyLabAvailable(
+          environment: AppEnvironment.dev,
+          requested: true,
+        ),
+        isTrue,
+      );
+      expect(
+        AppConfig.isEventPolicyLabAvailable(
+          environment: AppEnvironment.staging,
+          requested: true,
+        ),
+        isTrue,
+      );
+    });
+
+    test('blocks the lab in production or when not requested', () {
+      expect(
+        AppConfig.isEventPolicyLabAvailable(
+          environment: AppEnvironment.prod,
+          requested: true,
+        ),
+        isFalse,
+      );
+      expect(
+        AppConfig.isEventPolicyLabAvailable(
+          environment: AppEnvironment.dev,
+          requested: false,
+        ),
+        isFalse,
+      );
+    });
+  });
 }

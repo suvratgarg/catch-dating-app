@@ -62,6 +62,18 @@ void main() {
     },
   );
 
+  test('eligibilityFor uses the supplied reference time', () {
+    final now = DateTime(2026, 1, 1, 8);
+    final user = buildUser();
+    final run = buildRun(startTime: now.add(const Duration(minutes: 30)));
+
+    expect(run.eligibilityFor(user, now: now), isA<Eligible>());
+    expect(
+      run.eligibilityFor(user, now: now.add(const Duration(hours: 1))),
+      isA<RunPast>(),
+    );
+  });
+
   // ── #15: AgeTooYoung ─────────────────────────────────────────────────────
 
   test('#15 eligibilityFor returns AgeTooYoung when user age < minAge', () {
@@ -88,17 +100,17 @@ void main() {
     expect((result as AgeTooOld).maxAge, 40);
   });
 
-  // ── #17: GenderCapacityReached ────────────────────────────────────────────
+  // ── #17: Cohort cap reached ───────────────────────────────────────────────
 
   test(
-    '#17 eligibilityFor returns GenderCapacityReached when gender slot is full',
+    '#17 eligibilityFor returns RunFull when a waitlistable cohort slot is full',
     () {
       final user = buildUser(gender: Gender.man);
       final run = buildRun(
         constraints: const RunConstraints(maxMen: 2),
         genderCounts: {'man': 2}, // at cap
       );
-      expect(run.eligibilityFor(user), isA<GenderCapacityReached>());
+      expect(run.eligibilityFor(user), isA<RunFull>());
     },
   );
 
@@ -133,7 +145,7 @@ void main() {
     },
   );
 
-  // ── #20: statusFor maps every eligibility to RunSignUpStatus ─────────────
+  // ── #20: statusFor maps fresh-viewer eligibility to RunSignUpStatus ──────
 
   group('#20 statusFor', () {
     test('RunPast → RunSignUpStatus.past', () {
@@ -156,13 +168,13 @@ void main() {
       expect(run.statusFor(user), RunSignUpStatus.eligible);
     });
 
-    test('GenderCapacityReached → RunSignUpStatus.ineligible', () {
+    test('Waitlistable cohort cap → RunSignUpStatus.full', () {
       final user = buildUser(gender: Gender.man);
       final run = buildRun(
         constraints: const RunConstraints(maxMen: 1),
         genderCounts: {'man': 1},
       );
-      expect(run.statusFor(user), RunSignUpStatus.ineligible);
+      expect(run.statusFor(user), RunSignUpStatus.full);
     });
   });
 }

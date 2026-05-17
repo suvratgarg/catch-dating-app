@@ -1,44 +1,28 @@
 import 'package:catch_dating_app/core/city_catalog.dart';
+import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/activity_section.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_empty.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_full.dart';
 import 'package:catch_dating_app/dashboard/presentation/widgets/dashboard_sliver_header.dart';
+import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
-class DashboardScreen extends ConsumerStatefulWidget {
+class DashboardScreen extends ConsumerWidget {
   const DashboardScreen({super.key});
 
   @override
-  ConsumerState<DashboardScreen> createState() => _DashboardScreenState();
-}
-
-class _DashboardScreenState extends ConsumerState<DashboardScreen>
-    with SingleTickerProviderStateMixin {
-  late final TabController _tabController;
-
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
-  }
-
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final userAsync = ref.watch(watchUserProfileProvider);
 
     return userAsync.when(
@@ -49,11 +33,9 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
       ),
       data: (user) {
         if (user == null) {
-          return _DashboardTabbedScreen(
-            controller: _tabController,
+          return _DashboardHomeScreen(
             header: _DashboardHeaderModel.empty(),
             dashboardSliver: const DashboardEmptySliverBody(),
-            activitySliver: const _SignedOutActivitySliverBody(),
           );
         }
 
@@ -98,15 +80,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
             final showEmptyDashboard =
                 signedUpRuns.isEmpty && viewModel.arrivalAction == null;
 
-            return _DashboardTabbedScreen(
-              controller: _tabController,
+            return _DashboardHomeScreen(
               header: showEmptyDashboard
                   ? _DashboardHeaderModel.empty()
                   : _DashboardHeaderModel.full(context, user),
               dashboardSliver: showEmptyDashboard
-                  ? const DashboardEmptySliverBody()
+                  ? DashboardEmptySliverBody(
+                      weeklyActivitySection: viewModel.weeklyActivitySection,
+                    )
                   : DashboardFullSliverBody(viewModel: viewModel, user: user),
-              activitySliver: ActivitySliverBody(uid: user.uid),
+              notificationAction: _NotificationsAction(uid: user.uid),
             );
           },
         );
@@ -115,18 +98,16 @@ class _DashboardScreenState extends ConsumerState<DashboardScreen>
   }
 }
 
-class _DashboardTabbedScreen extends StatelessWidget {
-  const _DashboardTabbedScreen({
-    required this.controller,
+class _DashboardHomeScreen extends StatelessWidget {
+  const _DashboardHomeScreen({
     required this.header,
     required this.dashboardSliver,
-    required this.activitySliver,
+    this.notificationAction,
   });
 
-  final TabController controller;
   final _DashboardHeaderModel header;
   final Widget dashboardSliver;
-  final Widget activitySliver;
+  final Widget? notificationAction;
 
   @override
   Widget build(BuildContext context) {
@@ -137,69 +118,19 @@ class _DashboardTabbedScreen extends StatelessWidget {
       body: SafeArea(
         bottom: false,
         child: Semantics(
-          label: 'Home tabs',
-          hint: 'Swipe left or right to switch between Dashboard and Activity.',
-          child: NestedScrollView(
-            headerSliverBuilder: (context, innerBoxIsScrolled) {
-              final headerSlivers = DashboardSliverHeader(
+          label: 'Home',
+          child: CustomScrollView(
+            slivers: [
+              ...DashboardSliverHeader(
                 eyebrow: header.eyebrow,
                 title: header.title,
-                controller: controller,
-              ).buildSlivers(context);
-              final collapsibleSlivers = headerSlivers.take(
-                headerSlivers.length - 1,
-              );
-              final pinnedSliver = headerSlivers.last;
-
-              return [
-                ...collapsibleSlivers,
-                SliverOverlapAbsorber(
-                  handle: NestedScrollView.sliverOverlapAbsorberHandleFor(
-                    context,
-                  ),
-                  sliver: pinnedSliver,
-                ),
-              ];
-            },
-            body: TabBarView(
-              controller: controller,
-              children: [
-                _DashboardTabScrollView(
-                  scrollKey: const PageStorageKey('home-dashboard-tab-scroll'),
-                  sliver: dashboardSliver,
-                ),
-                _DashboardTabScrollView(
-                  scrollKey: const PageStorageKey('home-activity-tab-scroll'),
-                  sliver: activitySliver,
-                ),
-              ],
-            ),
+                actions: [?notificationAction],
+              ).buildSlivers(context),
+              dashboardSliver,
+            ],
           ),
         ),
       ),
-    );
-  }
-}
-
-class _DashboardTabScrollView extends StatelessWidget {
-  const _DashboardTabScrollView({
-    required this.scrollKey,
-    required this.sliver,
-  });
-
-  final PageStorageKey<String> scrollKey;
-  final Widget sliver;
-
-  @override
-  Widget build(BuildContext context) {
-    return CustomScrollView(
-      key: scrollKey,
-      slivers: [
-        SliverOverlapInjector(
-          handle: NestedScrollView.sliverOverlapAbsorberHandleFor(context),
-        ),
-        sliver,
-      ],
     );
   }
 }
@@ -226,14 +157,68 @@ class _DashboardHeaderModel {
   }
 }
 
-class _SignedOutActivitySliverBody extends StatelessWidget {
-  const _SignedOutActivitySliverBody();
+class _NotificationsAction extends ConsumerWidget {
+  const _NotificationsAction({required this.uid});
+
+  final String uid;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final notificationsAsync = ref.watch(
+      watchActivityNotificationsProvider(uid),
+    );
+    final unreadCount =
+        notificationsAsync.asData?.value
+            .where((notification) => notification.isUnread)
+            .length ??
+        0;
+
+    return _NotificationBellButton(
+      unreadCount: unreadCount,
+      onPressed: () => context.pushNamed(Routes.notificationsScreen.name),
+    );
+  }
+}
+
+class _NotificationBellButton extends StatelessWidget {
+  const _NotificationBellButton({
+    required this.unreadCount,
+    required this.onPressed,
+  });
+
+  final int unreadCount;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    return const SliverFillRemaining(
-      hasScrollBody: false,
-      child: Center(child: ActivitySignedOutState()),
+    final t = CatchTokens.of(context);
+    final badgeLabel = unreadCount > 99 ? '99+' : '$unreadCount';
+
+    return SizedBox.square(
+      dimension: 44,
+      child: Badge(
+        isLabelVisible: unreadCount > 0,
+        label: Text(
+          badgeLabel,
+          style: CatchTextStyles.labelS(
+            context,
+            color: t.primaryInk,
+          ).copyWith(fontSize: 10, height: 1),
+        ),
+        backgroundColor: t.primary,
+        alignment: Alignment.topRight,
+        offset: const Offset(-2, 2),
+        child: Align(
+          alignment: Alignment.center,
+          child: CatchTopBarIconAction(
+            icon: unreadCount > 0
+                ? Icons.notifications_rounded
+                : Icons.notifications_none_rounded,
+            tooltip: 'Notifications',
+            onPressed: onPressed,
+          ),
+        ),
+      ),
     );
   }
 }

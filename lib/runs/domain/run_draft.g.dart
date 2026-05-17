@@ -29,6 +29,8 @@ _RunDraft _$RunDraftFromJson(Map<String, dynamic> json) => _RunDraft(
   maxAge: json['maxAge'] as String?,
   maxMen: json['maxMen'] as String?,
   maxWomen: json['maxWomen'] as String?,
+  admissionPreset: json['admissionPreset'] as String?,
+  cancellationPolicy: json['cancellationPolicy'] as String?,
 );
 
 Map<String, dynamic> _$RunDraftToJson(_RunDraft instance) => <String, dynamic>{
@@ -52,4 +54,6 @@ Map<String, dynamic> _$RunDraftToJson(_RunDraft instance) => <String, dynamic>{
   'maxAge': instance.maxAge,
   'maxMen': instance.maxMen,
   'maxWomen': instance.maxWomen,
+  'admissionPreset': instance.admissionPreset,
+  'cancellationPolicy': instance.cancellationPolicy,
 };

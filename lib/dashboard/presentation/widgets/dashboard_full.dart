@@ -125,9 +125,7 @@ class DashboardFullSliverBody extends ConsumerWidget {
             HostToolsRail(tools: viewModel.hostRunTools),
             gapH18,
           ],
-          ..._buildAttendedRunSection(
-            attendedRunsSection: viewModel.attendedRunsSection,
-          ),
+          DashboardStrideSection(section: viewModel.weeklyActivitySection),
           gapH18,
           const QuickActions(),
           ..._buildRecommendedRunsSection(
@@ -136,28 +134,6 @@ class DashboardFullSliverBody extends ConsumerWidget {
         ]),
       ),
     );
-  }
-
-  List<Widget> _buildAttendedRunSection({
-    required DashboardSectionModel<List<Run>> attendedRunsSection,
-  }) {
-    if (attendedRunsSection.isLoading) {
-      return const [
-        _DashboardSectionStateCard(
-          message: 'Loading your recent runs...',
-          isLoading: true,
-        ),
-      ];
-    }
-
-    if (attendedRunsSection.hasError) {
-      return const [
-        _DashboardSectionStateCard(message: 'Unable to load your recent runs.'),
-      ];
-    }
-
-    final attendedRuns = attendedRunsSection.data ?? const <Run>[];
-    return [StrideCard(attendedRuns: attendedRuns)];
   }
 
   List<Widget> _buildRecommendedRunsSection({

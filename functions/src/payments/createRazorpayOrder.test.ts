@@ -25,6 +25,7 @@ function buildRunDoc(overrides: Partial<RunDoc> = {}): RunDoc {
       maxAge: 99,
     },
     genderCounts: {},
+    cohortCounts: {},
     ...overrides,
   };
 }
@@ -61,6 +62,7 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
     notes: {
       runId: "run-1",
       userId: "runner-1",
+      quotedAmountInPaise: 25000,
     },
   });
   assert.deepEqual(order, {
@@ -117,6 +119,65 @@ test(
   }
 );
 
+test(
+  "createRazorpayOrderHandler rejects policy-blocked cohorts before payment",
+  async () => {
+    await assert.rejects(
+      createRazorpayOrderHandler(
+        buildRequest({
+          data: {runId: "run-1"},
+          auth: {uid: "runner-1"},
+        }),
+        {
+          firestore: () =>
+            createRunFirestore(buildRunDoc({
+              bookedCount: 11,
+              cohortCounts: {
+                menInterestedInWomen: 10,
+                womenInterestedInMen: 1,
+              },
+              eventPolicy: {
+                version: 1,
+                admission: {
+                  format: "balancedRatio",
+                  capacityLimit: 20,
+                  waitlistPolicy: {
+                    mode: "rankedOffer",
+                    offerWindowMinutes: 20,
+                  },
+                  inviteRequired: false,
+                  membershipRequired: false,
+                  manualApprovalRequired: false,
+                  cohortCapacityLimits: {},
+                  balancedRatioPolicy: {
+                    leftCohortId: "menInterestedInWomen",
+                    rightCohortId: "womenInterestedInMen",
+                    maxSkew: 1,
+                    openingBufferPerCohort: 1,
+                    outOfRatioCohortPolicy: "waitlist",
+                  },
+                },
+                pricing: {
+                  basePriceInPaise: 25000,
+                  cohortAdjustmentsInPaise: {},
+                  demandPricingRules: [],
+                },
+                cancellation: {policyId: "standard"},
+                settlement: {hostPayoutTiming: "afterEventCompletion"},
+              },
+            })),
+          createClient: failOnClientUse,
+          now: () => 0,
+        }
+      ),
+      isHttpsError(
+        "failed-precondition",
+        "A balanced spot is not available right now. Join the waitlist."
+      )
+    );
+  }
+);
+
 function buildRequest({
   data,
   auth,
@@ -146,6 +207,19 @@ function createRunFirestore(
             get: async () => ({
               exists: run !== null,
               data: () => run,
+            }),
+          }),
+        };
+      }
+      if (collectionName === "users") {
+        return {
+          doc: () => ({
+            get: async () => ({
+              exists: true,
+              data: () => ({
+                gender: "man",
+                interestedInGenders: ["woman"],
+              }),
             }),
           }),
         };

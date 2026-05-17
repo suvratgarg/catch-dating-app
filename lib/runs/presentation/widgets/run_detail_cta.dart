@@ -73,6 +73,8 @@ class RunDetailCta extends ConsumerWidget {
     final supportsPaid = ref
         .watch(paymentRepositoryProvider)
         .supportsPaidBookings;
+    final quotedPriceInPaise = run.priceInPaiseFor(userProfile);
+    final isFreeForViewer = quotedPriceInPaise == 0;
 
     final bookMutation = ref.watch(RunBookingController.bookMutation);
     final cancelMutation = ref.watch(RunBookingController.cancelMutation);
@@ -100,12 +102,13 @@ class RunDetailCta extends ConsumerWidget {
           ),
         switch (status) {
           RunSignUpStatus.eligible => BottomCTA(
-            label: run.isFree
+            label: isFreeForViewer
                 ? 'Join run — ${run.spotsRemaining} spots left'
                 : supportsPaid
                 ? 'Book run'
                 : 'Unavailable on this platform',
-            onPressed: bookMutation.isPending || (!run.isFree && !supportsPaid)
+            onPressed:
+                bookMutation.isPending || (!isFreeForViewer && !supportsPaid)
                 ? null
                 : () {
                     final router = GoRouter.maybeOf(context);
@@ -149,10 +152,10 @@ class RunDetailCta extends ConsumerWidget {
                     });
                   },
             isLoading: bookMutation.isPending,
-            leadingContent: run.isFree
+            leadingContent: isFreeForViewer
                 ? null
                 : PriceLeading(
-                    price: RunFormatters.priceInPaise(run.priceInPaise),
+                    price: RunFormatters.priceInPaise(quotedPriceInPaise),
                   ),
           ),
           RunSignUpStatus.signedUp => (() {
@@ -252,36 +255,9 @@ RunEligibility _eligibilityForParticipation({
     RunParticipationStatus.waitlisted => const OnWaitlist(),
     RunParticipationStatus.cancelled ||
     RunParticipationStatus.deleted ||
-    null => _eligibilityForFreshViewer(
-      run: run,
-      userProfile: userProfile,
-      now: now,
-    ),
+    null => run.eligibilityFor(userProfile, now: now),
   };
 }
-
-RunEligibility _eligibilityForFreshViewer({
-  required Run run,
-  required UserProfile userProfile,
-  required DateTime now,
-}) {
-  if (!_isRunUpcomingAt(run, now)) return const RunPast();
-  if (userProfile.age < run.constraints.minAge) {
-    return AgeTooYoung(run.constraints.minAge);
-  }
-  if (userProfile.age > run.constraints.maxAge) {
-    return AgeTooOld(run.constraints.maxAge);
-  }
-  final cap = run.constraints.maxForGender(userProfile.gender);
-  if (cap != null && (run.genderCounts[userProfile.gender.name] ?? 0) >= cap) {
-    return const GenderCapacityReached();
-  }
-  if (run.isFull) return const RunFull();
-  return const Eligible();
-}
-
-bool _isRunUpcomingAt(Run run, DateTime now) =>
-    !run.isCancelled && run.startTime.isAfter(now);
 
 bool _hasRunStarted(Run run, DateTime now) => !run.startTime.isAfter(now);
 

@@ -26,6 +26,7 @@ class ScrollableProfile extends ConsumerWidget {
     required this.profile,
     required this.surfaceHeight,
     this.scrollController,
+    this.scrollPhysics,
     this.onLeadingOverscroll,
     this.bottomPadding = 24,
     this.onReact,
@@ -38,6 +39,7 @@ class ScrollableProfile extends ConsumerWidget {
   final PublicProfile profile;
   final double surfaceHeight;
   final ScrollController? scrollController;
+  final ScrollPhysics? scrollPhysics;
   final ValueChanged<double>? onLeadingOverscroll;
   final double bottomPadding;
   final ProfileReactionCallback? onReact;
@@ -52,6 +54,7 @@ class ScrollableProfile extends ConsumerWidget {
       sharedRunTitle: sharedRunTitle,
     );
     final palette = ProfileCardPalette.of(context);
+    final primaryPhoto = content.primaryPhoto;
     final additionalPhotos = content.additionalPhotos;
     final insightLabel = content.insights.compatibilityReasons.isEmpty
         ? 'Profile signals'
@@ -73,7 +76,7 @@ class ScrollableProfile extends ConsumerWidget {
           key: scrollViewKey,
           controller: scrollController,
           primary: false,
-          physics: const ClampingScrollPhysics(),
+          physics: scrollPhysics ?? const ClampingScrollPhysics(),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -82,16 +85,23 @@ class ScrollableProfile extends ConsumerWidget {
                   bottom: Radius.circular(30),
                 ),
                 child: CardPhotoSection(
-                  url: content.primaryPhotoUrl,
+                  url: primaryPhoto?.url,
                   height: _heroHeight(surfaceHeight),
-                  overlayChild: NameOverlay(profile: profile),
-                  reactionTarget: content.primaryPhotoUrl == null
+                  overlayChild: _HeroPhotoOverlay(
+                    profile: profile,
+                    prompt: primaryPhoto?.prompt,
+                  ),
+                  reactionTarget: primaryPhoto == null
                       ? null
                       : _reactionTarget(
                           id: 'hero-photo',
                           type: SwipeReactionTargetType.heroPhoto,
                           label: 'Main photo',
-                          preview: '${profile.name}\'s main profile photo',
+                          preview: _photoReactionPreview(
+                            profile: profile,
+                            ordinalLabel: 'main profile photo',
+                            prompt: primaryPhoto.prompt,
+                          ),
                         ),
                   onReact: onReact,
                 ),
@@ -142,7 +152,11 @@ class ScrollableProfile extends ConsumerWidget {
                     id: 'photo-2',
                     type: SwipeReactionTargetType.photo,
                     label: 'Photo 2',
-                    preview: '${profile.name}\'s second profile photo',
+                    preview: _photoReactionPreview(
+                      profile: profile,
+                      ordinalLabel: 'second profile photo',
+                      prompt: additionalPhotos.first.prompt,
+                    ),
                   ),
                   onReact: onReact,
                 ),
@@ -176,8 +190,11 @@ class ScrollableProfile extends ConsumerWidget {
                     id: 'photo-${indexedPhoto.$1 + 3}',
                     type: SwipeReactionTargetType.photo,
                     label: 'Photo ${indexedPhoto.$1 + 3}',
-                    preview:
-                        '${profile.name}\'s profile photo ${indexedPhoto.$1 + 3}',
+                    preview: _photoReactionPreview(
+                      profile: profile,
+                      ordinalLabel: 'profile photo ${indexedPhoto.$1 + 3}',
+                      prompt: indexedPhoto.$2.prompt,
+                    ),
                   ),
                   onReact: onReact,
                 ),
@@ -198,6 +215,29 @@ double _heroHeight(double surfaceHeight) {
 double _photoBlockHeight(double surfaceHeight) {
   if (surfaceHeight.isInfinite || surfaceHeight <= 0) return 480;
   return (surfaceHeight * 0.68).clamp(420.0, 560.0).toDouble();
+}
+
+class _HeroPhotoOverlay extends StatelessWidget {
+  const _HeroPhotoOverlay({required this.profile, this.prompt});
+
+  final PublicProfile profile;
+  final PhotoPromptAnswer? prompt;
+
+  @override
+  Widget build(BuildContext context) {
+    final photoPrompt = prompt;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (photoPrompt != null) ...[
+          _PhotoPromptOverlay(prompt: photoPrompt),
+          gapH18,
+        ],
+        NameOverlay(profile: profile),
+      ],
+    );
+  }
 }
 
 class _InsetProfilePhoto extends StatelessWidget {
@@ -469,6 +509,18 @@ String _runningReactionPreview(PublicProfile profile) {
     if (reasons.isNotEmpty) reasons,
     if (runTimes.isNotEmpty) runTimes,
   ].join(' · ');
+}
+
+String _photoReactionPreview({
+  required PublicProfile profile,
+  required String ordinalLabel,
+  required PhotoPromptAnswer? prompt,
+}) {
+  final caption = prompt?.caption.trim();
+  if (caption != null && caption.isNotEmpty) {
+    return '${prompt!.displayPrompt}: $caption';
+  }
+  return '${profile.name}\'s $ordinalLabel';
 }
 
 String _insightReactionPreview(ProfileCardContent content) {

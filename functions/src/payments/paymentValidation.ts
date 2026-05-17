@@ -48,6 +48,7 @@ const successfulPaymentStatuses = new Set(["authorized", "captured"]);
  * @param {RunDoc} params.run Trusted Firestore run snapshot.
  * @param {string} params.userId Authenticated user id.
  * @param {string|number} params.receiptToken Receipt uniqueness token.
+ * @param {number=} params.amountInPaise Optional event-policy quoted amount.
  * @return {object} Razorpay order creation payload.
  */
 export function buildOrderCreatePayload({
@@ -55,11 +56,13 @@ export function buildOrderCreatePayload({
   run,
   userId,
   receiptToken,
+  amountInPaise,
 }: {
   runId: string;
   run: RunDoc;
   userId: string;
   receiptToken: string | number;
+  amountInPaise?: number;
 }) {
   if (run.status === "cancelled") {
     throw new HttpsError(
@@ -68,15 +71,19 @@ export function buildOrderCreatePayload({
     );
   }
 
-  const amountInPaise = parsePositiveAmount(run.priceInPaise, "Run price");
+  const trustedAmountInPaise = parsePositiveAmount(
+    amountInPaise ?? run.priceInPaise,
+    "Run price"
+  );
 
   return {
-    amount: amountInPaise,
+    amount: trustedAmountInPaise,
     currency: razorpayCurrency,
     receipt: `run_${runId}_${receiptToken}`,
     notes: {
       runId,
       userId,
+      quotedAmountInPaise: trustedAmountInPaise,
     },
   };
 }

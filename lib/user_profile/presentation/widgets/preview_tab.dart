@@ -7,11 +7,15 @@ class PreviewTab extends StatelessWidget {
     super.key,
     required this.profile,
     this.scrollController,
+    this.scrollPhysics,
+    this.bottomPadding = 24,
     this.onLeadingOverscroll,
   });
 
   final PublicProfile profile;
   final ScrollController? scrollController;
+  final ScrollPhysics? scrollPhysics;
+  final double bottomPadding;
   final ValueChanged<double>? onLeadingOverscroll;
 
   @override
@@ -20,6 +24,8 @@ class PreviewTab extends StatelessWidget {
       profile: profile,
       mode: ProfileSurfaceMode.preview,
       scrollController: scrollController,
+      scrollPhysics: scrollPhysics,
+      bottomPadding: bottomPadding,
       onLeadingOverscroll: onLeadingOverscroll,
     );
   }

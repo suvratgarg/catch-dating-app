@@ -140,6 +140,48 @@ void main() {
         );
         expect(draft.isEmpty, isFalse);
       });
+
+      test(
+        'returns false when only secondary location or time fields exist',
+        () {
+          expect(
+            RunDraft(
+              id: 'draft-1',
+              runClubId: 'club-1',
+              savedAt: DateTime.now(),
+              startingPointLng: 72.8,
+            ).isEmpty,
+            isFalse,
+          );
+          expect(
+            RunDraft(
+              id: 'draft-2',
+              runClubId: 'club-1',
+              savedAt: DateTime.now(),
+              selectedStartHour: 7,
+            ).isEmpty,
+            isFalse,
+          );
+          expect(
+            RunDraft(
+              id: 'draft-3',
+              runClubId: 'club-1',
+              savedAt: DateTime.now(),
+              selectedStartMinute: 30,
+            ).isEmpty,
+            isFalse,
+          );
+          expect(
+            RunDraft(
+              id: 'draft-4',
+              runClubId: 'club-1',
+              savedAt: DateTime.now(),
+              durationMinutes: 90,
+            ).isEmpty,
+            isFalse,
+          );
+        },
+      );
     });
 
     group('summary', () {

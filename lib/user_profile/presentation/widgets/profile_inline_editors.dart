@@ -426,6 +426,7 @@ class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
     this.autofillHints,
     this.validator,
     this.toFieldValue,
+    this.toFields,
   });
 
   final IconData icon;
@@ -448,6 +449,7 @@ class ProfileInlineTextEntryEditor extends ConsumerStatefulWidget {
   final Iterable<String>? autofillHints;
   final FormFieldValidator<String>? validator;
   final Object? Function(String value)? toFieldValue;
+  final Map<String, dynamic> Function(String value)? toFields;
   final ProfileInlineSaveCallback onSaved;
   final VoidCallback onCancel;
 
@@ -528,7 +530,9 @@ class _ProfileInlineTextEntryEditorState
       return;
     }
 
-    final saved = await saveFields({widget.fieldName: fieldValue});
+    final fields =
+        widget.toFields?.call(rawValue) ?? {widget.fieldName: fieldValue};
+    final saved = await saveFields(fields);
     if (saved && mounted) widget.onSaved();
   }
 

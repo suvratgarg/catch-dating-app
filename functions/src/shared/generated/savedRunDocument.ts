@@ -15,10 +15,6 @@ export interface SavedRunDocument {
     _seconds: number;
     _nanoseconds: number;
   };
-  removedAt?: {
-    _seconds: number;
-    _nanoseconds: number;
-  } | null;
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
    */

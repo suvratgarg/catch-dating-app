@@ -27,11 +27,15 @@
     "startingPointLat": {"type": "number", "minimum": -90, "maximum": 90},
     "startingPointLng": {"type": "number", "minimum": -180, "maximum": 180},
     "locationDetails": {"type": ["string", "null"], "maxLength": 1000},
+    "photoUrl": {"$ref": "../shared/run_common.schema.json#/definitions/urlOrNull"},
     "distanceKm": {"type": "number", "exclusiveMinimum": 0, "maximum": 100},
     "pace": {"$ref": "../shared/run_common.schema.json#/definitions/paceLevel"},
     "capacityLimit": {"type": "integer", "minimum": 1, "maximum": 1000},
     "description": {"type": "string", "maxLength": 2000},
     "priceInPaise": {"type": "integer", "minimum": 0, "maximum": 100000000},
+    "eventPolicy": {
+      "$ref": "../shared/run_common.schema.json#/definitions/eventPolicyBundle"
+    },
     "constraints": {
       "type": "object",
       "additionalProperties": false,

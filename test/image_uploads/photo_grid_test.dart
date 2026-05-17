@@ -1,10 +1,18 @@
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid.dart';
 import 'package:catch_dating_app/image_uploads/presentation/photo_grid_keys.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  ProfilePhoto photo(int position) => ProfilePhoto.uploaded(
+    position: position,
+    url: 'https://img.example/$position.jpg',
+    storagePath: 'users/runner-1/photos/${position}_test.jpg',
+    now: DateTime(2026, 5, 17),
+  );
+
   testWidgets('only active, non-loading photo slots are tappable', (
     tester,
   ) async {
@@ -15,7 +23,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: PhotoGrid(
-            photoUrls: const [],
+            profilePhotos: const [],
             loadingIndices: const {0},
             onSlotTapped: tappedSlots.add,
           ),
@@ -39,7 +47,10 @@ void main() {
       MaterialApp(
         theme: AppTheme.light,
         home: Scaffold(
-          body: PhotoGrid(photoUrls: const [], onSlotTapped: tappedSlots.add),
+          body: PhotoGrid(
+            profilePhotos: const [],
+            onSlotTapped: tappedSlots.add,
+          ),
         ),
       ),
     );
@@ -49,5 +60,30 @@ void main() {
 
     expect(tappedSlots, [0]);
     expect(find.bySemanticsLabel('Add photo 1'), findsOneWidget);
+  });
+
+  testWidgets('filled slots expose delete affordances when enabled', (
+    tester,
+  ) async {
+    final deletedSlots = <int>[];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: AppTheme.light,
+        home: Scaffold(
+          body: PhotoGrid(
+            profilePhotos: [photo(0), photo(1)],
+            onSlotTapped: (_) {},
+            onDeletePhoto: deletedSlots.add,
+          ),
+        ),
+      ),
+    );
+
+    await tester.tap(find.byKey(PhotoGridKeys.delete(1)));
+    await tester.pump();
+
+    expect(deletedSlots, [1]);
+    expect(find.bySemanticsLabel('Replace photo 1'), findsOneWidget);
   });
 }

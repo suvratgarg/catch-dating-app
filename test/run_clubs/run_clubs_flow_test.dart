@@ -82,6 +82,61 @@ void main() {
       expect(find.text('Club ${club.id}'), findsOneWidget);
     });
 
+    testWidgets('guest join CTA opens phone auth with the club as from route', (
+      tester,
+    ) async {
+      final club = _buildClub();
+      final router = GoRouter(
+        initialLocation: Routes.runClubsListScreen.path,
+        routes: [
+          GoRoute(
+            path: Routes.authScreen.path,
+            builder: (_, state) => Text(
+              'Auth ${state.uri.queryParameters['from']}',
+              textDirection: TextDirection.ltr,
+            ),
+          ),
+          GoRoute(
+            path: Routes.runClubsListScreen.path,
+            builder: (_, _) => const RunClubsListScreen(),
+            routes: [
+              GoRoute(
+                path: 'run-clubs/:runClubId',
+                name: Routes.runClubDetailScreen.name,
+                builder: (_, state) => Text(
+                  'Club ${state.pathParameters['runClubId']}',
+                  textDirection: TextDirection.ltr,
+                ),
+              ),
+            ],
+          ),
+        ],
+      );
+      addTearDown(router.dispose);
+
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value(null)),
+            watchUserProfileProvider.overrideWith((ref) => Stream.value(null)),
+            watchRunClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value([club])),
+          ],
+          child: MaterialApp.router(
+            theme: AppTheme.light,
+            routerConfig: router,
+          ),
+        ),
+      );
+      await _pumpRunClubFlow(tester);
+
+      await tester.tap(find.text('Join'));
+      await _pumpRunClubFlow(tester);
+
+      expect(find.text('Auth /clubs/run-clubs/${club.id}'), findsOneWidget);
+    });
+
     testWidgets(
       'detail screen can load from live data without navigation extra',
       (tester) async {

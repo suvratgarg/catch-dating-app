@@ -45,9 +45,8 @@ class MembershipButton extends ConsumerWidget {
             isLoading: isPushMutating,
             onPressed: isMutating
                 ? null
-                : () => RunClubMembershipController
-                      .pushNotificationsMutation
-                      .run(
+                : () =>
+                      RunClubMembershipController.pushNotificationsMutation.run(
                         ref,
                         (tx) async => tx
                             .get(runClubMembershipControllerProvider.notifier)

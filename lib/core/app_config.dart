@@ -38,6 +38,14 @@ class AppConfig {
   static AppEnvironment get environment =>
       AppEnvironment.fromValue(_rawAppEnvironment);
 
+  @visibleForTesting
+  static bool isEventPolicyLabAvailable({
+    required AppEnvironment environment,
+    required bool requested,
+  }) {
+    return requested && !environment.isProduction;
+  }
+
   static String get environmentName => environment.value;
 
   static String get appTitle => environment.appTitle;
@@ -89,6 +97,16 @@ class AppConfig {
   static const bool verboseAuthDebugLogs = bool.fromEnvironment(
     'VERBOSE_AUTH_DEBUG_LOGS',
     defaultValue: false,
+  );
+
+  static const bool _eventPolicyLabRequested = bool.fromEnvironment(
+    'ENABLE_EVENT_POLICY_LAB',
+    defaultValue: true,
+  );
+
+  static bool get enableEventPolicyLab => isEventPolicyLabAvailable(
+    environment: environment,
+    requested: _eventPolicyLabRequested,
   );
 
   static const String firebaseAppCheckWebRecaptchaEnterpriseSiteKey =

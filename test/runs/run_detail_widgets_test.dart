@@ -29,10 +29,16 @@ import 'runs_test_helpers.dart';
 void main() {
   group('RunDetailScreen', () {
     test('stores the route arguments', () {
-      final screen = RunDetailScreen(runClubId: 'club-1', runId: 'run-1');
+      final run = buildRun(id: 'run-1', runClubId: 'club-1');
+      final screen = RunDetailScreen(
+        runClubId: 'club-1',
+        runId: 'run-1',
+        initialRun: run,
+      );
 
       expect(screen.runClubId, 'club-1');
       expect(screen.runId, 'run-1');
+      expect(screen.initialRun, run);
     });
 
     testWidgets('renders the loading state', (tester) async {
@@ -50,6 +56,31 @@ void main() {
       );
 
       expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    });
+
+    testWidgets('uses initialRun while live data is still loading', (
+      tester,
+    ) async {
+      final run = buildRun(
+        id: 'run-1',
+        runClubId: 'club-1',
+        meetingPoint: 'Marine Drive',
+      );
+
+      await pumpRunsTestApp(
+        tester,
+        RunDetailScreen(runClubId: 'club-1', runId: 'run-1', initialRun: run),
+        signedInUid: null,
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value(null)),
+          runDetailViewModelProvider(
+            'run-1',
+          ).overrideWith((ref) => const AsyncLoading()),
+        ],
+      );
+
+      expect(find.text('Marine Drive'), findsWidgets);
+      expect(find.byType(CircularProgressIndicator), findsNothing);
     });
 
     testWidgets('renders the error state', (tester) async {
@@ -486,7 +517,7 @@ void main() {
       expect(find.text('Cancel booking'), findsOneWidget);
     });
 
-    testWidgets('renders ineligible reasons for age and gender caps', (
+    testWidgets('renders ineligible ages and waitlistable cohort caps', (
       tester,
     ) async {
       final tooYoungUser = buildUser(
@@ -540,7 +571,7 @@ void main() {
 
       expect(find.text('Must be 18+ to join'), findsOneWidget);
       expect(find.text('Must be 40 or younger'), findsOneWidget);
-      expect(find.text('Spots for your gender are full'), findsOneWidget);
+      expect(find.text('Join waitlist'), findsOneWidget);
     });
   });
 

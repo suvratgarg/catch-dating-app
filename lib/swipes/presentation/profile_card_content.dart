@@ -9,7 +9,7 @@ typedef ProfileCardPhoto = ({String url, PhotoPromptAnswer? prompt});
 
 class ProfileCardContent {
   const ProfileCardContent({
-    required this.primaryPhotoUrl,
+    required this.primaryPhoto,
     required this.additionalPhotos,
     required this.attributes,
     required this.lifestyle,
@@ -22,7 +22,7 @@ class ProfileCardContent {
     UserProfile? viewerProfile,
     String? sharedRunTitle,
   }) {
-    final photos = profile.photoUrls;
+    final photos = profile.effectiveProfilePhotos;
     final occupation = _trimToNull(profile.occupation);
     final company = _trimToNull(profile.company);
 
@@ -58,17 +58,15 @@ class ProfileCardContent {
         (icon: Icons.child_friendly_outlined, text: profile.children!.label),
     ];
 
-    final photoPrompts = {
-      for (final prompt in normalizePhotoPromptAnswers(profile.photoPrompts))
-        prompt.photoIndex: prompt,
-    };
     final additionalPhotos = photos.indexed
         .skip(1)
-        .map((photo) => (url: photo.$2, prompt: photoPrompts[photo.$1]))
+        .map((photo) => (url: photo.$2.url, prompt: photo.$2.prompt))
         .toList(growable: false);
 
     return ProfileCardContent(
-      primaryPhotoUrl: photos.firstOrNull,
+      primaryPhoto: photos.firstOrNull == null
+          ? null
+          : (url: photos.first.url, prompt: photos.first.prompt),
       additionalPhotos: additionalPhotos,
       attributes: attributes,
       lifestyle: lifestyle,
@@ -81,12 +79,14 @@ class ProfileCardContent {
     );
   }
 
-  final String? primaryPhotoUrl;
+  final ProfileCardPhoto? primaryPhoto;
   final List<ProfileCardPhoto> additionalPhotos;
   final List<ProfileCardFact> attributes;
   final List<ProfileCardFact> lifestyle;
   final List<ProfilePromptAnswer> profilePrompts;
   final ProfileCardInsights insights;
+
+  String? get primaryPhotoUrl => primaryPhoto?.url;
 
   bool get hasProfilePrompts => profilePrompts.isNotEmpty;
 }

@@ -6,6 +6,7 @@ import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
 import {
+  ProfilePhoto,
   RunClubMembershipDoc,
   RunParticipationDoc,
 } from "../shared/firestore";
@@ -48,12 +49,10 @@ export async function requestAccountDeletionHandler(
 
   const now = deps.serverTimestamp();
   const userSnap = await db.collection("users").doc(uid).get();
-  const photoUrls = (userSnap.data()?.photoUrls ?? []) as string[];
-  const photoThumbnailUrls =
-    (userSnap.data()?.photoThumbnailUrls ?? []) as string[];
+  const userData = userSnap.data() ?? {};
 
-  await deleteStorageUrls(
-    [...photoUrls, ...photoThumbnailUrls],
+  await deleteStoragePaths(
+    profilePhotoDeletionStoragePaths(userData),
     deps.storageBucket()
   );
 
@@ -88,6 +87,7 @@ export async function requestAccountDeletionHandler(
     photoUrls: [],
     photoThumbnailUrls: [],
     photoPrompts: [],
+    profilePhotos: [],
     city: admin.firestore.FieldValue.delete(),
     interestedInGenders: [],
     minAgePreference: 18,
@@ -108,6 +108,7 @@ export async function requestAccountDeletionHandler(
     paceMaxSecsPerKm: 420,
     preferredDistances: [],
     runningReasons: [],
+    preferredRunTimes: [],
     fcmToken: admin.firestore.FieldValue.delete(),
   }, {merge: true});
 
@@ -461,19 +462,62 @@ class BatchQueue {
 }
 
 /**
- * Deletes Firebase Storage objects represented by download URLs.
- * @param {string[]} urls Public download URLs from user profile docs.
+ * Extracts grouped and legacy profile photo object paths.
+ * @param {FirebaseFirestore.DocumentData} user User profile data.
+ * @return {string[]} Storage object paths to delete.
+ */
+function profilePhotoDeletionStoragePaths(
+  user: FirebaseFirestore.DocumentData
+): string[] {
+  const paths = new Set<string>();
+  const addPath = (value: unknown) => {
+    if (typeof value !== "string") return;
+    const trimmed = value.trim();
+    if (trimmed.length > 0) paths.add(trimmed);
+  };
+  const addUrl = (value: unknown) => {
+    if (typeof value !== "string") return;
+    addPath(storagePathFromDownloadUrl(value));
+  };
+
+  const profilePhotos = Array.isArray(user.profilePhotos) ?
+    user.profilePhotos as Partial<ProfilePhoto>[] :
+    [];
+  for (const photo of profilePhotos) {
+    if (photo === null || typeof photo !== "object") continue;
+    addPath(photo.storagePath);
+    addPath(photo.thumbnailStoragePath);
+    addUrl(photo.url);
+    addUrl(photo.thumbnailUrl);
+  }
+
+  for (const url of stringArray(user.photoUrls)) addUrl(url);
+  for (const url of stringArray(user.photoThumbnailUrls)) addUrl(url);
+  return [...paths];
+}
+
+/**
+ * Coerces a Firestore field into a string array.
+ * @param {unknown} value Unknown Firestore field value.
+ * @return {string[]} String items only.
+ */
+function stringArray(value: unknown): string[] {
+  return Array.isArray(value) ?
+    value.filter((item): item is string => typeof item === "string") :
+    [];
+}
+
+/**
+ * Deletes Firebase Storage objects represented by object paths.
+ * @param {string[]} paths Firebase Storage object paths.
  * @param {StorageBucket} bucket Default Firebase Storage bucket.
  */
-async function deleteStorageUrls(
-  urls: string[],
+async function deleteStoragePaths(
+  paths: string[],
   bucket: StorageBucket
 ): Promise<void> {
   await Promise.all(
-    urls
-      .map(storagePathFromDownloadUrl)
-      .filter((path): path is string => path !== null)
-      .map((path) => bucket.file(path).delete({ignoreNotFound: true}))
+    paths.map((path) => bucket.file(path).delete({ignoreNotFound: true}))
   );
 }
 

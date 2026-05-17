@@ -31,6 +31,11 @@ _PublicProfile _$PublicProfileFromJson(
           ?.map((e) => PhotoPromptAnswer.fromJson(e as Map<String, dynamic>))
           .toList() ??
       const [],
+  profilePhotos:
+      (json['profilePhotos'] as List<dynamic>?)
+          ?.map((e) => ProfilePhoto.fromJson(e as Map<String, dynamic>))
+          .toList() ??
+      const [],
   city: json['city'] as String?,
   height: (json['height'] as num?)?.toInt(),
   occupation: json['occupation'] as String?,
@@ -80,6 +85,7 @@ Map<String, dynamic> _$PublicProfileToJson(
   'photoUrls': instance.photoUrls,
   'photoThumbnailUrls': instance.photoThumbnailUrls,
   'photoPrompts': instance.photoPrompts.map((e) => e.toJson()).toList(),
+  'profilePhotos': instance.profilePhotos.map((e) => e.toJson()).toList(),
   'city': instance.city,
   'height': instance.height,
   'occupation': instance.occupation,

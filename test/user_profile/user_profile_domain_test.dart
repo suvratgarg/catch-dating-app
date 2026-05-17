@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -40,6 +41,74 @@ void main() {
       final dob = DateTime(now.year - 25, now.month, now.day);
       final user = buildUser(dateOfBirth: dob);
       expect(user.age, 25);
+    });
+  });
+
+  group('profile photo helpers', () {
+    ProfilePhoto photo(int position, {PhotoPromptAnswer? prompt}) {
+      return ProfilePhoto.uploaded(
+        position: position,
+        url: 'https://example.test/$position.jpg',
+        storagePath: 'users/user-1/photos/${position}_test.jpg',
+        prompt: prompt,
+        now: DateTime(2026, 5, 17),
+      );
+    }
+
+    test(
+      'removeProfilePhotoAtPosition compacts positions and prompt indexes',
+      () {
+        final updated = removeProfilePhotoAtPosition(
+          profilePhotos: [
+            photo(0),
+            photo(
+              1,
+              prompt: const PhotoPromptAnswer(
+                photoIndex: 1,
+                promptId: 'proofIRun',
+                prompt: 'Proof I actually run',
+                caption: 'Track day',
+              ),
+            ),
+            photo(2),
+          ],
+          position: 0,
+          updatedAt: DateTime(2026, 5, 18),
+        );
+
+        expect(updated.map((photo) => photo.position), [0, 1]);
+        expect(updated.first.prompt?.photoIndex, 0);
+        expect(updated.first.updatedAt, DateTime(2026, 5, 18));
+      },
+    );
+
+    test('reorderProfilePhoto keeps the moved photo caption attached', () {
+      final updated = reorderProfilePhoto(
+        profilePhotos: [
+          photo(
+            0,
+            prompt: const PhotoPromptAnswer(
+              photoIndex: 0,
+              promptId: 'proofIRun',
+              prompt: 'Proof I actually run',
+              caption: 'Race day',
+            ),
+          ),
+          photo(1),
+          photo(2),
+        ],
+        fromPosition: 0,
+        toPosition: 2,
+        updatedAt: DateTime(2026, 5, 18),
+      );
+
+      expect(updated.map((photo) => photo.url), [
+        'https://example.test/1.jpg',
+        'https://example.test/2.jpg',
+        'https://example.test/0.jpg',
+      ]);
+      expect(updated.map((photo) => photo.position), [0, 1, 2]);
+      expect(updated.last.prompt?.photoIndex, 2);
     });
   });
 

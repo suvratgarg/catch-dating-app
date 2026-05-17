@@ -1,4 +1,7 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
+import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
+import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -48,6 +51,7 @@ class DashboardFullViewModel {
     required this.pendingReviewRun,
     required this.hostRunTools,
     required this.attendedRunsSection,
+    required this.weeklyActivitySection,
     required this.recommendationsSection,
   });
 
@@ -58,6 +62,8 @@ class DashboardFullViewModel {
   final Run? pendingReviewRun;
   final List<DashboardHostRunTool> hostRunTools;
   final DashboardSectionModel<List<Run>> attendedRunsSection;
+  final DashboardSectionModel<WeeklyRunningActivitySnapshot>
+  weeklyActivitySection;
   final DashboardSectionModel<List<DashboardRunRecommendation>>
   recommendationsSection;
 }
@@ -99,6 +105,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
   required AsyncValue<List<Run>> attendedRunsAsync,
   required AsyncValue<List<DashboardRunRecommendationCandidate>>
   recommendedRunsAsync,
+  AsyncValue<WeeklyRunningActivitySnapshot>? weeklyActivityAsync,
   AsyncValue<List<Review>> reviewsByUserAsync = const AsyncData<List<Review>>(
     [],
   ),
@@ -121,6 +128,11 @@ DashboardFullViewModel buildDashboardFullViewModel({
       'Unable to load your recent runs.',
     ),
     data: DashboardSectionModel<List<Run>>.data,
+  );
+  final weeklyActivitySection = _buildWeeklyActivitySection(
+    attendedRunsAsync: attendedRunsAsync,
+    weeklyActivityAsync: weeklyActivityAsync,
+    referenceDate: effectiveNow,
   );
 
   final signedUpRunIds = signedUpRuns.map((run) => run.id).toSet();
@@ -181,8 +193,155 @@ DashboardFullViewModel buildDashboardFullViewModel({
     pendingReviewRun: pendingReviewRun,
     hostRunTools: hostRunTools,
     attendedRunsSection: attendedRunsSection,
+    weeklyActivitySection: weeklyActivitySection,
     recommendationsSection: recommendationsSection,
   );
+}
+
+DashboardSectionModel<WeeklyRunningActivitySnapshot>
+_buildWeeklyActivitySection({
+  required AsyncValue<List<Run>> attendedRunsAsync,
+  required AsyncValue<WeeklyRunningActivitySnapshot>? weeklyActivityAsync,
+  required DateTime referenceDate,
+}) {
+  if (attendedRunsAsync.isLoading) {
+    return const DashboardSectionModel<WeeklyRunningActivitySnapshot>.loading(
+      'Loading your recent runs...',
+    );
+  }
+  if (weeklyActivityAsync?.isLoading ?? false) {
+    return const DashboardSectionModel<WeeklyRunningActivitySnapshot>.loading(
+      'Loading your weekly running activity...',
+    );
+  }
+
+  final attendedRuns = attendedRunsAsync.asData?.value;
+  final platformSnapshot = weeklyActivityAsync?.asData?.value;
+  if (attendedRunsAsync.hasError &&
+      platformSnapshot?.hasPlatformConnection != true) {
+    return const DashboardSectionModel<WeeklyRunningActivitySnapshot>.error(
+      'Unable to load your recent runs.',
+    );
+  }
+
+  if (attendedRuns != null || platformSnapshot != null) {
+    return DashboardSectionModel<WeeklyRunningActivitySnapshot>.data(
+      buildDashboardWeeklyActivitySnapshot(
+        attendedRuns: attendedRuns ?? const <Run>[],
+        platformSnapshot:
+            platformSnapshot ??
+            WeeklyRunningActivitySnapshot.unsupported(
+              referenceDate: referenceDate,
+            ),
+        referenceDate: referenceDate,
+      ),
+    );
+  }
+
+  return DashboardSectionModel<WeeklyRunningActivitySnapshot>.data(
+    WeeklyRunningActivitySnapshot.unsupported(referenceDate: referenceDate),
+  );
+}
+
+WeeklyRunningActivitySnapshot buildDashboardWeeklyActivitySnapshot({
+  required List<Run> attendedRuns,
+  required WeeklyRunningActivitySnapshot platformSnapshot,
+  required DateTime referenceDate,
+}) {
+  final catchActivities = attendedRuns
+      .map(_runnerActivityFromCatchRun)
+      .toList(growable: false);
+
+  if (!platformSnapshot.hasPlatformConnection) {
+    final catchSummary = WeeklyActivitySummary.fromActivities(
+      catchActivities,
+      referenceDate: referenceDate,
+      refreshedAt: platformSnapshot.summary.refreshedAt,
+    );
+    if (!catchSummary.hasRuns) {
+      return platformSnapshot.copyWith(
+        summary: catchSummary,
+        activities: const [],
+        source: WeeklyRunningActivitySource.none,
+      );
+    }
+    return platformSnapshot.copyWith(
+      summary: catchSummary,
+      activities: catchActivities,
+      source: WeeklyRunningActivitySource.catchFallback,
+      message: 'Catch check-ins only.',
+    );
+  }
+
+  final platformActivities = platformSnapshot.activities;
+  final catchOnlyActivities = catchActivities
+      .where(
+        (activity) => !_overlapsPlatformActivity(activity, platformActivities),
+      )
+      .toList(growable: false);
+  final mergedActivities = [...platformActivities, ...catchOnlyActivities];
+  final summary = WeeklyActivitySummary.fromActivities(
+    mergedActivities,
+    referenceDate: referenceDate,
+    refreshedAt: platformSnapshot.summary.refreshedAt,
+  );
+
+  final source = _weeklyActivitySource(
+    platformActivities: platformActivities,
+    catchActivities: catchOnlyActivities,
+    summary: summary,
+  );
+
+  return platformSnapshot.copyWith(
+    summary: summary,
+    activities: mergedActivities,
+    source: source,
+    clearMessage: source != WeeklyRunningActivitySource.catchFallback,
+    message: source == WeeklyRunningActivitySource.catchFallback
+        ? 'Catch check-ins only.'
+        : null,
+  );
+}
+
+RunnerActivity _runnerActivityFromCatchRun(Run run) {
+  return RunnerActivity(
+    stableId: 'catch:${run.id}',
+    provider: RunnerActivityProvider.catchAttendance,
+    type: RunnerActivityType.running,
+    startTime: run.startTime,
+    endTime: run.endTime,
+    distanceMeters: run.distanceKm * 1000,
+    sourceName: 'Catch',
+    matchedCatchRunId: run.id,
+  );
+}
+
+bool _overlapsPlatformActivity(
+  RunnerActivity catchActivity,
+  List<RunnerActivity> platformActivities,
+) {
+  final matchWindowStart = catchActivity.startTime.subtract(
+    const Duration(minutes: 30),
+  );
+  final matchWindowEnd = catchActivity.endTime.add(const Duration(minutes: 30));
+  return platformActivities.any(
+    (activity) => activity.overlaps(matchWindowStart, matchWindowEnd),
+  );
+}
+
+WeeklyRunningActivitySource _weeklyActivitySource({
+  required List<RunnerActivity> platformActivities,
+  required List<RunnerActivity> catchActivities,
+  required WeeklyActivitySummary summary,
+}) {
+  if (!summary.hasRuns) return WeeklyRunningActivitySource.none;
+  if (platformActivities.isNotEmpty && catchActivities.isNotEmpty) {
+    return WeeklyRunningActivitySource.mixed;
+  }
+  if (platformActivities.isNotEmpty) {
+    return WeeklyRunningActivitySource.healthPlatform;
+  }
+  return WeeklyRunningActivitySource.catchFallback;
 }
 
 List<DashboardHostRunTool> _buildHostRunTools(
@@ -495,6 +654,7 @@ DashboardFullViewModel dashboardFullViewModel(
     viewer: user,
     hostedRuns: hostedRuns,
     attendedRunsAsync: ref.watch(watchAttendedRunsProvider(uid)),
+    weeklyActivityAsync: ref.watch(weeklyRunningActivityProvider),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
     recommendedRunsAsync: ref.watch(
       dashboardRecommendedRunsProvider(

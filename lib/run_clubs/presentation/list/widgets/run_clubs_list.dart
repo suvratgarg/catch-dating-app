@@ -4,7 +4,7 @@ import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_skeleton.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_snackbar_listener.dart';
 import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_controller.dart';
+import 'package:catch_dating_app/run_clubs/presentation/detail/run_club_membership_controller.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_empty_state.dart';
 import 'package:catch_dating_app/run_clubs/presentation/list/widgets/run_clubs_list_body.dart';
@@ -56,7 +56,7 @@ class RunClubsList extends ConsumerWidget {
                     : const RunClubsEmptyState(),
               )
             : MutationErrorSnackbarListener(
-                mutation: RunClubsListController.joinMutation,
+                mutation: RunClubMembershipController.joinMutation,
                 child: RunClubsListBody(viewModel: value),
               ),
     };

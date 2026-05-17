@@ -10,7 +10,7 @@
     "photoIndex": {
       "type": "integer",
       "minimum": 0,
-      "maximum": 5
+      "x-catch-maximumFrom": "profilePhotoPolicy.maxPhotosMinusOne"
     },
     "promptId": {
       "type": "string",

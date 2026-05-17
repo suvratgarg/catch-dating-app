@@ -30,6 +30,7 @@ abstract class RunParticipation with _$RunParticipation {
     @NullableTimestampConverter() DateTime? cancelledAt,
     @NullableTimestampConverter() DateTime? deletedAt,
     @JsonKey(unknownEnumValue: null) Gender? genderAtSignup,
+    String? cohortAtSignup,
     String? paymentId,
   }) = _RunParticipation;
 

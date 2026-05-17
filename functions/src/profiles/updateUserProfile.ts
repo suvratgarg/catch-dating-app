@@ -1,10 +1,12 @@
 import {onCall, CallableRequest, HttpsError} from
   "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
+import * as logger from "firebase-functions/logger";
 import {ValidateFunction} from "ajv";
 import {appCheckCallableOptions} from "../shared/callableOptions";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
+import {profilePhotoPolicy} from "../shared/generated/schemaRegistry";
 import {
   schemaErrorMessages,
   validateUpdateUserProfileCallablePayload,
@@ -21,12 +23,14 @@ interface UpdateUserProfileDeps {
     uid: string,
     action: string
   ) => Promise<void>;
+  deleteStoragePaths?: (paths: string[]) => Promise<void>;
 }
 
 const defaultDeps: UpdateUserProfileDeps = {
   firestore: () => admin.firestore(),
   timestampFromMillis: (millis) => admin.firestore.Timestamp.fromMillis(millis),
   checkRateLimit: defaultCheckRateLimit,
+  deleteStoragePaths: deleteProfilePhotoStoragePaths,
 };
 
 type UserProfilePatch = UpdateUserProfileCallablePayload["fields"];
@@ -69,7 +73,7 @@ export async function updateUserProfileHandler(
   const deletedUserRef = db.collection("deletedUsers").doc(uid);
   const updateFields = toFirestorePatch(fields, deps);
 
-  await db.runTransaction(async (tx) => {
+  const removedStoragePaths = await db.runTransaction(async (tx) => {
     const [userSnap, deletedUserSnap] = await Promise.all([
       tx.get(userRef),
       tx.get(deletedUserRef),
@@ -85,8 +89,22 @@ export async function updateUserProfileHandler(
       );
     }
 
+    const currentData = userSnap.data() ?? {};
+    assertMinimumProfilePhotosForCompletedProfile(
+      currentData,
+      updateFields
+    );
+    const removedPaths = collectRemovedProfilePhotoStoragePaths(
+      uid,
+      currentData.profilePhotos,
+      updateFields.profilePhotos
+    );
     tx.update(userRef, updateFields);
+    return removedPaths;
   });
+  if (removedStoragePaths.length > 0) {
+    await deps.deleteStoragePaths?.(removedStoragePaths);
+  }
 
   return {updated: true};
 }
@@ -164,6 +182,11 @@ function normalizeProfilePatchFields(
       normalized.photoPrompts
     );
   }
+  if ("profilePhotos" in normalized) {
+    normalized.profilePhotos = normalizeProfilePhotoPayloads(
+      normalized.profilePhotos
+    );
+  }
 
   return normalized;
 }
@@ -224,6 +247,35 @@ function normalizePhotoPromptPayloads(value: unknown): unknown {
 }
 
 /**
+ * Trims profile-photo ids, URLs, Storage paths, and nested prompt display
+ * fields while preserving timestamp validation semantics.
+ * @param {unknown} value Raw profile-photo payloads.
+ * @return {unknown} Normalized profile-photo payloads.
+ */
+function normalizeProfilePhotoPayloads(value: unknown): unknown {
+  if (!Array.isArray(value)) return value;
+  return value.map((item) => {
+    if (!isRecord(item)) return item;
+    const normalized: Record<string, unknown> = {
+      ...item,
+      id: trimIfString(item.id),
+      url: trimIfString(item.url),
+      thumbnailUrl: trimIfString(item.thumbnailUrl),
+      storagePath: trimIfString(item.storagePath),
+      thumbnailStoragePath: trimIfString(item.thumbnailStoragePath),
+    };
+    if (isRecord(item.prompt)) {
+      normalized.prompt = {
+        ...item.prompt,
+        promptId: trimIfString(item.prompt.promptId),
+        prompt: trimIfString(item.prompt.prompt),
+      };
+    }
+    return normalized;
+  });
+}
+
+/**
  * Trims a value only when it is a string.
  * @param {unknown} value Raw value.
  * @return {unknown} Trimmed string or original value.
@@ -239,6 +291,176 @@ function trimIfString(value: unknown): unknown {
  */
 function isRecord(value: unknown): value is Record<string, unknown> {
   return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+
+/**
+ * Prevents completed profiles from falling below the canonical photo floor.
+ * @param {FirebaseFirestore.DocumentData} currentData Existing profile data.
+ * @param {Record<string, unknown>} updateFields Firestore update patch.
+ */
+function assertMinimumProfilePhotosForCompletedProfile(
+  currentData: FirebaseFirestore.DocumentData,
+  updateFields: Record<string, unknown>
+) {
+  const nextProfileComplete =
+    updateFields.profileComplete === true ||
+    (updateFields.profileComplete === undefined &&
+      currentData.profileComplete === true);
+  if (!nextProfileComplete) return;
+
+  const photoCount = profilePhotoCountAfterPatch(currentData, updateFields);
+  if (photoCount < profilePhotoPolicy.minPhotos) {
+    throw new HttpsError(
+      "failed-precondition",
+      `Add at least ${profilePhotoPolicy.minPhotos} profile photos.`
+    );
+  }
+}
+
+/**
+ * Counts the effective photos after a profile update patch.
+ * @param {FirebaseFirestore.DocumentData} currentData Existing profile data.
+ * @param {Record<string, unknown>} updateFields Firestore update patch.
+ * @return {number} Effective photo count.
+ */
+function profilePhotoCountAfterPatch(
+  currentData: FirebaseFirestore.DocumentData,
+  updateFields: Record<string, unknown>
+): number {
+  const profilePhotos = Object.hasOwn(updateFields, "profilePhotos") ?
+    updateFields.profilePhotos :
+    currentData.profilePhotos;
+  const groupedCount = countProfilePhotoRecords(profilePhotos);
+  if (groupedCount > 0 || Object.hasOwn(updateFields, "profilePhotos")) {
+    return groupedCount;
+  }
+
+  const photoUrls = Object.hasOwn(updateFields, "photoUrls") ?
+    updateFields.photoUrls :
+    currentData.photoUrls;
+  return asNonEmptyStringArray(photoUrls).slice(
+    0,
+    profilePhotoPolicy.maxPhotos
+  ).length;
+}
+
+/**
+ * Counts valid grouped profile photo records.
+ * @param {unknown} value Candidate profilePhotos value.
+ * @return {number} Count of records with usable URLs and positions.
+ */
+function countProfilePhotoRecords(value: unknown): number {
+  if (!Array.isArray(value)) return 0;
+  return value
+    .filter(isRecord)
+    .filter((photo) =>
+      typeof photo.url === "string" &&
+      photo.url.trim().length > 0 &&
+      Number.isInteger(photo.position) &&
+      typeof photo.position === "number" &&
+      photo.position >= 0 &&
+      photo.position < profilePhotoPolicy.maxPhotos
+    )
+    .length;
+}
+
+/**
+ * Coerces an unknown value into a non-empty string array.
+ * @param {unknown} value Candidate array.
+ * @return {string[]} Trimmed strings.
+ */
+function asNonEmptyStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is string => typeof item === "string")
+    .map((item) => item.trim())
+    .filter((item) => item.length > 0);
+}
+
+/**
+ * Computes removed user-owned Storage paths when grouped photos are replaced.
+ * @param {string} uid Owner uid.
+ * @param {unknown} currentProfilePhotos Stored current grouped photos.
+ * @param {unknown} nextProfilePhotos Incoming grouped photos.
+ * @return {string[]} User-owned original and thumbnail paths no longer used.
+ */
+function collectRemovedProfilePhotoStoragePaths(
+  uid: string,
+  currentProfilePhotos: unknown,
+  nextProfilePhotos: unknown
+): string[] {
+  if (nextProfilePhotos === undefined) return [];
+  const currentPaths = profilePhotoStoragePathsFromValue(
+    uid,
+    currentProfilePhotos
+  );
+  if (currentPaths.length === 0) return [];
+  const nextPaths = new Set(profilePhotoStoragePathsFromValue(
+    uid,
+    nextProfilePhotos
+  ));
+  return [...new Set(currentPaths.filter((path) => !nextPaths.has(path)))];
+}
+
+/**
+ * Reads user-owned original and thumbnail Storage paths from profile photos.
+ * @param {string} uid Owner uid.
+ * @param {unknown} value Candidate profilePhotos value.
+ * @return {string[]} Safe Storage object paths.
+ */
+function profilePhotoStoragePathsFromValue(
+  uid: string,
+  value: unknown
+): string[] {
+  if (!Array.isArray(value)) return [];
+  const paths: string[] = [];
+  for (const item of value) {
+    if (!isRecord(item)) continue;
+    for (const key of ["storagePath", "thumbnailStoragePath"]) {
+      const path = safeProfilePhotoStoragePath(uid, item[key]);
+      if (path) paths.push(path);
+    }
+  }
+  return paths;
+}
+
+/**
+ * Accepts only profile photo paths owned by the authenticated user.
+ * @param {string} uid Owner uid.
+ * @param {unknown} value Candidate Storage path.
+ * @return {string | null} Safe path or null.
+ */
+function safeProfilePhotoStoragePath(
+  uid: string,
+  value: unknown
+): string | null {
+  if (typeof value !== "string") return null;
+  const path = value.trim();
+  if (
+    path.startsWith(`users/${uid}/photos/`) ||
+    path.startsWith(`users/${uid}/photoThumbnails/`)
+  ) {
+    return path;
+  }
+  return null;
+}
+
+/**
+ * Deletes old profile photo Storage objects after Firestore commits.
+ * @param {string[]} paths Storage object paths.
+ */
+async function deleteProfilePhotoStoragePaths(paths: string[]) {
+  const bucket = admin.storage().bucket();
+  await Promise.all(paths.map(async (path) => {
+    try {
+      await bucket.file(path).delete({ignoreNotFound: true});
+    } catch (error) {
+      logger.warn("Failed to delete replaced profile photo object", {
+        path,
+        error,
+      });
+    }
+  }));
 }
 
 /**
@@ -271,6 +493,20 @@ function toFirestorePatch(
         caption: collapseStackedPromptBlankLines(prompt.caption).trim(),
       }))
       .filter((prompt) => prompt.caption.length > 0);
+  }
+  if (fields.profilePhotos !== undefined) {
+    updateFields.profilePhotos = fields.profilePhotos.map((photo) => ({
+      ...photo,
+      createdAt: deps.timestampFromMillis(photo.createdAt),
+      updatedAt: deps.timestampFromMillis(photo.updatedAt),
+      ...(photo.moderation?.reviewedAt !== undefined &&
+        photo.moderation?.reviewedAt !== null && {
+        moderation: {
+          ...photo.moderation,
+          reviewedAt: deps.timestampFromMillis(photo.moderation.reviewedAt),
+        },
+      }),
+    }));
   }
   if (fields.dateOfBirth !== undefined) {
     updateFields.dateOfBirth = deps.timestampFromMillis(fields.dateOfBirth);

@@ -170,9 +170,11 @@ void _toggleSavedRun(
   required bool isSaved,
 }) {
   if (!isAuthenticated || userProfile == null) {
-    context.pushNamed(
-      Routes.onboardingScreen.name,
-      queryParameters: {'from': '/clubs/run-clubs/$runClubId/runs/${run.id}'},
+    context.go(
+      Uri(
+        path: Routes.authScreen.path,
+        queryParameters: {'from': '/clubs/run-clubs/$runClubId/runs/${run.id}'},
+      ).toString(),
     );
     return;
   }
@@ -299,11 +301,13 @@ class _GuestBookCta extends StatelessWidget {
         padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
         child: CatchButton(
           label: 'Sign in to book this run',
-          onPressed: () => context.pushNamed(
-            Routes.onboardingScreen.name,
-            queryParameters: {
-              'from': '/clubs/run-clubs/$runClubId/runs/$runId',
-            },
+          onPressed: () => context.go(
+            Uri(
+              path: Routes.authScreen.path,
+              queryParameters: {
+                'from': '/clubs/run-clubs/$runClubId/runs/$runId',
+              },
+            ).toString(),
           ),
           icon: Icon(Icons.lock_outline_rounded, size: 18, color: t.primary),
           fullWidth: true,

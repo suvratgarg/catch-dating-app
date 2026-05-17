@@ -1,46 +1,109 @@
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
+import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
+import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+class DashboardStrideSection extends ConsumerStatefulWidget {
+  const DashboardStrideSection({super.key, required this.section});
+
+  final DashboardSectionModel<WeeklyRunningActivitySnapshot> section;
+
+  @override
+  ConsumerState<DashboardStrideSection> createState() =>
+      _DashboardStrideSectionState();
+}
+
+class _DashboardStrideSectionState
+    extends ConsumerState<DashboardStrideSection> {
+  bool _isConnecting = false;
+  bool _isInstallingHealthConnect = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final section = widget.section;
+    if (section.isLoading) {
+      return _StrideSectionStateCard(
+        message: section.message ?? 'Loading your weekly running activity...',
+        isLoading: true,
+      );
+    }
+    if (section.hasError) {
+      return _StrideSectionStateCard(
+        message:
+            section.message ?? 'Unable to load your weekly running activity.',
+      );
+    }
+
+    return StrideCard(
+      snapshot: section.data!,
+      isConnecting: _isConnecting,
+      isInstallingHealthConnect: _isInstallingHealthConnect,
+      onConnect: section.data!.canRequestPermission ? _connect : null,
+      onInstallHealthConnect: section.data!.canInstallHealthConnect
+          ? _installHealthConnect
+          : null,
+    );
+  }
+
+  Future<void> _connect() async {
+    if (_isConnecting) return;
+    setState(() => _isConnecting = true);
+    final granted = await ref
+        .read(healthActivityRepositoryProvider)
+        .requestRunningReadPermission();
+    ref.invalidate(weeklyRunningActivityProvider);
+    if (!mounted) return;
+    setState(() => _isConnecting = false);
+    if (!granted) {
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        const SnackBar(content: Text('Health access was not granted.')),
+      );
+    }
+  }
+
+  Future<void> _installHealthConnect() async {
+    if (_isInstallingHealthConnect) return;
+    setState(() => _isInstallingHealthConnect = true);
+    await ref.read(healthActivityRepositoryProvider).installHealthConnect();
+    ref.invalidate(weeklyRunningActivityProvider);
+    if (!mounted) return;
+    setState(() => _isInstallingHealthConnect = false);
+  }
+}
 
 class StrideCard extends StatelessWidget {
-  const StrideCard({super.key, required this.attendedRuns});
+  const StrideCard({
+    super.key,
+    required this.snapshot,
+    this.onConnect,
+    this.onInstallHealthConnect,
+    this.isConnecting = false,
+    this.isInstallingHealthConnect = false,
+  });
 
-  final List<Run> attendedRuns;
+  final WeeklyRunningActivitySnapshot snapshot;
+  final VoidCallback? onConnect;
+  final VoidCallback? onInstallHealthConnect;
+  final bool isConnecting;
+  final bool isInstallingHealthConnect;
 
   static const _days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
-
-  /// Returns the Monday of the week containing [date].
-  static DateTime _weekStart(DateTime date) =>
-      DateTime(date.year, date.month, date.day - (date.weekday - 1));
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
 
     final now = DateTime.now();
-    final weekStart = _weekStart(now);
-    final weekEnd = weekStart.add(const Duration(days: 7));
     final isToday = now.weekday - 1; // 0 = Mon
-
-    final thisWeek = attendedRuns
-        .where(
-          (r) =>
-              r.startTime.isAfter(weekStart) && r.startTime.isBefore(weekEnd),
-        )
-        .toList();
-
-    // Sum km per weekday (0=Mon … 6=Sun).
-    final kmPerDay = List<double>.filled(7, 0);
-    for (final run in thisWeek) {
-      final dayIdx = run.startTime.weekday - 1;
-      kmPerDay[dayIdx] += run.distanceKm;
-    }
-
-    final totalKm = kmPerDay.fold<double>(0, (s, v) => s + v);
-    final maxKm = kmPerDay.fold<double>(0, (m, v) => v > m ? v : m);
+    final summary = snapshot.summary;
+    final totalKm = summary.totalDistanceKm;
+    final maxMeters = summary.maxDailyDistanceMeters;
 
     return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p18),
@@ -66,10 +129,15 @@ class StrideCard extends StatelessWidget {
               ),
               gapW6,
               Text(
-                'km · ${thisWeek.length} run${thisWeek.length == 1 ? '' : 's'}',
+                'km · ${summary.runCount} run${summary.runCount == 1 ? '' : 's'}',
                 style: CatchTextStyles.bodyS(context),
               ),
             ],
+          ),
+          gapH4,
+          Text(
+            _sourceText(snapshot),
+            style: CatchTextStyles.bodyS(context).copyWith(color: t.ink3),
           ),
           gapH10,
           SizedBox(
@@ -81,7 +149,9 @@ class StrideCard extends StatelessWidget {
                   if (i > 0) gapW6,
                   Expanded(
                     child: StrideBarColumn(
-                      fraction: maxKm > 0 ? kmPerDay[i] / maxKm : 0,
+                      fraction: maxMeters > 0
+                          ? summary.distanceMetersByWeekday[i] / maxMeters
+                          : 0,
                       dayLabel: _days[i],
                       isToday: i == isToday,
                     ),
@@ -90,9 +160,50 @@ class StrideCard extends StatelessWidget {
               ],
             ),
           ),
+          if (onConnect != null || onInstallHealthConnect != null) ...[
+            gapH12,
+            Wrap(
+              spacing: Sizes.p8,
+              runSpacing: Sizes.p8,
+              children: [
+                if (onConnect != null)
+                  _StrideActionButton(
+                    icon: Icons.favorite_outline_rounded,
+                    label: isConnecting
+                        ? 'Connecting...'
+                        : 'Connect ${snapshot.platformLabel}',
+                    onPressed: isConnecting ? null : onConnect,
+                    isBusy: isConnecting,
+                  ),
+                if (onInstallHealthConnect != null)
+                  _StrideActionButton(
+                    icon: Icons.download_rounded,
+                    label: isInstallingHealthConnect
+                        ? 'Opening...'
+                        : 'Install Health Connect',
+                    onPressed: isInstallingHealthConnect
+                        ? null
+                        : onInstallHealthConnect,
+                    isBusy: isInstallingHealthConnect,
+                  ),
+              ],
+            ),
+          ],
         ],
       ),
     );
+  }
+
+  String _sourceText(WeeklyRunningActivitySnapshot snapshot) {
+    return switch (snapshot.source) {
+      WeeklyRunningActivitySource.healthPlatform =>
+        'From ${snapshot.platformLabel}',
+      WeeklyRunningActivitySource.mixed =>
+        '${snapshot.platformLabel} + Catch check-ins',
+      WeeklyRunningActivitySource.catchFallback => 'Catch check-ins only',
+      WeeklyRunningActivitySource.none =>
+        snapshot.message ?? 'No running activity this week yet.',
+    };
   }
 }
 
@@ -142,6 +253,74 @@ class StrideBarColumn extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _StrideActionButton extends StatelessWidget {
+  const _StrideActionButton({
+    required this.icon,
+    required this.label,
+    required this.onPressed,
+    required this.isBusy,
+  });
+
+  final IconData icon;
+  final String label;
+  final VoidCallback? onPressed;
+  final bool isBusy;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton.icon(
+      onPressed: onPressed,
+      icon: isBusy
+          ? const SizedBox(
+              width: 16,
+              height: 16,
+              child: CatchLoadingIndicator(strokeWidth: 2),
+            )
+          : Icon(icon, size: 16),
+      label: Text(label),
+    );
+  }
+}
+
+class _StrideSectionStateCard extends StatelessWidget {
+  const _StrideSectionStateCard({
+    required this.message,
+    this.isLoading = false,
+  });
+
+  final String message;
+  final bool isLoading;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      borderColor: t.line,
+      child: Row(
+        children: [
+          if (isLoading)
+            const SizedBox(
+              width: 18,
+              height: 18,
+              child: CatchLoadingIndicator(strokeWidth: 2),
+            )
+          else
+            Icon(Icons.error_outline_rounded, color: t.primary, size: 18),
+          gapW10,
+          Expanded(
+            child: Text(
+              message,
+              style: CatchTextStyles.bodyS(context).copyWith(color: t.ink2),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

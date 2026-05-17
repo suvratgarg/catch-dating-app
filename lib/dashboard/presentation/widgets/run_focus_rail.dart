@@ -255,6 +255,7 @@ class _RunFocusRailState extends ConsumerState<RunFocusRail> {
     context.pushNamed(
       Routes.dashboardRunDetailScreen.name,
       pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+      extra: run,
     );
   }
 
@@ -302,6 +303,7 @@ class _RunFocusRailState extends ConsumerState<RunFocusRail> {
               GoRouter.of(context).goNamed(
                 Routes.runDetailScreen.name,
                 pathParameters: {'runClubId': run.runClubId, 'runId': run.id},
+                extra: run,
               );
             },
             onBackHome: () {

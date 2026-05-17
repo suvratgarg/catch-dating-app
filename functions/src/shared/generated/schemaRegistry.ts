@@ -675,7 +675,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
     },
     "photoUrls": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "type": "string",
         "format": "uri",
@@ -684,7 +684,7 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
     },
     "photoThumbnailUrls": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "type": "string",
         "format": "uri",
@@ -727,6 +727,207 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
+      }
+    },
+    "profilePhotos": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "title": "ProfilePhoto",
+        "description": "Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "thumbnailUrl",
+          "storagePath",
+          "thumbnailStoragePath",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "storagePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "thumbnailStoragePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "prompt": {
+            "anyOf": [
+              {
+                "title": "PhotoPromptAnswer",
+                "description": "One optional caption prompt for a profile photo slot.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "photoIndex",
+                  "promptId",
+                  "prompt",
+                  "caption"
+                ],
+                "properties": {
+                  "photoIndex": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                  },
+                  "promptId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 140
+                  }
+                },
+                "x-catch-catalog": "../catalogs/photo_prompts.json"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "moderation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "reviewedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 11
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        "definitions": {
+          "storageObjectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          }
+        },
+        "x-storage-metadata": true,
+        "x-future-field": "profilePhotos",
+        "x-migration-contract": "../migrations/profile_photos_storage.json"
       }
     },
     "city": {
@@ -1170,7 +1371,7 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
     },
     "photoUrls": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "type": "string",
         "format": "uri",
@@ -1179,7 +1380,7 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
     },
     "photoThumbnailUrls": {
       "type": "array",
-      "maxItems": 12,
+      "maxItems": 6,
       "items": {
         "type": "string",
         "format": "uri",
@@ -1222,6 +1423,207 @@ export const publicProfileDocumentSchema: Record<string, unknown> = {
           }
         },
         "x-catch-catalog": "../catalogs/photo_prompts.json"
+      }
+    },
+    "profilePhotos": {
+      "type": "array",
+      "maxItems": 6,
+      "items": {
+        "title": "ProfilePhoto",
+        "description": "Future canonical profile-photo object that groups display URLs, Firebase Storage object paths, prompt metadata, moderation state, order, and lifecycle timestamps.",
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "url",
+          "thumbnailUrl",
+          "storagePath",
+          "thumbnailStoragePath",
+          "position",
+          "createdAt",
+          "updatedAt"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80,
+            "pattern": "^[A-Za-z0-9_-]+$"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "thumbnailUrl": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          },
+          "storagePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "thumbnailStoragePath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          },
+          "prompt": {
+            "anyOf": [
+              {
+                "title": "PhotoPromptAnswer",
+                "description": "One optional caption prompt for a profile photo slot.",
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "photoIndex",
+                  "promptId",
+                  "prompt",
+                  "caption"
+                ],
+                "properties": {
+                  "photoIndex": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 5
+                  },
+                  "promptId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 80
+                  },
+                  "prompt": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 140
+                  },
+                  "caption": {
+                    "type": "string",
+                    "maxLength": 140
+                  }
+                },
+                "x-catch-catalog": "../catalogs/photo_prompts.json"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "moderation": {
+            "type": [
+              "object",
+              "null"
+            ],
+            "additionalProperties": false,
+            "required": [
+              "status"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "approved",
+                  "rejected"
+                ]
+              },
+              "reason": {
+                "type": [
+                  "string",
+                  "null"
+                ],
+                "maxLength": 240
+              },
+              "reviewedAt": {
+                "anyOf": [
+                  {
+                    "type": "object",
+                    "description": "Serialized Firestore Timestamp fixture shape.",
+                    "x-firestore-type": "timestamp",
+                    "additionalProperties": false,
+                    "required": [
+                      "_seconds",
+                      "_nanoseconds"
+                    ],
+                    "properties": {
+                      "_seconds": {
+                        "type": "integer"
+                      },
+                      "_nanoseconds": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 999999999
+                      }
+                    }
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              }
+            }
+          },
+          "position": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 11
+          },
+          "createdAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          },
+          "updatedAt": {
+            "type": "object",
+            "description": "Serialized Firestore Timestamp fixture shape.",
+            "x-firestore-type": "timestamp",
+            "additionalProperties": false,
+            "required": [
+              "_seconds",
+              "_nanoseconds"
+            ],
+            "properties": {
+              "_seconds": {
+                "type": "integer"
+              },
+              "_nanoseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999999999
+              }
+            }
+          }
+        },
+        "definitions": {
+          "storageObjectPath": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 512,
+            "pattern": "^[^/\\u0000][^\\u0000]*$"
+          }
+        },
+        "x-storage-metadata": true,
+        "x-future-field": "profilePhotos",
+        "x-migration-contract": "../migrations/profile_photos_storage.json"
       }
     },
     "city": {
@@ -2075,6 +2477,18 @@ export const runDocumentSchema: Record<string, unknown> = {
       ],
       "maxLength": 1000
     },
+    "photoUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "distanceKm": {
       "type": "number",
       "exclusiveMinimum": 0,
@@ -2192,7 +2606,252 @@ export const runDocumentSchema: Record<string, unknown> = {
         }
       }
     },
+    "eventPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "admission",
+        "pricing",
+        "cancellation",
+        "settlement"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1
+        },
+        "admission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "format",
+            "capacityLimit",
+            "waitlistPolicy",
+            "inviteRequired",
+            "membershipRequired",
+            "manualApprovalRequired",
+            "cohortCapacityLimits",
+            "balancedRatioPolicy"
+          ],
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": [
+                "open",
+                "inviteOnly",
+                "manualApproval",
+                "fixedCohortCaps",
+                "balancedRatio",
+                "membersOnly"
+              ]
+            },
+            "capacityLimit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "waitlistPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "offerWindowMinutes"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "rankedOffer",
+                    "broadcastFirstComeFirstServed",
+                    "manualReview"
+                  ]
+                },
+                "offerWindowMinutes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10080
+                }
+              }
+            },
+            "inviteRequired": {
+              "type": "boolean"
+            },
+            "membershipRequired": {
+              "type": "boolean"
+            },
+            "manualApprovalRequired": {
+              "type": "boolean"
+            },
+            "cohortCapacityLimits": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "balancedRatioPolicy": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "leftCohortId",
+                "rightCohortId",
+                "maxSkew",
+                "openingBufferPerCohort",
+                "outOfRatioCohortPolicy"
+              ],
+              "properties": {
+                "leftCohortId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "rightCohortId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "maxSkew": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "openingBufferPerCohort": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "outOfRatioCohortPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "admitWithinGeneralCapacity",
+                    "waitlist",
+                    "manualReview",
+                    "reject"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "basePriceInPaise",
+            "cohortAdjustmentsInPaise",
+            "demandPricingRules"
+          ],
+          "properties": {
+            "basePriceInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "cohortAdjustmentsInPaise": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": -100000000,
+                "maximum": 100000000
+              }
+            },
+            "demandPricingRules": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pricedCohortId",
+                  "balancingCohortId",
+                  "stepAdjustmentInPaise",
+                  "maxAdjustmentInPaise",
+                  "freeSkew",
+                  "demandStep"
+                ],
+                "properties": {
+                  "pricedCohortId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "balancingCohortId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "stepAdjustmentInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "maxAdjustmentInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "freeSkew": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "demandStep": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cancellation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyId"
+          ],
+          "properties": {
+            "policyId": {
+              "type": "string",
+              "enum": [
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        },
+        "settlement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hostPayoutTiming"
+          ],
+          "properties": {
+            "hostPayoutTiming": {
+              "type": "string",
+              "enum": [
+                "afterEventCompletion"
+              ]
+            }
+          }
+        }
+      }
+    },
     "genderCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
+    "cohortCounts": {
       "type": "object",
       "additionalProperties": {
         "type": "integer",
@@ -2484,6 +3143,14 @@ export const runParticipationDocumentSchema: Record<string, unknown> = {
           "type": "null"
         }
       ]
+    },
+    "cohortAtSignup": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 1,
+      "maxLength": 120
     },
     "paymentId": {
       "type": [
@@ -2778,33 +3445,6 @@ export const savedRunDocumentSchema: Record<string, unknown> = {
           "maximum": 999999999
         }
       }
-    },
-    "removedAt": {
-      "anyOf": [
-        {
-          "type": "object",
-          "description": "Serialized Firestore Timestamp fixture shape.",
-          "x-firestore-type": "timestamp",
-          "additionalProperties": false,
-          "required": [
-            "_seconds",
-            "_nanoseconds"
-          ],
-          "properties": {
-            "_seconds": {
-              "type": "integer"
-            },
-            "_nanoseconds": {
-              "type": "integer",
-              "minimum": 0,
-              "maximum": 999999999
-            }
-          }
-        },
-        {
-          "type": "null"
-        }
-      ]
     },
     "synthetic": {
       "type": "boolean",
@@ -4450,7 +5090,16 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
         },
         "photoUrls": {
           "type": "array",
-          "maxItems": 12,
+          "maxItems": 6,
+          "items": {
+            "type": "string",
+            "format": "uri",
+            "maxLength": 2048
+          }
+        },
+        "photoThumbnailUrls": {
+          "type": "array",
+          "maxItems": 6,
           "items": {
             "type": "string",
             "format": "uri",
@@ -4493,6 +5142,142 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
               }
             },
             "x-catch-catalog": "../catalogs/photo_prompts.json"
+          }
+        },
+        "profilePhotos": {
+          "type": "array",
+          "maxItems": 6,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "id",
+              "url",
+              "thumbnailUrl",
+              "storagePath",
+              "thumbnailStoragePath",
+              "position",
+              "createdAt",
+              "updatedAt"
+            ],
+            "properties": {
+              "id": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 80,
+                "pattern": "^[A-Za-z0-9_-]+$"
+              },
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "thumbnailUrl": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "storagePath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              "thumbnailStoragePath": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 512,
+                "pattern": "^[^/\\u0000][^\\u0000]*$"
+              },
+              "prompt": {
+                "anyOf": [
+                  {
+                    "title": "PhotoPromptAnswer",
+                    "description": "One optional caption prompt for a profile photo slot.",
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "photoIndex",
+                      "promptId",
+                      "prompt",
+                      "caption"
+                    ],
+                    "properties": {
+                      "photoIndex": {
+                        "type": "integer",
+                        "minimum": 0,
+                        "maximum": 5
+                      },
+                      "promptId": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "prompt": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 140
+                      },
+                      "caption": {
+                        "type": "string",
+                        "maxLength": 140
+                      }
+                    },
+                    "x-catch-catalog": "../catalogs/photo_prompts.json"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "moderation": {
+                "type": [
+                  "object",
+                  "null"
+                ],
+                "additionalProperties": false,
+                "required": [
+                  "status"
+                ],
+                "properties": {
+                  "status": {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "approved",
+                      "rejected"
+                    ]
+                  },
+                  "reason": {
+                    "type": [
+                      "string",
+                      "null"
+                    ],
+                    "maxLength": 240
+                  },
+                  "reviewedAt": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ],
+                    "minimum": 0
+                  }
+                }
+              },
+              "position": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 11
+              },
+              "createdAt": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "updatedAt": {
+                "type": "integer",
+                "minimum": 0
+              }
+            }
           }
         },
         "city": {
@@ -4786,7 +5571,6 @@ export const updateUserProfileCallablePayloadSchema: Record<string, unknown> = {
   "x-intentionally-excluded-fields": [
     "firstName",
     "lastName",
-    "photoThumbnailUrls",
     "fcmToken",
     "deleted",
     "deletedAt",
@@ -5116,6 +5900,18 @@ export const createRunCallablePayloadSchema: Record<string, unknown> = {
       ],
       "maxLength": 1000
     },
+    "photoUrl": {
+      "anyOf": [
+        {
+          "type": "string",
+          "format": "uri",
+          "maxLength": 2048
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "distanceKm": {
       "type": "number",
       "exclusiveMinimum": 0,
@@ -5143,6 +5939,244 @@ export const createRunCallablePayloadSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "maximum": 100000000
+    },
+    "eventPolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "admission",
+        "pricing",
+        "cancellation",
+        "settlement"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1
+        },
+        "admission": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "format",
+            "capacityLimit",
+            "waitlistPolicy",
+            "inviteRequired",
+            "membershipRequired",
+            "manualApprovalRequired",
+            "cohortCapacityLimits",
+            "balancedRatioPolicy"
+          ],
+          "properties": {
+            "format": {
+              "type": "string",
+              "enum": [
+                "open",
+                "inviteOnly",
+                "manualApproval",
+                "fixedCohortCaps",
+                "balancedRatio",
+                "membersOnly"
+              ]
+            },
+            "capacityLimit": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000
+            },
+            "waitlistPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "offerWindowMinutes"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "disabled",
+                    "rankedOffer",
+                    "broadcastFirstComeFirstServed",
+                    "manualReview"
+                  ]
+                },
+                "offerWindowMinutes": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 10080
+                }
+              }
+            },
+            "inviteRequired": {
+              "type": "boolean"
+            },
+            "membershipRequired": {
+              "type": "boolean"
+            },
+            "manualApprovalRequired": {
+              "type": "boolean"
+            },
+            "cohortCapacityLimits": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": 0
+              }
+            },
+            "balancedRatioPolicy": {
+              "type": [
+                "object",
+                "null"
+              ],
+              "additionalProperties": false,
+              "required": [
+                "leftCohortId",
+                "rightCohortId",
+                "maxSkew",
+                "openingBufferPerCohort",
+                "outOfRatioCohortPolicy"
+              ],
+              "properties": {
+                "leftCohortId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "rightCohortId": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 120
+                },
+                "maxSkew": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "openingBufferPerCohort": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 1000
+                },
+                "outOfRatioCohortPolicy": {
+                  "type": "string",
+                  "enum": [
+                    "admitWithinGeneralCapacity",
+                    "waitlist",
+                    "manualReview",
+                    "reject"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "pricing": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "basePriceInPaise",
+            "cohortAdjustmentsInPaise",
+            "demandPricingRules"
+          ],
+          "properties": {
+            "basePriceInPaise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000000
+            },
+            "cohortAdjustmentsInPaise": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "integer",
+                "minimum": -100000000,
+                "maximum": 100000000
+              }
+            },
+            "demandPricingRules": {
+              "type": "array",
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "pricedCohortId",
+                  "balancingCohortId",
+                  "stepAdjustmentInPaise",
+                  "maxAdjustmentInPaise",
+                  "freeSkew",
+                  "demandStep"
+                ],
+                "properties": {
+                  "pricedCohortId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "balancingCohortId": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 120
+                  },
+                  "stepAdjustmentInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "maxAdjustmentInPaise": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 100000000
+                  },
+                  "freeSkew": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "maximum": 1000
+                  },
+                  "demandStep": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "maximum": 1000
+                  }
+                }
+              }
+            }
+          }
+        },
+        "cancellation": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "policyId"
+          ],
+          "properties": {
+            "policyId": {
+              "type": "string",
+              "enum": [
+                "flexible",
+                "standard",
+                "strict"
+              ]
+            }
+          }
+        },
+        "settlement": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "hostPayoutTiming"
+          ],
+          "properties": {
+            "hostPayoutTiming": {
+              "type": "string",
+              "enum": [
+                "afterEventCompletion"
+              ]
+            }
+          }
+        }
+      }
     },
     "constraints": {
       "type": "object",
@@ -5246,6 +6280,18 @@ export const updateRunCallablePayloadSchema: Record<string, unknown> = {
             "null"
           ],
           "maxLength": 1000
+        },
+        "photoUrl": {
+          "anyOf": [
+            {
+              "type": "string",
+              "format": "uri",
+              "maxLength": 2048
+            },
+            {
+              "type": "null"
+            }
+          ]
         },
         "distanceKm": {
           "type": "number",
@@ -6218,10 +7264,10 @@ export const photoPromptCatalog = {
   "schemaVersion": 1,
   "kind": "photoPrompts",
   "limits": {
-    "maxCaptions": 6,
     "maxPromptIdLength": 80,
     "maxPromptTitleLength": 140,
-    "maxCaptionLength": 140
+    "maxCaptionLength": 140,
+    "maxCaptions": 6
   },
   "prompts": [
     {
@@ -6265,10 +7311,23 @@ export const profilePromptLimits = {
 } as const;
 
 export const photoPromptLimits = {
-  "maxCaptions": 6,
   "maxPromptIdLength": 80,
   "maxPromptTitleLength": 140,
-  "maxCaptionLength": 140
+  "maxCaptionLength": 140,
+  "maxCaptions": 6
+} as const;
+
+export const profilePhotoPolicy = {
+  "schemaVersion": 1,
+  "kind": "profilePhotoPolicy",
+  "minPhotos": 2,
+  "maxPhotos": 6,
+  "displayAspectRatio": {
+    "width": 3,
+    "height": 4
+  },
+  "thumbnailSize": 160,
+  "maxUploadBytes": 8388608
 } as const;
 
 export const defaultProfilePromptIds = [

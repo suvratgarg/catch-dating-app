@@ -1,5 +1,7 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
+import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
+import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
@@ -22,6 +24,22 @@ DashboardRunRecommendationCandidate _recommendationCandidate(
   clubName: clubName,
   clubLocation: clubLocation,
 );
+
+RunnerActivity _platformActivity({
+  required String id,
+  required DateTime startTime,
+  required double distanceMeters,
+}) {
+  return RunnerActivity(
+    stableId: id,
+    provider: RunnerActivityProvider.appleHealth,
+    type: RunnerActivityType.running,
+    startTime: startTime,
+    endTime: startTime.add(const Duration(hours: 1)),
+    distanceMeters: distanceMeters,
+    sourceName: 'Apple Watch',
+  );
+}
 
 void main() {
   group('buildDashboardFullViewModel', () {
@@ -110,6 +128,111 @@ void main() {
       );
 
       expect(viewModel.activeSwipeRun?.id, latest.id);
+    });
+
+    test('uses Catch attended runs as the weekly activity fallback', () {
+      final now = DateTime(2026, 5, 13, 12);
+      final attendedRun = buildRun(
+        id: 'catch-run',
+        startTime: DateTime(2026, 5, 11, 6),
+        distanceKm: 5,
+      );
+
+      final viewModel = buildDashboardFullViewModel(
+        signedUpRuns: const [],
+        attendedRunsAsync: AsyncData<List<Run>>([attendedRun]),
+        weeklyActivityAsync: AsyncData(
+          WeeklyRunningActivitySnapshot.permissionRequired(
+            referenceDate: now,
+            platformLabel: 'Apple Health',
+          ),
+        ),
+        recommendedRunsAsync: _noRecommendationCandidates,
+        now: now,
+      );
+
+      final snapshot = viewModel.weeklyActivitySection.data!;
+      expect(snapshot.source, WeeklyRunningActivitySource.catchFallback);
+      expect(snapshot.canRequestPermission, isTrue);
+      expect(snapshot.summary.totalDistanceKm, 5);
+      expect(snapshot.summary.runCount, 1);
+    });
+
+    test(
+      'merges connected platform activity with non-overlapping Catch runs',
+      () {
+        final now = DateTime(2026, 5, 13, 12);
+        final catchRun = buildRun(
+          id: 'catch-run',
+          startTime: DateTime(2026, 5, 12, 7),
+          distanceKm: 5,
+        );
+        final platformActivity = _platformActivity(
+          id: 'health-run',
+          startTime: DateTime(2026, 5, 11, 7),
+          distanceMeters: 3000,
+        );
+
+        final viewModel = buildDashboardFullViewModel(
+          signedUpRuns: const [],
+          attendedRunsAsync: AsyncData<List<Run>>([catchRun]),
+          weeklyActivityAsync: AsyncData(
+            WeeklyRunningActivitySnapshot.connected(
+              referenceDate: now,
+              platformLabel: 'Apple Health',
+              activities: [platformActivity],
+            ),
+          ),
+          recommendedRunsAsync: _noRecommendationCandidates,
+          now: now,
+        );
+
+        final snapshot = viewModel.weeklyActivitySection.data!;
+        expect(snapshot.source, WeeklyRunningActivitySource.mixed);
+        expect(snapshot.summary.totalDistanceKm, 8);
+        expect(snapshot.summary.runCount, 2);
+        expect(snapshot.activities.map((activity) => activity.stableId), [
+          'health-run',
+          'catch:catch-run',
+        ]);
+      },
+    );
+
+    test('does not double count overlapping platform and Catch activity', () {
+      final now = DateTime(2026, 5, 13, 12);
+      final catchRun = buildRun(
+        id: 'catch-run',
+        startTime: DateTime(2026, 5, 12, 7),
+        endTime: DateTime(2026, 5, 12, 8),
+        distanceKm: 5,
+      );
+      final platformActivity = _platformActivity(
+        id: 'health-run',
+        startTime: DateTime(2026, 5, 12, 7, 10),
+        distanceMeters: 5100,
+      );
+
+      final viewModel = buildDashboardFullViewModel(
+        signedUpRuns: const [],
+        attendedRunsAsync: AsyncData<List<Run>>([catchRun]),
+        weeklyActivityAsync: AsyncData(
+          WeeklyRunningActivitySnapshot.connected(
+            referenceDate: now,
+            platformLabel: 'Apple Health',
+            activities: [platformActivity],
+          ),
+        ),
+        recommendedRunsAsync: _noRecommendationCandidates,
+        now: now,
+      );
+
+      final snapshot = viewModel.weeklyActivitySection.data!;
+      expect(snapshot.source, WeeklyRunningActivitySource.healthPlatform);
+      expect(snapshot.summary.totalDistanceMeters, 5100);
+      expect(snapshot.summary.runCount, 1);
+      expect(snapshot.activities.map((activity) => activity.stableId), [
+        'health-run',
+      ]);
     });
 
     test('selects the latest attended run that has not been reviewed', () {

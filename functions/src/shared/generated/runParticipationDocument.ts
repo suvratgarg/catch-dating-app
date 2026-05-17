@@ -45,6 +45,7 @@ export interface RunParticipationDocument {
     _nanoseconds: number;
   } | null;
   genderAtSignup: ("man" | "woman" | "nonBinary" | "other") | null;
+  cohortAtSignup?: string | null;
   paymentId: string | null;
   /**
    * Internal demo seed marker used for cleanup and diagnostics.

@@ -4,6 +4,7 @@
 
 import {ProfilePromptAnswer} from "./profilePromptAnswer";
 import {PhotoPromptAnswer} from "./photoPromptAnswer";
+import {ProfilePhoto} from "./profilePhoto";
 
 /**
  * Backend-owned public profile projection stored at publicProfiles/{uid}. The uid is the document id and is not stored in document data.
@@ -41,17 +42,21 @@ export interface PublicProfileDocument {
    */
   profilePrompts: ProfilePromptAnswer[];
   /**
-   * @maxItems 12
+   * @maxItems 6
    */
   photoUrls: string[];
   /**
-   * @maxItems 12
+   * @maxItems 6
    */
   photoThumbnailUrls: string[];
   /**
    * @maxItems 6
    */
   photoPrompts: PhotoPromptAnswer[];
+  /**
+   * @maxItems 6
+   */
+  profilePhotos?: ProfilePhoto[];
   city?: string | null;
   height?: number | null;
   occupation?: string | null;

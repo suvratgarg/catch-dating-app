@@ -7,9 +7,8 @@ part 'run_club_membership_controller.g.dart';
 
 /// **Pattern A: Action controller + static Mutations**
 ///
-/// Exposes [joinMutation] and [leaveMutation] for the club detail screen.
-/// The UI watches mutation state to show loading spinners and error banners
-/// during join/leave operations.
+/// Owns membership actions from both the run-club list and detail screens.
+/// The UI watches mutation state to show loading spinners and error banners.
 @riverpod
 class RunClubMembershipController extends _$RunClubMembershipController {
   static final joinMutation = Mutation<void>();

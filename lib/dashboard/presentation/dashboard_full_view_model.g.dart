@@ -100,7 +100,7 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'fc873ef717c5891da3467504eaaf76b5d86aa018';
+    r'd5660f027390d03835b9cc8f02acf5922b4eaa77';
 
 /// Combines signed-up runs, attended runs, and recommended runs into a single
 /// [DashboardFullViewModel] for the dashboard screen.

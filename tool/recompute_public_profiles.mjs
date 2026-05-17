@@ -113,7 +113,7 @@ export async function buildPublicProfileRepairPlan(
     try {
       assertValidSchemaPayload(
         validatePublicProfileDocument,
-        expected,
+        schemaSerializableFirestoreData(expected),
         `publicProfiles/${uid}`
       );
     } catch (error) {
@@ -257,6 +257,44 @@ function readFirebaseRc() {
   return JSON.parse(
     fs.readFileSync(path.join(repoRoot, ".firebaserc"), "utf8")
   );
+}
+
+function schemaSerializableFirestoreData(value) {
+  if (value === undefined) return undefined;
+  if (value === null) return null;
+  if (isFirestoreTimestamp(value)) return schemaSerializableTimestamp(value);
+  if (Array.isArray(value)) {
+    return value.map((item) => schemaSerializableFirestoreData(item));
+  }
+  if (typeof value === "object") {
+    return Object.fromEntries(
+      Object.entries(value)
+        .map(([key, item]) => [key, schemaSerializableFirestoreData(item)])
+        .filter(([, item]) => item !== undefined)
+    );
+  }
+  return value;
+}
+
+function isFirestoreTimestamp(value) {
+  return value &&
+    typeof value === "object" &&
+    typeof value.toDate === "function" &&
+    typeof value.toMillis === "function";
+}
+
+function schemaSerializableTimestamp(timestamp) {
+  if (
+    Number.isInteger(timestamp.seconds) &&
+    Number.isInteger(timestamp.nanoseconds)
+  ) {
+    return {_seconds: timestamp.seconds, _nanoseconds: timestamp.nanoseconds};
+  }
+  const millis = timestamp.toMillis();
+  return {
+    _seconds: Math.floor(millis / 1000),
+    _nanoseconds: (millis % 1000) * 1000000,
+  };
 }
 
 function printHelp() {

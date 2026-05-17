@@ -1,5 +1,6 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -28,6 +29,7 @@ Run buildRun({
   double? startingPointLat,
   double? startingPointLng,
   String? locationDetails,
+  String? photoUrl,
   double distanceKm = 5,
   PaceLevel pace = PaceLevel.easy,
   int capacityLimit = 20,
@@ -38,7 +40,9 @@ Run buildRun({
   int? waitlistedCount,
   RunLifecycleStatus status = RunLifecycleStatus.active,
   RunConstraints constraints = const RunConstraints(),
+  EventPolicyBundle? eventPolicy,
   Map<String, int> genderCounts = const {},
+  Map<String, int> cohortCounts = const {},
 }) {
   final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
   return Run(
@@ -50,6 +54,7 @@ Run buildRun({
     startingPointLat: startingPointLat,
     startingPointLng: startingPointLng,
     locationDetails: locationDetails,
+    photoUrl: photoUrl,
     distanceKm: distanceKm,
     pace: pace,
     capacityLimit: capacityLimit,
@@ -60,7 +65,9 @@ Run buildRun({
     waitlistedCount: waitlistedCount,
     status: status,
     constraints: constraints,
+    eventPolicy: eventPolicy,
     genderCounts: genderCounts,
+    cohortCounts: cohortCounts,
   );
 }
 
@@ -69,6 +76,7 @@ RunParticipation buildRunParticipation({
   required String uid,
   RunParticipationStatus status = RunParticipationStatus.signedUp,
   DateTime? createdAt,
+  String? cohortAtSignup,
 }) {
   final timestamp = createdAt ?? DateTime(2026, 5, 6, 7);
   return RunParticipation(
@@ -90,6 +98,7 @@ RunParticipation buildRunParticipation({
         : null,
     cancelledAt: status == RunParticipationStatus.cancelled ? timestamp : null,
     deletedAt: status == RunParticipationStatus.deleted ? timestamp : null,
+    cohortAtSignup: cohortAtSignup,
   );
 }
 
@@ -103,6 +112,7 @@ UserProfile buildUser({
   String bio = 'Here for the run.',
   List<ProfilePromptAnswer>? profilePrompts,
   Gender gender = Gender.man,
+  List<Gender> interestedInGenders = const [Gender.woman],
   DateTime? dateOfBirth,
   String phoneNumber = '+910000000000',
   List<String> photoUrls = const [],
@@ -123,7 +133,7 @@ UserProfile buildUser({
     gender: gender,
     phoneNumber: phoneNumber,
     profileComplete: true,
-    interestedInGenders: const [Gender.woman],
+    interestedInGenders: interestedInGenders,
     photoUrls: photoUrls,
   );
 }
@@ -236,10 +246,15 @@ class FakeRunRepository extends Fake implements RunRepository {
   Run? createdRun;
   Object? createError;
   Object? cancelError;
+  Object? hostCancelError;
+  Object? deleteRunError;
   Object? joinWaitlistError;
   Object? leaveWaitlistError;
   Object? markAttendanceError;
   String? cancelledRunId;
+  String? hostCancelledRunId;
+  String? hostCancelReason;
+  String? deletedRunId;
   String? joinedWaitlistRunId;
   String? leftWaitlistRunId;
   String? leftWaitlistUserId;
@@ -295,6 +310,23 @@ class FakeRunRepository extends Fake implements RunRepository {
       throw cancelError!;
     }
     cancelledRunId = runId;
+  }
+
+  @override
+  Future<void> cancelRun({required String runId, String? reason}) async {
+    if (hostCancelError != null) {
+      throw hostCancelError!;
+    }
+    hostCancelledRunId = runId;
+    hostCancelReason = reason;
+  }
+
+  @override
+  Future<void> deleteRun({required String runId}) async {
+    if (deleteRunError != null) {
+      throw deleteRunError!;
+    }
+    deletedRunId = runId;
   }
 
   @override

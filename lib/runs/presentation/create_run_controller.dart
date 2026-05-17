@@ -1,10 +1,22 @@
+import 'dart:typed_data';
+
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
 import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:catch_dating_app/runs/domain/run_constraints.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'create_run_controller.g.dart';
+
+class PickedRunPhoto {
+  const PickedRunPhoto({required this.image, required this.bytes});
+
+  final XFile image;
+  final Uint8List bytes;
+}
 
 /// **Pattern A: Action controller + static Mutations**
 ///
@@ -18,6 +30,20 @@ class CreateRunController extends _$CreateRunController {
   @override
   void build() {}
 
+  Future<PickedRunPhoto?> pickRunPhoto({int imageQuality = 82}) async {
+    final image = await ref
+        .read(imageUploadRepositoryProvider)
+        .pickImage(
+          purpose: ImageUploadPurpose.runPhoto,
+          imageQuality: imageQuality,
+        );
+    if (image == null) {
+      return null;
+    }
+
+    return PickedRunPhoto(image: image, bytes: await image.readAsBytes());
+  }
+
   Future<Run> submit({
     required String runClubId,
     required DateTime startTime,
@@ -28,10 +54,10 @@ class CreateRunController extends _$CreateRunController {
     String? locationDetails,
     required double distanceKm,
     required PaceLevel pace,
-    required int capacityLimit,
     required String description,
-    required int priceInPaise,
     required RunConstraints constraints,
+    required EventPolicyBundle eventPolicy,
+    XFile? photoImage,
   }) async {
     final normalizedRunClubId = _requireNonBlank(
       runClubId,
@@ -60,17 +86,17 @@ class CreateRunController extends _$CreateRunController {
         'Distance must be greater than zero.',
       );
     }
-    if (capacityLimit < 1) {
+    if (eventPolicy.capacityLimit < 1) {
       throw ArgumentError.value(
-        capacityLimit,
-        'capacityLimit',
+        eventPolicy.capacityLimit,
+        'eventPolicy.capacityLimit',
         'Capacity limit must be at least 1.',
       );
     }
-    if (priceInPaise < 0) {
+    if (eventPolicy.basePriceInPaise < 0) {
       throw ArgumentError.value(
-        priceInPaise,
-        'priceInPaise',
+        eventPolicy.basePriceInPaise,
+        'eventPolicy.basePriceInPaise',
         'Price cannot be negative.',
       );
     }
@@ -80,8 +106,20 @@ class CreateRunController extends _$CreateRunController {
     );
 
     final runRepo = ref.read(runRepositoryProvider);
+    final runId = runRepo.generateId();
+    String? photoUrl;
+    if (photoImage != null) {
+      photoUrl = await ref
+          .read(imageUploadRepositoryProvider)
+          .uploadRunPhoto(
+            runClubId: normalizedRunClubId,
+            runId: runId,
+            image: photoImage,
+          );
+    }
+
     final run = Run(
-      id: runRepo.generateId(),
+      id: runId,
       runClubId: normalizedRunClubId,
       startTime: startTime,
       endTime: endTime,
@@ -89,12 +127,14 @@ class CreateRunController extends _$CreateRunController {
       startingPointLat: normalizedStartingPoint.latitude,
       startingPointLng: normalizedStartingPoint.longitude,
       locationDetails: normalizedLocationDetails,
+      photoUrl: photoUrl,
       distanceKm: distanceKm,
       pace: pace,
-      capacityLimit: capacityLimit,
+      capacityLimit: eventPolicy.capacityLimit,
       description: normalizedDescription,
-      priceInPaise: priceInPaise,
+      priceInPaise: eventPolicy.basePriceInPaise,
       constraints: constraints,
+      eventPolicy: eventPolicy,
     );
     await runRepo.createRun(run: run);
     return run;

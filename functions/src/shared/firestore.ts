@@ -6,6 +6,10 @@
  *
  * To update: dart tool/generate_firestore_types.dart
  *
+ * Transitional Admin SDK typing facade. JSON Schema contracts are the
+ * canonical persisted-data source; this file only exists while Functions
+ * code still needs live FirebaseFirestore.Timestamp-oriented types.
+ *
  * These mirror the Dart freezed models in lib/<feature>/domain/<Model>.dart.
  * Enum values match what Dart's json_serializable serialises by default
  * (enum member name, camelCase — e.g. DrinkingHabit.socially → "socially").
@@ -204,6 +208,10 @@ export interface UserProfileDoc {
   /** Safety/account lifecycle field written by account deletion flow */
   deleted?: boolean;
   deletedAt?: FirebaseFirestore.Timestamp;
+  /**
+   * Migration field; legacy documents may still only have parallel photo arrays
+   */
+  profilePhotos?: ProfilePhoto[];
 }
 
 /**
@@ -238,6 +246,11 @@ export interface PublicProfileDoc {
   runningReasons: RunReason[];
   preferredRunTimes: PreferredRunTime[];
   languages?: Language[];
+  /**
+   * Migration field; legacy projections may still only have parallel photo
+   * arrays
+   */
+  profilePhotos?: ProfilePhoto[];
 }
 
 /**
@@ -319,6 +332,7 @@ export interface RunDoc {
   startingPointLng?: number | null;
   /** nullable in Firestore */
   locationDetails?: string | null;
+  photoUrl?: string | null;
   distanceKm: number;
   pace: PaceLevel;
   capacityLimit: number;
@@ -337,6 +351,12 @@ export interface RunDoc {
    * Denormalized counts maintained atomically by Cloud Functions.
    */
   genderCounts: Record<string, number>;
+  cohortCounts: Record<string, number>;
+  /**
+   * Production event-policy snapshot; legacy runs may fall back to
+   * capacityLimit, priceInPaise, and constraints
+   */
+  eventPolicy?: EventPolicyBundleDoc | null;
 }
 
 /**
@@ -357,6 +377,7 @@ export interface RunParticipationDoc {
   cancelledAt?: FirebaseFirestore.Timestamp | null;
   deletedAt?: FirebaseFirestore.Timestamp | null;
   genderAtSignup?: Gender | null;
+  cohortAtSignup?: string | null;
   paymentId?: string | null;
 }
 
@@ -369,7 +390,6 @@ export interface SavedRunDoc {
   uid: string;
   runId: string;
   savedAt: FirebaseFirestore.Timestamp;
-  removedAt?: FirebaseFirestore.Timestamp | null;
 }
 
 /**
@@ -506,6 +526,120 @@ export interface PhotoPromptAnswer {
   promptId: string;
   prompt: string;
   caption: string;
+}
+
+/**
+ * embedded profile photo moderation
+ * Stored inside users/{uid}.profilePhotos and
+ * publicProfiles/{uid}.profilePhotos.
+ */
+export interface ProfilePhotoModeration {
+  status: "pending" | "approved" | "rejected";
+  reason?: string | null;
+  reviewedAt?: FirebaseFirestore.Timestamp | null;
+}
+
+/**
+ * embedded profile photo
+ * Canonical grouped profile photo object replacing parallel URL/prompt arrays.
+ */
+export interface ProfilePhoto {
+  id: string;
+  url: string;
+  thumbnailUrl: string;
+  storagePath: string;
+  thumbnailStoragePath: string;
+  prompt?: PhotoPromptAnswer | null;
+  moderation?: ProfilePhotoModeration | null;
+  position: number;
+  createdAt: FirebaseFirestore.Timestamp;
+  updatedAt: FirebaseFirestore.Timestamp;
+}
+
+/**
+ * embedded event policy snapshot
+ * Stored inside runs/{runId}.eventPolicy for production booking, pricing,
+ * cancellation, and settlement behavior.
+ */
+export interface EventPolicyBundleDoc {
+  version: number;
+  admission: EventPolicyAdmissionDoc;
+  pricing: EventPolicyPricingDoc;
+  cancellation: { policyId: "flexible" | "standard" | "strict" };
+  settlement: { hostPayoutTiming: "afterEventCompletion" };
+}
+
+/**
+ * embedded event policy admission
+ * Nested inside runs/{runId}.eventPolicy.admission.
+ */
+export interface EventPolicyAdmissionDoc {
+  format:
+    | "open"
+    | "inviteOnly"
+    | "manualApproval"
+    | "fixedCohortCaps"
+    | "balancedRatio"
+    | "membersOnly";
+  capacityLimit: number;
+  waitlistPolicy?: EventPolicyWaitlistDoc;
+  inviteRequired?: boolean;
+  membershipRequired?: boolean;
+  manualApprovalRequired?: boolean;
+  cohortCapacityLimits?: Record<string, number>;
+  balancedRatioPolicy?: EventPolicyBalancedRatioDoc | null;
+}
+
+/**
+ * embedded event policy waitlist
+ * Nested inside runs/{runId}.eventPolicy.admission.waitlistPolicy.
+ */
+export interface EventPolicyWaitlistDoc {
+  mode:
+    | "disabled"
+    | "rankedOffer"
+    | "broadcastFirstComeFirstServed"
+    | "manualReview";
+  offerWindowMinutes: number;
+}
+
+/**
+ * embedded event policy balanced ratio
+ * Nested inside runs/{runId}.eventPolicy.admission.balancedRatioPolicy.
+ */
+export interface EventPolicyBalancedRatioDoc {
+  leftCohortId: string;
+  rightCohortId: string;
+  maxSkew: number;
+  openingBufferPerCohort: number;
+  outOfRatioCohortPolicy:
+    | "admitWithinGeneralCapacity"
+    | "waitlist"
+    | "manualReview"
+    | "reject";
+}
+
+/**
+ * embedded event policy pricing
+ * Nested inside runs/{runId}.eventPolicy.pricing.
+ */
+export interface EventPolicyPricingDoc {
+  basePriceInPaise: number;
+  cohortAdjustmentsInPaise?: Record<string, number>;
+  demandPricingRules?: EventPolicyDemandPricingRuleDoc[];
+}
+
+/**
+ * embedded event policy demand pricing rule
+ * Nested inside runs/{runId}.eventPolicy.pricing.demandPricingRules.
+ */
+export interface EventPolicyDemandPricingRuleDoc {
+  pricedCohortId: string;
+  balancingCohortId: string;
+  stepAdjustmentInPaise: number;
+  maxAdjustmentInPaise: number;
+  freeSkew: number;
+  demandStep: number;
 }
 
 /**

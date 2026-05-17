@@ -7,7 +7,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'image_upload_repository.g.dart';
 
-enum ImageUploadPurpose { profilePhoto, runClubCover, chatImage }
+enum ImageUploadPurpose { profilePhoto, runClubCover, runPhoto, chatImage }
 
 class ImageUploadPolicy {
   const ImageUploadPolicy({
@@ -21,6 +21,13 @@ class ImageUploadPolicy {
   final int quality;
 }
 
+class UploadedImage {
+  const UploadedImage({required this.url, required this.storagePath});
+
+  final String url;
+  final String storagePath;
+}
+
 class ImageUploadRepository {
   ImageUploadRepository(this._storage, {ImagePicker? picker})
     : _picker = picker ?? ImagePicker();
@@ -31,6 +38,11 @@ class ImageUploadRepository {
     quality: 85,
   );
   static const runClubCoverPolicy = ImageUploadPolicy(
+    maxWidth: 1800,
+    maxHeight: 1200,
+    quality: 82,
+  );
+  static const runPhotoPolicy = ImageUploadPolicy(
     maxWidth: 1800,
     maxHeight: 1200,
     quality: 82,
@@ -69,15 +81,24 @@ class ImageUploadRepository {
   Future<String> upload({
     required String storagePath,
     required XFile image,
+  }) async =>
+      (await uploadWithMetadata(storagePath: storagePath, image: image)).url;
+
+  /// Uploads [image] and returns both the download URL and final Storage path.
+  Future<UploadedImage> uploadWithMetadata({
+    required String storagePath,
+    required XFile image,
   }) async {
     return withBackendErrorContext(
       () async {
         final bytes = await image.readAsBytes();
         final ext = _normalizedExt(image.name);
         final contentType = ext == 'png' ? 'image/png' : 'image/jpeg';
-        final ref = _storage.ref('$storagePath.$ext');
+        final finalStoragePath = '$storagePath.$ext';
+        final ref = _storage.ref(finalStoragePath);
         await ref.putData(bytes, SettableMetadata(contentType: contentType));
-        return ref.getDownloadURL();
+        final url = await ref.getDownloadURL();
+        return UploadedImage(url: url, storagePath: finalStoragePath);
       },
       context: BackendErrorContext(
         service: BackendService.storage,
@@ -99,10 +120,31 @@ class ImageUploadRepository {
     image: image,
   );
 
+  Future<UploadedImage> uploadUserProfilePhoto({
+    required String uid,
+    required int index,
+    required XFile image,
+  }) {
+    final millis = DateTime.now().millisecondsSinceEpoch;
+    return uploadWithMetadata(
+      storagePath: 'users/$uid/photos/${index}_$millis',
+      image: image,
+    );
+  }
+
   Future<String> uploadRunClubCover({
     required String clubId,
     required XFile image,
   }) => upload(storagePath: 'runClubs/$clubId/cover', image: image);
+
+  Future<String> uploadRunPhoto({
+    required String runClubId,
+    required String runId,
+    required XFile image,
+  }) => upload(
+    storagePath: 'runClubs/$runClubId/run_${runId}_photo',
+    image: image,
+  );
 
   Future<String> uploadChatImage({
     required String matchId,
@@ -121,6 +163,7 @@ class ImageUploadRepository {
     return switch (purpose) {
       ImageUploadPurpose.profilePhoto => profilePhotoPolicy,
       ImageUploadPurpose.runClubCover => runClubCoverPolicy,
+      ImageUploadPurpose.runPhoto => runPhotoPolicy,
       ImageUploadPurpose.chatImage => chatImagePolicy,
     };
   }
@@ -135,6 +178,12 @@ class ImageUploadRepository {
 
   static String _resourceForStoragePath(String storagePath) {
     if (storagePath.startsWith('users/')) return 'profile_photos';
+    final storageName = storagePath.split('/').last;
+    if (storagePath.startsWith('runClubs/') &&
+        storageName.startsWith('run_') &&
+        storageName.endsWith('_photo')) {
+      return 'run_photos';
+    }
     if (storagePath.startsWith('runClubs/')) return 'run_club_covers';
     if (storagePath.startsWith('matches/')) return 'chat_images';
     return 'images';

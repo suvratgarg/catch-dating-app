@@ -466,6 +466,16 @@ void _writeHeader(StringBuffer buf) {
   buf.writeln(' * To update: dart tool/generate_firestore_types.dart');
   buf.writeln(' *');
   buf.writeln(
+    ' * Transitional Admin SDK typing facade. JSON Schema contracts are the',
+  );
+  buf.writeln(
+    ' * canonical persisted-data source; this file only exists while Functions',
+  );
+  buf.writeln(
+    ' * code still needs live FirebaseFirestore.Timestamp-oriented types.',
+  );
+  buf.writeln(' *');
+  buf.writeln(
     ' * These mirror the Dart freezed models in lib/<feature>/domain/<Model>.dart.',
   );
   buf.writeln(

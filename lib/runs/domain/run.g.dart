@@ -17,6 +17,7 @@ _Run _$RunFromJson(Map<String, dynamic> json) => _Run(
   startingPointLat: (json['startingPointLat'] as num?)?.toDouble(),
   startingPointLng: (json['startingPointLng'] as num?)?.toDouble(),
   locationDetails: json['locationDetails'] as String?,
+  photoUrl: json['photoUrl'] as String?,
   distanceKm: (json['distanceKm'] as num).toDouble(),
   pace: $enumDecode(_$PaceLevelEnumMap, json['pace']),
   capacityLimit: (json['capacityLimit'] as num).toInt(),
@@ -35,8 +36,16 @@ _Run _$RunFromJson(Map<String, dynamic> json) => _Run(
   constraints: json['constraints'] == null
       ? const RunConstraints()
       : RunConstraints.fromJson(json['constraints'] as Map<String, dynamic>),
+  eventPolicy: json['eventPolicy'] == null
+      ? null
+      : EventPolicyBundle.fromJson(json['eventPolicy'] as Map<String, dynamic>),
   genderCounts:
       (json['genderCounts'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toInt()),
+      ) ??
+      const {},
+  cohortCounts:
+      (json['cohortCounts'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ) ??
       const {},
@@ -50,6 +59,7 @@ Map<String, dynamic> _$RunToJson(_Run instance) => <String, dynamic>{
   'startingPointLat': instance.startingPointLat,
   'startingPointLng': instance.startingPointLng,
   'locationDetails': instance.locationDetails,
+  'photoUrl': ?instance.photoUrl,
   'distanceKm': instance.distanceKm,
   'pace': _$PaceLevelEnumMap[instance.pace]!,
   'capacityLimit': instance.capacityLimit,
@@ -64,7 +74,9 @@ Map<String, dynamic> _$RunToJson(_Run instance) => <String, dynamic>{
   ),
   'cancellationReason': instance.cancellationReason,
   'constraints': instance.constraints.toJson(),
+  'eventPolicy': ?instance.eventPolicy?.toJson(),
   'genderCounts': instance.genderCounts,
+  'cohortCounts': instance.cohortCounts,
 };
 
 const _$PaceLevelEnumMap = {
