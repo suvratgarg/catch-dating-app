@@ -44,7 +44,7 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
 
   @override
   Future<List<PublicProfile>> build(
-    String runId, {
+    String eventId, {
     Set<String> vibeIds = const {},
   }) async {
     final timeout = ref.watch(swipeQueueLoadTimeoutProvider);
@@ -64,7 +64,7 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
     final candidates = await _loadStep(
       ref
           .read(swipeCandidateRepositoryProvider)
-          .fetchCandidates(runId: runId, currentUser: currentUser),
+          .fetchCandidates(eventId: eventId, currentUser: currentUser),
       timeout,
     );
     if (vibeIds.isEmpty) return candidates;
@@ -107,7 +107,7 @@ class SwipeQueueNotifier extends _$SwipeQueueNotifier {
             swipe: Swipe(
               swiperId: currentUserId,
               targetId: target.uid,
-              runId: runId,
+              eventId: eventId,
               direction: direction,
               reactionTargetId: effectiveReactionTarget?.id,
               reactionTargetType: effectiveReactionTarget?.type,

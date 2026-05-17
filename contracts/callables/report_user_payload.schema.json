@@ -7,7 +7,7 @@
   "additionalProperties": false,
   "required": ["targetUserId"],
   "properties": {
-    "targetUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "targetUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "source": {"type": "string", "maxLength": 64},
     "reasonCode": {"type": "string", "maxLength": 64},
     "contextId": {"type": "string", "maxLength": 128},

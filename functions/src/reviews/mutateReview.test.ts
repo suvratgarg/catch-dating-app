@@ -3,9 +3,9 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {CallableRequest, HttpsError} from "firebase-functions/v2/https";
 import {
-  createRunReviewHandler,
-  deleteRunReviewHandler,
-  updateRunReviewHandler,
+  createEventReviewHandler,
+  deleteEventReviewHandler,
+  updateEventReviewHandler,
 } from "./mutateReview";
 
 type FakeData = Record<string, unknown>;
@@ -144,10 +144,10 @@ function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
       firstName: "Runner",
       displayName: "Runner",
     },
-    "runs/run-1": {runClubId: "club-1"},
-    "runParticipations/run-1_runner-1": {
-      runId: "run-1",
-      runClubId: "club-1",
+    "events/event-1": {clubId: "club-1"},
+    "eventParticipations/event-1_runner-1": {
+      eventId: "event-1",
+      clubId: "club-1",
       uid: "runner-1",
       status: "attended",
     },
@@ -155,41 +155,41 @@ function baseDocs(overrides: Record<string, FakeData | undefined> = {}) {
   };
 }
 
-test("createRunReviewHandler writes attended runner review", async () => {
+test("createEventReviewHandler writes attended attendee review", async () => {
   const h = harness(baseDocs());
 
-  const result = await createRunReviewHandler(
+  const result = await createEventReviewHandler(
     request("runner-1", {
-      runClubId: "club-1",
-      runId: "run-1",
+      clubId: "club-1",
+      eventId: "event-1",
       rating: 5,
-      comment: "  Great run.  ",
+      comment: "  Great event.  ",
     }),
     h.deps
   );
 
-  assert.deepEqual(result, {reviewId: "run-1~runner-1"});
-  assert.deepEqual(h.rateLimitCalls, ["runner-1:createRunReview"]);
-  const review = h.firestore.get("reviews/run-1~runner-1");
+  assert.deepEqual(result, {reviewId: "event-1~runner-1"});
+  assert.deepEqual(h.rateLimitCalls, ["runner-1:createEventReview"]);
+  const review = h.firestore.get("reviews/event-1~runner-1");
   assert.equal(review?.reviewerName, "Runner");
-  assert.equal(review?.comment, "Great run.");
+  assert.equal(review?.comment, "Great event.");
 });
 
-test("createRunReviewHandler rejects non-attendees", async () => {
+test("createEventReviewHandler rejects non-attendees", async () => {
   const h = harness(baseDocs({
-    "runParticipations/run-1_runner-1": {
-      runId: "run-1",
-      runClubId: "club-1",
+    "eventParticipations/event-1_runner-1": {
+      eventId: "event-1",
+      clubId: "club-1",
       uid: "runner-1",
       status: "signedUp",
     },
   }));
 
   await assert.rejects(
-    () => createRunReviewHandler(
+    () => createEventReviewHandler(
       request("runner-1", {
-        runClubId: "club-1",
-        runId: "run-1",
+        clubId: "club-1",
+        eventId: "event-1",
         rating: 5,
         comment: "Great.",
       }),
@@ -199,11 +199,11 @@ test("createRunReviewHandler rejects non-attendees", async () => {
   );
 });
 
-test("updateRunReviewHandler updates only author reviews", async () => {
+test("updateEventReviewHandler updates only author reviews", async () => {
   const h = harness(baseDocs({
-    "reviews/run-1~runner-1": {
-      runClubId: "club-1",
-      runId: "run-1",
+    "reviews/event-1~runner-1": {
+      clubId: "club-1",
+      eventId: "event-1",
       reviewerUserId: "runner-1",
       reviewerName: "Runner",
       rating: 3,
@@ -211,9 +211,9 @@ test("updateRunReviewHandler updates only author reviews", async () => {
     },
   }));
 
-  const result = await updateRunReviewHandler(
+  const result = await updateEventReviewHandler(
     request("runner-1", {
-      reviewId: "run-1~runner-1",
+      reviewId: "event-1~runner-1",
       rating: 4,
       comment: "Better.",
     }),
@@ -221,17 +221,17 @@ test("updateRunReviewHandler updates only author reviews", async () => {
   );
 
   assert.deepEqual(result, {updated: true});
-  assert.deepEqual(h.rateLimitCalls, ["runner-1:updateRunReview"]);
-  const review = h.firestore.get("reviews/run-1~runner-1");
+  assert.deepEqual(h.rateLimitCalls, ["runner-1:updateEventReview"]);
+  const review = h.firestore.get("reviews/event-1~runner-1");
   assert.equal(review?.rating, 4);
   assert.equal(review?.comment, "Better.");
 });
 
-test("deleteRunReviewHandler deletes only author reviews", async () => {
+test("deleteEventReviewHandler deletes only author reviews", async () => {
   const h = harness(baseDocs({
-    "reviews/run-1~runner-1": {
-      runClubId: "club-1",
-      runId: "run-1",
+    "reviews/event-1~runner-1": {
+      clubId: "club-1",
+      eventId: "event-1",
       reviewerUserId: "runner-1",
       reviewerName: "Runner",
       rating: 3,
@@ -239,12 +239,12 @@ test("deleteRunReviewHandler deletes only author reviews", async () => {
     },
   }));
 
-  const result = await deleteRunReviewHandler(
-    request("runner-1", {reviewId: "run-1~runner-1"}),
+  const result = await deleteEventReviewHandler(
+    request("runner-1", {reviewId: "event-1~runner-1"}),
     h.deps
   );
 
   assert.deepEqual(result, {deleted: true});
-  assert.deepEqual(h.rateLimitCalls, ["runner-1:deleteRunReview"]);
-  assert.equal(h.firestore.get("reviews/run-1~runner-1"), undefined);
+  assert.deepEqual(h.rateLimitCalls, ["runner-1:deleteEventReview"]);
+  assert.equal(h.firestore.get("reviews/event-1~runner-1"), undefined);
 });

@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/runs/domain/run_participation.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 class FakeSwipeRepository extends Fake implements SwipeRepository {
   @override
@@ -16,24 +16,24 @@ void main() {
   test(
     'normalizes invalid stored age preferences before filtering candidates',
     () async {
-      final run = buildRun(
-        id: 'run-open',
+      final event = buildEvent(
+        id: 'event-open',
         startTime: DateTime.now().subtract(const Duration(hours: 4)),
         endTime: DateTime.now().subtract(const Duration(hours: 3)),
       );
-      final runRepository = FakeRunRepository()..fetchedRun = run;
-      final runParticipationRepository = FakeRunParticipationRepository()
-        ..runParticipations[run.id] = [
-          buildRunParticipation(
-            run: run,
+      final eventRepository = FakeEventRepository()..fetchedEvent = event;
+      final eventParticipationRepository = FakeEventParticipationRepository()
+        ..eventParticipations[event.id] = [
+          buildEventParticipation(
+            event: event,
             uid: 'runner-1',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 1),
           ),
-          buildRunParticipation(
-            run: run,
+          buildEventParticipation(
+            event: event,
             uid: 'runner-2',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 2),
           ),
         ];
@@ -47,14 +47,14 @@ void main() {
           ),
         ];
       final repository = SwipeCandidateRepository(
-        runRepository,
-        runParticipationRepository,
+        eventRepository,
+        eventParticipationRepository,
         FakeSwipeRepository(),
         publicProfileRepository,
       );
 
       final results = await repository.fetchCandidates(
-        runId: 'run-open',
+        eventId: 'event-open',
         currentUser: buildUser(uid: 'runner-1').copyWith(
           minAgePreference: 40,
           maxAgePreference: 20,

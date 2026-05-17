@@ -129,7 +129,7 @@ class StrideCard extends StatelessWidget {
               ),
               gapW6,
               Text(
-                'km · ${summary.runCount} run${summary.runCount == 1 ? '' : 's'}',
+                'km · ${summary.runCount} event${summary.runCount == 1 ? '' : 's'}',
                 style: CatchTextStyles.bodyS(context),
               ),
             ],

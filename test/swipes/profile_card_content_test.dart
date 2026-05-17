@@ -5,7 +5,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 void main() {
   group('ProfileCardContent', () {
@@ -32,7 +32,7 @@ void main() {
           ).copyWith(
             profilePrompts: normalizeProfilePromptAnswers(
               const [],
-              legacyBio: '  Long runs and filter coffee.  ',
+              legacyBio: '  Long events and filter coffee.  ',
             ),
             photoPrompts: const [
               PhotoPromptAnswer(
@@ -68,7 +68,7 @@ void main() {
       );
       expect(
         content.profilePrompts.single.answer,
-        'Long runs and filter coffee.',
+        'Long events and filter coffee.',
       );
       expect(content.hasProfilePrompts, isTrue);
       expect(content.attributes.map((fact) => fact.text), [
@@ -103,7 +103,7 @@ void main() {
       final content = ProfileCardContent.fromProfile(
         profile,
         viewerProfile: viewer,
-        sharedRunTitle: 'Friday Evening Run',
+        sharedRunTitle: 'Friday Evening Event',
       );
 
       expect(
@@ -117,9 +117,9 @@ void main() {
       expect(
         content.insights.compatibilityReasons.map((reason) => reason.label),
         [
-          'You met at Friday Evening Run',
+          'You met at Friday Evening Event',
           'You both want new friends',
-          'You both run to make friends',
+          'You both event to make friends',
         ],
       );
     });

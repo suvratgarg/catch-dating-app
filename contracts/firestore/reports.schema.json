@@ -17,9 +17,9 @@
     "status"
   ],
   "properties": {
-    "reporterUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "targetUserId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
+    "reporterUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetUserId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
     "source": {"type": "string", "enum": ["profile", "chat", "match", "support"]},
     "status": {"type": "string", "enum": ["open", "reviewed", "dismissed"]},
     "reasonCode": {"type": "string", "minLength": 1, "maxLength": 80},

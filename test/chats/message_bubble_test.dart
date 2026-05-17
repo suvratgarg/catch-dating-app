@@ -13,7 +13,7 @@ void main() {
         theme: AppTheme.light,
         home: Scaffold(
           body: MessageBubble(
-            text: 'Morning run?',
+            text: 'Morning event?',
             isMe: true,
             sentAt: DateTime(2026, 4, 23, 9, 5),
           ),
@@ -21,7 +21,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Morning run?'), findsOneWidget);
+    expect(find.text('Morning event?'), findsOneWidget);
     expect(find.text('9:05 AM'), findsOneWidget);
   });
 
@@ -55,7 +55,7 @@ void main() {
                 ChatMessage(
                   id: 'msg-3',
                   senderId: 'runner-2',
-                  text: 'Coffee after the weekend run?',
+                  text: 'Coffee after the weekend event?',
                   sentAt: DateTime(2026, 5, 8, 15, 2),
                 ),
               ]),
@@ -78,7 +78,7 @@ void main() {
         .getBottomRight(find.text('2:55 PM'))
         .dy;
     final thirdMessageTop = tester
-        .getTopLeft(find.text('Coffee after the weekend run?'))
+        .getTopLeft(find.text('Coffee after the weekend event?'))
         .dy;
 
     expect(firstTimestampBottom, lessThan(secondMessageTop));

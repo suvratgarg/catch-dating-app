@@ -1,16 +1,16 @@
 {
-  "runScheduling": {
+  "eventScheduling": {
     "defaultDurationMinutes": 60,
     "minDurationMinutes": 30,
     "maxDurationMinutes": 240,
     "durationStepMinutes": 15,
     "scheduleLockSlotMinutes": 1
   },
-  "runAttendance": {
+  "eventAttendance": {
     "selfCheckInWindowBeforeMinutes": 10,
     "selfCheckInWindowAfterMinutes": 30,
     "selfCheckInMaxDistanceMeters": 200,
     "hostAttendanceWindowBeforeMinutes": 10,
-    "hostAttendanceWindowAfterRunHours": 6
+    "hostAttendanceWindowAfterEventHours": 6
   }
 }

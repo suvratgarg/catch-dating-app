@@ -15,7 +15,7 @@ void main() {
     tester,
   ) async {
     final router = GoRouter(
-      initialLocation: Routes.runClubsListScreen.path,
+      initialLocation: Routes.clubsListScreen.path,
       routes: [
         GoRoute(
           path: Routes.authScreen.path,
@@ -29,7 +29,7 @@ void main() {
               AppShell(navigationShell: navigationShell),
           branches: [
             _branch(Routes.dashboardScreen.path, 'Home'),
-            _branch(Routes.runClubsListScreen.path, 'Clubs'),
+            _branch(Routes.clubsListScreen.path, 'Clubs'),
             _branch(Routes.swipeHubScreen.path, 'Catches'),
             _branch(Routes.matchesListScreen.path, 'Chats'),
             _branch(Routes.profileScreen.path, 'Profile'),

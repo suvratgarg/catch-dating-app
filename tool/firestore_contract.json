@@ -68,7 +68,7 @@
         "preferredRunTimes",
         "prefsNewCatches",
         "prefsMessages",
-        "prefsRunReminders",
+        "prefsEventReminders",
         "prefsRunStatusUpdates",
         "prefsClubUpdates",
         "prefsWeeklyDigest",
@@ -140,7 +140,7 @@
             "preferredRunTimes",
             "prefsNewCatches",
             "prefsMessages",
-            "prefsRunReminders",
+            "prefsEventReminders",
             "prefsRunStatusUpdates",
             "prefsClubUpdates",
             "prefsWeeklyDigest",
@@ -199,7 +199,7 @@
             "preferredRunTimes",
             "prefsNewCatches",
             "prefsMessages",
-            "prefsRunReminders",
+            "prefsEventReminders",
             "prefsRunStatusUpdates",
             "prefsClubUpdates",
             "prefsWeeklyDigest",
@@ -226,8 +226,8 @@
         "Rules, Functions profile updates, and the generated Dart/TypeScript contract no longer allow new sexualOrientation writes.",
         "firstName and lastName are private identity fields initialized during onboarding; displayName is the editable public name written by the updateUserProfile callable.",
         "Legacy bio text now migrates into structured profilePrompts; new prompt text is stored in profilePrompts and optional photo captions are stored in photoPrompts.",
-        "Global notification category preferences live on users/{uid}; per-club push opt-in lives on runClubMemberships/{clubId_uid}.",
-        "Run-club membership and saved-run state live in edge collections, not profile arrays."
+        "Global notification category preferences live on users/{uid}; per-club push opt-in lives on clubMemberships/{clubId_uid}.",
+        "Event-club membership and saved-event state live in edge collections, not profile arrays."
       ]
     },
     {
@@ -323,15 +323,15 @@
       ]
     },
     {
-      "id": "runClubs",
-      "path": "runClubs/{clubId}",
-      "rulesMatch": "/runClubs/{clubId}",
-      "typescriptInterface": "RunClubDoc",
-      "dartModel": "lib/run_clubs/domain/run_club.dart",
+      "id": "clubs",
+      "path": "clubs/{clubId}",
+      "rulesMatch": "/clubs/{clubId}",
+      "typescriptInterface": "ClubDoc",
+      "dartModel": "lib/clubs/domain/club.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "run-club create/update/membership lifecycle is callable-owned; aggregate and next-run projections are trigger-owned",
+      "owner": "club create/update/membership lifecycle is callable-owned; aggregate and next-event projections are trigger-owned",
       "read": "public",
-      "write": "all run-club writes are callable-owned; direct client writes are denied",
+      "write": "all club writes are callable-owned; direct client writes are denied",
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -353,35 +353,35 @@
         "memberCount",
         "rating",
         "reviewCount",
-        "nextRunAt",
-        "nextRunLabel"
+        "nextEventAt",
+        "nextEventLabel"
       ],
       "exportedFunctions": [
-        "createRunClub",
-        "updateRunClub",
-        "joinRunClub",
-        "leaveRunClub",
-        "archiveRunClub",
-        "deleteRunClub",
-        "syncRunClubMemberStats",
-        "syncRunClubNextRun",
-        "syncRunClubReviewStats"
+        "createClub",
+        "updateClub",
+        "joinClub",
+        "leaveClub",
+        "archiveClub",
+        "deleteClub",
+        "syncClubMemberStats",
+        "syncClubNextEvent",
+        "syncClubReviewStats"
       ],
       "migrationNotes": [
-        "archiveRunClub marks clubs archived when history exists.",
-        "deleteRunClub hard-deletes only never-used clubs with no runs, payments, reviews, or non-host members.",
-        "memberCount is recomputed from active runClubMemberships by syncRunClubMemberStats.",
-        "nextRunAt and nextRunLabel are recomputed from active future runs by syncRunClubNextRun."
+        "archiveClub marks clubs archived when history exists.",
+        "deleteClub hard-deletes only never-used clubs with no events, payments, reviews, or non-host members.",
+        "memberCount is recomputed from active clubMemberships by syncClubMemberStats.",
+        "nextEventAt and nextEventLabel are recomputed from active future events by syncClubNextEvent."
       ]
     },
     {
-      "id": "runClubMemberships",
-      "path": "runClubMemberships/{membershipId}",
-      "rulesMatch": "/runClubMemberships/{membershipId}",
-      "typescriptInterface": "RunClubMembershipDoc",
-      "dartModel": "lib/run_clubs/domain/run_club_membership.dart",
+      "id": "clubMemberships",
+      "path": "clubMemberships/{membershipId}",
+      "rulesMatch": "/clubMemberships/{membershipId}",
+      "typescriptInterface": "ClubMembershipDoc",
+      "dartModel": "lib/clubs/domain/club_membership.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "run-club membership callables; syncRunClubMemberStats derives parent count",
+      "owner": "club membership callables; syncClubMemberStats derives parent count",
       "read": "active memberships visible to authenticated users; historical memberships visible to the member",
       "write": "server only",
       "internalDemoFields": [
@@ -403,24 +403,24 @@
         "deletedAt"
       ],
       "exportedFunctions": [
-        "createRunClub",
-        "joinRunClub",
-        "leaveRunClub",
-        "setRunClubNotificationPreference",
-        "syncRunClubMemberStats",
+        "createClub",
+        "joinClub",
+        "leaveClub",
+        "setClubNotificationPreference",
+        "syncClubMemberStats",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Owns run-club membership state; parent runClubs documents retain only memberCount as a trigger-recomputed aggregate.",
+        "Owns club membership state; parent clubs documents retain only memberCount as a trigger-recomputed aggregate.",
         "pushNotificationsEnabled is the per-club bell opt-in for FCM only; active membership still receives durable Activity updates."
       ]
     },
     {
-      "id": "runClubHostClaims",
-      "path": "runClubHostClaims/{uid}",
-      "rulesMatch": "/runClubHostClaims/{uid}",
+      "id": "clubHostClaims",
+      "path": "clubHostClaims/{uid}",
+      "rulesMatch": "/clubHostClaims/{uid}",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "createRunClub callable",
+      "owner": "createClub callable",
       "read": "server only",
       "write": "server only",
       "serverOwnedFields": [
@@ -429,23 +429,23 @@
         "createdAt"
       ],
       "exportedFunctions": [
-        "createRunClub"
+        "createClub"
       ],
       "migrationNotes": [
-        "One document per host UID enforces the product rule that a user can host at most one run club.",
+        "One document per host UID enforces the product rule that a user can host at most one club.",
         "Existing beta data should be backfilled with a host claim or reset before relying on this invariant in production."
       ]
     },
     {
-      "id": "runs",
-      "path": "runs/{runId}",
-      "rulesMatch": "/runs/{runId}",
-      "typescriptInterface": "RunDoc",
-      "dartModel": "lib/runs/domain/run.dart",
+      "id": "events",
+      "path": "events/{eventId}",
+      "rulesMatch": "/events/{eventId}",
+      "typescriptInterface": "EventDoc",
+      "dartModel": "lib/events/domain/event.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
-      "owner": "host creates and edits runs through callables; booking, attendance, waitlist joins, and gender counts are backend-owned",
+      "owner": "host creates and edits events through callables; booking, attendance, waitlist joins, and gender counts are backend-owned",
       "read": "public",
-      "write": "all run writes are callable-owned; direct client writes are denied",
+      "write": "all event writes are callable-owned; direct client writes are denied",
       "internalDemoFields": [
         "synthetic",
         "seedPrefix",
@@ -457,7 +457,7 @@
       "clientWritableFields": [],
       "clientRuntimeWritableFields": [],
       "callableOwnedFields": [
-        "runClubId",
+        "clubId",
         "startTime",
         "endTime",
         "meetingPoint",
@@ -480,15 +480,15 @@
         "genderCounts"
       ],
       "exportedFunctions": [
-        "createRun",
-        "updateRun",
-        "cancelRun",
-        "deleteRun",
-        "signUpForFreeRun",
-        "cancelRunSignUp",
-        "joinRunWaitlist",
-        "leaveRunWaitlist",
-        "markRunAttendance",
+        "createEvent",
+        "updateEvent",
+        "cancelEvent",
+        "deleteEvent",
+        "signUpForFreeEvent",
+        "cancelEventSignUp",
+        "joinEventWaitlist",
+        "leaveEventWaitlist",
+        "markEventAttendance",
         "selfCheckInAttendance",
         "verifyRazorpayPayment"
       ],
@@ -496,10 +496,10 @@
         {
           "id": "host_create",
           "type": "callable",
-          "owner": "run-club host",
-          "function": "createRun",
+          "owner": "club host",
+          "function": "createEvent",
           "allowedFields": [
-            "runClubId",
+            "clubId",
             "startTime",
             "endTime",
             "meetingPoint",
@@ -525,8 +525,8 @@
         {
           "id": "host_detail_update",
           "type": "callable",
-          "owner": "run-club host",
-          "function": "updateRun",
+          "owner": "club host",
+          "function": "updateEvent",
           "allowedFields": [
             "startTime",
             "endTime",
@@ -540,7 +540,7 @@
             "description"
           ],
           "deniedFields": [
-            "runClubId",
+            "clubId",
             "capacityLimit",
             "priceInPaise",
             "constraints",
@@ -553,16 +553,16 @@
             "cancellationReason"
           ],
           "rulesTestNames": [
-            "denies direct run creates because creation is callable-owned",
-            "denies direct host run detail edits because updates are callable-owned",
-            "denies hosts changing booking-sensitive or ownership run fields"
+            "denies direct event creates because creation is callable-owned",
+            "denies direct host event detail edits because updates are callable-owned",
+            "denies hosts changing booking-sensitive or ownership event fields"
           ]
         },
         {
           "id": "host_cancel",
           "type": "callable",
-          "owner": "run-club host",
-          "function": "cancelRun",
+          "owner": "club host",
+          "function": "cancelEvent",
           "allowedFields": [
             "status",
             "cancelledAt",
@@ -572,25 +572,25 @@
         {
           "id": "host_delete_unused",
           "type": "callable",
-          "owner": "run-club host",
-          "function": "deleteRun",
+          "owner": "club host",
+          "function": "deleteEvent",
           "allowedFields": [],
           "preconditions": [
-            "no runParticipations for runId",
-            "no payments for runId",
-            "no reviews for runId"
+            "no eventParticipations for eventId",
+            "no payments for eventId",
+            "no reviews for eventId"
           ]
         },
         {
           "id": "waitlist_self_leave",
           "type": "callable",
           "owner": "waitlisted authenticated user",
-          "function": "leaveRunWaitlist",
+          "function": "leaveEventWaitlist",
           "allowedFields": [
             "waitlistedCount"
           ],
           "rulesTestNames": [
-            "denies direct run aggregate rewrites because roster actions are callable-owned"
+            "denies direct event aggregate rewrites because roster actions are callable-owned"
           ]
         },
         {
@@ -607,7 +607,7 @@
       ],
       "embeddedTypes": [
         {
-          "typescriptInterface": "RunConstraints",
+          "typescriptInterface": "EventConstraints",
           "allFields": [
             "minAge",
             "maxAge",
@@ -617,19 +617,19 @@
         }
       ],
       "migrationNotes": [
-        "cancelRun handles runs with history.",
-        "deleteRun hard-deletes only unused hosted runs with no participations, payments, or reviews."
+        "cancelEvent handles events with history.",
+        "deleteEvent hard-deletes only unused hosted events with no participations, payments, or reviews."
       ]
     },
     {
-      "id": "runParticipations",
-      "path": "runParticipations/{participationId}",
-      "rulesMatch": "/runParticipations/{participationId}",
-      "typescriptInterface": "RunParticipationDoc",
-      "dartModel": "lib/runs/domain/run_participation.dart",
+      "id": "eventParticipations",
+      "path": "eventParticipations/{participationId}",
+      "rulesMatch": "/eventParticipations/{participationId}",
+      "typescriptInterface": "EventParticipationDoc",
+      "dartModel": "lib/events/domain/event_participation.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "booking, waitlist, attendance, cancellation, and account-deletion callables",
-      "read": "participant, run-club host, or authenticated users for attended edges",
+      "read": "participant, club host, or authenticated users for attended edges",
       "write": "server only",
       "internalDemoFields": [
         "synthetic",
@@ -640,8 +640,8 @@
         "demoOpsCommand"
       ],
       "callableOwnedFields": [
-        "runId",
-        "runClubId",
+        "eventId",
+        "clubId",
         "uid",
         "status",
         "createdAt",
@@ -655,24 +655,24 @@
         "paymentId"
       ],
       "exportedFunctions": [
-        "signUpForFreeRun",
+        "signUpForFreeEvent",
         "verifyRazorpayPayment",
-        "cancelRunSignUp",
-        "joinRunWaitlist",
-        "leaveRunWaitlist",
-        "markRunAttendance",
+        "cancelEventSignUp",
+        "joinEventWaitlist",
+        "leaveEventWaitlist",
+        "markEventAttendance",
         "selfCheckInAttendance",
         "requestAccountDeletion"
       ],
       "migrationNotes": [
-        "Owns signed-up, waitlisted, attended, cancelled, and deleted run roster state; runs documents retain only callable-owned aggregate counts."
+        "Owns signed-up, waitlisted, attended, cancelled, and deleted event roster state; events documents retain only callable-owned aggregate counts."
       ]
     },
     {
-      "id": "runClubScheduleLocks",
-      "path": "runClubScheduleLocks/{lockId}",
-      "rulesMatch": "/runClubScheduleLocks/{lockId}",
-      "owner": "run scheduling callables",
+      "id": "clubScheduleLocks",
+      "path": "clubScheduleLocks/{lockId}",
+      "rulesMatch": "/clubScheduleLocks/{lockId}",
+      "owner": "event scheduling callables",
       "read": "server/admin only",
       "write": "server only",
       "internalDemoFields": [
@@ -687,27 +687,27 @@
         "ownerType",
         "ownerId",
         "slot",
-        "runId",
-        "runClubId",
+        "eventId",
+        "clubId",
         "startTimeMillis",
         "endTimeMillis"
       ],
       "exportedFunctions": [
-        "createRun",
-        "updateRun",
-        "cancelRun",
-        "deleteRun"
+        "createEvent",
+        "updateEvent",
+        "cancelEvent",
+        "deleteEvent"
       ],
       "migrationNotes": [
-        "Server-owned minute-bucket lock documents prevent overlapping active runs for a run club.",
+        "Server-owned minute-bucket lock documents prevent overlapping active events for a club.",
         "Demo seeding writes these only when --include-schedule-locks is explicitly provided."
       ]
     },
     {
-      "id": "userRunScheduleLocks",
-      "path": "userRunScheduleLocks/{lockId}",
-      "rulesMatch": "/userRunScheduleLocks/{lockId}",
-      "owner": "run booking and waitlist callables",
+      "id": "userEventScheduleLocks",
+      "path": "userEventScheduleLocks/{lockId}",
+      "rulesMatch": "/userEventScheduleLocks/{lockId}",
+      "owner": "event booking and waitlist callables",
       "read": "server/admin only",
       "write": "server only",
       "internalDemoFields": [
@@ -722,30 +722,30 @@
         "ownerType",
         "ownerId",
         "slot",
-        "runId",
-        "runClubId",
+        "eventId",
+        "clubId",
         "uid",
         "startTimeMillis",
         "endTimeMillis"
       ],
       "exportedFunctions": [
-        "signUpForFreeRun",
+        "signUpForFreeEvent",
         "verifyRazorpayPayment",
-        "cancelRunSignUp",
-        "joinRunWaitlist",
-        "leaveRunWaitlist"
+        "cancelEventSignUp",
+        "joinEventWaitlist",
+        "leaveEventWaitlist"
       ],
       "migrationNotes": [
-        "Server-owned minute-bucket lock documents prevent users from signing up or waitlisting for overlapping runs.",
+        "Server-owned minute-bucket lock documents prevent users from signing up or waitlisting for overlapping events.",
         "Demo seeding writes these only when --include-schedule-locks is explicitly provided."
       ]
     },
     {
-      "id": "savedRuns",
-      "path": "savedRuns/{savedRunId}",
-      "rulesMatch": "/savedRuns/{savedRunId}",
-      "typescriptInterface": "SavedRunDoc",
-      "dartModel": "lib/runs/domain/saved_run.dart",
+      "id": "savedEvents",
+      "path": "savedEvents/{savedEventId}",
+      "rulesMatch": "/savedEvents/{savedEventId}",
+      "typescriptInterface": "SavedEventDoc",
+      "dartModel": "lib/events/domain/saved_event.dart",
       "rulesTestFile": "functions/test/firestore.rules.test.cjs",
       "owner": "authenticated owner",
       "read": "owner only",
@@ -760,7 +760,7 @@
       ],
       "clientWritableFields": [
         "uid",
-        "runId",
+        "eventId",
         "savedAt"
       ],
       "operations": [
@@ -770,7 +770,7 @@
           "owner": "authenticated owner",
           "allowedFields": [
             "uid",
-            "runId",
+            "eventId",
             "savedAt"
           ]
         },
@@ -781,7 +781,7 @@
         }
       ],
       "migrationNotes": [
-        "Owns saved-run state; users documents do not keep a saved-run projection. Current unsave is a hard delete."
+        "Owns saved-event state; users documents do not keep a saved-event projection. Current unsave is a hard delete."
       ]
     },
     {
@@ -805,7 +805,7 @@
         "userId",
         "orderId",
         "paymentId",
-        "runId",
+        "eventId",
         "amount",
         "currency",
         "status",
@@ -837,25 +837,25 @@
       ],
       "clientWritableFields": [],
       "exportedFunctions": [
-        "createRunReview",
-        "updateRunReview",
-        "deleteRunReview",
-        "syncRunClubReviewStats"
+        "createEventReview",
+        "updateEventReview",
+        "deleteEventReview",
+        "syncClubReviewStats"
       ],
       "operations": [
         {
           "id": "attended_run_review_create",
           "type": "callable",
-          "owner": "createRunReview",
-          "function": "createRunReview",
+          "owner": "createEventReview",
+          "function": "createEventReview",
           "allowedFields": [
-            "runClubId",
-            "runId",
+            "clubId",
+            "eventId",
             "rating",
             "comment"
           ],
           "pathDataFields": [
-            "runId",
+            "eventId",
             "reviewerUserId"
           ],
           "rulesMustContain": [
@@ -868,15 +868,15 @@
         {
           "id": "author_content_update",
           "type": "callable",
-          "owner": "updateRunReview",
-          "function": "updateRunReview",
+          "owner": "updateEventReview",
+          "function": "updateEventReview",
           "allowedFields": [
             "rating",
             "comment"
           ],
           "deniedFields": [
-            "runClubId",
-            "runId",
+            "clubId",
+            "eventId",
             "reviewerUserId",
             "reviewerName",
             "createdAt"
@@ -888,15 +888,15 @@
         {
           "id": "author_review_delete",
           "type": "callable",
-          "owner": "deleteRunReview",
-          "function": "deleteRunReview",
+          "owner": "deleteEventReview",
+          "function": "deleteEventReview",
           "rulesTestNames": [
             "denies direct review writes because reviews are callable-owned"
           ]
         }
       ],
       "migrationNotes": [
-        "Existing club-level/random-id reviews should be migrated or archived before enforcing this in production. The app should write run-scoped reviews through callables only."
+        "Existing club-level/random-id reviews should be migrated or archived before enforcing this in production. The app should write event-scoped reviews through callables only."
       ]
     },
     {
@@ -920,7 +920,7 @@
       "clientWritableFields": [
         "swiperId",
         "targetId",
-        "runId",
+        "eventId",
         "direction",
         "reactionTargetId",
         "reactionTargetType",
@@ -940,7 +940,7 @@
           "allowedFields": [
             "swiperId",
             "targetId",
-            "runId",
+            "eventId",
             "direction",
             "reactionTargetId",
             "reactionTargetType",
@@ -959,7 +959,7 @@
           "rulesTestNames": [
             "allows attended users to create valid outgoing swipes",
             "denies malformed swipe payloads",
-            "denies swipes outside the eligible run candidate relationship"
+            "denies swipes outside the eligible event candidate relationship"
           ]
         }
       ]
@@ -987,7 +987,7 @@
       "triggerOwnedFields": [
         "user1Id",
         "user2Id",
-        "runIds",
+        "eventIds",
         "createdAt",
         "lastMessageAt",
         "lastMessagePreview",
@@ -1059,23 +1059,23 @@
         "body",
         "createdAt",
         "matchId",
-        "runId",
-        "runClubId",
+        "eventId",
+        "clubId",
         "actorUid",
         "actorName"
       ],
       "exportedFunctions": [
         "onMatchCreated",
         "onMessageCreated",
-        "createRun",
-        "updateRun",
-        "cancelRun",
-        "signUpForFreeRun",
+        "createEvent",
+        "updateEvent",
+        "cancelEvent",
+        "signUpForFreeEvent",
         "verifyRazorpayPayment",
-        "cancelRunSignUp"
+        "cancelEventSignUp"
       ],
       "migrationNotes": [
-        "Durable Activity timeline source. Match/message triggers, create-run fan-out, host run update/cancellation, and booking/cancellation callables write it; run reminder producer remains queued."
+        "Durable Activity timeline source. Match/message triggers, create-event fan-out, host event update/cancellation, and booking/cancellation callables write it; event reminder producer remains queued."
       ]
     },
     {
@@ -1201,9 +1201,9 @@
       ]
     },
     {
-      "id": "seedRuns",
-      "path": "seedRuns/{manifestId}",
-      "rulesMatch": "/seedRuns/{manifestId}",
+      "id": "seedEvents",
+      "path": "seedEvents/{manifestId}",
+      "rulesMatch": "/seedEvents/{manifestId}",
       "owner": "demo data seeding tooling",
       "read": "server/admin only",
       "write": "server/admin only",

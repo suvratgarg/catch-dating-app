@@ -8,11 +8,11 @@ part 'activity_notification.g.dart';
 enum ActivityNotificationType {
   message,
   match,
-  runReminder,
-  runSignup,
+  eventReminder,
+  eventSignup,
   waitlistPromotion,
-  runCancelled,
-  runUpdated,
+  eventCancelled,
+  eventUpdated,
   clubUpdate,
 }
 
@@ -29,8 +29,8 @@ abstract class ActivityNotification with _$ActivityNotification {
     @TimestampConverter() required DateTime createdAt,
     @NullableTimestampConverter() DateTime? readAt,
     String? matchId,
-    String? runId,
-    String? runClubId,
+    String? eventId,
+    String? clubId,
     String? actorUid,
     String? actorName,
   }) = _ActivityNotification;

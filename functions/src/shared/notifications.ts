@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import {RunDoc} from "./firestore";
+import {EventDoc} from "./firestore";
 
 export interface FcmParams {
   token: string;
@@ -7,18 +7,18 @@ export interface FcmParams {
   body: string;
   type: string;
   matchId?: string;
-  runId?: string;
-  runClubId?: string;
+  eventId?: string;
+  clubId?: string;
 }
 
 export type ActivityNotificationType =
   | "message"
   | "match"
-  | "runReminder"
-  | "runSignup"
+  | "eventReminder"
+  | "eventSignup"
   | "waitlistPromotion"
-  | "runCancelled"
-  | "runUpdated"
+  | "eventCancelled"
+  | "eventUpdated"
   | "clubUpdate";
 
 interface ActivityNotificationParams {
@@ -29,8 +29,8 @@ interface ActivityNotificationParams {
   body: string;
   createdAt: FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue;
   matchId?: string;
-  runId?: string;
-  runClubId?: string;
+  eventId?: string;
+  clubId?: string;
   actorUid?: string;
   actorName?: string;
   demoOps?: boolean;
@@ -43,14 +43,14 @@ interface ActivityNotificationParams {
 export type NotificationPreference =
   | "matches"
   | "messages"
-  | "runReminders"
-  | "runStatusUpdates"
+  | "eventReminders"
+  | "eventStatusUpdates"
   | "clubUpdates";
 
 export interface NotificationPreferenceDoc {
   prefsNewCatches?: boolean;
   prefsMessages?: boolean;
-  prefsRunReminders?: boolean;
+  prefsEventReminders?: boolean;
   prefsRunStatusUpdates?: boolean;
   prefsClubUpdates?: boolean;
 }
@@ -75,9 +75,9 @@ export function allowsPushPreference(
     return user.prefsNewCatches !== false;
   case "messages":
     return user.prefsMessages !== false;
-  case "runReminders":
-    return user.prefsRunReminders !== false;
-  case "runStatusUpdates":
+  case "eventReminders":
+    return user.prefsEventReminders !== false;
+  case "eventStatusUpdates":
     return user.prefsRunStatusUpdates !== false;
   case "clubUpdates":
     return user.prefsClubUpdates !== false;
@@ -96,8 +96,8 @@ export async function sendFcmNotification(params: FcmParams): Promise<void> {
     data: compactStringMap({
       type: params.type,
       matchId: params.matchId,
-      runId: params.runId,
-      runClubId: params.runClubId,
+      eventId: params.eventId,
+      clubId: params.clubId,
     }),
     apns: {payload: {aps: {sound: "default"}}},
     android: {notification: {sound: "default"}},
@@ -175,47 +175,48 @@ export async function createActivityNotificationIfAbsent(
 }
 
 /**
- * Builds user-facing copy for run participation notifications.
+ * Builds user-facing copy for event participation notifications.
  * @param {ActivityNotificationType} type Notification type.
- * @param {RunDoc} run Run document that caused the notification.
+ * @param {EventDoc} event Event document that caused the notification.
  * @return {{title: string, body: string}} Title and body copy.
  */
-export function runActivityNotificationCopy(
+export function eventActivityNotificationCopy(
   type: ActivityNotificationType,
-  run: RunDoc
+  event: EventDoc
 ): {title: string; body: string} {
-  const runLabel = `${formatDistance(run.distanceKm)} run`;
+  const eventLabel = `${formatDistance(event.distanceKm)} event`;
   switch (type) {
-  case "runReminder":
+  case "eventReminder":
     return {
-      title: "Your run starts soon",
-      body: `Your ${runLabel} from ${run.meetingPoint} starts in about ` +
+      title: "Your event starts soon",
+      body: `Your ${eventLabel} from ${event.meetingPoint} starts in about ` +
         "15 minutes.",
     };
-  case "runSignup":
+  case "eventSignup":
     return {
       title: "You're booked",
-      body: `Your ${runLabel} from ${run.meetingPoint} is confirmed.`,
+      body: `Your ${eventLabel} from ${event.meetingPoint} is confirmed.`,
     };
   case "waitlistPromotion":
     return {
       title: "You're in",
-      body: `A spot opened for your ${runLabel} from ${run.meetingPoint}.`,
+      body: `A spot opened for your ${eventLabel} from ${event.meetingPoint}.`,
     };
-  case "runUpdated":
+  case "eventUpdated":
     return {
-      title: "Run details changed",
-      body: `Check the latest time and meeting point for your ${runLabel}.`,
+      title: "Event details changed",
+      body: `Check the latest time and meeting point for your ${eventLabel}.`,
     };
-  case "runCancelled":
+  case "eventCancelled":
     return {
-      title: "Run cancelled",
-      body: `Your ${runLabel} from ${run.meetingPoint} has been cancelled.`,
+      title: "Event cancelled",
+      body: `Your ${eventLabel} from ${event.meetingPoint} has been cancelled.`,
     };
   default:
     return {
-      title: "Run update",
-      body: `There is an update for your ${runLabel} from ${run.meetingPoint}.`,
+      title: "Event update",
+      body: `There is an update for your ${eventLabel} from ` +
+        `${event.meetingPoint}.`,
     };
   }
 }
@@ -251,8 +252,8 @@ function activityNotificationData(
     createdAt: params.createdAt,
     ...compactStringMap({
       matchId: params.matchId,
-      runId: params.runId,
-      runClubId: params.runClubId,
+      eventId: params.eventId,
+      clubId: params.clubId,
       actorUid: params.actorUid,
       actorName: params.actorName,
       demoOpsId: params.demoOpsId,

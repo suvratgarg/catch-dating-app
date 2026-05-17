@@ -26,7 +26,7 @@ class SchemaPhotoPromptDefinition {
   final String placeholder;
 }
 
-const schemaProfilePromptPerfectRunId = 'perfectRun';
+const schemaProfilePromptPerfectEventId = 'perfectRun';
 const schemaMaxProfilePromptAnswers = 3;
 const schemaMaxPhotoPromptCaptions = 6;
 const schemaMinimumProfilePhotos = 2;
@@ -61,20 +61,20 @@ const schemaProfileDecisionFutureOutgoingSubcollectionPath =
 
 const schemaDefaultProfilePromptIds = <String>[
   'perfectRun',
-  'afterRun',
+  'afterEvent',
   'greenFlag',
 ];
 
 const schemaProfilePromptCatalog = <SchemaProfilePromptDefinition>[
-  SchemaProfilePromptDefinition(id: 'perfectRun', title: 'A perfect run with me looks like...', placeholder: 'Tell runners what kind of run feels like you.',),
-  SchemaProfilePromptDefinition(id: 'afterRun', title: 'After a run, you can usually find me...', placeholder: 'Coffee, dosa, stretching, playlists...',),
+  SchemaProfilePromptDefinition(id: 'perfectRun', title: 'A perfect event with me looks like...', placeholder: 'Tell runners what kind of event feels like you.',),
+  SchemaProfilePromptDefinition(id: 'afterEvent', title: 'After an event, you can usually find me...', placeholder: 'Coffee, dosa, stretching, playlists...',),
   SchemaProfilePromptDefinition(id: 'greenFlag', title: 'My green flag is...', placeholder: 'Share something specific and easy to respond to.',),
   SchemaProfilePromptDefinition(id: 'getAlongIf', title: 'We\'ll get along if...', placeholder: 'Name the energy, habits, or humor you like.',),
   SchemaProfilePromptDefinition(id: 'favoriteRoute', title: 'My favorite running route has...', placeholder: 'Shade, chaos, hills, street food, sunrise...',),
 ];
 
 const schemaPhotoPromptCatalog = <SchemaPhotoPromptDefinition>[
-  SchemaPhotoPromptDefinition(id: 'proofIRun', title: 'Proof I actually run', placeholder: 'Add a caption for this running photo.',),
+  SchemaPhotoPromptDefinition(id: 'proofIRun', title: 'Proof I actually event', placeholder: 'Add a caption for this running photo.',),
   SchemaPhotoPromptDefinition(id: 'finishLine', title: 'After the finish line', placeholder: 'What was happening in this moment?',),
   SchemaPhotoPromptDefinition(id: 'notRunning', title: 'When I\'m not running', placeholder: 'Show another side of your life.',),
   SchemaPhotoPromptDefinition(id: 'favoritePeople', title: 'My favorite people know me as', placeholder: 'A small detail friends would recognize.',),
@@ -913,7 +913,7 @@ const schemaUpdateUserProfileCallablePayloadSchema =
         'prefsMessages': <String, Object?>{
           'type': 'boolean',
         },
-        'prefsRunReminders': <String, Object?>{
+        'prefsEventReminders': <String, Object?>{
           'type': 'boolean',
         },
         'prefsRunStatusUpdates': <String, Object?>{

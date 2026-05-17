@@ -22,15 +22,15 @@ import {
   validateProfilePromptAnswer,
   validatePublicProfileDocument,
   validateReviewDocument,
-  validateRunClubScheduleLockDocument,
-  validateRunClubDocument,
-  validateRunClubMembershipDocument,
-  validateRunDocument,
-  validateRunParticipationDocument,
-  validateSavedRunDocument,
-  validateSeedRunManifestDocument,
+  validateClubScheduleLockDocument,
+  validateClubDocument,
+  validateClubMembershipDocument,
+  validateEventDocument,
+  validateEventParticipationDocument,
+  validateSavedEventDocument,
+  validateSeedEventManifestDocument,
   validateSwipeDocument,
-  validateUserRunScheduleLockDocument,
+  validateUserEventScheduleLockDocument,
   validateUserProfileDocument,
 } from "./generated/schema_contract_validators.mjs";
 
@@ -68,7 +68,7 @@ const scenarios = {
     cities: ["mumbai", "bangalore", "indore"],
     usersPerCity: 4,
     clubsPerCity: 1,
-    runsPerClub: 5,
+    eventsPerClub: 5,
     anchorsPerRun: 2,
   },
   "beta-full": {
@@ -76,7 +76,7 @@ const scenarios = {
     cities: allCities,
     usersPerCity: 8,
     clubsPerCity: 2,
-    runsPerClub: 8,
+    eventsPerClub: 8,
     anchorsPerRun: 4,
   },
   "city-dense": {
@@ -84,7 +84,7 @@ const scenarios = {
     cities: ["mumbai"],
     usersPerCity: 36,
     clubsPerCity: 5,
-    runsPerClub: 8,
+    eventsPerClub: 8,
     anchorsPerRun: 5,
   },
   "empty-edge-cases": {
@@ -92,7 +92,7 @@ const scenarios = {
     cities: ["mumbai", "delhi", "bangalore", "indore"],
     usersPerCity: 4,
     clubsPerCity: 1,
-    runsPerClub: 7,
+    eventsPerClub: 7,
     anchorsPerRun: 1,
   },
   "paid-flow-demo": {
@@ -100,9 +100,9 @@ const scenarios = {
     cities: ["mumbai", "bangalore", "delhi", "indore"],
     usersPerCity: 6,
     clubsPerCity: 1,
-    runsPerClub: 6,
+    eventsPerClub: 6,
     anchorsPerRun: 3,
-    preferPaidRuns: true,
+    preferPaidEvents: true,
   },
 };
 
@@ -121,18 +121,18 @@ const occupations = [
   "Consultant", "Filmmaker", "Teacher",
 ];
 const companies = [
-  "Freelance", "Urban Loop", "Northstar", "Founders Office", "Studio Run",
+  "Freelance", "Urban Loop", "Northstar", "Founders Office", "Studio Event",
   "Cloudline", "Stride Labs", "Independent",
 ];
 const perfectRunAnswers = [
   "Easy kilometres, strong coffee, and plans that start on time.",
-  "Training for a faster 10K and always up for post-run breakfast.",
+  "Training for a faster 10K and always up for post-event breakfast.",
   "I like neighbourhood routes, clean playlists, and low-pressure chats.",
-  "Weekend long runs, weekday strength sessions, and new city corners.",
+  "Weekend long events, weekday strength sessions, and new city corners.",
   "Mostly here for good routes, kind people, and a reason to wake up early.",
   "Race curious, brunch serious, and happiest near a waterfront route.",
 ];
-const afterRunAnswers = [
+const afterEventAnswers = [
   "Ordering coffee before my watch has finished syncing.",
   "Looking for the best dosa within walking distance.",
   "Stretching badly and pretending that counts as recovery.",
@@ -152,7 +152,7 @@ const photoCaptions = [
   "Usually happier after kilometre three.",
   "The smile is real; the pace was suspicious.",
   "Proof that I occasionally leave the treadmill.",
-  "My favorite kind of post-run light.",
+  "My favorite kind of post-event light.",
   "Race day nerves, finish line energy.",
   "Not pictured: the snack I was thinking about.",
 ];
@@ -189,8 +189,8 @@ function profilePromptsForIndex(index) {
       perfectRunAnswers[index % perfectRunAnswers.length]
     ),
     profilePromptAnswer(
-      "afterRun",
-      afterRunAnswers[index % afterRunAnswers.length]
+      "afterEvent",
+      afterEventAnswers[index % afterEventAnswers.length]
     ),
     profilePromptAnswer(
       "greenFlag",
@@ -247,7 +247,7 @@ const meetingPointData = {
     {label: "Jubilee Hills check post", lat: 17.4326, lng: 78.4071, detail: "Meet near the check-post pavement before the hill route."},
   ],
   chennai: [
-    {label: "Besant Nagar beach police booth", lat: 12.9995, lng: 80.2668, detail: "Meet beside the beach police booth before the promenade run."},
+    {label: "Besant Nagar beach police booth", lat: 12.9995, lng: 80.2668, detail: "Meet beside the beach police booth before the promenade event."},
     {label: "Marina lighthouse entrance", lat: 13.0500, lng: 80.2824, detail: "Meet near the lighthouse entrance facing the service road."},
     {label: "Adyar theosophical gate", lat: 13.0067, lng: 80.2574, detail: "Meet outside the gate before the shaded loop."},
   ],
@@ -352,7 +352,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   if (!args.apply) {
     if (!args.json) {
-      console.log("\nDry run only. Re-run with --apply to write these documents.");
+      console.log("\nDry event only. Re-event with --apply to write these documents.");
     }
     return;
   }
@@ -374,7 +374,7 @@ export async function main(argv = process.argv.slice(2)) {
     return;
   }
   const writeReport = await applyWritePlan({db, docs: writePlan.docs});
-  await db.collection("seedRuns").doc(seed.manifestId).set(
+  await db.collection("seedEvents").doc(seed.manifestId).set(
     writePlan.manifest ?? seed.manifest
   );
 
@@ -383,7 +383,7 @@ export async function main(argv = process.argv.slice(2)) {
     console.log(`Reset source: ${resetReport.source}`);
     console.log(`Deleted docs: ${resetReport.deleted}`);
     console.log(`Written docs: ${writeReport.written}`);
-    console.log(`Manifest: seedRuns/${seed.manifestId}`);
+    console.log(`Manifest: seedEvents/${seed.manifestId}`);
   }
 }
 
@@ -415,7 +415,7 @@ function parseArgs(argv) {
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--include-schedule-locks") parsed.includeScheduleLocks = true;
     else if (arg === "--apply") parsed.apply = true;
-    else if (arg === "--dry-run") parsed.apply = false;
+    else if (arg === "--dry-event") parsed.apply = false;
     else if (arg === "--allow-prod") parsed.allowProd = true;
     else if (arg === "--reset-synthetic") parsed.resetSynthetic = true;
     else if (arg === "--delete-only") parsed.deleteOnly = true;
@@ -560,9 +560,9 @@ function buildSeed({
   const users = buildSyntheticUsers({scenario, seedPrefix, seedMarker});
   const clubs = [];
   const memberships = [];
-  const runs = [];
+  const events = [];
   const participations = [];
-  const savedRuns = [];
+  const savedEvents = [];
   const swipes = [];
   const matches = [];
   const messages = [];
@@ -587,8 +587,8 @@ function buildSeed({
         memberships.push(buildMembership({seedMarker, clubId: club.id, uid: member.uid, role: member.uid === host.uid ? "host" : "member", now}));
       }
 
-      for (let runIndex = 0; runIndex < scenario.runsPerClub; runIndex += 1) {
-        const run = buildRun({
+      for (let runIndex = 0; runIndex < scenario.eventsPerClub; runIndex += 1) {
+        const event = buildEvent({
           seedPrefix,
           seedMarker,
           city,
@@ -596,27 +596,27 @@ function buildSeed({
           runIndex,
           clubIndex,
           now,
-          preferPaid: scenario.preferPaidRuns,
+          preferPaid: scenario.preferPaidEvents,
         });
-        const roster = buildRoster({run, runIndex, clubMembers, anchorProfiles: cityAnchors});
-        applyRosterAggregates(run, roster);
-        runs.push(run);
+        const roster = buildRoster({event, runIndex, clubMembers, anchorProfiles: cityAnchors});
+        applyRosterAggregates(event, roster);
+        events.push(event);
         for (const rosterEntry of roster) {
-          participations.push(buildParticipation({seedMarker, run, entry: rosterEntry, now}));
+          participations.push(buildParticipation({seedMarker, event, entry: rosterEntry, now}));
           if (rosterEntry.paymentState) {
-            payments.push(buildPayment({seedPrefix, seedMarker, run, uid: rosterEntry.person.uid, state: rosterEntry.paymentState, now}));
+            payments.push(buildPayment({seedPrefix, seedMarker, event, uid: rosterEntry.person.uid, state: rosterEntry.paymentState, now}));
           }
         }
         for (const anchor of cityAnchors.slice(0, Math.min(2, cityAnchors.length))) {
           if (runIndex === 0 || runIndex === 1) {
-            savedRuns.push(buildSavedRun({seedMarker, uid: anchor.uid, runId: run.id, now}));
+            savedEvents.push(buildSavedEvent({seedMarker, uid: anchor.uid, eventId: event.id, now}));
           }
         }
-        if (run.kind === "pastOpen") {
+        if (event.kind === "pastOpen") {
           const relationshipDocs = buildSwipeMatchDocs({
             seedPrefix,
             seedMarker,
-            run,
+            event,
             roster,
             anchorProfiles,
             now,
@@ -626,20 +626,20 @@ function buildSeed({
           messages.push(...relationshipDocs.messages);
           notifications.push(...relationshipDocs.notifications);
         }
-        if (run.kind === "pastOld") {
-          reviews.push(...buildReviews({seedPrefix, seedMarker, club, run, roster, now}));
+        if (event.kind === "pastOld") {
+          reviews.push(...buildReviews({seedPrefix, seedMarker, club, event, roster, now}));
         }
       }
     }
   }
 
-  updateClubAggregates({clubs, memberships, reviews, runs});
-  notifications.push(...buildGeneralNotifications({seedMarker, anchorProfiles, clubs, runs, now}));
-  payments.push(...buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, runs, now}));
-  assertScheduleCompliance({runs, participations});
-  assertRunCoordinateQuality({runs});
+  updateClubAggregates({clubs, memberships, reviews, events});
+  notifications.push(...buildGeneralNotifications({seedMarker, anchorProfiles, clubs, events, now}));
+  payments.push(...buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, events, now}));
+  assertScheduleCompliance({events, participations});
+  assertRunCoordinateQuality({events});
   const scheduleLocks = includeScheduleLocks ?
-    buildScheduleLockDocs({runs, participations}) :
+    buildScheduleLockDocs({events, participations}) :
     [];
 
   const docs = [
@@ -647,12 +647,12 @@ function buildSeed({
       {path: `users/${user.uid}`, data: user.userDoc},
       {path: `publicProfiles/${user.uid}`, data: user.publicProfileDoc},
     ]),
-    ...clubs.map((club) => ({path: `runClubs/${club.id}`, data: club.doc})),
-    ...memberships.map((membership) => ({path: `runClubMemberships/${membership.id}`, data: membership.doc})),
-    ...runs.map((run) => ({path: `runs/${run.id}`, data: run.doc})),
-    ...participations.map((participation) => ({path: `runParticipations/${participation.id}`, data: participation.doc})),
+    ...clubs.map((club) => ({path: `clubs/${club.id}`, data: club.doc})),
+    ...memberships.map((membership) => ({path: `clubMemberships/${membership.id}`, data: membership.doc})),
+    ...events.map((event) => ({path: `events/${event.id}`, data: event.doc})),
+    ...participations.map((participation) => ({path: `eventParticipations/${participation.id}`, data: participation.doc})),
     ...scheduleLocks,
-    ...savedRuns.map((savedRun) => ({path: `savedRuns/${savedRun.id}`, data: savedRun.doc})),
+    ...savedEvents.map((savedEvent) => ({path: `savedEvents/${savedEvent.id}`, data: savedEvent.doc})),
     ...swipes.map((swipe) => ({path: `swipes/${swipe.swiperId}/outgoing/${swipe.targetId}`, data: swipe.doc})),
     ...matches.map((match) => ({path: `matches/${match.id}`, data: match.doc})),
     ...messages.map((message) => ({path: `matches/${message.matchId}/messages/${message.id}`, data: message.doc})),
@@ -722,7 +722,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         profileComplete: true,
         email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${index + 1}@example.test`,
         profilePrompts,
-        instagramHandle: `${firstName.toLowerCase()}runs${index + 1}`,
+        instagramHandle: `${firstName.toLowerCase()}events${index + 1}`,
         photoUrls: [photo],
         photoThumbnailUrls,
         photoPrompts,
@@ -757,7 +757,7 @@ function buildSyntheticUsers({scenario, seedPrefix, seedMarker}) {
         preferredRunTimes: [["morning"], ["evening"], ["earlyMorning"], ["morning", "evening"], ["afternoon"]][index % 5],
         prefsNewCatches: true,
         prefsMessages: true,
-        prefsRunReminders: true,
+        prefsEventReminders: true,
         prefsRunStatusUpdates: true,
         prefsClubUpdates: true,
         prefsWeeklyDigest: index % 3 === 0,
@@ -959,8 +959,8 @@ function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
     city,
     doc: {
       ...seedMarker,
-      name: `${area} Run Collective`,
-      description: `Social ${cityMeta.label} runs for easy kilometres, coffee stops, and reliable weekend training.`,
+      name: `${area} Event Collective`,
+      description: `Social ${cityMeta.label} events for easy kilometres, coffee stops, and reliable weekend training.`,
       location: city,
       area,
       hostUserId: host.uid,
@@ -972,9 +972,9 @@ function buildClub({seedPrefix, seedMarker, city, clubIndex, host}) {
       memberCount: 0,
       rating: 0,
       reviewCount: 0,
-      nextRunAt: null,
-      nextRunLabel: null,
-      instagramHandle: `${area.toLowerCase().replace(/\s+/g, "")}runs`,
+      nextEventAt: null,
+      nextEventLabel: null,
+      instagramHandle: `${area.toLowerCase().replace(/\s+/g, "")}events`,
       phoneNumber: `+918800${String(clubIndex + 1).padStart(6, "0")}`,
       email: `${area.toLowerCase().replace(/\s+/g, ".")}@catch.demo`,
       status: "active",
@@ -1002,7 +1002,7 @@ function buildMembership({seedMarker, clubId, uid, role, now}) {
   };
 }
 
-function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now, preferPaid}) {
+function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now, preferPaid}) {
   const cityMeta = cityData[city];
   const patterns = [
     {kind: "upcomingFree", offsetHours: 30, price: 0, capacity: 12, durationMinutes: 70},
@@ -1028,7 +1028,7 @@ function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now,
     priceInPaise: pattern.price,
     doc: {
       ...seedMarker,
-      runClubId: club.id,
+      clubId: club.id,
       startTime: admin.firestore.Timestamp.fromDate(start),
       endTime: admin.firestore.Timestamp.fromDate(end),
       meetingPoint: meetingPoint.label,
@@ -1038,7 +1038,7 @@ function buildRun({seedPrefix, seedMarker, city, club, runIndex, clubIndex, now,
       distanceKm: [3, 5, 7, 10, 12, 15][runIndex % 6],
       pace,
       capacityLimit: pattern.capacity,
-      description: `${cityMeta.label} ${pace} run with a seeded roster for end-to-end testing.`,
+      description: `${cityMeta.label} ${pace} event with a seeded roster for end-to-end testing.`,
       priceInPaise: pattern.price,
       bookedCount: 0,
       checkedInCount: 0,
@@ -1073,46 +1073,46 @@ function meetingPointForRun({city, clubIndex, runIndex}) {
   return points[(clubIndex + runIndex) % points.length];
 }
 
-function assertRunCoordinateQuality({runs}) {
+function assertRunCoordinateQuality({events}) {
   const issues = [];
-  for (const run of runs) {
-    if (run.doc.status === "cancelled") continue;
-    const lat = run.doc.startingPointLat;
-    const lng = run.doc.startingPointLng;
+  for (const event of events) {
+    if (event.doc.status === "cancelled") continue;
+    const lat = event.doc.startingPointLat;
+    const lng = event.doc.startingPointLng;
     if (typeof lat !== "number" || typeof lng !== "number") {
-      issues.push(`${run.id}: missing exact starting coordinates`);
+      issues.push(`${event.id}: missing exact starting coordinates`);
       continue;
     }
 
-    const knownPoint = (meetingPointData[run.city] ?? []).find(
-      (point) => point.label === run.doc.meetingPoint
+    const knownPoint = (meetingPointData[event.city] ?? []).find(
+      (point) => point.label === event.doc.meetingPoint
     );
     if (!knownPoint) {
-      issues.push(`${run.id}: meeting point is not in the curated venue catalog`);
+      issues.push(`${event.id}: meeting point is not in the curated venue catalog`);
       continue;
     }
     if (Math.abs(knownPoint.lat - lat) > 0.000001 ||
         Math.abs(knownPoint.lng - lng) > 0.000001) {
-      issues.push(`${run.id}: coordinates do not match curated venue catalog`);
+      issues.push(`${event.id}: coordinates do not match curated venue catalog`);
     }
   }
 
   if (issues.length > 0) {
     throw new Error(
-      "Demo run coordinates are not map/check-in ready:\n" +
+      "Demo event coordinates are not map/check-in ready:\n" +
         issues.map((issue) => `- ${issue}`).join("\n")
     );
   }
 }
 
-function buildRoster({run, runIndex, clubMembers, anchorProfiles}) {
-  if (run.kind === "cancelled") return [];
+function buildRoster({event, runIndex, clubMembers, anchorProfiles}) {
+  if (event.kind === "cancelled") return [];
   const members = uniqueByUid([...anchorProfiles, ...rotate(clubMembers, runIndex)]);
-  const signedCount = run.kind === "upcomingFull" || run.kind === "upcomingWaitlist" ?
-    run.doc.capacityLimit :
-    Math.min(run.doc.capacityLimit - 1, 6 + (runIndex % 4));
-  const attendedCount = run.kind === "pastOpen" || run.kind === "pastOld" ?
-    Math.min(run.doc.capacityLimit, Math.max(6, members.length)) :
+  const signedCount = event.kind === "upcomingFull" || event.kind === "upcomingWaitlist" ?
+    event.doc.capacityLimit :
+    Math.min(event.doc.capacityLimit - 1, 6 + (runIndex % 4));
+  const attendedCount = event.kind === "pastOpen" || event.kind === "pastOld" ?
+    Math.min(event.doc.capacityLimit, Math.max(6, members.length)) :
     0;
   const roster = [];
 
@@ -1127,45 +1127,45 @@ function buildRoster({run, runIndex, clubMembers, anchorProfiles}) {
     roster.push({
       person,
       status: "signedUp",
-      paymentState: run.priceInPaise > 0 ? "completed" : null,
+      paymentState: event.priceInPaise > 0 ? "completed" : null,
     });
   }
-  if (run.kind === "upcomingWaitlist") {
+  if (event.kind === "upcomingWaitlist") {
     for (const person of members.slice(signedCount, signedCount + 3)) {
       roster.push({person, status: "waitlisted"});
     }
   }
-  if (run.kind === "upcomingFree" && members[signedCount]) {
+  if (event.kind === "upcomingFree" && members[signedCount]) {
     roster.push({person: members[signedCount], status: "cancelled"});
   }
   return roster;
 }
 
-function applyRosterAggregates(run, roster) {
+function applyRosterAggregates(event, roster) {
   const booked = roster.filter((entry) => entry.status === "signedUp" || entry.status === "attended");
   const attended = roster.filter((entry) => entry.status === "attended");
   const waitlisted = roster.filter((entry) => entry.status === "waitlisted");
-  run.doc.bookedCount = booked.length;
-  run.doc.checkedInCount = attended.length;
-  run.doc.waitlistedCount = waitlisted.length;
-  run.doc.genderCounts = {};
+  event.doc.bookedCount = booked.length;
+  event.doc.checkedInCount = attended.length;
+  event.doc.waitlistedCount = waitlisted.length;
+  event.doc.genderCounts = {};
   for (const entry of booked) {
     const gender = entry.person.gender || "other";
-    run.doc.genderCounts[gender] = (run.doc.genderCounts[gender] ?? 0) + 1;
+    event.doc.genderCounts[gender] = (event.doc.genderCounts[gender] ?? 0) + 1;
   }
 }
 
-function buildParticipation({seedMarker, run, entry, now}) {
-  const createdAt = offsetDate(now, {days: -8, minutes: stableNumber(`${run.id}_${entry.person.uid}`, 180)});
+function buildParticipation({seedMarker, event, entry, now}) {
+  const createdAt = offsetDate(now, {days: -8, minutes: stableNumber(`${event.id}_${entry.person.uid}`, 180)});
   const statusTime = entry.status === "attended" ?
-    admin.firestore.Timestamp.fromDate(offsetDate(run.doc.endTime.toDate(), {minutes: 5})) :
+    admin.firestore.Timestamp.fromDate(offsetDate(event.doc.endTime.toDate(), {minutes: 5})) :
     null;
   return {
-    id: `${run.id}_${entry.person.uid}`,
+    id: `${event.id}_${entry.person.uid}`,
     doc: {
       ...seedMarker,
-      runId: run.id,
-      runClubId: run.clubId,
+      eventId: event.id,
+      clubId: event.clubId,
       uid: entry.person.uid,
       status: entry.status,
       createdAt: admin.firestore.Timestamp.fromDate(createdAt),
@@ -1182,24 +1182,24 @@ function buildParticipation({seedMarker, run, entry, now}) {
         null,
       deletedAt: null,
       genderAtSignup: entry.person.gender || "other",
-      paymentId: entry.paymentState ? paymentIdFor(run.id, entry.person.uid, entry.paymentState) : null,
+      paymentId: entry.paymentState ? paymentIdFor(event.id, entry.person.uid, entry.paymentState) : null,
     },
   };
 }
 
-function buildSavedRun({seedMarker, uid, runId, now}) {
+function buildSavedEvent({seedMarker, uid, eventId, now}) {
   return {
-    id: `${uid}_${runId}`,
+    id: `${uid}_${eventId}`,
     doc: {
       ...seedMarker,
       uid,
-      runId,
+      eventId,
       savedAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {hours: -6})),
     },
   };
 }
 
-function buildSwipeMatchDocs({seedPrefix, seedMarker, run, roster, anchorProfiles, now}) {
+function buildSwipeMatchDocs({seedPrefix, seedMarker, event, roster, anchorProfiles, now}) {
   const attendedPeople = roster.filter((entry) => entry.status === "attended").map((entry) => entry.person);
   const anchors = anchorProfiles.filter((anchor) => attendedPeople.some((person) => person.uid === anchor.uid));
   const syntheticTargets = attendedPeople.filter((person) => person.source === "synthetic");
@@ -1212,10 +1212,10 @@ function buildSwipeMatchDocs({seedPrefix, seedMarker, run, roster, anchorProfile
     const targets = rotate(syntheticTargets, anchorIndex).slice(0, 4);
     for (const [targetIndex, target] of targets.entries()) {
       const direction = targetIndex === 3 ? "pass" : "like";
-      swipes.push(swipeDoc({seedMarker, swiper: anchor, target, run, direction, now, offsetMinutes: targetIndex}));
+      swipes.push(swipeDoc({seedMarker, swiper: anchor, target, event, direction, now, offsetMinutes: targetIndex}));
       if (direction === "like" && targetIndex < 2) {
-        swipes.push(swipeDoc({seedMarker, swiper: target, target: anchor, run, direction: "like", now, offsetMinutes: targetIndex + 5}));
-        const match = matchDoc({seedMarker, userA: anchor, userB: target, run, now});
+        swipes.push(swipeDoc({seedMarker, swiper: target, target: anchor, event, direction: "like", now, offsetMinutes: targetIndex + 5}));
+        const match = matchDoc({seedMarker, userA: anchor, userB: target, event, now});
         matches.push(match);
         const builtMessages = buildMessages({seedPrefix, seedMarker, match, anchor, target, now});
         messages.push(...builtMessages);
@@ -1228,7 +1228,7 @@ function buildSwipeMatchDocs({seedPrefix, seedMarker, run, roster, anchorProfile
           body: `${target.displayName || target.firstName} liked you back.`,
           createdAt: offsetDate(now, {hours: -4, minutes: targetIndex}),
           matchId: match.id,
-          runId: run.id,
+          eventId: event.id,
           actorUid: target.uid,
           actorName: target.displayName || target.firstName,
         }));
@@ -1238,7 +1238,7 @@ function buildSwipeMatchDocs({seedPrefix, seedMarker, run, roster, anchorProfile
   return {swipes, matches, messages, notifications};
 }
 
-function swipeDoc({seedMarker, swiper, target, run, direction, now, offsetMinutes}) {
+function swipeDoc({seedMarker, swiper, target, event, direction, now, offsetMinutes}) {
   return {
     swiperId: swiper.uid,
     targetId: target.uid,
@@ -1246,14 +1246,14 @@ function swipeDoc({seedMarker, swiper, target, run, direction, now, offsetMinute
       ...seedMarker,
       swiperId: swiper.uid,
       targetId: target.uid,
-      runId: run.id,
+      eventId: event.id,
       direction,
       createdAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {hours: -3, minutes: offsetMinutes})),
     },
   };
 }
 
-function matchDoc({seedMarker, userA, userB, run, now}) {
+function matchDoc({seedMarker, userA, userB, event, now}) {
   const [user1Id, user2Id] = [userA.uid, userB.uid].sort();
   const id = `${user1Id}_${user2Id}`;
   return {
@@ -1264,7 +1264,7 @@ function matchDoc({seedMarker, userA, userB, run, now}) {
       ...seedMarker,
       user1Id,
       user2Id,
-      runIds: [run.id],
+      eventIds: [event.id],
       createdAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {hours: -3})),
       lastMessageAt: null,
       lastMessagePreview: null,
@@ -1282,7 +1282,7 @@ function buildMessages({seedPrefix, seedMarker, match, anchor, target, now}) {
   const snippets = [
     {sender: target, text: `That ${cityData[target.city]?.label ?? "city"} route was fun. Same pace next time?`},
     {sender: anchor, text: "Definitely. I liked the last 2 km push."},
-    {sender: target, text: "Coffee after the weekend run?"},
+    {sender: target, text: "Coffee after the weekend event?"},
   ].slice(0, MATCH_MESSAGE_LIMIT);
   return snippets.map((snippet, index) => {
     const id = `${seedPrefix}_msg_${match.id}_${String(index + 1).padStart(2, "0")}`;
@@ -1312,24 +1312,24 @@ function buildMessages({seedPrefix, seedMarker, match, anchor, target, now}) {
   });
 }
 
-function buildReviews({seedPrefix, seedMarker, club, run, roster, now}) {
+function buildReviews({seedPrefix, seedMarker, club, event, roster, now}) {
   return roster
     .filter((entry) => entry.status === "attended")
     .slice(0, 4)
     .map((entry, index) => {
-      const id = `${run.id}~${entry.person.uid}`;
+      const id = `${event.id}~${entry.person.uid}`;
       return {
         id,
         clubId: club.id,
         rating: 4 + (index % 2),
         doc: {
           ...seedMarker,
-          runClubId: club.id,
-          runId: run.id,
+          clubId: club.id,
+          eventId: event.id,
           reviewerUserId: entry.person.uid,
           reviewerName: entry.person.name || entry.person.displayName || "Runner",
           rating: 4 + (index % 2),
-          comment: "Well organized demo run with clear pacing and a friendly group.",
+          comment: "Well organized demo event with clear pacing and a friendly group.",
           createdAt: admin.firestore.Timestamp.fromDate(offsetDate(now, {days: -2, minutes: index})),
           updatedAt: null,
         },
@@ -1337,17 +1337,17 @@ function buildReviews({seedPrefix, seedMarker, club, run, roster, now}) {
     });
 }
 
-function buildPayment({seedPrefix, seedMarker, run, uid, state, now}) {
-  const id = paymentIdFor(run.id, uid, state);
+function buildPayment({seedPrefix, seedMarker, event, uid, state, now}) {
+  const id = paymentIdFor(event.id, uid, state);
   return {
     id,
     doc: {
       ...seedMarker,
       userId: uid,
-      orderId: `${seedPrefix}_order_${run.id}_${uid}`,
+      orderId: `${seedPrefix}_order_${event.id}_${uid}`,
       paymentId: id,
-      runId: run.id,
-      amount: run.priceInPaise || 29900,
+      eventId: event.id,
+      amount: event.priceInPaise || 29900,
       currency: "INR",
       status: state,
       signUpFailed: state === "failed",
@@ -1356,48 +1356,48 @@ function buildPayment({seedPrefix, seedMarker, run, uid, state, now}) {
   };
 }
 
-function buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, runs, now}) {
-  const paidRuns = runs.filter((run) => run.priceInPaise > 0);
+function buildPaymentHistoryEdges({seedPrefix, seedMarker, anchorProfiles, events, now}) {
+  const paidEvents = events.filter((event) => event.priceInPaise > 0);
   const result = [];
   for (const [index, anchor] of anchorProfiles.entries()) {
-    const run = paidRuns[index % paidRuns.length];
-    if (!run) continue;
-    result.push(buildPayment({seedPrefix, seedMarker, run, uid: anchor.uid, state: "refunded", now}));
-    result.push(buildPayment({seedPrefix, seedMarker, run, uid: anchor.uid, state: "failed", now}));
+    const event = paidEvents[index % paidEvents.length];
+    if (!event) continue;
+    result.push(buildPayment({seedPrefix, seedMarker, event, uid: anchor.uid, state: "refunded", now}));
+    result.push(buildPayment({seedPrefix, seedMarker, event, uid: anchor.uid, state: "failed", now}));
   }
   return result;
 }
 
-function buildGeneralNotifications({seedMarker, anchorProfiles, clubs, runs, now}) {
+function buildGeneralNotifications({seedMarker, anchorProfiles, clubs, events, now}) {
   const result = [];
-  const upcoming = runs.find((run) => run.kind === "upcomingFree") ?? runs[0];
-  const paid = runs.find((run) => run.kind === "upcomingPaid") ?? upcoming;
+  const upcoming = events.find((event) => event.kind === "upcomingFree") ?? events[0];
+  const paid = events.find((event) => event.kind === "upcomingPaid") ?? upcoming;
   const club = clubs[0];
   for (const anchor of anchorProfiles) {
     if (upcoming) {
       result.push(notificationDoc({
         seedMarker,
         uid: anchor.uid,
-        id: `runReminder_${upcoming.id}`,
-        type: "runReminder",
-        title: "Run coming up",
-        body: "Your demo run starts tomorrow morning.",
+        id: `eventReminder_${upcoming.id}`,
+        type: "eventReminder",
+        title: "Event coming up",
+        body: "Your demo event starts tomorrow morning.",
         createdAt: offsetDate(now, {hours: -1}),
-        runId: upcoming.id,
-        runClubId: upcoming.clubId,
+        eventId: upcoming.id,
+        clubId: upcoming.clubId,
       }));
     }
     if (paid) {
       result.push(notificationDoc({
         seedMarker,
         uid: anchor.uid,
-        id: `runSignup_${paid.id}`,
-        type: "runSignup",
+        id: `eventSignup_${paid.id}`,
+        type: "eventSignup",
         title: "Spot confirmed",
-        body: "Your paid demo run booking is confirmed.",
+        body: "Your paid demo event booking is confirmed.",
         createdAt: offsetDate(now, {hours: -5}),
-        runId: paid.id,
-        runClubId: paid.clubId,
+        eventId: paid.id,
+        clubId: paid.clubId,
         readAt: offsetDate(now, {hours: -4}),
       }));
     }
@@ -1408,9 +1408,9 @@ function buildGeneralNotifications({seedMarker, anchorProfiles, clubs, runs, now
         id: `clubUpdate_${club.id}`,
         type: "clubUpdate",
         title: `${club.doc.name} update`,
-        body: "New demo runs were added for this week.",
+        body: "New demo events were added for this week.",
         createdAt: offsetDate(now, {days: -1}),
-        runClubId: club.id,
+        clubId: club.id,
       }));
     }
   }
@@ -1427,8 +1427,8 @@ function notificationDoc({
   createdAt,
   readAt = null,
   matchId = null,
-  runId = null,
-  runClubId = null,
+  eventId = null,
+  clubId = null,
   actorUid = null,
   actorName = null,
 }) {
@@ -1444,36 +1444,36 @@ function notificationDoc({
       createdAt: admin.firestore.Timestamp.fromDate(createdAt),
       readAt: readAt ? admin.firestore.Timestamp.fromDate(readAt) : null,
       matchId,
-      runId,
-      runClubId,
+      eventId,
+      clubId,
       actorUid,
       actorName,
     },
   };
 }
 
-function updateClubAggregates({clubs, memberships, reviews, runs}) {
+function updateClubAggregates({clubs, memberships, reviews, events}) {
   const membersByClub = groupBy(memberships, (membership) => membership.doc.clubId);
   const reviewsByClub = groupBy(reviews, (review) => review.clubId);
   const upcomingByClub = groupBy(
-    runs
-      .filter((run) => run.doc.status === "active" && run.doc.startTime.toDate() > new Date())
+    events
+      .filter((event) => event.doc.status === "active" && event.doc.startTime.toDate() > new Date())
       .sort((a, b) => a.doc.startTime.toMillis() - b.doc.startTime.toMillis()),
-    (run) => run.clubId
+    (event) => event.clubId
   );
   for (const club of clubs) {
     const activeMembers = (membersByClub.get(club.id) ?? [])
       .filter((membership) => membership.doc.status === "active");
     const clubReviews = reviewsByClub.get(club.id) ?? [];
     const totalRating = clubReviews.reduce((sum, review) => sum + review.rating, 0);
-    const nextRun = upcomingByClub.get(club.id)?.[0];
+    const nextEvent = upcomingByClub.get(club.id)?.[0];
     club.doc.memberCount = activeMembers.length;
     club.doc.reviewCount = clubReviews.length;
     club.doc.rating = clubReviews.length > 0 ?
       Number((totalRating / clubReviews.length).toFixed(1)) :
       0;
-    club.doc.nextRunAt = nextRun?.doc.startTime ?? null;
-    club.doc.nextRunLabel = nextRun ? nextRun.doc.meetingPoint : null;
+    club.doc.nextEventAt = nextEvent?.doc.startTime ?? null;
+    club.doc.nextEventLabel = nextEvent ? nextEvent.doc.meetingPoint : null;
   }
 }
 
@@ -1489,13 +1489,13 @@ export function validateSeedDocuments(writePlan) {
   const result = {
     users: 0,
     publicProfiles: 0,
-    runClubs: 0,
-    runClubMemberships: 0,
-    runs: 0,
-    runParticipations: 0,
-    runClubScheduleLocks: 0,
-    userRunScheduleLocks: 0,
-    savedRuns: 0,
+    clubs: 0,
+    clubMemberships: 0,
+    events: 0,
+    eventParticipations: 0,
+    clubScheduleLocks: 0,
+    userEventScheduleLocks: 0,
+    savedEvents: 0,
     payments: 0,
     swipes: 0,
     matches: 0,
@@ -1539,55 +1539,55 @@ export function validateSeedDocuments(writePlan) {
         doc.path
       );
       result.publicProfiles += 1;
-    } else if (isRunClubPath(doc.path)) {
+    } else if (isClubPath(doc.path)) {
       assertValidSchemaPayload(
-        validateRunClubDocument,
+        validateClubDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.runClubs += 1;
-    } else if (isRunClubMembershipPath(doc.path)) {
+      result.clubs += 1;
+    } else if (isClubMembershipPath(doc.path)) {
       assertValidSchemaPayload(
-        validateRunClubMembershipDocument,
+        validateClubMembershipDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.runClubMemberships += 1;
+      result.clubMemberships += 1;
     } else if (isRunPath(doc.path)) {
       assertValidSchemaPayload(
-        validateRunDocument,
+        validateEventDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.runs += 1;
-    } else if (isRunParticipationPath(doc.path)) {
+      result.events += 1;
+    } else if (isEventParticipationPath(doc.path)) {
       assertValidSchemaPayload(
-        validateRunParticipationDocument,
+        validateEventParticipationDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.runParticipations += 1;
-    } else if (isRunClubScheduleLockPath(doc.path)) {
+      result.eventParticipations += 1;
+    } else if (isClubScheduleLockPath(doc.path)) {
       assertValidSchemaPayload(
-        validateRunClubScheduleLockDocument,
+        validateClubScheduleLockDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.runClubScheduleLocks += 1;
-    } else if (isUserRunScheduleLockPath(doc.path)) {
+      result.clubScheduleLocks += 1;
+    } else if (isUserEventScheduleLockPath(doc.path)) {
       assertValidSchemaPayload(
-        validateUserRunScheduleLockDocument,
+        validateUserEventScheduleLockDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.userRunScheduleLocks += 1;
-    } else if (isSavedRunPath(doc.path)) {
+      result.userEventScheduleLocks += 1;
+    } else if (isSavedEventPath(doc.path)) {
       assertValidSchemaPayload(
-        validateSavedRunDocument,
+        validateSavedEventDocument,
         schemaSerializableFirestoreData(doc.data),
         doc.path
       );
-      result.savedRuns += 1;
+      result.savedEvents += 1;
     } else if (isPaymentPath(doc.path)) {
       assertValidSchemaPayload(
         validatePaymentDocument,
@@ -1635,9 +1635,9 @@ export function validateSeedDocuments(writePlan) {
 
   if (writePlan.manifest) {
     assertValidSchemaPayload(
-      validateSeedRunManifestDocument,
+      validateSeedEventManifestDocument,
       schemaSerializableFirestoreData(writePlan.manifest),
-      `seedRuns/${writePlan.manifest.manifestId ?? "<unknown>"}`
+      `seedEvents/${writePlan.manifest.manifestId ?? "<unknown>"}`
     );
     result.seedManifests += 1;
   }
@@ -1723,32 +1723,32 @@ function isPublicProfilePath(docPath) {
   return /^publicProfiles\/[^/]+$/.test(docPath);
 }
 
-function isRunClubPath(docPath) {
-  return /^runClubs\/[^/]+$/.test(docPath);
+function isClubPath(docPath) {
+  return /^clubs\/[^/]+$/.test(docPath);
 }
 
-function isRunClubMembershipPath(docPath) {
-  return /^runClubMemberships\/[^/]+$/.test(docPath);
+function isClubMembershipPath(docPath) {
+  return /^clubMemberships\/[^/]+$/.test(docPath);
 }
 
 function isRunPath(docPath) {
-  return /^runs\/[^/]+$/.test(docPath);
+  return /^events\/[^/]+$/.test(docPath);
 }
 
-function isRunParticipationPath(docPath) {
-  return /^runParticipations\/[^/]+$/.test(docPath);
+function isEventParticipationPath(docPath) {
+  return /^eventParticipations\/[^/]+$/.test(docPath);
 }
 
-function isRunClubScheduleLockPath(docPath) {
-  return /^runClubScheduleLocks\/[^/]+$/.test(docPath);
+function isClubScheduleLockPath(docPath) {
+  return /^clubScheduleLocks\/[^/]+$/.test(docPath);
 }
 
-function isUserRunScheduleLockPath(docPath) {
-  return /^userRunScheduleLocks\/[^/]+$/.test(docPath);
+function isUserEventScheduleLockPath(docPath) {
+  return /^userEventScheduleLocks\/[^/]+$/.test(docPath);
 }
 
-function isSavedRunPath(docPath) {
-  return /^savedRuns\/[^/]+$/.test(docPath);
+function isSavedEventPath(docPath) {
+  return /^savedEvents\/[^/]+$/.test(docPath);
 }
 
 function isPaymentPath(docPath) {
@@ -1836,27 +1836,27 @@ function firstInteger(...values) {
 
 async function readExistingSeedTime(firestore, seedId) {
   const manifestId = seedId.replace(/[^A-Za-z0-9_-]/g, "_");
-  const snap = await firestore.collection("seedRuns").doc(manifestId).get();
+  const snap = await firestore.collection("seedEvents").doc(manifestId).get();
   if (!snap.exists) {
     throw new Error(
-      `--append-anchors requires an existing seedRuns/${manifestId} manifest. ` +
-      "Run a full seed first."
+      `--append-anchors requires an existing seedEvents/${manifestId} manifest. ` +
+      "Event a full seed first."
     );
   }
   const generatedAt = snap.data().generatedAt;
   if (!generatedAt || typeof generatedAt.toDate !== "function") {
-    throw new Error(`seedRuns/${manifestId} is missing generatedAt.`);
+    throw new Error(`seedEvents/${manifestId} is missing generatedAt.`);
   }
   return generatedAt.toDate();
 }
 
 async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
-  const manifestRef = firestore.collection("seedRuns").doc(seed.manifestId);
+  const manifestRef = firestore.collection("seedEvents").doc(seed.manifestId);
   const manifestSnap = await manifestRef.get();
   if (!manifestSnap.exists) {
     throw new Error(
       `--append-anchors requires an existing ${manifestRef.path} manifest. ` +
-      "Run a full seed first."
+      "Event a full seed first."
     );
   }
 
@@ -1938,16 +1938,16 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
 
 function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
   const parts = doc.path.split("/");
-  if (doc.path.startsWith("runClubMemberships/")) {
+  if (doc.path.startsWith("clubMemberships/")) {
     return newAnchorSet.has(doc.data.uid);
   }
-  if (doc.path.startsWith("runParticipations/")) {
+  if (doc.path.startsWith("eventParticipations/")) {
     return newAnchorSet.has(doc.data.uid);
   }
-  if (doc.path.startsWith("userRunScheduleLocks/")) {
+  if (doc.path.startsWith("userEventScheduleLocks/")) {
     return newAnchorSet.has(doc.data.uid);
   }
-  if (doc.path.startsWith("savedRuns/")) {
+  if (doc.path.startsWith("savedEvents/")) {
     return newAnchorSet.has(doc.data.uid);
   }
   if (doc.path.startsWith("payments/")) {
@@ -1971,27 +1971,27 @@ function isNewAnchorRelationshipDoc(doc, newAnchorSet, newAnchorMatchIds) {
 }
 
 async function filterAppendDocsForExistingTargets(firestore, docs) {
-  const runIds = new Set();
+  const eventIds = new Set();
   const clubIds = new Set();
 
   for (const doc of docs) {
-    collectString(doc.data.runId, runIds);
-    collectString(doc.data.runClubId, clubIds);
+    collectString(doc.data.eventId, eventIds);
     collectString(doc.data.clubId, clubIds);
-    if (Array.isArray(doc.data.runIds)) {
-      for (const runId of doc.data.runIds) collectString(runId, runIds);
+    collectString(doc.data.clubId, clubIds);
+    if (Array.isArray(doc.data.eventIds)) {
+      for (const eventId of doc.data.eventIds) collectString(eventId, eventIds);
     }
   }
 
-  const [existingRunIds, existingClubIds] = await Promise.all([
-    existingDocumentIds(firestore, "runs", runIds),
-    existingDocumentIds(firestore, "runClubs", clubIds),
+  const [existingEventIds, existingClubIds] = await Promise.all([
+    existingDocumentIds(firestore, "events", eventIds),
+    existingDocumentIds(firestore, "clubs", clubIds),
   ]);
 
   const skippedPaths = [];
   let kept = docs.filter((doc) => {
     const hasExistingTargets = docTargetsExist(doc, {
-      existingRunIds,
+      existingEventIds,
       existingClubIds,
     });
     if (!hasExistingTargets) skippedPaths.push(doc.path);
@@ -2027,13 +2027,13 @@ async function existingDocumentIds(firestore, collection, ids) {
   return existing;
 }
 
-function docTargetsExist(doc, {existingRunIds, existingClubIds}) {
-  if (!stringTargetExists(doc.data.runId, existingRunIds)) return false;
-  if (!stringTargetExists(doc.data.runClubId, existingClubIds)) return false;
+function docTargetsExist(doc, {existingEventIds, existingClubIds}) {
+  if (!stringTargetExists(doc.data.eventId, existingEventIds)) return false;
   if (!stringTargetExists(doc.data.clubId, existingClubIds)) return false;
-  if (Array.isArray(doc.data.runIds)) {
-    return doc.data.runIds.every((runId) =>
-      stringTargetExists(runId, existingRunIds)
+  if (!stringTargetExists(doc.data.clubId, existingClubIds)) return false;
+  if (Array.isArray(doc.data.eventIds)) {
+    return doc.data.eventIds.every((eventId) =>
+      stringTargetExists(eventId, existingEventIds)
     );
   }
   return true;
@@ -2053,25 +2053,25 @@ export async function normalizeAppendParticipationsForCapacity(firestore, docs) 
   const removedPaymentIds = new Set();
   const participationsByRun = groupBy(
     docs.filter((doc) =>
-      doc.path.startsWith("runParticipations/") &&
+      doc.path.startsWith("eventParticipations/") &&
       (doc.data.status === "signedUp" || doc.data.status === "attended")
     ),
-    (doc) => doc.data.runId
+    (doc) => doc.data.eventId
   );
 
-  for (const [runId, participationDocs] of participationsByRun.entries()) {
-    const runSnap = await firestore.collection("runs").doc(runId).get();
-    const run = runSnap.data();
-    if (!run || !Number.isInteger(run.capacityLimit)) continue;
+  for (const [eventId, participationDocs] of participationsByRun.entries()) {
+    const eventSnap = await firestore.collection("events").doc(eventId).get();
+    const event = eventSnap.data();
+    if (!event || !Number.isInteger(event.capacityLimit)) continue;
 
-    let bookedCount = Number.isInteger(run.bookedCount) ? run.bookedCount : 0;
+    let bookedCount = Number.isInteger(event.bookedCount) ? event.bookedCount : 0;
     for (const doc of participationDocs) {
-      if (doc.data.status === "attended" && isFutureRun(run)) {
+      if (doc.data.status === "attended" && isFutureRun(event)) {
         doc.data.status = "signedUp";
         doc.data.attendedAt = null;
       }
 
-      if (bookedCount < run.capacityLimit) {
+      if (bookedCount < event.capacityLimit) {
         bookedCount += 1;
         continue;
       }
@@ -2092,14 +2092,14 @@ export async function normalizeAppendParticipationsForCapacity(firestore, docs) 
   );
 }
 
-function isFutureRun(run, now = new Date()) {
-  return run.startTime?.toDate?.() > now;
+function isFutureRun(event, now = new Date()) {
+  return event.startTime?.toDate?.() > now;
 }
 
 export async function filterAppendDocsForValidRelationships(firestore, docs) {
   const participationCache = new Map();
   for (const doc of docs) {
-    if (!doc.path.startsWith("runParticipations/")) continue;
+    if (!doc.path.startsWith("eventParticipations/")) continue;
     participationCache.set(doc.path.split("/")[1], doc.data);
   }
 
@@ -2159,9 +2159,9 @@ export async function filterAppendDocsForValidRelationships(firestore, docs) {
 }
 
 async function hasValidSwipeAttendance({firestore, doc, participationCache}) {
-  const {runId, swiperId, targetId} = doc.data;
+  const {eventId, swiperId, targetId} = doc.data;
   if (
-    typeof runId !== "string" ||
+    typeof eventId !== "string" ||
     typeof swiperId !== "string" ||
     typeof targetId !== "string"
   ) {
@@ -2169,8 +2169,8 @@ async function hasValidSwipeAttendance({firestore, doc, participationCache}) {
   }
 
   const [swiperParticipation, targetParticipation] = await Promise.all([
-    effectiveParticipation({firestore, participationCache, runId, uid: swiperId}),
-    effectiveParticipation({firestore, participationCache, runId, uid: targetId}),
+    effectiveParticipation({firestore, participationCache, eventId, uid: swiperId}),
+    effectiveParticipation({firestore, participationCache, eventId, uid: targetId}),
   ]);
   return swiperParticipation?.status === "attended" &&
     targetParticipation?.status === "attended";
@@ -2179,12 +2179,12 @@ async function hasValidSwipeAttendance({firestore, doc, participationCache}) {
 async function effectiveParticipation({
   firestore,
   participationCache,
-  runId,
+  eventId,
   uid,
 }) {
-  const id = `${runId}_${uid}`;
+  const id = `${eventId}_${uid}`;
   if (participationCache.has(id)) return participationCache.get(id);
-  const snap = await firestore.collection("runParticipations").doc(id).get();
+  const snap = await firestore.collection("eventParticipations").doc(id).get();
   const data = snap.exists ? snap.data() : null;
   participationCache.set(id, data);
   return data;
@@ -2204,29 +2204,29 @@ function matchIdForSwipe(doc) {
 }
 
 function buildAppendAggregateUpdates(docs) {
-  const runUpdates = new Map();
+  const eventUpdates = new Map();
   const clubUpdates = new Map();
 
   for (const doc of docs) {
-    if (doc.path.startsWith("runClubMemberships/") &&
+    if (doc.path.startsWith("clubMemberships/") &&
         doc.data.status === "active") {
-      const clubUpdate = mapEntry(clubUpdates, `runClubs/${doc.data.clubId}`);
+      const clubUpdate = mapEntry(clubUpdates, `clubs/${doc.data.clubId}`);
       clubUpdate.memberCount = (clubUpdate.memberCount ?? 0) + 1;
     }
 
-    if (!doc.path.startsWith("runParticipations/")) continue;
-    const runUpdate = mapEntry(runUpdates, `runs/${doc.data.runId}`);
+    if (!doc.path.startsWith("eventParticipations/")) continue;
+    const eventUpdate = mapEntry(eventUpdates, `events/${doc.data.eventId}`);
     if (doc.data.status === "signedUp" || doc.data.status === "attended") {
-      runUpdate.bookedCount = (runUpdate.bookedCount ?? 0) + 1;
+      eventUpdate.bookedCount = (eventUpdate.bookedCount ?? 0) + 1;
       const gender = doc.data.genderAtSignup ?? "other";
       const genderKey = `genderCounts.${gender}`;
-      runUpdate[genderKey] = (runUpdate[genderKey] ?? 0) + 1;
+      eventUpdate[genderKey] = (eventUpdate[genderKey] ?? 0) + 1;
     }
     if (doc.data.status === "attended") {
-      runUpdate.checkedInCount = (runUpdate.checkedInCount ?? 0) + 1;
+      eventUpdate.checkedInCount = (eventUpdate.checkedInCount ?? 0) + 1;
     }
     if (doc.data.status === "waitlisted") {
-      runUpdate.waitlistedCount = (runUpdate.waitlistedCount ?? 0) + 1;
+      eventUpdate.waitlistedCount = (eventUpdate.waitlistedCount ?? 0) + 1;
     }
   }
 
@@ -2236,7 +2236,7 @@ function buildAppendAggregateUpdates(docs) {
       op: "update",
       data: incrementPatch(increments),
     })),
-    ...[...runUpdates.entries()].map(([docPath, increments]) => ({
+    ...[...eventUpdates.entries()].map(([docPath, increments]) => ({
       path: docPath,
       op: "update",
       data: incrementPatch(increments),
@@ -2259,7 +2259,7 @@ function incrementPatch(increments) {
 }
 
 async function resetSyntheticData({db: firestore, manifestId, seedPrefix, fallbackPaths}) {
-  const manifestRef = firestore.collection("seedRuns").doc(manifestId);
+  const manifestRef = firestore.collection("seedEvents").doc(manifestId);
   const manifestSnap = await manifestRef.get();
   const manifestPaths = manifestSnap.exists && Array.isArray(manifestSnap.data().paths) ?
     manifestSnap.data().paths :
@@ -2284,7 +2284,7 @@ async function resetSyntheticData({db: firestore, manifestId, seedPrefix, fallba
   }
   return {
     deleted,
-    source: manifestSnap.exists ? `seedRuns/${manifestId}` : "current generated plan",
+    source: manifestSnap.exists ? `seedEvents/${manifestId}` : "current generated plan",
   };
 }
 
@@ -2328,7 +2328,7 @@ function printSummary({
   if (args.emulatorHost) console.log(`Emulator: ${args.emulatorHost}`);
   console.log(`Scenario: ${args.scenario} - ${scenario.description}`);
   console.log(`Seed prefix: ${args.seedPrefix}`);
-  console.log(`Mode: ${args.apply ? "apply" : "dry-run"}`);
+  console.log(`Mode: ${args.apply ? "apply" : "dry-event"}`);
   if (args.deleteOnly) console.log("Delete only: yes");
   if (args.appendAnchors) {
     console.log("Append anchors: yes");
@@ -2347,9 +2347,9 @@ function printSummary({
   console.log(
     `Schema-validated docs: ${schemaValidation.users} users, ` +
     `${schemaValidation.publicProfiles} public profiles, ` +
-    `${schemaValidation.runClubs} run clubs, ` +
-    `${schemaValidation.runs} runs, ` +
-    `${schemaValidation.runParticipations} participations, ` +
+    `${schemaValidation.clubs} clubs, ` +
+    `${schemaValidation.events} events, ` +
+    `${schemaValidation.eventParticipations} participations, ` +
     `${schemaValidation.swipes} decisions, ` +
     `${schemaValidation.matches} matches`
   );
@@ -2358,7 +2358,7 @@ function printSummary({
       `Warning: ${identityDiagnostics.duplicateNamePhotoPairs} duplicate synthetic public name/photo pairs generated.`
     );
   }
-  console.log(`Manifest: seedRuns/${seed.manifestId}`);
+  console.log(`Manifest: seedEvents/${seed.manifestId}`);
 }
 
 function summary({
@@ -2389,7 +2389,7 @@ function summary({
     counts: seed.counts,
     schemaValidation,
     totalDocsToWrite: writePlan.docs.length,
-    manifestPath: `seedRuns/${seed.manifestId}`,
+    manifestPath: `seedEvents/${seed.manifestId}`,
   };
 }
 
@@ -2418,7 +2418,7 @@ Options:
   --anchor-users <uid,...>       Real TestFlight user UIDs to seed around.
   --anchor-phones <phone,...>    Resolve real users by users.phoneNumber.
   --anchor-file <path>           Newline file, or JSON with uids/users and phones.
-  --dry-run                      Print plan only. Default.
+  --dry-event                      Print plan only. Default.
   --apply                        Write documents.
   --reset-synthetic              Delete previous manifest docs before writing.
   --delete-only                  Delete previous manifest docs and exit. Requires
@@ -2427,7 +2427,7 @@ Options:
                                  seed manifest without recreating old anchors.
   --include-schedule-locks       Also write denormalized schedule lock docs.
                                  Usually unnecessary for demo worlds because
-                                 Functions query canonical run/participation docs.
+                                 Functions query canonical event/participation docs.
   --allow-prod                   Required when writing to the prod Firebase project.
   --emulator                     Use FIRESTORE_EMULATOR_HOST=127.0.0.1:8080.
   --emulator-host <host:port>    Use a custom Firestore emulator host.
@@ -2590,6 +2590,6 @@ function stableNumber(value, mod) {
   return Math.abs(hash) % mod;
 }
 
-function paymentIdFor(runId, uid, state) {
-  return `${runId}_${uid}_${state}`;
+function paymentIdFor(eventId, uid, state) {
+  return `${eventId}_${uid}_${state}`;
 }

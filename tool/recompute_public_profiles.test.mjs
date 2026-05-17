@@ -142,7 +142,7 @@ function validPublicProfile({name, age}) {
     gender: "woman",
     profilePrompts: [{
       promptId: "perfectRun",
-      prompt: "A perfect run with me looks like...",
+      prompt: "A perfect event with me looks like...",
       answer: "Easy kilometres.",
     }],
     photoUrls: ["https://example.test/full.jpg"],
@@ -150,7 +150,7 @@ function validPublicProfile({name, age}) {
     photoPrompts: [{
       photoIndex: 0,
       promptId: "proofIRun",
-      prompt: "Proof I actually run",
+      prompt: "Proof I actually event",
       caption: "Race morning.",
     }],
     paceMinSecsPerKm: 300,

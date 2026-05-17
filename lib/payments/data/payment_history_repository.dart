@@ -55,15 +55,15 @@ class PaymentHistoryRepository {
         ),
       );
 
-  /// Returns the payment record for a specific run, if any.
-  Future<Payment?> fetchPaymentForRun({
+  /// Returns the payment record for a specific event, if any.
+  Future<Payment?> fetchPaymentForEvent({
     required String userId,
-    required String runId,
+    required String eventId,
   }) => withBackendErrorContext(
     () async {
       final snap = await _paymentsRef
           .where('userId', isEqualTo: userId)
-          .where('runId', isEqualTo: runId)
+          .where('eventId', isEqualTo: eventId)
           .where('status', isEqualTo: PaymentStatus.completed.name)
           .limit(10)
           .get();
@@ -71,7 +71,7 @@ class PaymentHistoryRepository {
     },
     context: const BackendErrorContext(
       service: BackendService.firestore,
-      action: 'fetch run payment',
+      action: 'fetch event payment',
       resource: _collectionPath,
     ),
   );

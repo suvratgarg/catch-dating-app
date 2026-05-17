@@ -19,11 +19,11 @@
     "demoOpsId",
     "demoOpsCommand"
   ],
-  "required": ["swiperId", "targetId", "runId", "direction", "createdAt"],
+  "required": ["swiperId", "targetId", "eventId", "direction", "createdAt"],
   "properties": {
-    "swiperId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "targetId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
-    "runId": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "swiperId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "targetId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "direction": {"type": "string", "enum": ["like", "pass"]},
     "reactionTargetId": {"type": ["string", "null"], "minLength": 1, "maxLength": 80},
     "reactionTargetType": {
@@ -42,12 +42,12 @@
     "reactionTargetLabel": {"type": ["string", "null"], "maxLength": 80},
     "reactionTargetPreview": {"type": ["string", "null"], "maxLength": 240},
     "comment": {"type": ["string", "null"], "maxLength": 240},
-    "createdAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"},
-    "synthetic": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/synthetic"},
-    "seedPrefix": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
-    "scenario": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/scenario"},
-    "demoOps": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOps"},
-    "demoOpsId": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
-    "demoOpsCommand": {"$ref": "../shared/run_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+    "createdAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
   }
 }

@@ -6,13 +6,13 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
 import 'package:catch_dating_app/reviews/presentation/write_review_sheet.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/run_formatters.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +32,7 @@ class ReviewsHistoryScreen extends ConsumerWidget {
       body: switch ((uid, userAsync)) {
         (null, _) => const _ReviewsHistoryEmpty(
           title: 'Sign in to see reviews',
-          message: 'Your past run reviews will appear here.',
+          message: 'Your past event reviews will appear here.',
         ),
         (final String uid, AsyncData(value: final user?)) =>
           _ReviewsHistoryList(uid: uid, user: user),
@@ -68,7 +68,7 @@ class _ReviewsHistoryList extends ConsumerWidget {
         if (reviews.isEmpty) {
           return const _ReviewsHistoryEmpty(
             title: 'No reviews yet',
-            message: 'After you review a completed run, it will appear here.',
+            message: 'After you review a completed event, it will appear here.',
           );
         }
 
@@ -98,27 +98,29 @@ class _ReviewHistoryItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final t = CatchTokens.of(context);
-    final runId = review.runId;
-    final runAsync = runId == null ? null : ref.watch(watchRunProvider(runId));
-    final run = runAsync?.asData?.value;
+    final eventId = review.eventId;
+    final eventAsync = eventId == null
+        ? null
+        : ref.watch(watchEventProvider(eventId));
+    final event = eventAsync?.asData?.value;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          _reviewContextLabel(run, runId),
+          _reviewContextLabel(event, eventId),
           style: CatchTextStyles.labelS(context, color: t.ink2),
         ),
         gapH8,
         ReviewCard(
           review: review,
           isOwn: true,
-          onEdit: runId == null
+          onEdit: eventId == null
               ? null
               : () => showWriteReviewSheet(
                   context: context,
-                  runClubId: review.runClubId,
-                  runId: runId,
+                  clubId: review.clubId,
+                  eventId: eventId,
                   reviewer: user,
                   existingReview: review,
                 ),
@@ -127,9 +129,11 @@ class _ReviewHistoryItem extends ConsumerWidget {
     );
   }
 
-  String _reviewContextLabel(Run? run, String? runId) {
-    if (run != null) return '${run.longDateLabel} · ${run.timeRangeLabel}';
-    if (runId != null) return 'Run review';
+  String _reviewContextLabel(Event? event, String? eventId) {
+    if (event != null) {
+      return '${event.longDateLabel} · ${event.timeRangeLabel}';
+    }
+    if (eventId != null) return 'Event review';
     return 'Legacy club review';
   }
 }

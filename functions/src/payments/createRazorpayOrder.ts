@@ -5,7 +5,7 @@ import {
 } from "firebase-functions/v2/https";
 import * as admin from "firebase-admin";
 import Razorpay from "razorpay";
-import {RunDoc, UserProfileDoc} from "../shared/firestore";
+import {EventDoc, UserProfileDoc} from "../shared/firestore";
 import {buildOrderCreatePayload} from "./paymentValidation";
 import {
   createRazorpayClient,
@@ -16,21 +16,23 @@ import {hasBlockingRelationship} from "../safety/blocking";
 import {appCheckCallableOptionsWithSecrets} from "../shared/callableOptions";
 import {checkRateLimit} from "../shared/rateLimit";
 import {requireAuth} from "../shared/auth";
-import {RunIdCallablePayload} from "../shared/generated/runIdCallablePayload";
-import {validateRunIdCallablePayload} from
+import {
+  EventIdCallablePayload,
+} from "../shared/generated/eventIdCallablePayload";
+import {validateEventIdCallablePayload} from
   "../shared/generated/schemaValidators";
 import {normalizeSingleIdPayload} from
   "../shared/callablePayloadNormalization";
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
-import {runParticipationId} from "../shared/relationshipDocuments";
-import {assertNoUserRunScheduleConflict} from "../runs/scheduleConflicts";
+import {eventParticipationId} from "../shared/relationshipDocuments";
+import {assertNoUserEventScheduleConflict} from "../events/scheduleConflicts";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
-  eventPolicyFromRun,
+  eventPolicyFromEvent,
   quotePriceInPaise,
-  rosterFromRun,
-} from "../runs/eventPolicy";
+  rosterFromEvent,
+} from "../events/eventPolicy";
 
 interface CreateRazorpayOrderDeps {
   createClient: () => Razorpay;
@@ -45,7 +47,7 @@ const defaultDeps: CreateRazorpayOrderDeps = {
 };
 
 /**
- * Creates a Razorpay order from trusted Firestore run data.
+ * Creates a Razorpay order from trusted Firestore event data.
  * @param {CallableRequest<Partial<CreateOrderData> | null>} request Callable.
  * @param {CreateRazorpayOrderDeps} deps Injectable service dependencies.
  * @return {Promise<{orderId: string, amount: number, currency: string}>} Order.
@@ -55,34 +57,34 @@ export async function createRazorpayOrderHandler(
   deps: CreateRazorpayOrderDeps = defaultDeps
 ) {
   const uid = requireAuth(request);
-  const {runId} = validateCallableWithAjv<RunIdCallablePayload>(
+  const {eventId} = validateCallableWithAjv<EventIdCallablePayload>(
     request,
-    validateRunIdCallablePayload,
-    normalizeSingleIdPayload("runId")
+    validateEventIdCallablePayload,
+    normalizeSingleIdPayload("eventId")
   );
 
   const db = deps.firestore();
-  const [runSnap, userSnap, participationSnap, activeParticipationsSnap] =
+  const [eventSnap, userSnap, participationSnap, activeParticipationsSnap] =
     await Promise.all([
-      db.collection("runs").doc(runId).get(),
+      db.collection("events").doc(eventId).get(),
       db.collection("users").doc(uid).get(),
-      db.collection("runParticipations")
-        .doc(runParticipationId(runId, uid))
+      db.collection("eventParticipations")
+        .doc(eventParticipationId(eventId, uid))
         .get(),
-      db.collection("runParticipations")
-        .where("runId", "==", runId)
+      db.collection("eventParticipations")
+        .where("eventId", "==", eventId)
         .where("status", "in", ["signedUp", "attended"])
         .get(),
     ]);
 
-  if (!runSnap.exists) {
-    throw new HttpsError("not-found", "Run not found.");
+  if (!eventSnap.exists) {
+    throw new HttpsError("not-found", "Event not found.");
   }
   if (!userSnap.exists) {
     throw new HttpsError("not-found", "User profile not found.");
   }
 
-  const run = requireDoc<RunDoc>(runSnap, "RunDoc");
+  const event = requireDoc<EventDoc>(eventSnap, "EventDoc");
   const user = requireDoc<UserProfileDoc>(userSnap, "UserProfileDoc");
   const participation = participationSnap.exists ?
     participationSnap.data() as {status?: string} :
@@ -92,50 +94,50 @@ export async function createRazorpayOrderHandler(
     .filter((participantUid) => typeof participantUid === "string");
 
   // Pre-flight capacity check; the real atomic check happens in
-  // signUpUserForRun.
+  // signUpUserForEvent.
   if (
     participation?.status === "signedUp" ||
     participation?.status === "attended"
   ) {
     throw new HttpsError(
       "already-exists",
-      "You are already booked for this run."
+      "You are already booked for this event."
     );
   }
 
   const signedUpCount = activeParticipationsSnap.docs
     .filter((doc) => doc.data().status === "signedUp")
     .length;
-  if ((run.bookedCount ?? signedUpCount) >= run.capacityLimit) {
+  if ((event.bookedCount ?? signedUpCount) >= event.capacityLimit) {
     throw new HttpsError(
       "failed-precondition",
-      "This run is full. You can join the waitlist instead."
+      "This event is full. You can join the waitlist instead."
     );
   }
 
-  await assertNoUserRunScheduleConflict(db, {
+  await assertNoUserEventScheduleConflict(db, {
     uid,
-    runId,
-    runClubId: run.runClubId,
-    startTimeMillis: run.startTime.toMillis(),
-    endTimeMillis: run.endTime.toMillis(),
+    eventId,
+    clubId: event.clubId,
+    startTimeMillis: event.startTime.toMillis(),
+    endTimeMillis: event.endTime.toMillis(),
   });
 
   if (await hasBlockingRelationship(db, uid, activeParticipantIds)) {
     throw new HttpsError(
       "failed-precondition",
-      "This run is unavailable."
+      "This event is unavailable."
     );
   }
 
-  const policy = eventPolicyFromRun(run);
+  const policy = eventPolicyFromEvent(event);
   const cohortId = cohortIdForUser(user);
   assertPolicyAllowsSignup({
     policy,
     cohortId,
     roster: {
-      ...rosterFromRun(run),
-      totalBooked: run.bookedCount ?? signedUpCount,
+      ...rosterFromEvent(event),
+      totalBooked: event.bookedCount ?? signedUpCount,
     },
   });
 
@@ -143,12 +145,12 @@ export async function createRazorpayOrderHandler(
   const amountInPaise = quotePriceInPaise({
     policy,
     cohortId,
-    roster: rosterFromRun(run),
+    roster: rosterFromEvent(event),
   });
   const order = await razorpay.orders.create(
     buildOrderCreatePayload({
-      runId,
-      run,
+      eventId,
+      event,
       userId: uid,
       receiptToken: deps.now(),
       amountInPaise,

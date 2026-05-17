@@ -1,13 +1,13 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  buildCheckInRunPlan,
+  buildCheckInEventPlan,
   buildDemoChecklist,
   buildLaunchCleanupPlan,
   buildMarkAttendedPlan,
   buildMatchPhonePlan,
   buildResetUserDemoStatePlan,
-  buildStaleRunCleanupPlan,
+  buildStaleEventCleanupPlan,
   buildValidateDemoStateReport,
   buildWarmUserPlan,
   isDemoOwned,
@@ -48,9 +48,9 @@ test("buildMatchPhonePlan creates a deterministic direct demo match", async () =
       uid_a: {name: "Asha"},
       uid_b: {name: "Ben"},
     },
-    runParticipations: {
-      run_1_uid_a: {uid: "uid_a", runId: "run_1", status: "attended"},
-      run_1_uid_b: {uid: "uid_b", runId: "run_1", status: "attended"},
+    eventParticipations: {
+      run_1_uid_a: {uid: "uid_a", eventId: "run_1", status: "attended"},
+      run_1_uid_b: {uid: "uid_b", eventId: "run_1", status: "attended"},
     },
   });
 
@@ -63,7 +63,7 @@ test("buildMatchPhonePlan creates a deterministic direct demo match", async () =
   });
 
   assert.equal(plan.matchId, "uid_a_uid_b");
-  assert.equal(plan.runId, "run_1");
+  assert.equal(plan.eventId, "run_1");
   const matchDoc = plan.docs.find((doc) => doc.path === "matches/uid_a_uid_b");
   assert.equal(matchDoc.data.status, "active");
   assert.equal(matchDoc.data.demoOpsEntityType, "matchThread");
@@ -82,9 +82,9 @@ test("buildMatchPhonePlan creates starter messages only when requested", async (
       uid_a: {name: "Asha"},
       uid_b: {name: "Ben"},
     },
-    runParticipations: {
-      run_1_uid_a: {uid: "uid_a", runId: "run_1", status: "attended"},
-      run_1_uid_b: {uid: "uid_b", runId: "run_1", status: "attended"},
+    eventParticipations: {
+      run_1_uid_a: {uid: "uid_a", eventId: "run_1", status: "attended"},
+      run_1_uid_b: {uid: "uid_b", eventId: "run_1", status: "attended"},
     },
   });
 
@@ -120,9 +120,9 @@ test("buildMatchPhonePlan can write reciprocal swipe docs", async () => {
       uid_a: {name: "Asha"},
       uid_b: {name: "Ben"},
     },
-    runParticipations: {
-      run_1_uid_a: {uid: "uid_a", runId: "run_1", status: "attended"},
-      run_1_uid_b: {uid: "uid_b", runId: "run_1", status: "attended"},
+    eventParticipations: {
+      run_1_uid_a: {uid: "uid_a", eventId: "run_1", status: "attended"},
+      run_1_uid_b: {uid: "uid_b", eventId: "run_1", status: "attended"},
     },
   });
 
@@ -151,18 +151,18 @@ test("reset-user-demo-state deletes only demo-owned relationship docs", async ()
     users: {
       uid_a: {phoneNumber: "+910000000001"},
     },
-    runParticipations: {
+    eventParticipations: {
       demo_run_uid_a: {uid: "uid_a", synthetic: true},
       real_run_uid_a: {uid: "uid_a"},
     },
-    savedRuns: {
+    savedEvents: {
       demo_saved: {uid: "uid_a", demoOps: true},
       from_manifest: {uid: "uid_a"},
     },
-    demoOpsRuns: {
+    demoOpsEvents: {
       op_1: {
         users: ["uid_a"],
-        paths: ["savedRuns/from_manifest"],
+        paths: ["savedEvents/from_manifest"],
       },
     },
     payments: {
@@ -206,16 +206,16 @@ test("reset-user-demo-state deletes only demo-owned relationship docs", async ()
   const plan = await buildResetUserDemoStatePlan({db, phone: "+910000000001"});
 
   assert.deepEqual(plan.paths, [
-    "demoOpsRuns/op_1",
+    "demoOpsEvents/op_1",
     "matches/match_1",
     "matches/match_1/messages/demo_message",
     "matches/match_1/messages/dogfood_message",
     "notifications/uid_a/items/demo",
     "notifications/uid_a/items/trigger_owned",
     "payments/demo_payment",
-    "runParticipations/demo_run_uid_a",
-    "savedRuns/demo_saved",
-    "savedRuns/from_manifest",
+    "eventParticipations/demo_run_uid_a",
+    "savedEvents/demo_saved",
+    "savedEvents/from_manifest",
     "swipes/uid_a/outgoing/uid_b",
     "swipes/uid_b/outgoing/uid_a",
   ]);
@@ -230,8 +230,8 @@ test("validate report surfaces demo readiness gaps", async () => {
       uid_a: {name: "Asha"},
     },
     matches: {},
-    runParticipations: {},
-    savedRuns: {},
+    eventParticipations: {},
+    savedEvents: {},
     payments: {},
     swipes: {uid_a: {outgoing: {}}},
     notifications: {uid_a: {items: {}}},
@@ -248,9 +248,9 @@ test("buildMarkAttendedPlan creates attended edge for one real user", async () =
     users: {
       uid_a: {phoneNumber: "+910000000001", gender: "woman"},
     },
-    runs: {
+    events: {
       run_1: {
-        runClubId: "club_1",
+        clubId: "club_1",
         startTime: new Date("2026-05-08T13:00:00.000Z"),
         endTime: new Date("2026-05-08T14:00:00.000Z"),
       },
@@ -261,15 +261,15 @@ test("buildMarkAttendedPlan creates attended edge for one real user", async () =
     db,
     admin: fakeAdmin,
     phone: "+910000000001",
-    runId: "run_1",
+    eventId: "run_1",
     now: new Date("2026-05-08T12:00:00.000Z"),
   });
 
-  assert.equal(plan.docs[0].path, "runParticipations/run_1_uid_a");
+  assert.equal(plan.docs[0].path, "eventParticipations/run_1_uid_a");
   assert.equal(plan.docs[0].data.status, "attended");
   assert.equal(plan.docs[0].data.genderAtSignup, "woman");
   assert.equal(
-    plan.docs.filter((doc) => doc.path.startsWith("userRunScheduleLocks/")).length,
+    plan.docs.filter((doc) => doc.path.startsWith("userEventScheduleLocks/")).length,
     60
   );
 });
@@ -289,15 +289,15 @@ test("buildDemoChecklist converts validation counts into capabilities", async ()
         messages: {message_1: {text: "Hi"}},
       },
     },
-    runParticipations: {
-      run_1_uid_a: {uid: "uid_a", runId: "run_1", status: "attended"},
+    eventParticipations: {
+      run_1_uid_a: {uid: "uid_a", eventId: "run_1", status: "attended"},
       run_checkin_uid_a: {
         uid: "uid_a",
-        runId: "run_checkin",
+        eventId: "run_checkin",
         status: "signedUp",
       },
     },
-    runs: {
+    events: {
       run_checkin: {
         status: "active",
         startTime: "2026-05-12T12:05:00.000Z",
@@ -305,7 +305,7 @@ test("buildDemoChecklist converts validation counts into capabilities", async ()
         startingPointLng: 77.2295,
       },
     },
-    savedRuns: {
+    savedEvents: {
       saved_1: {uid: "uid_a"},
     },
     payments: {
@@ -314,8 +314,8 @@ test("buildDemoChecklist converts validation counts into capabilities", async ()
     swipes: {uid_a: {outgoing: {}}},
     notifications: {uid_a: {items: {n1: {}}}},
   });
-  for (const run of Object.values(db.data.runs)) {
-    run.startTime = fakeTimestamp(run.startTime);
+  for (const event of Object.values(db.data.events)) {
+    event.startTime = fakeTimestamp(event.startTime);
   }
 
   const checklist = await buildDemoChecklist({
@@ -326,12 +326,12 @@ test("buildDemoChecklist converts validation counts into capabilities", async ()
 
   assert(checklist.canDemo.includes("chat thread"));
   assert(checklist.canDemo.includes("payment history"));
-  assert(checklist.canDemo.includes("run map pins"));
+  assert(checklist.canDemo.includes("event map pins"));
   assert(checklist.canDemo.includes("location-gated self check-in"));
   assert.equal(checklist.gaps.length, 0);
 });
 
-test("buildWarmUserPlan prefers runs in the user's city", async () => {
+test("buildWarmUserPlan prefers events in the user's city", async () => {
   const db = fakeFirestore({
     users: {
       uid_a: {
@@ -343,45 +343,45 @@ test("buildWarmUserPlan prefers runs in the user's city", async () => {
     publicProfiles: {
       uid_a: {name: "Asha"},
     },
-    runClubs: {
+    clubs: {
       club_mumbai: {location: "mumbai"},
       club_delhi: {location: "delhi"},
     },
-    runs: {
+    events: {
       mumbai_soon: {
-        runClubId: "club_mumbai",
+        clubId: "club_mumbai",
         status: "active",
         startTime: "2026-05-13T06:00:00.000Z",
         endTime: "2026-05-13T07:00:00.000Z",
         priceInPaise: 0,
       },
       delhi_soon: {
-        runClubId: "club_delhi",
+        clubId: "club_delhi",
         status: "active",
         startTime: "2026-05-13T07:00:00.000Z",
         endTime: "2026-05-13T08:00:00.000Z",
         priceInPaise: 0,
       },
       delhi_waitlist: {
-        runClubId: "club_delhi",
+        clubId: "club_delhi",
         status: "active",
         startTime: "2026-05-14T07:00:00.000Z",
         endTime: "2026-05-14T08:00:00.000Z",
         priceInPaise: 29900,
       },
       delhi_past: {
-        runClubId: "club_delhi",
+        clubId: "club_delhi",
         status: "active",
         startTime: "2026-05-10T07:00:00.000Z",
         endTime: "2026-05-10T08:00:00.000Z",
         priceInPaise: 0,
       },
     },
-    runParticipations: {},
+    eventParticipations: {},
   });
-  for (const run of Object.values(db.data.runs)) {
-    run.startTime = fakeTimestamp(run.startTime);
-    run.endTime = fakeTimestamp(run.endTime);
+  for (const event of Object.values(db.data.events)) {
+    event.startTime = fakeTimestamp(event.startTime);
+    event.endTime = fakeTimestamp(event.endTime);
   }
 
   const plan = await buildWarmUserPlan({
@@ -394,15 +394,15 @@ test("buildWarmUserPlan prefers runs in the user's city", async () => {
 
   const participationPaths = plan.docs
     .map((doc) => doc.path)
-    .filter((path) => path.startsWith("runParticipations/"))
+    .filter((path) => path.startsWith("eventParticipations/"))
     .sort();
   assert.deepEqual(participationPaths, [
-    "runParticipations/delhi_past_uid_a",
-    "runParticipations/delhi_soon_uid_a",
-    "runParticipations/delhi_waitlist_uid_a",
+    "eventParticipations/delhi_past_uid_a",
+    "eventParticipations/delhi_soon_uid_a",
+    "eventParticipations/delhi_waitlist_uid_a",
   ]);
   assert.equal(
-    plan.docs.some((doc) => doc.path === "runParticipations/mumbai_soon_uid_a"),
+    plan.docs.some((doc) => doc.path === "eventParticipations/mumbai_soon_uid_a"),
     false
   );
 });
@@ -450,9 +450,9 @@ test("buildLaunchCleanupPlan finds demo-owned top-level and nested docs", async 
   ]);
 });
 
-test("buildStaleRunCleanupPlan removes stale seeded runs and their edges", async () => {
+test("buildStaleEventCleanupPlan removes stale seeded events and their edges", async () => {
   const db = fakeFirestore({
-    runs: {
+    events: {
       demo_past: {
         seedPrefix: "demo_beta_2026",
         status: "active",
@@ -473,64 +473,64 @@ test("buildStaleRunCleanupPlan removes stale seeded runs and their edges", async
         startTime: "2026-05-10T06:00:00.000Z",
       },
     },
-    runParticipations: {
-      p1: {runId: "demo_past"},
-      p2: {runId: "demo_future"},
+    eventParticipations: {
+      p1: {eventId: "demo_past"},
+      p2: {eventId: "demo_future"},
     },
-    runClubScheduleLocks: {
-      club_lock: {runId: "demo_past"},
+    clubScheduleLocks: {
+      club_lock: {eventId: "demo_past"},
     },
-    userRunScheduleLocks: {
-      user_lock: {runId: "demo_cancelled"},
+    userEventScheduleLocks: {
+      user_lock: {eventId: "demo_cancelled"},
     },
-    savedRuns: {
-      saved: {runId: "demo_past"},
+    savedEvents: {
+      saved: {eventId: "demo_past"},
     },
     payments: {
-      payment: {runId: "demo_past"},
+      payment: {eventId: "demo_past"},
     },
     reviews: {
-      review: {runId: "demo_past"},
+      review: {eventId: "demo_past"},
     },
     matches: {
       match_1: {
         demoOps: true,
-        runIds: ["demo_past"],
+        eventIds: ["demo_past"],
         messages: {m1: {}},
       },
       match_2: {
-        runIds: ["demo_past"],
+        eventIds: ["demo_past"],
         messages: {m2: {}},
       },
     },
     swipes: {
       uid_a: {
         outgoing: {
-          uid_b: {runId: "demo_past"},
-          uid_c: {runId: "demo_future"},
+          uid_b: {eventId: "demo_past"},
+          uid_c: {eventId: "demo_future"},
         },
       },
     },
     notifications: {
       uid_a: {
         items: {
-          run_note: {runId: "demo_past"},
+          run_note: {eventId: "demo_past"},
           match_note: {matchId: "match_1"},
-          future_note: {runId: "demo_future"},
+          future_note: {eventId: "demo_future"},
         },
       },
     },
   });
-  for (const run of Object.values(db.data.runs)) {
-    run.startTime = fakeTimestamp(run.startTime);
+  for (const event of Object.values(db.data.events)) {
+    event.startTime = fakeTimestamp(event.startTime);
   }
 
-  const plan = await buildStaleRunCleanupPlan({
+  const plan = await buildStaleEventCleanupPlan({
     db,
     now: new Date("2026-05-12T12:00:00.000Z"),
   });
 
-  assert.deepEqual(plan.staleRunIds, ["demo_cancelled", "demo_past"]);
+  assert.deepEqual(plan.staleEventIds, ["demo_cancelled", "demo_past"]);
   assert.deepEqual(plan.paths, [
     "matches/match_1",
     "matches/match_1/messages/m1",
@@ -538,17 +538,17 @@ test("buildStaleRunCleanupPlan removes stale seeded runs and their edges", async
     "notifications/uid_a/items/run_note",
     "payments/payment",
     "reviews/review",
-    "runClubScheduleLocks/club_lock",
-    "runParticipations/p1",
-    "runs/demo_cancelled",
-    "runs/demo_past",
-    "savedRuns/saved",
+    "clubScheduleLocks/club_lock",
+    "eventParticipations/p1",
+    "events/demo_cancelled",
+    "events/demo_past",
+    "savedEvents/saved",
     "swipes/uid_a/outgoing/uid_b",
-    "userRunScheduleLocks/user_lock",
+    "userEventScheduleLocks/user_lock",
   ]);
 });
 
-test("buildCheckInRunPlan creates a signed-up run inside the check-in window", async () => {
+test("buildCheckInEventPlan creates a signed-up event inside the check-in window", async () => {
   const db = fakeFirestore({
     users: {
       uid_a: {
@@ -560,11 +560,11 @@ test("buildCheckInRunPlan creates a signed-up run inside the check-in window", a
     publicProfiles: {
       uid_a: {name: "Asha"},
     },
-    runParticipations: {},
-    runs: {},
+    eventParticipations: {},
+    events: {},
   });
 
-  const plan = await buildCheckInRunPlan({
+  const plan = await buildCheckInEventPlan({
     db,
     admin: fakeAdmin,
     phone: "+910000000001",
@@ -574,14 +574,14 @@ test("buildCheckInRunPlan creates a signed-up run inside the check-in window", a
     now: new Date("2026-05-12T12:00:00.000Z"),
   });
 
-  assert.equal(plan.runId, "demo_ops_2026_checkin_run_uid_a");
+  assert.equal(plan.eventId, "demo_ops_2026_checkin_run_uid_a");
   assert.equal(plan.checkInWindowOpensAt, "2026-05-12T11:55:00.000Z");
-  const runDoc = plan.docs.find((doc) => doc.path === `runs/${plan.runId}`);
-  assert.equal(runDoc.data.startingPointLat, 28.6129);
-  assert.equal(runDoc.data.startingPointLng, 77.2295);
-  assert.equal(runDoc.data.bookedCount, 1);
+  const eventDoc = plan.docs.find((doc) => doc.path === `events/${plan.eventId}`);
+  assert.equal(eventDoc.data.startingPointLat, 28.6129);
+  assert.equal(eventDoc.data.startingPointLng, 77.2295);
+  assert.equal(eventDoc.data.bookedCount, 1);
   assert.equal(
-    plan.docs.some((doc) => doc.path === `runParticipations/${plan.runId}_uid_a`),
+    plan.docs.some((doc) => doc.path === `eventParticipations/${plan.eventId}_uid_a`),
     true
   );
 });

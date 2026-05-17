@@ -1,0 +1,66 @@
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/celebration/catch_celebration_screen.dart';
+import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
+import 'package:flutter/material.dart';
+
+class CreateEventSuccessScreen extends StatelessWidget {
+  const CreateEventSuccessScreen({
+    super.key,
+    required this.club,
+    required this.event,
+    required this.onManageEvent,
+    required this.onDone,
+  });
+
+  final Club club;
+  final Event event;
+  final VoidCallback onManageEvent;
+  final VoidCallback onDone;
+
+  @override
+  Widget build(BuildContext context) {
+    return CatchCelebrationScreen(
+      kind: CelebrationMomentKind.eventCreated,
+      eyebrow: 'Event created',
+      title: 'Your event is live.',
+      message:
+          '${event.title} is now listed on ${club.name}. Followers can discover it from their home feed.',
+      details: [
+        CelebrationDetail(
+          icon: Icons.calendar_month_outlined,
+          label: 'When',
+          value: '${event.longDateLabel} · ${event.timeRangeLabel}',
+        ),
+        CelebrationDetail(
+          icon: Icons.location_on_outlined,
+          label: 'Where',
+          value: event.meetingPoint,
+        ),
+        CelebrationDetail(
+          icon: Icons.directions_run_rounded,
+          label: 'Event',
+          value:
+              '${EventFormatters.distanceKm(event.distanceKm)} · ${event.pace.label}',
+        ),
+        CelebrationDetail(
+          icon: Icons.group_outlined,
+          label: 'Capacity',
+          value: '${event.capacityLimit} attendees',
+        ),
+      ],
+      note: 'Bookings, waitlist, and attendance are tracked from Manage event.',
+      primaryAction: CelebrationAction(
+        label: 'Manage event',
+        onPressed: onManageEvent,
+        icon: const Icon(Icons.tune_rounded),
+      ),
+      secondaryAction: CelebrationAction(
+        label: 'Back to club',
+        onPressed: onDone,
+      ),
+      onClose: onDone,
+    );
+  }
+}

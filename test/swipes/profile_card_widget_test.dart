@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 Widget _profileCardHarness({required ThemeData theme}) {
   final profile = buildPublicProfile(
@@ -64,7 +64,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('Photo coming soon'), findsOneWidget);
-      expect(find.text('A PERFECT RUN WITH ME LOOKS LIKE...'), findsOneWidget);
+      expect(find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'), findsOneWidget);
       expect(find.text('Something casual'), findsOneWidget);
       expect(find.text('5:00-7:00/km'), findsWidgets);
       expect(find.text('RUNNING RHYTHM'), findsOneWidget);
@@ -114,7 +114,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(find.text('A PERFECT RUN WITH ME LOOKS LIKE...'), findsNothing);
+    expect(find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'), findsNothing);
     expect(find.text('RUNNING RHYTHM'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -149,11 +149,11 @@ void main() {
       await tester.pump();
 
       expect(
-        find.byTooltip('Like A perfect run with me looks like...'),
+        find.byTooltip('Like A perfect event with me looks like...'),
         findsNothing,
       );
       expect(
-        find.byTooltip('Comment on A perfect run with me looks like...'),
+        find.byTooltip('Comment on A perfect event with me looks like...'),
         findsNothing,
       );
     }
@@ -169,7 +169,7 @@ void main() {
             profilePrompts: normalizeProfilePromptAnswers(
               const [],
               legacyBio:
-                  'Long easy runs, coffee after the finish, and a playlist that keeps the whole group moving without making the card feel cramped.',
+                  'Long easy events, coffee after the finish, and a playlist that keeps the whole group moving without making the card feel cramped.',
             ),
           ).copyWith(
             city: 'indore',
@@ -194,14 +194,14 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('A PERFECT RUN WITH ME LOOKS LIKE...'), findsOneWidget);
+      expect(find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'), findsOneWidget);
       expect(find.text('DETAILS'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
   );
 
   testWidgets(
-    'ProfileSurface renders compatibility reasons and run identity tags',
+    'ProfileSurface renders compatibility reasons and event identity tags',
     (tester) async {
       final viewer = buildUser().copyWith(
         relationshipGoal: RelationshipGoal.relationship,
@@ -225,7 +225,7 @@ void main() {
                 child: ProfileSurface(
                   profile: profile,
                   viewerProfile: viewer,
-                  sharedRunTitle: 'Thursday Morning Run',
+                  sharedRunTitle: 'Thursday Morning Event',
                 ),
               ),
             ),
@@ -235,7 +235,7 @@ void main() {
       await tester.pump();
 
       expect(find.text('WHY YOU MIGHT CLICK'), findsOneWidget);
-      expect(find.text('You met at Thursday Morning Run'), findsOneWidget);
+      expect(find.text('You met at Thursday Morning Event'), findsOneWidget);
       expect(find.text('Social miles'), findsOneWidget);
       expect(find.text('5K regular'), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -276,10 +276,10 @@ void main() {
     await tester.pump();
 
     await tester.ensureVisible(
-      find.byTooltip('Like A perfect run with me looks like...'),
+      find.byTooltip('Like A perfect event with me looks like...'),
     );
     await tester.tap(
-      find.byTooltip('Like A perfect run with me looks like...'),
+      find.byTooltip('Like A perfect event with me looks like...'),
     );
     await tester.pump();
 
@@ -363,10 +363,10 @@ void main() {
     await tester.pump();
 
     await tester.ensureVisible(
-      find.byTooltip('Comment on A perfect run with me looks like...'),
+      find.byTooltip('Comment on A perfect event with me looks like...'),
     );
     await tester.tap(
-      find.byTooltip('Comment on A perfect run with me looks like...'),
+      find.byTooltip('Comment on A perfect event with me looks like...'),
     );
     await tester.pumpAndSettle();
 

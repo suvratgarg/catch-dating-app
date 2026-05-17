@@ -1,22 +1,24 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_history_screen.dart';
 import 'package:catch_dating_app/reviews/presentation/reviews_section.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 void main() {
-  testWidgets('empty attended run section can submit a review', (tester) async {
+  testWidgets('empty attended event section can submit a review', (
+    tester,
+  ) async {
     final repository = _FakeReviewsRepository();
     final user = buildUser(uid: 'runner-1', name: 'Asha');
     final container = _reviewsContainer(repository);
@@ -39,8 +41,8 @@ void main() {
     await tester.tap(find.byKey(ReviewKeys.submitReviewButton));
     await pumpFeatureUi(tester);
 
-    expect(repository.addedReview?.runClubId, 'club-1');
-    expect(repository.addedReview?.runId, 'run-1');
+    expect(repository.addedReview?.clubId, 'club-1');
+    expect(repository.addedReview?.eventId, 'event-1');
     expect(repository.addedReview?.reviewerUserId, 'runner-1');
     expect(repository.addedReview?.reviewerName, 'Asha');
     expect(repository.addedReview?.rating, 4);
@@ -62,7 +64,7 @@ void main() {
       reviews: const [],
     );
 
-    final sectionCenter = tester.getCenter(find.byType(RunReviewsSection)).dx;
+    final sectionCenter = tester.getCenter(find.byType(EventReviewsSection)).dx;
     final iconCenter = tester
         .getCenter(find.byIcon(Icons.rate_review_outlined))
         .dx;
@@ -79,11 +81,11 @@ void main() {
     final user = buildUser(uid: 'runner-1', name: 'Asha');
     final review = buildReview(
       id: 'review-1',
-      runClubId: 'club-1',
-      runId: 'run-1',
+      clubId: 'club-1',
+      eventId: 'event-1',
       reviewerUserId: user.uid,
       reviewerName: user.name,
-      comment: 'Good run.',
+      comment: 'Good event.',
     );
     final container = _reviewsContainer(repository);
     addTearDown(container.dispose);
@@ -116,11 +118,11 @@ void main() {
     tester,
   ) async {
     final user = buildUser(uid: 'runner-1', name: 'Asha');
-    final run = buildRun(id: 'run-1', runClubId: 'club-1');
+    final event = buildEvent(id: 'event-1', clubId: 'club-1');
     final review = buildReview(
-      id: 'run-1~runner-1',
-      runClubId: 'club-1',
-      runId: run.id,
+      id: 'event-1~runner-1',
+      clubId: 'club-1',
+      eventId: event.id,
       reviewerUserId: user.uid,
       reviewerName: user.name,
       comment: 'Great route.',
@@ -131,7 +133,7 @@ void main() {
         uidProvider.overrideWith((ref) => Stream.value(user.uid)),
         watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
         reviewsRepositoryProvider.overrideWith((ref) => repository),
-        watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
+        watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
       ],
     );
     addTearDown(container.dispose);
@@ -177,9 +179,9 @@ Future<void> _pumpReviewsSection(
         home: Scaffold(
           body: Padding(
             padding: const EdgeInsets.all(16),
-            child: RunReviewsSection(
-              runClubId: 'club-1',
-              runId: 'run-1',
+            child: EventReviewsSection(
+              clubId: 'club-1',
+              eventId: 'event-1',
               reviews: reviews,
               currentUid: user.uid,
               userProfile: user,

@@ -1,7 +1,7 @@
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/presentation/widgets/run_tiles/run_tiles.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -10,14 +10,14 @@ class RecommendCard extends StatelessWidget {
 
   factory RecommendCard.fromRecommendation({
     Key? key,
-    required DashboardRunRecommendation recommendation,
+    required DashboardEventRecommendation recommendation,
     double? width,
   }) {
     return RecommendCard(
       key: key,
-      data: RunTileData.fromRun(
-        run: recommendation.run,
-        status: RunTileStatus.recommended,
+      data: EventTileData.fromEvent(
+        event: recommendation.event,
+        status: EventTileStatus.recommended,
         clubName: recommendation.clubName,
         reasonLabel: recommendation.reasonLabel,
       ),
@@ -25,31 +25,35 @@ class RecommendCard extends StatelessWidget {
     );
   }
 
-  factory RecommendCard.fromRun({Key? key, required Run run, double? width}) {
+  factory RecommendCard.fromEvent({
+    Key? key,
+    required Event event,
+    double? width,
+  }) {
     return RecommendCard(
       key: key,
-      data: RunTileData.fromRun(
-        run: run,
-        status: RunTileStatus.recommended,
-        clubName: 'Your run club',
+      data: EventTileData.fromEvent(
+        event: event,
+        status: EventTileStatus.recommended,
+        clubName: 'Your club',
         reasonLabel: 'From your clubs',
       ),
       width: width,
     );
   }
 
-  final RunTileData data;
+  final EventTileData data;
   final double? width;
 
   @override
   Widget build(BuildContext context) {
-    return RunRailTile(
+    return EventRailTile(
       data: data,
       width: width,
       onTap: () => context.pushNamed(
-        Routes.dashboardRunDetailScreen.name,
-        pathParameters: {'runClubId': data.runClubId, 'runId': data.runId},
-        extra: data.run,
+        Routes.dashboardEventDetailScreen.name,
+        pathParameters: {'clubId': data.clubId, 'eventId': data.eventId},
+        extra: data.event,
       ),
     );
   }

@@ -13,7 +13,7 @@
   "properties": {
     "cityNames": {
       "type": "array",
-      "items": {"$ref": "../shared/run_common.schema.json#/definitions/citySlug"},
+      "items": {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
       "minItems": 1,
       "uniqueItems": true
     },
@@ -24,10 +24,10 @@
         "additionalProperties": false,
         "required": ["name", "label", "latitude", "longitude"],
         "properties": {
-          "name": {"$ref": "../shared/run_common.schema.json#/definitions/citySlug"},
+          "name": {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
           "label": {"type": "string", "minLength": 1, "maxLength": 80},
-          "latitude": {"$ref": "../shared/run_common.schema.json#/definitions/latitude"},
-          "longitude": {"$ref": "../shared/run_common.schema.json#/definitions/longitude"}
+          "latitude": {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},
+          "longitude": {"$ref": "../shared/event_common.schema.json#/definitions/longitude"}
         }
       },
       "uniqueItems": true

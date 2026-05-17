@@ -11,10 +11,10 @@
   "x-owner": "shared callable rate-limit middleware",
   "required": ["uid", "action", "windowKey", "count", "expiresAt"],
   "properties": {
-    "uid": {"$ref": "../shared/run_common.schema.json#/definitions/documentId"},
+    "uid": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
     "action": {"type": "string", "minLength": 1, "maxLength": 120},
     "windowKey": {"type": "integer", "minimum": 0},
     "count": {"type": "integer", "minimum": 1},
-    "expiresAt": {"$ref": "../shared/run_common.schema.json#/definitions/timestamp"}
+    "expiresAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"}
   }
 }

@@ -9,7 +9,7 @@ export interface PaymentDocument {
   userId: string;
   orderId: string;
   paymentId: string;
-  runId: string;
+  eventId: string;
   amount: number;
   currency: string;
   status: "pending" | "completed" | "failed" | "refunded";

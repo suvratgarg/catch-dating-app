@@ -21,7 +21,7 @@ import 'package:go_router/go_router.dart';
 
 // Tab indices — kept in sync with branch order in go_router.dart
 //   0  Home      (DashboardScreen)
-//   1  Clubs     (RunClubsListScreen)
+//   1  Clubs     (ClubsListScreen)
 //   2  Catches   (SwipeHubScreen)
 //   3  Chats     (MatchesListScreen)
 //   4  Profile   (ProfileScreen)
@@ -132,7 +132,7 @@ class _GuestAuthCtaBar extends StatelessWidget {
     return Uri(
       path: Routes.authScreen.path,
       queryParameters: {
-        'from': from.isEmpty ? Routes.runClubsListScreen.path : from,
+        'from': from.isEmpty ? Routes.clubsListScreen.path : from,
       },
     ).toString();
   }

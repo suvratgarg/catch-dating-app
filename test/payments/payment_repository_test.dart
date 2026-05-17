@@ -101,7 +101,7 @@ void main() {
     });
 
     test(
-      'processPayment requests a trusted order and verifies without client run metadata',
+      'processPayment requests a trusted order and verifies without client event metadata',
       () async {
         functions.callables['createRazorpayOrder'] =
             TestHttpsCallable('createRazorpayOrder')
@@ -112,11 +112,11 @@ void main() {
               };
         functions.callables['verifyRazorpayPayment'] = TestHttpsCallable(
           'verifyRazorpayPayment',
-        )..resultData = {'verified': true, 'runId': 'trusted-run'};
+        )..resultData = {'verified': true, 'eventId': 'trusted-event'};
 
         final future = repository.processPayment(
-          runId: 'run-1',
-          description: 'Sunrise Run',
+          eventId: 'event-1',
+          description: 'Sunrise Event',
           userName: 'Priya',
           userEmail: 'priya@example.com',
           userContact: '+919876543210',
@@ -124,7 +124,7 @@ void main() {
         await flushTestEventQueue();
 
         expect(functions.callables['createRazorpayOrder']!.calls.single, {
-          'runId': 'run-1',
+          'eventId': 'event-1',
         });
         expect(razorpay.openCalls.single['order_id'], 'order_123');
         expect(razorpay.openCalls.single['amount'], 25000);
@@ -159,31 +159,31 @@ void main() {
       expect(factoryCalls, 0);
     });
 
-    test('bookFreeRun calls the free-run booking function', () async {
-      await repository.bookFreeRun(runId: 'run-1');
+    test('bookFreeEvent calls the free-event booking function', () async {
+      await repository.bookFreeEvent(eventId: 'event-1');
 
-      expect(functions.callables['signUpForFreeRun']!.calls.single, {
-        'runId': 'run-1',
+      expect(functions.callables['signUpForFreeEvent']!.calls.single, {
+        'eventId': 'event-1',
       });
     });
 
     test(
-      'bookFreeRun maps unauthenticated callable failures to sign-in errors',
+      'bookFreeEvent maps unauthenticated callable failures to sign-in errors',
       () async {
-        functions.callables['signUpForFreeRun'] =
-            TestHttpsCallable('signUpForFreeRun')
+        functions.callables['signUpForFreeEvent'] =
+            TestHttpsCallable('signUpForFreeEvent')
               ..error = TestFirebaseFunctionsException(
                 code: 'unauthenticated',
                 message: 'UNAUTHENTICATED',
               );
 
         await expectLater(
-          repository.bookFreeRun(runId: 'run-1'),
+          repository.bookFreeEvent(eventId: 'event-1'),
           throwsA(
             isA<SignInRequiredException>().having(
               (error) => error.message,
               'message',
-              'You need to be signed in to book a run.',
+              'You need to be signed in to book an event.',
             ),
           ),
         );
@@ -191,22 +191,22 @@ void main() {
     );
 
     test(
-      'bookFreeRun preserves server-side booking failure messages',
+      'bookFreeEvent preserves server-side booking failure messages',
       () async {
-        functions.callables['signUpForFreeRun'] =
-            TestHttpsCallable('signUpForFreeRun')
+        functions.callables['signUpForFreeEvent'] =
+            TestHttpsCallable('signUpForFreeEvent')
               ..error = TestFirebaseFunctionsException(
                 code: 'failed-precondition',
-                message: 'Run is full.',
+                message: 'Event is full.',
               );
 
         await expectLater(
-          repository.bookFreeRun(runId: 'run-1'),
+          repository.bookFreeEvent(eventId: 'event-1'),
           throwsA(
-            isA<RunBookingFailedException>().having(
+            isA<EventBookingFailedException>().having(
               (error) => error.message,
               'message',
-              'Run is full.',
+              'Event is full.',
             ),
           ),
         );
@@ -220,13 +220,13 @@ void main() {
             TestHttpsCallable('createRazorpayOrder')
               ..error = TestFirebaseFunctionsException(
                 code: 'failed-precondition',
-                message: 'Run is full.',
+                message: 'Event is full.',
               );
 
         await expectLater(
           repository.processPayment(
-            runId: 'run-1',
-            description: 'Sunrise Run',
+            eventId: 'event-1',
+            description: 'Sunrise Event',
             userName: 'Priya',
             userEmail: 'priya@example.com',
             userContact: '+919876543210',
@@ -235,7 +235,7 @@ void main() {
             isA<PaymentFailedException>().having(
               (error) => error.message,
               'message',
-              'Payment failed: Run is full.',
+              'Payment failed: Event is full.',
             ),
           ),
         );
@@ -252,8 +252,8 @@ void main() {
 
         await expectLater(
           repository.processPayment(
-            runId: 'run-1',
-            description: 'Sunrise Run',
+            eventId: 'event-1',
+            description: 'Sunrise Event',
             userName: 'Priya',
             userEmail: 'priya@example.com',
             userContact: '+919876543210',
@@ -276,8 +276,8 @@ void main() {
               };
 
         final future = repository.processPayment(
-          runId: 'run-1',
-          description: 'Sunrise Run',
+          eventId: 'event-1',
+          description: 'Sunrise Event',
           userName: 'Priya',
           userEmail: 'priya@example.com',
           userContact: '+919876543210',
@@ -305,8 +305,8 @@ void main() {
             };
 
       final future = repository.processPayment(
-        runId: 'run-1',
-        description: 'Sunrise Run',
+        eventId: 'event-1',
+        description: 'Sunrise Event',
         userName: 'Priya',
         userEmail: 'priya@example.com',
         userContact: '+919876543210',
@@ -338,12 +338,12 @@ void main() {
             TestHttpsCallable('verifyRazorpayPayment')
               ..error = TestFirebaseFunctionsException(
                 code: 'failed-precondition',
-                message: 'This run is now full.',
+                message: 'This event is now full.',
               );
 
         final future = repository.processPayment(
-          runId: 'run-1',
-          description: 'Sunrise Run',
+          eventId: 'event-1',
+          description: 'Sunrise Event',
           userName: 'Priya',
           userEmail: 'priya@example.com',
           userContact: '+919876543210',
@@ -360,7 +360,7 @@ void main() {
             isA<PaymentFailedException>().having(
               (error) => error.message,
               'message',
-              'Payment failed: This run is now full.',
+              'Payment failed: This event is now full.',
             ),
           ),
         );

@@ -153,7 +153,7 @@ export interface UpdateUserProfileCallablePayload {
     )[];
     prefsNewCatches?: boolean;
     prefsMessages?: boolean;
-    prefsRunReminders?: boolean;
+    prefsEventReminders?: boolean;
     prefsRunStatusUpdates?: boolean;
     prefsClubUpdates?: boolean;
     prefsWeeklyDigest?: boolean;

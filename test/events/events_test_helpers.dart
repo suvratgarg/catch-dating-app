@@ -1,0 +1,508 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/saved_event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/payments/data/payment_repository.dart';
+import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
+import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
+import 'package:catch_dating_app/reviews/domain/review.dart';
+import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+Event buildEvent({
+  String id = 'event-1',
+  String clubId = 'club-1',
+  DateTime? startTime,
+  DateTime? endTime,
+  String meetingPoint = 'Carter Road',
+  double? startingPointLat,
+  double? startingPointLng,
+  String? locationDetails,
+  String? photoUrl,
+  double distanceKm = 5,
+  PaceLevel pace = PaceLevel.easy,
+  int capacityLimit = 20,
+  String description = 'Easy paced seaside event.',
+  int priceInPaise = 0,
+  int? bookedCount,
+  int? checkedInCount,
+  int? waitlistedCount,
+  EventLifecycleStatus status = EventLifecycleStatus.active,
+  EventConstraints constraints = const EventConstraints(),
+  EventPolicyBundle? eventPolicy,
+  Map<String, int> genderCounts = const {},
+  Map<String, int> cohortCounts = const {},
+}) {
+  final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
+  return Event(
+    id: id,
+    clubId: clubId,
+    startTime: start,
+    endTime: endTime ?? start.add(const Duration(hours: 1)),
+    meetingPoint: meetingPoint,
+    startingPointLat: startingPointLat,
+    startingPointLng: startingPointLng,
+    locationDetails: locationDetails,
+    photoUrl: photoUrl,
+    distanceKm: distanceKm,
+    pace: pace,
+    capacityLimit: capacityLimit,
+    description: description,
+    priceInPaise: priceInPaise,
+    bookedCount: bookedCount,
+    checkedInCount: checkedInCount,
+    waitlistedCount: waitlistedCount,
+    status: status,
+    constraints: constraints,
+    eventPolicy: eventPolicy,
+    genderCounts: genderCounts,
+    cohortCounts: cohortCounts,
+  );
+}
+
+EventParticipation buildEventParticipation({
+  required Event event,
+  required String uid,
+  EventParticipationStatus status = EventParticipationStatus.signedUp,
+  DateTime? createdAt,
+  String? cohortAtSignup,
+}) {
+  final timestamp = createdAt ?? DateTime(2026, 5, 6, 7);
+  return EventParticipation(
+    id: eventParticipationId(eventId: event.id, uid: uid),
+    eventId: event.id,
+    clubId: event.clubId,
+    uid: uid,
+    status: status,
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    signedUpAt:
+        status == EventParticipationStatus.signedUp ||
+            status == EventParticipationStatus.attended
+        ? timestamp
+        : null,
+    attendedAt: status == EventParticipationStatus.attended ? timestamp : null,
+    waitlistedAt: status == EventParticipationStatus.waitlisted
+        ? timestamp
+        : null,
+    cancelledAt: status == EventParticipationStatus.cancelled
+        ? timestamp
+        : null,
+    deletedAt: status == EventParticipationStatus.deleted ? timestamp : null,
+    cohortAtSignup: cohortAtSignup,
+  );
+}
+
+UserProfile buildUser({
+  String uid = 'runner-1',
+  String name = 'Runner',
+  String? firstName,
+  String? lastName,
+  String displayName = '',
+  String email = 'runner@example.com',
+  String bio = 'Here for the event.',
+  List<ProfilePromptAnswer>? profilePrompts,
+  Gender gender = Gender.man,
+  List<Gender> interestedInGenders = const [Gender.woman],
+  DateTime? dateOfBirth,
+  String phoneNumber = '+910000000000',
+  List<String> photoUrls = const [],
+}) {
+  final nameParts = name.trim().split(RegExp(r'\s+'));
+  return UserProfile(
+    uid: uid,
+    email: email,
+    name: name,
+    firstName: firstName ?? nameParts.first,
+    lastName:
+        lastName ?? (nameParts.length > 1 ? nameParts.skip(1).join(' ') : ''),
+    displayName: displayName,
+    dateOfBirth: dateOfBirth ?? DateTime(1995, 6, 15),
+    profilePrompts:
+        profilePrompts ??
+        normalizeProfilePromptAnswers(const [], legacyBio: bio),
+    gender: gender,
+    phoneNumber: phoneNumber,
+    profileComplete: true,
+    interestedInGenders: interestedInGenders,
+    photoUrls: photoUrls,
+  );
+}
+
+Review buildReview({
+  String id = 'review-1',
+  String clubId = 'club-1',
+  String? eventId = 'event-1',
+  String reviewerUserId = 'runner-1',
+  String reviewerName = 'Runner 1',
+  int rating = 5,
+  String comment = 'Loved it.',
+  DateTime? createdAt,
+}) {
+  return Review(
+    id: id,
+    clubId: clubId,
+    eventId: eventId,
+    reviewerUserId: reviewerUserId,
+    reviewerName: reviewerName,
+    rating: rating,
+    comment: comment,
+    createdAt: createdAt ?? DateTime(2025, 1, 2),
+  );
+}
+
+Club buildClub({
+  String id = 'club-1',
+  String name = 'Stride Social',
+  String description = 'Morning runners who like easy city loops.',
+  String location = 'mumbai',
+  String area = 'Bandra',
+  String hostUserId = 'host-1',
+  String hostName = 'Host',
+  DateTime? createdAt,
+}) {
+  return Club(
+    id: id,
+    name: name,
+    description: description,
+    location: location,
+    area: area,
+    hostUserId: hostUserId,
+    hostName: hostName,
+    createdAt: createdAt ?? DateTime(2025, 1, 1),
+    memberCount: 1,
+  );
+}
+
+PublicProfile buildPublicProfile({
+  String uid = 'runner-1',
+  String name = 'Runner',
+  int age = 30,
+  String bio = 'Always up for a sunrise event.',
+  List<ProfilePromptAnswer>? profilePrompts,
+  Gender gender = Gender.man,
+  List<String> photoUrls = const [],
+}) {
+  return PublicProfile(
+    uid: uid,
+    name: name,
+    age: age,
+    profilePrompts:
+        profilePrompts ??
+        normalizeProfilePromptAnswers(const [], legacyBio: bio),
+    gender: gender,
+    photoUrls: photoUrls,
+  );
+}
+
+Future<void> pumpEventsTestApp(
+  WidgetTester tester,
+  Widget child, {
+  Iterable overrides = const [],
+  String? signedInUid = 'runner-1',
+}) async {
+  await tester.pumpWidget(
+    ProviderScope(
+      overrides: [
+        if (signedInUid != null)
+          uidProvider.overrideWith((ref) => Stream.value(signedInUid)),
+        ...overrides,
+      ],
+      child: _EventTestProviderPrimer(
+        primeUid: signedInUid != null,
+        child: MaterialApp(theme: AppTheme.light, home: child),
+      ),
+    ),
+  );
+  await tester.pump();
+}
+
+class _EventTestProviderPrimer extends ConsumerWidget {
+  const _EventTestProviderPrimer({required this.primeUid, required this.child});
+
+  final bool primeUid;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (primeUid) {
+      ref.watch(uidProvider);
+    }
+    return child;
+  }
+}
+
+class FakeEventRepository extends Fake implements EventRepository {
+  String generatedId = 'generated-event-id';
+  Event? createdEvent;
+  Object? createError;
+  Object? cancelError;
+  Object? hostCancelError;
+  Object? deleteEventError;
+  Object? joinWaitlistError;
+  Object? leaveWaitlistError;
+  Object? markAttendanceError;
+  String? cancelledEventId;
+  String? hostCancelledEventId;
+  String? hostCancelReason;
+  String? deletedEventId;
+  String? joinedWaitlistEventId;
+  String? leftWaitlistEventId;
+  String? leftWaitlistUserId;
+  String? markedAttendanceEventId;
+  String? markedAttendanceUserId;
+  String? selfCheckedInEventId;
+  Event? fetchedEvent;
+  final Map<String, Event?> watchedEvents = {};
+  final Map<String, List<Event>> clubEvents = {};
+  final Map<String, List<Event>> attendedEvents = {};
+  final Map<String, List<Event>> signedUpEvents = {};
+  List<String>? recommendedClubIds;
+  List<Event> recommendedEvents = const [];
+
+  @override
+  String generateId() => generatedId;
+
+  @override
+  Future<void> createEvent({required Event event}) async {
+    if (createError != null) {
+      throw createError!;
+    }
+    createdEvent = event;
+  }
+
+  @override
+  Future<Event?> fetchEvent(String id) async => fetchedEvent;
+
+  @override
+  Stream<Event?> watchEvent(String id) => Stream.value(watchedEvents[id]);
+
+  @override
+  Stream<List<Event>> watchEventsForClub({required String clubId}) =>
+      Stream.value(clubEvents[clubId] ?? const []);
+
+  @override
+  Stream<List<Event>> watchAttendedEvents({required String uid}) =>
+      Stream.value(attendedEvents[uid] ?? const []);
+
+  @override
+  Stream<List<Event>> watchSignedUpEvents({required String uid}) =>
+      Stream.value(signedUpEvents[uid] ?? const []);
+
+  @override
+  Future<List<Event>> fetchUpcomingEventsForClubs(List<String> clubIds) async {
+    recommendedClubIds = clubIds;
+    return recommendedEvents;
+  }
+
+  @override
+  Future<void> cancelSignUpViaFunction({required String eventId}) async {
+    if (cancelError != null) {
+      throw cancelError!;
+    }
+    cancelledEventId = eventId;
+  }
+
+  @override
+  Future<void> cancelEvent({required String eventId, String? reason}) async {
+    if (hostCancelError != null) {
+      throw hostCancelError!;
+    }
+    hostCancelledEventId = eventId;
+    hostCancelReason = reason;
+  }
+
+  @override
+  Future<void> deleteEvent({required String eventId}) async {
+    if (deleteEventError != null) {
+      throw deleteEventError!;
+    }
+    deletedEventId = eventId;
+  }
+
+  @override
+  Future<void> joinWaitlistViaFunction({required String eventId}) async {
+    if (joinWaitlistError != null) {
+      throw joinWaitlistError!;
+    }
+    joinedWaitlistEventId = eventId;
+  }
+
+  @override
+  Future<void> leaveWaitlist({
+    required String eventId,
+    required String userId,
+  }) async {
+    if (leaveWaitlistError != null) {
+      throw leaveWaitlistError!;
+    }
+    leftWaitlistEventId = eventId;
+    leftWaitlistUserId = userId;
+  }
+
+  @override
+  Future<bool> markAttendance({
+    required String eventId,
+    required String userId,
+  }) async {
+    if (markAttendanceError != null) {
+      throw markAttendanceError!;
+    }
+    markedAttendanceEventId = eventId;
+    markedAttendanceUserId = userId;
+    return true;
+  }
+
+  @override
+  Future<void> selfCheckInAttendance({
+    required String eventId,
+    required double? latitude,
+    required double? longitude,
+  }) async {
+    selfCheckedInEventId = eventId;
+  }
+}
+
+class FakeEventParticipationRepository extends Fake
+    implements EventParticipationRepository {
+  final Map<String, List<EventParticipation>> eventParticipations = {};
+  String? lastFetchedEventId;
+
+  @override
+  Future<List<EventParticipation>> fetchParticipationsForEvent({
+    required String eventId,
+  }) async {
+    lastFetchedEventId = eventId;
+    return eventParticipations[eventId] ?? const [];
+  }
+
+  @override
+  Stream<List<EventParticipation>> watchParticipationsForEvent({
+    required String eventId,
+  }) => Stream.value(eventParticipations[eventId] ?? const []);
+}
+
+class FakePaymentRepository extends Fake implements PaymentRepository {
+  FakePaymentRepository({this.supportsPaid = true});
+
+  final bool supportsPaid;
+  Object? bookFreeEventError;
+  Object? processPaymentError;
+  bool bookFreeEventCalled = false;
+  String? bookedFreeEventId;
+  bool processPaymentCalled = false;
+  ProcessPaymentCall? lastProcessPaymentCall;
+  PaymentConfirmationData? processPaymentResult;
+
+  @override
+  bool get supportsPaidBookings => supportsPaid;
+
+  @override
+  Future<void> bookFreeEvent({required String eventId}) async {
+    if (bookFreeEventError != null) {
+      throw bookFreeEventError!;
+    }
+    bookFreeEventCalled = true;
+    bookedFreeEventId = eventId;
+  }
+
+  @override
+  Future<PaymentConfirmationData> processPayment({
+    required String eventId,
+    required String description,
+    required String userName,
+    required String userEmail,
+    required String userContact,
+  }) async {
+    if (!supportsPaid) {
+      throw const PaidBookingUnsupportedException();
+    }
+    if (processPaymentError != null) {
+      throw processPaymentError!;
+    }
+    processPaymentCalled = true;
+    lastProcessPaymentCall = ProcessPaymentCall(
+      eventId: eventId,
+      description: description,
+      userName: userName,
+      userEmail: userEmail,
+      userContact: userContact,
+    );
+    return processPaymentResult ??
+        PaymentConfirmationData(
+          paymentId: 'pay_test',
+          orderId: 'order_test',
+          amountInPaise: 0,
+          eventId: eventId,
+        );
+  }
+
+  @override
+  void dispose() {}
+}
+
+class ProcessPaymentCall {
+  const ProcessPaymentCall({
+    required this.eventId,
+    required this.description,
+    required this.userName,
+    required this.userEmail,
+    required this.userContact,
+  });
+
+  final String eventId;
+  final String description;
+  final String userName;
+  final String userEmail;
+  final String userContact;
+}
+
+class FakePublicProfileRepository extends Fake
+    implements PublicProfileRepository {
+  List<String>? lastRequestedUids;
+  List<PublicProfile> profiles = const [];
+
+  @override
+  Future<List<PublicProfile>> fetchPublicProfiles(List<String> uids) async {
+    lastRequestedUids = uids;
+    return profiles;
+  }
+}
+
+class FakeSavedEventRepository extends Fake implements SavedEventRepository {
+  String? savedUid;
+  String? savedEventId;
+  String? unsavedUid;
+  String? unsavedEventId;
+  final Map<String, List<Event>> savedEventDetails = {};
+
+  @override
+  Future<void> saveEvent({required String uid, required String eventId}) async {
+    savedUid = uid;
+    savedEventId = eventId;
+  }
+
+  @override
+  Future<void> unsaveEvent({
+    required String uid,
+    required String eventId,
+  }) async {
+    unsavedUid = uid;
+    unsavedEventId = eventId;
+  }
+
+  @override
+  Stream<List<Event>> watchSavedEventDetailsForUser({required String uid}) =>
+      Stream.value(savedEventDetails[uid] ?? const []);
+}

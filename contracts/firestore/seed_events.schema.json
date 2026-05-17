@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/seed_events.schema.json",
+  "title": "SeedEventManifestDocument",
+  "description": "Tool-owned synthetic-data manifest stored at seedEvents/{manifestId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "seedEvents",
+  "x-firestore-path": "seedEvents/{manifestId}",
+  "x-document-id-field": "manifestId",
+  "x-owner": "demo data seeding tooling",
+  "x-internal-demo-fields": [
+    "synthetic",
+    "seedPrefix",
+    "scenario",
+    "demoOps",
+    "demoOpsId",
+    "demoOpsCommand"
+  ],
+  "required": [
+    "seedId",
+    "manifestId",
+    "generatedAt",
+    "anchorUserIds",
+    "counts",
+    "paths"
+  ],
+  "properties": {
+    "seedId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "manifestId": {"type": "string", "minLength": 1, "maxLength": 180},
+    "generatedAt": {"$ref": "../shared/event_common.schema.json#/definitions/timestamp"},
+    "anchorUserIds": {
+      "type": "array",
+      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+      "uniqueItems": true
+    },
+    "counts": {
+      "type": "object",
+      "additionalProperties": {"type": "integer", "minimum": 0}
+    },
+    "paths": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1, "maxLength": 512},
+      "uniqueItems": true
+    },
+    "appendMode": {"type": "boolean"},
+    "appendedAnchorUserIds": {
+      "type": "array",
+      "items": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"},
+      "uniqueItems": true
+    },
+    "synthetic": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/synthetic"},
+    "seedPrefix": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/seedPrefix"},
+    "scenario": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/scenario"},
+    "demoOps": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOps"},
+    "demoOpsId": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsId"},
+    "demoOpsCommand": {"$ref": "../shared/event_common.schema.json#/definitions/demoMetadataFields/demoOpsCommand"}
+  }
+}

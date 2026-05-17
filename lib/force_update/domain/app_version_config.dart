@@ -19,12 +19,12 @@ const kAppVersionConfigDefaults = <String, dynamic>{
 /// Remote configuration served by Firebase Remote Config.
 ///
 /// Fields:
-/// - [minVersion]       — oldest semver allowed to run (e.g. "1.2.0").
+/// - [minVersion]       — oldest semver allowed to event (e.g. "1.2.0").
 ///                        Users on an older version see the update screen.
-/// - [minBuildAndroid]  — oldest Android build number allowed to run.
-/// - [minBuildIos]      — oldest iOS build number allowed to run.
-/// - [minBuildWeb]      — oldest web build number allowed to run.
-/// - [minBuildMacos]    — oldest macOS build number allowed to run.
+/// - [minBuildAndroid]  — oldest Android build number allowed to event.
+/// - [minBuildIos]      — oldest iOS build number allowed to event.
+/// - [minBuildWeb]      — oldest web build number allowed to event.
+/// - [minBuildMacos]    — oldest macOS build number allowed to event.
 /// - [storeUrlAndroid]  — Play Store URL for the app.
 /// - [storeUrlIos]      — App Store URL for the app.
 @freezed

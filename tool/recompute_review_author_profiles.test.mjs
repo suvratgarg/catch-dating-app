@@ -18,15 +18,15 @@ test("buildReviewAuthorProfileRepairPlan finds stale reviewer names",
         "reviewer-2": {firstName: "Stable"},
       },
       reviews: {
-        "run-1~reviewer-1": {
+        "event-1~reviewer-1": {
           reviewerUserId: "reviewer-1",
           reviewerName: "Old Reviewer",
         },
-        "run-2~reviewer-2": {
+        "event-2~reviewer-2": {
           reviewerUserId: "reviewer-2",
           reviewerName: "Stable",
         },
-        "run-3~missing": {
+        "event-3~missing": {
           reviewerUserId: "missing",
           reviewerName: "Missing",
         },
@@ -40,15 +40,15 @@ test("buildReviewAuthorProfileRepairPlan finds stale reviewer names",
 
     assert.deepEqual(plan.summary.repairs, [
       {
-        path: "reviews/run-1~reviewer-1",
-        reviewId: "run-1~reviewer-1",
+        path: "reviews/event-1~reviewer-1",
+        reviewId: "event-1~reviewer-1",
         reviewerUserId: "reviewer-1",
         current: {reviewerName: "Old Reviewer"},
         expected: {reviewerName: "New Reviewer"},
       },
     ]);
     assert.deepEqual(plan.summary.warnings, [
-      "reviews/run-3~missing references missing users/missing.",
+      "reviews/event-3~missing references missing users/missing.",
     ]);
   }
 );
@@ -58,26 +58,26 @@ test("applyReviewAuthorProfileRepairPlan writes only reviewer names",
     const firestore = fakeFirestore({
       users: {},
       reviews: {
-        "run-1~reviewer-1": {reviewerName: "Old", rating: 5},
-        "run-2~reviewer-1": {reviewerName: "Stable", rating: 4},
+        "event-1~reviewer-1": {reviewerName: "Old", rating: 5},
+        "event-2~reviewer-1": {reviewerName: "Stable", rating: 4},
       },
     });
 
     await applyReviewAuthorProfileRepairPlan(firestore, {
       repairs: [
         {
-          path: "reviews/run-1~reviewer-1",
+          path: "reviews/event-1~reviewer-1",
           expected: {reviewerName: "New"},
         },
       ],
     });
 
-    assert.deepEqual(firestore.data.reviews["run-1~reviewer-1"], {
+    assert.deepEqual(firestore.data.reviews["event-1~reviewer-1"], {
       reviewerName: "New",
       rating: 5,
     });
     assert.equal(
-      firestore.data.reviews["run-2~reviewer-1"].reviewerName,
+      firestore.data.reviews["event-2~reviewer-1"].reviewerName,
       "Stable"
     );
   }

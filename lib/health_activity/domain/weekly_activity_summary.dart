@@ -34,7 +34,7 @@ class WeeklyActivitySummary {
     (max, meters) => meters > max ? meters : max,
   );
 
-  bool get hasRuns => runCount > 0 && totalDistanceMeters > 0;
+  bool get hasEvents => runCount > 0 && totalDistanceMeters > 0;
 
   static DateTime weekStartFor(DateTime date) {
     return DateTime(date.year, date.month, date.day - (date.weekday - 1));
@@ -111,7 +111,7 @@ class WeeklyRunningActivitySnapshot {
   bool get hasPlatformConnection =>
       connectionStatus == HealthActivityConnectionStatus.connected;
 
-  bool get hasRuns => summary.hasRuns;
+  bool get hasEvents => summary.hasEvents;
 
   factory WeeklyRunningActivitySnapshot.unsupported({
     required DateTime referenceDate,
@@ -144,7 +144,7 @@ class WeeklyRunningActivitySnapshot {
       ),
       activities: const [],
       source: WeeklyRunningActivitySource.none,
-      message: 'Install or update Health Connect to show weekly runs.',
+      message: 'Install or update Health Connect to show weekly events.',
       canInstallHealthConnect: true,
     );
   }
@@ -163,7 +163,7 @@ class WeeklyRunningActivitySnapshot {
       ),
       activities: const [],
       source: WeeklyRunningActivitySource.none,
-      message: 'Connect $platformLabel to include runs outside Catch.',
+      message: 'Connect $platformLabel to include events outside Catch.',
       canRequestPermission: true,
     );
   }
@@ -184,7 +184,7 @@ class WeeklyRunningActivitySnapshot {
       platformLabel: platformLabel,
       summary: summary,
       activities: List.unmodifiable(activities),
-      source: summary.hasRuns
+      source: summary.hasEvents
           ? WeeklyRunningActivitySource.healthPlatform
           : WeeklyRunningActivitySource.none,
       message: null,

@@ -8,7 +8,7 @@
 // functions/src/shared/firestore.ts.
 //
 // CI enforces that the committed file matches the generated output — if you
-// change a Dart model, run this script and commit the result.
+// change a Dart model, event this script and commit the result.
 
 import 'dart:convert';
 import 'dart:io';
@@ -30,38 +30,38 @@ final _modelConfigs = <_ModelConfig>[
     idField: 'uid',
   ),
   _ModelConfig(
-    dartPath: 'lib/run_clubs/domain/run_club.dart',
-    tsName: 'RunClubDoc',
-    collectionPath: '/runClubs/{clubId}',
+    dartPath: 'lib/clubs/domain/club.dart',
+    tsName: 'ClubDoc',
+    collectionPath: '/clubs/{clubId}',
     idField: 'id',
   ),
   _ModelConfig(
-    dartPath: 'lib/run_clubs/domain/run_club_membership.dart',
-    tsName: 'RunClubMembershipDoc',
-    collectionPath: '/runClubMemberships/{membershipId}',
+    dartPath: 'lib/clubs/domain/club_membership.dart',
+    tsName: 'ClubMembershipDoc',
+    collectionPath: '/clubMemberships/{membershipId}',
     idField: 'id',
   ),
   _ModelConfig(
-    dartPath: 'lib/runs/domain/run_constraints.dart',
-    tsName: 'RunConstraints',
-    collectionPath: null, // embedded in RunDoc, not a top-level collection
+    dartPath: 'lib/events/domain/event_constraints.dart',
+    tsName: 'EventConstraints',
+    collectionPath: null, // embedded in EventDoc, not a top-level collection
   ),
   _ModelConfig(
-    dartPath: 'lib/runs/domain/run.dart',
-    tsName: 'RunDoc',
-    collectionPath: '/runs/{runId}',
+    dartPath: 'lib/events/domain/event.dart',
+    tsName: 'EventDoc',
+    collectionPath: '/events/{eventId}',
     idField: 'id',
   ),
   _ModelConfig(
-    dartPath: 'lib/runs/domain/run_participation.dart',
-    tsName: 'RunParticipationDoc',
-    collectionPath: '/runParticipations/{participationId}',
+    dartPath: 'lib/events/domain/event_participation.dart',
+    tsName: 'EventParticipationDoc',
+    collectionPath: '/eventParticipations/{participationId}',
     idField: 'id',
   ),
   _ModelConfig(
-    dartPath: 'lib/runs/domain/saved_run.dart',
-    tsName: 'SavedRunDoc',
-    collectionPath: '/savedRuns/{savedRunId}',
+    dartPath: 'lib/events/domain/saved_event.dart',
+    tsName: 'SavedEventDoc',
+    collectionPath: '/savedEvents/{savedEventId}',
     idField: 'id',
   ),
   _ModelConfig(
@@ -148,7 +148,7 @@ final _enumRegex = RegExp(
 );
 
 /// Enum names that are client-side only and should not appear in the TS output.
-const _clientOnlyEnums = {'RunSignUpStatus', 'RunEligibility'};
+const _clientOnlyEnums = {'EventSignUpStatus', 'EventEligibility'};
 
 Map<String, List<String>> _parseEnums(String source) {
   final enums = <String, List<String>>{};
@@ -210,7 +210,7 @@ Map<String, List<String>> _parseEnums(String source) {
 }
 
 /// Strips leading Dart annotations from [line]. Handles nested parens
-/// (e.g. `@Default(RunConstraints())`) by counting parenthesis depth.
+/// (e.g. `@Default(EventConstraints())`) by counting parenthesis depth.
 String _stripAnnotations(String line) {
   while (line.startsWith('@')) {
     final afterAt = line.substring(1);

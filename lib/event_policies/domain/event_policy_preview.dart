@@ -6,7 +6,7 @@ import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 ///
 /// This file is intentionally not wired into production booking. It exists so
 /// host-facing event configurations can be tested against representative demand
-/// snapshots before the live run schema is migrated.
+/// snapshots before the live event schema is migrated.
 const eventPolicyPreviewDevelopmentStatus =
     'in_development_parallel_policy_preview';
 

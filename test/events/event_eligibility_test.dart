@@ -1,0 +1,181 @@
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/domain/event_eligibility.dart';
+import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
+import 'package:flutter_test/flutter_test.dart';
+
+void main() {
+  // ── helpers ────────────────────────────────────────────────────────────────
+
+  /// A future event with capacity, no sign-ups, no constraints — always Eligible.
+  Event buildEvent({
+    DateTime? startTime,
+    int capacityLimit = 20,
+    int? bookedCount,
+    EventConstraints constraints = const EventConstraints(),
+    Map<String, int> genderCounts = const {},
+  }) {
+    final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
+    return Event(
+      id: 'event-1',
+      clubId: 'club-1',
+      startTime: start,
+      endTime: start.add(const Duration(hours: 1)),
+      meetingPoint: 'Start line',
+      distanceKm: 5.0,
+      pace: PaceLevel.easy,
+      capacityLimit: capacityLimit,
+      description: '',
+      priceInPaise: 0,
+      bookedCount: bookedCount,
+      constraints: constraints,
+      genderCounts: genderCounts,
+    );
+  }
+
+  UserProfile buildUser({
+    String uid = 'user-1',
+    int birthYear = 1990, // ~35 y/o — well within any reasonable constraint
+    Gender gender = Gender.man,
+  }) {
+    return UserProfile(
+      uid: uid,
+      name: 'Test Runner',
+      dateOfBirth: DateTime(birthYear, 6, 15),
+      gender: gender,
+      phoneNumber: '+910000000000',
+      profileComplete: true,
+      interestedInGenders: const [Gender.woman],
+    );
+  }
+
+  // ── #13: EventPast ──────────────────────────────────────────────────────────
+
+  test(
+    '#13 eligibilityFor returns EventPast for a past event the user never signed up for',
+    () {
+      final user = buildUser();
+      final event = buildEvent(
+        startTime: DateTime.now().subtract(const Duration(hours: 2)),
+      );
+      expect(event.eligibilityFor(user), isA<EventPast>());
+    },
+  );
+
+  test('eligibilityFor uses the supplied reference time', () {
+    final now = DateTime(2026, 1, 1, 8);
+    final user = buildUser();
+    final event = buildEvent(startTime: now.add(const Duration(minutes: 30)));
+
+    expect(event.eligibilityFor(user, now: now), isA<Eligible>());
+    expect(
+      event.eligibilityFor(user, now: now.add(const Duration(hours: 1))),
+      isA<EventPast>(),
+    );
+  });
+
+  // ── #15: AgeTooYoung ─────────────────────────────────────────────────────
+
+  test('#15 eligibilityFor returns AgeTooYoung when user age < minAge', () {
+    // User born 5 years ago → age ~5; minAge = 18
+    final user = buildUser(birthYear: DateTime.now().year - 5);
+    final event = buildEvent(
+      constraints: const EventConstraints(minAge: 18, maxAge: 99),
+    );
+    final result = event.eligibilityFor(user);
+    expect(result, isA<AgeTooYoung>());
+    expect((result as AgeTooYoung).minAge, 18);
+  });
+
+  // ── #16: AgeTooOld ───────────────────────────────────────────────────────
+
+  test('#16 eligibilityFor returns AgeTooOld when user age > maxAge', () {
+    // User born 60 years ago → age ~60; maxAge = 40
+    final user = buildUser(birthYear: DateTime.now().year - 60);
+    final event = buildEvent(
+      constraints: const EventConstraints(minAge: 0, maxAge: 40),
+    );
+    final result = event.eligibilityFor(user);
+    expect(result, isA<AgeTooOld>());
+    expect((result as AgeTooOld).maxAge, 40);
+  });
+
+  // ── #17: Cohort cap reached ───────────────────────────────────────────────
+
+  test(
+    '#17 eligibilityFor returns EventFull when a waitlistable cohort slot is full',
+    () {
+      final user = buildUser(gender: Gender.man);
+      final event = buildEvent(
+        constraints: const EventConstraints(maxMen: 2),
+        genderCounts: {'man': 2}, // at cap
+      );
+      expect(event.eligibilityFor(user), isA<EventFull>());
+    },
+  );
+
+  test('eligible when gender count is below cap', () {
+    final user = buildUser(gender: Gender.man);
+    final event = buildEvent(
+      constraints: const EventConstraints(maxMen: 5),
+      genderCounts: {'man': 4},
+    );
+    expect(event.eligibilityFor(user), isA<Eligible>());
+  });
+
+  // ── #18: EventFull ──────────────────────────────────────────────────────────
+
+  test(
+    '#18 eligibilityFor returns EventFull when at capacity (user meets all criteria)',
+    () {
+      final user = buildUser();
+      final event = buildEvent(capacityLimit: 2, bookedCount: 2);
+      expect(event.eligibilityFor(user), isA<EventFull>());
+    },
+  );
+
+  // ── #19: Eligible ─────────────────────────────────────────────────────────
+
+  test(
+    '#19 eligibilityFor returns Eligible for a future, non-full, qualifying event',
+    () {
+      final user = buildUser();
+      final event =
+          buildEvent(); // all defaults: future, 20 capacity, 0 sign-ups
+      expect(event.eligibilityFor(user), isA<Eligible>());
+    },
+  );
+
+  // ── #20: statusFor maps fresh-viewer eligibility to EventSignUpStatus ──────
+
+  group('#20 statusFor', () {
+    test('EventPast → EventSignUpStatus.past', () {
+      final user = buildUser();
+      final event = buildEvent(
+        startTime: DateTime.now().subtract(const Duration(days: 1)),
+      );
+      expect(event.statusFor(user), EventSignUpStatus.past);
+    });
+
+    test('EventFull → EventSignUpStatus.full', () {
+      final user = buildUser();
+      final event = buildEvent(capacityLimit: 1, bookedCount: 1);
+      expect(event.statusFor(user), EventSignUpStatus.full);
+    });
+
+    test('Eligible → EventSignUpStatus.eligible', () {
+      final user = buildUser();
+      final event = buildEvent();
+      expect(event.statusFor(user), EventSignUpStatus.eligible);
+    });
+
+    test('Waitlistable cohort cap → EventSignUpStatus.full', () {
+      final user = buildUser(gender: Gender.man);
+      final event = buildEvent(
+        constraints: const EventConstraints(maxMen: 1),
+        genderCounts: {'man': 1},
+      );
+      expect(event.statusFor(user), EventSignUpStatus.full);
+    });
+  });
+}

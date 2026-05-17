@@ -38,8 +38,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
   bool _showOnMap = true;
   bool _newCatches = true;
   bool _messages = true;
-  bool _runReminders = true;
-  bool _runStatusUpdates = true;
+  bool _eventReminders = true;
+  bool _eventStatusUpdates = true;
   bool _clubUpdates = true;
   bool _weeklyDigest = false;
   String? _seededUid;
@@ -128,8 +128,8 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
       _showOnMap = userProfile.prefsShowOnMap;
       _newCatches = userProfile.prefsNewCatches;
       _messages = userProfile.prefsMessages;
-      _runReminders = userProfile.prefsRunReminders;
-      _runStatusUpdates = userProfile.prefsRunStatusUpdates;
+      _eventReminders = userProfile.prefsEventReminders;
+      _eventStatusUpdates = userProfile.prefsRunStatusUpdates;
       _clubUpdates = userProfile.prefsClubUpdates;
       _weeklyDigest = userProfile.prefsWeeklyDigest;
     }
@@ -171,7 +171,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                       SettingsRow(
                         key: SettingsKeys.reviewHistoryRow,
                         label: 'Review history',
-                        value: 'Runs you reviewed',
+                        value: 'Events you reviewed',
                         icon: Icons.rate_review_outlined,
                         onTap: () =>
                             context.pushNamed(Routes.reviewsHistoryScreen.name),
@@ -201,19 +201,31 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     ],
                   ),
                   gapH20,
-                  if (AppConfig.enableEventPolicyLab) ...[
+                  if (AppConfig.enableEventPolicyLab ||
+                      AppConfig.enableEventSuccessPreview) ...[
                     _SettingsSection(
                       title: 'Development',
                       children: [
-                        SettingsRow(
-                          key: SettingsKeys.eventPolicyLabRow,
-                          label: 'Event policy lab',
-                          value: 'Static booking policy previews',
-                          icon: Icons.science_outlined,
-                          onTap: () => context.pushNamed(
-                            Routes.eventPolicyLabScreen.name,
+                        if (AppConfig.enableEventPolicyLab)
+                          SettingsRow(
+                            key: SettingsKeys.eventPolicyLabRow,
+                            label: 'Event policy lab',
+                            value: 'Static booking policy previews',
+                            icon: Icons.science_outlined,
+                            onTap: () => context.pushNamed(
+                              Routes.eventPolicyLabScreen.name,
+                            ),
                           ),
-                        ),
+                        if (AppConfig.enableEventSuccessPreview)
+                          SettingsRow(
+                            key: SettingsKeys.eventSuccessLabRow,
+                            label: 'Event success lab',
+                            value: 'Host, attendee, and report previews',
+                            icon: Icons.auto_graph_rounded,
+                            onTap: () => context.pushNamed(
+                              Routes.eventSuccessLabScreen.name,
+                            ),
+                          ),
                       ],
                     ),
                     gapH20,
@@ -223,7 +235,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                     children: [
                       SettingsRow(
                         label: 'Who can see me',
-                        value: 'Runners on my runs',
+                        value: 'Runners on my events',
                         icon: Icons.visibility_outlined,
                       ),
                       SettingsRow(
@@ -281,35 +293,35 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                         ),
                       ),
                       SettingsRow(
-                        label: 'Run reminders',
+                        label: 'Event reminders',
                         icon: Icons.directions_run_outlined,
                         trailing: Switch.adaptive(
-                          key: SettingsKeys.runRemindersSwitch,
-                          value: _runReminders,
+                          key: SettingsKeys.eventRemindersSwitch,
+                          value: _eventReminders,
                           onChanged: savingPreference
                               ? null
                               : (value) => _savePref(
-                                  preference: SettingsPreference.runReminders,
+                                  preference: SettingsPreference.eventReminders,
                                   value: value,
-                                  apply: () => _runReminders = value,
-                                  rollback: () => _runReminders = !value,
+                                  apply: () => _eventReminders = value,
+                                  rollback: () => _eventReminders = !value,
                                 ),
                         ),
                       ),
                       SettingsRow(
-                        label: 'Run changes and cancellations',
+                        label: 'Event changes and cancellations',
                         icon: Icons.event_repeat_outlined,
                         trailing: Switch.adaptive(
-                          key: SettingsKeys.runStatusUpdatesSwitch,
-                          value: _runStatusUpdates,
+                          key: SettingsKeys.eventStatusUpdatesSwitch,
+                          value: _eventStatusUpdates,
                           onChanged: savingPreference
                               ? null
                               : (value) => _savePref(
                                   preference:
-                                      SettingsPreference.runStatusUpdates,
+                                      SettingsPreference.eventStatusUpdates,
                                   value: value,
-                                  apply: () => _runStatusUpdates = value,
-                                  rollback: () => _runStatusUpdates = !value,
+                                  apply: () => _eventStatusUpdates = value,
+                                  rollback: () => _eventStatusUpdates = !value,
                                 ),
                         ),
                       ),

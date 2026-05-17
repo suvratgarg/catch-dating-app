@@ -4,10 +4,10 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
 import 'package:catch_dating_app/swipes/domain/swipe.dart';
 import 'package:catch_dating_app/swipes/presentation/profile_surface.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_empty_content.dart';
@@ -22,9 +22,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 class SwipeScreen extends ConsumerStatefulWidget {
-  const SwipeScreen({super.key, required this.runId, this.vibeIds = const {}});
+  const SwipeScreen({
+    super.key,
+    required this.eventId,
+    this.vibeIds = const {},
+  });
 
-  final String runId;
+  final String eventId;
   final Set<String> vibeIds;
 
   @override
@@ -39,7 +43,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
   }) async {
     await ref
         .read(
-          swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds).notifier,
+          swipeQueueProvider(widget.eventId, vibeIds: widget.vibeIds).notifier,
         )
         .swipe(direction, reactionTarget: reactionTarget, comment: comment);
   }
@@ -48,16 +52,19 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
     final queueAsync = ref.watch(
-      swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds),
+      swipeQueueProvider(widget.eventId, vibeIds: widget.vibeIds),
     );
-    final runAsync = ref.watch(watchRunProvider(widget.runId));
+    final eventAsync = ref.watch(watchEventProvider(widget.eventId));
     final currentUserAsync = ref.watch(watchUserProfileProvider);
     final currentUser = currentUserAsync.asData?.value;
     final currentUserParticipation = currentUser == null
         ? null
         : ref
               .watch(
-                watchRunParticipationProvider(widget.runId, currentUser.uid),
+                watchEventParticipationProvider(
+                  widget.eventId,
+                  currentUser.uid,
+                ),
               )
               .asData
               ?.value;
@@ -70,13 +77,13 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
           e,
           context: AppErrorContext.swipes,
           onRetry: () => ref.invalidate(
-            swipeQueueProvider(widget.runId, vibeIds: widget.vibeIds),
+            swipeQueueProvider(widget.eventId, vibeIds: widget.vibeIds),
           ),
         ),
         data: (profiles) => profiles.isEmpty
             ? SwipeEmptyState(
                 content: buildSwipeEmptyContent(
-                  run: runAsync.asData?.value,
+                  event: eventAsync.asData?.value,
                   currentUser: currentUser,
                   currentUserParticipation: currentUserParticipation,
                 ),
@@ -85,7 +92,7 @@ class _SwipeScreenState extends ConsumerState<SwipeScreen> {
                 profile: profiles.first,
                 remainingCount: profiles.length,
                 viewerProfile: currentUser,
-                sharedRunTitle: runAsync.asData?.value?.title,
+                sharedRunTitle: eventAsync.asData?.value?.title,
                 onBack: () {
                   if (context.canPop()) {
                     context.pop();

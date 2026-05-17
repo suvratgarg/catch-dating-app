@@ -1,22 +1,22 @@
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:flutter/material.dart';
 
-/// Run / roster status badge.
+/// Event / roster status badge.
 ///
 /// Usage:
 /// ```dart
-/// StatusChip(status: RunStatus.joined)
-/// StatusChip(status: RunStatus.waitlist, waitlistPosition: 3)
-/// StatusChip(status: RunStatus.full)
+/// StatusChip(status: EventStatus.joined)
+/// StatusChip(status: EventStatus.waitlist, waitlistPosition: 3)
+/// StatusChip(status: EventStatus.full)
 /// ```
-enum RunStatus { open, joined, waitlist, pending, paid, full, interested }
+enum EventStatus { open, joined, waitlist, pending, paid, full, interested }
 
 class StatusChip extends StatelessWidget {
   const StatusChip({super.key, required this.status, this.waitlistPosition});
 
-  final RunStatus status;
+  final EventStatus status;
 
-  /// Only relevant when [status] is [RunStatus.waitlist].
+  /// Only relevant when [status] is [EventStatus.waitlist].
   final int? waitlistPosition;
 
   @override
@@ -26,15 +26,15 @@ class StatusChip extends StatelessWidget {
     return CatchBadge(label: label, tone: tone, uppercase: true);
   }
 
-  static (String, CatchBadgeTone) _resolve(RunStatus s, int? pos) {
+  static (String, CatchBadgeTone) _resolve(EventStatus s, int? pos) {
     return switch (s) {
-      RunStatus.joined => ('joined', CatchBadgeTone.brand),
-      RunStatus.paid => ('paid', CatchBadgeTone.success),
-      RunStatus.waitlist => ('waitlist #${pos ?? '?'}', CatchBadgeTone.solid),
-      RunStatus.pending => ('pending', CatchBadgeTone.neutral),
-      RunStatus.full => ('full', CatchBadgeTone.solid),
-      RunStatus.interested => ('interested', CatchBadgeTone.brand),
-      RunStatus.open => ('open', CatchBadgeTone.brand),
+      EventStatus.joined => ('joined', CatchBadgeTone.brand),
+      EventStatus.paid => ('paid', CatchBadgeTone.success),
+      EventStatus.waitlist => ('waitlist #${pos ?? '?'}', CatchBadgeTone.solid),
+      EventStatus.pending => ('pending', CatchBadgeTone.neutral),
+      EventStatus.full => ('full', CatchBadgeTone.solid),
+      EventStatus.interested => ('interested', CatchBadgeTone.brand),
+      EventStatus.open => ('open', CatchBadgeTone.brand),
     };
   }
 }

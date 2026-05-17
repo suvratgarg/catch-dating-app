@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 void main() {
   testWidgets('renders full-screen match celebration actions', (tester) async {
@@ -31,7 +31,7 @@ void main() {
               id: 'match-1',
               user1Id: 'runner-1',
               user2Id: 'runner-2',
-              runIds: const ['run-1'],
+              eventIds: const ['event-1'],
               createdAt: DateTime(2026, 5, 6),
             ),
             otherUid: 'runner-2',

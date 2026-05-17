@@ -11,9 +11,9 @@ import 'package:flutter/material.dart';
 
 /// Work-in-progress preview for the event success layer.
 ///
-/// This screen is intentionally not registered in GoRouter and should not be
-/// exposed in distribution until the product model, safety controls, and backend
-/// ownership rules are approved.
+/// This screen is registered only behind dev/staging preview gates and should
+/// not be exposed in distribution until the product model, safety controls, and
+/// backend ownership rules are approved.
 class EventSuccessLabScreen extends StatelessWidget {
   const EventSuccessLabScreen({
     super.key,
@@ -156,7 +156,7 @@ class _LabHero extends StatelessWidget {
               runSpacing: CatchSpacing.s2,
               children: [
                 _DarkPill(label: '$playbookCount playbooks'),
-                const _DarkPill(label: 'No app route'),
+                const _DarkPill(label: 'Dev/staging route'),
                 const _DarkPill(label: 'No Firestore writes'),
                 const _DarkPill(label: 'No booking changes'),
               ],

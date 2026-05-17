@@ -15,13 +15,13 @@ class DashboardEmpty extends StatelessWidget {
   static const _steps = [
     (
       '01',
-      'Book a group run',
+      'Book a group event',
       "Pick a club near you. Pay the fee (or don't — some are free).",
     ),
     (
       '02',
       'Actually show up',
-      'Run with the club. No swiping happens here. Just run.',
+      'Event with the club. No swiping happens here. Just event.',
     ),
     (
       '03',
@@ -31,7 +31,7 @@ class DashboardEmpty extends StatelessWidget {
     (
       '04',
       'They catch you back?',
-      'Match. Message. Plan the next run together.',
+      'Match. Message. Plan the next event together.',
     ),
   ];
 
@@ -46,7 +46,7 @@ class DashboardEmpty extends StatelessWidget {
           slivers: [
             ...DashboardSliverHeader(
               eyebrow: 'WELCOME TO CATCH',
-              title: "Let's find your first run",
+              title: "Let's find your first event",
             ).buildSlivers(context),
             const DashboardEmptySliverBody(),
           ],

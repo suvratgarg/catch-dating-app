@@ -96,12 +96,16 @@ service cloud.firestore {
       return blockerUid + '__' + blockedUid;
     }
 
-    function runParticipationDocId(runId, uid) {
-      return runId + '_' + uid;
+    function eventParticipationDocId(eventId, uid) {
+      return eventId + '_' + uid;
     }
 
-    function savedRunDocId(uid, runId) {
-      return uid + '_' + runId;
+    function savedEventDocId(uid, eventId) {
+      return uid + '_' + eventId;
+    }
+
+    function eventSuccessFeedbackDocId(eventId, uid) {
+      return eventId + '_' + uid;
     }
 
     function hasBlockBetween(uidA, uidB) {
@@ -124,20 +128,36 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/deletedUsers/$(uid));
     }
 
-    function isRunHostForRun(runId) {
-      return exists(/databases/$(database)/documents/runs/$(runId))
-        && exists(/databases/$(database)/documents/runClubs/$(
-          get(/databases/$(database)/documents/runs/$(runId)).data.runClubId
+    function isClubHostForEvent(eventId) {
+      return exists(/databases/$(database)/documents/events/$(eventId))
+        && exists(/databases/$(database)/documents/clubs/$(
+          get(/databases/$(database)/documents/events/$(eventId)).data.clubId
         ))
-        && get(/databases/$(database)/documents/runClubs/$(
-          get(/databases/$(database)/documents/runs/$(runId)).data.runClubId
+        && get(/databases/$(database)/documents/clubs/$(
+          get(/databases/$(database)/documents/events/$(eventId)).data.clubId
         )).data.hostUserId == request.auth.uid;
     }
 
-    function hasAttendedRun(runId, uid) {
-      return exists(/databases/$(database)/documents/runParticipations/$(runParticipationDocId(runId, uid)))
-        && get(/databases/$(database)/documents/runParticipations/$(runParticipationDocId(runId, uid)))
+    function hasEventParticipationStatus(eventId, uid, statuses) {
+      return exists(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
+        && get(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
+        .data.status in statuses;
+    }
+
+    function hasAttendedEvent(eventId, uid) {
+      return exists(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
+        && get(/databases/$(database)/documents/eventParticipations/$(eventParticipationDocId(eventId, uid)))
         .data.status == 'attended';
+    }
+
+    function canReadEventSuccess(eventId) {
+      return isAuthed()
+        && (
+          isClubHostForEvent(eventId)
+          || hasEventParticipationStatus(eventId, request.auth.uid, [
+            'signedUp', 'waitlisted', 'attended'
+          ])
+        );
     }
 
     // ── Users ─────────────────────────────────────────────────────────────────
@@ -168,7 +188,7 @@ service cloud.firestore {
           'paceMinSecsPerKm', 'paceMaxSecsPerKm',
           'preferredDistances', 'runningReasons', 'preferredRunTimes',
           // Notification / discovery preferences
-          'prefsNewCatches', 'prefsMessages', 'prefsRunReminders',
+          'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap',
           // Runtime fields
@@ -186,7 +206,7 @@ service cloud.firestore {
           'interestedInGenders', 'minAgePreference', 'maxAgePreference',
           'languages', 'paceMinSecsPerKm', 'paceMaxSecsPerKm',
           'preferredDistances', 'runningReasons', 'preferredRunTimes',
-          'prefsNewCatches', 'prefsMessages', 'prefsRunReminders',
+          'prefsNewCatches', 'prefsMessages', 'prefsEventReminders',
           'prefsRunStatusUpdates', 'prefsClubUpdates',
           'prefsWeeklyDigest', 'prefsShowOnMap'
         ])
@@ -277,7 +297,7 @@ service cloud.firestore {
         // Notification / discovery preferences
         && data.prefsNewCatches is bool
         && data.prefsMessages is bool
-        && data.prefsRunReminders is bool
+        && data.prefsEventReminders is bool
         && data.prefsRunStatusUpdates is bool
         && data.prefsClubUpdates is bool
         && data.prefsWeeklyDigest is bool
@@ -401,17 +421,17 @@ service cloud.firestore {
     }
 
     // Written exclusively by demo-data tooling to track synthetic-data cleanup.
-    match /seedRuns/{manifestId} {
+    match /seedEvents/{manifestId} {
       allow read, write: if false;
     }
 
-    // Written exclusively by run scheduling Cloud Functions to prevent
-    // overlapping runs and bookings.
-    match /runClubScheduleLocks/{lockId} {
+    // Written exclusively by event scheduling Cloud Functions to prevent
+    // overlapping events and bookings.
+    match /clubScheduleLocks/{lockId} {
       allow read, write: if false;
     }
 
-    match /userRunScheduleLocks/{lockId} {
+    match /userEventScheduleLocks/{lockId} {
       allow read, write: if false;
     }
 
@@ -443,8 +463,8 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // ── Run clubs ─────────────────────────────────────────────────────────────
-    match /runClubMemberships/{membershipId} {
+    // ── Clubs ─────────────────────────────────────────────────────────────
+    match /clubMemberships/{membershipId} {
       allow read: if isAuthed()
         && (
           resource.data.status == 'active'
@@ -453,23 +473,23 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    match /runClubHostClaims/{uid} {
+    match /clubHostClaims/{uid} {
       allow read, write: if false;
     }
 
-    match /runClubs/{clubId} {
+    match /clubs/{clubId} {
       allow read: if true;
 
-      // Club creation is handled by the createRunClub Cloud Function so the
+      // Club creation is handled by the createClub Cloud Function so the
       // initial club doc and user membership projection stay atomic.
       allow create: if false;
 
-      // Club profile edits go through updateRunClub. Keeping direct updates
+      // Club profile edits go through updateClub. Keeping direct updates
       // closed lets rules avoid duplicating Zod validation and prevents
       // clients from touching aggregate/projection fields.
       allow update: if false;
 
-      // Club deletion needs backend cleanup of runs, memberships, reviews, and
+      // Club deletion needs backend cleanup of events, memberships, reviews, and
       // images before it can be safely exposed.
       allow delete: if false;
     }
@@ -487,7 +507,7 @@ service cloud.firestore {
         && request.resource.data.keys().hasOnly([
           'swiperId',
           'targetId',
-          'runId',
+          'eventId',
           'direction',
           'reactionTargetId',
           'reactionTargetType',
@@ -499,13 +519,13 @@ service cloud.firestore {
         && request.resource.data.keys().hasAll([
           'swiperId',
           'targetId',
-          'runId',
+          'eventId',
           'direction',
           'createdAt'
         ])
         && request.resource.data.swiperId == userId
         && request.resource.data.targetId == targetId
-        && request.resource.data.runId is string
+        && request.resource.data.eventId is string
         && request.resource.data.direction in ['like', 'pass']
         && optionalSwipeText(request.resource.data, 'reactionTargetId', 80)
         && optionalSwipeText(request.resource.data, 'reactionTargetLabel', 80)
@@ -541,50 +561,144 @@ service cloud.firestore {
         && !isDeletedUser(userId)
         && !isDeletedUser(targetId)
         && exists(/databases/$(database)/documents/publicProfiles/$(targetId))
-        && exists(/databases/$(database)/documents/runs/$(request.resource.data.runId))
-        && hasAttendedRun(request.resource.data.runId, userId)
-        && hasAttendedRun(request.resource.data.runId, targetId)
+        && exists(/databases/$(database)/documents/events/$(request.resource.data.eventId))
+        && hasAttendedEvent(request.resource.data.eventId, userId)
+        && hasAttendedEvent(request.resource.data.eventId, targetId)
         && !hasBlockBetween(userId, targetId);
     }
 
-    // ── Runs ──────────────────────────────────────────────────────────────────
-    match /runParticipations/{participationId} {
+    // ── Events ──────────────────────────────────────────────────────────────────
+    match /eventParticipations/{participationId} {
       allow read: if isAuthed()
         && (
           resource.data.uid == request.auth.uid
           || resource.data.status in ['signedUp', 'waitlisted', 'attended']
-          || isRunHostForRun(resource.data.runId)
+          || isClubHostForEvent(resource.data.eventId)
         );
       allow write: if false;
     }
 
-    match /savedRuns/{savedRunId} {
+    match /savedEvents/{savedEventId} {
       allow read: if isAuthed() && resource.data.uid == request.auth.uid;
       allow create: if isAuthed()
-        && request.resource.data.keys().hasOnly(['uid', 'runId', 'savedAt'])
-        && request.resource.data.keys().hasAll(['uid', 'runId', 'savedAt'])
+        && request.resource.data.keys().hasOnly(['uid', 'eventId', 'savedAt'])
+        && request.resource.data.keys().hasAll(['uid', 'eventId', 'savedAt'])
         && request.resource.data.uid == request.auth.uid
-        && request.resource.data.runId is string
+        && request.resource.data.eventId is string
         && request.resource.data.savedAt is timestamp
-        && exists(/databases/$(database)/documents/runs/$(request.resource.data.runId))
-        && savedRunId == savedRunDocId(request.auth.uid, request.resource.data.runId);
+        && exists(/databases/$(database)/documents/events/$(request.resource.data.eventId))
+        && savedEventId == savedEventDocId(request.auth.uid, request.resource.data.eventId);
       allow delete: if isAuthed() && resource.data.uid == request.auth.uid;
       allow update: if false;
     }
 
-    match /runs/{runId} {
+    match /events/{eventId} {
       allow read: if true;
 
-      // Run creation is callable-owned so host authority and server-owned
+      // Event creation is callable-owned so host authority and server-owned
       // booking fields stay in one backend contract.
       allow create: if false;
 
       // Booking, waitlist, attendance, cancellation, and host edits are all
-      // callable-owned so canonical run projections cannot be mutated directly.
+      // callable-owned so canonical event projections cannot be mutated directly.
       allow update: if false;
 
-      // Run deletion needs backend cleanup/refunds before it can be safely
+      // Event deletion needs backend cleanup/refunds before it can be safely
       // exposed.
+      allow delete: if false;
+    }
+
+    function isValidEventSuccessPlan(eventId, data) {
+      return data.keys().hasOnly([
+          'eventId', 'clubId', 'playbookId', 'selectedModuleIds',
+          'targetAttendeeCount', 'hostGoal', 'privateCrushEnabled',
+          'contextualOpenersEnabled', 'activeStepIndex', 'status',
+          'attendeePrompt', 'createdAt', 'updatedAt', 'frozenAt',
+          'completedAt'
+        ])
+        && data.keys().hasAll([
+          'eventId', 'clubId', 'playbookId', 'selectedModuleIds',
+          'targetAttendeeCount', 'hostGoal', 'privateCrushEnabled',
+          'contextualOpenersEnabled', 'activeStepIndex', 'status',
+          'createdAt', 'updatedAt'
+        ])
+        && exists(/databases/$(database)/documents/events/$(eventId))
+        && data.eventId == eventId
+        && data.clubId == get(/databases/$(database)/documents/events/$(eventId)).data.clubId
+        && data.playbookId is string
+        && data.playbookId.size() > 0
+        && data.playbookId.size() <= 120
+        && data.selectedModuleIds is list
+        && data.selectedModuleIds.size() <= 24
+        && data.targetAttendeeCount is number
+        && data.targetAttendeeCount >= 1
+        && data.targetAttendeeCount <= 1000
+        && data.hostGoal is string
+        && data.hostGoal.size() <= 300
+        && data.privateCrushEnabled is bool
+        && data.contextualOpenersEnabled is bool
+        && data.activeStepIndex is number
+        && data.activeStepIndex >= 0
+        && data.activeStepIndex <= 100
+        && data.status in ['setup', 'live', 'complete']
+        && optionalString(data, 'attendeePrompt')
+        && (!hasField(data, 'attendeePrompt') || data.attendeePrompt == null || data.attendeePrompt.size() <= 300)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp
+        && optionalTimestamp(data, 'frozenAt')
+        && optionalTimestamp(data, 'completedAt');
+    }
+
+    function isValidEventSuccessFeedback(feedbackId, data) {
+      return data.keys().hasOnly([
+          'eventId', 'clubId', 'uid', 'welcomeRating', 'structureRating',
+          'metNewPeopleCount', 'markedPrivateCrush', 'safetyConcern',
+          'privateNote', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasAll([
+          'eventId', 'clubId', 'uid', 'welcomeRating', 'structureRating',
+          'metNewPeopleCount', 'markedPrivateCrush', 'safetyConcern',
+          'createdAt', 'updatedAt'
+        ])
+        && exists(/databases/$(database)/documents/events/$(data.eventId))
+        && feedbackId == eventSuccessFeedbackDocId(data.eventId, data.uid)
+        && data.uid == request.auth.uid
+        && data.clubId == get(/databases/$(database)/documents/events/$(data.eventId)).data.clubId
+        && get(/databases/$(database)/documents/events/$(data.eventId)).data.endTime <= request.time
+        && hasAttendedEvent(data.eventId, data.uid)
+        && data.welcomeRating is number
+        && data.welcomeRating >= 1
+        && data.welcomeRating <= 5
+        && data.structureRating is number
+        && data.structureRating >= 1
+        && data.structureRating <= 5
+        && data.metNewPeopleCount is number
+        && data.metNewPeopleCount >= 0
+        && data.metNewPeopleCount <= 100
+        && data.markedPrivateCrush is bool
+        && data.safetyConcern is bool
+        && optionalString(data, 'privateNote')
+        && (!hasField(data, 'privateNote') || data.privateNote == null || data.privateNote.size() <= 500)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /eventSuccessPlans/{eventId} {
+      allow read: if canReadEventSuccess(eventId);
+      allow create, update: if isAuthed()
+        && isClubHostForEvent(eventId)
+        && isValidEventSuccessPlan(eventId, request.resource.data);
+      allow delete: if false;
+    }
+
+    match /eventSuccessFeedback/{feedbackId} {
+      allow read: if isAuthed()
+        && (
+          resource.data.uid == request.auth.uid
+          || isClubHostForEvent(resource.data.eventId)
+        );
+      allow create, update: if isAuthed()
+        && isValidEventSuccessFeedback(feedbackId, request.resource.data);
       allow delete: if false;
     }
 

@@ -7,16 +7,16 @@
     "maxPromptTitleLength": 140,
     "maxAnswerLength": 300
   },
-  "defaultPromptIds": ["perfectRun", "afterRun", "greenFlag"],
+  "defaultPromptIds": ["perfectRun", "afterEvent", "greenFlag"],
   "prompts": [
     {
       "id": "perfectRun",
-      "title": "A perfect run with me looks like...",
-      "placeholder": "Tell runners what kind of run feels like you."
+      "title": "A perfect event with me looks like...",
+      "placeholder": "Tell runners what kind of event feels like you."
     },
     {
-      "id": "afterRun",
-      "title": "After a run, you can usually find me...",
+      "id": "afterEvent",
+      "title": "After an event, you can usually find me...",
       "placeholder": "Coffee, dosa, stretching, playlists..."
     },
     {

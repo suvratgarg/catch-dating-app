@@ -63,21 +63,21 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         preferredDistances: ["tenK"],
         runningReasons: ["community"],
       },
-      "runClubMemberships/club-1_runner-1": {
+      "clubMemberships/club-1_runner-1": {
         clubId: "club-1",
         uid: "runner-1",
         role: "member",
         status: "active",
         pushNotificationsEnabled: true,
       },
-      "runParticipations/run-1_runner-1": {
-        runId: "run-1",
-        runClubId: "club-1",
+      "eventParticipations/event-1_runner-1": {
+        eventId: "event-1",
+        clubId: "club-1",
         uid: "runner-1",
         status: "signedUp",
         genderAtSignup: "woman",
       },
-      "savedRuns/runner-1_run-1": {uid: "runner-1", runId: "run-1"},
+      "savedEvents/runner-1_run-1": {uid: "runner-1", eventId: "event-1"},
       "swipes/runner-1/outgoing/runner-2": {
         swiperId: "runner-1",
         targetId: "runner-2",
@@ -91,7 +91,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
         user1Id: "runner-1",
         user2Id: "runner-2",
       },
-      "reviews/run-1~runner-1": {reviewerUserId: "runner-1"},
+      "reviews/event-1~runner-1": {reviewerUserId: "runner-1"},
       "payments/payment-1": {userId: "runner-1"},
       "notifications/runner-1/items/item-1": {uid: "runner-1"},
       "blocks/runner-1__runner-2": {
@@ -161,30 +161,30 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   assert.ok(harness.deletedPublicDocs.includes("publicProfiles/runner-1"));
   assert.ok(
     harness.setWrites.some((write) =>
-      write.path === "runClubMemberships/club-1_runner-1" &&
+      write.path === "clubMemberships/club-1_runner-1" &&
       write.data.status === "deleted"
     )
   );
   assert.ok(
     harness.updateWrites.some((write) =>
-      write.path === "runClubs/club-1" &&
+      write.path === "clubs/club-1" &&
       write.data.memberCount !== undefined
     )
   );
   assert.ok(
     harness.setWrites.some((write) =>
-      write.path === "runParticipations/run-1_runner-1" &&
+      write.path === "eventParticipations/event-1_runner-1" &&
       write.data.status === "deleted"
     )
   );
   assert.ok(
     harness.updateWrites.some((write) =>
-      write.path === "runs/run-1" &&
+      write.path === "events/event-1" &&
       write.data.bookedCount !== undefined
     )
   );
   assert.ok(
-    harness.deletedPublicDocs.includes("savedRuns/runner-1_run-1")
+    harness.deletedPublicDocs.includes("savedEvents/runner-1_run-1")
   );
   assert.ok(
     harness.deletedPublicDocs.includes("swipes/runner-1/outgoing/runner-2")
@@ -200,7 +200,7 @@ test("requestAccountDeletionHandler anonymizes retained user doc", async () => {
   );
   assert.ok(
     harness.setWrites.some((write) =>
-      write.path === "reviews/run-1~runner-1" &&
+      write.path === "reviews/event-1~runner-1" &&
       write.data.reviewerDeleted === true
     )
   );

@@ -15,7 +15,7 @@ void main() {
       id: 'match-1',
       user1Id: 'runner-1',
       user2Id: 'runner-2',
-      runIds: const ['run-1'],
+      eventIds: const ['event-1'],
       createdAt: DateTime(2026, 4, 23, 9),
     );
 
@@ -34,7 +34,7 @@ void main() {
               timestamp: match.createdAt,
               unreadCount: 0,
               hasConversation: false,
-              runIds: match.runIds,
+              eventIds: match.eventIds,
             ),
             onTap: () => tapped = true,
           ),
@@ -62,7 +62,7 @@ void main() {
       id: 'match-1',
       user1Id: 'runner-1',
       user2Id: 'runner-2',
-      runIds: const ['run-1'],
+      eventIds: const ['event-1'],
       createdAt: DateTime(2026, 4, 23, 9),
     );
 
@@ -77,11 +77,11 @@ void main() {
               otherUid: 'runner-2',
               displayName: 'Taylor',
               photoUrl: null,
-              previewText: 'See you at the run',
+              previewText: 'See you at the event',
               timestamp: match.createdAt,
               unreadCount: 1,
               hasConversation: true,
-              runIds: match.runIds,
+              eventIds: match.eventIds,
             ),
             onTap: () {},
           ),

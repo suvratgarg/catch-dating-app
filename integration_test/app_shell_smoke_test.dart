@@ -6,6 +6,13 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/chats/data/conversation_repository.dart';
 import 'package:catch_dating_app/chats/domain/chat_message.dart';
+import 'package:catch_dating_app/clubs/data/club_draft_repository.dart';
+import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
+import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/clubs/domain/club_draft.dart';
+import 'package:catch_dating_app/clubs/domain/club_membership.dart';
+import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
@@ -17,7 +24,16 @@ import 'package:catch_dating_app/core/presentation/app_shell.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
-import 'package:catch_dating_app/dashboard/presentation/widgets/run_focus_rail.dart';
+import 'package:catch_dating_app/dashboard/presentation/widgets/event_focus_rail.dart';
+import 'package:catch_dating_app/events/data/event_draft_repository.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/data/saved_event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_draft.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
+import 'package:catch_dating_app/events/presentation/event_check_in_location_service.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/force_update/data/force_update_provider.dart';
 import 'package:catch_dating_app/image_uploads/data/image_upload_repository.dart';
@@ -37,22 +53,6 @@ import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/reviews/presentation/review_keys.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
-import 'package:catch_dating_app/run_clubs/data/run_club_draft_repository.dart';
-import 'package:catch_dating_app/run_clubs/data/run_club_membership_repository.dart';
-import 'package:catch_dating_app/run_clubs/data/run_clubs_repository.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club_draft.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club_membership.dart';
-import 'package:catch_dating_app/run_clubs/presentation/list/run_clubs_list_view_model.dart';
-import 'package:catch_dating_app/runs/data/run_draft_repository.dart';
-import 'package:catch_dating_app/runs/data/run_participation_repository.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/data/saved_run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/domain/run_draft.dart';
-import 'package:catch_dating_app/runs/domain/run_participation.dart';
-import 'package:catch_dating_app/runs/presentation/create_run_form_keys.dart';
-import 'package:catch_dating_app/runs/presentation/run_check_in_location_service.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_keys.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
@@ -72,9 +72,9 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 import 'package:image_picker/image_picker.dart';
 import 'package:integration_test/integration_test.dart';
 
+import '../test/clubs/clubs_test_helpers.dart' as club_helpers;
+import '../test/events/events_test_helpers.dart' as event_helpers;
 import '../test/onboarding/onboarding_test_helpers.dart' as onboarding_helpers;
-import '../test/run_clubs/run_clubs_test_helpers.dart' as club_helpers;
-import '../test/runs/runs_test_helpers.dart' as run_helpers;
 import '../test/test_pump_helpers.dart';
 
 const _mumbai = CityData(
@@ -90,14 +90,14 @@ void main() {
   testWidgets('unauthenticated launch opens public club discovery', (
     tester,
   ) async {
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
 
     await _pumpCatchApp(
       tester,
       overrides: _appOverrides(uid: null, user: null, clubs: [club]),
     );
 
-    expect(find.text('Run clubs'), findsOneWidget);
+    expect(find.text('Clubs'), findsOneWidget);
     expect(find.text('Stride Social'), findsWidgets);
     expect(find.text('Home'), findsNothing);
     expect(find.text('Profile'), findsNothing);
@@ -106,7 +106,7 @@ void main() {
   testWidgets(
     'public club discovery opens club details through the real route',
     (tester) async {
-      final club = club_helpers.buildRunClub(
+      final club = club_helpers.buildClub(
         id: 'club-1',
         name: 'Stride Social',
         description: 'Morning runners who like easy city loops.',
@@ -117,7 +117,7 @@ void main() {
         overrides: _appOverrides(uid: null, user: null, clubs: [club]),
       );
 
-      await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+      await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
       await pumpFeatureUi(tester);
 
       expect(find.text('Stride Social'), findsWidgets);
@@ -130,7 +130,7 @@ void main() {
   );
 
   testWidgets('phone auth route sends and verifies an OTP', (tester) async {
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
     final authRepository = onboarding_helpers.FakeAuthRepository()
       ..onVerifyPhoneNumber =
           ({
@@ -152,7 +152,7 @@ void main() {
       ),
     );
 
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
     await _tapCatchButton(tester, 'Sign in to join');
     await _tapCatchButton(tester, 'Continue with phone');
@@ -177,9 +177,9 @@ void main() {
   testWidgets('club detail joins through the membership action', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final clubsRepository = club_helpers.FakeClubsRepository();
 
     await _pumpCatchApp(
       tester,
@@ -187,26 +187,26 @@ void main() {
         uid: user.uid,
         user: user,
         clubs: [club],
-        runClubsRepository: runClubsRepository,
+        clubsRepository: clubsRepository,
       ),
     );
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Join club'));
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(runClubsRepository.joinedClubId, club.id);
+    expect(clubsRepository.joinedClubId, club.id);
   });
 
   testWidgets('club detail leaves through the membership action', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final clubsRepository = club_helpers.FakeClubsRepository();
 
     await _pumpCatchApp(
       tester,
@@ -215,31 +215,31 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        runClubsRepository: runClubsRepository,
+        clubsRepository: clubsRepository,
       ),
     );
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Leave club'));
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(runClubsRepository.leftClubId, club.id);
+    expect(clubsRepository.leftClubId, club.id);
   });
 
-  testWidgets('run clubs tab creates a new club', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+  testWidgets('clubs tab creates a new club', (tester) async {
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final clubsRepository = club_helpers.FakeClubsRepository();
 
     await _pumpCatchApp(
       tester,
       overrides: _appOverrides(
         uid: user.uid,
         user: user,
-        canCreateRunClub: true,
-        runClubsRepository: runClubsRepository,
+        canCreateClub: true,
+        clubsRepository: clubsRepository,
       ),
     );
 
@@ -247,29 +247,29 @@ void main() {
     await tester.tap(find.byIcon(Icons.add_rounded).first);
     await pumpFeatureUi(tester);
 
-    await _enterRunClubText('Club name', 'Sunset Striders', tester);
-    await _enterRunClubText('Area / neighbourhood', 'Bandra', tester);
-    await _selectRunClubCity(tester, 'Mumbai');
+    await _enterClubText('Club name', 'Sunset Striders', tester);
+    await _enterClubText('Area / neighbourhood', 'Bandra', tester);
+    await _selectClubCity(tester, 'Mumbai');
     await _tapCatchButton(tester, 'Next');
 
-    await _enterRunClubText('Description', 'Easy social club', tester);
+    await _enterClubText('Description', 'Easy social club', tester);
     await _tapCatchButton(tester, 'Create club');
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(runClubsRepository.lastCreateCall, isNotNull);
-    expect(runClubsRepository.lastCreateCall?.name, 'Sunset Striders');
-    expect(runClubsRepository.lastCreateCall?.location, 'mumbai');
-    expect(runClubsRepository.lastCreateCall?.area, 'Bandra');
-    expect(runClubsRepository.lastCreateCall?.description, 'Easy social club');
+    expect(clubsRepository.lastCreateCall, isNotNull);
+    expect(clubsRepository.lastCreateCall?.name, 'Sunset Striders');
+    expect(clubsRepository.lastCreateCall?.location, 'mumbai');
+    expect(clubsRepository.lastCreateCall?.area, 'Bandra');
+    expect(clubsRepository.lastCreateCall?.description, 'Easy social club');
   });
 
-  testWidgets('run clubs tab uploads a picked cover while creating a club', (
+  testWidgets('clubs tab uploads a picked cover while creating a club', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final runClubsRepository = club_helpers.FakeRunClubsRepository();
-    final pickedCover = await _generatedPngXFile('run-club-cover.png');
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final clubsRepository = club_helpers.FakeClubsRepository();
+    final pickedCover = await _generatedPngXFile('club-cover.png');
     final imageUploadRepository = club_helpers.FakeImageUploadRepository(
       pickedImage: pickedCover,
       uploadResult: 'https://example.com/uploaded-cover.jpg',
@@ -280,8 +280,8 @@ void main() {
       overrides: _appOverrides(
         uid: user.uid,
         user: user,
-        canCreateRunClub: true,
-        runClubsRepository: runClubsRepository,
+        canCreateClub: true,
+        clubsRepository: clubsRepository,
         imageUploadRepository: imageUploadRepository,
       ),
     );
@@ -294,12 +294,12 @@ void main() {
     await pumpFeatureUi(tester);
     expect(find.byIcon(Icons.edit_outlined), findsOneWidget);
 
-    await _enterRunClubText('Club name', 'Sunset Striders', tester);
-    await _enterRunClubText('Area / neighbourhood', 'Bandra', tester);
-    await _selectRunClubCity(tester, 'Mumbai');
+    await _enterClubText('Club name', 'Sunset Striders', tester);
+    await _enterClubText('Area / neighbourhood', 'Bandra', tester);
+    await _selectClubCity(tester, 'Mumbai');
     await _tapCatchButton(tester, 'Next');
 
-    await _enterRunClubText('Description', 'Easy social club', tester);
+    await _enterClubText('Description', 'Easy social club', tester);
     await _tapCatchButton(tester, 'Create club');
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
@@ -310,20 +310,20 @@ void main() {
       isNotEmpty,
     );
     expect(
-      runClubsRepository.lastCreateCall?.imageUrl,
+      clubsRepository.lastCreateCall?.imageUrl,
       imageUploadRepository.uploadResult,
     );
   });
 
-  testWidgets('host edits a run club from club detail', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(
+  testWidgets('host edits a club from club detail', (tester) async {
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(
       id: 'club-1',
       name: 'Stride Social',
       hostUserId: user.uid,
       hostName: user.name,
     );
-    final runClubsRepository = club_helpers.FakeRunClubsRepository();
+    final clubsRepository = club_helpers.FakeClubsRepository();
 
     await _pumpCatchApp(
       tester,
@@ -332,12 +332,12 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        runClubsRepository: runClubsRepository,
+        clubsRepository: clubsRepository,
       ),
     );
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
     await tester.scrollUntilVisible(find.text('Edit club'), 240);
     await pumpFeatureUi(tester);
@@ -345,30 +345,26 @@ void main() {
     await pumpFeatureUi(tester);
 
     await _tapCatchButton(tester, 'Next');
-    await _enterRunClubText(
-      'Description',
-      'Updated host-led city loops.',
-      tester,
-    );
+    await _enterClubText('Description', 'Updated host-led city loops.', tester);
     await _tapCatchButton(tester, 'Save changes');
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(runClubsRepository.lastUpdatedClubId, club.id);
+    expect(clubsRepository.lastUpdatedClubId, club.id);
     expect(
-      runClubsRepository.lastUpdatedFields?['description'],
+      clubsRepository.lastUpdatedFields?['description'],
       'Updated host-led city loops.',
     );
   });
 
-  testWidgets('club schedule opens a run detail route with booking CTA', (
+  testWidgets('club schedule opens an event detail route with booking CTA', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final run = run_helpers.buildRun(
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final run = event_helpers.buildEvent(
       id: 'run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 2,
@@ -381,35 +377,35 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        clubRuns: {
+        clubEvents: {
           club.id: [run],
         },
       ),
     );
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Carter Road Amphitheatre'));
     await pumpFeatureUi(tester);
 
     expect(find.text('Carter Road Amphitheatre'), findsWidgets);
-    expect(find.text('Join run — 18 spots left'), findsOneWidget);
+    expect(find.text('Join event — 18 spots left'), findsOneWidget);
   });
 
-  testWidgets('run detail books a free run and shows confirmation', (
+  testWidgets('event detail books a free event and shows confirmation', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final run = run_helpers.buildRun(
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final run = event_helpers.buildEvent(
       id: 'run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
     );
-    final paymentRepository = run_helpers.FakePaymentRepository();
+    final paymentRepository = event_helpers.FakePaymentRepository();
 
     await _pumpCatchApp(
       tester,
@@ -418,7 +414,7 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        clubRuns: {
+        clubEvents: {
           club.id: [run],
         },
         paymentRepository: paymentRepository,
@@ -426,96 +422,97 @@ void main() {
     );
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Carter Road Amphitheatre'));
     await pumpFeatureUi(tester);
 
-    await tester.tap(find.text('Join run — 19 spots left'));
+    await tester.tap(find.text('Join event — 19 spots left'));
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(paymentRepository.bookFreeRunCalled, isTrue);
-    expect(paymentRepository.bookedFreeRunId, run.id);
+    expect(paymentRepository.bookFreeEventCalled, isTrue);
+    expect(paymentRepository.bookedFreeEventId, run.id);
     expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
     expect(find.text("You're in."), findsOneWidget);
   });
 
-  testWidgets('run detail books a paid run and opens payment confirmation', (
-    tester,
-  ) async {
-    final user = run_helpers.buildUser(
-      uid: 'runner-1',
-      name: 'Suvrat Garg',
-      email: 'suvrat@example.com',
-      phoneNumber: '+919876543210',
-    );
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final run = run_helpers.buildRun(
-      id: 'paid-run-1',
-      runClubId: club.id,
-      startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
-      meetingPoint: 'Carter Road Amphitheatre',
-      bookedCount: 1,
-      priceInPaise: 29900,
-    );
-    final paymentRepository = run_helpers.FakePaymentRepository()
-      ..processPaymentResult = PaymentConfirmationData(
-        paymentId: 'pay_integration_123',
-        orderId: 'order_integration_123',
-        amountInPaise: run.priceInPaise,
-        runId: run.id,
+  testWidgets(
+    'event detail books a paid event and opens payment confirmation',
+    (tester) async {
+      final user = event_helpers.buildUser(
+        uid: 'runner-1',
+        name: 'Suvrat Garg',
+        email: 'suvrat@example.com',
+        phoneNumber: '+919876543210',
+      );
+      final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+      final run = event_helpers.buildEvent(
+        id: 'paid-run-1',
+        clubId: club.id,
+        startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
+        meetingPoint: 'Carter Road Amphitheatre',
+        bookedCount: 1,
+        priceInPaise: 29900,
+      );
+      final paymentRepository = event_helpers.FakePaymentRepository()
+        ..processPaymentResult = PaymentConfirmationData(
+          paymentId: 'pay_integration_123',
+          orderId: 'order_integration_123',
+          amountInPaise: run.priceInPaise,
+          eventId: run.id,
+        );
+
+      await _pumpCatchApp(
+        tester,
+        overrides: _appOverrides(
+          uid: user.uid,
+          user: user,
+          clubs: [club],
+          joinedClubIds: {club.id},
+          clubEvents: {
+            club.id: [run],
+          },
+          paymentRepository: paymentRepository,
+        ),
       );
 
-    await _pumpCatchApp(
-      tester,
-      overrides: _appOverrides(
-        uid: user.uid,
-        user: user,
-        clubs: [club],
-        joinedClubIds: {club.id},
-        clubRuns: {
-          club.id: [run],
-        },
-        paymentRepository: paymentRepository,
-      ),
-    );
+      await _openTab(tester, 'Clubs');
+      await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
+      await pumpFeatureUi(tester);
+      await tester.tap(find.text('Carter Road Amphitheatre'));
+      await pumpFeatureUi(tester);
 
-    await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
-    await pumpFeatureUi(tester);
-    await tester.tap(find.text('Carter Road Amphitheatre'));
-    await pumpFeatureUi(tester);
+      await tester.tap(find.text('Book event'));
+      await flushTestEventQueue();
+      await pumpFeatureUi(tester);
 
-    await tester.tap(find.text('Book run'));
-    await flushTestEventQueue();
-    await pumpFeatureUi(tester);
+      expect(paymentRepository.processPaymentCalled, isTrue);
+      expect(paymentRepository.lastProcessPaymentCall?.eventId, run.id);
+      expect(paymentRepository.lastProcessPaymentCall?.userName, user.name);
+      expect(paymentRepository.lastProcessPaymentCall?.userEmail, user.email);
+      expect(
+        paymentRepository.lastProcessPaymentCall?.userContact,
+        user.phoneNumber,
+      );
+      expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
+      expect(find.text('Payment ID'), findsOneWidget);
+      expect(find.text('pay_integration_123'), findsOneWidget);
+      expect(find.byKey(PaymentConfirmationKeys.backHome), findsOneWidget);
+    },
+  );
 
-    expect(paymentRepository.processPaymentCalled, isTrue);
-    expect(paymentRepository.lastProcessPaymentCall?.runId, run.id);
-    expect(paymentRepository.lastProcessPaymentCall?.userName, user.name);
-    expect(paymentRepository.lastProcessPaymentCall?.userEmail, user.email);
-    expect(
-      paymentRepository.lastProcessPaymentCall?.userContact,
-      user.phoneNumber,
-    );
-    expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
-    expect(find.text('Payment ID'), findsOneWidget);
-    expect(find.text('pay_integration_123'), findsOneWidget);
-    expect(find.byKey(PaymentConfirmationKeys.backHome), findsOneWidget);
-  });
-
-  testWidgets('run detail cancels an existing booking', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final run = run_helpers.buildRun(
+  testWidgets('event detail cancels an existing booking', (tester) async {
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final run = event_helpers.buildEvent(
       id: 'run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
     );
-    final runRepository = run_helpers.FakeRunRepository();
+    final eventRepository = event_helpers.FakeEventRepository();
 
     await _pumpCatchApp(
       tester,
@@ -524,15 +521,15 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        signedUpRuns: [run],
-        runRepository: runRepository,
+        signedUpEvents: [run],
+        eventRepository: eventRepository,
       ),
     );
 
     await tester.tap(
       find.descendant(
-        of: find.byKey(RunFocusRail.railKey),
-        matching: find.text('View run'),
+        of: find.byKey(EventFocusRail.railKey),
+        matching: find.text('View event'),
       ),
     );
     await pumpFeatureUi(tester);
@@ -540,22 +537,22 @@ void main() {
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(runRepository.cancelledRunId, run.id);
+    expect(eventRepository.cancelledEventId, run.id);
     expect(find.text('Booking cancelled.'), findsOneWidget);
   });
 
-  testWidgets('run detail joins a waitlist for a full run', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final run = run_helpers.buildRun(
+  testWidgets('event detail joins a waitlist for a full event', (tester) async {
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final run = event_helpers.buildEvent(
       id: 'run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       capacityLimit: 20,
       bookedCount: 20,
     );
-    final runRepository = run_helpers.FakeRunRepository();
+    final eventRepository = event_helpers.FakeEventRepository();
 
     await _pumpCatchApp(
       tester,
@@ -564,15 +561,15 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        clubRuns: {
+        clubEvents: {
           club.id: [run],
         },
-        runRepository: runRepository,
+        eventRepository: eventRepository,
       ),
     );
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Carter Road Amphitheatre'));
     await pumpFeatureUi(tester);
@@ -581,18 +578,18 @@ void main() {
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(runRepository.joinedWaitlistRunId, run.id);
+    expect(eventRepository.joinedWaitlistEventId, run.id);
   });
 
-  testWidgets('host creates a run from club detail', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(
+  testWidgets('host creates an event from club detail', (tester) async {
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(
       id: 'club-1',
       name: 'Stride Social',
       hostUserId: user.uid,
       hostName: user.name,
     );
-    final runRepository = run_helpers.FakeRunRepository();
+    final eventRepository = event_helpers.FakeEventRepository();
 
     await _pumpCatchApp(
       tester,
@@ -601,49 +598,49 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        runClubsRepository: club_helpers.FakeRunClubsRepository(),
-        runRepository: runRepository,
+        clubsRepository: club_helpers.FakeClubsRepository(),
+        eventRepository: eventRepository,
       ),
     );
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
-    await tester.scrollUntilVisible(find.text('Add run'), 240);
+    await tester.scrollUntilVisible(find.text('Add event'), 240);
     await pumpFeatureUi(tester);
-    await tester.tap(find.text('Add run'));
+    await tester.tap(find.text('Add event'));
     await pumpFeatureUi(tester);
 
-    await _submitValidRun(tester);
+    await _submitValidEvent(tester);
 
-    expect(runRepository.createdRun, isNotNull);
-    expect(runRepository.createdRun?.runClubId, club.id);
-    expect(runRepository.createdRun?.meetingPoint, 'Bandra Fort');
-    expect(runRepository.createdRun?.startingPointLat, 19.12345);
-    expect(runRepository.createdRun?.startingPointLng, 72.98765);
-    expect(runRepository.createdRun?.distanceKm, 7.5);
-    expect(runRepository.createdRun?.capacityLimit, 18);
-    expect(runRepository.createdRun?.priceInPaise, 24950);
-    expect(find.text('RUN CREATED'), findsOneWidget);
-    expect(find.text('Your run is live.'), findsOneWidget);
+    expect(eventRepository.createdEvent, isNotNull);
+    expect(eventRepository.createdEvent?.clubId, club.id);
+    expect(eventRepository.createdEvent?.meetingPoint, 'Bandra Fort');
+    expect(eventRepository.createdEvent?.startingPointLat, 19.12345);
+    expect(eventRepository.createdEvent?.startingPointLng, 72.98765);
+    expect(eventRepository.createdEvent?.distanceKm, 7.5);
+    expect(eventRepository.createdEvent?.capacityLimit, 18);
+    expect(eventRepository.createdEvent?.priceInPaise, 24950);
+    expect(find.text('EVENT CREATED'), findsOneWidget);
+    expect(find.text('Your event is live.'), findsOneWidget);
   });
 
   testWidgets('matches list opens chat and resets unread state', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
     final match = Match(
       id: 'match-1',
       user1Id: user.uid,
       user2Id: 'runner-2',
-      runIds: const ['run-1'],
+      eventIds: const ['run-1'],
       createdAt: DateTime(2026, 4, 23, 9),
       lastMessageAt: DateTime(2026, 4, 23, 10),
-      lastMessagePreview: 'See you at the run',
+      lastMessagePreview: 'See you at the event',
       lastMessageSenderId: 'runner-2',
       unreadCounts: const {'runner-1': 1},
     );
-    final profile = run_helpers.buildPublicProfile(
+    final profile = event_helpers.buildPublicProfile(
       uid: 'runner-2',
       name: 'Taylor',
     );
@@ -664,7 +661,7 @@ void main() {
 
     await _openTab(tester, 'Chats');
     expect(find.text('Taylor'), findsOneWidget);
-    expect(find.text('See you at the run'), findsOneWidget);
+    expect(find.text('See you at the event'), findsOneWidget);
 
     await tester.tap(find.text('Taylor'));
     await pumpFeatureUi(tester);
@@ -712,12 +709,12 @@ void main() {
     expect(safetyRepository.blockedUserId, profile.uid);
   });
 
-  testWidgets('dashboard next-run card opens run detail', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final run = run_helpers.buildRun(
+  testWidgets('dashboard next-event card opens event detail', (tester) async {
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final run = event_helpers.buildEvent(
       id: 'run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
@@ -730,14 +727,14 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        signedUpRuns: [run],
+        signedUpEvents: [run],
       ),
     );
 
     await tester.tap(
       find.descendant(
-        of: find.byKey(RunFocusRail.railKey),
-        matching: find.text('View run'),
+        of: find.byKey(EventFocusRail.railKey),
+        matching: find.text('View event'),
       ),
     );
     await pumpFeatureUi(tester);
@@ -747,17 +744,17 @@ void main() {
   });
 
   testWidgets('dashboard self check-in records attendance', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final run = run_helpers.buildRun(
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final run = event_helpers.buildEvent(
       id: 'check-in-run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(minutes: 5)),
       endTime: DateTime.now().add(const Duration(hours: 1)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
     );
-    final runRepository = run_helpers.FakeRunRepository();
+    final eventRepository = event_helpers.FakeEventRepository();
 
     await _pumpCatchApp(
       tester,
@@ -766,8 +763,8 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        signedUpRuns: [run],
-        runRepository: runRepository,
+        signedUpEvents: [run],
+        eventRepository: eventRepository,
       ),
     );
 
@@ -776,32 +773,32 @@ void main() {
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(runRepository.selfCheckedInRunId, run.id);
+    expect(eventRepository.selfCheckedInEventId, run.id);
     expect(find.text('CHECKED IN'), findsOneWidget);
     expect(find.text('Checked in.'), findsOneWidget);
   });
 
   testWidgets('dashboard host attendance toggles an attendee', (tester) async {
-    final host = run_helpers.buildUser(uid: 'host-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(
+    final host = event_helpers.buildUser(uid: 'host-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(
       id: 'club-1',
       name: 'Stride Social',
       hostUserId: host.uid,
       hostName: host.name,
     );
-    final run = run_helpers.buildRun(
+    final run = event_helpers.buildEvent(
       id: 'attendance-run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().subtract(const Duration(minutes: 5)),
       endTime: DateTime.now().add(const Duration(minutes: 55)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
     );
-    final attendeeProfile = run_helpers.buildPublicProfile(
+    final attendeeProfile = event_helpers.buildPublicProfile(
       uid: 'runner-2',
       name: 'Taylor',
     );
-    final runRepository = run_helpers.FakeRunRepository();
+    final eventRepository = event_helpers.FakeEventRepository();
 
     await _pumpCatchApp(
       tester,
@@ -810,16 +807,16 @@ void main() {
         user: host,
         clubs: [club],
         joinedClubIds: {club.id},
-        clubRuns: {
+        clubEvents: {
           club.id: [run],
         },
-        runParticipations: {
+        eventParticipations: {
           run.id: [
-            run_helpers.buildRunParticipation(run: run, uid: 'runner-2'),
+            event_helpers.buildEventParticipation(event: run, uid: 'runner-2'),
           ],
         },
         publicProfiles: [attendeeProfile],
-        runRepository: runRepository,
+        eventRepository: eventRepository,
       ),
     );
 
@@ -835,22 +832,22 @@ void main() {
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(runRepository.markedAttendanceRunId, run.id);
-    expect(runRepository.markedAttendanceUserId, 'runner-2');
+    expect(eventRepository.markedAttendanceEventId, run.id);
+    expect(eventRepository.markedAttendanceUserId, 'runner-2');
   });
 
-  testWidgets('dashboard recommended run opens run detail', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final nextRun = run_helpers.buildRun(
+  testWidgets('dashboard recommended event opens event detail', (tester) async {
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final nextRun = event_helpers.buildEvent(
       id: 'run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
       bookedCount: 1,
     );
-    final recommendedRun = run_helpers.buildRun(
+    final recommendedRun = event_helpers.buildEvent(
       id: 'recommended-run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(days: 2, hours: 3)),
       meetingPoint: 'Joggers Park Gate',
       bookedCount: 3,
@@ -863,8 +860,8 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        signedUpRuns: [nextRun],
-        recommendedRuns: [recommendedRun],
+        signedUpEvents: [nextRun],
+        recommendedEvents: [recommendedRun],
       ),
     );
 
@@ -878,17 +875,17 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Joggers Park Gate'), findsWidgets);
-    expect(find.text('Join run — 17 spots left'), findsOneWidget);
+    expect(find.text('Join event — 17 spots left'), findsOneWidget);
   });
 
-  testWidgets('catches tab opens the swipe deck for an attended run', (
+  testWidgets('catches tab opens the swipe deck for an attended event', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final attendedRun = run_helpers.buildRun(
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       meetingPoint: 'Bandstand Steps',
@@ -902,7 +899,7 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        attendedRuns: [attendedRun],
+        attendedEvents: [attendedRun],
       ),
     );
 
@@ -911,27 +908,27 @@ void main() {
     await pumpFeatureUi(tester);
 
     expect(find.text('Discover'), findsOneWidget);
-    expect(find.text('No more runners'), findsOneWidget);
-    expect(find.text('Join more runs to meet new people'), findsOneWidget);
+    expect(find.text('No more attendees'), findsOneWidget);
+    expect(find.text('Join more events to meet new people'), findsOneWidget);
   });
 
   testWidgets('catches deck records like and pass decisions', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final attendedRun = run_helpers.buildRun(
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       meetingPoint: 'Bandstand Steps',
       checkedInCount: 3,
     );
-    final firstCandidate = run_helpers.buildPublicProfile(
+    final firstCandidate = event_helpers.buildPublicProfile(
       uid: 'runner-2',
       name: 'Taylor',
       gender: Gender.woman,
     );
-    final secondCandidate = run_helpers.buildPublicProfile(
+    final secondCandidate = event_helpers.buildPublicProfile(
       uid: 'runner-3',
       name: 'Riya',
       gender: Gender.woman,
@@ -945,7 +942,7 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        attendedRuns: [attendedRun],
+        attendedEvents: [attendedRun],
         swipeCandidates: [firstCandidate, secondCandidate],
         swipeRepository: swipeRepository,
       ),
@@ -958,7 +955,7 @@ void main() {
     expect(find.text('Taylor'), findsOneWidget);
 
     final promptLikeButton = find.byTooltip(
-      'Like A perfect run with me looks like...',
+      'Like A perfect event with me looks like...',
     );
     await tester.ensureVisible(promptLikeButton);
     await tester.tap(promptLikeButton);
@@ -968,7 +965,7 @@ void main() {
     expect(swipeRepository.recordedSwipes, hasLength(1));
     expect(swipeRepository.recordedSwipes.single.swiperId, user.uid);
     expect(swipeRepository.recordedSwipes.single.targetId, firstCandidate.uid);
-    expect(swipeRepository.recordedSwipes.single.runId, attendedRun.id);
+    expect(swipeRepository.recordedSwipes.single.eventId, attendedRun.id);
     expect(
       swipeRepository.recordedSwipes.single.direction,
       SwipeDirection.like,
@@ -982,11 +979,11 @@ void main() {
     expect(swipeRepository.recordedSwipes, hasLength(2));
     expect(swipeRepository.recordedSwipes.last.targetId, secondCandidate.uid);
     expect(swipeRepository.recordedSwipes.last.direction, SwipeDirection.pass);
-    expect(find.text('No more runners'), findsOneWidget);
+    expect(find.text('No more attendees'), findsOneWidget);
   });
 
   testWidgets('settings opens payment history from profile', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
 
     await _pumpCatchApp(
       tester,
@@ -1008,7 +1005,7 @@ void main() {
   });
 
   testWidgets('settings opens review history from profile', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
 
     await _pumpCatchApp(
       tester,
@@ -1025,12 +1022,12 @@ void main() {
     expect(find.text('No reviews yet'), findsOneWidget);
   });
 
-  testWidgets('attended run detail submits a review', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
-    final run = run_helpers.buildRun(
+  testWidgets('attended event detail submits a review', (tester) async {
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
+    final run = event_helpers.buildEvent(
       id: 'review-run-1',
-      runClubId: club.id,
+      clubId: club.id,
       startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
       meetingPoint: 'Carter Road Amphitheatre',
       bookedCount: 1,
@@ -1044,16 +1041,16 @@ void main() {
         user: user,
         clubs: [club],
         joinedClubIds: {club.id},
-        clubRuns: {
+        clubEvents: {
           club.id: [run],
         },
-        attendedRuns: [run],
+        attendedEvents: [run],
         reviewsRepository: reviewsRepository,
       ),
     );
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await pumpFeatureUi(tester);
     await tester.tap(find.text('Carter Road Amphitheatre'));
     await pumpFeatureUi(tester);
@@ -1071,8 +1068,8 @@ void main() {
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(reviewsRepository.addedReview?.runClubId, club.id);
-    expect(reviewsRepository.addedReview?.runId, run.id);
+    expect(reviewsRepository.addedReview?.clubId, club.id);
+    expect(reviewsRepository.addedReview?.eventId, run.id);
     expect(reviewsRepository.addedReview?.reviewerUserId, user.uid);
     expect(reviewsRepository.addedReview?.reviewerName, user.name);
     expect(reviewsRepository.addedReview?.rating, 4);
@@ -1082,16 +1079,16 @@ void main() {
   testWidgets('review history edits and deletes an existing review', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final run = run_helpers.buildRun(
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final run = event_helpers.buildEvent(
       id: 'review-run-1',
-      runClubId: 'club-1',
+      clubId: 'club-1',
       meetingPoint: 'Carter Road Amphitheatre',
     );
-    final review = run_helpers.buildReview(
+    final review = event_helpers.buildReview(
       id: '${run.id}~${user.uid}',
-      runClubId: run.runClubId,
-      runId: run.id,
+      clubId: run.clubId,
+      eventId: run.id,
       reviewerUserId: user.uid,
       reviewerName: user.name,
       rating: 3,
@@ -1104,7 +1101,7 @@ void main() {
       overrides: _appOverrides(
         uid: user.uid,
         user: user,
-        signedUpRuns: [run],
+        signedUpEvents: [run],
         reviewsByUser: [review],
         reviewsRepository: reviewsRepository,
       ),
@@ -1142,7 +1139,7 @@ void main() {
   });
 
   testWidgets('settings signs out through auth controller', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
     final authRepository = _FakeAuthRepository();
 
     await _pumpCatchApp(
@@ -1171,7 +1168,7 @@ void main() {
   testWidgets(
     'settings updates notification preferences and unblocks account',
     (tester) async {
-      final user = run_helpers
+      final user = event_helpers
           .buildUser(uid: 'runner-1', name: 'Suvrat Garg')
           .copyWith(prefsWeeklyDigest: false);
       final userProfileRepository = _FakeUserProfileRepository();
@@ -1184,7 +1181,7 @@ void main() {
           ),
         ],
       );
-      final blockedProfile = run_helpers.buildPublicProfile(
+      final blockedProfile = event_helpers.buildPublicProfile(
         uid: 'blocked-1',
         name: 'Riya',
       );
@@ -1229,7 +1226,7 @@ void main() {
   testWidgets('settings requests account deletion after confirmation', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
     final safetyRepository = _FakeSafetyRepository();
 
     await _pumpCatchApp(
@@ -1264,7 +1261,10 @@ void main() {
   testWidgets(
     'authenticated shell initializes push messaging and crash context',
     (tester) async {
-      final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+      final user = event_helpers.buildUser(
+        uid: 'runner-1',
+        name: 'Suvrat Garg',
+      );
       final fcmService = _RecordingFcmService();
       final crashReporter = _RecordingCrashReporter();
       final errorLogger = ErrorLogger(
@@ -1291,8 +1291,8 @@ void main() {
   );
 
   testWidgets('app router reports screen views to analytics', (tester) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final club = club_helpers.buildRunClub(id: 'club-1', name: 'Stride Social');
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final club = club_helpers.buildClub(id: 'club-1', name: 'Stride Social');
     final reporter = _RecordingAnalyticsReporter();
 
     await _pumpCatchApp(
@@ -1309,17 +1309,17 @@ void main() {
     await pumpFeatureUi(tester);
 
     await _openTab(tester, 'Clubs');
-    await tester.tap(find.bySemanticsLabel('Open ${club.name} run club'));
+    await tester.tap(find.bySemanticsLabel('Open ${club.name} club'));
     await flushTestEventQueue();
     await pumpFeatureUi(tester);
 
-    expect(reporter.screenViews, contains(Routes.runClubDetailScreen.name));
+    expect(reporter.screenViews, contains(Routes.clubDetailScreen.name));
   });
 
   testWidgets('incomplete profiles resume onboarding before app shell', (
     tester,
   ) async {
-    final user = run_helpers
+    final user = event_helpers
         .buildUser(uid: 'runner-1', name: 'Suvrat Garg')
         .copyWith(profileComplete: false, photoUrls: const []);
 
@@ -1336,21 +1336,21 @@ void main() {
   testWidgets('authenticated shell loads the five primary feature tabs', (
     tester,
   ) async {
-    final user = run_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
-    final joinedClub = club_helpers.buildRunClub(
+    final user = event_helpers.buildUser(uid: 'runner-1', name: 'Suvrat Garg');
+    final joinedClub = club_helpers.buildClub(
       id: 'club-1',
       name: 'Stride Social',
-      nextRunLabel: 'Sat 6:30 AM',
+      nextEventLabel: 'Sat 6:30 AM',
     );
-    final nextRun = run_helpers.buildRun(
+    final nextRun = event_helpers.buildEvent(
       id: 'run-1',
-      runClubId: joinedClub.id,
+      clubId: joinedClub.id,
       startTime: DateTime.now().add(const Duration(hours: 3)),
       bookedCount: 1,
     );
-    final attendedRun = run_helpers.buildRun(
+    final attendedRun = event_helpers.buildEvent(
       id: 'attended-run-1',
-      runClubId: joinedClub.id,
+      clubId: joinedClub.id,
       startTime: DateTime.now().subtract(const Duration(hours: 11)),
       endTime: DateTime.now().subtract(const Duration(hours: 10)),
       checkedInCount: 2,
@@ -1363,8 +1363,8 @@ void main() {
         user: user,
         clubs: [joinedClub],
         joinedClubIds: {joinedClub.id},
-        signedUpRuns: [nextRun],
-        attendedRuns: [attendedRun],
+        signedUpEvents: [nextRun],
+        attendedEvents: [attendedRun],
       ),
     );
     await pumpFeatureUi(tester);
@@ -1372,11 +1372,11 @@ void main() {
     expect(find.textContaining('NEXT RUN'), findsOneWidget);
 
     await _openTab(tester, 'Clubs');
-    expect(find.text('Run clubs'), findsOneWidget);
+    expect(find.text('Clubs'), findsOneWidget);
     expect(find.text('Stride Social'), findsWidgets);
 
     await _openTab(tester, 'Catches');
-    expect(find.text('After the run'), findsOneWidget);
+    expect(find.text('After the event'), findsOneWidget);
     expect(find.text('Start catching'), findsOneWidget);
 
     await _openTab(tester, 'Chats');
@@ -1404,35 +1404,35 @@ Future<void> _pumpCatchApp(
   await pumpFeatureUi(tester);
 }
 
-Future<void> _submitValidRun(WidgetTester tester) async {
-  await _fillCreateRunBasicsStep(tester);
+Future<void> _submitValidEvent(WidgetTester tester) async {
+  await _fillCreateEventBasicsStep(tester);
   await _tapCatchButton(tester, 'Next');
 
-  await _enterCreateRunText(
+  await _enterCreateEventText(
     tester,
-    CreateRunFormKeys.meetingPoint,
+    CreateEventFormKeys.meetingPoint,
     'Bandra Fort',
   );
-  await _pickCreateRunMapPoint(tester);
-  await _enterCreateRunText(
+  await _pickCreateEventMapPoint(tester);
+  await _enterCreateEventText(
     tester,
-    CreateRunFormKeys.locationDetails,
+    CreateEventFormKeys.locationDetails,
     'Meet at the gate',
   );
   await _tapCatchButton(tester, 'Next');
 
-  await _pickFutureRunDate(tester);
-  await _acceptInitialRunTime(tester);
+  await _pickFutureEventDate(tester);
+  await _acceptInitialEventTime(tester);
   await _tapCatchButton(tester, 'Next');
 
-  await _enterCreateRunText(tester, CreateRunFormKeys.minAge, '21');
-  await _enterCreateRunText(tester, CreateRunFormKeys.maxAge, '35');
-  await _enterCreateRunText(tester, CreateRunFormKeys.maxMen, '9');
-  await _enterCreateRunText(tester, CreateRunFormKeys.maxWomen, '9');
-  await _tapCatchButton(tester, 'Schedule run');
+  await _enterCreateEventText(tester, CreateEventFormKeys.minAge, '21');
+  await _enterCreateEventText(tester, CreateEventFormKeys.maxAge, '35');
+  await _enterCreateEventText(tester, CreateEventFormKeys.maxMen, '9');
+  await _enterCreateEventText(tester, CreateEventFormKeys.maxWomen, '9');
+  await _tapCatchButton(tester, 'Schedule event');
 }
 
-Future<void> _enterRunClubText(
+Future<void> _enterClubText(
   String label,
   String text,
   WidgetTester tester,
@@ -1440,7 +1440,7 @@ Future<void> _enterRunClubText(
   await tester.enterText(find.widgetWithText(CatchTextField, label), text);
 }
 
-Future<void> _selectRunClubCity(WidgetTester tester, String label) async {
+Future<void> _selectClubCity(WidgetTester tester, String label) async {
   tester.binding.focusManager.primaryFocus?.unfocus();
   await tester.pump();
   final cityDropdownIcon = find.byIcon(Icons.expand_more_rounded);
@@ -1451,21 +1451,21 @@ Future<void> _selectRunClubCity(WidgetTester tester, String label) async {
   await pumpFeatureUi(tester);
 }
 
-Future<void> _fillCreateRunBasicsStep(WidgetTester tester) async {
-  await _enterCreateRunText(tester, CreateRunFormKeys.distance, '7.5');
-  await _enterCreateRunText(tester, CreateRunFormKeys.capacity, '18');
-  await _enterCreateRunText(tester, CreateRunFormKeys.price, '249.5');
+Future<void> _fillCreateEventBasicsStep(WidgetTester tester) async {
+  await _enterCreateEventText(tester, CreateEventFormKeys.distance, '7.5');
+  await _enterCreateEventText(tester, CreateEventFormKeys.capacity, '18');
+  await _enterCreateEventText(tester, CreateEventFormKeys.price, '249.5');
   await tester.tap(find.text('MODERATE'));
-  await _enterCreateRunText(
+  await _enterCreateEventText(
     tester,
-    CreateRunFormKeys.description,
+    CreateEventFormKeys.description,
     'Social pacing with a coffee stop.',
   );
   await pumpFeatureUi(tester);
 }
 
-Future<void> _pickCreateRunMapPoint(WidgetTester tester) async {
-  await tester.tap(find.byKey(CreateRunFormKeys.mapPicker));
+Future<void> _pickCreateEventMapPoint(WidgetTester tester) async {
+  await tester.tap(find.byKey(CreateEventFormKeys.mapPicker));
   await pumpFeatureUi(tester);
 
   final googleMap = tester.widget<gmaps.GoogleMap>(
@@ -1480,8 +1480,8 @@ Future<void> _pickCreateRunMapPoint(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
-Future<void> _pickFutureRunDate(WidgetTester tester) async {
-  await tester.tap(find.byKey(CreateRunFormKeys.datePicker));
+Future<void> _pickFutureEventDate(WidgetTester tester) async {
+  await tester.tap(find.byKey(CreateEventFormKeys.datePicker));
   await pumpFeatureUi(tester);
   await tester.tap(find.byTooltip('Next month'));
   await pumpFeatureUi(tester);
@@ -1491,14 +1491,14 @@ Future<void> _pickFutureRunDate(WidgetTester tester) async {
   await pumpFeatureUi(tester);
 }
 
-Future<void> _acceptInitialRunTime(WidgetTester tester) async {
-  await tester.tap(find.byKey(CreateRunFormKeys.timePicker));
+Future<void> _acceptInitialEventTime(WidgetTester tester) async {
+  await tester.tap(find.byKey(CreateEventFormKeys.timePicker));
   await pumpFeatureUi(tester);
   await tester.tap(find.text('OK'));
   await pumpFeatureUi(tester);
 }
 
-Future<void> _enterCreateRunText(
+Future<void> _enterCreateEventText(
   WidgetTester tester,
   Key fieldKey,
   String text,
@@ -1535,24 +1535,24 @@ Future<XFile> _generatedPngXFile(String name) async {
 List<Object> _appOverrides({
   required String? uid,
   required UserProfile? user,
-  List<RunClub> clubs = const [],
+  List<Club> clubs = const [],
   Set<String> joinedClubIds = const {},
-  List<Run> signedUpRuns = const [],
-  List<Run> attendedRuns = const [],
-  List<Run> recommendedRuns = const [],
-  Map<String, List<Run>> clubRuns = const {},
-  Map<String, List<RunParticipation>> runParticipations = const {},
+  List<Event> signedUpEvents = const [],
+  List<Event> attendedEvents = const [],
+  List<Event> recommendedEvents = const [],
+  Map<String, List<Event>> clubEvents = const {},
+  Map<String, List<EventParticipation>> eventParticipations = const {},
   Map<String, List<Review>> clubReviews = const {},
-  Map<String, List<Review>> runReviews = const {},
+  Map<String, List<Review>> eventReviews = const {},
   List<Review> reviewsByUser = const [],
-  bool canCreateRunClub = false,
+  bool canCreateClub = false,
   List<PublicProfile> swipeCandidates = const [],
   List<Match> matches = const [],
   List<PublicProfile> publicProfiles = const [],
   ConversationRepository? conversationRepository,
   PaymentRepository? paymentRepository,
-  RunRepository? runRepository,
-  RunClubsRepository? runClubsRepository,
+  EventRepository? eventRepository,
+  ClubsRepository? clubsRepository,
   AuthRepository? authRepository,
   SafetyRepository? safetyRepository,
   UserProfileRepository? userProfileRepository,
@@ -1567,26 +1567,24 @@ List<Object> _appOverrides({
   final joinedClubs = clubs
       .where((club) => joinedClubIds.contains(club.id))
       .toList(growable: false);
-  final knownRunsById = <String, Run>{
-    for (final run in signedUpRuns) run.id: run,
-    for (final run in attendedRuns) run.id: run,
-    for (final run in recommendedRuns) run.id: run,
-    for (final run in clubRuns.values.expand((runs) => runs)) run.id: run,
+  final knownEventsById = <String, Event>{
+    for (final run in signedUpEvents) run.id: run,
+    for (final run in attendedEvents) run.id: run,
+    for (final run in recommendedEvents) run.id: run,
+    for (final run in clubEvents.values.expand((runs) => runs)) run.id: run,
   };
   final clubsById = {for (final club in clubs) club.id: club};
-  final knownRunClubIds = knownRunsById.values
-      .map((run) => run.runClubId)
-      .toSet();
-  final participationsByRunId = <String, RunParticipation>{
+  final knownClubIds = knownEventsById.values.map((run) => run.clubId).toSet();
+  final participationsByEventId = <String, EventParticipation>{
     if (uid != null)
-      for (final run in signedUpRuns)
-        run.id: run_helpers.buildRunParticipation(run: run, uid: uid),
+      for (final run in signedUpEvents)
+        run.id: event_helpers.buildEventParticipation(event: run, uid: uid),
     if (uid != null)
-      for (final run in attendedRuns)
-        run.id: run_helpers.buildRunParticipation(
-          run: run,
+      for (final run in attendedEvents)
+        run.id: event_helpers.buildEventParticipation(
+          event: run,
           uid: uid,
-          status: RunParticipationStatus.attended,
+          status: EventParticipationStatus.attended,
         ),
   };
 
@@ -1622,23 +1620,21 @@ List<Object> _appOverrides({
     ),
     uidProvider.overrideWith((ref) => Stream.value(uid)),
     watchUserProfileProvider.overrideWith((ref) => Stream.value(user)),
-    watchRunClubsByLocationProvider(
+    watchClubsByLocationProvider(
       _mumbai.name,
     ).overrideWith((ref) => Stream.value(clubs)),
     reviewsRepositoryProvider.overrideWithValue(
       reviewsRepository ??
           _FakeReviewsRepository(
             clubReviews: clubReviews,
-            runReviews: runReviews,
+            eventReviews: eventReviews,
             reviewsByUser: reviewsByUser,
           ),
     ),
-    runClubsRepositoryProvider.overrideWithValue(
-      runClubsRepository ?? club_helpers.FakeRunClubsRepository(),
+    clubsRepositoryProvider.overrideWithValue(
+      clubsRepository ?? club_helpers.FakeClubsRepository(),
     ),
-    runClubDraftRepositoryProvider.overrideWithValue(
-      _FakeRunClubDraftRepository(),
-    ),
+    clubDraftRepositoryProvider.overrideWithValue(_FakeClubDraftRepository()),
     swipeCandidateRepositoryProvider.overrideWithValue(
       _FakeSwipeCandidateRepository(candidates: swipeCandidates),
     ),
@@ -1655,98 +1651,98 @@ List<Object> _appOverrides({
       imageUploadRepositoryProvider.overrideWithValue(imageUploadRepository),
     if (fcmService != null) fcmServiceProvider.overrideWithValue(fcmService),
     for (final club in clubs) ...[
-      watchRunClubProvider(club.id).overrideWith((ref) => Stream.value(club)),
-      watchRunsForClubProvider(
-        club.id,
-      ).overrideWithValue(AsyncData<List<Run>>(clubRuns[club.id] ?? const [])),
+      watchClubProvider(club.id).overrideWith((ref) => Stream.value(club)),
+      watchEventsForClubProvider(club.id).overrideWithValue(
+        AsyncData<List<Event>>(clubEvents[club.id] ?? const []),
+      ),
       watchReviewsForClubProvider(club.id).overrideWithValue(
         AsyncData<List<Review>>(clubReviews[club.id] ?? const []),
       ),
       if (uid != null)
-        watchRunClubMembershipProvider(club.id, uid).overrideWith(
+        watchClubMembershipProvider(club.id, uid).overrideWith(
           (ref) => Stream.value(
             joinedClubIds.contains(club.id)
-                ? RunClubMembership(
-                    id: runClubMembershipId(clubId: club.id, uid: uid),
+                ? ClubMembership(
+                    id: clubMembershipId(clubId: club.id, uid: uid),
                     clubId: club.id,
                     uid: uid,
-                    role: RunClubMembershipRole.member,
-                    status: RunClubMembershipStatus.active,
+                    role: ClubMembershipRole.member,
+                    status: ClubMembershipStatus.active,
                     joinedAt: DateTime(2026, 1, 1),
                   )
                 : null,
           ),
         ),
     ],
-    for (final runClubId in knownRunClubIds)
-      fetchRunClubProvider(
-        runClubId,
-      ).overrideWith((ref) async => _clubById(clubs, runClubId)),
-    for (final run in knownRunsById.values) ...[
-      watchRunProvider(run.id).overrideWith((ref) => Stream.value(run)),
-      watchReviewsForRunProvider(run.id).overrideWithValue(
-        AsyncData<List<Review>>(runReviews[run.id] ?? const []),
+    for (final clubId in knownClubIds)
+      fetchClubProvider(
+        clubId,
+      ).overrideWith((ref) async => _clubById(clubs, clubId)),
+    for (final run in knownEventsById.values) ...[
+      watchEventProvider(run.id).overrideWith((ref) => Stream.value(run)),
+      watchReviewsForEventProvider(run.id).overrideWithValue(
+        AsyncData<List<Review>>(eventReviews[run.id] ?? const []),
       ),
-      watchRunParticipationsForRunProvider(run.id).overrideWithValue(
-        AsyncData<List<RunParticipation>>(
-          runParticipations[run.id] ?? const [],
+      watchEventParticipationsForEventProvider(run.id).overrideWithValue(
+        AsyncData<List<EventParticipation>>(
+          eventParticipations[run.id] ?? const [],
         ),
       ),
       if (uid != null) ...[
-        watchSavedRunProvider(
+        watchSavedEventProvider(
           uid,
           run.id,
         ).overrideWithValue(const AsyncData(null)),
-        watchRunParticipationProvider(
+        watchEventParticipationProvider(
           run.id,
           uid,
-        ).overrideWithValue(AsyncData(participationsByRunId[run.id])),
+        ).overrideWithValue(AsyncData(participationsByEventId[run.id])),
       ],
     ],
-    runClubsListViewModelProvider.overrideWithValue(
+    clubsListViewModelProvider.overrideWithValue(
       AsyncData(
-        RunClubsListViewModel(
+        ClubsListViewModel(
           joinedClubs: joinedClubs,
           allClubs: clubs,
           joinedClubIds: joinedClubIds,
         ),
       ),
     ),
-    canCreateRunClubProvider.overrideWithValue(AsyncData(canCreateRunClub)),
-    runRepositoryProvider.overrideWithValue(
-      runRepository ?? run_helpers.FakeRunRepository(),
+    canCreateClubProvider.overrideWithValue(AsyncData(canCreateClub)),
+    eventRepositoryProvider.overrideWithValue(
+      eventRepository ?? event_helpers.FakeEventRepository(),
     ),
-    runDraftRepositoryProvider.overrideWithValue(_FakeRunDraftRepository()),
+    eventDraftRepositoryProvider.overrideWithValue(_FakeEventDraftRepository()),
     paymentRepositoryProvider.overrideWithValue(
-      paymentRepository ?? run_helpers.FakePaymentRepository(),
+      paymentRepository ?? event_helpers.FakePaymentRepository(),
     ),
     celebrationEffectsControllerProvider.overrideWithValue(
       const _NoopCelebrationEffectsController(),
     ),
-    runCheckInLocationServiceProvider.overrideWithValue(
-      const _FakeRunCheckInLocationService(),
+    eventCheckInLocationServiceProvider.overrideWithValue(
+      const _FakeEventCheckInLocationService(),
     ),
     if (uid != null) ...[
       if (!initializeFcm)
         appShellFcmInitializationProvider(uid).overrideWith((ref) async {}),
-      watchSignedUpRunsProvider(
+      watchSignedUpEventsProvider(
         uid,
-      ).overrideWithValue(AsyncData<List<Run>>(signedUpRuns)),
-      watchAttendedRunsProvider(
+      ).overrideWithValue(AsyncData<List<Event>>(signedUpEvents)),
+      watchAttendedEventsProvider(
         uid,
-      ).overrideWithValue(AsyncData<List<Run>>(attendedRuns)),
-      dashboardRecommendedRunsProvider(
+      ).overrideWithValue(AsyncData<List<Event>>(attendedEvents)),
+      dashboardRecommendedEventsProvider(
         DashboardRecommendationsQuery(
           userId: uid,
           followedClubIds: joinedClubIds.toList(growable: false),
         ),
       ).overrideWithValue(
-        AsyncData<List<DashboardRunRecommendationCandidate>>([
-          for (final run in recommendedRuns)
-            DashboardRunRecommendationCandidate(
-              run: run,
-              clubName: clubsById[run.runClubId]?.name ?? 'Run club',
-              clubLocation: clubsById[run.runClubId]?.location,
+        AsyncData<List<DashboardEventRecommendationCandidate>>([
+          for (final run in recommendedEvents)
+            DashboardEventRecommendationCandidate(
+              event: run,
+              clubName: clubsById[run.clubId]?.name ?? 'Event club',
+              clubLocation: clubsById[run.clubId]?.location,
             ),
         ]),
       ),
@@ -1759,21 +1755,21 @@ List<Object> _appOverrides({
       watchReviewsByUserProvider(
         uid,
       ).overrideWith((ref) => Stream.value(reviewsByUser)),
-      watchActiveRunClubMembershipsForUserProvider(uid).overrideWith(
+      watchActiveClubMembershipsForUserProvider(uid).overrideWith(
         (ref) => Stream.value([
           for (final clubId in joinedClubIds)
-            RunClubMembership(
-              id: runClubMembershipId(clubId: clubId, uid: uid),
+            ClubMembership(
+              id: clubMembershipId(clubId: clubId, uid: uid),
               clubId: clubId,
               uid: uid,
-              role: RunClubMembershipRole.member,
-              status: RunClubMembershipStatus.active,
+              role: ClubMembershipRole.member,
+              status: ClubMembershipStatus.active,
               joinedAt: DateTime(2026, 1, 1),
             ),
         ]),
       ),
-      watchRunClubsHostedByProvider(uid).overrideWithValue(
-        AsyncData<List<RunClub>>(
+      watchClubsHostedByProvider(uid).overrideWithValue(
+        AsyncData<List<Club>>(
           clubs.where((club) => club.hostUserId == uid).toList(growable: false),
         ),
       ),
@@ -1810,7 +1806,7 @@ List<Object> _appOverrides({
   ];
 }
 
-RunClub? _clubById(List<RunClub> clubs, String id) {
+Club? _clubById(List<Club> clubs, String id) {
   for (final club in clubs) {
     if (club.id == id) return club;
   }
@@ -1832,12 +1828,12 @@ class _NoDeviceLocation extends DeviceLocation {
   Future<LocationCoordinate?> build() async => null;
 }
 
-class _FakeRunCheckInLocationService implements RunCheckInLocationService {
-  const _FakeRunCheckInLocationService();
+class _FakeEventCheckInLocationService implements EventCheckInLocationService {
+  const _FakeEventCheckInLocationService();
 
   @override
-  Future<RunCheckInLocation> getCurrentLocation() async {
-    return const RunCheckInLocation(latitude: 19.07, longitude: 72.87);
+  Future<EventCheckInLocation> getCurrentLocation() async {
+    return const EventCheckInLocation(latitude: 19.07, longitude: 72.87);
   }
 }
 
@@ -1975,25 +1971,25 @@ class _FakeUserProfileRepository implements UserProfileRepository {
 class _FakeReviewsRepository implements ReviewsRepository {
   _FakeReviewsRepository({
     this.clubReviews = const {},
-    this.runReviews = const {},
+    this.eventReviews = const {},
     this.reviewsByUser = const [],
   });
 
   final Map<String, List<Review>> clubReviews;
-  final Map<String, List<Review>> runReviews;
+  final Map<String, List<Review>> eventReviews;
   final List<Review> reviewsByUser;
   Review? addedReview;
   Review? updatedReview;
   String? deletedReviewId;
 
   @override
-  Stream<List<Review>> watchReviewsForClub(String runClubId) {
-    return Stream.value(clubReviews[runClubId] ?? const []);
+  Stream<List<Review>> watchReviewsForClub(String clubId) {
+    return Stream.value(clubReviews[clubId] ?? const []);
   }
 
   @override
-  Stream<List<Review>> watchReviewsForRun(String runId) {
-    return Stream.value(runReviews[runId] ?? const []);
+  Stream<List<Review>> watchReviewsForEvent(String eventId) {
+    return Stream.value(eventReviews[eventId] ?? const []);
   }
 
   @override
@@ -2002,11 +1998,11 @@ class _FakeReviewsRepository implements ReviewsRepository {
   }
 
   @override
-  Stream<Review?> watchUserReviewForRun({
-    required String runId,
+  Stream<Review?> watchUserReviewForEvent({
+    required String eventId,
     required String reviewerUserId,
   }) {
-    for (final review in runReviews[runId] ?? const <Review>[]) {
+    for (final review in eventReviews[eventId] ?? const <Review>[]) {
       if (review.reviewerUserId == reviewerUserId) {
         return Stream.value(review);
       }
@@ -2050,10 +2046,10 @@ class _FakePublicProfileRepository implements PublicProfileRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class _FakeRunDraftRepository implements RunDraftRepository {
+class _FakeEventDraftRepository implements EventDraftRepository {
   @override
-  Future<List<RunDraft>> loadDrafts({
-    required String runClubId,
+  Future<List<EventDraft>> loadDrafts({
+    required String clubId,
     required String userId,
   }) async {
     return const [];
@@ -2062,19 +2058,19 @@ class _FakeRunDraftRepository implements RunDraftRepository {
   @override
   Future<void> saveDraft({
     required String userId,
-    required RunDraft draft,
+    required EventDraft draft,
   }) async {}
 
   @override
   Future<void> deleteDraft({
-    required String runClubId,
+    required String clubId,
     required String userId,
     required String draftId,
   }) async {}
 
   @override
   Future<void> deleteAllDrafts({
-    required String runClubId,
+    required String clubId,
     required String userId,
   }) async {}
 
@@ -2082,14 +2078,14 @@ class _FakeRunDraftRepository implements RunDraftRepository {
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
-class _FakeRunClubDraftRepository implements RunClubDraftRepository {
+class _FakeClubDraftRepository implements ClubDraftRepository {
   @override
-  Future<RunClubDraft?> loadDraft({required String userId}) async => null;
+  Future<ClubDraft?> loadDraft({required String userId}) async => null;
 
   @override
   Future<void> saveDraft({
     required String userId,
-    required RunClubDraft draft,
+    required ClubDraft draft,
   }) async {}
 
   @override
@@ -2156,7 +2152,7 @@ class _FakeSwipeCandidateRepository implements SwipeCandidateRepository {
 
   @override
   Future<List<PublicProfile>> fetchCandidates({
-    required String runId,
+    required String eventId,
     required UserProfile currentUser,
   }) async {
     return candidates;

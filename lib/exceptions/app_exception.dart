@@ -34,7 +34,7 @@ enum AppErrorSeverity { info, warning, error, fatal }
 /// Non-PII operation context attached to app-facing backend failures.
 ///
 /// Keep [resource] to collection/bucket/document-kind names such as `users`,
-/// `runs`, or `profile_photos`. Do not put raw user IDs, phone numbers, file
+/// `events`, or `profile_photos`. Do not put raw user IDs, phone numbers, file
 /// names, messages, or other user content in this object.
 class BackendErrorContext {
   const BackendErrorContext({
@@ -214,7 +214,7 @@ class PaymentVerificationFailedException extends AppException {
        );
 }
 
-// ── Run booking ───────────────────────────────────────────────────────────────
+// ── Event booking ───────────────────────────────────────────────────────────────
 
 class PaidBookingUnsupportedException extends AppException {
   const PaidBookingUnsupportedException({
@@ -232,15 +232,15 @@ class PaidBookingUnsupportedException extends AppException {
        );
 }
 
-class RunBookingFailedException extends AppException {
-  const RunBookingFailedException(
+class EventBookingFailedException extends AppException {
+  const EventBookingFailedException(
     String message, {
     String? debugMessage,
     Object? cause,
     StackTrace? stackTrace,
     BackendErrorContext? context,
   }) : super(
-         'run-booking-failed',
+         'event-booking-failed',
          message,
          debugMessage: debugMessage,
          cause: cause,

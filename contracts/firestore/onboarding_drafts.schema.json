@@ -15,7 +15,7 @@
     "draftVersion": {"type": "integer", "minimum": 0},
     "firstName": {"type": "string", "maxLength": 80},
     "lastName": {"type": "string", "maxLength": 80},
-    "dateOfBirth": {"$ref": "../shared/run_common.schema.json#/definitions/nullableTimestamp"},
+    "dateOfBirth": {"$ref": "../shared/event_common.schema.json#/definitions/nullableTimestamp"},
     "phoneNumber": {"type": "string", "maxLength": 32},
     "countryCode": {"type": "string", "maxLength": 8},
     "gender": {

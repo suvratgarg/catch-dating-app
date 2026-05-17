@@ -11,8 +11,8 @@ enum SettingsPreference {
   showOnMap('prefsShowOnMap'),
   newCatches('prefsNewCatches'),
   messages('prefsMessages'),
-  runReminders('prefsRunReminders'),
-  runStatusUpdates('prefsRunStatusUpdates'),
+  eventReminders('prefsEventReminders'),
+  eventStatusUpdates('prefsRunStatusUpdates'),
   clubUpdates('prefsClubUpdates'),
   weeklyDigest('prefsWeeklyDigest');
 

@@ -4,7 +4,7 @@ import path from "node:path";
 import {createRequire} from "node:module";
 import {fileURLToPath} from "node:url";
 import {
-  RUN_MAX_DURATION_MINUTES,
+  EVENT_MAX_DURATION_MINUTES,
   scheduleComplianceIssues,
 } from "./demo_schedule_policy.mjs";
 
@@ -22,7 +22,7 @@ const ERROR_DOC_BYTES = 950 * 1024;
 const ARRAY_LIMITS = {
   "users.photoUrls": 12,
   "matches.participantIds": 20,
-  "matches.runIds": 100,
+  "matches.eventIds": 100,
 };
 
 const args = parseArgs(process.argv.slice(2));
@@ -141,11 +141,11 @@ async function loadCollections(firestore, maxDocs, {includeScheduleLocks = false
   const topLevel = [
     "users",
     "publicProfiles",
-    "runClubs",
-    "runClubMemberships",
-    "runs",
-    "runParticipations",
-    "savedRuns",
+    "clubs",
+    "clubMemberships",
+    "events",
+    "eventParticipations",
+    "savedEvents",
     "reviews",
     "matches",
     "onboarding_drafts",
@@ -157,11 +157,11 @@ async function loadCollections(firestore, maxDocs, {includeScheduleLocks = false
       maxDocs
     );
   }
-  result.runClubScheduleLocks = includeScheduleLocks ?
-    await readQuery(firestore.collection("runClubScheduleLocks"), maxDocs) :
+  result.clubScheduleLocks = includeScheduleLocks ?
+    await readQuery(firestore.collection("clubScheduleLocks"), maxDocs) :
     [];
-  result.userRunScheduleLocks = includeScheduleLocks ?
-    await readQuery(firestore.collection("userRunScheduleLocks"), maxDocs) :
+  result.userEventScheduleLocks = includeScheduleLocks ?
+    await readQuery(firestore.collection("userEventScheduleLocks"), maxDocs) :
     [];
   result.swipes = await readQuery(
     firestore.collectionGroup("outgoing"),
@@ -202,9 +202,9 @@ function createReport({projectId, emulatorHost}) {
 function validateAll(collections, currentReport, {checkScheduleLocks = false} = {}) {
   const users = byId(collections.users);
   const publicProfiles = byId(collections.publicProfiles);
-  const clubs = byId(collections.runClubs);
-  const runs = byId(collections.runs);
-  const runParticipations = byId(collections.runParticipations);
+  const clubs = byId(collections.clubs);
+  const events = byId(collections.events);
+  const eventParticipations = byId(collections.eventParticipations);
   const matches = byId(collections.matches);
 
   for (const docs of Object.values(collections)) {
@@ -216,24 +216,24 @@ function validateAll(collections, currentReport, {checkScheduleLocks = false} = 
     collections.publicProfiles,
     currentReport
   );
-  for (const doc of collections.runClubs) {
-    validateRunClub(doc, users, currentReport);
+  for (const doc of collections.clubs) {
+    validateClub(doc, users, currentReport);
   }
-  for (const doc of collections.runClubMemberships) {
-    validateRunClubMembership(doc, users, clubs, currentReport);
+  for (const doc of collections.clubMemberships) {
+    validateClubMembership(doc, users, clubs, currentReport);
   }
-  for (const doc of collections.runs) validateRun(doc, clubs, currentReport);
-  for (const doc of collections.runParticipations) {
-    validateRunParticipation(doc, users, runs, currentReport);
+  for (const doc of collections.events) validateRun(doc, clubs, currentReport);
+  for (const doc of collections.eventParticipations) {
+    validateEventParticipation(doc, users, events, currentReport);
   }
-  for (const doc of collections.savedRuns) {
-    validateSavedRun(doc, users, runs, currentReport);
+  for (const doc of collections.savedEvents) {
+    validateSavedEvent(doc, users, events, currentReport);
   }
   for (const doc of collections.reviews) {
-    validateReview(doc, users, clubs, runs, currentReport);
+    validateReview(doc, users, clubs, events, currentReport);
   }
   for (const doc of collections.swipes) {
-    validateSwipe(doc, users, publicProfiles, runs, runParticipations,
+    validateSwipe(doc, users, publicProfiles, events, eventParticipations,
       currentReport);
   }
   for (const doc of collections.matches) validateMatch(doc, users, currentReport);
@@ -243,18 +243,18 @@ function validateAll(collections, currentReport, {checkScheduleLocks = false} = 
   for (const doc of collections.onboarding_drafts) {
     validateOnboardingDraft(doc, currentReport);
   }
-  validateRunClubMemberCountAggregates(
-    collections.runClubs,
-    collections.runClubMemberships,
+  validateClubMemberCountAggregates(
+    collections.clubs,
+    collections.clubMemberships,
     currentReport
   );
   validateRunAggregateCounts(
-    collections.runs,
-    collections.runParticipations,
+    collections.events,
+    collections.eventParticipations,
     currentReport
   );
-  validateRunClubHostProfileProjections(
-    collections.runClubs,
+  validateClubHostProfileProjections(
+    collections.clubs,
     users,
     currentReport
   );
@@ -330,7 +330,7 @@ function validateSyntheticPublicProfileIdentities(publicProfiles, currentReport)
   }
 }
 
-function validateRunClub(doc, users, currentReport) {
+function validateClub(doc, users, currentReport) {
   const data = doc.data;
   requireString(data, "name", doc, currentReport);
   requireString(data, "description", doc, currentReport);
@@ -360,7 +360,7 @@ function isSyntheticPublicProfile(doc) {
     doc.id.startsWith("demo_");
 }
 
-function validateRunClubMembership(doc, users, clubs, currentReport) {
+function validateClubMembership(doc, users, clubs, currentReport) {
   const data = doc.data;
   requireString(data, "clubId", doc, currentReport);
   requireString(data, "uid", doc, currentReport);
@@ -382,7 +382,7 @@ function validateRunClubMembership(doc, users, clubs, currentReport) {
   }
   if (data.clubId && !clubs.has(data.clubId)) {
     issue(currentReport, "warning", doc.path, "missing-membership-club",
-      `clubId references missing runClubs/${data.clubId}.`);
+      `clubId references missing clubs/${data.clubId}.`);
   }
   if (data.uid && !users.has(data.uid)) {
     issue(currentReport, "warning", doc.path, "missing-membership-user",
@@ -392,7 +392,7 @@ function validateRunClubMembership(doc, users, clubs, currentReport) {
 
 function validateRun(doc, clubs, currentReport) {
   const data = doc.data;
-  requireString(data, "runClubId", doc, currentReport);
+  requireString(data, "clubId", doc, currentReport);
   requireTimestamp(data, "startTime", doc, currentReport);
   requireTimestamp(data, "endTime", doc, currentReport);
   requireString(data, "meetingPoint", doc, currentReport);
@@ -407,21 +407,21 @@ function validateRun(doc, clubs, currentReport) {
   requireObject(data, "constraints", doc, currentReport);
   requireObject(data, "genderCounts", doc, currentReport);
 
-  if (data.runClubId && !clubs.has(data.runClubId)) {
-    issue(currentReport, "error", doc.path, "missing-run-club",
-      `runClubId references missing runClubs/${data.runClubId}.`);
+  if (data.clubId && !clubs.has(data.clubId)) {
+    issue(currentReport, "error", doc.path, "missing-club",
+      `clubId references missing clubs/${data.clubId}.`);
   }
   if (isTimestamp(data.startTime) && isTimestamp(data.endTime) &&
       data.endTime.toMillis() <= data.startTime.toMillis()) {
-    issue(currentReport, "error", doc.path, "invalid-run-time",
+    issue(currentReport, "error", doc.path, "invalid-event-time",
       "endTime must be after startTime.");
   }
   if (isTimestamp(data.startTime) && isTimestamp(data.endTime)) {
     const durationMinutes =
       (data.endTime.toMillis() - data.startTime.toMillis()) / (60 * 1000);
-    if (durationMinutes > RUN_MAX_DURATION_MINUTES) {
-      issue(currentReport, "error", doc.path, "run-duration-too-long",
-        `Run duration is ${durationMinutes} minutes, max ${RUN_MAX_DURATION_MINUTES}.`);
+    if (durationMinutes > EVENT_MAX_DURATION_MINUTES) {
+      issue(currentReport, "error", doc.path, "event-duration-too-long",
+        `Event duration is ${durationMinutes} minutes, max ${EVENT_MAX_DURATION_MINUTES}.`);
     }
   }
   if (Number.isInteger(data.bookedCount) &&
@@ -431,7 +431,7 @@ function validateRun(doc, clubs, currentReport) {
   }
   for (const field of ["bookedCount", "checkedInCount", "waitlistedCount"]) {
     if (Number.isInteger(data[field]) && data[field] < 0) {
-      issue(currentReport, "error", doc.path, "negative-run-count",
+      issue(currentReport, "error", doc.path, "negative-event-count",
         `${field} cannot be negative.`);
     }
   }
@@ -441,10 +441,10 @@ function validateRun(doc, clubs, currentReport) {
   }
 }
 
-function validateRunParticipation(doc, users, runs, currentReport) {
+function validateEventParticipation(doc, users, events, currentReport) {
   const data = doc.data;
-  requireString(data, "runId", doc, currentReport);
-  requireString(data, "runClubId", doc, currentReport);
+  requireString(data, "eventId", doc, currentReport);
+  requireString(data, "clubId", doc, currentReport);
   requireString(data, "uid", doc, currentReport);
   requireString(data, "status", doc, currentReport);
   requireTimestamp(data, "createdAt", doc, currentReport);
@@ -455,24 +455,24 @@ function validateRunParticipation(doc, users, runs, currentReport) {
     issue(currentReport, "error", doc.path, "invalid-participation-status",
       "status must be signedUp, waitlisted, attended, cancelled, or deleted.");
   }
-  if (data.runId && data.uid && doc.id !== `${data.runId}_${data.uid}`) {
+  if (data.eventId && data.uid && doc.id !== `${data.eventId}_${data.uid}`) {
     issue(currentReport, "error", doc.path, "participation-id-mismatch",
-      "document id must be {runId}_{uid}.");
+      "document id must be {eventId}_{uid}.");
   }
-  const run = runs.get(data.runId);
-  if (!run) {
-    issue(currentReport, "warning", doc.path, "missing-participation-run",
-      `runId references missing runs/${data.runId}.`);
-  } else if (run.data.runClubId !== data.runClubId) {
+  const event = events.get(data.eventId);
+  if (!event) {
+    issue(currentReport, "warning", doc.path, "missing-participation-event",
+      `eventId references missing events/${data.eventId}.`);
+  } else if (event.data.clubId !== data.clubId) {
     issue(currentReport, "error", doc.path, "participation-club-mismatch",
-      "runClubId does not match the parent run.");
+      "clubId does not match the parent event.");
   }
   if (data.status === "attended" &&
-      run &&
-      isTimestamp(run.data.startTime) &&
-      run.data.startTime.toMillis() > Date.now()) {
-    issue(currentReport, "error", doc.path, "future-run-attended",
-      "future runs cannot have attended runParticipations.");
+      event &&
+      isTimestamp(event.data.startTime) &&
+      event.data.startTime.toMillis() > Date.now()) {
+    issue(currentReport, "error", doc.path, "future-event-attended",
+      "future events cannot have attended eventParticipations.");
   }
   if (data.uid && !users.has(data.uid)) {
     issue(currentReport, "warning", doc.path, "missing-participation-user",
@@ -480,29 +480,29 @@ function validateRunParticipation(doc, users, runs, currentReport) {
   }
 }
 
-function validateSavedRun(doc, users, runs, currentReport) {
+function validateSavedEvent(doc, users, events, currentReport) {
   const data = doc.data;
   requireString(data, "uid", doc, currentReport);
-  requireString(data, "runId", doc, currentReport);
+  requireString(data, "eventId", doc, currentReport);
   requireTimestamp(data, "savedAt", doc, currentReport);
 
-  if (data.uid && data.runId && doc.id !== `${data.uid}_${data.runId}`) {
-    issue(currentReport, "error", doc.path, "saved-run-id-mismatch",
-      "document id must be {uid}_{runId}.");
+  if (data.uid && data.eventId && doc.id !== `${data.uid}_${data.eventId}`) {
+    issue(currentReport, "error", doc.path, "saved-event-id-mismatch",
+      "document id must be {uid}_{eventId}.");
   }
   if (data.uid && !users.has(data.uid)) {
-    issue(currentReport, "warning", doc.path, "missing-saved-run-user",
+    issue(currentReport, "warning", doc.path, "missing-saved-event-user",
       `uid references missing users/${data.uid}.`);
   }
-  if (data.runId && !runs.has(data.runId)) {
-    issue(currentReport, "warning", doc.path, "missing-saved-run",
-      `runId references missing runs/${data.runId}.`);
+  if (data.eventId && !events.has(data.eventId)) {
+    issue(currentReport, "warning", doc.path, "missing-saved-event",
+      `eventId references missing events/${data.eventId}.`);
   }
 }
 
-function validateReview(doc, users, clubs, runs, currentReport) {
+function validateReview(doc, users, clubs, events, currentReport) {
   const data = doc.data;
-  requireString(data, "runClubId", doc, currentReport);
+  requireString(data, "clubId", doc, currentReport);
   requireString(data, "reviewerUserId", doc, currentReport);
   requireString(data, "reviewerName", doc, currentReport);
   requireInteger(data, "rating", doc, currentReport);
@@ -513,26 +513,26 @@ function validateReview(doc, users, clubs, runs, currentReport) {
     issue(currentReport, "error", doc.path, "invalid-rating",
       "rating must be between 1 and 5.");
   }
-  if (data.runClubId && !clubs.has(data.runClubId)) {
+  if (data.clubId && !clubs.has(data.clubId)) {
     issue(currentReport, "error", doc.path, "missing-review-club",
-      `runClubId references missing runClubs/${data.runClubId}.`);
+      `clubId references missing clubs/${data.clubId}.`);
   }
-  if (!data.runId) {
+  if (!data.eventId) {
     issue(currentReport, "warning", doc.path, "legacy-review-id",
-      "Review has no runId; new reviews must be run-scoped.");
+      "Review has no eventId; new reviews must be event-scoped.");
   } else {
-    const expectedId = `${data.runId}~${data.reviewerUserId}`;
+    const expectedId = `${data.eventId}~${data.reviewerUserId}`;
     if (doc.id !== expectedId) {
       issue(currentReport, "error", doc.path, "review-id-mismatch",
         `Expected deterministic review id ${expectedId}.`);
     }
-    const run = runs.get(data.runId);
-    if (!run) {
-      issue(currentReport, "error", doc.path, "missing-review-run",
-        `runId references missing runs/${data.runId}.`);
-    } else if (run.data.runClubId !== data.runClubId) {
-      issue(currentReport, "error", doc.path, "review-run-club-mismatch",
-        "Review runId belongs to a different runClubId.");
+    const event = events.get(data.eventId);
+    if (!event) {
+      issue(currentReport, "error", doc.path, "missing-review-event",
+        `eventId references missing events/${data.eventId}.`);
+    } else if (event.data.clubId !== data.clubId) {
+      issue(currentReport, "error", doc.path, "review-club-mismatch",
+        "Review eventId belongs to a different clubId.");
     }
   }
   const reviewer = users.get(data.reviewerUserId);
@@ -547,13 +547,13 @@ function validateReview(doc, users, clubs, runs, currentReport) {
   }
 }
 
-function validateSwipe(doc, users, publicProfiles, runs, runParticipations,
+function validateSwipe(doc, users, publicProfiles, events, eventParticipations,
   currentReport) {
   const data = doc.data;
   const pathMatch = /^swipes\/([^/]+)\/outgoing\/([^/]+)$/.exec(doc.path);
   requireString(data, "swiperId", doc, currentReport);
   requireString(data, "targetId", doc, currentReport);
-  requireString(data, "runId", doc, currentReport);
+  requireString(data, "eventId", doc, currentReport);
   requireString(data, "direction", doc, currentReport);
   requireTimestamp(data, "createdAt", doc, currentReport);
 
@@ -574,20 +574,20 @@ function validateSwipe(doc, users, publicProfiles, runs, runParticipations,
     issue(currentReport, "warning", doc.path, "missing-target-profile",
       `targetId references missing publicProfiles/${data.targetId}.`);
   }
-  const run = runs.get(data.runId);
-  if (!run) {
-    issue(currentReport, "error", doc.path, "missing-swipe-run",
-      `runId references missing runs/${data.runId}.`);
-  } else if (!hasAttendedRun(runParticipations, data.runId, data.swiperId) ||
-      !hasAttendedRun(runParticipations, data.runId, data.targetId)) {
-    issue(currentReport, "error", doc.path, "swipe-run-attendance-mismatch",
-      "swiperId and targetId must both have attended runParticipations for the swipe run.");
+  const event = events.get(data.eventId);
+  if (!event) {
+    issue(currentReport, "error", doc.path, "missing-swipe-event",
+      `eventId references missing events/${data.eventId}.`);
+  } else if (!hasAttendedRun(eventParticipations, data.eventId, data.swiperId) ||
+      !hasAttendedRun(eventParticipations, data.eventId, data.targetId)) {
+    issue(currentReport, "error", doc.path, "swipe-event-attendance-mismatch",
+      "swiperId and targetId must both have attended eventParticipations for the swipe event.");
   }
 }
 
-function hasAttendedRun(runParticipations, runId, uid) {
-  if (!runId || !uid) return false;
-  const participation = runParticipations.get(`${runId}_${uid}`);
+function hasAttendedRun(eventParticipations, eventId, uid) {
+  if (!eventId || !uid) return false;
+  const participation = eventParticipations.get(`${eventId}_${uid}`);
   return participation?.data?.status === "attended";
 }
 
@@ -596,16 +596,16 @@ function validateMatch(doc, users, currentReport) {
   requireString(data, "user1Id", doc, currentReport);
   requireString(data, "user2Id", doc, currentReport);
   requireStringArray(data, "participantIds", doc, currentReport);
-  if (Array.isArray(data.runIds)) {
-    requireStringArray(data, "runIds", doc, currentReport);
+  if (Array.isArray(data.eventIds)) {
+    requireStringArray(data, "eventIds", doc, currentReport);
   } else {
-    requireString(data, "runId", doc, currentReport);
+    requireString(data, "eventId", doc, currentReport);
   }
   requireTimestamp(data, "createdAt", doc, currentReport);
   requireObject(data, "unreadCounts", doc, currentReport);
   requireString(data, "status", doc, currentReport);
   checkArrayLimit("matches.participantIds", data.participantIds, doc, currentReport);
-  checkArrayLimit("matches.runIds", data.runIds, doc, currentReport);
+  checkArrayLimit("matches.eventIds", data.eventIds, doc, currentReport);
 
   for (const uid of [data.user1Id, data.user2Id]) {
     if (uid && !users.has(uid)) {
@@ -651,34 +651,34 @@ function validateOnboardingDraft(doc, currentReport) {
   requireInteger(doc.data, "step", doc, currentReport);
 }
 
-function validateRunClubMemberCountAggregates(
-  runClubs,
-  runClubMemberships,
+function validateClubMemberCountAggregates(
+  clubs,
+  clubMemberships,
   currentReport
 ) {
   const activeCounts = new Map();
-  for (const doc of runClubMemberships) {
+  for (const doc of clubMemberships) {
     const data = doc.data;
     if (data.status !== "active" || typeof data.clubId !== "string") continue;
     activeCounts.set(data.clubId, (activeCounts.get(data.clubId) ?? 0) + 1);
   }
 
-  for (const doc of runClubs) {
+  for (const doc of clubs) {
     const expected = activeCounts.get(doc.id) ?? 0;
     if (doc.data.memberCount !== expected) {
       issue(currentReport, "error", doc.path, "member-count-drift",
         `memberCount is ${doc.data.memberCount}, but active ` +
-        `runClubMemberships count is ${expected}.`);
+        `clubMemberships count is ${expected}.`);
     }
   }
 }
 
-function validateRunAggregateCounts(runs, runParticipations, currentReport) {
+function validateRunAggregateCounts(events, eventParticipations, currentReport) {
   const aggregates = new Map();
-  for (const doc of runParticipations) {
+  for (const doc of eventParticipations) {
     const data = doc.data;
-    if (typeof data.runId !== "string") continue;
-    const aggregate = runAggregate(aggregates, data.runId);
+    if (typeof data.eventId !== "string") continue;
+    const aggregate = runAggregate(aggregates, data.eventId);
     if (data.status === "signedUp" || data.status === "attended") {
       aggregate.bookedCount += 1;
       if (typeof data.genderAtSignup === "string") {
@@ -690,25 +690,25 @@ function validateRunAggregateCounts(runs, runParticipations, currentReport) {
     if (data.status === "waitlisted") aggregate.waitlistedCount += 1;
   }
 
-  for (const doc of runs) {
+  for (const doc of events) {
     const expected = runAggregate(aggregates, doc.id);
     for (const field of ["bookedCount", "checkedInCount", "waitlistedCount"]) {
       if (doc.data[field] !== expected[field]) {
-        issue(currentReport, "error", doc.path, "run-count-drift",
-          `${field} is ${doc.data[field]}, but runParticipations imply ` +
+        issue(currentReport, "error", doc.path, "event-count-drift",
+          `${field} is ${doc.data[field]}, but eventParticipations imply ` +
           `${expected[field]}.`);
       }
     }
     if (JSON.stringify(normalizeObject(doc.data.genderCounts ?? {})) !==
         JSON.stringify(normalizeObject(expected.genderCounts))) {
-      issue(currentReport, "error", doc.path, "run-gender-count-drift",
-        "genderCounts does not match signedUp/attended runParticipations.");
+      issue(currentReport, "error", doc.path, "event-gender-count-drift",
+        "genderCounts does not match signedUp/attended eventParticipations.");
     }
   }
 }
 
-function validateRunClubHostProfileProjections(runClubs, users, currentReport) {
-  for (const doc of runClubs) {
+function validateClubHostProfileProjections(clubs, users, currentReport) {
+  for (const doc of clubs) {
     const data = doc.data;
     if (typeof data.hostUserId !== "string" || data.hostUserId.length === 0) {
       continue;
@@ -719,12 +719,12 @@ function validateRunClubHostProfileProjections(runClubs, users, currentReport) {
     const expectedName = publicDisplayName(host);
     const expectedAvatarUrl = publicAvatarUrl(host);
     if (data.hostName !== expectedName) {
-      issue(currentReport, "error", doc.path, "run-club-host-name-drift",
+      issue(currentReport, "error", doc.path, "club-host-name-drift",
         `hostName is ${JSON.stringify(data.hostName)}, but users/` +
         `${data.hostUserId} projects to ${JSON.stringify(expectedName)}.`);
     }
     if ((data.hostAvatarUrl ?? null) !== expectedAvatarUrl) {
-      issue(currentReport, "error", doc.path, "run-club-host-avatar-drift",
+      issue(currentReport, "error", doc.path, "club-host-avatar-drift",
         `hostAvatarUrl is ${JSON.stringify(data.hostAvatarUrl ?? null)}, ` +
         `but users/${data.hostUserId} projects to ` +
         `${JSON.stringify(expectedAvatarUrl)}.`);
@@ -750,10 +750,10 @@ function publicAvatarUrl(user) {
 
 function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}) {
   const issues = scheduleComplianceIssues({
-    runs: collections.runs,
-    participations: collections.runParticipations,
-    runClubScheduleLocks: collections.runClubScheduleLocks,
-    userRunScheduleLocks: collections.userRunScheduleLocks,
+    events: collections.events,
+    participations: collections.eventParticipations,
+    clubScheduleLocks: collections.clubScheduleLocks,
+    userEventScheduleLocks: collections.userEventScheduleLocks,
     checkLocks: checkScheduleLocks,
   });
   for (const found of issues) {
@@ -761,16 +761,16 @@ function validateSchedulePolicy(collections, currentReport, {checkScheduleLocks}
   }
 }
 
-function runAggregate(aggregates, runId) {
-  if (!aggregates.has(runId)) {
-    aggregates.set(runId, {
+function runAggregate(aggregates, eventId) {
+  if (!aggregates.has(eventId)) {
+    aggregates.set(eventId, {
       bookedCount: 0,
       checkedInCount: 0,
       waitlistedCount: 0,
       genderCounts: {},
     });
   }
-  return aggregates.get(runId);
+  return aggregates.get(eventId);
 }
 
 function normalizeObject(value) {

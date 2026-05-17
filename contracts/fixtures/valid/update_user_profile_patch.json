@@ -4,7 +4,7 @@
     "profilePrompts": [
       {
         "promptId": "perfectRun",
-        "prompt": "A perfect run with me looks like...",
+        "prompt": "A perfect event with me looks like...",
         "answer": "Easy kilometres, low-pressure conversation, and coffee after."
       }
     ],

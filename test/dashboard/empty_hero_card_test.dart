@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('Find a run CTA stays legible in dark mode', (tester) async {
+  testWidgets('Find an event CTA stays legible in dark mode', (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppTheme.dark,
@@ -13,7 +13,7 @@ void main() {
       ),
     );
 
-    final label = tester.widget<Text>(find.text('Find a run near me'));
+    final label = tester.widget<Text>(find.text('Find an event near me'));
 
     expect(label.style?.color, CatchTokens.sunsetLight.ink);
   });

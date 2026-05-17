@@ -13,10 +13,10 @@
       "required": ["userId", "targetId"],
       "properties": {
         "userId": {
-          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         },
         "targetId": {
-          "$ref": "../shared/run_common.schema.json#/definitions/documentId"
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
         }
       }
     },

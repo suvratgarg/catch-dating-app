@@ -1,5 +1,5 @@
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/domain/run_participation.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/swipes/domain/swipe_window.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
@@ -17,20 +17,20 @@ class SwipeEmptyContent {
 }
 
 const defaultSwipeEmptyContent = SwipeEmptyContent(
-  title: 'No more runners',
-  message: 'Join more runs to meet new people',
+  title: 'No more attendees',
+  message: 'Join more events to meet new people',
   icon: Icons.directions_run_rounded,
 );
 
 SwipeEmptyContent buildSwipeEmptyContent({
-  required Run? run,
+  required Event? event,
   required UserProfile? currentUser,
-  required RunParticipation? currentUserParticipation,
+  required EventParticipation? currentUserParticipation,
 }) {
-  if (run == null) {
+  if (event == null) {
     return const SwipeEmptyContent(
       title: 'Catch unavailable',
-      message: 'This run could not be found.',
+      message: 'This event could not be found.',
       icon: Icons.search_off_rounded,
     );
   }
@@ -38,31 +38,31 @@ SwipeEmptyContent buildSwipeEmptyContent({
   if (currentUser == null) {
     return const SwipeEmptyContent(
       title: 'Sign in required',
-      message: 'Sign in again to swipe on fellow runners.',
+      message: 'Sign in again to swipe on fellow attendees.',
       icon: Icons.lock_outline_rounded,
     );
   }
 
-  if (currentUserParticipation?.status != RunParticipationStatus.attended) {
+  if (currentUserParticipation?.status != EventParticipationStatus.attended) {
     return const SwipeEmptyContent(
       title: 'Catch unavailable',
-      message: 'You can only swipe on runners from events you attended.',
+      message: 'You can only swipe on attendees from events you attended.',
       icon: Icons.verified_user_outlined,
     );
   }
 
-  if (run.isUpcoming) {
+  if (event.isUpcoming) {
     return const SwipeEmptyContent(
-      title: 'Run in progress',
-      message: 'Swiping unlocks for 24 hours after the run finishes.',
+      title: 'Event in progress',
+      message: 'Swiping unlocks for 24 hours after the event finishes.',
       icon: Icons.schedule_rounded,
     );
   }
 
-  if (!hasOpenSwipeWindow(run)) {
+  if (!hasOpenSwipeWindow(event)) {
     return const SwipeEmptyContent(
       title: 'Swipe window closed',
-      message: 'This run is past the 24-hour catch window.',
+      message: 'This event is past the 24-hour catch window.',
       icon: Icons.hourglass_disabled_rounded,
     );
   }

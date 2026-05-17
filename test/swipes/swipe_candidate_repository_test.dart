@@ -1,10 +1,10 @@
-import 'package:catch_dating_app/runs/domain/run_participation.dart';
+import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/swipes/data/swipe_candidate_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 class FakeSwipeRepository extends Fake implements SwipeRepository {
   String? lastRequestedUid;
@@ -19,20 +19,20 @@ class FakeSwipeRepository extends Fake implements SwipeRepository {
 
 void main() {
   group('SwipeCandidateRepository', () {
-    late FakeRunRepository runRepository;
-    late FakeRunParticipationRepository runParticipationRepository;
+    late FakeEventRepository eventRepository;
+    late FakeEventParticipationRepository eventParticipationRepository;
     late FakeSwipeRepository swipeRepository;
     late FakePublicProfileRepository publicProfileRepository;
     late SwipeCandidateRepository repository;
 
     setUp(() {
-      runRepository = FakeRunRepository();
-      runParticipationRepository = FakeRunParticipationRepository();
+      eventRepository = FakeEventRepository();
+      eventParticipationRepository = FakeEventParticipationRepository();
       swipeRepository = FakeSwipeRepository();
       publicProfileRepository = FakePublicProfileRepository();
       repository = SwipeCandidateRepository(
-        runRepository,
-        runParticipationRepository,
+        eventRepository,
+        eventParticipationRepository,
         swipeRepository,
         publicProfileRepository,
       );
@@ -40,50 +40,50 @@ void main() {
 
     test('returns empty when the swipe window has closed', () async {
       final endedAt = DateTime.now().subtract(const Duration(hours: 25));
-      runRepository.fetchedRun = buildRun(
-        id: 'run-closed',
+      eventRepository.fetchedEvent = buildEvent(
+        id: 'event-closed',
         startTime: endedAt.subtract(const Duration(hours: 1)),
         endTime: endedAt,
       );
 
       final results = await repository.fetchCandidates(
-        runId: 'run-closed',
+        eventId: 'event-closed',
         currentUser: buildUser(uid: 'runner-1'),
       );
 
       expect(results, isEmpty);
-      expect(runParticipationRepository.lastFetchedRunId, isNull);
+      expect(eventParticipationRepository.lastFetchedEventId, isNull);
       expect(publicProfileRepository.lastRequestedUids, isNull);
     });
 
     test(
-      'returns empty when the current user did not attend the run',
+      'returns empty when the current user did not attend the event',
       () async {
         final endedAt = DateTime.now().subtract(const Duration(hours: 3));
-        final run = buildRun(
-          id: 'run-not-attended',
+        final event = buildEvent(
+          id: 'event-not-attended',
           startTime: endedAt.subtract(const Duration(hours: 1)),
           endTime: endedAt,
           checkedInCount: 1,
         );
-        runRepository.fetchedRun = run;
-        runParticipationRepository.runParticipations[run.id] = [
-          buildRunParticipation(
-            run: run,
+        eventRepository.fetchedEvent = event;
+        eventParticipationRepository.eventParticipations[event.id] = [
+          buildEventParticipation(
+            event: event,
             uid: 'runner-2',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 1),
           ),
-          buildRunParticipation(
-            run: run,
+          buildEventParticipation(
+            event: event,
             uid: 'runner-3',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 2),
           ),
         ];
 
         final results = await repository.fetchCandidates(
-          runId: 'run-not-attended',
+          eventId: 'event-not-attended',
           currentUser: buildUser(uid: 'runner-1'),
         );
 
@@ -96,41 +96,41 @@ void main() {
       'filters swiped and incompatible profiles while preserving attendee order',
       () async {
         final endedAt = DateTime.now().subtract(const Duration(hours: 3));
-        final run = buildRun(
-          id: 'run-open',
+        final event = buildEvent(
+          id: 'event-open',
           startTime: endedAt.subtract(const Duration(hours: 1)),
           endTime: endedAt,
         );
-        runRepository.fetchedRun = run;
-        runParticipationRepository.runParticipations[run.id] = [
-          buildRunParticipation(
-            run: run,
+        eventRepository.fetchedEvent = event;
+        eventParticipationRepository.eventParticipations[event.id] = [
+          buildEventParticipation(
+            event: event,
             uid: 'runner-1',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 1),
           ),
-          buildRunParticipation(
-            run: run,
+          buildEventParticipation(
+            event: event,
             uid: 'runner-a',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 2),
           ),
-          buildRunParticipation(
-            run: run,
+          buildEventParticipation(
+            event: event,
             uid: 'runner-b',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 3),
           ),
-          buildRunParticipation(
-            run: run,
+          buildEventParticipation(
+            event: event,
             uid: 'runner-c',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 4),
           ),
-          buildRunParticipation(
-            run: run,
+          buildEventParticipation(
+            event: event,
             uid: 'runner-d',
-            status: RunParticipationStatus.attended,
+            status: EventParticipationStatus.attended,
             createdAt: DateTime(2026, 5, 6, 7, 5),
           ),
         ];
@@ -163,7 +163,7 @@ void main() {
         );
 
         final results = await repository.fetchCandidates(
-          runId: 'run-open',
+          eventId: 'event-open',
           currentUser: currentUser,
         );
 

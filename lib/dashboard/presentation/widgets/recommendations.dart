@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 class Recommendations extends StatelessWidget {
   const Recommendations({super.key, required this.recommendations});
 
-  final List<DashboardRunRecommendation> recommendations;
+  final List<DashboardEventRecommendation> recommendations;
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +16,7 @@ class Recommendations extends StatelessWidget {
             .clamp(280.0, 340.0)
             .toDouble();
         return CatchHorizontalRail(
-          title: 'Recommended runs',
+          title: 'Recommended events',
           itemCount: recommendations.length,
           itemBuilder: (context, i) => RecommendCard.fromRecommendation(
             recommendation: recommendations[i],

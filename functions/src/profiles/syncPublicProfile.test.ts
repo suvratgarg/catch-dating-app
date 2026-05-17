@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   syncAuthoredReviewReviewerProfile,
-  syncHostedRunClubHostProfile,
+  syncHostedClubHostProfile,
   syncUserProfileProjectionsHandler,
 } from "./syncPublicProfile";
 
@@ -102,7 +102,7 @@ function completeUser(overrides: FakeData = {}): FakeData {
     dateOfBirth: timestamp(new Date("1996-01-01T00:00:00.000Z")),
     profilePrompts: [{
       promptId: "perfectRun",
-      prompt: "A perfect run with me looks like...",
+      prompt: "A perfect event with me looks like...",
       answer: "Morning runner",
     }],
     photoPrompts: [],
@@ -120,23 +120,23 @@ function completeUser(overrides: FakeData = {}): FakeData {
 test("syncUserProfileProjectionsHandler syncs public profile and clubs",
   async () => {
     const firestore = new FakeFirestore({
-      "runClubs/club-1": {
+      "clubs/club-1": {
         hostUserId: "host-1",
         hostName: "Old Name",
         hostAvatarUrl: "https://old.test/avatar.jpg",
         memberCount: 3,
       },
-      "runClubs/club-2": {
+      "clubs/club-2": {
         hostUserId: "other-host",
         hostName: "Other Host",
         memberCount: 4,
       },
-      "reviews/run-1~host-1": {
+      "reviews/event-1~host-1": {
         reviewerUserId: "host-1",
         reviewerName: "Old Reviewer",
         rating: 5,
       },
-      "reviews/run-1~other-host": {
+      "reviews/event-1~other-host": {
         reviewerUserId: "other-host",
         reviewerName: "Other Reviewer",
         rating: 4,
@@ -156,59 +156,59 @@ test("syncUserProfileProjectionsHandler syncs public profile and clubs",
       firestore.get("publicProfiles/host-1")?.name,
       "Asha Updated"
     );
-    assert.deepEqual(firestore.get("runClubs/club-1"), {
+    assert.deepEqual(firestore.get("clubs/club-1"), {
       hostUserId: "host-1",
       hostName: "Asha Updated",
       hostAvatarUrl: "https://example.test/new-thumb.jpg",
       memberCount: 3,
     });
     assert.equal(
-      firestore.get("runClubs/club-2")?.hostName,
+      firestore.get("clubs/club-2")?.hostName,
       "Other Host"
     );
     assert.equal(
-      firestore.get("reviews/run-1~host-1")?.reviewerName,
+      firestore.get("reviews/event-1~host-1")?.reviewerName,
       "Asha Updated"
     );
     assert.equal(
-      firestore.get("reviews/run-1~other-host")?.reviewerName,
+      firestore.get("reviews/event-1~other-host")?.reviewerName,
       "Other Reviewer"
     );
   }
 );
 
-test("syncHostedRunClubHostProfile updates every club hosted by the user",
+test("syncHostedClubHostProfile updates every club hosted by the user",
   async () => {
     const firestore = new FakeFirestore({
-      "runClubs/club-1": {hostUserId: "host-1", hostName: "Old 1"},
-      "runClubs/club-2": {hostUserId: "host-1", hostName: "Old 2"},
-      "runClubs/club-3": {hostUserId: "host-2", hostName: "Other"},
+      "clubs/club-1": {hostUserId: "host-1", hostName: "Old 1"},
+      "clubs/club-2": {hostUserId: "host-1", hostName: "Old 2"},
+      "clubs/club-3": {hostUserId: "host-2", hostName: "Other"},
     });
 
-    await syncHostedRunClubHostProfile(
+    await syncHostedClubHostProfile(
       "host-1",
       {hostName: "New Host", hostAvatarUrl: null},
       {firestore: () => firestore as never}
     );
 
-    assert.equal(firestore.get("runClubs/club-1")?.hostName, "New Host");
-    assert.equal(firestore.get("runClubs/club-2")?.hostName, "New Host");
-    assert.equal(firestore.get("runClubs/club-3")?.hostName, "Other");
+    assert.equal(firestore.get("clubs/club-1")?.hostName, "New Host");
+    assert.equal(firestore.get("clubs/club-2")?.hostName, "New Host");
+    assert.equal(firestore.get("clubs/club-3")?.hostName, "Other");
   }
 );
 
 test("syncAuthoredReviewReviewerProfile updates every review by the user",
   async () => {
     const firestore = new FakeFirestore({
-      "reviews/run-1~reviewer-1": {
+      "reviews/event-1~reviewer-1": {
         reviewerUserId: "reviewer-1",
         reviewerName: "Old 1",
       },
-      "reviews/run-2~reviewer-1": {
+      "reviews/event-2~reviewer-1": {
         reviewerUserId: "reviewer-1",
         reviewerName: "Old 2",
       },
-      "reviews/run-1~reviewer-2": {
+      "reviews/event-1~reviewer-2": {
         reviewerUserId: "reviewer-2",
         reviewerName: "Other",
       },
@@ -221,15 +221,15 @@ test("syncAuthoredReviewReviewerProfile updates every review by the user",
     );
 
     assert.equal(
-      firestore.get("reviews/run-1~reviewer-1")?.reviewerName,
+      firestore.get("reviews/event-1~reviewer-1")?.reviewerName,
       "New Reviewer"
     );
     assert.equal(
-      firestore.get("reviews/run-2~reviewer-1")?.reviewerName,
+      firestore.get("reviews/event-2~reviewer-1")?.reviewerName,
       "New Reviewer"
     );
     assert.equal(
-      firestore.get("reviews/run-1~reviewer-2")?.reviewerName,
+      firestore.get("reviews/event-1~reviewer-2")?.reviewerName,
       "Other"
     );
   }

@@ -2,17 +2,17 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/payments/data/payment_history_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_keys.dart';
 import 'package:catch_dating_app/payments/presentation/payment_history_screen.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 /// Wraps [child] in a MaterialApp with an iPhone SE-sized surface so that
@@ -35,13 +35,13 @@ void main() {
           _payment(
             id: 'pay-1',
             orderId: 'order-1',
-            runId: 'run-1',
+            eventId: 'event-1',
             status: PaymentStatus.completed,
             signUpFailed: true,
             createdAt: DateTime(2025, 1, 2),
           ),
         ],
-        runs: {'run-1': buildRun(id: 'run-1')},
+        events: {'event-1': buildEvent(id: 'event-1')},
       );
 
       expect(_topBarMaterial(tester).color, CatchTokens.sunsetLight.bg);
@@ -61,13 +61,13 @@ void main() {
           _payment(
             id: 'pay-2',
             orderId: 'order-2',
-            runId: 'run-2',
+            eventId: 'event-2',
             status: PaymentStatus.refunded,
             signUpFailed: true,
             createdAt: DateTime(2025, 1, 3),
           ),
         ],
-        runs: {'run-2': buildRun(id: 'run-2')},
+        events: {'event-2': buildEvent(id: 'event-2')},
       );
 
       expect(find.text('Refunded'), findsOneWidget);
@@ -87,13 +87,13 @@ void main() {
             id: 'pay-3',
             orderId: 'order-3',
             paymentId: 'pay_XYZ789',
-            runId: 'run-3',
+            eventId: 'event-3',
             amount: 19900,
             status: PaymentStatus.completed,
             createdAt: DateTime(2025, 2, 10),
           ),
         ],
-        runs: {'run-3': buildRun(id: 'run-3')},
+        events: {'event-3': buildEvent(id: 'event-3')},
       );
 
       await tester.tap(find.byKey(PaymentHistoryKeys.paymentTile('pay-3')));
@@ -115,13 +115,13 @@ void main() {
           _payment(
             id: 'pay-4',
             orderId: 'order-4',
-            runId: 'run-4',
+            eventId: 'event-4',
             status: PaymentStatus.completed,
             signUpFailed: true,
             createdAt: DateTime(2025, 3, 1),
           ),
         ],
-        runs: {'run-4': buildRun(id: 'run-4')},
+        events: {'event-4': buildEvent(id: 'event-4')},
       );
 
       await tester.tap(find.byKey(PaymentHistoryKeys.paymentTile('pay-4')));
@@ -138,7 +138,7 @@ void main() {
             id: 'pay-completed',
             orderId: 'order-c',
             paymentId: 'pay-c',
-            runId: 'run-a',
+            eventId: 'event-a',
             amount: 10000,
             status: PaymentStatus.completed,
             createdAt: DateTime(2025, 1, 10),
@@ -147,7 +147,7 @@ void main() {
             id: 'pay-failed',
             orderId: 'order-f',
             paymentId: 'pay-f',
-            runId: 'run-b',
+            eventId: 'event-b',
             amount: 5000,
             status: PaymentStatus.failed,
             createdAt: DateTime(2025, 1, 9),
@@ -156,16 +156,16 @@ void main() {
             id: 'pay-pending',
             orderId: 'order-p',
             paymentId: 'pay-p',
-            runId: 'run-c',
+            eventId: 'event-c',
             amount: 7500,
             status: PaymentStatus.pending,
             createdAt: DateTime(2025, 1, 8),
           ),
         ],
-        runs: {
-          'run-a': buildRun(id: 'run-a'),
-          'run-b': buildRun(id: 'run-b'),
-          'run-c': buildRun(id: 'run-c'),
+        events: {
+          'event-a': buildEvent(id: 'event-a'),
+          'event-b': buildEvent(id: 'event-b'),
+          'event-c': buildEvent(id: 'event-c'),
         },
       );
 
@@ -194,7 +194,7 @@ Future<void> _pumpPaymentSheet(WidgetTester tester) async {
 Future<void> _pumpPaymentHistory(
   WidgetTester tester, {
   required List<Payment> payments,
-  required Map<String, Run> runs,
+  required Map<String, Event> events,
 }) async {
   await tester.pumpWidget(
     ProviderScope(
@@ -203,8 +203,8 @@ Future<void> _pumpPaymentHistory(
         watchPaymentsForUserProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value(payments)),
-        for (final entry in runs.entries)
-          watchRunProvider(
+        for (final entry in events.entries)
+          watchEventProvider(
             entry.key,
           ).overrideWith((ref) => Stream.value(entry.value)),
       ],
@@ -218,7 +218,7 @@ Future<void> _pumpPaymentHistory(
 Payment _payment({
   required String id,
   required String orderId,
-  required String runId,
+  required String eventId,
   required PaymentStatus status,
   required DateTime createdAt,
   String? paymentId,
@@ -230,7 +230,7 @@ Payment _payment({
     userId: 'runner-1',
     orderId: orderId,
     paymentId: paymentId ?? id,
-    runId: runId,
+    eventId: eventId,
     amount: amount,
     status: status,
     signUpFailed: signUpFailed,

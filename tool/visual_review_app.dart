@@ -1,23 +1,23 @@
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/calendar/presentation/calendar_screen.dart';
+import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
+import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/domain/event_constraints.dart';
+import 'package:catch_dating_app/events/presentation/create_event_success_screen.dart';
+import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
+import 'package:catch_dating_app/events/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
-import 'package:catch_dating_app/run_clubs/domain/run_club.dart';
-import 'package:catch_dating_app/runs/data/run_repository.dart';
-import 'package:catch_dating_app/runs/domain/run.dart';
-import 'package:catch_dating_app/runs/domain/run_constraints.dart';
-import 'package:catch_dating_app/runs/presentation/create_run_success_screen.dart';
-import 'package:catch_dating_app/runs/presentation/host_run_manage_screen.dart';
-import 'package:catch_dating_app/runs/presentation/run_map_screen.dart';
 import 'package:catch_dating_app/safety/data/safety_repository.dart';
 import 'package:catch_dating_app/safety/presentation/settings_screen.dart';
+import 'package:catch_dating_app/swipes/presentation/event_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/filters_screen.dart';
-import 'package:catch_dating_app/swipes/presentation/run_recap_screen.dart';
 import 'package:catch_dating_app/swipes/presentation/swipe_hub_screen.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -29,7 +29,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 void main() {
   final liveRun = _run(
-    id: 'run-live',
+    id: 'event-live',
     startTime: DateTime.now().subtract(const Duration(hours: 2)),
     endTime: DateTime.now().subtract(const Duration(hours: 1)),
     checkedInCount: 4,
@@ -37,7 +37,7 @@ void main() {
     startingPointLng: 72.8221,
   );
   final upcomingRun = _run(
-    id: 'run-upcoming',
+    id: 'event-upcoming',
     startTime: DateTime.now().add(const Duration(days: 1, hours: 2)),
     distanceKm: 10,
     pace: PaceLevel.moderate,
@@ -49,7 +49,7 @@ void main() {
     id: 'match-1',
     user1Id: 'runner-1',
     user2Id: 'runner-2',
-    runIds: [liveRun.id],
+    eventIds: [liveRun.id],
     createdAt: DateTime.now().subtract(const Duration(hours: 3)),
     lastMessageAt: DateTime.now().subtract(const Duration(minutes: 18)),
     lastMessagePreview: 'Coffee after the next 10K?',
@@ -70,19 +70,19 @@ void main() {
         publicProfileRepositoryProvider.overrideWithValue(
           _VisualReviewPublicProfileRepository(publicProfiles),
         ),
-        watchAttendedRunsProvider(
+        watchAttendedEventsProvider(
           'runner-1',
         ).overrideWithValue(AsyncData([liveRun])),
-        watchSignedUpRunsProvider(
+        watchSignedUpEventsProvider(
           'runner-1',
         ).overrideWithValue(AsyncData([upcomingRun])),
-        recommendedRunsProvider(
-          RecommendedRunsQuery.fromClubIds(const ['club-1']),
+        recommendedEventsProvider(
+          RecommendedEventsQuery.fromClubIds(const ['club-1']),
         ).overrideWithValue(AsyncData([upcomingRun])),
         watchMatchesForUserProvider(
           'runner-1',
         ).overrideWith((ref) => Stream.value([match])),
-        watchRunProvider(
+        watchEventProvider(
           liveRun.id,
         ).overrideWith((ref) => Stream.value(liveRun)),
         watchBlockedUsersProvider.overrideWithValue(const AsyncData([])),
@@ -95,13 +95,13 @@ void main() {
 class VisualReviewApp extends StatelessWidget {
   const VisualReviewApp({required this.liveRun, super.key});
 
-  final Run liveRun;
+  final Event liveRun;
 
   @override
   Widget build(BuildContext context) {
     final club = _club();
     final managedRun = _run(
-      id: 'run-managed',
+      id: 'event-managed',
       startTime: DateTime(2026, 5, 10, 6),
       distanceKm: 7.5,
       capacityLimit: 4,
@@ -130,27 +130,27 @@ class VisualReviewApp extends StatelessWidget {
                 _PhoneFrame(label: 'Calendar', child: const CalendarScreen()),
                 _PhoneFrame(
                   label: 'Map view',
-                  child: const RunMapScreen(enableNetworkTiles: false),
+                  child: const EventMapScreen(enableNetworkTiles: false),
                 ),
                 _PhoneFrame(label: 'Filters', child: const FiltersScreen()),
                 _PhoneFrame(
-                  label: 'Run recap',
-                  child: RunRecapScreen(runId: liveRun.id),
+                  label: 'Event recap',
+                  child: EventRecapScreen(eventId: liveRun.id),
                 ),
                 _PhoneFrame(
                   label: 'Create success',
-                  child: CreateRunSuccessScreen(
-                    runClub: club,
-                    run: managedRun,
-                    onManageRun: () {},
+                  child: CreateEventSuccessScreen(
+                    club: club,
+                    event: managedRun,
+                    onManageEvent: () {},
                     onDone: () {},
                   ),
                 ),
                 _PhoneFrame(
                   label: 'Host manage',
-                  child: HostRunManageScreen(
-                    runClub: club,
-                    run: managedRun,
+                  child: HostEventManageScreen(
+                    club: club,
+                    event: managedRun,
                     onBackToSuccess: () {},
                   ),
                 ),
@@ -303,7 +303,7 @@ class _PhoneFrame extends StatelessWidget {
   }
 }
 
-Run _run({
+Event _run({
   required String id,
   required DateTime startTime,
   DateTime? endTime,
@@ -317,9 +317,9 @@ Run _run({
   double? startingPointLat,
   double? startingPointLng,
 }) {
-  return Run(
+  return Event(
     id: id,
-    runClubId: 'club-1',
+    clubId: 'club-1',
     startTime: startTime,
     endTime: endTime ?? startTime.add(const Duration(hours: 1)),
     meetingPoint: 'Carter Road Amphitheatre',
@@ -333,12 +333,12 @@ Run _run({
     bookedCount: bookedCount,
     checkedInCount: checkedInCount,
     waitlistedCount: waitlistedCount,
-    constraints: const RunConstraints(minAge: 21, maxAge: 35),
+    constraints: const EventConstraints(minAge: 21, maxAge: 35),
   );
 }
 
-RunClub _club() {
-  return RunClub(
+Club _club() {
+  return Club(
     id: 'club-1',
     name: 'Bandra Striders',
     description: 'Morning runners who like easy city loops.',
@@ -359,8 +359,8 @@ UserProfile _user() {
     dateOfBirth: DateTime(1996, 5, 8),
     profilePrompts: const [
       ProfilePromptAnswer(
-        promptId: profilePromptPerfectRunId,
-        prompt: 'A perfect run with me looks like...',
+        promptId: profilePromptPerfectEventId,
+        prompt: 'A perfect event with me looks like...',
         answer: 'Coffee after a steady 10K is the ideal Sunday.',
       ),
     ],
@@ -389,9 +389,9 @@ PublicProfile _publicProfile(String uid, String name) {
     gender: Gender.woman,
     profilePrompts: const [
       ProfilePromptAnswer(
-        promptId: profilePromptPerfectRunId,
-        prompt: 'A perfect run with me looks like...',
-        answer: 'Steady miles, good coffee, and Sunday long runs.',
+        promptId: profilePromptPerfectEventId,
+        prompt: 'A perfect event with me looks like...',
+        answer: 'Steady miles, good coffee, and Sunday long events.',
       ),
     ],
   );

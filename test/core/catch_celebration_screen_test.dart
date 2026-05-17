@@ -21,7 +21,7 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: CatchCelebrationScreen(
-            kind: CelebrationMomentKind.runJoined,
+            kind: CelebrationMomentKind.eventJoined,
             eyebrow: 'Booking confirmed',
             title: "You're in.",
             message: 'Your spot is confirmed.',
@@ -34,7 +34,7 @@ void main() {
             ],
             note: 'Arrive by the meeting time.',
             primaryAction: CelebrationAction(
-              label: 'View run',
+              label: 'View event',
               onPressed: () => primaryPressed++,
             ),
             secondaryAction: CelebrationAction(
@@ -47,7 +47,7 @@ void main() {
     );
     await tester.pump();
 
-    expect(effects.playedKinds, [CelebrationMomentKind.runJoined]);
+    expect(effects.playedKinds, [CelebrationMomentKind.eventJoined]);
     expect(find.text('BOOKING CONFIRMED'), findsOneWidget);
     expect(find.text("You're in."), findsOneWidget);
     expect(find.text('Your spot is confirmed.'), findsOneWidget);
@@ -82,14 +82,14 @@ void main() {
       Colors.white,
     );
 
-    await tester.tap(find.text('View run'));
+    await tester.tap(find.text('View event'));
     await tester.pump();
     await tester.tap(find.text('Back to home'));
     await tester.pump();
 
     expect(primaryPressed, 1);
     expect(secondaryPressed, 1);
-    expect(effects.playedKinds, [CelebrationMomentKind.runJoined]);
+    expect(effects.playedKinds, [CelebrationMomentKind.eventJoined]);
   });
 
   testWidgets('can suppress effects for deterministic surfaces', (
@@ -140,14 +140,14 @@ void main() {
         child: MaterialApp(
           theme: AppTheme.light,
           home: CatchCelebrationScreen(
-            kind: CelebrationMomentKind.runJoined,
+            kind: CelebrationMomentKind.eventJoined,
             eyebrow: 'Booking confirmed',
             title: "You're in.",
-            message: 'Your spot is confirmed for a longer run name.',
+            message: 'Your spot is confirmed for a longer event name.',
             details: const [
               CelebrationDetail(label: 'When', value: 'Thursday evening'),
               CelebrationDetail(label: 'Where', value: 'Carter Road'),
-              CelebrationDetail(label: 'Run', value: '8km · Easy'),
+              CelebrationDetail(label: 'Event', value: '8km · Easy'),
               CelebrationDetail(label: 'Paid', value: '₹299'),
             ],
             note: 'Arrive by the meeting time.',
@@ -156,7 +156,7 @@ void main() {
               SizedBox(height: 120, child: Text('Invite a friend')),
             ],
             primaryAction: CelebrationAction(
-              label: 'View run',
+              label: 'View event',
               onPressed: () {},
             ),
             secondaryAction: CelebrationAction(

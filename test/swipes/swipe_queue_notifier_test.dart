@@ -13,7 +13,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../auth/auth_test_helpers.dart';
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 
 class FakeSwipeRecordRepository extends Fake implements SwipeRepository {
   Swipe? recordedSwipe;
@@ -32,7 +32,7 @@ class FakeSwipeCandidateRepository extends Fake
     implements SwipeCandidateRepository {
   @override
   Future<List<PublicProfile>> fetchCandidates({
-    required String runId,
+    required String eventId,
     required currentUser,
   }) async => const [];
 }
@@ -72,21 +72,21 @@ void main() {
       addTearDown(container.dispose);
 
       final sub = container.listen(
-        swipeQueueProvider('run-1'),
+        swipeQueueProvider('event-1'),
         (_, _) {},
         fireImmediately: true,
       );
       addTearDown(sub.close);
       await container.pump();
 
-      final notifier = container.read(swipeQueueProvider('run-1').notifier);
+      final notifier = container.read(swipeQueueProvider('event-1').notifier);
       notifier.state = AsyncData([buildPublicProfile(uid: 'runner-2')]);
 
       await notifier.swipe(SwipeDirection.like);
 
       expect(swipeRepository.recordedSwipe, isNull);
       expect(
-        container.read(swipeQueueProvider('run-1')).value?.map((p) => p.uid),
+        container.read(swipeQueueProvider('event-1')).value?.map((p) => p.uid),
         ['runner-2'],
       );
     });
@@ -111,14 +111,14 @@ void main() {
         addTearDown(container.dispose);
 
         final sub = container.listen(
-          swipeQueueProvider('run-9'),
+          swipeQueueProvider('event-9'),
           (_, _) {},
           fireImmediately: true,
         );
         addTearDown(sub.close);
         await container.pump();
 
-        final notifier = container.read(swipeQueueProvider('run-9').notifier);
+        final notifier = container.read(swipeQueueProvider('event-9').notifier);
         notifier.state = AsyncData([
           buildPublicProfile(uid: 'runner-2'),
           buildPublicProfile(uid: 'runner-3'),
@@ -128,10 +128,13 @@ void main() {
 
         expect(swipeRepository.recordedSwipe?.swiperId, 'runner-1');
         expect(swipeRepository.recordedSwipe?.targetId, 'runner-2');
-        expect(swipeRepository.recordedSwipe?.runId, 'run-9');
+        expect(swipeRepository.recordedSwipe?.eventId, 'event-9');
         expect(swipeRepository.recordedSwipe?.direction, SwipeDirection.pass);
         expect(
-          container.read(swipeQueueProvider('run-9')).value?.map((p) => p.uid),
+          container
+              .read(swipeQueueProvider('event-9'))
+              .value
+              ?.map((p) => p.uid),
           ['runner-3'],
         );
       },
@@ -155,14 +158,14 @@ void main() {
       addTearDown(container.dispose);
 
       final sub = container.listen(
-        swipeQueueProvider('run-9'),
+        swipeQueueProvider('event-9'),
         (_, _) {},
         fireImmediately: true,
       );
       addTearDown(sub.close);
       await container.pump();
 
-      final notifier = container.read(swipeQueueProvider('run-9').notifier);
+      final notifier = container.read(swipeQueueProvider('event-9').notifier);
       notifier.state = AsyncData([buildPublicProfile(uid: 'runner-2')]);
 
       await notifier.swipe(
@@ -170,8 +173,8 @@ void main() {
         reactionTarget: const ProfileReactionTarget(
           id: 'profile-prompt-perfectRun',
           type: SwipeReactionTargetType.profilePrompt,
-          label: 'A perfect run with me looks like...',
-          preview: 'Always up for a sunrise run.',
+          label: 'A perfect event with me looks like...',
+          preview: 'Always up for a sunrise event.',
         ),
         comment: '  This sounds fun.  ',
       );
@@ -186,7 +189,7 @@ void main() {
       );
       expect(
         swipeRepository.recordedSwipe?.reactionTargetLabel,
-        'A perfect run with me looks like...',
+        'A perfect event with me looks like...',
       );
       expect(swipeRepository.recordedSwipe?.comment, 'This sounds fun.');
     });
@@ -212,14 +215,14 @@ void main() {
         addTearDown(container.dispose);
 
         final sub = container.listen(
-          swipeQueueProvider('run-9'),
+          swipeQueueProvider('event-9'),
           (_, _) {},
           fireImmediately: true,
         );
         addTearDown(sub.close);
         await container.pump();
 
-        final notifier = container.read(swipeQueueProvider('run-9').notifier);
+        final notifier = container.read(swipeQueueProvider('event-9').notifier);
         notifier.state = AsyncData([
           buildPublicProfile(uid: 'runner-2'),
           buildPublicProfile(uid: 'runner-3'),
@@ -239,7 +242,10 @@ void main() {
         await Future.wait([firstSwipe, secondSwipe]);
 
         expect(
-          container.read(swipeQueueProvider('run-9')).value?.map((p) => p.uid),
+          container
+              .read(swipeQueueProvider('event-9'))
+              .value
+              ?.map((p) => p.uid),
           ['runner-3'],
         );
       },
@@ -263,7 +269,7 @@ void main() {
       addTearDown(container.dispose);
 
       final sub = container.listen(
-        swipeQueueProvider('run-1'),
+        swipeQueueProvider('event-1'),
         (_, _) {},
         fireImmediately: true,
       );
@@ -272,7 +278,7 @@ void main() {
       await Future<void>.delayed(const Duration(milliseconds: 5));
       await container.pump();
 
-      final state = container.read(swipeQueueProvider('run-1'));
+      final state = container.read(swipeQueueProvider('event-1'));
       expect(state.hasError, isTrue);
       expect(
         state.error,

@@ -13,14 +13,14 @@ test(
       {
         swiperId: "user-b",
         targetId: "user-a",
-        swipeData: swipe("user-b", "user-a", "run-2", "like"),
+        swipeData: swipe("user-b", "user-a", "event-2", "like"),
       },
       deps({
         docs: {
           "swipes/user-a/outgoing/user-b": swipe(
             "user-a",
             "user-b",
-            "run-1",
+            "event-1",
             "like"
           ),
         },
@@ -32,7 +32,7 @@ test(
       user1Id: "user-a",
       user2Id: "user-b",
       participantIds: ["user-a", "user-b"],
-      runIds: ["run-1", "run-2"],
+      eventIds: ["event-1", "event-2"],
       createdAt: "SERVER_TIMESTAMP",
       lastMessageAt: null,
       lastMessagePreview: null,
@@ -50,9 +50,9 @@ test("onSwipeCreatedHandler writes reaction comments to chat", async () => {
     {
       swiperId: "user-b",
       targetId: "user-a",
-      swipeData: swipe("user-b", "user-a", "run-2", "like", {
+      swipeData: swipe("user-b", "user-a", "event-2", "like", {
         reactionTargetLabel: "Bio",
-        reactionTargetPreview: "Always up for a sunrise run.",
+        reactionTargetPreview: "Always up for a sunrise event.",
         comment: "This sounds like my kind of morning.",
       }),
     },
@@ -61,7 +61,7 @@ test("onSwipeCreatedHandler writes reaction comments to chat", async () => {
         "swipes/user-a/outgoing/user-b": swipe(
           "user-a",
           "user-b",
-          "run-1",
+          "event-1",
           "like",
           {
             reactionTargetLabel: "Main photo",
@@ -86,12 +86,13 @@ test("onSwipeCreatedHandler writes reaction comments to chat", async () => {
     senderId: "user-b",
     text:
       "This sounds like my kind of morning.\n\n" +
-      "About Bio: Always up for a sunrise run.",
+      "About Bio: Always up for a sunrise event.",
     sentAt: "SERVER_TIMESTAMP",
   });
 });
 
-test("onSwipeCreatedHandler appends run ids to an existing match", async () => {
+test("onSwipeCreatedHandler appends event ids to an existing match", async (
+) => {
   const created: Record<string, unknown> = {};
   const updated: Record<string, unknown> = {};
 
@@ -99,17 +100,17 @@ test("onSwipeCreatedHandler appends run ids to an existing match", async () => {
     {
       swiperId: "user-b",
       targetId: "user-a",
-      swipeData: swipe("user-b", "user-a", "run-3", "like"),
+      swipeData: swipe("user-b", "user-a", "event-3", "like"),
     },
     deps({
       docs: {
         "swipes/user-a/outgoing/user-b": swipe(
           "user-a",
           "user-b",
-          "run-2",
+          "event-2",
           "like"
         ),
-        "matches/user-a_user-b": {runIds: ["run-1"]},
+        "matches/user-a_user-b": {eventIds: ["event-1"]},
       },
       created,
       updated,
@@ -118,7 +119,7 @@ test("onSwipeCreatedHandler appends run ids to an existing match", async () => {
 
   assert.deepEqual(created, {});
   assert.deepEqual(updated["matches/user-a_user-b"], {
-    runIds: {arrayUnion: ["run-2", "run-3"]},
+    eventIds: {arrayUnion: ["event-2", "event-3"]},
   });
 });
 
@@ -130,7 +131,7 @@ test(
       {
         swiperId: "user-a",
         targetId: "user-b",
-        swipeData: swipe("user-a", "user-b", "run-1", "like"),
+        swipeData: swipe("user-a", "user-b", "event-1", "like"),
       },
       deps({created: nonReciprocal})
     );
@@ -141,14 +142,14 @@ test(
       {
         swiperId: "user-a",
         targetId: "user-b",
-        swipeData: swipe("user-a", "user-b", "run-1", "like"),
+        swipeData: swipe("user-a", "user-b", "event-1", "like"),
       },
       deps({
         docs: {
           "swipes/user-b/outgoing/user-a": swipe(
             "user-b",
             "user-a",
-            "run-1",
+            "event-1",
             "like"
           ),
         },
@@ -163,14 +164,14 @@ test(
 function swipe(
   swiperId: string,
   targetId: string,
-  runId: string,
+  eventId: string,
   direction: "like" | "pass",
   overrides: Partial<SwipeDoc> = {}
 ): SwipeDoc {
   return {
     swiperId,
     targetId,
-    runId,
+    eventId,
     direction,
     createdAt: "created-at" as unknown as FirebaseFirestore.Timestamp,
     ...overrides,

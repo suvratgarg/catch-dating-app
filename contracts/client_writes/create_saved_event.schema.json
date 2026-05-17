@@ -1,0 +1,40 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/client_writes/create_saved_event.schema.json",
+  "title": "CreateSavedEventClientWrite",
+  "description": "Client-owned Firestore create operation for savedEvents/{savedEventId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["path", "data"],
+  "properties": {
+    "path": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["savedEventId"],
+      "properties": {
+        "savedEventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        }
+      }
+    },
+    "data": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uid", "eventId", "savedAt"],
+      "properties": {
+        "uid": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "eventId": {
+          "$ref": "../shared/event_common.schema.json#/definitions/documentId"
+        },
+        "savedAt": {
+          "$ref": "../shared/event_common.schema.json#/definitions/timestamp"
+        }
+      }
+    }
+  },
+  "x-firestore-operation": "create",
+  "x-firestore-path": "savedEvents/{savedEventId}",
+  "x-owner": "authenticated owner direct create"
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callables/delete_event_payload.schema.json",
+  "title": "DeleteEventCallablePayload",
+  "description": "Callable payload accepted by deleteEvent.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["eventId"],
+  "properties": {
+    "eventId": {"$ref": "../shared/event_common.schema.json#/definitions/documentId"}
+  }
+}

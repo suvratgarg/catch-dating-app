@@ -14,8 +14,8 @@ part of 'dashboard_recommendations_provider.dart';
 /// presentation provider follows the same declaration style as the rest of the
 /// app.
 
-@ProviderFor(dashboardRecommendedRuns)
-final dashboardRecommendedRunsProvider = DashboardRecommendedRunsFamily._();
+@ProviderFor(dashboardRecommendedEvents)
+final dashboardRecommendedEventsProvider = DashboardRecommendedEventsFamily._();
 
 /// **Pattern D: View-model provider**
 ///
@@ -23,56 +23,56 @@ final dashboardRecommendedRunsProvider = DashboardRecommendedRunsFamily._();
 /// presentation provider follows the same declaration style as the rest of the
 /// app.
 
-final class DashboardRecommendedRunsProvider
+final class DashboardRecommendedEventsProvider
     extends
         $FunctionalProvider<
-          AsyncValue<List<DashboardRunRecommendationCandidate>>,
-          List<DashboardRunRecommendationCandidate>,
-          FutureOr<List<DashboardRunRecommendationCandidate>>
+          AsyncValue<List<DashboardEventRecommendationCandidate>>,
+          List<DashboardEventRecommendationCandidate>,
+          FutureOr<List<DashboardEventRecommendationCandidate>>
         >
     with
-        $FutureModifier<List<DashboardRunRecommendationCandidate>>,
-        $FutureProvider<List<DashboardRunRecommendationCandidate>> {
+        $FutureModifier<List<DashboardEventRecommendationCandidate>>,
+        $FutureProvider<List<DashboardEventRecommendationCandidate>> {
   /// **Pattern D: View-model provider**
   ///
   /// Keeps dashboard recommendation fetching behind generated Riverpod so this
   /// presentation provider follows the same declaration style as the rest of the
   /// app.
-  DashboardRecommendedRunsProvider._({
-    required DashboardRecommendedRunsFamily super.from,
+  DashboardRecommendedEventsProvider._({
+    required DashboardRecommendedEventsFamily super.from,
     required DashboardRecommendationsQuery super.argument,
   }) : super(
          retry: null,
-         name: r'dashboardRecommendedRunsProvider',
+         name: r'dashboardRecommendedEventsProvider',
          isAutoDispose: true,
          dependencies: null,
          $allTransitiveDependencies: null,
        );
 
   @override
-  String debugGetCreateSourceHash() => _$dashboardRecommendedRunsHash();
+  String debugGetCreateSourceHash() => _$dashboardRecommendedEventsHash();
 
   @override
   String toString() {
-    return r'dashboardRecommendedRunsProvider'
+    return r'dashboardRecommendedEventsProvider'
         ''
         '($argument)';
   }
 
   @$internal
   @override
-  $FutureProviderElement<List<DashboardRunRecommendationCandidate>>
+  $FutureProviderElement<List<DashboardEventRecommendationCandidate>>
   $createElement($ProviderPointer pointer) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<List<DashboardRunRecommendationCandidate>> create(Ref ref) {
+  FutureOr<List<DashboardEventRecommendationCandidate>> create(Ref ref) {
     final argument = this.argument as DashboardRecommendationsQuery;
-    return dashboardRecommendedRuns(ref, argument);
+    return dashboardRecommendedEvents(ref, argument);
   }
 
   @override
   bool operator ==(Object other) {
-    return other is DashboardRecommendedRunsProvider &&
+    return other is DashboardRecommendedEventsProvider &&
         other.argument == argument;
   }
 
@@ -82,8 +82,8 @@ final class DashboardRecommendedRunsProvider
   }
 }
 
-String _$dashboardRecommendedRunsHash() =>
-    r'67132b8a08386e1938ddbe3abf4927e431854fcb';
+String _$dashboardRecommendedEventsHash() =>
+    r'd858bc8d9e7c0419beecf30717490a8fb84d478f';
 
 /// **Pattern D: View-model provider**
 ///
@@ -91,16 +91,16 @@ String _$dashboardRecommendedRunsHash() =>
 /// presentation provider follows the same declaration style as the rest of the
 /// app.
 
-final class DashboardRecommendedRunsFamily extends $Family
+final class DashboardRecommendedEventsFamily extends $Family
     with
         $FunctionalFamilyOverride<
-          FutureOr<List<DashboardRunRecommendationCandidate>>,
+          FutureOr<List<DashboardEventRecommendationCandidate>>,
           DashboardRecommendationsQuery
         > {
-  DashboardRecommendedRunsFamily._()
+  DashboardRecommendedEventsFamily._()
     : super(
         retry: null,
-        name: r'dashboardRecommendedRunsProvider',
+        name: r'dashboardRecommendedEventsProvider',
         dependencies: null,
         $allTransitiveDependencies: null,
         isAutoDispose: true,
@@ -112,9 +112,10 @@ final class DashboardRecommendedRunsFamily extends $Family
   /// presentation provider follows the same declaration style as the rest of the
   /// app.
 
-  DashboardRecommendedRunsProvider call(DashboardRecommendationsQuery query) =>
-      DashboardRecommendedRunsProvider._(argument: query, from: this);
+  DashboardRecommendedEventsProvider call(
+    DashboardRecommendationsQuery query,
+  ) => DashboardRecommendedEventsProvider._(argument: query, from: this);
 
   @override
-  String toString() => r'dashboardRecommendedRunsProvider';
+  String toString() => r'dashboardRecommendedEventsProvider';
 }

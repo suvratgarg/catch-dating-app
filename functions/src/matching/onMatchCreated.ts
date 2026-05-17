@@ -57,7 +57,7 @@ export async function onMatchCreatedHandler(
     (profile1Doc.data() as PublicProfileDoc | undefined)?.name ?? "Someone";
   const profile2Name =
     (profile2Doc.data() as PublicProfileDoc | undefined)?.name ?? "Someone";
-  const latestRunId = latestMatchRunId(match);
+  const latestEventId = latestMatchEventId(match);
 
   await Promise.all([
     setActivityNotification(db, {
@@ -68,7 +68,7 @@ export async function onMatchCreatedHandler(
       body: `You and ${profile2Name} matched. Say hi!`,
       createdAt: deps.serverTimestamp(),
       matchId,
-      runId: latestRunId,
+      eventId: latestEventId,
       actorUid: user2Id,
       actorName: profile2Name,
       ...demoMetadataFromSources(match),
@@ -81,7 +81,7 @@ export async function onMatchCreatedHandler(
       body: `You and ${profile1Name} matched. Say hi!`,
       createdAt: deps.serverTimestamp(),
       matchId,
-      runId: latestRunId,
+      eventId: latestEventId,
       actorUid: user1Id,
       actorName: profile1Name,
       ...demoMetadataFromSources(match),
@@ -127,18 +127,19 @@ export async function onMatchCreatedHandler(
   );
 }
 
-type LegacyMatchDoc = MatchDoc & {runId?: string | null};
+type LegacyMatchDoc = MatchDoc & {eventId?: string | null};
 
 /**
- * Returns the newest shared run id for a match, including legacy runId docs.
+ * Returns the newest shared event id for a match, including legacy eventId
+ * docs.
  *
  * @param {MatchDoc} match Match document data.
- * @return {string | undefined} Latest run id when one is available.
+ * @return {string | undefined} Latest event id when one is available.
  */
-function latestMatchRunId(match: MatchDoc): string | undefined {
-  const runIds = match.runIds ?? [];
-  const legacyRunId = (match as LegacyMatchDoc).runId;
-  return runIds.at(-1) ?? legacyRunId ?? undefined;
+function latestMatchEventId(match: MatchDoc): string | undefined {
+  const eventIds = match.eventIds ?? [];
+  const legacyEventId = (match as LegacyMatchDoc).eventId;
+  return eventIds.at(-1) ?? legacyEventId ?? undefined;
 }
 
 export const onMatchCreated = onDocumentCreated(

@@ -25,7 +25,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import '../runs/runs_test_helpers.dart';
+import '../events/events_test_helpers.dart';
 import '../test_pump_helpers.dart';
 
 Widget _profileTab(UserProfile user) {
@@ -117,7 +117,7 @@ Finder _catchChip(String label) => find.byWidgetPredicate(
 );
 
 final _perfectRunPromptTitle = profilePromptDefinition(
-  profilePromptPerfectRunId,
+  profilePromptPerfectEventId,
 ).title;
 
 void main() {
@@ -486,7 +486,7 @@ void main() {
         firstName: 'Suvrat',
         lastName: 'Garg',
         displayName: 'S.',
-      ).copyWith(instagramHandle: 'suvrat_runs');
+      ).copyWith(instagramHandle: 'suvrat_events');
       await _pumpProfileTab(tester, user);
 
       final displayNameTile = tester.widget<ProfileInfoTile>(
@@ -509,7 +509,7 @@ void main() {
       final instagramTile = tester.widget<ProfileInfoTile>(
         _profileInfoTile('Instagram'),
       );
-      expect(instagramTile.value, '@suvrat_runs');
+      expect(instagramTile.value, '@suvrat_events');
       expect(instagramTile.onTap, isNotNull);
     },
   );
@@ -770,7 +770,7 @@ void main() {
     final user = buildUser(name: 'Suvrat Garg');
     await _pumpProfileTab(tester, user);
 
-    await tester.tap(find.text('Here for the run.'));
+    await tester.tap(find.text('Here for the event.'));
     await _pumpProfileSheet(tester);
 
     expect(find.widgetWithText(CatchButton, 'Done'), findsOneWidget);
