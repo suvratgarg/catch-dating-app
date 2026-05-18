@@ -8,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
@@ -21,6 +22,7 @@ import 'package:catch_dating_app/public_profile/domain/public_profile.dart';
 import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -142,7 +144,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
   }
 }
 
-class EventSuccessCompanionScreen extends StatelessWidget {
+class EventSuccessCompanionScreen extends StatefulWidget {
   const EventSuccessCompanionScreen({
     super.key,
     required this.event,
@@ -163,13 +165,34 @@ class EventSuccessCompanionScreen extends StatelessWidget {
   final DateTime? now;
 
   @override
+  State<EventSuccessCompanionScreen> createState() =>
+      _EventSuccessCompanionScreenState();
+}
+
+class _EventSuccessCompanionScreenState
+    extends State<EventSuccessCompanionScreen> {
+  late bool _markedPrivateCrush =
+      widget.existingFeedback?.markedPrivateCrush ?? false;
+
+  @override
+  void didUpdateWidget(covariant EventSuccessCompanionScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.existingFeedback?.markedPrivateCrush == true) {
+      _markedPrivateCrush = true;
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final referenceNow = now ?? DateTime.now();
-    final attended = participation.status == EventParticipationStatus.attended;
-    final eventEnded = !event.endTime.isAfter(referenceNow);
+    final event = widget.event;
+    final plan = widget.plan;
+    final referenceNow = widget.now ?? DateTime.now();
+    final attended =
+        widget.participation.status == EventParticipationStatus.attended;
+    final eventEnded = !widget.event.endTime.isAfter(referenceNow);
     final checkInOpen = isSelfCheckInOpenForParticipationStatus(
-      event: event,
-      status: participation.status,
+      event: widget.event,
+      status: widget.participation.status,
       now: referenceNow,
     );
 
@@ -199,15 +222,17 @@ class EventSuccessCompanionScreen extends StatelessWidget {
             gapH16,
             _PrivateCrushSection(
               eventId: event.id,
-              candidates: privateCrushCandidates,
+              candidates: widget.privateCrushCandidates,
+              onMarked: () => setState(() => _markedPrivateCrush = true),
             ),
           ],
           if (attended && eventEnded) ...[
             gapH16,
             EventSuccessFeedbackForm(
               event: event,
-              userProfile: userProfile,
-              existingFeedback: existingFeedback,
+              userProfile: widget.userProfile,
+              existingFeedback: widget.existingFeedback,
+              markedPrivateCrush: _markedPrivateCrush,
             ),
           ],
         ],
@@ -343,10 +368,15 @@ class _SelfCheckInCard extends ConsumerWidget {
 }
 
 class _PrivateCrushSection extends StatelessWidget {
-  const _PrivateCrushSection({required this.eventId, required this.candidates});
+  const _PrivateCrushSection({
+    required this.eventId,
+    required this.candidates,
+    required this.onMarked,
+  });
 
   final String eventId;
   final List<PublicProfile> candidates;
+  final VoidCallback onMarked;
 
   @override
   Widget build(BuildContext context) {
@@ -370,44 +400,70 @@ class _PrivateCrushSection extends StatelessWidget {
             )
           else
             for (final candidate in candidates)
-              _PrivateCrushRow(eventId: eventId, candidate: candidate),
+              _PrivateCrushRow(
+                eventId: eventId,
+                candidate: candidate,
+                onMarked: onMarked,
+              ),
         ],
       ),
     );
   }
 }
 
-class _PrivateCrushRow extends ConsumerWidget {
-  const _PrivateCrushRow({required this.eventId, required this.candidate});
+class _PrivateCrushRow extends ConsumerStatefulWidget {
+  const _PrivateCrushRow({
+    required this.eventId,
+    required this.candidate,
+    required this.onMarked,
+  });
 
   final String eventId;
   final PublicProfile candidate;
+  final VoidCallback onMarked;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<_PrivateCrushRow> createState() => _PrivateCrushRowState();
+}
+
+class _PrivateCrushRowState extends ConsumerState<_PrivateCrushRow> {
+  bool _marked = false;
+
+  @override
+  Widget build(BuildContext context) {
     final mutation = ref.watch(EventSuccessController.privateCrushMutation);
     return Padding(
       padding: const EdgeInsets.only(bottom: CatchSpacing.s2),
       child: Row(
         children: [
-          CircleAvatar(child: Text(_avatarInitial(candidate.name))),
+          CircleAvatar(child: Text(_avatarInitial(widget.candidate.name))),
           gapW10,
           Expanded(
-            child: Text(candidate.name, style: CatchTextStyles.titleS(context)),
+            child: Text(
+              widget.candidate.name,
+              style: CatchTextStyles.titleS(context),
+            ),
           ),
           CatchButton(
-            label: 'Mark',
+            label: _marked ? 'Marked' : 'Mark',
             size: CatchButtonSize.sm,
             variant: CatchButtonVariant.secondary,
-            isLoading: mutation.isPending,
-            onPressed: mutation.isPending
+            isLoading: !_marked && mutation.isPending,
+            onPressed: _marked || mutation.isPending
                 ? null
-                : () => EventSuccessController.privateCrushMutation.run(
-                    ref,
-                    (tx) => tx
+                : () => EventSuccessController.privateCrushMutation.run(ref, (
+                    tx,
+                  ) async {
+                    await tx
                         .get(eventSuccessControllerProvider.notifier)
-                        .markPrivateCrush(eventId: eventId, target: candidate),
-                  ),
+                        .markPrivateCrush(
+                          eventId: widget.eventId,
+                          target: widget.candidate,
+                        );
+                    if (!mounted) return;
+                    setState(() => _marked = true);
+                    widget.onMarked();
+                  }),
           ),
         ],
       ),
@@ -427,11 +483,13 @@ class EventSuccessFeedbackForm extends StatefulWidget {
     required this.event,
     required this.userProfile,
     this.existingFeedback,
+    this.markedPrivateCrush = false,
   });
 
   final Event event;
   final UserProfile userProfile;
   final EventSuccessFeedback? existingFeedback;
+  final bool markedPrivateCrush;
 
   @override
   State<EventSuccessFeedbackForm> createState() =>
@@ -495,13 +553,11 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
                     setState(() => _safetyConcern = value ?? false),
                 title: const Text('I had a safety or comfort concern'),
               ),
-              TextField(
+              CatchTextField(
+                label: 'Private note to host',
                 controller: _noteController,
                 maxLines: 3,
-                maxLength: 500,
-                decoration: const InputDecoration(
-                  labelText: 'Private note to host',
-                ),
+                inputFormatters: [LengthLimitingTextInputFormatter(500)],
               ),
               gapH12,
               CatchButton(
@@ -539,7 +595,8 @@ class _EventSuccessFeedbackFormState extends State<EventSuccessFeedbackForm> {
       privateNote: _noteController.text.trim().isEmpty
           ? null
           : _noteController.text.trim(),
-      markedPrivateCrush: existing?.markedPrivateCrush ?? false,
+      markedPrivateCrush:
+          widget.markedPrivateCrush || (existing?.markedPrivateCrush ?? false),
       createdAt: existing?.createdAt ?? now,
       updatedAt: now,
     );

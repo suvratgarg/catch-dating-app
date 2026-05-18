@@ -1,8 +1,9 @@
 # Event Success Layer In Development
 
 Status: live migration in progress. Host setup, live mode, attendee companion,
-private follow-up, and feedback/report surfaces are now wired to live event
-routes and Firestore state; the lab remains available for product iteration.
+private follow-up, event detail expectation copy, activity-format snapshots, and
+feedback/report surfaces are now wired to live event routes and Firestore state;
+the lab remains available for product iteration.
 
 Owner intent:
 
@@ -13,6 +14,10 @@ Owner intent:
 - The current production loop remains event-club discovery, event booking, host
   attendance, attendee companion, private follow-up via the existing swipe/match
   pipeline, mutual matches, chat, and reviews.
+- `ActivityKind`, `EventInteractionModel`, and `EventFormatSnapshot` in
+  `lib/activity/domain/activity_taxonomy.dart` are the shared taxonomy for event
+  creation defaults, event-success playbooks, and health activity imports. Do
+  not reintroduce event-success-only activity enums or run-only health models.
 - This layer is the proving ground for the future middle of the platform:
   host playbooks, arrival check-in, crowd balance, micro-pods, social prompts,
   rotations, private crushes, contextual openers, decomposed feedback, host
@@ -58,5 +63,19 @@ Current proof:
 - Live wiring now uses `eventSuccessPlans/{eventId}` for host-owned setup and
   active run-of-show state, plus `eventSuccessFeedback/{eventId_uid}` for
   attendee-owned post-event feedback.
+- Production host setup now exposes target attendance, host goal, attendee
+  prompt, module selection, private follow-up, and contextual opener controls;
+  setup is visibly frozen once the event has started.
+- Production event detail now shows "What to expect" before booking,
+  cancellation, and settlement policy copy without adding another Firestore
+  read.
+- Attendee private follow-up now feeds the post-event feedback/report aggregate
+  on submit while private-crush target identities remain attendee-private.
+- Created events now write `events/{eventId}.eventFormat`; the create-event
+  wizard exposes activity type defaults, event detail surfaces branch "What to
+  expect" copy by interaction model, and the dashboard weekly activity card
+  counts non-run physical activities by active minutes.
 - `test/core/catch_primitives_test.dart` remains in the focused proof set
   because the preview exposed a narrow-width status-badge layout edge case.
+- `codex_audit/event_success_completion_tracker.md` tracks the current
+  completion pass and remaining watch items for future cleanup loops.

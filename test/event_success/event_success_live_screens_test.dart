@@ -1,9 +1,15 @@
+import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
+import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
+import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -50,6 +56,11 @@ void main() {
 
     expect(find.text('Event success'), findsOneWidget);
     expect(find.text('Setup'), findsWidgets);
+    expect(find.text('Target attendees'), findsOneWidget);
+    expect(find.text('Host goal'), findsOneWidget);
+    expect(find.text('Attendee prompt'), findsOneWidget);
+    expect(find.text('Private follow-up'), findsOneWidget);
+    expect(find.text('Contextual openers'), findsWidgets);
     expect(find.text('Save setup'), findsOneWidget);
 
     await tester.tap(find.text('Live'));
@@ -65,6 +76,7 @@ void main() {
   testWidgets(
     'companion screen shows private follow-up and feedback after attendance',
     (tester) async {
+      final firestore = FakeFirebaseFirestore();
       final start = DateTime(2026, 5, 18, 7);
       final event = buildEvent(
         startTime: start,
@@ -74,25 +86,42 @@ void main() {
 
       await tester.pumpWidget(
         ProviderScope(
-          child: MaterialApp(
-            theme: AppTheme.light,
-            home: EventSuccessCompanionScreen(
-              event: event,
-              plan: plan,
-              userProfile: buildUser(uid: 'runner-1'),
-              participation: buildEventParticipation(
-                event: event,
-                uid: 'runner-1',
-                status: EventParticipationStatus.attended,
+          overrides: [
+            uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+            eventSuccessRepositoryProvider.overrideWithValue(
+              EventSuccessRepository(
+                firestore,
+                EventParticipationRepository(firestore),
+                PublicProfileRepository(firestore),
+                SwipeRepository(firestore),
               ),
-              privateCrushCandidates: [
-                buildPublicProfile(uid: 'runner-2', name: 'Rhea'),
-              ],
-              now: start.add(const Duration(hours: 2)),
             ),
+          ],
+          child: Consumer(
+            builder: (context, ref, _) {
+              ref.watch(uidProvider);
+              return MaterialApp(
+                theme: AppTheme.light,
+                home: EventSuccessCompanionScreen(
+                  event: event,
+                  plan: plan,
+                  userProfile: buildUser(uid: 'runner-1'),
+                  participation: buildEventParticipation(
+                    event: event,
+                    uid: 'runner-1',
+                    status: EventParticipationStatus.attended,
+                  ),
+                  privateCrushCandidates: [
+                    buildPublicProfile(uid: 'runner-2', name: 'Rhea'),
+                  ],
+                  now: start.add(const Duration(hours: 2)),
+                ),
+              );
+            },
           ),
         ),
       );
+      await tester.pump();
 
       expect(find.text('Event companion'), findsOneWidget);
       expect(find.text('Social prompt'), findsOneWidget);
@@ -103,6 +132,9 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('Rhea'), findsOneWidget);
+      await tester.tap(find.text('Mark'));
+      await tester.pumpAndSettle();
+      expect(find.text('Marked'), findsOneWidget);
 
       await tester.scrollUntilVisible(
         find.text('Event feedback'),
@@ -110,6 +142,21 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('Submit feedback'), findsOneWidget);
+      await tester.scrollUntilVisible(
+        find.text('Submit feedback'),
+        400,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.drag(find.byType(Scrollable).first, const Offset(0, -180));
+      await tester.pump();
+      await tester.tap(find.text('Submit feedback'));
+      await tester.pumpAndSettle();
+
+      final feedback = await firestore
+          .collection('eventSuccessFeedback')
+          .doc('event-1_runner-1')
+          .get();
+      expect(feedback.data()?['markedPrivateCrush'], isTrue);
     },
   );
 }

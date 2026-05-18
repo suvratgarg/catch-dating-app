@@ -11,6 +11,7 @@ import 'package:catch_dating_app/core/widgets/catch_chip.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_feature_state.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
@@ -22,6 +23,7 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -206,16 +208,35 @@ class _SetupTab extends StatefulWidget {
 
 class _SetupTabState extends State<_SetupTab> {
   late EventSuccessHostDraft _draft = widget.plan.hostDraft;
+  late int _targetAttendeeCount = widget.plan.targetAttendeeCount;
+  late final TextEditingController _hostGoalController = TextEditingController(
+    text: widget.plan.hostGoal,
+  );
+  late final TextEditingController _attendeePromptController =
+      TextEditingController(text: widget.plan.attendeePrompt ?? '');
 
   @override
   void didUpdateWidget(covariant _SetupTab oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.plan != widget.plan) _draft = widget.plan.hostDraft;
+    if (oldWidget.plan != widget.plan) {
+      _draft = widget.plan.hostDraft;
+      _targetAttendeeCount = widget.plan.targetAttendeeCount;
+      _hostGoalController.text = widget.plan.hostGoal;
+      _attendeePromptController.text = widget.plan.attendeePrompt ?? '';
+    }
+  }
+
+  @override
+  void dispose() {
+    _hostGoalController.dispose();
+    _attendeePromptController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
+    final setupFrozen = !widget.event.startTime.isAfter(DateTime.now());
 
     return Consumer(
       builder: (context, ref, _) {
@@ -238,6 +259,15 @@ class _SetupTabState extends State<_SetupTab> {
                 title: 'Setup is not saved yet',
                 body:
                     'This default plan is visible here only. Save it to make event-success tools live for this event.',
+              ),
+              gapH16,
+            ],
+            if (setupFrozen) ...[
+              _NoticeCard(
+                icon: Icons.lock_clock_rounded,
+                title: 'Setup is frozen',
+                body:
+                    'Event-success setup can be changed before the event starts. Live step controls and the report remain available.',
               ),
               gapH16,
             ],
@@ -265,17 +295,61 @@ class _SetupTabState extends State<_SetupTab> {
                         CatchChip(
                           label: playbook.activityType.label,
                           active: _draft.playbook.id == playbook.id,
+                          enabled: !setupFrozen,
                           onTap: () => setState(() {
-                            _draft = EventSuccessHostDraft.fromPlaybook(
-                              playbook,
-                              targetAttendeeCount: widget.event.capacityLimit,
-                            );
+                            _draft =
+                                EventSuccessHostDraft.fromPlaybook(
+                                  playbook,
+                                  targetAttendeeCount: _targetAttendeeCount,
+                                ).copyWith(
+                                  hostGoal: _normalizedRequired(
+                                    _hostGoalController.text,
+                                    fallback: _draft.hostGoal,
+                                  ),
+                                  privateCrushEnabled:
+                                      _draft.privateCrushEnabled,
+                                  contextualOpenersEnabled:
+                                      _draft.contextualOpenersEnabled,
+                                );
                           }),
                         ),
                     ],
                   ),
                   gapH16,
-                  _PlanSummary(plan: widget.plan, draft: _draft),
+                  _PlanSummary(plan: widget.plan, draft: _resolvedDraft),
+                  if (_resolvedDraft.readinessIssues.isNotEmpty) ...[
+                    gapH12,
+                    _ReadinessIssues(issues: _resolvedDraft.readinessIssues),
+                  ],
+                  gapH16,
+                  _TargetAttendeeControl(
+                    value: _targetAttendeeCount,
+                    recommendedMin: _draft.playbook.capacity.min,
+                    recommendedMax: _draft.playbook.capacity.max,
+                    enabled: !setupFrozen,
+                    onChanged: (value) =>
+                        setState(() => _targetAttendeeCount = value),
+                  ),
+                  gapH16,
+                  CatchTextField(
+                    label: 'Host goal',
+                    controller: _hostGoalController,
+                    enabled: !setupFrozen,
+                    hintText: 'Help attendees meet at least two new people.',
+                    inputFormatters: [LengthLimitingTextInputFormatter(300)],
+                    textInputAction: TextInputAction.next,
+                    onChanged: (_) => setState(() {}),
+                  ),
+                  gapH12,
+                  CatchTextField(
+                    label: 'Attendee prompt',
+                    controller: _attendeePromptController,
+                    enabled: !setupFrozen,
+                    hintText: widget.plan.attendeePromptFor(widget.event),
+                    inputFormatters: [LengthLimitingTextInputFormatter(300)],
+                    textInputAction: TextInputAction.done,
+                    onChanged: (_) => setState(() {}),
+                  ),
                   gapH16,
                   _SectionTitle(
                     title: 'Modules',
@@ -288,10 +362,37 @@ class _SetupTabState extends State<_SetupTab> {
                       title: module.title,
                       subtitle: module.hostPromise,
                       active: _draft.isModuleSelected(module.id),
-                      onChanged: (_) => setState(
-                        () => _draft = _draft.toggleModule(module.id),
+                      onChanged: setupFrozen
+                          ? null
+                          : (_) => setState(
+                              () => _draft = _draft.toggleModule(module.id),
+                            ),
+                    ),
+                  gapH8,
+                  _FeatureSwitch(
+                    title: 'Private follow-up',
+                    subtitle:
+                        'Attendees can mark private interest after attendance is confirmed.',
+                    value: _draft.privateCrushEnabled,
+                    enabled: !setupFrozen,
+                    onChanged: (value) => setState(
+                      () =>
+                          _draft = _draft.copyWith(privateCrushEnabled: value),
+                    ),
+                  ),
+                  gapH8,
+                  _FeatureSwitch(
+                    title: 'Contextual openers',
+                    subtitle:
+                        'Matches can get lightweight opener context from this event.',
+                    value: _draft.contextualOpenersEnabled,
+                    enabled: !setupFrozen,
+                    onChanged: (value) => setState(
+                      () => _draft = _draft.copyWith(
+                        contextualOpenersEnabled: value,
                       ),
                     ),
+                  ),
                 ],
               ),
             ),
@@ -299,7 +400,10 @@ class _SetupTabState extends State<_SetupTab> {
             CatchButton(
               label: widget.planIsPersisted ? 'Save setup' : 'Save and go live',
               isLoading: saveMutation.isPending || ensureMutation.isPending,
-              onPressed: saveMutation.isPending || ensureMutation.isPending
+              onPressed:
+                  saveMutation.isPending ||
+                      ensureMutation.isPending ||
+                      setupFrozen
                   ? null
                   : () => EventSuccessController.saveSetupMutation.run(ref, (
                       tx,
@@ -311,7 +415,11 @@ class _SetupTabState extends State<_SetupTab> {
                                 .ensurePlan(widget.event);
                       await tx
                           .get(eventSuccessControllerProvider.notifier)
-                          .saveSetup(plan: basePlan, draft: _draft);
+                          .saveSetup(
+                            plan: basePlan,
+                            draft: _resolvedDraft,
+                            attendeePrompt: _attendeePromptController.text,
+                          );
                     }),
               fullWidth: true,
             ),
@@ -320,6 +428,14 @@ class _SetupTabState extends State<_SetupTab> {
       },
     );
   }
+
+  EventSuccessHostDraft get _resolvedDraft => _draft.copyWith(
+    targetAttendeeCount: _targetAttendeeCount,
+    hostGoal: _normalizedRequired(
+      _hostGoalController.text,
+      fallback: _draft.hostGoal,
+    ),
+  );
 }
 
 class _LiveTab extends ConsumerWidget {
@@ -479,6 +595,146 @@ class _PlanSummary extends StatelessWidget {
   }
 }
 
+class _TargetAttendeeControl extends StatelessWidget {
+  const _TargetAttendeeControl({
+    required this.value,
+    required this.recommendedMin,
+    required this.recommendedMax,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final int value;
+  final int recommendedMin;
+  final int recommendedMax;
+  final bool enabled;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      tone: CatchSurfaceTone.raised,
+      borderColor: t.line,
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Target attendees',
+                  style: CatchTextStyles.titleS(context),
+                ),
+                gapH2,
+                Text(
+                  'Recommended range: $recommendedMin-$recommendedMax',
+                  style: CatchTextStyles.bodyS(context, color: t.ink2),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            tooltip: 'Decrease target attendees',
+            icon: const Icon(Icons.remove_circle_outline_rounded),
+            onPressed: !enabled || value <= 1
+                ? null
+                : () => onChanged(value - 1),
+          ),
+          Text('$value', style: CatchTextStyles.titleM(context)),
+          IconButton(
+            tooltip: 'Increase target attendees',
+            icon: const Icon(Icons.add_circle_outline_rounded),
+            onPressed: !enabled ? null : () => onChanged(value + 1),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _FeatureSwitch extends StatelessWidget {
+  const _FeatureSwitch({
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.enabled,
+    required this.onChanged,
+  });
+
+  final String title;
+  final String subtitle;
+  final bool value;
+  final bool enabled;
+  final ValueChanged<bool> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      tone: value ? CatchSurfaceTone.primarySoft : CatchSurfaceTone.raised,
+      borderColor: value ? Colors.transparent : t.line,
+      padding: const EdgeInsets.fromLTRB(12, 10, 10, 10),
+      child: Row(
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: CatchTextStyles.titleS(context)),
+                gapH3,
+                Text(subtitle, style: CatchTextStyles.bodyS(context)),
+              ],
+            ),
+          ),
+          Switch.adaptive(value: value, onChanged: enabled ? onChanged : null),
+        ],
+      ),
+    );
+  }
+}
+
+class _ReadinessIssues extends StatelessWidget {
+  const _ReadinessIssues({required this.issues});
+
+  final List<String> issues;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      tone: CatchSurfaceTone.raised,
+      borderColor: t.warning.withValues(alpha: 0.32),
+      padding: const EdgeInsets.all(CatchSpacing.s3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Before pilot', style: CatchTextStyles.titleS(context)),
+          gapH6,
+          for (final issue in issues)
+            Padding(
+              padding: const EdgeInsets.only(bottom: CatchSpacing.s1),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.error_outline_rounded, color: t.warning, size: 16),
+                  gapW6,
+                  Expanded(
+                    child: Text(
+                      issue,
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+}
+
 class _ModuleToggle extends StatelessWidget {
   const _ModuleToggle({
     required this.title,
@@ -490,7 +746,7 @@ class _ModuleToggle extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool active;
-  final ValueChanged<bool> onChanged;
+  final ValueChanged<bool>? onChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -519,6 +775,11 @@ class _ModuleToggle extends StatelessWidget {
       ),
     );
   }
+}
+
+String _normalizedRequired(String value, {required String fallback}) {
+  final trimmed = value.trim();
+  return trimmed.isEmpty ? fallback : trimmed;
 }
 
 class _SectionTitle extends StatelessWidget {

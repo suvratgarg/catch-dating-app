@@ -34,8 +34,9 @@ class EventSuccessEventPreview {
     EventParticipationRoster? roster,
     UserProfile? viewer,
     DateTime? now,
-    EventSuccessPlaybook playbook = EventSuccessPlaybookLibrary.socialRun,
+    EventSuccessPlaybook? playbook,
   }) {
+    final resolvedPlaybook = playbook ?? _playbookForEvent(event);
     final bookedCount = math.max(roster?.bookedCount ?? 0, event.signedUpCount);
     final checkedInCount = math.max(
       roster?.checkedInCount ?? 0,
@@ -43,7 +44,7 @@ class EventSuccessEventPreview {
     );
     final referenceNow = now ?? DateTime.now();
     final hostDraft = EventSuccessHostDraft.fromPlaybook(
-      playbook,
+      resolvedPlaybook,
       targetAttendeeCount: event.capacityLimit,
     );
     final scorecard = _scorecardFromEvent(
@@ -54,12 +55,12 @@ class EventSuccessEventPreview {
     return EventSuccessEventPreview(
       event: event,
       club: club,
-      playbook: playbook,
+      playbook: resolvedPlaybook,
       hostDraft: hostDraft,
       livePlan: EventSuccessLivePlan.fromDraft(
         hostDraft,
         activeStepIndex: _activeStepIndex(
-          playbook: playbook,
+          playbook: resolvedPlaybook,
           event: event,
           now: referenceNow,
         ),
@@ -69,17 +70,17 @@ class EventSuccessEventPreview {
       attendeeState: _attendeeStateFromEvent(
         event: event,
         viewer: viewer,
-        playbook: playbook,
+        playbook: resolvedPlaybook,
         checkedInCount: checkedInCount,
         now: referenceNow,
       ),
       scorecard: scorecard,
       brief: const EventSuccessCoach().analyze(
-        playbook: playbook,
+        playbook: resolvedPlaybook,
         scorecard: scorecard,
       ),
       integrationNotes: [
-        'Seeds host setup from Event.capacityLimit and the Social Event Lite playbook.',
+        'Seeds host setup from Event.capacityLimit and the event format playbook.',
         'Uses roster counts when available, then falls back to Event.bookedCount and Event.checkedInCount.',
         'Keeps all event-success modules read-only until persistence, privacy, and safety ownership are approved.',
       ],
@@ -95,6 +96,17 @@ class EventSuccessEventPreview {
   final EventSuccessScorecard scorecard;
   final EventSuccessBrief brief;
   final List<String> integrationNotes;
+}
+
+EventSuccessPlaybook _playbookForEvent(Event event) {
+  final playbookId = event.eventFormat.defaultPlaybookId;
+  if (playbookId != null) {
+    return EventSuccessPlaybookLibrary.byIdOrDefault(playbookId);
+  }
+  return EventSuccessPlaybookLibrary.forActivity(
+        event.eventFormat.activityKind,
+      ).firstOrNull ??
+      EventSuccessPlaybookLibrary.socialRun;
 }
 
 int _activeStepIndex({
@@ -134,8 +146,7 @@ EventSuccessAttendeeState _attendeeStateFromEvent({
   return EventSuccessAttendeeState(
     eventTitle: event.title,
     attendeeName: firstName,
-    podLabel:
-        '${event.pace.label} pace pod · ${event.distanceKm.toStringAsFixed(1)} km',
+    podLabel: _attendeePodLabel(event),
     prompt: playbook.activityType.isMovementHeavy
         ? 'Find someone running your pace and ask what route they want to try next.'
         : 'Find someone on your team and ask what brought them here.',
@@ -148,6 +159,13 @@ EventSuccessAttendeeState _attendeeStateFromEvent({
     checkedIn: checkedInCount > 0,
     followUpOpen: !event.isUpcomingAt(now),
   );
+}
+
+String _attendeePodLabel(Event event) {
+  if (event.eventFormat.isDistanceBased) {
+    return '${event.pace.label} pace pod · ${event.distanceKm.toStringAsFixed(1)} km';
+  }
+  return event.eventFormat.interactionModel.label;
 }
 
 EventSuccessScorecard _scorecardFromEvent({

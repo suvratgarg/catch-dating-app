@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 
 abstract final class EventSuccessModuleCatalog {
@@ -95,10 +96,10 @@ abstract final class EventSuccessModuleCatalog {
     ],
     requiresLivePhoneUse: true,
     recommendedFor: {
-      EventActivityType.pickleball,
-      EventActivityType.pubQuiz,
-      EventActivityType.dinner,
-      EventActivityType.singlesMixer,
+      ActivityKind.pickleball,
+      ActivityKind.pubQuiz,
+      ActivityKind.dinner,
+      ActivityKind.singlesMixer,
     },
     riskControls: [
       'Do not use timed rotations for movement-heavy events unless there is a pause.',
@@ -292,7 +293,7 @@ abstract final class EventSuccessPlaybookLibrary {
   static const socialRun = EventSuccessPlaybook(
     id: 'social_run_light',
     title: 'Social Event Lite',
-    activityType: EventActivityType.socialRun,
+    activityType: ActivityKind.socialRun,
     socialIntensity: EventSocialIntensity.light,
     summary:
         'A event-first format that adds arrival structure, pace pods, optional prompts, and a post-event crush loop.',
@@ -382,7 +383,7 @@ abstract final class EventSuccessPlaybookLibrary {
   static const pickleball = EventSuccessPlaybook(
     id: 'pickleball_rotations',
     title: 'Pickleball Partner Rotations',
-    activityType: EventActivityType.pickleball,
+    activityType: ActivityKind.pickleball,
     socialIntensity: EventSocialIntensity.structured,
     summary:
         'A court-based mixer with rotating partners, skill-aware teams, and a post-game interest loop.',
@@ -459,7 +460,7 @@ abstract final class EventSuccessPlaybookLibrary {
   static const pubQuiz = EventSuccessPlaybook(
     id: 'pub_quiz_team_mixer',
     title: 'Pub Quiz Team Mixer',
-    activityType: EventActivityType.pubQuiz,
+    activityType: ActivityKind.pubQuiz,
     socialIntensity: EventSocialIntensity.guided,
     summary:
         'A team-based format that uses role prompts and team reshuffles to make conversation easy.',
@@ -529,7 +530,7 @@ abstract final class EventSuccessPlaybookLibrary {
   static const algorithmicMixer = EventSuccessPlaybook(
     id: 'algorithmic_mixer_reveal',
     title: 'Questionnaire Reveal Mixer',
-    activityType: EventActivityType.singlesMixer,
+    activityType: ActivityKind.singlesMixer,
     socialIntensity: EventSocialIntensity.algorithmic,
     summary:
         'A Matchbox-like format with short questionnaires, clues, reveal moments, private interest, and explanations.',
@@ -617,14 +618,14 @@ abstract final class EventSuccessPlaybookLibrary {
     algorithmicMixer,
   ];
 
-  static Iterable<EventSuccessPlaybook> forActivity(EventActivityType type) =>
+  static Iterable<EventSuccessPlaybook> forActivity(ActivityKind type) =>
       all.where((playbook) => playbook.activityType == type);
 
   static EventSuccessPlaybook byIdOrDefault(String id) =>
       all.firstWhere((playbook) => playbook.id == id, orElse: () => socialRun);
 
   static EventSuccessPlaybook recommendedFor({
-    required EventActivityType activityType,
+    required ActivityKind activityType,
     EventSocialIntensity? preferredIntensity,
   }) {
     final matches = forActivity(activityType).toList();

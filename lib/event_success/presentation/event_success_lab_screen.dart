@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
@@ -735,15 +736,23 @@ class _DarkPill extends StatelessWidget {
   }
 }
 
-IconData _activityIcon(EventActivityType type) => switch (type) {
-  EventActivityType.socialRun => Icons.directions_run_rounded,
-  EventActivityType.pickleball => Icons.sports_tennis_rounded,
-  EventActivityType.spinClass => Icons.fitness_center_rounded,
-  EventActivityType.pubQuiz => Icons.quiz_outlined,
-  EventActivityType.barCrawl => Icons.local_bar_outlined,
-  EventActivityType.dinner => Icons.restaurant_outlined,
-  EventActivityType.singlesMixer => Icons.favorite_border_rounded,
-  EventActivityType.openActivity => Icons.event_available_outlined,
+IconData _activityIcon(ActivityKind type) => switch (type) {
+  ActivityKind.socialRun => Icons.directions_run_rounded,
+  ActivityKind.running => Icons.directions_run_rounded,
+  ActivityKind.walking => Icons.directions_walk_rounded,
+  ActivityKind.pickleball => Icons.sports_tennis_rounded,
+  ActivityKind.padel => Icons.sports_tennis_rounded,
+  ActivityKind.tennis => Icons.sports_tennis_rounded,
+  ActivityKind.badminton => Icons.sports_tennis_rounded,
+  ActivityKind.cycling => Icons.directions_bike_rounded,
+  ActivityKind.spinClass => Icons.fitness_center_rounded,
+  ActivityKind.yoga => Icons.self_improvement_rounded,
+  ActivityKind.strengthTraining => Icons.fitness_center_rounded,
+  ActivityKind.pubQuiz => Icons.quiz_outlined,
+  ActivityKind.barCrawl => Icons.local_bar_outlined,
+  ActivityKind.dinner => Icons.restaurant_outlined,
+  ActivityKind.singlesMixer => Icons.favorite_border_rounded,
+  ActivityKind.openActivity => Icons.event_available_outlined,
 };
 
 IconData _priorityIcon(EventRecommendationPriority priority) =>

@@ -1,31 +1,10 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+
 const eventSuccessLayerDevelopmentStatus =
     'live_wired_with_preview_lab_and_iterating';
 
-enum EventActivityType {
-  socialRun('Social event'),
-  pickleball('Pickleball'),
-  spinClass('Spin class'),
-  pubQuiz('Pub quiz'),
-  barCrawl('Bar crawl'),
-  dinner('Dinner'),
-  singlesMixer('Singles mixer'),
-  openActivity('Open activity');
-
-  const EventActivityType(this.label);
-
-  final String label;
-
-  bool get isMovementHeavy => switch (this) {
-    EventActivityType.socialRun ||
-    EventActivityType.pickleball ||
-    EventActivityType.spinClass => true,
-    EventActivityType.pubQuiz ||
-    EventActivityType.barCrawl ||
-    EventActivityType.dinner ||
-    EventActivityType.singlesMixer ||
-    EventActivityType.openActivity => false,
-  };
-}
+@Deprecated('Use ActivityKind from lib/activity/domain/activity_taxonomy.dart.')
+typedef EventActivityType = ActivityKind;
 
 enum EventSocialIntensity {
   light('Light', 'Small nudges that keep the activity primary.'),
@@ -113,11 +92,11 @@ class EventSuccessModule {
   final String hostPromise;
   final bool enabledByDefault;
   final bool requiresLivePhoneUse;
-  final Set<EventActivityType> recommendedFor;
+  final Set<ActivityKind> recommendedFor;
   final List<String> setupSteps;
   final List<String> riskControls;
 
-  bool supports(EventActivityType activityType) =>
+  bool supports(ActivityKind activityType) =>
       recommendedFor.isEmpty || recommendedFor.contains(activityType);
 }
 
@@ -173,7 +152,7 @@ class EventSuccessPlaybook {
 
   final String id;
   final String title;
-  final EventActivityType activityType;
+  final ActivityKind activityType;
   final EventSocialIntensity socialIntensity;
   final String summary;
   final String attendeePromise;

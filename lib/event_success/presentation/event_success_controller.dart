@@ -29,11 +29,18 @@ class EventSuccessController extends _$EventSuccessController {
   Future<void> saveSetup({
     required EventSuccessPlan plan,
     required EventSuccessHostDraft draft,
+    String? attendeePrompt,
   }) async {
     requireSignedInUid(ref, action: 'save event success setup');
-    await ref
-        .read(eventSuccessRepositoryProvider)
-        .savePlan(plan.copyWithDraft(draft, updatedAt: DateTime.now()));
+    final normalizedPrompt = attendeePrompt?.trim();
+    final nextPlan = plan
+        .copyWithDraft(draft, updatedAt: DateTime.now())
+        .copyWith(
+          attendeePrompt: normalizedPrompt == null || normalizedPrompt.isEmpty
+              ? null
+              : normalizedPrompt,
+        );
+    await ref.read(eventSuccessRepositoryProvider).savePlan(nextPlan);
   }
 
   Future<void> updateActiveStep({

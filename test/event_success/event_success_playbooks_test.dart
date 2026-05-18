@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_coach.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_models.dart';
 import 'package:catch_dating_app/event_success/domain/event_success_playbooks.dart';
@@ -17,10 +18,10 @@ void main() {
           .map((playbook) => playbook.activityType)
           .toSet();
 
-      expect(activities, contains(EventActivityType.socialRun));
-      expect(activities, contains(EventActivityType.pickleball));
-      expect(activities, contains(EventActivityType.pubQuiz));
-      expect(activities, contains(EventActivityType.singlesMixer));
+      expect(activities, contains(ActivityKind.socialRun));
+      expect(activities, contains(ActivityKind.pickleball));
+      expect(activities, contains(ActivityKind.pubQuiz));
+      expect(activities, contains(ActivityKind.singlesMixer));
     });
 
     test(
