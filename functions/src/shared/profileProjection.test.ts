@@ -24,6 +24,7 @@ function completeUser(overrides: Partial<UserProfileDoc> = {}): UserProfileDoc {
     dateOfBirth: timestamp(new Date("1996-01-01T00:00:00.000Z")),
     gender: "woman",
     phoneNumber: "+919900000001",
+    countryCode: "+91",
     email: "asha@example.test",
     profilePrompts: [{
       promptId: " perfectRun ",

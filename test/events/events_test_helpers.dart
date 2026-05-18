@@ -470,6 +470,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
           paymentId: 'pay_test',
           orderId: 'order_test',
           amountInPaise: 0,
+          currency: 'INR',
           eventId: eventId,
         );
   }

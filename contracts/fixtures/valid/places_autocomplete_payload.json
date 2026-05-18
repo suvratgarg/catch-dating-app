@@ -1,6 +1,7 @@
 {
   "input": "Race Course",
   "sessionToken": "session-123",
+  "countryIsoCode": "IN",
   "latitude": 22.7196,
   "longitude": 75.8577
 }

@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
@@ -155,12 +156,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                 capacityLimit: capacityLimit,
                 basePriceInPaise: basePriceInPaise,
                 stepAdjustmentInPaise:
-                    _rupeeControllerValueInPaise(
+                    _currencyControllerValueInMinorUnits(
                       _dynamicPricingStepController,
                     ) ??
                     0,
                 maxAdjustmentInPaise:
-                    _rupeeControllerValueInPaise(
+                    _currencyControllerValueInMinorUnits(
                       _dynamicPricingMaxController,
                     ) ??
                     0,
@@ -292,6 +293,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     final result = await Navigator.of(context).push<LocationCoordinate>(
       MaterialPageRoute(
         builder: (_) => LocationPickerScreen(
+          countryIsoCode: countryIsoCodeForCityName(widget.club.location),
           initialLocation: _startingPoint ?? deviceLocation,
           loadMapTiles: widget.loadMapTiles,
         ),
@@ -397,6 +399,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             distanceKm: _distanceKmForSelectedActivity(),
             pace: _selectedPace ?? PaceLevel.easy,
             description: _descriptionController.text.trim(),
+            currency: currencyCodeForCityName(widget.club.location),
             constraints: _constraints,
             eventPolicy: _eventPolicy,
             inviteCode: _trimmedTextOrNull(_inviteCodeController),
@@ -712,7 +715,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
   }
 
-  static int? _rupeeControllerValueInPaise(TextEditingController controller) {
+  static int? _currencyControllerValueInMinorUnits(
+    TextEditingController controller,
+  ) {
     final amount = double.tryParse(controller.text.trim());
     if (amount == null) return null;
     return (amount * 100).round();
@@ -810,6 +815,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     formKey: _eventPolicyFormKey,
                     capacityController: _capacityController,
                     priceController: _priceController,
+                    currencyCode: currencyCodeForCityName(widget.club.location),
                     inviteCodeController: _inviteCodeController,
                     dynamicPricingStepController: _dynamicPricingStepController,
                     dynamicPricingMaxController: _dynamicPricingMaxController,

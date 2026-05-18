@@ -56,7 +56,7 @@ final class SelectedClubCityProvider
   }
 }
 
-String _$selectedClubCityHash() => r'19c812d7db6ac94e9997ea2c423148faa40d99d1';
+String _$selectedClubCityHash() => r'2980a3b5b00d368356b8c5a3277938182926a71e';
 
 /// **KeepAlive notifier with internal flag**
 ///

@@ -69,7 +69,7 @@ class AuthInput {
     if (phoneNumber.length < 5) {
       return '$countryCode $phoneNumber';
     }
-    return '$countryCode ${phoneNumber.substring(0, 5)} ${phoneNumber.substring(5)}';
+    return '$countryCode $phoneNumber';
   }
 
   static String maskedPhoneNumber(String phoneNumber) {

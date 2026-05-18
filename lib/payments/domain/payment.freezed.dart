@@ -15,8 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Payment {
 
-@JsonKey(includeToJson: false) String get id; String get userId; String get orderId; String get paymentId; String get eventId; int get amount;// in paise
- String get currency; PaymentStatus get status; bool get signUpFailed;@TimestampConverter() DateTime get createdAt;
+@JsonKey(includeToJson: false) String get id; String get userId; String get orderId; String get paymentId; String get eventId; int get amount; String get currency; PaymentStatus get status; bool get signUpFailed;@TimestampConverter() DateTime get createdAt;
 /// Create a copy of Payment
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -219,7 +218,7 @@ return $default(_that.id,_that.userId,_that.orderId,_that.paymentId,_that.eventI
 @JsonSerializable()
 
 class _Payment implements Payment {
-  const _Payment({@JsonKey(includeToJson: false) required this.id, required this.userId, required this.orderId, required this.paymentId, required this.eventId, required this.amount, this.currency = 'INR', required this.status, this.signUpFailed = false, @TimestampConverter() required this.createdAt});
+  const _Payment({@JsonKey(includeToJson: false) required this.id, required this.userId, required this.orderId, required this.paymentId, required this.eventId, required this.amount, this.currency = defaultCurrencyCode, required this.status, this.signUpFailed = false, @TimestampConverter() required this.createdAt});
   factory _Payment.fromJson(Map<String, dynamic> json) => _$PaymentFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -228,7 +227,6 @@ class _Payment implements Payment {
 @override final  String paymentId;
 @override final  String eventId;
 @override final  int amount;
-// in paise
 @override@JsonKey() final  String currency;
 @override final  PaymentStatus status;
 @override@JsonKey() final  bool signUpFailed;

@@ -8,6 +8,7 @@ final class CreateEventCallableRequest {
     required this.details,
     required this.capacityLimit,
     required this.priceInPaise,
+    required this.currency,
     required this.constraints,
     required this.eventPolicy,
     required this.eventFormat,
@@ -23,6 +24,7 @@ final class CreateEventCallableRequest {
     details: EventDetailsCallableDto.fromEvent(event),
     capacityLimit: event.capacityLimit,
     priceInPaise: event.priceInPaise,
+    currency: event.currency,
     constraints: EventConstraintsCallableDto.fromDomain(event.constraints),
     eventPolicy: event.eventPolicy?.toJson(),
     eventFormat: event.eventFormat.toJson(),
@@ -34,6 +36,7 @@ final class CreateEventCallableRequest {
   final EventDetailsCallableDto details;
   final int capacityLimit;
   final int priceInPaise;
+  final String currency;
   final EventConstraintsCallableDto constraints;
   final Map<String, Object?>? eventPolicy;
   final Map<String, Object?> eventFormat;
@@ -45,6 +48,7 @@ final class CreateEventCallableRequest {
     ...details.toJson(),
     'capacityLimit': capacityLimit,
     'priceInPaise': priceInPaise,
+    'currency': currency,
     'constraints': constraints.toJson(),
     'eventPolicy': ?eventPolicy,
     'eventFormat': eventFormat,

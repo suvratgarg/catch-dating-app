@@ -13,7 +13,7 @@ _Payment _$PaymentFromJson(Map<String, dynamic> json) => _Payment(
   paymentId: json['paymentId'] as String,
   eventId: json['eventId'] as String,
   amount: (json['amount'] as num).toInt(),
-  currency: json['currency'] as String? ?? 'INR',
+  currency: json['currency'] as String? ?? defaultCurrencyCode,
   status: $enumDecode(_$PaymentStatusEnumMap, json['status']),
   signUpFailed: json['signUpFailed'] as bool? ?? false,
   createdAt: const TimestampConverter().fromJson(

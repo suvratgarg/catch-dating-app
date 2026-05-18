@@ -215,7 +215,7 @@ return $default(_that.phoneNumber,_that.countryCode,_that.verificationId,_that.s
 
 
 class _AuthScreenState with DiagnosticableTreeMixin implements AuthScreenState {
-  const _AuthScreenState({this.phoneNumber = '', this.countryCode = '+91', this.verificationId, this.step = AuthStep.phone});
+  const _AuthScreenState({this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.verificationId, this.step = AuthStep.phone});
   
 
 @override@JsonKey() final  String phoneNumber;

@@ -57,6 +57,7 @@ class CreateEventController extends _$CreateEventController {
     required double distanceKm,
     required PaceLevel pace,
     required String description,
+    required String currency,
     required EventConstraints constraints,
     required EventPolicyBundle eventPolicy,
     String? inviteCode,
@@ -153,6 +154,7 @@ class CreateEventController extends _$CreateEventController {
       capacityLimit: eventPolicy.capacityLimit,
       description: normalizedDescription,
       priceInPaise: eventPolicy.basePriceInPaise,
+      currency: currency,
       constraints: constraints,
       eventPolicy: eventPolicy,
     );

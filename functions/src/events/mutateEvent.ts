@@ -613,6 +613,7 @@ function buildCreateEventDoc(
     capacityLimit: eventPolicy.admission.capacityLimit,
     description: data.description,
     priceInPaise: eventPolicy.pricing.basePriceInPaise,
+    currency: data.currency ?? "INR",
     constraints: normalizeConstraints(data.constraints),
     eventPolicy,
     cohortCounts: {},

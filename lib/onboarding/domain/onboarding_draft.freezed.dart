@@ -219,7 +219,7 @@ return $default(_that.step,_that.draftVersion,_that.firstName,_that.lastName,_th
 @JsonSerializable()
 
 class _OnboardingDraft extends OnboardingDraft {
-  const _OnboardingDraft({required this.step, this.draftVersion = 0, this.firstName = '', this.lastName = '', @TimestampConverter() this.dateOfBirth, this.phoneNumber = '', this.countryCode = '+91', this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
+  const _OnboardingDraft({required this.step, this.draftVersion = 0, this.firstName = '', this.lastName = '', @TimestampConverter() this.dateOfBirth, this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
   factory _OnboardingDraft.fromJson(Map<String, dynamic> json) => _$OnboardingDraftFromJson(json);
 
 @override final  int step;

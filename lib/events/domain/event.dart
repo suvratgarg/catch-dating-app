@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -71,6 +72,7 @@ abstract class Event with _$Event {
     required int capacityLimit,
     required String description,
     required int priceInPaise,
+    @Default(defaultCurrencyCode) String currency,
     @JsonKey(includeIfNull: false) int? bookedCount,
     @JsonKey(includeIfNull: false) int? checkedInCount,
     @JsonKey(includeIfNull: false) int? waitlistedCount,

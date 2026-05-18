@@ -65,7 +65,10 @@ class EventTileData {
   String get priceLabel => event.priceInPaise <= 0
       ? 'Free'
       : event.effectiveEventPolicy.usesDemandPricing
-      ? 'From ${EventFormatters.priceInPaise(event.priceInPaise)}'
-      : EventFormatters.priceInPaise(event.priceInPaise);
+      ? 'From ${EventFormatters.priceInPaise(event.priceInPaise, currencyCode: event.currency)}'
+      : EventFormatters.priceInPaise(
+          event.priceInPaise,
+          currencyCode: event.currency,
+        );
   bool get hasExactStartingPoint => event.hasExactStartingPoint;
 }

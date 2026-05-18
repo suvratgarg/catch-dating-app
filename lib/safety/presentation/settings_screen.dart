@@ -415,7 +415,7 @@ class _SettingsScreenState extends ConsumerState<SettingsScreen> {
                   gapH20,
                   Center(
                     child: Text(
-                      'Catch v1.0 · made for runners in India',
+                      'Catch v1.0 · made for runners and clubs',
                       style: CatchTextStyles.bodyS(context, color: t.ink3),
                     ),
                   ),

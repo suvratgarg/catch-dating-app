@@ -8,6 +8,7 @@ export const googleMapsPlacesApiKey = defineSecret(
 const autocompleteEndpoint =
   "https://places.googleapis.com/v1/places:autocomplete";
 const detailsEndpoint = "https://places.googleapis.com/v1/places";
+const supportedRegionCodes = ["in", "np", "au", "us"];
 
 export interface PlaceAutocompleteResult {
   placeId: string;
@@ -48,12 +49,13 @@ interface GooglePlaceDetailsResponse {
 }
 
 /**
- * Calls Google Places Autocomplete (New) for India-biased meeting-point search.
+ * Calls Google Places Autocomplete (New) for meeting-point search.
  * @param {object} params Autocomplete request parameters.
  * @param {string} params.input User-entered search query.
  * @param {string=} params.sessionToken Google billing/session token.
  * @param {number=} params.latitude Optional latitude bias.
  * @param {number=} params.longitude Optional longitude bias.
+ * @param {string=} params.countryIsoCode Optional ISO country scope.
  * @return {Promise<PlaceAutocompleteResult[]>} Normalized predictions.
  */
 export async function autocompletePlaces({
@@ -61,31 +63,21 @@ export async function autocompletePlaces({
   sessionToken,
   latitude,
   longitude,
+  countryIsoCode,
 }: {
   input: string;
   sessionToken?: string;
   latitude?: number;
   longitude?: number;
+  countryIsoCode?: string;
 }): Promise<PlaceAutocompleteResult[]> {
-  const body: Record<string, unknown> = {
+  const body = buildPlacesAutocompleteRequestBody({
     input,
-    includedRegionCodes: ["in"],
-    regionCode: "in",
-    languageCode: "en-IN",
-  };
-
-  if (sessionToken) {
-    body.sessionToken = sessionToken;
-  }
-
-  if (latitude != null && longitude != null) {
-    body.locationBias = {
-      circle: {
-        center: {latitude, longitude},
-        radius: 50000,
-      },
-    };
-  }
+    sessionToken,
+    latitude,
+    longitude,
+    countryIsoCode,
+  });
 
   const response = await fetch(autocompleteEndpoint, {
     method: "POST",
@@ -125,6 +117,69 @@ export async function autocompletePlaces({
       };
     })
     .filter((result) => result.placeId.length > 0);
+}
+
+/**
+ * Builds the Places Autocomplete request body.
+ * @param {object} params Autocomplete request parameters.
+ * @param {string} params.input User-entered search query.
+ * @param {string=} params.sessionToken Google billing/session token.
+ * @param {number=} params.latitude Optional latitude bias.
+ * @param {number=} params.longitude Optional longitude bias.
+ * @param {string=} params.countryIsoCode Optional ISO country scope.
+ * @return {Record<string, unknown>} Google Places request body.
+ */
+export function buildPlacesAutocompleteRequestBody({
+  input,
+  sessionToken,
+  latitude,
+  longitude,
+  countryIsoCode,
+}: {
+  input: string;
+  sessionToken?: string;
+  latitude?: number;
+  longitude?: number;
+  countryIsoCode?: string;
+}): Record<string, unknown> {
+  const regionCodes = autocompleteRegionCodes(countryIsoCode);
+  const body: Record<string, unknown> = {
+    input,
+    includedRegionCodes: regionCodes,
+    languageCode: "en",
+  };
+
+  if (regionCodes.length === 1) {
+    body.regionCode = regionCodes[0];
+  }
+
+  if (sessionToken) {
+    body.sessionToken = sessionToken;
+  }
+
+  if (latitude != null && longitude != null) {
+    body.locationBias = {
+      circle: {
+        center: {latitude, longitude},
+        radius: 50000,
+      },
+    };
+  }
+
+  return body;
+}
+
+/**
+ * Returns supported Places region scopes for a requested country.
+ * @param {string=} countryIsoCode ISO country code from the app.
+ * @return {string[]} Lowercase Places region codes.
+ */
+function autocompleteRegionCodes(countryIsoCode?: string): string[] {
+  const normalized = countryIsoCode?.trim().toLowerCase();
+  if (normalized != null && supportedRegionCodes.includes(normalized)) {
+    return [normalized];
+  }
+  return supportedRegionCodes;
 }
 
 /**

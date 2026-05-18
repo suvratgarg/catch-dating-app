@@ -8,6 +8,7 @@
 export interface PlacesAutocompleteCallablePayload {
   input: string;
   sessionToken?: string;
+  countryIsoCode?: "IN" | "NP" | "AU" | "US" | "in" | "np" | "au" | "us";
   latitude?: number;
   longitude?: number;
 }

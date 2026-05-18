@@ -126,7 +126,7 @@ class HostEventManageScreen extends ConsumerWidget {
       roster?.waitlistedCount ?? 0,
       event.waitlistCount,
     );
-    final baseRevenueEstimateRupees = bookedCount * (event.priceInPaise ~/ 100);
+    final baseRevenueEstimate = bookedCount * event.priceInPaise;
     final usesDemandPricing = event.effectiveEventPolicy.usesDemandPricing;
     final hasKnownActivity =
         bookedCount > 0 || checkedInCount > 0 || waitlistCount > 0;
@@ -211,9 +211,12 @@ class HostEventManageScreen extends ConsumerWidget {
                 gapW8,
                 Expanded(
                   child: HostStatChip(
-                    icon: Icons.currency_rupee_rounded,
-                    value: baseRevenueEstimateRupees > 0
-                        ? '₹$baseRevenueEstimateRupees'
+                    icon: Icons.payments_rounded,
+                    value: baseRevenueEstimate > 0
+                        ? EventFormatters.priceInPaise(
+                            baseRevenueEstimate,
+                            currencyCode: event.currency,
+                          )
                         : '-',
                     label: usesDemandPricing ? 'Base est.' : 'Revenue',
                   ),
@@ -682,7 +685,12 @@ class _HostEventSummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
-    final price = event.isFree ? 'Free' : '₹${event.priceInPaise ~/ 100}';
+    final price = event.isFree
+        ? 'Free'
+        : EventFormatters.priceInPaise(
+            event.priceInPaise,
+            currencyCode: event.currency,
+          );
 
     return CatchSurface(
       padding: const EdgeInsets.symmetric(

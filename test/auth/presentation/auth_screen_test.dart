@@ -32,9 +32,7 @@ void main() {
   group('AuthScreen', () {
     testWidgets('starts on phone entry view', (tester) async {
       final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -46,9 +44,7 @@ void main() {
 
     testWidgets('defaults the country picker to India', (tester) async {
       final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -57,11 +53,25 @@ void main() {
       expect(find.text('+91'), findsOneWidget);
     });
 
+    testWidgets('uses the locale-derived country picker default', (
+      tester,
+    ) async {
+      final repository = FakeAuthRepository();
+      final container = _authControllerContainer(
+        repository,
+        defaultCountryCode: '+61',
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      await pumpAuthScreen(tester, container: container);
+
+      expect(find.text('+61'), findsOneWidget);
+    });
+
     testWidgets('country picker opens with dark theme styles', (tester) async {
       final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -80,9 +90,7 @@ void main() {
 
     testWidgets('switch between phone and OTP views', (tester) async {
       final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -98,9 +106,7 @@ void main() {
 
     testWidgets('change number returns to phone step', (tester) async {
       final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -124,9 +130,7 @@ void main() {
             }) {
               codeSent('verification-id', 11);
             };
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -161,9 +165,7 @@ void main() {
             }) {
               codeSent('verification-id', 11);
             };
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
       await container
@@ -180,4 +182,16 @@ void main() {
       expect(repository.otpSmsCode, '123456');
     });
   });
+}
+
+ProviderContainer _authControllerContainer(
+  FakeAuthRepository repository, {
+  String defaultCountryCode = '+91',
+}) {
+  return ProviderContainer(
+    overrides: [
+      authRepositoryProvider.overrideWithValue(repository),
+      authInitialCountryDialCodeProvider.overrideWithValue(defaultCountryCode),
+    ],
+  );
 }

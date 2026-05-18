@@ -78,10 +78,17 @@ export function buildOrderCreatePayload({
     amountInPaise ?? event.priceInPaise,
     "Event price"
   );
+  const eventCurrency = event.currency ?? razorpayCurrency;
+  if (eventCurrency !== razorpayCurrency) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Paid bookings are not available for this event currency yet."
+    );
+  }
 
   return {
     amount: trustedAmountInPaise,
-    currency: razorpayCurrency,
+    currency: eventCurrency,
     receipt: `event_${eventId}_${receiptToken}`,
     notes: {
       eventId,

@@ -308,7 +308,11 @@ export const configCitiesDocumentSchema: Record<string, unknown> = {
           "name",
           "label",
           "latitude",
-          "longitude"
+          "longitude",
+          "countryIsoCode",
+          "currencyCode",
+          "dialCode",
+          "timeZone"
         ],
         "properties": {
           "name": {
@@ -340,6 +344,23 @@ export const configCitiesDocumentSchema: Record<string, unknown> = {
             ],
             "minimum": -180,
             "maximum": 180
+          },
+          "countryIsoCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "currencyCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "dialCode": {
+            "type": "string",
+            "pattern": "^\\+\\d{1,4}$"
+          },
+          "timeZone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
           }
         }
       },
@@ -580,6 +601,10 @@ export const userProfileDocumentSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 1,
       "maxLength": 32
+    },
+    "countryCode": {
+      "type": "string",
+      "pattern": "^\\+\\d{1,4}$"
     },
     "profileComplete": {
       "type": "boolean"
@@ -2591,6 +2616,10 @@ export const eventDocumentSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "maximum": 100000000
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
     },
     "bookedCount": {
       "type": "integer",
@@ -6113,6 +6142,25 @@ export const createClubCallablePayloadSchema: Record<string, unknown> = {
   }
 } as const;
 
+export const createClubCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/create_club_response.schema.json",
+  "title": "CreateClubCallableResponse",
+  "description": "Callable response returned by createClub.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "clubId"
+  ],
+  "properties": {
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    }
+  }
+} as const;
+
 export const updateClubCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/update_club_payload.schema.json",
@@ -6399,6 +6447,10 @@ export const createEventCallablePayloadSchema: Record<string, unknown> = {
       "type": "integer",
       "minimum": 0,
       "maximum": 100000000
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
     },
     "eventPolicy": {
       "type": "object",
@@ -6987,6 +7039,23 @@ export const markEventAttendanceCallablePayloadSchema: Record<string, unknown> =
   }
 } as const;
 
+export const markEventAttendanceCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/mark_event_attendance_response.schema.json",
+  "title": "MarkEventAttendanceCallableResponse",
+  "description": "Callable response returned by markEventAttendance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "attended"
+  ],
+  "properties": {
+    "attended": {
+      "type": "boolean"
+    }
+  }
+} as const;
+
 export const selfCheckInAttendanceCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/self_check_in_attendance_payload.schema.json",
@@ -7219,6 +7288,36 @@ export const verifyRazorpayPaymentCallablePayloadSchema: Record<string, unknown>
   }
 } as const;
 
+export const razorpayOrderCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/razorpay_order_response.schema.json",
+  "title": "RazorpayOrderCallableResponse",
+  "description": "Callable response returned by createRazorpayOrder.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "orderId",
+    "amount",
+    "currency"
+  ],
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "amount": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100000000
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    }
+  }
+} as const;
+
 export const placesAutocompleteCallablePayloadSchema: Record<string, unknown> = {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "https://catch.app/contracts/callables/places_autocomplete_payload.schema.json",
@@ -7240,6 +7339,19 @@ export const placesAutocompleteCallablePayloadSchema: Record<string, unknown> = 
       "minLength": 8,
       "maxLength": 128
     },
+    "countryIsoCode": {
+      "type": "string",
+      "enum": [
+        "IN",
+        "NP",
+        "AU",
+        "US",
+        "in",
+        "np",
+        "au",
+        "us"
+      ]
+    },
     "latitude": {
       "type": "number",
       "minimum": -90,
@@ -7249,6 +7361,53 @@ export const placesAutocompleteCallablePayloadSchema: Record<string, unknown> = 
       "type": "number",
       "minimum": -180,
       "maximum": 180
+    }
+  }
+} as const;
+
+export const placesAutocompleteCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/places_autocomplete_response.schema.json",
+  "title": "PlacesAutocompleteCallableResponse",
+  "description": "Callable response returned by placesAutocomplete.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "predictions"
+  ],
+  "properties": {
+    "predictions": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "placeId",
+          "description",
+          "mainText",
+          "secondaryText"
+        ],
+        "properties": {
+          "placeId": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 1000
+          },
+          "mainText": {
+            "type": "string",
+            "maxLength": 240
+          },
+          "secondaryText": {
+            "type": "string",
+            "maxLength": 1000
+          }
+        }
+      }
     }
   }
 } as const;
@@ -7273,6 +7432,56 @@ export const placeDetailsCallablePayloadSchema: Record<string, unknown> = {
       "type": "string",
       "minLength": 8,
       "maxLength": 128
+    }
+  }
+} as const;
+
+export const placeDetailsCallableResponseSchema: Record<string, unknown> = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/callable_responses/place_details_response.schema.json",
+  "title": "PlaceDetailsCallableResponse",
+  "description": "Callable response returned by placeDetails.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "place"
+  ],
+  "properties": {
+    "place": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "placeId",
+        "displayName",
+        "formattedAddress",
+        "latitude",
+        "longitude"
+      ],
+      "properties": {
+        "placeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
+        },
+        "displayName": {
+          "type": "string",
+          "maxLength": 240
+        },
+        "formattedAddress": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "latitude": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "longitude": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        }
+      }
     }
   }
 } as const;

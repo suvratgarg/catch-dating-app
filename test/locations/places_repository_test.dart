@@ -65,11 +65,13 @@ void main() {
         input: 'Cubbon',
         sessionToken: 'places-session-1',
         bias: const LocationCoordinate(12.9716, 77.5946),
+        countryIsoCode: 'IN',
       );
 
       expect(functions.callables['placesAutocomplete']!.calls.single, {
         'input': 'Cubbon',
         'sessionToken': 'places-session-1',
+        'countryIsoCode': 'IN',
         'latitude': 12.9716,
         'longitude': 77.5946,
       });

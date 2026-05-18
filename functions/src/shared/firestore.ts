@@ -165,6 +165,7 @@ export interface UserProfileDoc {
   gender: Gender;
   /** Authentication is phone-only */
   phoneNumber: string;
+  countryCode: string;
   profileComplete: boolean;
   /** Optional profile/contact field */
   email: string;
@@ -338,8 +339,12 @@ export interface EventDoc {
   pace: PaceLevel;
   capacityLimit: number;
   description: string;
-  /** in paise (INR subunit). 0 = free event */
+  /**
+   * legacy field name; amount in the event currency's minor unit. 0 = free
+   * event
+   */
   priceInPaise: number;
+  currency: string;
   bookedCount?: number | null;
   checkedInCount?: number | null;
   waitlistedCount?: number | null;
@@ -404,7 +409,7 @@ export interface PaymentDoc {
   orderId: string;
   paymentId: string;
   eventId: string;
-  /** in paise */
+  /** amount in the payment currency's minor unit */
   amount: number;
   currency: string;
   status: PaymentStatus;

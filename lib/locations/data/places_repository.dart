@@ -19,6 +19,7 @@ abstract interface class PlacesRepository {
     required String input,
     required String sessionToken,
     LocationCoordinate? bias,
+    String? countryIsoCode,
   });
 
   Future<PlaceDetails> details({
@@ -37,11 +38,13 @@ class FirebasePlacesRepository implements PlacesRepository {
     required String input,
     required String sessionToken,
     LocationCoordinate? bias,
+    String? countryIsoCode,
   }) async {
     final payload = PlacesAutocompleteCallableRequest(
       input: input,
       sessionToken: sessionToken,
       bias: bias,
+      countryIsoCode: countryIsoCode,
     );
     return withBackendErrorContext(
       () async {

@@ -62,7 +62,7 @@ export const placeDetails = onCall(
  */
 function normalizePlacesAutocompletePayload(data: unknown): unknown {
   return normalizePayloadStrings(data, {
-    stringFields: ["input", "sessionToken"],
+    stringFields: ["input", "sessionToken", "countryIsoCode"],
   });
 }
 

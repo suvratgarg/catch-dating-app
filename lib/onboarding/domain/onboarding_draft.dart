@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_prompts.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
@@ -18,7 +19,7 @@ abstract class OnboardingDraft with _$OnboardingDraft {
     @Default('') String lastName,
     @TimestampConverter() DateTime? dateOfBirth,
     @Default('') String phoneNumber,
-    @Default('+91') String countryCode,
+    @Default(defaultCountryDialCode) String countryCode,
     Gender? gender,
     @Default([]) List<Gender> interestedInGenders,
     String? instagramHandle,

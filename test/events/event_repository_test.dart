@@ -321,6 +321,7 @@ void main() {
             'description': event.description,
             'capacityLimit': event.capacityLimit,
             'priceInPaise': event.priceInPaise,
+            'currency': event.currency,
             'constraints': {
               'minAge': 21,
               'maxAge': 35,

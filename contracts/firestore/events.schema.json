@@ -95,6 +95,10 @@
       "minimum": 0,
       "maximum": 100000000
     },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
     "bookedCount": {
       "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
     },

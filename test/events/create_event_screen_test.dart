@@ -434,7 +434,7 @@ void main() {
 
       expect(find.text('Base est.'), findsOneWidget);
       expect(find.text('Revenue'), findsNothing);
-      expect(find.text('₹1200'), findsOneWidget);
+      expect(find.text('₹1,200'), findsOneWidget);
       expect(
         find.textContaining('Demand-priced bookings may settle higher'),
         findsOneWidget,

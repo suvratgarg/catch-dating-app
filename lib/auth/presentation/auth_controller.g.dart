@@ -8,6 +8,50 @@ part of 'auth_controller.dart';
 
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint, type=warning
+
+@ProviderFor(authInitialCountryDialCode)
+final authInitialCountryDialCodeProvider =
+    AuthInitialCountryDialCodeProvider._();
+
+final class AuthInitialCountryDialCodeProvider
+    extends $FunctionalProvider<String, String, String>
+    with $Provider<String> {
+  AuthInitialCountryDialCodeProvider._()
+    : super(
+        from: null,
+        argument: null,
+        retry: null,
+        name: r'authInitialCountryDialCodeProvider',
+        isAutoDispose: false,
+        dependencies: null,
+        $allTransitiveDependencies: null,
+      );
+
+  @override
+  String debugGetCreateSourceHash() => _$authInitialCountryDialCodeHash();
+
+  @$internal
+  @override
+  $ProviderElement<String> $createElement($ProviderPointer pointer) =>
+      $ProviderElement(pointer);
+
+  @override
+  String create(Ref ref) {
+    return authInitialCountryDialCode(ref);
+  }
+
+  /// {@macro riverpod.override_with_value}
+  Override overrideWithValue(String value) {
+    return $ProviderOverride(
+      origin: this,
+      providerOverride: $SyncValueProvider<String>(value),
+    );
+  }
+}
+
+String _$authInitialCountryDialCodeHash() =>
+    r'ac9ba6845c77b393de6c665705648bc511c8f818';
+
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///
 /// Owns the phone-auth screen state while the user moves between phone entry
@@ -71,7 +115,7 @@ final class AuthControllerProvider
   }
 }
 
-String _$authControllerHash() => r'dbeffce1bf9c0a1b03d42a7d66532c18b6e93881';
+String _$authControllerHash() => r'ef95a755f9de3b4c2d10376ec287c7d204f3a0fb';
 
 /// **Pattern B: Flow controller with freezed state + Mutations**
 ///

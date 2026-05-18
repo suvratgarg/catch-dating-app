@@ -204,6 +204,7 @@ class _FakePlacesRepository implements PlacesRepository {
     required String input,
     required String sessionToken,
     LocationCoordinate? bias,
+    String? countryIsoCode,
   }) async {
     return suggestions;
   }

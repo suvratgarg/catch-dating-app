@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/clubs/domain/club.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -7,6 +8,7 @@ import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
 import 'package:catch_dating_app/core/widgets/stat_column.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/host_tools/presentation/host_event_tools.dart';
 import 'package:flutter/material.dart';
 
@@ -117,9 +119,9 @@ class HostStatsStrip extends StatelessWidget {
 
     final totalBooked = events.fold(0, (sum, r) => sum + r.signedUpCount);
     final totalWaitlist = events.fold(0, (sum, r) => sum + r.waitlistCount);
-    final baseRevenueEstimateRupees = events.fold(
+    final baseRevenueEstimate = events.fold(
       0,
-      (sum, r) => sum + r.signedUpCount * (r.priceInPaise ~/ 100),
+      (sum, r) => sum + r.signedUpCount * r.priceInPaise,
     );
     final usesDemandPricing = events.any(
       (event) => event.effectiveEventPolicy.usesDemandPricing,
@@ -165,10 +167,15 @@ class HostStatsStrip extends StatelessWidget {
               Expanded(
                 child: HostStatChip(
                   label: usesDemandPricing ? 'Base est.' : 'Revenue',
-                  value: baseRevenueEstimateRupees > 0
-                      ? '₹$baseRevenueEstimateRupees'
+                  value: baseRevenueEstimate > 0
+                      ? EventFormatters.priceInPaise(
+                          baseRevenueEstimate,
+                          currencyCode: events.isEmpty
+                              ? defaultCurrencyCode
+                              : events.first.currency,
+                        )
                       : '-',
-                  icon: Icons.currency_rupee_rounded,
+                  icon: Icons.payments_rounded,
                 ),
               ),
             ],

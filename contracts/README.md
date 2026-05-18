@@ -40,8 +40,10 @@ The current contract layer covers:
 - profile and photo prompt catalogs;
 - event, event-success, club, relationship, social, payment, safety,
   operational, and demo Firestore document contracts;
-- callable payloads for profile, event, club, review, safety, payment, and
-  Places operations;
+- callable request payloads for profile, event, club, review, safety, payment,
+  and Places operations;
+- selected callable response payloads that the Flutter app decodes into typed
+  client response objects;
 - direct client-write operation payloads for contextual profile decisions,
   chat messages, saved-event edges, notification read updates, and match unread
   resets;

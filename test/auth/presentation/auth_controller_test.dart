@@ -1,3 +1,5 @@
+import 'dart:ui' show Locale;
+
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
@@ -23,9 +25,7 @@ void main() {
               }) {
                 codeSent('verification-id', 11);
               };
-        final container = ProviderContainer(
-          overrides: [authRepositoryProvider.overrideWithValue(repository)],
-        );
+        final container = _authControllerContainer(repository);
         addTearDown(repository.dispose);
         addTearDown(container.dispose);
         AuthController.sendOtpMutation.reset(container);
@@ -54,9 +54,7 @@ void main() {
       'rejects invalid phone numbers before calling Firebase Auth',
       () async {
         final repository = FakeAuthRepository();
-        final container = ProviderContainer(
-          overrides: [authRepositoryProvider.overrideWithValue(repository)],
-        );
+        final container = _authControllerContainer(repository);
         addTearDown(repository.dispose);
         addTearDown(container.dispose);
 
@@ -91,9 +89,7 @@ void main() {
             }) {
               verificationCompleted(credential);
             };
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
       AuthController.sendOtpMutation.reset(container);
@@ -111,9 +107,7 @@ void main() {
   group('AuthController.verifyOtp', () {
     test('throws when no verification session is active', () async {
       final repository = _SignOutAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -141,9 +135,7 @@ void main() {
             }) {
               codeSent('verification-id', 11);
             };
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
       AuthController.sendOtpMutation.reset(container);
@@ -168,9 +160,7 @@ void main() {
             }) {
               codeSent('verification-id', 11);
             };
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
       final notifier = container.read(authControllerProvider.notifier);
@@ -193,11 +183,37 @@ void main() {
   });
 
   group('AuthController state management', () {
-    test('setCountryCode updates state and resets mutation', () {
+    test('initial country code maps the platform locale', () {
+      final binding = TestWidgetsFlutterBinding.ensureInitialized();
+      binding.platformDispatcher.localeTestValue = const Locale('en', 'AU');
+      addTearDown(binding.platformDispatcher.clearLocaleTestValue);
+
       final repository = FakeAuthRepository();
       final container = ProviderContainer(
         overrides: [authRepositoryProvider.overrideWithValue(repository)],
       );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      expect(container.read(authInitialCountryDialCodeProvider), '+61');
+      expect(container.read(authControllerProvider).countryCode, '+61');
+    });
+
+    test('defaults country code from the locale provider', () {
+      final repository = FakeAuthRepository();
+      final container = _authControllerContainer(
+        repository,
+        defaultCountryCode: '+61',
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      expect(container.read(authControllerProvider).countryCode, '+61');
+    });
+
+    test('setCountryCode updates state and resets mutation', () {
+      final repository = FakeAuthRepository();
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -208,9 +224,7 @@ void main() {
 
     test('goToStep changes the current step', () {
       final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -221,9 +235,7 @@ void main() {
 
     test('reset clears all state', () {
       final repository = FakeAuthRepository();
-      final container = ProviderContainer(
-        overrides: [authRepositoryProvider.overrideWithValue(repository)],
-      );
+      final container = _authControllerContainer(repository);
       addTearDown(repository.dispose);
       addTearDown(container.dispose);
 
@@ -234,6 +246,26 @@ void main() {
 
       expect(container.read(authControllerProvider), const AuthScreenState());
     });
+
+    test('reset restores the locale-derived country code', () {
+      final repository = FakeAuthRepository();
+      final container = _authControllerContainer(
+        repository,
+        defaultCountryCode: '+977',
+      );
+      addTearDown(repository.dispose);
+      addTearDown(container.dispose);
+
+      container.read(authControllerProvider.notifier)
+        ..goToStep(AuthStep.otp)
+        ..setCountryCode('+1');
+      container.read(authControllerProvider.notifier).reset();
+
+      expect(
+        container.read(authControllerProvider),
+        const AuthScreenState(countryCode: '+977'),
+      );
+    });
   });
 
   group('AuthSessionController', () {
@@ -241,9 +273,7 @@ void main() {
       'signOut delegates to the repository and clears auth flow state',
       () async {
         final repository = _SignOutAuthRepository();
-        final container = ProviderContainer(
-          overrides: [authRepositoryProvider.overrideWithValue(repository)],
-        );
+        final container = _authControllerContainer(repository);
         addTearDown(repository.dispose);
         addTearDown(container.dispose);
 
@@ -258,6 +288,18 @@ void main() {
       },
     );
   });
+}
+
+ProviderContainer _authControllerContainer(
+  FakeAuthRepository repository, {
+  String defaultCountryCode = '+91',
+}) {
+  return ProviderContainer(
+    overrides: [
+      authRepositoryProvider.overrideWithValue(repository),
+      authInitialCountryDialCodeProvider.overrideWithValue(defaultCountryCode),
+    ],
+  );
 }
 
 class _SignOutAuthRepository extends FakeAuthRepository {

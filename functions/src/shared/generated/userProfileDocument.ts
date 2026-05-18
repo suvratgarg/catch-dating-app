@@ -23,6 +23,7 @@ export interface UserProfileDocument {
   };
   gender: "man" | "woman" | "nonBinary" | "other";
   phoneNumber: string;
+  countryCode?: string;
   profileComplete: boolean;
   /**
    * Internal demo seed marker used for cleanup and diagnostics.
