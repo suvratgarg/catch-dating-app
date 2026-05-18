@@ -3,10 +3,11 @@ import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/locations/data/places_callable_dtos.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/locations/domain/place.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-export 'places_callable_dtos.dart'
+export 'package:catch_dating_app/locations/domain/place.dart'
     show PlaceAutocompleteSuggestion, PlaceDetails;
 
 final placesRepositoryProvider = Provider<PlacesRepository>((ref) {

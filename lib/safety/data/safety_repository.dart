@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/safety/data/safety_callable_dtos.dart';
 import 'package:catch_dating_app/safety/domain/blocked_user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -71,10 +72,14 @@ class SafetyRepository {
     required String targetUserId,
     String source = 'profile',
   }) => withBackendErrorContext(
-    () => _functions.httpsCallable('blockUser').call({
-      'targetUserId': targetUserId,
-      'source': source,
-    }),
+    () => _functions
+        .httpsCallable('blockUser')
+        .call(
+          BlockUserCallableRequest(
+            targetUserId: targetUserId,
+            source: source,
+          ).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'block user',
@@ -84,9 +89,11 @@ class SafetyRepository {
 
   Future<void> unblockUser({required String targetUserId}) =>
       withBackendErrorContext(
-        () => _functions.httpsCallable('unblockUser').call({
-          'targetUserId': targetUserId,
-        }),
+        () => _functions
+            .httpsCallable('unblockUser')
+            .call(
+              UnblockUserCallableRequest(targetUserId: targetUserId).toJson(),
+            ),
         context: const BackendErrorContext(
           service: BackendService.functions,
           action: 'unblock user',
@@ -101,13 +108,17 @@ class SafetyRepository {
     String? contextId,
     String? notes,
   }) => withBackendErrorContext(
-    () => _functions.httpsCallable('reportUser').call({
-      'targetUserId': targetUserId,
-      'source': source,
-      'reasonCode': ?reasonCode,
-      'contextId': ?contextId,
-      'notes': ?notes,
-    }),
+    () => _functions
+        .httpsCallable('reportUser')
+        .call(
+          ReportUserCallableRequest(
+            targetUserId: targetUserId,
+            source: source,
+            reasonCode: reasonCode,
+            contextId: contextId,
+            notes: notes,
+          ).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'report user',

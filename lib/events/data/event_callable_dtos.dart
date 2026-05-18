@@ -20,7 +20,7 @@ final class CreateEventCallableRequest {
   }) => CreateEventCallableRequest(
     eventId: event.id,
     clubId: event.clubId,
-    details: EventDetailsCallableFields.fromEvent(event),
+    details: EventDetailsCallableDto.fromEvent(event),
     capacityLimit: event.capacityLimit,
     priceInPaise: event.priceInPaise,
     constraints: EventConstraintsCallableDto.fromDomain(event.constraints),
@@ -31,7 +31,7 @@ final class CreateEventCallableRequest {
 
   final String eventId;
   final String clubId;
-  final EventDetailsCallableFields details;
+  final EventDetailsCallableDto details;
   final int capacityLimit;
   final int priceInPaise;
   final EventConstraintsCallableDto constraints;
@@ -61,11 +61,11 @@ final class UpdateEventCallableRequest {
   factory UpdateEventCallableRequest.fromEvent(Event event) =>
       UpdateEventCallableRequest(
         eventId: event.id,
-        fields: EventDetailsCallableFields.fromEvent(event),
+        fields: EventDetailsCallableDto.fromEvent(event),
       );
 
   final String eventId;
-  final EventDetailsCallableFields fields;
+  final EventDetailsCallableDto fields;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
@@ -73,8 +73,8 @@ final class UpdateEventCallableRequest {
   };
 }
 
-final class EventDetailsCallableFields {
-  const EventDetailsCallableFields({
+final class EventDetailsCallableDto {
+  const EventDetailsCallableDto({
     required this.startTimeMillis,
     required this.endTimeMillis,
     required this.meetingPoint,
@@ -87,8 +87,8 @@ final class EventDetailsCallableFields {
     required this.description,
   });
 
-  factory EventDetailsCallableFields.fromEvent(Event event) =>
-      EventDetailsCallableFields(
+  factory EventDetailsCallableDto.fromEvent(Event event) =>
+      EventDetailsCallableDto(
         startTimeMillis: event.startTime.millisecondsSinceEpoch,
         endTimeMillis: event.endTime.millisecondsSinceEpoch,
         meetingPoint: event.meetingPoint,
