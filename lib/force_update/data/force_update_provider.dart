@@ -8,9 +8,7 @@ part 'force_update_provider.g.dart';
 
 /// The current app version and build number from the platform.
 @Riverpod(keepAlive: true)
-Future<({String version, String buildNumber})> appPackageInfo(
-  Ref ref,
-) async {
+Future<({String version, String buildNumber})> appPackageInfo(Ref ref) async {
   final info = await PackageInfo.fromPlatform();
   return (version: info.version, buildNumber: info.buildNumber);
 }

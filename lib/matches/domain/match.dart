@@ -15,7 +15,9 @@ abstract class Match with _$Match {
     @JsonKey(includeToJson: false) required String id,
     required String user1Id,
     required String user2Id,
-    @JsonKey(readValue: _readEventIds) @Default(<String>[]) List<String> eventIds,
+    @JsonKey(readValue: _readEventIds)
+    @Default(<String>[])
+    List<String> eventIds,
     @TimestampConverter() required DateTime createdAt,
     @NullableTimestampConverter() DateTime? lastMessageAt,
     String? lastMessagePreview,

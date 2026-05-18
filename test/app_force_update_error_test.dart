@@ -3,21 +3,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  test(
-    'force update diagnostics show Remote Config guidance in dev',
-    () {
-      final diagnostic = forceUpdateDevelopmentDiagnostic(
-        FirebaseException(plugin: 'remoteconfig', code: 'fetch-throttled'),
-      );
+  test('force update diagnostics show Remote Config guidance in dev', () {
+    final diagnostic = forceUpdateDevelopmentDiagnostic(
+      FirebaseException(plugin: 'remoteconfig', code: 'fetch-throttled'),
+    );
 
-      expect(diagnostic, isNotNull);
-      expect(diagnostic, contains('Remote Config'));
-      expect(
-        diagnostic,
-        contains('Firebase Console'),
-      );
-    },
-  );
+    expect(diagnostic, isNotNull);
+    expect(diagnostic, contains('Remote Config'));
+    expect(diagnostic, contains('Firebase Console'));
+  });
 
   test('force update diagnostics stay hidden when there is no error', () {
     expect(forceUpdateDevelopmentDiagnostic(null), isNull);

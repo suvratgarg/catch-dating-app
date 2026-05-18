@@ -30,10 +30,7 @@ void main() {
         child: const WelcomePage(),
       );
 
-      expect(
-        find.widgetWithText(CatchButton, 'Browse clubs'),
-        findsOneWidget,
-      );
+      expect(find.widgetWithText(CatchButton, 'Browse clubs'), findsOneWidget);
       expect(
         find.widgetWithText(CatchButton, 'Continue with phone'),
         findsOneWidget,

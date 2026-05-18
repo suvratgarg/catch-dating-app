@@ -108,11 +108,7 @@ class CatchSkeleton extends StatelessWidget {
     final t = CatchTokens.of(context);
     return Shimmer(
       gradient: LinearGradient(
-        colors: [
-          t.raised,
-          t.surface,
-          t.raised,
-        ],
+        colors: [t.raised, t.surface, t.raised],
         stops: const [0.0, 0.5, 1.0],
       ),
       period: const Duration(milliseconds: 1200),

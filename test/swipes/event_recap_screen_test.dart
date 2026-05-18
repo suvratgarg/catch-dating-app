@@ -29,7 +29,9 @@ void main() {
       ProviderScope(
         overrides: [
           uidProvider.overrideWith((ref) => Stream.value('runner-1')),
-          watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
+          watchEventProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(event)),
           watchEventParticipationsForEventProvider(event.id).overrideWith(
             (ref) => Stream.value([
               buildEventParticipation(
@@ -73,7 +75,7 @@ void main() {
     );
     await pumpFeatureUi(tester);
 
-    expect(find.text('Easy pace · 3 checked in'), findsOneWidget);
+    expect(find.text('5km · Easy · 3 checked in'), findsOneWidget);
     expect(find.byKey(SwipeKeys.vibeTile('runner-2')), findsOneWidget);
     expect(find.byKey(SwipeKeys.vibeTile('runner-3')), findsOneWidget);
     expect(find.byKey(SwipeKeys.vibeTile('runner-1')), findsNothing);

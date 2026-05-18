@@ -177,12 +177,12 @@ class _RecapHero extends StatelessWidget {
           ),
           gapH10,
           Text(
-            EventFormatters.distanceKm(event.distanceKm),
+            event.distanceLabel,
             style: CatchTextStyles.displayL(context, color: t.surface),
           ),
           gapH4,
           Text(
-            '${event.pace.label} pace · $checkedInCount checked in',
+            '${event.activitySummaryLabel} · $checkedInCount checked in',
             style: CatchTextStyles.bodyS(
               context,
               color: t.surface.withValues(alpha: 0.76),
