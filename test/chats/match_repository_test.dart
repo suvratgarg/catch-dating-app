@@ -158,13 +158,13 @@ void main() {
           lastMessageSenderId: 'runner-2',
           unreadCounts: const {'runner-1': 2},
         ),
-      _buildMatch(
-        id: 'match-2',
-        user2Id: 'runner-3',
-        lastMessagePreview: 'Incoming two',
-        lastMessageSenderId: 'runner-3',
-        unreadCounts: const {'runner-1': 3},
-      ),
+        _buildMatch(
+          id: 'match-2',
+          user2Id: 'runner-3',
+          lastMessagePreview: 'Incoming two',
+          lastMessageSenderId: 'runner-3',
+          unreadCounts: const {'runner-1': 3},
+        ),
         _buildMatch(
           id: 'own-message',
           lastMessagePreview: 'Sent by me',

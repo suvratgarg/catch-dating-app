@@ -137,7 +137,9 @@ void main() {
             conversationRepositoryProvider.overrideWithValue(
               conversationRepository,
             ),
-            watchEventProvider('event-1').overrideWith((ref) => Stream.value(null)),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(null)),
             watchPublicProfileProvider('runner-2').overrideWith(
               (ref) => Stream.value(
                 buildPublicProfile(uid: 'runner-2', name: 'Taylor'),
@@ -176,7 +178,9 @@ void main() {
             conversationRepositoryProvider.overrideWithValue(
               conversationRepository,
             ),
-            watchEventProvider('event-1').overrideWith((ref) => Stream.value(null)),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -209,7 +213,9 @@ void main() {
             conversationRepositoryProvider.overrideWithValue(
               conversationRepository,
             ),
-            watchEventProvider('event-1').overrideWith((ref) => Stream.value(null)),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -253,7 +259,9 @@ void main() {
             conversationRepositoryProvider.overrideWithValue(
               conversationRepository,
             ),
-            watchEventProvider('event-1').overrideWith((ref) => Stream.value(null)),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -298,7 +306,9 @@ void main() {
             conversationRepositoryProvider.overrideWithValue(
               conversationRepository,
             ),
-            watchEventProvider('event-1').overrideWith((ref) => Stream.value(null)),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(null)),
           ],
           child: MaterialApp(
             theme: AppTheme.light,
@@ -341,7 +351,9 @@ void main() {
             conversationRepositoryProvider.overrideWithValue(
               conversationRepository,
             ),
-            watchEventProvider('event-1').overrideWith((ref) => Stream.value(null)),
+            watchEventProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(null)),
             watchConversationMessagesProvider('match-1').overrideWithValue(
               AsyncError<List<ChatMessage>>(
                 Exception('boom'),

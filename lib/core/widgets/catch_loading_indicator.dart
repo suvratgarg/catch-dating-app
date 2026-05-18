@@ -9,10 +9,7 @@ class CatchLoadingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: CircularProgressIndicator(
-        strokeWidth: strokeWidth,
-        color: color,
-      ),
+      child: CircularProgressIndicator(strokeWidth: strokeWidth, color: color),
     );
   }
 }

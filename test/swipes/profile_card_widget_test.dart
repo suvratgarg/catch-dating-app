@@ -64,7 +64,10 @@ void main() {
       await tester.pump();
 
       expect(find.text('Photo coming soon'), findsOneWidget);
-      expect(find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'), findsOneWidget);
+      expect(
+        find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
+        findsOneWidget,
+      );
       expect(find.text('Something casual'), findsOneWidget);
       expect(find.text('5:00-7:00/km'), findsWidgets);
       expect(find.text('RUNNING RHYTHM'), findsOneWidget);
@@ -194,7 +197,10 @@ void main() {
       );
       await tester.pump();
 
-      expect(find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'), findsOneWidget);
+      expect(
+        find.text('A PERFECT EVENT WITH ME LOOKS LIKE...'),
+        findsOneWidget,
+      );
       expect(find.text('DETAILS'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },

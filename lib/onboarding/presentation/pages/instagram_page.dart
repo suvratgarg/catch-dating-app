@@ -43,15 +43,13 @@ class _InstagramPageState extends ConsumerState<InstagramPage> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const SizedBox(height: 32),
-          const OnboardingStepHeader(
-            title: "What's your Instagram?",
-          ),
+          const OnboardingStepHeader(title: "What's your Instagram?"),
           const SizedBox(height: 8),
           Text(
             'This helps us verify you for early access. Your handle is never shown to other users.',
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Theme.of(context).colorScheme.onSurfaceVariant,
-                ),
+              color: Theme.of(context).colorScheme.onSurfaceVariant,
+            ),
           ),
           const SizedBox(height: 32),
           CatchTextField(

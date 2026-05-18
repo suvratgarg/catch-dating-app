@@ -30,9 +30,10 @@ class DetailRow extends StatelessWidget {
         Expanded(
           child: Text(
             value,
-            style: CatchTextStyles.bodyS(context, color: t.ink).copyWith(
-              fontWeight: FontWeight.w600,
-            ),
+            style: CatchTextStyles.bodyS(
+              context,
+              color: t.ink,
+            ).copyWith(fontWeight: FontWeight.w600),
           ),
         ),
       ],

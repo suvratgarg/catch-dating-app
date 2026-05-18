@@ -141,10 +141,7 @@ class ImageUploadRepository {
     required String clubId,
     required String eventId,
     required XFile image,
-  }) => upload(
-    storagePath: 'clubs/$clubId/run_${eventId}_photo',
-    image: image,
-  );
+  }) => upload(storagePath: 'clubs/$clubId/run_${eventId}_photo', image: image);
 
   Future<String> uploadChatImage({
     required String matchId,

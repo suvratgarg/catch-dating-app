@@ -51,7 +51,10 @@ void main() {
           data?['reactionTargetLabel'],
           'A perfect event with me looks like...',
         );
-        expect(data?['reactionTargetPreview'], 'Always up for a sunrise event.');
+        expect(
+          data?['reactionTargetPreview'],
+          'Always up for a sunrise event.',
+        );
         expect(data?['comment'], 'Same here.');
       },
     );
