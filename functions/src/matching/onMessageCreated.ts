@@ -11,6 +11,10 @@ import {
   allowsPushPreference,
   sendFcmNotification,
 } from "../shared/notifications";
+import {buildChatSignalFacts} from "../marketplace/signalBuilders";
+import {
+  recordParticipantSignalFactsBestEffort,
+} from "../marketplace/participantSignals";
 
 interface MessageCreatedEvent {
   id?: string;
@@ -27,12 +31,14 @@ interface MessageCreatedDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   sendNotification: typeof sendFcmNotification;
+  recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
 }
 
 const defaultDeps: MessageCreatedDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
+  recordSignalFacts: recordParticipantSignalFactsBestEffort,
 };
 
 /**
@@ -57,6 +63,7 @@ export async function onMessageCreatedHandler(
 
   let recipientId: string | null = null;
   let shouldNotify = false;
+  let isFirstMessage = false;
   let notificationTitle = "New message";
   let notificationBody = buildMessageBody(message);
 
@@ -81,6 +88,7 @@ export async function onMessageCreatedHandler(
     }
     recipientId =
       match.user1Id === message.senderId ? match.user2Id : match.user1Id;
+    isFirstMessage = match.lastMessageAt == null;
     const senderName =
       (senderProfileDoc.data() as PublicProfileDoc | undefined)?.name ??
       "New message";
@@ -111,6 +119,19 @@ export async function onMessageCreatedHandler(
 
   if (!shouldNotify || !recipientId) {
     return;
+  }
+
+  if (deps.recordSignalFacts) {
+    await deps.recordSignalFacts(
+      db,
+      buildChatSignalFacts({
+        matchId,
+        messageId,
+        message,
+        recipientId,
+        isFirstMessage,
+      })
+    );
   }
 
   const recipientUserDoc = await db.collection("users").doc(recipientId).get();

@@ -1562,6 +1562,91 @@ describe("firestore.rules", () => {
         getDoc(doc(authedDb("runner-2"), "eventSuccessFeedback", "event-1_runner-1")),
       );
     });
+
+    it("exposes event scorecards only through the event-success read policy", async () => {
+      await seed(["clubs", "club-1"], club());
+      await seed(["events", "event-1"], event());
+      await seed(
+        ["eventParticipations", "event-1_runner-1"],
+        eventParticipation({status: "signedUp"}),
+      );
+      await seed(["eventSuccessScorecards", "event-1"], {
+        eventId: "event-1",
+        clubId: "club-1",
+        feedbackCount: 2,
+        updatedAt: Timestamp.fromDate(new Date("2026-05-02T03:00:00.000Z")),
+      });
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("host-1"), "eventSuccessScorecards", "event-1")),
+      );
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "eventSuccessScorecards", "event-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-2"), "eventSuccessScorecards", "event-1")),
+      );
+      await assertFails(
+        setDoc(
+          doc(authedDb("host-1"), "eventSuccessScorecards", "event-1"),
+          {eventId: "event-1"},
+        ),
+      );
+    });
+  });
+
+  describe("participant success metrics", () => {
+    it("keeps raw and admin participant metrics server-owned", async () => {
+      await seed(["participantSignalFacts", "fact-1"], {
+        uid: "runner-1",
+        type: "incoming_like",
+        source: "swipe",
+      });
+      await seed(["participantMetricCounters", "runner-1"], {
+        uid: "runner-1",
+        counters: {incoming_like: 1},
+      });
+      await seed(["participantMarketplaceMetrics", "runner-1"], {
+        uid: "runner-1",
+        demandPercentile: 80,
+      });
+
+      await assertFails(
+        getDoc(doc(authedDb("runner-1"), "participantSignalFacts", "fact-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-1"), "participantMetricCounters", "runner-1")),
+      );
+      await assertFails(
+        getDoc(
+          doc(authedDb("runner-1"), "participantMarketplaceMetrics", "runner-1"),
+        ),
+      );
+      await assertFails(
+        setDoc(doc(authedDb("runner-1"), "participantSignalFacts", "fact-2"), {
+          uid: "runner-1",
+        }),
+      );
+    });
+
+    it("lets users read only their own materialized momentum summary", async () => {
+      await seed(["participantMomentum", "runner-1"], {
+        uid: "runner-1",
+        profileMomentum: 0.7,
+      });
+
+      await assertSucceeds(
+        getDoc(doc(authedDb("runner-1"), "participantMomentum", "runner-1")),
+      );
+      await assertFails(
+        getDoc(doc(authedDb("runner-2"), "participantMomentum", "runner-1")),
+      );
+      await assertFails(
+        setDoc(doc(authedDb("runner-1"), "participantMomentum", "runner-1"), {
+          uid: "runner-1",
+        }),
+      );
+    });
   });
 
   describe("safety privacy rules", () => {

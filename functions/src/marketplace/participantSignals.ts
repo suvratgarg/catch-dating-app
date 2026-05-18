@@ -146,8 +146,7 @@ export function participantSignalFactData(
  * @param {ParticipantSignalFactInput} fact Fact input.
  * @param {FirebaseFirestore.Timestamp | FirebaseFirestore.FieldValue} now
  * Shared server timestamp for this write.
- * @param {(value: number) => FirebaseFirestore.FieldValue} increment
- * Firestore increment helper.
+ * @param {Function} increment Firestore increment helper.
  * @return {Record<string, unknown>} Firestore merge payload.
  */
 export function participantCounterPatch(
@@ -167,6 +166,12 @@ export function participantCounterPatch(
   };
 }
 
+/**
+ * Records one idempotent signal fact and matching counter patch.
+ * @param {FirebaseFirestore.Firestore} db Firestore instance.
+ * @param {ParticipantSignalFactInput} fact Fact to record.
+ * @param {ParticipantSignalDeps} deps Injectable Firestore helpers.
+ */
 async function recordParticipantSignalFact(
   db: FirebaseFirestore.Firestore,
   fact: ParticipantSignalFactInput,
@@ -189,10 +194,21 @@ async function recordParticipantSignalFact(
   });
 }
 
+/**
+ * Normalizes a dynamic id segment into a Firestore-safe fragment.
+ * @param {string} value Raw segment value.
+ * @return {string} Safe deterministic segment.
+ */
 function stableIdSegment(value: string): string {
   return value.replace(/[^a-zA-Z0-9_.-]/g, "_").slice(0, 180);
 }
 
+/**
+ * Copies a non-empty optional string into a Firestore payload.
+ * @param {Record<string, unknown>} data Mutable payload.
+ * @param {string} key Payload key.
+ * @param {string | undefined} value Optional value.
+ */
 function setOptional(
   data: Record<string, unknown>,
   key: string,
@@ -203,6 +219,11 @@ function setOptional(
   }
 }
 
+/**
+ * Drops null and undefined metadata values before writing Firestore data.
+ * @param {object | undefined} metadata Raw metadata.
+ * @return {Record<string, string | number | boolean>} Compact metadata.
+ */
 function compactMetadata(
   metadata: ParticipantSignalFactInput["metadata"]
 ): Record<string, string | number | boolean> {

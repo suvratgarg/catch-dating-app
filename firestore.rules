@@ -709,6 +709,32 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /eventSuccessScorecards/{eventId} {
+      allow read: if canReadEventSuccess(eventId);
+      allow write: if false;
+    }
+
+    // ── Participant success / marketplace metrics ───────────────────────────
+    // Raw signals and absolute marketplace metrics are server-owned. User-facing
+    // participant momentum should be materialized separately and read only by
+    // the subject user.
+    match /participantSignalFacts/{factId} {
+      allow read, write: if false;
+    }
+
+    match /participantMetricCounters/{uid} {
+      allow read, write: if false;
+    }
+
+    match /participantMarketplaceMetrics/{uid} {
+      allow read, write: if false;
+    }
+
+    match /participantMomentum/{uid} {
+      allow read: if isAuthed() && request.auth.uid == uid;
+      allow write: if false;
+    }
+
     // ── Payments ──────────────────────────────────────────────────────────────
     // Written exclusively by Cloud Functions (verifyRazorpayPayment).
     // Users can only read their own payment records.

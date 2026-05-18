@@ -194,7 +194,7 @@ operation ownership drift.
   - `tool/recompute_club_member_counts.mjs` recomputes
     `clubs/{clubId}.memberCount` from active
     `clubMemberships/{clubId_uid}` edge documents.
-  - `tool/recompute_run_aggregate_counts.mjs` recomputes
+  - `tool/recompute_event_aggregate_counts.mjs` recomputes
     `events/{eventId}.bookedCount`, `checkedInCount`, `waitlistedCount`, and
     `genderCounts` from `eventParticipations/{eventId_uid}` edge documents.
   - `tool/validate_firestore_data.mjs` now reports member/event aggregate drift
@@ -205,9 +205,9 @@ operation ownership drift.
     stale event-club count projections and 0 membership edges.
   - `node tool/recompute_club_member_counts.mjs --env dev --apply`
     reset both stale `memberCount` projections to 0.
-  - `node tool/recompute_run_aggregate_counts.mjs --env dev --json` found 4
+  - `node tool/recompute_event_aggregate_counts.mjs --env dev --json` found 4
     stale event aggregate projections and 0 participation edges.
-  - `node tool/recompute_run_aggregate_counts.mjs --env dev --apply`
+  - `node tool/recompute_event_aggregate_counts.mjs --env dev --apply`
     reset those event count projections and `genderCounts` from the edge source.
   - `node tool/validate_firestore_data.mjs --env dev --json` then scanned 10
     docs with 0 errors and 0 warnings.
@@ -215,7 +215,7 @@ operation ownership drift.
   `npm --prefix functions test` passed, focused review tests passed through
   `node --test functions/lib/reviews/*.test.js`, aggregate repair tool tests
   passed through `node --test tool/recompute_club_member_counts.test.mjs
-  tool/recompute_run_aggregate_counts.test.mjs`, and dev live-data validation
+  tool/recompute_event_aggregate_counts.test.mjs`, and dev live-data validation
   passed with 0 errors / 0 warnings.
 - Next Functions queue: add handler seams and focused tests for remaining
   trigger/direct callable files that are not yet covered by the normal suite,

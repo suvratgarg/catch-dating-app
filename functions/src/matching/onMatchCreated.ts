@@ -9,6 +9,10 @@ import {
   setActivityNotification,
 } from "../shared/notifications";
 import {demoMetadataFromSources} from "../shared/demoMetadata";
+import {buildMatchSignalFacts} from "../marketplace/signalBuilders";
+import {
+  recordParticipantSignalFactsBestEffort,
+} from "../marketplace/participantSignals";
 
 interface MatchCreatedEvent {
   params: {matchId: string};
@@ -21,12 +25,14 @@ interface MatchCreatedDeps {
   firestore: () => FirebaseFirestore.Firestore;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
   sendNotification: typeof sendFcmNotification;
+  recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
 }
 
 const defaultDeps: MatchCreatedDeps = {
   firestore: () => admin.firestore(),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
   sendNotification: sendFcmNotification,
+  recordSignalFacts: recordParticipantSignalFactsBestEffort,
 };
 
 /**
@@ -58,6 +64,10 @@ export async function onMatchCreatedHandler(
   const profile2Name =
     (profile2Doc.data() as PublicProfileDoc | undefined)?.name ?? "Someone";
   const latestEventId = latestMatchEventId(match);
+
+  if (deps.recordSignalFacts) {
+    await deps.recordSignalFacts(db, buildMatchSignalFacts(matchId, match));
+  }
 
   await Promise.all([
     setActivityNotification(db, {
