@@ -48,17 +48,6 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         ? const AsyncData<EventParticipation?>(null)
         : ref.watch(watchEventParticipationProvider(eventId, uid));
     final planAsync = ref.watch(watchEventSuccessPlanProvider(eventId));
-    final feedbackAsync = uid == null
-        ? const AsyncData<EventSuccessFeedback?>(null)
-        : ref.watch(
-            watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
-          );
-    final candidatesAsync = uid == null
-        ? const AsyncData<List<PublicProfile>>([])
-        : ref.watch(
-            privateCrushCandidatesProvider(eventId: eventId, currentUid: uid),
-          );
-
     if (eventAsync.isLoading && event == null) {
       return const Scaffold(body: CatchLoadingIndicator());
     }
@@ -83,8 +72,7 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
     }
     if (profileAsync.isLoading ||
         participationAsync.isLoading ||
-        planAsync.isLoading ||
-        feedbackAsync.isLoading) {
+        planAsync.isLoading) {
       return const Scaffold(body: CatchLoadingIndicator());
     }
     if (profileAsync.hasError) {
@@ -109,15 +97,6 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
         onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(eventId)),
       );
     }
-    if (feedbackAsync.hasError) {
-      return CatchErrorScaffold.fromError(
-        feedbackAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(
-          watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
-        ),
-      );
-    }
 
     final profile = profileAsync.asData?.value;
     final participation = participationAsync.asData?.value;
@@ -128,8 +107,35 @@ class EventSuccessCompanionRouteScreen extends ConsumerWidget {
       );
     }
 
-    final plan =
-        planAsync.asData?.value ?? EventSuccessPlan.defaultForEvent(event);
+    final plan = planAsync.asData?.value;
+    if (plan == null) {
+      return const CatchErrorScaffold(
+        title: 'Companion not available',
+        message:
+            'The host has not enabled event companion tools for this event yet.',
+      );
+    }
+
+    final feedbackAsync = ref.watch(
+      watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
+    );
+    final candidatesAsync = ref.watch(
+      privateCrushCandidatesProvider(eventId: eventId, currentUid: uid),
+    );
+
+    if (feedbackAsync.isLoading) {
+      return const Scaffold(body: CatchLoadingIndicator());
+    }
+    if (feedbackAsync.hasError) {
+      return CatchErrorScaffold.fromError(
+        feedbackAsync.error!,
+        context: AppErrorContext.event,
+        onRetry: () => ref.invalidate(
+          watchUserEventSuccessFeedbackProvider(eventId: eventId, uid: uid),
+        ),
+      );
+    }
+
     final candidates = candidatesAsync.asData?.value ?? const <PublicProfile>[];
     final feedback = feedbackAsync.asData?.value;
 

@@ -12,6 +12,7 @@ import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
+import 'package:catch_dating_app/events/presentation/create_event_success_screen.dart';
 import 'package:catch_dating_app/events/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
@@ -160,6 +161,47 @@ void main() {
         await tester.drag(find.byType(ListView), const Offset(0, -500));
         await _pumpTestAnimation(tester);
         expect(find.text('Roster'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'invite-only creation copy says the event is listed but booking-gated',
+      (tester) async {
+        final event = buildEvent(
+          id: 'event-private',
+          eventPolicy: EventPolicyBundle.inviteOnlyEvent(
+            capacityLimit: 12,
+            basePriceInPaise: 0,
+          ),
+        );
+
+        await pumpEventsTestApp(
+          tester,
+          CreateEventSuccessScreen(
+            club: buildClub(),
+            event: event,
+            inviteCode: 'CATCH-DELHI',
+            onManageEvent: () {},
+            onDone: () {},
+          ),
+        );
+
+        expect(find.text('Your event is live.'), findsOneWidget);
+        expect(
+          find.textContaining('is now listed on Stride Social'),
+          findsOneWidget,
+        );
+        expect(find.textContaining('People can discover it'), findsOneWidget);
+        expect(
+          find.textContaining(
+            'only attendees with the invite code or private link can book',
+          ),
+          findsOneWidget,
+        );
+        expect(
+          find.textContaining('Followers can discover it from their home feed'),
+          findsNothing,
+        );
       },
     );
 
@@ -358,6 +400,47 @@ void main() {
       expect(find.text('Open event success'), findsOneWidget);
     });
 
+    testWidgets('host manage labels demand pricing revenue as base estimate', (
+      tester,
+    ) async {
+      final participationRepository = FakeEventParticipationRepository();
+      final event = buildEvent(
+        id: 'event-demand',
+        bookedCount: 3,
+        priceInPaise: 40000,
+        eventPolicy: EventPolicyBundle.demandPricedBalancedSinglesEvent(
+          capacityLimit: 20,
+          basePriceInPaise: 40000,
+          stepAdjustmentInPaise: 20000,
+          maxAdjustmentInPaise: 100000,
+        ),
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        HostEventManageScreen(
+          club: buildClub(hostUserId: 'host-1'),
+          event: event,
+          onBackToSuccess: () {},
+        ),
+        overrides: [
+          eventParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+
+      expect(find.text('Base est.'), findsOneWidget);
+      expect(find.text('Revenue'), findsNothing);
+      expect(find.text('₹1200'), findsOneWidget);
+      expect(
+        find.textContaining('Demand-priced bookings may settle higher'),
+        findsOneWidget,
+      );
+    });
+
     testWidgets('host manage exposes invite code and private link', (
       tester,
     ) async {
@@ -400,6 +483,7 @@ void main() {
 
       expect(find.text('Private access'), findsOneWidget);
       expect(find.text('CATCH-DELHI'), findsOneWidget);
+      expect(find.textContaining('This event can stay listed'), findsOneWidget);
       expect(find.textContaining('?invite=CATCH-DELHI'), findsOneWidget);
       expect(
         find.widgetWithText(CatchButton, 'Share private link'),

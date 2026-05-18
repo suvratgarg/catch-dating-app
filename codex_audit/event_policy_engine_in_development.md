@@ -42,6 +42,9 @@ Migration rule:
 6. Cancellation policy is a bounded platform policy axis, not free-form host
    text. Host cancellations always make attendees complete, and host payout is
    held until after event completion.
+7. Invite-only/private-link access is a booking gate, not an unlisted-event
+   visibility mode. Events remain discoverable by default unless a future
+   explicit visibility field is added.
 
 Current proof:
 

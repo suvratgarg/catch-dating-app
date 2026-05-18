@@ -33,13 +33,15 @@ class CreateEventSuccessScreen extends StatelessWidget {
             eventId: event.id,
             inviteCode: normalizedInviteCode,
           ).toString();
+    final message = inviteLink == null
+        ? '${event.title} is now listed on ${club.name}. Followers can discover it from their home feed.'
+        : '${event.title} is now listed on ${club.name}. People can discover it, but only attendees with the invite code or private link can book.';
 
     return CatchCelebrationScreen(
       kind: CelebrationMomentKind.eventCreated,
       eyebrow: 'Event created',
       title: 'Your event is live.',
-      message:
-          '${event.title} is now listed on ${club.name}. Followers can discover it from their home feed.',
+      message: message,
       details: [
         CelebrationDetail(
           icon: Icons.calendar_month_outlined,

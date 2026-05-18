@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
@@ -135,12 +136,12 @@ class EventDetailBody extends ConsumerWidget {
                         )
                       : null,
                 ),
-                if (_shouldShowCompanionCard(
+                if (_canOpenCompanion(
                   participation: participation,
                   isHost: isHost,
                 )) ...[
                   const SizedBox(height: 20),
-                  _EventCompanionCard(event: event, clubId: clubId),
+                  _EventCompanionEntry(event: event, clubId: clubId),
                 ],
                 const SizedBox(height: 24),
                 Divider(color: t.line, height: 1),
@@ -179,7 +180,7 @@ class EventDetailBody extends ConsumerWidget {
   }
 }
 
-bool _shouldShowCompanionCard({
+bool _canOpenCompanion({
   required EventParticipation? participation,
   required bool isHost,
 }) {
@@ -192,6 +193,24 @@ bool _shouldShowCompanionCard({
     EventParticipationStatus.deleted ||
     null => false,
   };
+}
+
+class _EventCompanionEntry extends ConsumerWidget {
+  const _EventCompanionEntry({required this.event, required this.clubId});
+
+  final Event event;
+  final String clubId;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
+    return planAsync.maybeWhen(
+      data: (plan) => plan == null
+          ? const SizedBox.shrink()
+          : _EventCompanionCard(event: event, clubId: clubId),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
 }
 
 class _EventCompanionCard extends StatelessWidget {

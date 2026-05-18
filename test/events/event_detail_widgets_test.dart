@@ -6,6 +6,8 @@ import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
+import 'package:catch_dating_app/event_success/data/event_success_repository.dart';
+import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -644,6 +646,7 @@ void main() {
       final event = buildEvent(
         constraints: const EventConstraints(minAge: 21, maxAge: 35),
       );
+      final plan = EventSuccessPlan.defaultForEvent(event);
 
       await pumpEventsTestApp(
         tester,
@@ -662,6 +665,9 @@ void main() {
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(plan)),
         ],
       );
 
@@ -671,6 +677,38 @@ void main() {
       expect(find.text(event.description), findsOneWidget);
       expect(find.text('Event companion'), findsOneWidget);
       expect(find.text('Open companion'), findsOneWidget);
+    });
+
+    testWidgets('hides the companion entry until the host saves setup', (
+      tester,
+    ) async {
+      final event = buildEvent();
+
+      await pumpEventsTestApp(
+        tester,
+        EventDetailBody(
+          event: event,
+          userProfile: buildUser(),
+          clubId: 'club-1',
+          isHost: false,
+          reviews: const [],
+          isAuthenticated: true,
+          isSaved: false,
+          participation: _participation(
+            status: EventParticipationStatus.signedUp,
+          ),
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(null)),
+        ],
+      );
+
+      expect(find.text('Event companion'), findsNothing);
+      expect(find.text('Open companion'), findsNothing);
     });
 
     testWidgets('does not unlock reviews for stale future attendance data', (
@@ -701,6 +739,9 @@ void main() {
         overrides: [
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(null)),
         ],
       );
 
@@ -794,6 +835,9 @@ void main() {
           clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
           eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
           paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+          watchEventSuccessPlanProvider(
+            'event-1',
+          ).overrideWith((ref) => Stream.value(null)),
         ],
       );
 
@@ -820,6 +864,9 @@ void main() {
             savedEventRepositoryProvider.overrideWithValue(
               fakeSavedEventRepository,
             ),
+            watchEventSuccessPlanProvider(
+              'event-1',
+            ).overrideWith((ref) => Stream.value(null)),
             externalUrlLauncherProvider.overrideWithValue((
               uri, {
               LaunchMode mode = LaunchMode.platformDefault,

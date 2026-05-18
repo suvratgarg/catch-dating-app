@@ -5,10 +5,12 @@ import 'package:catch_dating_app/event_success/domain/event_success_plan.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
+import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
 import 'package:catch_dating_app/swipes/data/swipe_repository.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_repository.dart';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -159,4 +161,53 @@ void main() {
       expect(feedback.data()?['markedPrivateCrush'], isTrue);
     },
   );
+
+  testWidgets('companion route is unavailable until host saves setup', (
+    tester,
+  ) async {
+    final event = buildEvent(id: 'event-no-plan');
+    final participation = buildEventParticipation(
+      event: event,
+      uid: 'runner-1',
+    );
+
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          uidProvider.overrideWith((ref) => Stream.value('runner-1')),
+          watchEventProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(event)),
+          watchUserProfileProvider.overrideWith(
+            (ref) => Stream.value(buildUser(uid: 'runner-1')),
+          ),
+          watchEventParticipationProvider(
+            event.id,
+            'runner-1',
+          ).overrideWith((ref) => Stream.value(participation)),
+          watchEventSuccessPlanProvider(
+            event.id,
+          ).overrideWith((ref) => Stream.value(null)),
+        ],
+        child: MaterialApp(
+          theme: AppTheme.light,
+          home: EventSuccessCompanionRouteScreen(
+            clubId: event.clubId,
+            eventId: event.id,
+            initialEvent: event,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Companion not available'), findsOneWidget);
+    expect(
+      find.text(
+        'The host has not enabled event companion tools for this event yet.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Social prompt'), findsNothing);
+  });
 }

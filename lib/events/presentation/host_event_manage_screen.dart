@@ -126,7 +126,8 @@ class HostEventManageScreen extends ConsumerWidget {
       roster?.waitlistedCount ?? 0,
       event.waitlistCount,
     );
-    final revenueRupees = bookedCount * (event.priceInPaise ~/ 100);
+    final baseRevenueEstimateRupees = bookedCount * (event.priceInPaise ~/ 100);
+    final usesDemandPricing = event.effectiveEventPolicy.usesDemandPricing;
     final hasKnownActivity =
         bookedCount > 0 || checkedInCount > 0 || waitlistCount > 0;
 
@@ -211,12 +212,21 @@ class HostEventManageScreen extends ConsumerWidget {
                 Expanded(
                   child: HostStatChip(
                     icon: Icons.currency_rupee_rounded,
-                    value: revenueRupees > 0 ? '₹$revenueRupees' : '-',
-                    label: 'Revenue',
+                    value: baseRevenueEstimateRupees > 0
+                        ? '₹$baseRevenueEstimateRupees'
+                        : '-',
+                    label: usesDemandPricing ? 'Base est.' : 'Revenue',
                   ),
                 ),
               ],
             ),
+            if (usesDemandPricing) ...[
+              gapH8,
+              Text(
+                'Base estimate uses the starting price. Demand-priced bookings may settle higher.',
+                style: CatchTextStyles.bodyS(context, color: t.ink2),
+              ),
+            ],
             gapH20,
             _HostEventSummaryCard(club: club, event: event),
             if (event.effectiveEventPolicy.usesInviteOnly) ...[
@@ -365,7 +375,7 @@ class _PrivateAccessBody extends ConsumerWidget {
                     Text(
                       inviteCode == null || inviteCode.isEmpty
                           ? 'This event requires an invite, but no host-readable access code was found.'
-                          : 'Share this code or private link with invited attendees only.',
+                          : 'This event can stay listed; only people with this code or private link can book.',
                       style: CatchTextStyles.bodyS(context, color: t.ink2),
                     ),
                   ],
