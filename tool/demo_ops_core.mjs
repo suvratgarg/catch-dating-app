@@ -80,6 +80,15 @@ export function matchIdFor(uidA, uidB) {
   return [uidA, uidB].sort().join("_");
 }
 
+function demoOpsCohortIdForGender(gender) {
+  if (gender === "man") return "menInterestedInWomen";
+  if (gender === "woman") return "womenInterestedInMen";
+  if (gender === "nonBinary" || gender === "other") {
+    return "nonBinaryOrOther";
+  }
+  return "queerOrOpen";
+}
+
 export function demoOperationId({command, seedPrefix, subject}) {
   const normalizedSubject = subject.replace(/[^A-Za-z0-9_-]/g, "_");
   return `${seedPrefix}_${command}_${normalizedSubject}`;
@@ -1172,6 +1181,8 @@ export async function buildHostAccountPlan({
         cancellationReason: null,
         constraints: {minAge: 21, maxAge: 45, maxMen: null, maxWomen: null},
         genderCounts: {},
+        cohortCounts: {},
+        waitlistedCohortCounts: {},
       },
     },
   ];
@@ -1256,6 +1267,10 @@ export async function buildCheckInEventPlan({
       cancellationReason: null,
       constraints: {minAge: 18, maxAge: 70, maxMen: null, maxWomen: null},
       genderCounts: {[user.data.gender ?? "other"]: 1},
+      cohortCounts: {
+        [demoOpsCohortIdForGender(user.data.gender ?? "other")]: 1,
+      },
+      waitlistedCohortCounts: {},
     },
   };
   const docs = [

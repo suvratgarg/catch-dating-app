@@ -15,11 +15,13 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Event {
 
-@JsonKey(includeToJson: false) String get id; String get clubId;@TimestampConverter() DateTime get startTime;@TimestampConverter() DateTime get endTime; String get meetingPoint; double? get startingPointLat; double? get startingPointLng; String? get locationDetails;@JsonKey(includeIfNull: false) String? get photoUrl; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise;@JsonKey(includeIfNull: false) int? get bookedCount;@JsonKey(includeIfNull: false) int? get checkedInCount;@JsonKey(includeIfNull: false) int? get waitlistedCount; EventLifecycleStatus get status;@NullableTimestampConverter() DateTime? get cancelledAt; String? get cancellationReason; EventConstraints get constraints;@JsonKey(includeIfNull: false) EventPolicyBundle? get eventPolicy;// Denormalized gender counts maintained atomically by Cloud Functions.
+@JsonKey(includeToJson: false) String get id; String get clubId;@TimestampConverter() DateTime get startTime;@TimestampConverter() DateTime get endTime; String get meetingPoint; double? get startingPointLat; double? get startingPointLng; String? get locationDetails;@JsonKey(includeIfNull: false) String? get photoUrl; EventFormatSnapshot get eventFormat; double get distanceKm; PaceLevel get pace; int get capacityLimit; String get description; int get priceInPaise;@JsonKey(includeIfNull: false) int? get bookedCount;@JsonKey(includeIfNull: false) int? get checkedInCount;@JsonKey(includeIfNull: false) int? get waitlistedCount; EventLifecycleStatus get status;@NullableTimestampConverter() DateTime? get cancelledAt; String? get cancellationReason; EventConstraints get constraints;@JsonKey(includeIfNull: false) EventPolicyBundle? get eventPolicy;// Denormalized gender counts maintained atomically by Cloud Functions.
 // Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'.
  Map<String, int> get genderCounts;// Denormalized event-policy cohort counts maintained by Cloud Functions.
 // Keys are EventCohortIds values.
- Map<String, int> get cohortCounts;
+ Map<String, int> get cohortCounts;// Denormalized waitlist demand by event-policy cohort. Used for dynamic
+// pricing quotes without reading the whole waitlist on every client view.
+ Map<String, int> get waitlistedCohortCounts;
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -32,16 +34,16 @@ $EventCopyWith<Event> get copyWith => _$EventCopyWithImpl<Event>(this as Event, 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&const DeepCollectionEquality().equals(other.genderCounts, genderCounts)&&const DeepCollectionEquality().equals(other.cohortCounts, cohortCounts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Event&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&const DeepCollectionEquality().equals(other.genderCounts, genderCounts)&&const DeepCollectionEquality().equals(other.cohortCounts, cohortCounts)&&const DeepCollectionEquality().equals(other.waitlistedCohortCounts, waitlistedCohortCounts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,clubId,startTime,endTime,meetingPoint,startingPointLat,startingPointLng,locationDetails,photoUrl,distanceKm,pace,capacityLimit,description,priceInPaise,bookedCount,checkedInCount,waitlistedCount,status,cancelledAt,cancellationReason,constraints,eventPolicy,const DeepCollectionEquality().hash(genderCounts),const DeepCollectionEquality().hash(cohortCounts)]);
+int get hashCode => Object.hashAll([runtimeType,id,clubId,startTime,endTime,meetingPoint,startingPointLat,startingPointLng,locationDetails,photoUrl,eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,bookedCount,checkedInCount,waitlistedCount,status,cancelledAt,cancellationReason,constraints,eventPolicy,const DeepCollectionEquality().hash(genderCounts),const DeepCollectionEquality().hash(cohortCounts),const DeepCollectionEquality().hash(waitlistedCohortCounts)]);
 
 @override
 String toString() {
-  return 'Event(id: $id, clubId: $clubId, startTime: $startTime, endTime: $endTime, meetingPoint: $meetingPoint, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, photoUrl: $photoUrl, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, constraints: $constraints, eventPolicy: $eventPolicy, genderCounts: $genderCounts, cohortCounts: $cohortCounts)';
+  return 'Event(id: $id, clubId: $clubId, startTime: $startTime, endTime: $endTime, meetingPoint: $meetingPoint, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, photoUrl: $photoUrl, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, constraints: $constraints, eventPolicy: $eventPolicy, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
 }
 
 
@@ -52,7 +54,7 @@ abstract mixin class $EventCopyWith<$Res>  {
   factory $EventCopyWith(Event value, $Res Function(Event) _then) = _$EventCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String clubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails,@JsonKey(includeIfNull: false) String? photoUrl, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, EventLifecycleStatus status,@NullableTimestampConverter() DateTime? cancelledAt, String? cancellationReason, EventConstraints constraints,@JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy, Map<String, int> genderCounts, Map<String, int> cohortCounts
+@JsonKey(includeToJson: false) String id, String clubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails,@JsonKey(includeIfNull: false) String? photoUrl, EventFormatSnapshot eventFormat, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, EventLifecycleStatus status,@NullableTimestampConverter() DateTime? cancelledAt, String? cancellationReason, EventConstraints constraints,@JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy, Map<String, int> genderCounts, Map<String, int> cohortCounts, Map<String, int> waitlistedCohortCounts
 });
 
 
@@ -69,7 +71,7 @@ class _$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clubId = null,Object? startTime = null,Object? endTime = null,Object? meetingPoint = null,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? constraints = null,Object? eventPolicy = freezed,Object? genderCounts = null,Object? cohortCounts = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? clubId = null,Object? startTime = null,Object? endTime = null,Object? meetingPoint = null,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? eventFormat = null,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? constraints = null,Object? eventPolicy = freezed,Object? genderCounts = null,Object? cohortCounts = null,Object? waitlistedCohortCounts = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
@@ -80,7 +82,8 @@ as String,startingPointLat: freezed == startingPointLat ? _self.startingPointLat
 as double?,startingPointLng: freezed == startingPointLng ? _self.startingPointLng : startingPointLng // ignore: cast_nullable_to_non_nullable
 as double?,locationDetails: freezed == locationDetails ? _self.locationDetails : locationDetails // ignore: cast_nullable_to_non_nullable
 as String?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String?,distanceKm: null == distanceKm ? _self.distanceKm : distanceKm // ignore: cast_nullable_to_non_nullable
+as String?,eventFormat: null == eventFormat ? _self.eventFormat : eventFormat // ignore: cast_nullable_to_non_nullable
+as EventFormatSnapshot,distanceKm: null == distanceKm ? _self.distanceKm : distanceKm // ignore: cast_nullable_to_non_nullable
 as double,pace: null == pace ? _self.pace : pace // ignore: cast_nullable_to_non_nullable
 as PaceLevel,capacityLimit: null == capacityLimit ? _self.capacityLimit : capacityLimit // ignore: cast_nullable_to_non_nullable
 as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -95,6 +98,7 @@ as String?,constraints: null == constraints ? _self.constraints : constraints //
 as EventConstraints,eventPolicy: freezed == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
 as EventPolicyBundle?,genderCounts: null == genderCounts ? _self.genderCounts : genderCounts // ignore: cast_nullable_to_non_nullable
 as Map<String, int>,cohortCounts: null == cohortCounts ? _self.cohortCounts : cohortCounts // ignore: cast_nullable_to_non_nullable
+as Map<String, int>,waitlistedCohortCounts: null == waitlistedCohortCounts ? _self.waitlistedCohortCounts : waitlistedCohortCounts // ignore: cast_nullable_to_non_nullable
 as Map<String, int>,
   ));
 }
@@ -189,10 +193,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails, @JsonKey(includeIfNull: false)  String? photoUrl,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy,  Map<String, int> genderCounts,  Map<String, int> cohortCounts)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails, @JsonKey(includeIfNull: false)  String? photoUrl,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
-return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.photoUrl,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.status,_that.cancelledAt,_that.cancellationReason,_that.constraints,_that.eventPolicy,_that.genderCounts,_that.cohortCounts);case _:
+return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.photoUrl,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.status,_that.cancelledAt,_that.cancellationReason,_that.constraints,_that.eventPolicy,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
   return orElse();
 
 }
@@ -210,10 +214,10 @@ return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetin
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails, @JsonKey(includeIfNull: false)  String? photoUrl,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy,  Map<String, int> genderCounts,  Map<String, int> cohortCounts)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(includeToJson: false)  String id,  String clubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails, @JsonKey(includeIfNull: false)  String? photoUrl,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)  $default,) {final _that = this;
 switch (_that) {
 case _Event():
-return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.photoUrl,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.status,_that.cancelledAt,_that.cancellationReason,_that.constraints,_that.eventPolicy,_that.genderCounts,_that.cohortCounts);case _:
+return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.photoUrl,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.status,_that.cancelledAt,_that.cancellationReason,_that.constraints,_that.eventPolicy,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -230,10 +234,10 @@ return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetin
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String clubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails, @JsonKey(includeIfNull: false)  String? photoUrl,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy,  Map<String, int> genderCounts,  Map<String, int> cohortCounts)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(includeToJson: false)  String id,  String clubId, @TimestampConverter()  DateTime startTime, @TimestampConverter()  DateTime endTime,  String meetingPoint,  double? startingPointLat,  double? startingPointLng,  String? locationDetails, @JsonKey(includeIfNull: false)  String? photoUrl,  EventFormatSnapshot eventFormat,  double distanceKm,  PaceLevel pace,  int capacityLimit,  String description,  int priceInPaise, @JsonKey(includeIfNull: false)  int? bookedCount, @JsonKey(includeIfNull: false)  int? checkedInCount, @JsonKey(includeIfNull: false)  int? waitlistedCount,  EventLifecycleStatus status, @NullableTimestampConverter()  DateTime? cancelledAt,  String? cancellationReason,  EventConstraints constraints, @JsonKey(includeIfNull: false)  EventPolicyBundle? eventPolicy,  Map<String, int> genderCounts,  Map<String, int> cohortCounts,  Map<String, int> waitlistedCohortCounts)?  $default,) {final _that = this;
 switch (_that) {
 case _Event() when $default != null:
-return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.photoUrl,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.status,_that.cancelledAt,_that.cancellationReason,_that.constraints,_that.eventPolicy,_that.genderCounts,_that.cohortCounts);case _:
+return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetingPoint,_that.startingPointLat,_that.startingPointLng,_that.locationDetails,_that.photoUrl,_that.eventFormat,_that.distanceKm,_that.pace,_that.capacityLimit,_that.description,_that.priceInPaise,_that.bookedCount,_that.checkedInCount,_that.waitlistedCount,_that.status,_that.cancelledAt,_that.cancellationReason,_that.constraints,_that.eventPolicy,_that.genderCounts,_that.cohortCounts,_that.waitlistedCohortCounts);case _:
   return null;
 
 }
@@ -245,7 +249,7 @@ return $default(_that.id,_that.clubId,_that.startTime,_that.endTime,_that.meetin
 @JsonSerializable()
 
 class _Event extends Event {
-  const _Event({@JsonKey(includeToJson: false) required this.id, required this.clubId, @TimestampConverter() required this.startTime, @TimestampConverter() required this.endTime, required this.meetingPoint, this.startingPointLat, this.startingPointLng, this.locationDetails, @JsonKey(includeIfNull: false) this.photoUrl, required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, @JsonKey(includeIfNull: false) this.bookedCount, @JsonKey(includeIfNull: false) this.checkedInCount, @JsonKey(includeIfNull: false) this.waitlistedCount, this.status = EventLifecycleStatus.active, @NullableTimestampConverter() this.cancelledAt, this.cancellationReason, this.constraints = const EventConstraints(), @JsonKey(includeIfNull: false) this.eventPolicy, final  Map<String, int> genderCounts = const {}, final  Map<String, int> cohortCounts = const {}}): _genderCounts = genderCounts,_cohortCounts = cohortCounts,super._();
+  const _Event({@JsonKey(includeToJson: false) required this.id, required this.clubId, @TimestampConverter() required this.startTime, @TimestampConverter() required this.endTime, required this.meetingPoint, this.startingPointLat, this.startingPointLng, this.locationDetails, @JsonKey(includeIfNull: false) this.photoUrl, this.eventFormat = const EventFormatSnapshot.socialRun(), required this.distanceKm, required this.pace, required this.capacityLimit, required this.description, required this.priceInPaise, @JsonKey(includeIfNull: false) this.bookedCount, @JsonKey(includeIfNull: false) this.checkedInCount, @JsonKey(includeIfNull: false) this.waitlistedCount, this.status = EventLifecycleStatus.active, @NullableTimestampConverter() this.cancelledAt, this.cancellationReason, this.constraints = const EventConstraints(), @JsonKey(includeIfNull: false) this.eventPolicy, final  Map<String, int> genderCounts = const {}, final  Map<String, int> cohortCounts = const {}, final  Map<String, int> waitlistedCohortCounts = const {}}): _genderCounts = genderCounts,_cohortCounts = cohortCounts,_waitlistedCohortCounts = waitlistedCohortCounts,super._();
   factory _Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
 @override@JsonKey(includeToJson: false) final  String id;
@@ -257,6 +261,7 @@ class _Event extends Event {
 @override final  double? startingPointLng;
 @override final  String? locationDetails;
 @override@JsonKey(includeIfNull: false) final  String? photoUrl;
+@override@JsonKey() final  EventFormatSnapshot eventFormat;
 @override final  double distanceKm;
 @override final  PaceLevel pace;
 @override final  int capacityLimit;
@@ -292,6 +297,17 @@ class _Event extends Event {
   return EqualUnmodifiableMapView(_cohortCounts);
 }
 
+// Denormalized waitlist demand by event-policy cohort. Used for dynamic
+// pricing quotes without reading the whole waitlist on every client view.
+ final  Map<String, int> _waitlistedCohortCounts;
+// Denormalized waitlist demand by event-policy cohort. Used for dynamic
+// pricing quotes without reading the whole waitlist on every client view.
+@override@JsonKey() Map<String, int> get waitlistedCohortCounts {
+  if (_waitlistedCohortCounts is EqualUnmodifiableMapView) return _waitlistedCohortCounts;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableMapView(_waitlistedCohortCounts);
+}
+
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
@@ -306,16 +322,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&const DeepCollectionEquality().equals(other._genderCounts, _genderCounts)&&const DeepCollectionEquality().equals(other._cohortCounts, _cohortCounts));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Event&&(identical(other.id, id) || other.id == id)&&(identical(other.clubId, clubId) || other.clubId == clubId)&&(identical(other.startTime, startTime) || other.startTime == startTime)&&(identical(other.endTime, endTime) || other.endTime == endTime)&&(identical(other.meetingPoint, meetingPoint) || other.meetingPoint == meetingPoint)&&(identical(other.startingPointLat, startingPointLat) || other.startingPointLat == startingPointLat)&&(identical(other.startingPointLng, startingPointLng) || other.startingPointLng == startingPointLng)&&(identical(other.locationDetails, locationDetails) || other.locationDetails == locationDetails)&&(identical(other.photoUrl, photoUrl) || other.photoUrl == photoUrl)&&(identical(other.eventFormat, eventFormat) || other.eventFormat == eventFormat)&&(identical(other.distanceKm, distanceKm) || other.distanceKm == distanceKm)&&(identical(other.pace, pace) || other.pace == pace)&&(identical(other.capacityLimit, capacityLimit) || other.capacityLimit == capacityLimit)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceInPaise, priceInPaise) || other.priceInPaise == priceInPaise)&&(identical(other.bookedCount, bookedCount) || other.bookedCount == bookedCount)&&(identical(other.checkedInCount, checkedInCount) || other.checkedInCount == checkedInCount)&&(identical(other.waitlistedCount, waitlistedCount) || other.waitlistedCount == waitlistedCount)&&(identical(other.status, status) || other.status == status)&&(identical(other.cancelledAt, cancelledAt) || other.cancelledAt == cancelledAt)&&(identical(other.cancellationReason, cancellationReason) || other.cancellationReason == cancellationReason)&&(identical(other.constraints, constraints) || other.constraints == constraints)&&(identical(other.eventPolicy, eventPolicy) || other.eventPolicy == eventPolicy)&&const DeepCollectionEquality().equals(other._genderCounts, _genderCounts)&&const DeepCollectionEquality().equals(other._cohortCounts, _cohortCounts)&&const DeepCollectionEquality().equals(other._waitlistedCohortCounts, _waitlistedCohortCounts));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,clubId,startTime,endTime,meetingPoint,startingPointLat,startingPointLng,locationDetails,photoUrl,distanceKm,pace,capacityLimit,description,priceInPaise,bookedCount,checkedInCount,waitlistedCount,status,cancelledAt,cancellationReason,constraints,eventPolicy,const DeepCollectionEquality().hash(_genderCounts),const DeepCollectionEquality().hash(_cohortCounts)]);
+int get hashCode => Object.hashAll([runtimeType,id,clubId,startTime,endTime,meetingPoint,startingPointLat,startingPointLng,locationDetails,photoUrl,eventFormat,distanceKm,pace,capacityLimit,description,priceInPaise,bookedCount,checkedInCount,waitlistedCount,status,cancelledAt,cancellationReason,constraints,eventPolicy,const DeepCollectionEquality().hash(_genderCounts),const DeepCollectionEquality().hash(_cohortCounts),const DeepCollectionEquality().hash(_waitlistedCohortCounts)]);
 
 @override
 String toString() {
-  return 'Event(id: $id, clubId: $clubId, startTime: $startTime, endTime: $endTime, meetingPoint: $meetingPoint, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, photoUrl: $photoUrl, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, constraints: $constraints, eventPolicy: $eventPolicy, genderCounts: $genderCounts, cohortCounts: $cohortCounts)';
+  return 'Event(id: $id, clubId: $clubId, startTime: $startTime, endTime: $endTime, meetingPoint: $meetingPoint, startingPointLat: $startingPointLat, startingPointLng: $startingPointLng, locationDetails: $locationDetails, photoUrl: $photoUrl, eventFormat: $eventFormat, distanceKm: $distanceKm, pace: $pace, capacityLimit: $capacityLimit, description: $description, priceInPaise: $priceInPaise, bookedCount: $bookedCount, checkedInCount: $checkedInCount, waitlistedCount: $waitlistedCount, status: $status, cancelledAt: $cancelledAt, cancellationReason: $cancellationReason, constraints: $constraints, eventPolicy: $eventPolicy, genderCounts: $genderCounts, cohortCounts: $cohortCounts, waitlistedCohortCounts: $waitlistedCohortCounts)';
 }
 
 
@@ -326,7 +342,7 @@ abstract mixin class _$EventCopyWith<$Res> implements $EventCopyWith<$Res> {
   factory _$EventCopyWith(_Event value, $Res Function(_Event) _then) = __$EventCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(includeToJson: false) String id, String clubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails,@JsonKey(includeIfNull: false) String? photoUrl, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, EventLifecycleStatus status,@NullableTimestampConverter() DateTime? cancelledAt, String? cancellationReason, EventConstraints constraints,@JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy, Map<String, int> genderCounts, Map<String, int> cohortCounts
+@JsonKey(includeToJson: false) String id, String clubId,@TimestampConverter() DateTime startTime,@TimestampConverter() DateTime endTime, String meetingPoint, double? startingPointLat, double? startingPointLng, String? locationDetails,@JsonKey(includeIfNull: false) String? photoUrl, EventFormatSnapshot eventFormat, double distanceKm, PaceLevel pace, int capacityLimit, String description, int priceInPaise,@JsonKey(includeIfNull: false) int? bookedCount,@JsonKey(includeIfNull: false) int? checkedInCount,@JsonKey(includeIfNull: false) int? waitlistedCount, EventLifecycleStatus status,@NullableTimestampConverter() DateTime? cancelledAt, String? cancellationReason, EventConstraints constraints,@JsonKey(includeIfNull: false) EventPolicyBundle? eventPolicy, Map<String, int> genderCounts, Map<String, int> cohortCounts, Map<String, int> waitlistedCohortCounts
 });
 
 
@@ -343,7 +359,7 @@ class __$EventCopyWithImpl<$Res>
 
 /// Create a copy of Event
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clubId = null,Object? startTime = null,Object? endTime = null,Object? meetingPoint = null,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? constraints = null,Object? eventPolicy = freezed,Object? genderCounts = null,Object? cohortCounts = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? clubId = null,Object? startTime = null,Object? endTime = null,Object? meetingPoint = null,Object? startingPointLat = freezed,Object? startingPointLng = freezed,Object? locationDetails = freezed,Object? photoUrl = freezed,Object? eventFormat = null,Object? distanceKm = null,Object? pace = null,Object? capacityLimit = null,Object? description = null,Object? priceInPaise = null,Object? bookedCount = freezed,Object? checkedInCount = freezed,Object? waitlistedCount = freezed,Object? status = null,Object? cancelledAt = freezed,Object? cancellationReason = freezed,Object? constraints = null,Object? eventPolicy = freezed,Object? genderCounts = null,Object? cohortCounts = null,Object? waitlistedCohortCounts = null,}) {
   return _then(_Event(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,clubId: null == clubId ? _self.clubId : clubId // ignore: cast_nullable_to_non_nullable
@@ -354,7 +370,8 @@ as String,startingPointLat: freezed == startingPointLat ? _self.startingPointLat
 as double?,startingPointLng: freezed == startingPointLng ? _self.startingPointLng : startingPointLng // ignore: cast_nullable_to_non_nullable
 as double?,locationDetails: freezed == locationDetails ? _self.locationDetails : locationDetails // ignore: cast_nullable_to_non_nullable
 as String?,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String?,distanceKm: null == distanceKm ? _self.distanceKm : distanceKm // ignore: cast_nullable_to_non_nullable
+as String?,eventFormat: null == eventFormat ? _self.eventFormat : eventFormat // ignore: cast_nullable_to_non_nullable
+as EventFormatSnapshot,distanceKm: null == distanceKm ? _self.distanceKm : distanceKm // ignore: cast_nullable_to_non_nullable
 as double,pace: null == pace ? _self.pace : pace // ignore: cast_nullable_to_non_nullable
 as PaceLevel,capacityLimit: null == capacityLimit ? _self.capacityLimit : capacityLimit // ignore: cast_nullable_to_non_nullable
 as int,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
@@ -369,6 +386,7 @@ as String?,constraints: null == constraints ? _self.constraints : constraints //
 as EventConstraints,eventPolicy: freezed == eventPolicy ? _self.eventPolicy : eventPolicy // ignore: cast_nullable_to_non_nullable
 as EventPolicyBundle?,genderCounts: null == genderCounts ? _self._genderCounts : genderCounts // ignore: cast_nullable_to_non_nullable
 as Map<String, int>,cohortCounts: null == cohortCounts ? _self._cohortCounts : cohortCounts // ignore: cast_nullable_to_non_nullable
+as Map<String, int>,waitlistedCohortCounts: null == waitlistedCohortCounts ? _self._waitlistedCohortCounts : waitlistedCohortCounts // ignore: cast_nullable_to_non_nullable
 as Map<String, int>,
   ));
 }

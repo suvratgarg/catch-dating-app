@@ -18,6 +18,11 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
   startingPointLng: (json['startingPointLng'] as num?)?.toDouble(),
   locationDetails: json['locationDetails'] as String?,
   photoUrl: json['photoUrl'] as String?,
+  eventFormat: json['eventFormat'] == null
+      ? const EventFormatSnapshot.socialRun()
+      : EventFormatSnapshot.fromJson(
+          json['eventFormat'] as Map<String, dynamic>?,
+        ),
   distanceKm: (json['distanceKm'] as num).toDouble(),
   pace: $enumDecode(_$PaceLevelEnumMap, json['pace']),
   capacityLimit: (json['capacityLimit'] as num).toInt(),
@@ -49,6 +54,11 @@ _Event _$EventFromJson(Map<String, dynamic> json) => _Event(
         (k, e) => MapEntry(k, (e as num).toInt()),
       ) ??
       const {},
+  waitlistedCohortCounts:
+      (json['waitlistedCohortCounts'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, (e as num).toInt()),
+      ) ??
+      const {},
 );
 
 Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
@@ -60,6 +70,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'startingPointLng': instance.startingPointLng,
   'locationDetails': instance.locationDetails,
   'photoUrl': ?instance.photoUrl,
+  'eventFormat': instance.eventFormat.toJson(),
   'distanceKm': instance.distanceKm,
   'pace': _$PaceLevelEnumMap[instance.pace]!,
   'capacityLimit': instance.capacityLimit,
@@ -77,6 +88,7 @@ Map<String, dynamic> _$EventToJson(_Event instance) => <String, dynamic>{
   'eventPolicy': ?instance.eventPolicy?.toJson(),
   'genderCounts': instance.genderCounts,
   'cohortCounts': instance.cohortCounts,
+  'waitlistedCohortCounts': instance.waitlistedCohortCounts,
 };
 
 const _$PaceLevelEnumMap = {

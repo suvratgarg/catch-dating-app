@@ -10,17 +10,58 @@ class AppDeepLinks {
     pathParameters: {'clubId': clubId},
   );
 
-  static Uri event({required String clubId, required String eventId}) =>
-      _httpsRoute(
-        Routes.eventDetailScreen.path,
-        pathParameters: {'clubId': clubId, 'eventId': eventId},
-      );
+  static Uri event({
+    required String clubId,
+    required String eventId,
+    String? inviteCode,
+  }) => _httpsRoute(
+    Routes.eventDetailScreen.path,
+    pathParameters: {'clubId': clubId, 'eventId': eventId},
+    queryParameters: _inviteQuery(inviteCode),
+  );
+
+  static String inAppEventPath({
+    required String clubId,
+    required String eventId,
+    String? inviteCode,
+  }) {
+    return _inAppRoute(
+      Routes.eventDetailScreen.path,
+      pathParameters: {'clubId': clubId, 'eventId': eventId},
+      queryParameters: _inviteQuery(inviteCode),
+    ).toString();
+  }
 }
 
 Uri _httpsRoute(
   String routePath, {
   required Map<String, String> pathParameters,
+  Map<String, String>? queryParameters,
 }) {
+  final pathSegments = _pathSegments(routePath, pathParameters);
+  return Uri(
+    scheme: 'https',
+    host: _deepLinkHost,
+    pathSegments: pathSegments,
+    queryParameters: queryParameters,
+  );
+}
+
+Uri _inAppRoute(
+  String routePath, {
+  required Map<String, String> pathParameters,
+  Map<String, String>? queryParameters,
+}) {
+  return Uri(
+    pathSegments: _pathSegments(routePath, pathParameters),
+    queryParameters: queryParameters,
+  );
+}
+
+List<String> _pathSegments(
+  String routePath,
+  Map<String, String> pathParameters,
+) {
   final pathSegments = routePath
       .split('/')
       .where((segment) => segment.isNotEmpty)
@@ -36,5 +77,11 @@ Uri _httpsRoute(
       })
       .toList(growable: false);
 
-  return Uri(scheme: 'https', host: _deepLinkHost, pathSegments: pathSegments);
+  return pathSegments;
+}
+
+Map<String, String>? _inviteQuery(String? inviteCode) {
+  final normalized = inviteCode?.trim();
+  if (normalized == null || normalized.isEmpty) return null;
+  return {'invite': normalized};
 }

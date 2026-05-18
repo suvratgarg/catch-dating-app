@@ -21,15 +21,15 @@ import {
 } from "../shared/generated/eventIdCallablePayload";
 import {validateEventIdCallablePayload} from
   "../shared/generated/schemaValidators";
-import {normalizeSingleIdPayload} from
-  "../shared/callablePayloadNormalization";
 import {validateCallableWithAjv, requireDoc} from "../shared/validation";
 import {eventParticipationId} from "../shared/relationshipDocuments";
 import {assertNoUserEventScheduleConflict} from "../events/scheduleConflicts";
+import {normalizeEventIdPayload} from "../events/eventPayloadNormalization";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
   eventPolicyFromEvent,
+  hasValidInviteForEvent,
   quotePriceInPaise,
   rosterFromEvent,
 } from "../events/eventPolicy";
@@ -57,10 +57,10 @@ export async function createRazorpayOrderHandler(
   deps: CreateRazorpayOrderDeps = defaultDeps
 ) {
   const uid = requireAuth(request);
-  const {eventId} = validateCallableWithAjv<EventIdCallablePayload>(
+  const {eventId, inviteCode} = validateCallableWithAjv<EventIdCallablePayload>(
     request,
     validateEventIdCallablePayload,
-    normalizeSingleIdPayload("eventId")
+    normalizeEventIdPayload
   );
 
   const db = deps.firestore();
@@ -132,6 +132,12 @@ export async function createRazorpayOrderHandler(
 
   const policy = eventPolicyFromEvent(event);
   const cohortId = cohortIdForUser(user);
+  const hasValidInvite = await hasValidInviteForEvent({
+    db,
+    eventId,
+    policy,
+    inviteCode,
+  });
   assertPolicyAllowsSignup({
     policy,
     cohortId,
@@ -139,6 +145,7 @@ export async function createRazorpayOrderHandler(
       ...rosterFromEvent(event),
       totalBooked: event.bookedCount ?? signedUpCount,
     },
+    hasValidInvite,
   });
 
   const razorpay = deps.createClient();
@@ -154,6 +161,7 @@ export async function createRazorpayOrderHandler(
       userId: uid,
       receiptToken: deps.now(),
       amountInPaise,
+      inviteVerified: policy.admission.inviteRequired && hasValidInvite,
     })
   );
 

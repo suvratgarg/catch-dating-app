@@ -167,6 +167,7 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => EventDetailScreen(
           clubId: state.pathParameters['clubId']!,
           eventId: state.pathParameters['eventId']!,
+          inviteCode: state.uri.queryParameters['invite'],
           initialEvent: switch (state.extra) {
             final Event event => event,
             _ => null,
@@ -184,6 +185,7 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => EventDetailScreen(
           clubId: state.pathParameters['clubId']!,
           eventId: state.pathParameters['eventId']!,
+          inviteCode: state.uri.queryParameters['invite'],
           initialEvent: switch (state.extra) {
             final Event event => event,
             _ => null,
@@ -213,6 +215,7 @@ GoRouter goRouter(Ref ref) {
         builder: (context, state) => EventDetailScreen(
           clubId: state.pathParameters['clubId']!,
           eventId: state.pathParameters['eventId']!,
+          inviteCode: state.uri.queryParameters['invite'],
           initialEvent: switch (state.extra) {
             final Event event => event,
             _ => null,
@@ -355,6 +358,7 @@ GoRouter goRouter(Ref ref) {
                         builder: (context, state) => EventDetailScreen(
                           clubId: state.pathParameters['clubId']!,
                           eventId: state.pathParameters['eventId']!,
+                          inviteCode: state.uri.queryParameters['invite'],
                           initialEvent: switch (state.extra) {
                             final Event event => event,
                             _ => null,

@@ -7,7 +7,7 @@ type PayloadRecord = Record<string, unknown>;
  */
 export function normalizeCreateEventPayload(data: unknown): unknown {
   if (!isRecord(data)) return data;
-  return normalizeFields(data, {
+  const payload = normalizeFields(data, {
     stringFields: [
       "eventId",
       "clubId",
@@ -16,6 +16,13 @@ export function normalizeCreateEventPayload(data: unknown): unknown {
     ],
     nullableStringFields: ["locationDetails", "photoUrl"],
   });
+  if (!isRecord(payload.privateAccess)) return payload;
+  return {
+    ...payload,
+    privateAccess: normalizeFields(payload.privateAccess, {
+      stringFields: ["inviteCode"],
+    }),
+  };
 }
 
 /**
@@ -56,7 +63,10 @@ export function normalizeCancelEventPayload(data: unknown): unknown {
  */
 export function normalizeEventIdPayload(data: unknown): unknown {
   if (!isRecord(data)) return data;
-  return normalizeFields(data, {stringFields: ["eventId"]});
+  return normalizeFields(data, {
+    stringFields: ["eventId"],
+    nullableStringFields: ["inviteCode"],
+  });
 }
 
 /**

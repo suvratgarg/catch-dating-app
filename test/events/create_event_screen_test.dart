@@ -9,6 +9,7 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_draft.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/create_event_form_keys.dart';
 import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/host_event_manage_screen.dart';
@@ -355,6 +356,55 @@ void main() {
 
       expect(find.text('Event success'), findsOneWidget);
       expect(find.text('Open event success'), findsOneWidget);
+    });
+
+    testWidgets('host manage exposes invite code and private link', (
+      tester,
+    ) async {
+      final fakeEventRepository = FakeEventRepository();
+      final participationRepository = FakeEventParticipationRepository();
+      final event = buildEvent(
+        id: 'event-private',
+        eventPolicy: EventPolicyBundle.inviteOnlyEvent(
+          capacityLimit: 12,
+          basePriceInPaise: 0,
+        ),
+      );
+      fakeEventRepository.privateAccessByEventId[event.id] = EventPrivateAccess(
+        id: event.id,
+        eventId: event.id,
+        clubId: event.clubId,
+        inviteCode: 'CATCH-DELHI',
+        createdAt: DateTime(2026, 5, 1),
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        HostEventManageScreen(
+          club: buildClub(hostUserId: 'host-1'),
+          event: event,
+          onBackToSuccess: () {},
+        ),
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+          eventParticipationRepositoryProvider.overrideWith(
+            (ref) => participationRepository,
+          ),
+        ],
+        signedInUid: 'host-1',
+      );
+      await _pumpHostActionFrame(tester);
+
+      await tester.scrollUntilVisible(find.text('Private access'), 300);
+      await _pumpHostActionFrame(tester);
+
+      expect(find.text('Private access'), findsOneWidget);
+      expect(find.text('CATCH-DELHI'), findsOneWidget);
+      expect(find.textContaining('?invite=CATCH-DELHI'), findsOneWidget);
+      expect(
+        find.widgetWithText(CatchButton, 'Share private link'),
+        findsOneWidget,
+      );
     });
 
     testWidgets('host manage confirms and cancels an active event', (

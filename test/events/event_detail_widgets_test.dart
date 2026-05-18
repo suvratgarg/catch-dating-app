@@ -5,6 +5,7 @@ import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/core/external_links.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
 import 'package:catch_dating_app/core/widgets/catch_button.dart';
+import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
@@ -144,6 +145,13 @@ void main() {
       );
 
       expect(find.text('Wednesday Evening Event'), findsWidgets);
+      await tester.scrollUntilVisible(
+        find.text('What to expect'),
+        400,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.text('Attendance matters'), findsOneWidget);
+      expect(find.text('Booking policy'), findsOneWidget);
     });
   });
 
@@ -173,6 +181,70 @@ void main() {
 
       expect(fakePaymentRepository.bookFreeEventCalled, isTrue);
       expect(fakePaymentRepository.bookedFreeEventId, 'event-1');
+    });
+
+    testWidgets('passes invite query codes into booking actions', (
+      tester,
+    ) async {
+      final fakePaymentRepository = FakePaymentRepository();
+      final event = buildEvent(
+        bookedCount: 2,
+        eventPolicy: EventPolicyBundle.inviteOnlyEvent(
+          capacityLimit: 20,
+          basePriceInPaise: 0,
+        ),
+      );
+
+      await pumpEventsTestApp(
+        tester,
+        Scaffold(
+          bottomNavigationBar: EventDetailCta(
+            event: event,
+            clubId: 'club1',
+            isHost: false,
+            userProfile: buildUser(),
+            participation: null,
+            inviteCode: 'CATCH-DELHI',
+          ),
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+        ],
+      );
+
+      await tester.tap(find.text('Join event — 18 spots left'));
+      await tester.pump();
+
+      expect(fakePaymentRepository.bookedFreeEventInviteCode, 'CATCH-DELHI');
+    });
+
+    testWidgets('keeps invite-only events blocked without an invite code', (
+      tester,
+    ) async {
+      await pumpEventsTestApp(
+        tester,
+        Scaffold(
+          bottomNavigationBar: EventDetailCta(
+            event: buildEvent(
+              eventPolicy: EventPolicyBundle.inviteOnlyEvent(
+                capacityLimit: 20,
+                basePriceInPaise: 0,
+              ),
+            ),
+            clubId: 'club1',
+            isHost: false,
+            userProfile: buildUser(),
+            participation: null,
+          ),
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+
+      expect(find.text('Invite required'), findsOneWidget);
     });
 
     testWidgets('shows booking errors from the active mutation', (

@@ -45,7 +45,7 @@ String _calendarDetails(Event event) {
   final details = [
     'Catch event',
     event.description.trim(),
-    '${event.distanceLabel} · ${event.pace.label}',
+    event.activitySummaryLabel,
     if (event.locationDetails?.trim().isNotEmpty == true)
       event.locationDetails!.trim(),
   ]..removeWhere((line) => line.isEmpty);

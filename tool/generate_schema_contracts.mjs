@@ -71,6 +71,12 @@ const schemaSpecs = [
     typeOutput: "functions/src/shared/generated/eventDocument.ts",
   },
   {
+    name: "EventPrivateAccessDocument",
+    source: "firestore/event_private_access.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/eventPrivateAccessDocument.ts",
+  },
+  {
     name: "EventParticipationDocument",
     source: "firestore/event_participations.schema.json",
     typeOutput: "functions/src/shared/generated/eventParticipationDocument.ts",

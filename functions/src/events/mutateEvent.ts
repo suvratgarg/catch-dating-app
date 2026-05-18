@@ -12,6 +12,7 @@ import {
   ClubDoc,
   EventDoc,
   EventConstraints,
+  EventFormatSnapshot,
 } from "../shared/firestore";
 import {checkRateLimit as defaultCheckRateLimit} from "../shared/rateLimit";
 import {CancelEventCallablePayload} from
@@ -56,6 +57,7 @@ import {
 } from "./eventPayloadNormalization";
 import {
   EventPolicyBundleDoc,
+  normalizeInviteCode,
   normalizePolicy,
 } from "./eventPolicy";
 import {
@@ -89,6 +91,10 @@ type ParsedEventConstraints = NonNullable<
 >;
 type CreateEventPayloadWithPolicy = CreateEventCallablePayload & {
   eventPolicy?: EventPolicyBundleDoc;
+  eventFormat?: EventFormatSnapshot;
+  privateAccess?: {
+    inviteCode?: string | null;
+  };
 };
 type EventHostUpdateFields = UpdateEventCallablePayload["fields"];
 
@@ -142,6 +148,7 @@ export async function createEventHandler(
   const eventRef = data.eventId ?
     db.collection("events").doc(data.eventId) :
     db.collection("events").doc();
+  const privateAccessRef = db.collection("eventPrivateAccess").doc(eventRef.id);
   const clubRef = db.collection("clubs").doc(data.clubId);
   const deletedUserRef = db.collection("deletedUsers").doc(hostUserId);
 
@@ -172,6 +179,18 @@ export async function createEventHandler(
       cancellationReason: null,
       genderCounts: {},
     };
+    const eventPolicy = event.eventPolicy;
+    if (!eventPolicy) {
+      throw new HttpsError("internal", "Event policy was not normalized.");
+    }
+    const inviteCode = normalizedInviteCodeForCreate(data, eventPolicy);
+    const privateAccessSnap = await tx.get(privateAccessRef);
+    if (privateAccessSnap.exists) {
+      throw new HttpsError(
+        "already-exists",
+        "Event private access already exists."
+      );
+    }
 
     await claimClubScheduleInTransaction(tx, db, {
       clubId: data.clubId,
@@ -180,6 +199,15 @@ export async function createEventHandler(
       endTimeMillis: data.endTimeMillis,
     });
     tx.create(eventRef, event);
+    if (inviteCode) {
+      tx.create(privateAccessRef, {
+        eventId: eventRef.id,
+        clubId: data.clubId,
+        inviteCode,
+        createdAt: deps.serverTimestamp?.() ??
+          admin.firestore.FieldValue.serverTimestamp(),
+      });
+    }
     createdEvent = event;
   });
 
@@ -549,6 +577,14 @@ function buildCreateEventDoc(
         format: hasLegacyCaps ? "fixedCohortCaps" : "open",
         capacityLimit: data.capacityLimit,
         waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+        inviteRequired: false,
+        membershipRequired: false,
+        manualApprovalRequired: false,
+        privateAccessPolicy: {
+          mode: "none",
+          inviteCodeHint: null,
+          privateLinkEnabled: false,
+        },
         cohortCapacityLimits: {
           ...(maxMen != null ? {menInterestedInWomen: maxMen} : {}),
           ...(maxWomen != null ? {womenInterestedInMen: maxWomen} : {}),
@@ -569,6 +605,9 @@ function buildCreateEventDoc(
     startingPointLng: data.startingPointLng,
     locationDetails: data.locationDetails ?? null,
     photoUrl: data.photoUrl ?? null,
+    eventFormat: normalizeEventFormat(
+      (data as CreateEventPayloadWithPolicy).eventFormat
+    ),
     distanceKm: data.distanceKm,
     pace: data.pace,
     capacityLimit: eventPolicy.admission.capacityLimit,
@@ -577,7 +616,87 @@ function buildCreateEventDoc(
     constraints: normalizeConstraints(data.constraints),
     eventPolicy,
     cohortCounts: {},
+    waitlistedCohortCounts: {},
   };
+}
+
+/**
+ * Validates and returns invite-only access material for the host-private doc.
+ * @param {CreateEventCallablePayload} data Validated create payload.
+ * @param {EventPolicyBundleDoc} eventPolicy Normalized public policy snapshot.
+ * @return {string|null} Invite code to store in eventPrivateAccess/{eventId}.
+ */
+function normalizedInviteCodeForCreate(
+  data: CreateEventCallablePayload,
+  eventPolicy: EventPolicyBundleDoc
+): string | null {
+  if (!eventPolicy.admission.inviteRequired) return null;
+
+  const inviteCode = normalizeInviteCode(
+    (data as CreateEventPayloadWithPolicy).privateAccess?.inviteCode
+  );
+  if (!inviteCode || inviteCode.length < 4 || inviteCode.length > 64) {
+    throw new HttpsError(
+      "invalid-argument",
+      "Invite-only events need an invite code between 4 and 64 characters."
+    );
+  }
+  return inviteCode;
+}
+
+/**
+ * Normalizes the optional event-format snapshot on create.
+ * @param {EventFormatSnapshot | null | undefined} raw Client payload snapshot.
+ * @return {EventFormatSnapshot} Persistable event-format snapshot.
+ */
+function normalizeEventFormat(
+  raw?: EventFormatSnapshot | null
+): EventFormatSnapshot {
+  const activityKind = raw?.activityKind ?? "socialRun";
+  return {
+    version: 1,
+    activityKind,
+    interactionModel:
+      raw?.interactionModel ?? defaultInteractionModelFor(activityKind),
+    ...(raw?.customActivityLabel != null ?
+      {customActivityLabel: raw.customActivityLabel} : {}),
+    ...(raw?.defaultPlaybookId != null ?
+      {defaultPlaybookId: raw.defaultPlaybookId} : {}),
+    ...(raw?.defaultModuleIds != null && raw.defaultModuleIds.length > 0 ?
+      {defaultModuleIds: raw.defaultModuleIds} : {}),
+    ...(raw?.activityDetails != null ?
+      {activityDetails: raw.activityDetails} : {}),
+  };
+}
+
+/**
+ * Returns the default interaction model for a known activity kind.
+ * @param {string} activityKind Activity kind.
+ * @return {string} Interaction model.
+ */
+function defaultInteractionModelFor(
+  activityKind: EventFormatSnapshot["activityKind"]
+): EventFormatSnapshot["interactionModel"] {
+  switch (activityKind) {
+  case "socialRun":
+    return "pacePods";
+  case "pickleball":
+  case "padel":
+  case "tennis":
+  case "badminton":
+    return "pairedRotations";
+  case "pubQuiz":
+    return "teamRotations";
+  case "dinner":
+    return "seatedTable";
+  case "barCrawl":
+  case "singlesMixer":
+    return "freeFormMixer";
+  case "openActivity":
+    return "openFormat";
+  default:
+    return "hostLedProgram";
+  }
 }
 
 /**

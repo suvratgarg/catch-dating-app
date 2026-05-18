@@ -50,13 +50,17 @@ class EventBookingController extends _$EventBookingController {
   Future<PaymentConfirmationData?> book({
     required Event event,
     required UserProfile user,
+    String? inviteCode,
   }) async {
     _requireSignedIn(action: 'book an event');
     final paymentRepo = ref.read(paymentRepositoryProvider);
     final quotedPriceInPaise = event.priceInPaiseFor(user);
 
     if (quotedPriceInPaise == 0) {
-      await paymentRepo.bookFreeEvent(eventId: event.id);
+      await paymentRepo.bookFreeEvent(
+        eventId: event.id,
+        inviteCode: inviteCode,
+      );
       return null;
     } else {
       return paymentRepo.processPayment(
@@ -65,6 +69,7 @@ class EventBookingController extends _$EventBookingController {
         userName: user.name,
         userEmail: user.email,
         userContact: user.phoneNumber,
+        inviteCode: inviteCode,
       );
     }
   }
@@ -100,11 +105,11 @@ class EventBookingController extends _$EventBookingController {
   }
 
   /// Adds the user to the waitlist for a full event.
-  Future<void> joinWaitlist({required Event event}) async {
+  Future<void> joinWaitlist({required Event event, String? inviteCode}) async {
     _requireSignedIn(action: 'join a waitlist');
     await ref
         .read(eventRepositoryProvider)
-        .joinWaitlistViaFunction(eventId: event.id);
+        .joinWaitlistViaFunction(eventId: event.id, inviteCode: inviteCode);
   }
 
   /// Removes the user from the waitlist.

@@ -81,7 +81,7 @@ class EventAgendaTile extends StatelessWidget {
                 ],
                 gapH8,
                 Text(
-                  '${data.distanceLabel} · ${data.paceLabel} · ${data.spotsLabel}',
+                  '${data.activitySummaryLabel} · ${data.spotsLabel}',
                   style: CatchTextStyles.bodyS(context, color: t.ink2),
                 ),
               ],

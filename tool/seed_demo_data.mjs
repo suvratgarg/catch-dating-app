@@ -352,7 +352,7 @@ export async function main(argv = process.argv.slice(2)) {
 
   if (!args.apply) {
     if (!args.json) {
-      console.log("\nDry event only. Re-event with --apply to write these documents.");
+      console.log("\nDry run only. Re-event with --apply to write these documents.");
     }
     return;
   }
@@ -415,7 +415,7 @@ function parseArgs(argv) {
     else if (arg === "--json") parsed.json = true;
     else if (arg === "--include-schedule-locks") parsed.includeScheduleLocks = true;
     else if (arg === "--apply") parsed.apply = true;
-    else if (arg === "--dry-event") parsed.apply = false;
+    else if (arg === "--dry-run") parsed.apply = false;
     else if (arg === "--allow-prod") parsed.allowProd = true;
     else if (arg === "--reset-synthetic") parsed.resetSynthetic = true;
     else if (arg === "--delete-only") parsed.deleteOnly = true;
@@ -1035,6 +1035,7 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
       startingPointLat: meetingPoint.lat,
       startingPointLng: meetingPoint.lng,
       locationDetails: meetingPoint.detail,
+      eventFormat: socialRunEventFormat(),
       distanceKm: [3, 5, 7, 10, 12, 15][runIndex % 6],
       pace,
       capacityLimit: pattern.capacity,
@@ -1055,7 +1056,18 @@ function buildEvent({seedPrefix, seedMarker, city, club, runIndex, clubIndex, no
         maxWomen: runIndex % 4 === 0 ? 8 : null,
       },
       genderCounts: {},
+      cohortCounts: {},
+      waitlistedCohortCounts: {},
     },
+  };
+}
+
+function socialRunEventFormat() {
+  return {
+    version: 1,
+    activityKind: "socialRun",
+    interactionModel: "pacePods",
+    defaultPlaybookId: "social_run_light",
   };
 }
 
@@ -1149,10 +1161,28 @@ function applyRosterAggregates(event, roster) {
   event.doc.checkedInCount = attended.length;
   event.doc.waitlistedCount = waitlisted.length;
   event.doc.genderCounts = {};
+  event.doc.cohortCounts = {};
+  event.doc.waitlistedCohortCounts = {};
   for (const entry of booked) {
     const gender = entry.person.gender || "other";
     event.doc.genderCounts[gender] = (event.doc.genderCounts[gender] ?? 0) + 1;
+    const cohort = cohortIdForSeedPerson(entry.person);
+    event.doc.cohortCounts[cohort] = (event.doc.cohortCounts[cohort] ?? 0) + 1;
   }
+  for (const entry of waitlisted) {
+    const cohort = cohortIdForSeedPerson(entry.person);
+    event.doc.waitlistedCohortCounts[cohort] =
+      (event.doc.waitlistedCohortCounts[cohort] ?? 0) + 1;
+  }
+}
+
+function cohortIdForSeedPerson(person) {
+  if (person.gender === "man") return "menInterestedInWomen";
+  if (person.gender === "woman") return "womenInterestedInMen";
+  if (person.gender === "nonBinary" || person.gender === "other") {
+    return "nonBinaryOrOther";
+  }
+  return "queerOrOpen";
 }
 
 function buildParticipation({seedMarker, event, entry, now}) {
@@ -1840,7 +1870,7 @@ async function readExistingSeedTime(firestore, seedId) {
   if (!snap.exists) {
     throw new Error(
       `--append-anchors requires an existing seedEvents/${manifestId} manifest. ` +
-      "Event a full seed first."
+      "Run a full seed first."
     );
   }
   const generatedAt = snap.data().generatedAt;
@@ -1856,7 +1886,7 @@ async function createAppendWritePlan({db: firestore, seed, anchorProfiles}) {
   if (!manifestSnap.exists) {
     throw new Error(
       `--append-anchors requires an existing ${manifestRef.path} manifest. ` +
-      "Event a full seed first."
+      "Run a full seed first."
     );
   }
 
@@ -2221,12 +2251,19 @@ function buildAppendAggregateUpdates(docs) {
       const gender = doc.data.genderAtSignup ?? "other";
       const genderKey = `genderCounts.${gender}`;
       eventUpdate[genderKey] = (eventUpdate[genderKey] ?? 0) + 1;
+      const cohort = doc.data.cohortAtSignup ?? cohortIdForSeedPerson({gender});
+      const cohortKey = `cohortCounts.${cohort}`;
+      eventUpdate[cohortKey] = (eventUpdate[cohortKey] ?? 0) + 1;
     }
     if (doc.data.status === "attended") {
       eventUpdate.checkedInCount = (eventUpdate.checkedInCount ?? 0) + 1;
     }
     if (doc.data.status === "waitlisted") {
       eventUpdate.waitlistedCount = (eventUpdate.waitlistedCount ?? 0) + 1;
+      const cohort = doc.data.cohortAtSignup ??
+        cohortIdForSeedPerson({gender: doc.data.genderAtSignup});
+      const cohortKey = `waitlistedCohortCounts.${cohort}`;
+      eventUpdate[cohortKey] = (eventUpdate[cohortKey] ?? 0) + 1;
     }
   }
 
@@ -2328,7 +2365,7 @@ function printSummary({
   if (args.emulatorHost) console.log(`Emulator: ${args.emulatorHost}`);
   console.log(`Scenario: ${args.scenario} - ${scenario.description}`);
   console.log(`Seed prefix: ${args.seedPrefix}`);
-  console.log(`Mode: ${args.apply ? "apply" : "dry-event"}`);
+  console.log(`Mode: ${args.apply ? "apply" : "dry-run"}`);
   if (args.deleteOnly) console.log("Delete only: yes");
   if (args.appendAnchors) {
     console.log("Append anchors: yes");
@@ -2418,7 +2455,7 @@ Options:
   --anchor-users <uid,...>       Real TestFlight user UIDs to seed around.
   --anchor-phones <phone,...>    Resolve real users by users.phoneNumber.
   --anchor-file <path>           Newline file, or JSON with uids/users and phones.
-  --dry-event                      Print plan only. Default.
+  --dry-run                      Print plan only. Default.
   --apply                        Write documents.
   --reset-synthetic              Delete previous manifest docs before writing.
   --delete-only                  Delete previous manifest docs and exit. Requires

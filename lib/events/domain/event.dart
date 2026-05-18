@@ -1,5 +1,6 @@
 import 'dart:math' as math;
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
@@ -64,6 +65,7 @@ abstract class Event with _$Event {
     double? startingPointLng,
     String? locationDetails,
     @JsonKey(includeIfNull: false) String? photoUrl,
+    @Default(EventFormatSnapshot.socialRun()) EventFormatSnapshot eventFormat,
     required double distanceKm,
     required PaceLevel pace,
     required int capacityLimit,
@@ -83,11 +85,15 @@ abstract class Event with _$Event {
     // Denormalized event-policy cohort counts maintained by Cloud Functions.
     // Keys are EventCohortIds values.
     @Default({}) Map<String, int> cohortCounts,
+    // Denormalized waitlist demand by event-policy cohort. Used for dynamic
+    // pricing quotes without reading the whole waitlist on every client view.
+    @Default({}) Map<String, int> waitlistedCohortCounts,
   }) = _Event;
 
   factory Event.fromJson(Map<String, dynamic> json) => _$EventFromJson(json);
 
   double get distanceMiles => distanceKm * 0.621371;
+  ActivityKind get activityKind => eventFormat.activityKind;
   int get signedUpCount => bookedCount ?? 0;
   int get attendedCount => checkedInCount ?? 0;
   int get waitlistCount => waitlistedCount ?? 0;
@@ -124,6 +130,9 @@ abstract class Event with _$Event {
     };
   }
 
+  Map<String, int> get effectiveWaitlistedCohortCounts =>
+      waitlistedCohortCounts;
+
   int priceInPaiseFor(UserProfile user) {
     final policy = effectiveEventPolicy;
     final attendee = EventAttendeeProfile.fromUserProfile(user);
@@ -133,6 +142,7 @@ abstract class Event with _$Event {
           cohort: cohort,
           roster: EventRosterSnapshot(
             bookedCountsByCohort: effectiveCohortCounts,
+            waitlistedCountsByCohort: effectiveWaitlistedCohortCounts,
           ),
         )
         .finalAmount
@@ -144,7 +154,11 @@ abstract class Event with _$Event {
   /// User-specific roster state lives in `eventParticipations`, so callers that
   /// know the viewer's participation edge should prefer a view-model seam that
   /// combines the event and participation before rendering action state.
-  EventEligibility eligibilityFor(UserProfile user, {DateTime? now}) {
+  EventEligibility eligibilityFor(
+    UserProfile user, {
+    DateTime? now,
+    bool hasValidInvite = false,
+  }) {
     final referenceNow = now ?? DateTime.now();
     if (!isUpcomingAt(referenceNow)) return const EventPast();
     if (user.age < constraints.minAge) return AgeTooYoung(constraints.minAge);
@@ -157,6 +171,7 @@ abstract class Event with _$Event {
       policy: policy,
       request: EventAdmissionRequest(
         attendee: EventAttendeeProfile.fromUserProfile(user),
+        hasValidInvite: hasValidInvite,
       ),
       roster: EventRosterSnapshot(bookedCountsByCohort: effectiveCohortCounts),
     );
@@ -171,6 +186,9 @@ abstract class Event with _$Event {
     if (decision.reason == EventAdmissionDecisionReason.capacityFull) {
       return const EventFull();
     }
+    if (decision.reason == EventAdmissionDecisionReason.inviteRequired) {
+      return const EventInviteRequired();
+    }
     return const GenderCapacityReached();
   }
 
@@ -178,8 +196,16 @@ abstract class Event with _$Event {
   ///
   /// Signed-up, waitlisted, and attended statuses require a `EventParticipation`
   /// edge and are intentionally resolved outside this model.
-  EventSignUpStatus statusFor(UserProfile user, {DateTime? now}) {
-    return switch (eligibilityFor(user, now: now)) {
+  EventSignUpStatus statusFor(
+    UserProfile user, {
+    DateTime? now,
+    bool hasValidInvite = false,
+  }) {
+    return switch (eligibilityFor(
+      user,
+      now: now,
+      hasValidInvite: hasValidInvite,
+    )) {
       EventPast() => EventSignUpStatus.past,
       EventFull() => EventSignUpStatus.full,
       Eligible() => EventSignUpStatus.eligible,

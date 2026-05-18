@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 
 abstract final class CreateEventFormKeys {
   static const distance = ValueKey('create-event-distance-field');
+  static const activityType = ValueKey('create-event-activity-type');
   static const capacity = ValueKey('create-event-capacity-field');
   static const price = ValueKey('create-event-price-field');
   static const description = ValueKey('create-event-description-field');
@@ -16,6 +17,16 @@ abstract final class CreateEventFormKeys {
   static const maxAge = ValueKey('create-event-max-age-field');
   static const maxMen = ValueKey('create-event-max-men-field');
   static const maxWomen = ValueKey('create-event-max-women-field');
+  static const inviteCode = ValueKey('create-event-invite-code-field');
+  static const dynamicPricingToggle = ValueKey(
+    'create-event-dynamic-pricing-toggle',
+  );
+  static const dynamicPricingStep = ValueKey(
+    'create-event-dynamic-pricing-step-field',
+  );
+  static const dynamicPricingMax = ValueKey(
+    'create-event-dynamic-pricing-max-field',
+  );
 
   static ValueKey<String> admissionPreset(String presetName) =>
       ValueKey('create-event-admission-preset-$presetName');

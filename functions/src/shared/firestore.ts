@@ -333,6 +333,7 @@ export interface EventDoc {
   /** nullable in Firestore */
   locationDetails?: string | null;
   photoUrl?: string | null;
+  eventFormat: EventFormatSnapshot;
   distanceKm: number;
   pace: PaceLevel;
   capacityLimit: number;
@@ -352,6 +353,7 @@ export interface EventDoc {
    */
   genderCounts: Record<string, number>;
   cohortCounts: Record<string, number>;
+  waitlistedCohortCounts: Record<string, number>;
   /**
    * Production event-policy snapshot; legacy events may fall back to
    * capacityLimit, priceInPaise, and constraints
@@ -529,6 +531,44 @@ export interface PhotoPromptAnswer {
 }
 
 /**
+ * embedded event format snapshot
+ * Stored inside events/{eventId}.eventFormat so event success, health activity,
+ * and host defaults share one activity taxonomy.
+ */
+export interface EventFormatSnapshot {
+  version: number;
+  activityKind:
+    | "socialRun"
+    | "running"
+    | "walking"
+    | "pickleball"
+    | "padel"
+    | "tennis"
+    | "badminton"
+    | "cycling"
+    | "spinClass"
+    | "yoga"
+    | "strengthTraining"
+    | "pubQuiz"
+    | "barCrawl"
+    | "dinner"
+    | "singlesMixer"
+    | "openActivity";
+  interactionModel:
+    | "pacePods"
+    | "pairedRotations"
+    | "teamRotations"
+    | "seatedTable"
+    | "freeFormMixer"
+    | "hostLedProgram"
+    | "openFormat";
+  customActivityLabel?: string;
+  defaultPlaybookId?: string;
+  defaultModuleIds?: string[];
+  activityDetails?: Record<string, unknown>;
+}
+
+/**
  * embedded profile photo moderation
  * Stored inside users/{uid}.profilePhotos and
  * publicProfiles/{uid}.profilePhotos.
@@ -586,8 +626,21 @@ export interface EventPolicyAdmissionDoc {
   inviteRequired?: boolean;
   membershipRequired?: boolean;
   manualApprovalRequired?: boolean;
+  privateAccessPolicy?: EventPolicyPrivateAccessDoc;
   cohortCapacityLimits?: Record<string, number>;
   balancedRatioPolicy?: EventPolicyBalancedRatioDoc | null;
+}
+
+/**
+ * embedded event policy private access
+ * Public, non-secret invite metadata nested inside
+ * events/{eventId}.eventPolicy.admission.privateAccessPolicy. Secret invite
+ * codes live in eventPrivateAccess/{eventId}.
+ */
+export interface EventPolicyPrivateAccessDoc {
+  mode: "none" | "inviteCode";
+  inviteCodeHint: string | null;
+  privateLinkEnabled: boolean;
 }
 
 /**
@@ -640,6 +693,17 @@ export interface EventPolicyDemandPricingRuleDoc {
   maxAdjustmentInPaise: number;
   freeSkew: number;
   demandStep: number;
+}
+
+/**
+ * /eventPrivateAccess/{eventId}
+ * Host-private invite material created by createEvent for invite-only events.
+ */
+export interface EventPrivateAccessDoc {
+  eventId: string;
+  clubId: string;
+  inviteCode: string;
+  createdAt: FirebaseFirestore.Timestamp;
 }
 
 /**

@@ -10,6 +10,7 @@ sealed class EventEligibility with _$EventEligibility {
   const factory EventEligibility.attended() = Attended;
   const factory EventEligibility.eventPast() = EventPast;
   const factory EventEligibility.eventFull() = EventFull;
+  const factory EventEligibility.inviteRequired() = EventInviteRequired;
 
   /// The user's gender cap for this event has been reached.
   const factory EventEligibility.genderCapacityReached() =

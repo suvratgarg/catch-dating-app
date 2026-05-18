@@ -51,8 +51,7 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
         CelebrationDetail(
           icon: Icons.directions_run_rounded,
           label: 'Event',
-          value:
-              '${EventFormatters.distanceKm(event.distanceKm)} · ${event.pace.label}',
+          value: event.activitySummaryLabel,
         ),
         if (paymentData != null) ...[
           CelebrationDetail(

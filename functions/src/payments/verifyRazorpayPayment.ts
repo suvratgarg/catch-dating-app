@@ -90,7 +90,9 @@ export async function verifyRazorpayPaymentHandler(
   // race condition between order creation and payment), issue an immediate
   // refund so the user is never charged for a spot they didn't get.
   try {
-    await deps.signUpForEvent(db, booking.eventId, userId, paymentId);
+    await deps.signUpForEvent(db, booking.eventId, userId, paymentId, {
+      hasValidInvite: booking.inviteVerified,
+    });
   } catch (signUpError) {
     let refundSucceeded = false;
     try {

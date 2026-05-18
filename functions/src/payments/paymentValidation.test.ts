@@ -15,6 +15,12 @@ function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
     startTime: {} as FirebaseFirestore.Timestamp,
     endTime: {} as FirebaseFirestore.Timestamp,
     meetingPoint: "Carter Road",
+    eventFormat: {
+      version: 1,
+      activityKind: "socialRun",
+      interactionModel: "pacePods",
+      defaultPlaybookId: "social_run_light",
+    },
     distanceKm: 5,
     pace: "easy",
     capacityLimit: 20,
@@ -29,6 +35,7 @@ function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
     },
     genderCounts: {},
     cohortCounts: {},
+    waitlistedCohortCounts: {},
     ...overrides,
   };
 }
@@ -49,8 +56,21 @@ test("buildOrderCreatePayload derives trusted amount and notes", () => {
       eventId: "event-1",
       userId: "runner-1",
       quotedAmountInPaise: 25000,
+      inviteVerified: "false",
     },
   });
+});
+
+test("buildOrderCreatePayload records verified invite orders", () => {
+  const payload = buildOrderCreatePayload({
+    eventId: "event-1",
+    event: buildEventDoc(),
+    userId: "runner-1",
+    receiptToken: 123,
+    inviteVerified: true,
+  });
+
+  assert.equal(payload.notes.inviteVerified, "true");
 });
 
 test("buildOrderCreatePayload rejects free events", () => {
@@ -92,6 +112,7 @@ test(
         notes: {
           eventId: "event-1",
           userId: "runner-1",
+          inviteVerified: "true",
         },
       },
       payment: {
@@ -110,6 +131,7 @@ test(
       userId: "runner-1",
       amountInPaise: 25000,
       currency: "INR",
+      inviteVerified: true,
     });
   }
 );

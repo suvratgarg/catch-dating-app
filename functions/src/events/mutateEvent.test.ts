@@ -285,6 +285,7 @@ function event(overrides: FakeData = {}): FakeData {
     constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
     genderCounts: {},
     cohortCounts: {},
+    waitlistedCohortCounts: {},
     ...overrides,
   };
 }
@@ -337,6 +338,11 @@ test("createEventHandler creates a server-owned event for the club host",
       startingPointLng: 72.82,
       locationDetails: null,
       photoUrl: null,
+      eventFormat: {
+        version: 1,
+        activityKind: "socialRun",
+        interactionModel: "pacePods",
+      },
       distanceKm: 5,
       pace: "easy",
       capacityLimit: 20,
@@ -358,6 +364,11 @@ test("createEventHandler creates a server-owned event for the club host",
           inviteRequired: false,
           membershipRequired: false,
           manualApprovalRequired: false,
+          privateAccessPolicy: {
+            mode: "none",
+            inviteCodeHint: null,
+            privateLinkEnabled: false,
+          },
           cohortCapacityLimits: {menInterestedInWomen: 10},
           balancedRatioPolicy: null,
         },
@@ -371,6 +382,7 @@ test("createEventHandler creates a server-owned event for the club host",
       },
       genderCounts: {},
       cohortCounts: {},
+      waitlistedCohortCounts: {},
     });
   }
 );
@@ -387,6 +399,11 @@ test("createEventHandler accepts client event-policy snapshots", async () => {
       inviteRequired: false,
       membershipRequired: false,
       manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
+      },
       cohortCapacityLimits: {},
       balancedRatioPolicy: {
         leftCohortId: "menInterestedInWomen",
@@ -420,6 +437,57 @@ test("createEventHandler accepts client event-policy snapshots", async () => {
   assert.equal(h.firestore.get("events/event-1")?.priceInPaise, 40000);
   assert.equal(h.firestore.get("events/event-1")?.capacityLimit, 20);
 });
+
+test("createEventHandler stores invite codes in host-private access docs",
+  async () => {
+    const h = harness({"clubs/club-1": club()});
+    const eventPolicy = {
+      version: 1,
+      admission: {
+        format: "inviteOnly",
+        capacityLimit: 12,
+        waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+        inviteRequired: true,
+        membershipRequired: false,
+        manualApprovalRequired: false,
+        privateAccessPolicy: {
+          mode: "inviteCode",
+          inviteCodeHint: "CA...HI",
+          privateLinkEnabled: true,
+        },
+        cohortCapacityLimits: {},
+        balancedRatioPolicy: null,
+      },
+      pricing: {
+        basePriceInPaise: 0,
+        cohortAdjustmentsInPaise: {},
+        demandPricingRules: [],
+      },
+      cancellation: {policyId: "standard"},
+      settlement: {hostPayoutTiming: "afterEventCompletion"},
+    };
+
+    const result = await createEventHandler(
+      request("host-1", payload({
+        capacityLimit: 12,
+        constraints: {minAge: 0, maxAge: 99, maxMen: null, maxWomen: null},
+        eventPolicy,
+        privateAccess: {inviteCode: " CATCH-DELHI "},
+      })),
+      h.deps
+    );
+
+    const createdEvent = h.firestore.get("events/event-1");
+    const privateAccess = h.firestore.get("eventPrivateAccess/event-1");
+    assert.deepEqual(result, {eventId: "event-1"});
+    assert.deepEqual(createdEvent?.eventPolicy, eventPolicy);
+    assert.equal(JSON.stringify(createdEvent).includes("CATCH-DELHI"), false);
+    assert.equal(privateAccess?.eventId, "event-1");
+    assert.equal(privateAccess?.clubId, "club-1");
+    assert.equal(privateAccess?.inviteCode, "CATCH-DELHI");
+    assert.notEqual(privateAccess?.createdAt, undefined);
+  }
+);
 
 test("createEventHandler accepts an uploaded event photo URL", async () => {
   const h = harness({"clubs/club-1": club()});

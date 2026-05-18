@@ -1,17 +1,28 @@
 final class EventBookingCallableRequest {
-  const EventBookingCallableRequest({required this.eventId});
+  const EventBookingCallableRequest({required this.eventId, this.inviteCode});
 
   final String eventId;
+  final String? inviteCode;
 
-  Map<String, Object?> toJson() => {'eventId': eventId};
+  Map<String, Object?> toJson() => {
+    'eventId': eventId,
+    'inviteCode': ?inviteCode?.trim(),
+  };
 }
 
 final class CreateRazorpayOrderCallableRequest {
-  const CreateRazorpayOrderCallableRequest({required this.eventId});
+  const CreateRazorpayOrderCallableRequest({
+    required this.eventId,
+    this.inviteCode,
+  });
 
   final String eventId;
+  final String? inviteCode;
 
-  Map<String, Object?> toJson() => {'eventId': eventId};
+  Map<String, Object?> toJson() => {
+    'eventId': eventId,
+    'inviteCode': ?inviteCode?.trim(),
+  };
 }
 
 final class RazorpayOrderCallableResponse {

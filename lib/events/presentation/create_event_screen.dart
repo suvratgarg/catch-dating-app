@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:catch_dating_app/core/device_location.dart';
@@ -87,6 +88,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _capacityController = TextEditingController();
   final _priceController = TextEditingController();
   final _descriptionController = TextEditingController();
+  ActivityKind _selectedActivityKind = ActivityKind.socialRun;
   PaceLevel? _selectedPace;
   PickedEventPhoto? _eventPhoto;
 
@@ -95,8 +97,12 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _maxAgeController = TextEditingController();
   final _maxMenController = TextEditingController();
   final _maxWomenController = TextEditingController();
+  final _inviteCodeController = TextEditingController();
+  final _dynamicPricingStepController = TextEditingController();
+  final _dynamicPricingMaxController = TextEditingController();
   EventAdmissionPreset _selectedAdmissionPreset =
       EventAdmissionPreset.openCapacity;
+  bool _dynamicPricingEnabled = false;
   EventCancellationPolicyId _selectedCancellationPolicyId =
       EventCancellationPolicyId.standard;
 
@@ -137,12 +143,34 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
         basePriceInPaise: basePriceInPaise,
         cancellationPolicy: cancellationPolicy,
       ),
+      EventAdmissionPreset.inviteOnly => EventPolicyBundle.inviteOnlyEvent(
+        capacityLimit: capacityLimit,
+        basePriceInPaise: basePriceInPaise,
+        inviteCodeHint: _inviteCodeHint,
+        cancellationPolicy: cancellationPolicy,
+      ),
       EventAdmissionPreset.balancedSingles =>
-        EventPolicyBundle.balancedSinglesEvent(
-          capacityLimit: capacityLimit,
-          basePriceInPaise: basePriceInPaise,
-          cancellationPolicy: cancellationPolicy,
-        ),
+        _dynamicPricingEnabled
+            ? EventPolicyBundle.demandPricedBalancedSinglesEvent(
+                capacityLimit: capacityLimit,
+                basePriceInPaise: basePriceInPaise,
+                stepAdjustmentInPaise:
+                    _rupeeControllerValueInPaise(
+                      _dynamicPricingStepController,
+                    ) ??
+                    0,
+                maxAdjustmentInPaise:
+                    _rupeeControllerValueInPaise(
+                      _dynamicPricingMaxController,
+                    ) ??
+                    0,
+                cancellationPolicy: cancellationPolicy,
+              )
+            : EventPolicyBundle.balancedSinglesEvent(
+                capacityLimit: capacityLimit,
+                basePriceInPaise: basePriceInPaise,
+                cancellationPolicy: cancellationPolicy,
+              ),
       EventAdmissionPreset.fixedCohortCaps =>
         EventPolicyBundle.fixedCohortCapsEvent(
           capacityLimit: capacityLimit,
@@ -207,6 +235,9 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     _maxAgeController.dispose();
     _maxMenController.dispose();
     _maxWomenController.dispose();
+    _inviteCodeController.dispose();
+    _dynamicPricingStepController.dispose();
+    _dynamicPricingMaxController.dispose();
     super.dispose();
   }
 
@@ -360,11 +391,15 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
             startingPointLat: _startingPoint?.latitude,
             startingPointLng: _startingPoint?.longitude,
             locationDetails: _trimmedTextOrNull(_locationDetailsController),
-            distanceKm: double.parse(_distanceController.text.trim()),
-            pace: _selectedPace!,
+            eventFormat: EventFormatSnapshot.fromActivityKind(
+              _selectedActivityKind,
+            ),
+            distanceKm: _distanceKmForSelectedActivity(),
+            pace: _selectedPace ?? PaceLevel.easy,
             description: _descriptionController.text.trim(),
             constraints: _constraints,
             eventPolicy: _eventPolicy,
+            inviteCode: _trimmedTextOrNull(_inviteCodeController),
             photoImage: _eventPhoto?.image,
           );
       if (mounted) {
@@ -399,6 +434,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     capacity: _trimmedTextOrNull(_capacityController),
     price: _trimmedTextOrNull(_priceController),
     description: _trimmedTextOrNull(_descriptionController),
+    activityKind: _selectedActivityKind.name,
     paceName: _selectedPace?.name,
     meetingPoint: _trimmedTextOrNull(_meetingPointController),
     locationDetails: _trimmedTextOrNull(_locationDetailsController),
@@ -413,6 +449,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     maxMen: _trimmedTextOrNull(_maxMenController),
     maxWomen: _trimmedTextOrNull(_maxWomenController),
     admissionPreset: _selectedAdmissionPreset.name,
+    inviteCode: _trimmedTextOrNull(_inviteCodeController),
+    dynamicPricingEnabled: _dynamicPricingEnabled,
+    dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
+    dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
     cancellationPolicy: _selectedCancellationPolicyId.name,
   );
 
@@ -421,6 +461,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     capacity: null,
     price: null,
     description: null,
+    activityKind: 'socialRun',
     paceName: null,
     meetingPoint: null,
     locationDetails: null,
@@ -435,6 +476,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     maxMen: null,
     maxWomen: null,
     admissionPreset: 'openCapacity',
+    inviteCode: null,
+    dynamicPricingEnabled: false,
+    dynamicPricingStep: null,
+    dynamicPricingMax: null,
     cancellationPolicy: 'standard',
   );
 
@@ -473,6 +518,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       if (draft.description != null) {
         _descriptionController.text = draft.description!;
       }
+      _selectedActivityKind = _activityKindFromName(draft.activityKind);
       if (draft.paceName != null) {
         try {
           _selectedPace = PaceLevel.values.byName(draft.paceName!);
@@ -530,6 +576,16 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       _selectedAdmissionPreset = _admissionPresetFromName(
         draft.admissionPreset,
       );
+      if (draft.inviteCode != null) {
+        _inviteCodeController.text = draft.inviteCode!;
+      }
+      _dynamicPricingEnabled = draft.dynamicPricingEnabled;
+      if (draft.dynamicPricingStep != null) {
+        _dynamicPricingStepController.text = draft.dynamicPricingStep!;
+      }
+      if (draft.dynamicPricingMax != null) {
+        _dynamicPricingMaxController.text = draft.dynamicPricingMax!;
+      }
       _selectedCancellationPolicyId = _cancellationPolicyFromName(
         draft.cancellationPolicy,
       );
@@ -555,6 +611,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       capacity: _trimmedTextOrNull(_capacityController),
       price: _trimmedTextOrNull(_priceController),
       description: _trimmedTextOrNull(_descriptionController),
+      activityKind: _selectedActivityKind.name,
       paceName: _selectedPace?.name,
       meetingPoint: _trimmedTextOrNull(_meetingPointController),
       locationDetails: _trimmedTextOrNull(_locationDetailsController),
@@ -569,6 +626,10 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
       maxMen: _trimmedTextOrNull(_maxMenController),
       maxWomen: _trimmedTextOrNull(_maxWomenController),
       admissionPreset: _selectedAdmissionPreset.name,
+      inviteCode: _trimmedTextOrNull(_inviteCodeController),
+      dynamicPricingEnabled: _dynamicPricingEnabled,
+      dynamicPricingStep: _trimmedTextOrNull(_dynamicPricingStepController),
+      dynamicPricingMax: _trimmedTextOrNull(_dynamicPricingMaxController),
       cancellationPolicy: _selectedCancellationPolicyId.name,
     );
 
@@ -619,7 +680,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
   static String _stepTitle(int step) => switch (step) {
     0 => 'Event basics',
-    1 => 'Route & meet point',
+    1 => 'Venue & meet point',
     2 => 'When is the event?',
     3 => 'Event policy',
     _ => throw RangeError.range(step, 0, _totalSteps - 1, 'step'),
@@ -645,6 +706,31 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
     );
   }
 
+  String? get _inviteCodeHint {
+    final code = _inviteCodeController.text.trim();
+    if (code.length <= 4) return code.isEmpty ? null : code;
+    return '${code.substring(0, 2)}...${code.substring(code.length - 2)}';
+  }
+
+  static int? _rupeeControllerValueInPaise(TextEditingController controller) {
+    final amount = double.tryParse(controller.text.trim());
+    if (amount == null) return null;
+    return (amount * 100).round();
+  }
+
+  double _distanceKmForSelectedActivity() {
+    if (!_selectedActivityKind.isDistanceBased) return 0;
+    return double.parse(_distanceController.text.trim());
+  }
+
+  static ActivityKind _activityKindFromName(String? name) {
+    if (name == null) return ActivityKind.socialRun;
+    return ActivityKind.values.firstWhere(
+      (activityKind) => activityKind.name == name,
+      orElse: () => ActivityKind.socialRun,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final t = CatchTokens.of(context);
@@ -661,6 +747,7 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
           : CreateEventSuccessScreen(
               club: widget.club,
               event: createdEvent,
+              inviteCode: _trimmedTextOrNull(_inviteCodeController),
               onManageEvent: () => setState(() => _showHostManage = true),
               onDone: () => Navigator.of(context).pop(),
             );
@@ -690,6 +777,13 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     onPickPhoto: _pickEventPhoto,
                     distanceController: _distanceController,
                     descriptionController: _descriptionController,
+                    selectedActivityKind: _selectedActivityKind,
+                    onActivityKindChanged: (activityKind) => setState(() {
+                      _selectedActivityKind = activityKind;
+                      if (!activityKind.isDistanceBased) {
+                        _selectedPace = null;
+                      }
+                    }),
                     selectedPace: _selectedPace,
                     onPaceChanged: (p) => setState(() => _selectedPace = p),
                   ),
@@ -716,13 +810,23 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
                     formKey: _eventPolicyFormKey,
                     capacityController: _capacityController,
                     priceController: _priceController,
+                    inviteCodeController: _inviteCodeController,
+                    dynamicPricingStepController: _dynamicPricingStepController,
+                    dynamicPricingMaxController: _dynamicPricingMaxController,
                     minAgeController: _minAgeController,
                     maxAgeController: _maxAgeController,
                     maxMenController: _maxMenController,
                     maxWomenController: _maxWomenController,
                     admissionPreset: _selectedAdmissionPreset,
-                    onAdmissionPresetChanged: (preset) =>
-                        setState(() => _selectedAdmissionPreset = preset),
+                    onAdmissionPresetChanged: (preset) => setState(() {
+                      _selectedAdmissionPreset = preset;
+                      if (preset != EventAdmissionPreset.balancedSingles) {
+                        _dynamicPricingEnabled = false;
+                      }
+                    }),
+                    dynamicPricingEnabled: _dynamicPricingEnabled,
+                    onDynamicPricingChanged: (enabled) =>
+                        setState(() => _dynamicPricingEnabled = enabled),
                     cancellationPolicyId: _selectedCancellationPolicyId,
                     onCancellationPolicyChanged: (policyId) => setState(
                       () => _selectedCancellationPolicyId = policyId,

@@ -25,6 +25,7 @@
     "startingPointLat",
     "startingPointLng",
     "locationDetails",
+    "eventFormat",
     "distanceKm",
     "pace",
     "capacityLimit",
@@ -37,7 +38,9 @@
     "cancelledAt",
     "cancellationReason",
     "constraints",
-    "genderCounts"
+    "genderCounts",
+    "cohortCounts",
+    "waitlistedCohortCounts"
   ],
   "properties": {
     "clubId": {
@@ -69,8 +72,11 @@
     },
     "distanceKm": {
       "type": "number",
-      "exclusiveMinimum": 0,
+      "minimum": 0,
       "maximum": 100
+    },
+    "eventFormat": {
+      "$ref": "../shared/event_common.schema.json#/definitions/eventFormatSnapshot"
     },
     "pace": {
       "$ref": "../shared/event_common.schema.json#/definitions/paceLevel"
@@ -121,6 +127,12 @@
       }
     },
     "cohortCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"
+      }
+    },
+    "waitlistedCohortCounts": {
       "type": "object",
       "additionalProperties": {
         "$ref": "../shared/event_common.schema.json#/definitions/nonNegativeInteger"

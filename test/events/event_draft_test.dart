@@ -13,6 +13,7 @@ void main() {
           capacity: '20',
           price: '100',
           description: 'Easy morning event',
+          activityKind: 'pickleball',
           paceName: 'easy',
           meetingPoint: 'Bandra Fort',
           locationDetails: 'Near the gate',
@@ -38,6 +39,7 @@ void main() {
         expect(restored.capacity, '20');
         expect(restored.price, '100');
         expect(restored.description, 'Easy morning event');
+        expect(restored.activityKind, 'pickleball');
         expect(restored.paceName, 'easy');
         expect(restored.meetingPoint, 'Bandra Fort');
         expect(restored.locationDetails, 'Near the gate');
@@ -72,6 +74,7 @@ void main() {
         expect(restored.capacity, isNull);
         expect(restored.price, isNull);
         expect(restored.description, isNull);
+        expect(restored.activityKind, isNull);
         expect(restored.paceName, isNull);
         expect(restored.meetingPoint, isNull);
         expect(restored.locationDetails, isNull);
@@ -117,6 +120,26 @@ void main() {
           clubId: 'club-1',
           savedAt: DateTime.now(),
           distance: '5',
+        );
+        expect(draft.isEmpty, isFalse);
+      });
+
+      test('treats the default social run activity as empty', () {
+        final draft = EventDraft(
+          id: 'draft-1',
+          clubId: 'club-1',
+          savedAt: DateTime.now(),
+          activityKind: 'socialRun',
+        );
+        expect(draft.isEmpty, isTrue);
+      });
+
+      test('returns false when a non-default activity is selected', () {
+        final draft = EventDraft(
+          id: 'draft-1',
+          clubId: 'club-1',
+          savedAt: DateTime.now(),
+          activityKind: 'dinner',
         );
         expect(draft.isEmpty, isFalse);
       });
@@ -225,6 +248,16 @@ void main() {
           meetingPoint: 'Gateway of India',
         );
         expect(draft.summary, 'Gateway of India');
+      });
+
+      test('includes non-default activity type', () {
+        final draft = EventDraft(
+          id: 'draft-1',
+          clubId: 'club-1',
+          savedAt: DateTime.now(),
+          activityKind: 'dinner',
+        );
+        expect(draft.summary, 'Dinner');
       });
     });
 

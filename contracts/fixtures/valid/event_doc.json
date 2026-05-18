@@ -12,6 +12,12 @@
   "startingPointLat": 22.7196,
   "startingPointLng": 75.8577,
   "locationDetails": "Meet near the main gate.",
+  "eventFormat": {
+    "version": 1,
+    "activityKind": "socialRun",
+    "interactionModel": "pacePods",
+    "defaultPlaybookId": "social_run_light"
+  },
   "distanceKm": 5,
   "pace": "easy",
   "capacityLimit": 12,
@@ -32,5 +38,10 @@
   "genderCounts": {
     "man": 2,
     "woman": 2
-  }
+  },
+  "cohortCounts": {
+    "menInterestedInWomen": 2,
+    "womenInterestedInMen": 2
+  },
+  "waitlistedCohortCounts": {}
 }

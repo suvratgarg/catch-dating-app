@@ -29,6 +29,7 @@ class EventDetailCta extends ConsumerWidget {
     required this.clubId,
     required this.isHost,
     required this.participation,
+    this.inviteCode,
     this.now,
   });
 
@@ -37,6 +38,7 @@ class EventDetailCta extends ConsumerWidget {
   final String clubId;
   final bool isHost;
   final EventParticipation? participation;
+  final String? inviteCode;
   final DateTime? now;
 
   @override
@@ -68,6 +70,7 @@ class EventDetailCta extends ConsumerWidget {
       userProfile: userProfile,
       participation: participation,
       now: referenceNow,
+      hasInviteCode: _hasInviteCode(inviteCode),
     );
     final status = _statusForEligibility(eligibility);
     final supportsPaid = ref
@@ -121,7 +124,11 @@ class EventDetailCta extends ConsumerWidget {
                     EventBookingController.bookMutation.run(ref, (tx) async {
                       final data = await tx
                           .get(eventBookingControllerProvider.notifier)
-                          .book(event: event, user: userProfile);
+                          .book(
+                            event: event,
+                            user: userProfile,
+                            inviteCode: inviteCode,
+                          );
                       if (data != null) {
                         if (router == null) return;
                         unawaited(
@@ -191,7 +198,7 @@ class EventDetailCta extends ConsumerWidget {
                     ref,
                     (tx) async => tx
                         .get(eventBookingControllerProvider.notifier)
-                        .joinWaitlist(event: event),
+                        .joinWaitlist(event: event, inviteCode: inviteCode),
                   ),
             isLoading: joinWMutation.isPending,
           ),
@@ -220,6 +227,7 @@ class EventDetailCta extends ConsumerWidget {
             label: switch (eligibility) {
               AgeTooYoung(:final minAge) => 'Must be $minAge+ to join',
               AgeTooOld(:final maxAge) => 'Must be $maxAge or younger',
+              EventInviteRequired() => 'Invite required',
               GenderCapacityReached() => 'Spots for your gender are full',
               _ => 'Not eligible for this event',
             },
@@ -249,6 +257,7 @@ EventEligibility _eligibilityForParticipation({
   required UserProfile userProfile,
   required EventParticipation? participation,
   required DateTime now,
+  required bool hasInviteCode,
 }) {
   return switch (participation?.status) {
     EventParticipationStatus.attended =>
@@ -257,9 +266,16 @@ EventEligibility _eligibilityForParticipation({
     EventParticipationStatus.waitlisted => const OnWaitlist(),
     EventParticipationStatus.cancelled ||
     EventParticipationStatus.deleted ||
-    null => event.eligibilityFor(userProfile, now: now),
+    null => event.eligibilityFor(
+      userProfile,
+      now: now,
+      hasValidInvite: hasInviteCode,
+    ),
   };
 }
+
+bool _hasInviteCode(String? inviteCode) =>
+    inviteCode != null && inviteCode.trim().isNotEmpty;
 
 bool _hasEventStarted(Event event, DateTime now) =>
     !event.startTime.isAfter(now);

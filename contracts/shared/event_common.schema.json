@@ -83,6 +83,73 @@
       "type": "string",
       "enum": ["easy", "moderate", "fast", "competitive"]
     },
+    "activityKind": {
+      "type": "string",
+      "enum": [
+        "socialRun",
+        "running",
+        "walking",
+        "pickleball",
+        "padel",
+        "tennis",
+        "badminton",
+        "cycling",
+        "spinClass",
+        "yoga",
+        "strengthTraining",
+        "pubQuiz",
+        "barCrawl",
+        "dinner",
+        "singlesMixer",
+        "openActivity"
+      ]
+    },
+    "eventInteractionModel": {
+      "type": "string",
+      "enum": [
+        "pacePods",
+        "pairedRotations",
+        "teamRotations",
+        "seatedTable",
+        "freeFormMixer",
+        "hostLedProgram",
+        "openFormat"
+      ]
+    },
+    "eventFormatSnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "activityKind", "interactionModel"],
+      "properties": {
+        "version": {"type": "integer", "const": 1},
+        "activityKind": {
+          "$ref": "#/definitions/activityKind"
+        },
+        "interactionModel": {
+          "$ref": "#/definitions/eventInteractionModel"
+        },
+        "customActivityLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "defaultPlaybookId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "defaultModuleIds": {
+          "type": "array",
+          "items": {"type": "string", "minLength": 1, "maxLength": 120},
+          "maxItems": 30,
+          "uniqueItems": true
+        },
+        "activityDetails": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
     "clubLifecycleStatus": {
       "type": "string",
       "enum": ["active", "archived"]
@@ -154,6 +221,7 @@
             "inviteRequired",
             "membershipRequired",
             "manualApprovalRequired",
+            "privateAccessPolicy",
             "cohortCapacityLimits",
             "balancedRatioPolicy"
           ],
@@ -190,6 +258,22 @@
             "inviteRequired": {"type": "boolean"},
             "membershipRequired": {"type": "boolean"},
             "manualApprovalRequired": {"type": "boolean"},
+            "privateAccessPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["mode", "inviteCodeHint", "privateLinkEnabled"],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": ["none", "inviteCode"]
+                },
+                "inviteCodeHint": {
+                  "type": ["string", "null"],
+                  "maxLength": 64
+                },
+                "privateLinkEnabled": {"type": "boolean"}
+              }
+            },
             "cohortCapacityLimits": {
               "type": "object",
               "additionalProperties": {"type": "integer", "minimum": 0}

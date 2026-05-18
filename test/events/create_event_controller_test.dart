@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -59,6 +60,7 @@ void main() {
               startingPointLat: 19.076,
               startingPointLng: 72.8777,
               locationDetails: '   ',
+              eventFormat: const EventFormatSnapshot.socialRun(),
               distanceKm: 7.5,
               pace: PaceLevel.moderate,
               description: '  Steady social event  ',
@@ -109,8 +111,83 @@ void main() {
             maxWomen: 9,
           ),
         );
+        expect(createdEvent.eventFormat, const EventFormatSnapshot.socialRun());
       },
     );
+
+    test('allows zero distance for non-distance event formats', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(createEventControllerProvider.notifier)
+          .submit(
+            clubId: 'club-1',
+            startTime: DateTime(2025, 3, 1, 18),
+            endTime: DateTime(2025, 3, 1, 20),
+            meetingPoint: 'Dinner table',
+            startingPointLat: 19.076,
+            startingPointLng: 72.8777,
+            eventFormat: EventFormatSnapshot.fromActivityKind(
+              ActivityKind.dinner,
+            ),
+            distanceKm: 0,
+            pace: PaceLevel.easy,
+            description: 'Dinner',
+            constraints: const EventConstraints(),
+            eventPolicy: _eventPolicy(),
+          );
+
+      expect(fakeEventRepository.createdEvent!.distanceKm, 0);
+      expect(
+        fakeEventRepository.createdEvent!.eventFormat.activityKind,
+        ActivityKind.dinner,
+      );
+    });
+
+    test('passes invite codes for invite-only events', () async {
+      final fakeEventRepository = FakeEventRepository();
+      final container = ProviderContainer(
+        overrides: [
+          eventRepositoryProvider.overrideWith((ref) => fakeEventRepository),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container
+          .read(createEventControllerProvider.notifier)
+          .submit(
+            clubId: 'club-1',
+            startTime: DateTime(2025, 3, 1, 18),
+            endTime: DateTime(2025, 3, 1, 20),
+            meetingPoint: 'Private route',
+            startingPointLat: 19.076,
+            startingPointLng: 72.8777,
+            eventFormat: const EventFormatSnapshot.socialRun(),
+            distanceKm: 5,
+            pace: PaceLevel.easy,
+            description: 'Invite-only evening event',
+            constraints: const EventConstraints(),
+            eventPolicy: EventPolicyBundle.inviteOnlyEvent(
+              capacityLimit: 12,
+              basePriceInPaise: 0,
+              inviteCodeHint: 'CA...HI',
+            ),
+            inviteCode: ' CATCH-DELHI ',
+          );
+
+      expect(fakeEventRepository.createdEvent, isNotNull);
+      expect(
+        fakeEventRepository.createdEvent!.eventPolicy!.usesInviteOnly,
+        isTrue,
+      );
+      expect(fakeEventRepository.createdEventInviteCode, 'CATCH-DELHI');
+    });
 
     test(
       'rejects invalid create-event inputs before touching the repository',
@@ -133,6 +210,7 @@ void main() {
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingPoint: 'Marine Drive',
+            eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
@@ -148,6 +226,7 @@ void main() {
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingPoint: 'Marine Drive',
+            eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
@@ -163,6 +242,7 @@ void main() {
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 6),
             meetingPoint: 'Marine Drive',
+            eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
@@ -178,6 +258,7 @@ void main() {
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingPoint: '   ',
+            eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
@@ -193,6 +274,7 @@ void main() {
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingPoint: 'Marine Drive',
+            eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 0,
             pace: PaceLevel.easy,
             description: 'Event',
@@ -208,6 +290,7 @@ void main() {
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingPoint: 'Marine Drive',
+            eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
@@ -223,6 +306,7 @@ void main() {
             startTime: DateTime(2025, 3, 1, 6),
             endTime: DateTime(2025, 3, 1, 7),
             meetingPoint: 'Marine Drive',
+            eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
@@ -240,11 +324,34 @@ void main() {
             meetingPoint: 'Marine Drive',
             startingPointLat: 19.076,
             startingPointLng: 181,
+            eventFormat: const EventFormatSnapshot.socialRun(),
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
+          ),
+          throwsArgumentError,
+        );
+
+        await expectLater(
+          () => controller.submit(
+            clubId: 'club-1',
+            startTime: DateTime(2025, 3, 1, 6),
+            endTime: DateTime(2025, 3, 1, 7),
+            meetingPoint: 'Marine Drive',
+            startingPointLat: 19.076,
+            startingPointLng: 72.8777,
+            eventFormat: const EventFormatSnapshot.socialRun(),
+            distanceKm: 5,
+            pace: PaceLevel.easy,
+            description: 'Event',
+            constraints: const EventConstraints(),
+            eventPolicy: EventPolicyBundle.inviteOnlyEvent(
+              capacityLimit: 10,
+              basePriceInPaise: 0,
+            ),
+            inviteCode: 'abc',
           ),
           throwsArgumentError,
         );

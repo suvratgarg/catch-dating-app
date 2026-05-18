@@ -77,7 +77,7 @@ class EventMapTile extends StatelessWidget {
             ),
             gapH4,
             Text(
-              '${data.distanceLabel} · ${data.paceLabel} · ${data.priceLabel}',
+              '${data.activitySummaryLabel} · ${data.priceLabel}',
               style: CatchTextStyles.bodyS(context, color: t.ink2),
               maxLines: 1,
               overflow: TextOverflow.ellipsis,

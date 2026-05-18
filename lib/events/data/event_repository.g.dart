@@ -120,6 +120,85 @@ final class WatchEventFamily extends $Family
   String toString() => r'watchEventProvider';
 }
 
+@ProviderFor(watchEventPrivateAccess)
+final watchEventPrivateAccessProvider = WatchEventPrivateAccessFamily._();
+
+final class WatchEventPrivateAccessProvider
+    extends
+        $FunctionalProvider<
+          AsyncValue<EventPrivateAccess?>,
+          EventPrivateAccess?,
+          Stream<EventPrivateAccess?>
+        >
+    with
+        $FutureModifier<EventPrivateAccess?>,
+        $StreamProvider<EventPrivateAccess?> {
+  WatchEventPrivateAccessProvider._({
+    required WatchEventPrivateAccessFamily super.from,
+    required String super.argument,
+  }) : super(
+         retry: null,
+         name: r'watchEventPrivateAccessProvider',
+         isAutoDispose: true,
+         dependencies: null,
+         $allTransitiveDependencies: null,
+       );
+
+  @override
+  String debugGetCreateSourceHash() => _$watchEventPrivateAccessHash();
+
+  @override
+  String toString() {
+    return r'watchEventPrivateAccessProvider'
+        ''
+        '($argument)';
+  }
+
+  @$internal
+  @override
+  $StreamProviderElement<EventPrivateAccess?> $createElement(
+    $ProviderPointer pointer,
+  ) => $StreamProviderElement(pointer);
+
+  @override
+  Stream<EventPrivateAccess?> create(Ref ref) {
+    final argument = this.argument as String;
+    return watchEventPrivateAccess(ref, argument);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is WatchEventPrivateAccessProvider &&
+        other.argument == argument;
+  }
+
+  @override
+  int get hashCode {
+    return argument.hashCode;
+  }
+}
+
+String _$watchEventPrivateAccessHash() =>
+    r'216ea1d97d689c68aa6ed2f60e745e5153371190';
+
+final class WatchEventPrivateAccessFamily extends $Family
+    with $FunctionalFamilyOverride<Stream<EventPrivateAccess?>, String> {
+  WatchEventPrivateAccessFamily._()
+    : super(
+        retry: null,
+        name: r'watchEventPrivateAccessProvider',
+        dependencies: null,
+        $allTransitiveDependencies: null,
+        isAutoDispose: true,
+      );
+
+  WatchEventPrivateAccessProvider call(String eventId) =>
+      WatchEventPrivateAccessProvider._(argument: eventId, from: this);
+
+  @override
+  String toString() => r'watchEventPrivateAccessProvider';
+}
+
 @ProviderFor(watchEventsForClub)
 final watchEventsForClubProvider = WatchEventsForClubFamily._();
 

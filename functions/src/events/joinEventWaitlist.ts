@@ -22,7 +22,13 @@ import {
   releaseUserEventScheduleInTransaction,
 } from "./scheduleConflicts";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
-import {cohortIdForUser} from "./eventPolicy";
+import {
+  cohortIdForUser,
+  eventPolicyFromEvent,
+  incrementCount,
+  decrementCount,
+  normalizeInviteCode,
+} from "./eventPolicy";
 
 /**
  * Adds a user to an event waitlist after applying the same block boundary as
@@ -32,7 +38,7 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
   request
 ) => {
   const userId = requireAuth(request);
-  const {eventId} = validateCallableWithAjv<EventIdCallablePayload>(
+  const {eventId, inviteCode} = validateCallableWithAjv<EventIdCallablePayload>(
     request,
     validateEventIdCallablePayload,
     normalizeEventIdPayload
@@ -47,7 +53,13 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
     .doc(eventParticipationId(eventId, userId));
 
   await db.runTransaction(async (tx) => {
-    const [eventSnap, userSnap, participationSnap, activeParticipations] =
+    const [
+      eventSnap,
+      userSnap,
+      participationSnap,
+      activeParticipations,
+      privateAccessSnap,
+    ] =
       await Promise.all([
         tx.get(eventRef),
         tx.get(db.collection("users").doc(userId)),
@@ -56,6 +68,7 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
           "signedUp",
           "attended",
         ]),
+        tx.get(db.collection("eventPrivateAccess").doc(eventId)),
       ]);
     if (!eventSnap.exists) {
       throw new HttpsError("not-found", "Event not found.");
@@ -96,6 +109,23 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
       participantUids(activeParticipations)
     );
 
+    const policy = eventPolicyFromEvent(event);
+    const submittedInviteCode = normalizeInviteCode(inviteCode);
+    const storedInviteCode = normalizeInviteCode(
+      privateAccessSnap.data()?.inviteCode
+    );
+    const hasValidInvite =
+      storedInviteCode !== null &&
+      submittedInviteCode !== null &&
+      storedInviteCode.toLowerCase() === submittedInviteCode.toLowerCase();
+    if (policy.admission.inviteRequired && !hasValidInvite) {
+      throw new HttpsError(
+        "failed-precondition",
+        "Enter a valid invite code to join the waitlist."
+      );
+    }
+
+    const cohortAtSignup = cohortIdForUser(user);
     await claimUserEventScheduleInTransaction(tx, db, {
       uid: userId,
       eventId,
@@ -106,6 +136,10 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
 
     tx.update(eventRef, {
       waitlistedCount: admin.firestore.FieldValue.increment(1),
+      waitlistedCohortCounts: incrementCount(
+        event.waitlistedCohortCounts ?? {},
+        cohortAtSignup
+      ),
     });
     tx.set(participationRef, eventParticipationPatch({
       exists: participationSnap.exists,
@@ -114,7 +148,7 @@ export const joinEventWaitlist = onCall(appCheckCallableOptions, async (
       uid: userId,
       status: "waitlisted",
       genderAtSignup: user.gender,
-      cohortAtSignup: cohortIdForUser(user),
+      cohortAtSignup,
     }), {merge: true});
   });
 
@@ -162,10 +196,21 @@ export const leaveEventWaitlist = onCall(appCheckCallableOptions, async (
       return;
     }
 
+    const cohortAtSignup =
+      (existingParticipation as {cohortAtSignup?: string} | null)
+        ?.cohortAtSignup;
     const currentWaitlistedCount =
       event.waitlistedCount ?? 1;
     tx.update(eventRef, {
       waitlistedCount: Math.max(0, currentWaitlistedCount - 1),
+      ...(cohortAtSignup ?
+        {
+          waitlistedCohortCounts: decrementCount(
+            event.waitlistedCohortCounts ?? {},
+            cohortAtSignup
+          ),
+        } :
+        {}),
     });
     releaseUserEventScheduleInTransaction(tx, db, {
       uid: userId,

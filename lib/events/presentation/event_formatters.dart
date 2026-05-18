@@ -57,8 +57,14 @@ extension EventFormattingX on Event {
   String get timeRangeLabel => EventFormatters.timeRange(startTime, endTime);
   String get compactTimeRangeLabel =>
       EventFormatters.timeRange(startTime, endTime, separator: '–');
-  String get distanceLabel => EventFormatters.distanceKm(distanceKm);
-  String get distanceValueLabel =>
-      EventFormatters.distanceKm(distanceKm, includeUnit: false);
+  String get distanceLabel => eventFormat.isDistanceBased
+      ? EventFormatters.distanceKm(distanceKm)
+      : eventFormat.label;
+  String get distanceValueLabel => eventFormat.isDistanceBased
+      ? EventFormatters.distanceKm(distanceKm, includeUnit: false)
+      : eventFormat.label;
+  String get activitySummaryLabel => eventFormat.isDistanceBased
+      ? '${EventFormatters.distanceKm(distanceKm)} · ${pace.label}'
+      : eventFormat.label;
   String get spotsLabel => '$signedUpCount/$capacityLimit';
 }
