@@ -14,6 +14,10 @@ import {
   eventParticipationPatch,
 } from "../shared/relationshipDocuments";
 import {normalizeMarkEventAttendancePayload} from "./eventPayloadNormalization";
+import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
+import {
+  recordParticipantSignalFactsBestEffort,
+} from "../marketplace/participantSignals";
 
 /**
  * Callable function that toggles a single user's attendance for an event.
@@ -109,6 +113,16 @@ export const markEventAttendance = onCall(appCheckCallableOptions, async (
     status: alreadyAttended ? "signedUp" : "attended",
   }), {merge: true});
   await batch.commit();
+
+  await recordParticipantSignalFactsBestEffort(db, [
+    buildAttendanceSignalFact({
+      eventId,
+      clubId: event.clubId,
+      uid: userId,
+      attended: !alreadyAttended,
+      sourceId: `host_attendance_${eventId}_${userId}_${!alreadyAttended}`,
+    }),
+  ]);
 
   return {userId, attended: !alreadyAttended};
 });

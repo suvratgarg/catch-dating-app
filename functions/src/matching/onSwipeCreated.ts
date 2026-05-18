@@ -8,6 +8,10 @@ import {
   schemaProfileDecisionTriggerPath,
 } from "../shared/generated/schemaPaths";
 import {hasBlockingRelationship} from "../safety/blocking";
+import {buildSwipeSignalFacts} from "../marketplace/signalBuilders";
+import {
+  recordParticipantSignalFactsBestEffort,
+} from "../marketplace/participantSignals";
 
 interface SwipeCreatedParams {
   swiperId: string;
@@ -24,6 +28,7 @@ interface SwipeCreatedDeps {
   ) => Promise<boolean>;
   arrayUnion: (...elements: string[]) => FirebaseFirestore.FieldValue;
   serverTimestamp: () => FirebaseFirestore.FieldValue;
+  recordSignalFacts?: typeof recordParticipantSignalFactsBestEffort;
 }
 
 const defaultDeps: SwipeCreatedDeps = {
@@ -32,6 +37,7 @@ const defaultDeps: SwipeCreatedDeps = {
   arrayUnion: (...elements) =>
     admin.firestore.FieldValue.arrayUnion(...elements),
   serverTimestamp: () => admin.firestore.FieldValue.serverTimestamp(),
+  recordSignalFacts: recordParticipantSignalFactsBestEffort,
 };
 
 /**
@@ -51,6 +57,21 @@ export async function onSwipeCreatedHandler(
 
   const db = deps.firestore();
 
+  if (await deps.hasBlockingRelationship(db, swiperId, [targetId])) {
+    logger.info("Skipping blocked profile decision metrics", {
+      swiperId,
+      targetId,
+    });
+    return;
+  }
+
+  if (deps.recordSignalFacts) {
+    await deps.recordSignalFacts(
+      db,
+      buildSwipeSignalFacts(swiperId, targetId, swipeData)
+    );
+  }
+
   // Check if the target has already liked the swiper.
   const reverseSwipeDoc = await db
     .collection(schemaProfileDecisionCollectionPath)
@@ -61,11 +82,6 @@ export async function onSwipeCreatedHandler(
 
   const reverseSwipe = reverseSwipeDoc.data() as SwipeDoc | undefined;
   if (!reverseSwipeDoc.exists || reverseSwipe?.direction !== "like") {
-    return;
-  }
-
-  if (await deps.hasBlockingRelationship(db, swiperId, [targetId])) {
-    logger.info("Skipping blocked match", {swiperId, targetId});
     return;
   }
 

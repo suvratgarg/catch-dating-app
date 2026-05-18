@@ -4,7 +4,8 @@ on:
   pull_request:
     paths:
       - "tool/demo_ops*.mjs"
-      - "tool/recompute_run_*counts*.mjs"
+      - "tool/recompute_event_*counts*.mjs"
+      - "tool/recompute_club_*counts*.mjs"
       - "tool/demo_seed/**"
       - "docs/demo_data_seeding.md"
       - ".github/workflows/demo-ops-ci.yml"
@@ -13,7 +14,8 @@ on:
       - main
     paths:
       - "tool/demo_ops*.mjs"
-      - "tool/recompute_run_*counts*.mjs"
+      - "tool/recompute_event_*counts*.mjs"
+      - "tool/recompute_club_*counts*.mjs"
       - "tool/demo_seed/**"
       - "docs/demo_data_seeding.md"
       - ".github/workflows/demo-ops-ci.yml"
@@ -33,4 +35,4 @@ jobs:
       - run: node --check tool/demo_ops_core.mjs
       - run: node --check tool/demo_ops_core.test.mjs
       - run: node --check tool/seed_demo_data.mjs
-      - run: node --test tool/demo_ops_core.test.mjs tool/recompute_run_aggregate_counts.test.mjs tool/recompute_run_club_member_counts.test.mjs
+      - run: node --test tool/demo_ops_core.test.mjs tool/recompute_event_aggregate_counts.test.mjs tool/recompute_club_member_counts.test.mjs

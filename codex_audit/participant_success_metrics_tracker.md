@@ -88,13 +88,17 @@ Event dimensions:
 
 ## Progress
 
-- [ ] Tracker created.
-- [ ] Participant signal writer added.
-- [ ] Event-success scorecard rollup added.
-- [ ] Existing triggers/callables hooked.
-- [ ] Firestore rules boundaries added.
-- [ ] Focused verification run.
+- [x] Tracker created.
+- [x] Participant signal writer added.
+- [x] Event-success scorecard rollup added.
+- [x] Existing triggers/callables hooked.
+- [x] Firestore rules boundaries added.
+- [x] Focused verification run.
 
 ## Verification Log
 
-- Pending.
+- `npm --prefix functions run build` - pass.
+- `npm --prefix functions run lint` - pass.
+- `node --test functions/lib/marketplace/*.test.js functions/lib/matching/*.test.js` - 16 tests pass.
+- `firebase emulators:exec --only firestore 'node --test --test-concurrency=1 functions/test/firestore.rules.test.cjs'` - 64 tests pass.
+- `firebase emulators:exec --only firestore,storage 'npm --prefix functions run test:rules'` - Firestore assertions passed, but the pre-existing Storage rules tests still fail on chat/event photo permissions. Storage rules were not touched in this pass.

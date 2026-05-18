@@ -42,6 +42,9 @@ export {
 export {onSwipeCreated} from "./matching/onSwipeCreated";
 export {onMatchCreated} from "./matching/onMatchCreated";
 export {onMessageCreated} from "./matching/onMessageCreated";
+export {
+  onEventSuccessFeedbackWritten,
+} from "./marketplace/eventSuccessScorecards";
 export {syncClubReviewStats} from "./reviews/syncClubReviewStats";
 export {
   createEventReview,

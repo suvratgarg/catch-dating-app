@@ -44,6 +44,10 @@ import {
   EVENT_SELF_CHECK_IN_WINDOW_BEFORE_MINUTES,
 } from "../shared/businessRules";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
+import {buildAttendanceSignalFact} from "../marketplace/signalBuilders";
+import {
+  recordParticipantSignalFactsBestEffort,
+} from "../marketplace/participantSignals";
 
 // ── Constants ──────────────────────────────────────────────────────────────
 
@@ -216,6 +220,16 @@ export const selfCheckInAttendance = onCall(appCheckCallableOptions, async (
     status: "attended",
   }), {merge: true});
   await batch.commit();
+
+  await recordParticipantSignalFactsBestEffort(db, [
+    buildAttendanceSignalFact({
+      eventId,
+      clubId: event.clubId,
+      uid: userId,
+      attended: true,
+      sourceId: `self_check_in_${eventId}_${userId}`,
+    }),
+  ]);
 
   logger.info(
     `[attendance] Self-check-in: user ${userId} → event ${eventId}`

@@ -205,20 +205,20 @@ test("reset-user-demo-state deletes only demo-owned relationship docs", async ()
 
   const plan = await buildResetUserDemoStatePlan({db, phone: "+910000000001"});
 
-  assert.deepEqual(plan.paths, [
+  assert.deepEqual([...plan.paths].sort(), [
     "demoOpsEvents/op_1",
+    "eventParticipations/demo_run_uid_a",
     "matches/match_1",
     "matches/match_1/messages/demo_message",
     "matches/match_1/messages/dogfood_message",
     "notifications/uid_a/items/demo",
     "notifications/uid_a/items/trigger_owned",
     "payments/demo_payment",
-    "eventParticipations/demo_run_uid_a",
     "savedEvents/demo_saved",
     "savedEvents/from_manifest",
     "swipes/uid_a/outgoing/uid_b",
     "swipes/uid_b/outgoing/uid_a",
-  ]);
+  ].sort());
 });
 
 test("validate report surfaces demo readiness gaps", async () => {
@@ -531,21 +531,21 @@ test("buildStaleEventCleanupPlan removes stale seeded events and their edges", a
   });
 
   assert.deepEqual(plan.staleEventIds, ["demo_cancelled", "demo_past"]);
-  assert.deepEqual(plan.paths, [
+  assert.deepEqual([...plan.paths].sort(), [
+    "clubScheduleLocks/club_lock",
+    "eventParticipations/p1",
+    "events/demo_cancelled",
+    "events/demo_past",
     "matches/match_1",
     "matches/match_1/messages/m1",
     "notifications/uid_a/items/match_note",
     "notifications/uid_a/items/run_note",
     "payments/payment",
     "reviews/review",
-    "clubScheduleLocks/club_lock",
-    "eventParticipations/p1",
-    "events/demo_cancelled",
-    "events/demo_past",
     "savedEvents/saved",
     "swipes/uid_a/outgoing/uid_b",
     "userEventScheduleLocks/user_lock",
-  ]);
+  ].sort());
 });
 
 test("buildCheckInEventPlan creates a signed-up event inside the check-in window", async () => {
