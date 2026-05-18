@@ -15,6 +15,7 @@ import 'package:catch_dating_app/clubs/domain/club_membership.dart';
 import 'package:catch_dating_app/clubs/presentation/list/clubs_list_view_model.dart';
 import 'package:catch_dating_app/core/celebration/celebration_effects_controller.dart';
 import 'package:catch_dating_app/core/connectivity_service.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/data/city_repository.dart';
 import 'package:catch_dating_app/core/device_location.dart';
 import 'package:catch_dating_app/core/domain/city_data.dart';
@@ -460,6 +461,7 @@ void main() {
           paymentId: 'pay_integration_123',
           orderId: 'order_integration_123',
           amountInPaise: run.priceInPaise,
+          currency: defaultCurrencyCode,
           eventId: run.id,
         );
 

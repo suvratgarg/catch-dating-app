@@ -1,4 +1,5 @@
 import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -64,6 +65,7 @@ void main() {
               distanceKm: 7.5,
               pace: PaceLevel.moderate,
               description: '  Steady social event  ',
+              currency: defaultCurrencyCode,
               constraints: const EventConstraints(
                 minAge: 21,
                 maxAge: 35,
@@ -139,6 +141,7 @@ void main() {
             distanceKm: 0,
             pace: PaceLevel.easy,
             description: 'Dinner',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           );
@@ -172,6 +175,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Invite-only evening event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: EventPolicyBundle.inviteOnlyEvent(
               capacityLimit: 12,
@@ -214,6 +218,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           ),
@@ -230,6 +235,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           ),
@@ -246,6 +252,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           ),
@@ -262,6 +269,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           ),
@@ -278,6 +286,7 @@ void main() {
             distanceKm: 0,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           ),
@@ -294,6 +303,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(capacityLimit: 0),
           ),
@@ -310,6 +320,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(basePriceInPaise: -1),
           ),
@@ -328,6 +339,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: _eventPolicy(),
           ),
@@ -346,6 +358,7 @@ void main() {
             distanceKm: 5,
             pace: PaceLevel.easy,
             description: 'Event',
+            currency: defaultCurrencyCode,
             constraints: const EventConstraints(),
             eventPolicy: EventPolicyBundle.inviteOnlyEvent(
               capacityLimit: 10,

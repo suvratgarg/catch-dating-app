@@ -33,6 +33,7 @@ void main() {
       expect(EventFormatters.distanceKm(5.5, includeUnit: false), '5.5');
       expect(EventFormatters.priceInPaise(25000), '₹250');
       expect(EventFormatters.priceInPaise(24950), '₹249.50');
+      expect(EventFormatters.priceInPaise(100000), '₹1,000');
       expect(EventFormatters.priceInPaise(2500, currencyCode: 'AUD'), 'A\$25');
       expect(
         EventFormatters.priceInPaise(1999, currencyCode: 'USD'),

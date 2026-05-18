@@ -108,8 +108,26 @@ String formatMinorCurrency(
   final absolute = amountMinorUnits.abs();
   final whole = absolute ~/ factor;
   final remainder = absolute % factor;
+  final groupedWhole = _formatWholeCurrencyUnits(whole);
   final value = remainder == 0
-      ? whole.toString()
-      : '$whole.${remainder.toString().padLeft(2, '0')}';
+      ? groupedWhole
+      : '$groupedWhole.${remainder.toString().padLeft(2, '0')}';
   return '$sign${market.currencySymbol}$value';
+}
+
+String _formatWholeCurrencyUnits(int value) {
+  final digits = value.toString();
+  final firstGroupLength = digits.length % 3;
+  final buffer = StringBuffer();
+
+  for (var index = 0; index < digits.length; index++) {
+    if (index > 0 &&
+        (index - firstGroupLength) % 3 == 0 &&
+        (firstGroupLength != 0 || index != 0)) {
+      buffer.write(',');
+    }
+    buffer.write(digits[index]);
+  }
+
+  return buffer.toString();
 }
