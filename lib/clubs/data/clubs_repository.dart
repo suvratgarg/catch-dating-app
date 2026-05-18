@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/clubs/data/club_callable_dtos.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
@@ -111,23 +112,22 @@ class ClubsRepository {
     String? email,
   }) => withBackendErrorContext(
     () async {
-      final data = <String, dynamic>{
-        'name': name,
-        'description': description,
-        'location': location,
-        'area': area,
-        'imageUrl': imageUrl,
-        'instagramHandle': instagramHandle,
-        'phoneNumber': phoneNumber,
-        'email': email,
-      };
-      if (clubId != null) {
-        data['clubId'] = clubId;
-      }
       final result = await _functions
           .httpsCallable('createClub')
-          .call<Map<String, dynamic>>(data);
-      return result.data['clubId'] as String;
+          .call<Object?>(
+            CreateClubCallableRequest(
+              clubId: clubId,
+              name: name,
+              description: description,
+              location: location,
+              area: area,
+              imageUrl: imageUrl,
+              instagramHandle: instagramHandle,
+              phoneNumber: phoneNumber,
+              email: email,
+            ).toJson(),
+          );
+      return CreateClubCallableResponse.fromCallableData(result.data).clubId;
     },
     context: const BackendErrorContext(
       service: BackendService.functions,
@@ -142,10 +142,11 @@ class ClubsRepository {
     required String clubId,
     required Map<String, dynamic> fields,
   }) => withBackendErrorContext(
-    () => _functions.httpsCallable('updateClub').call({
-      'clubId': clubId,
-      'fields': fields,
-    }),
+    () => _functions
+        .httpsCallable('updateClub')
+        .call(
+          UpdateClubCallableRequest(clubId: clubId, fields: fields).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'update club',
@@ -161,7 +162,9 @@ class ClubsRepository {
   /// server owns this mutation and Firestore rules can keep membership fields
   /// read-only to direct client writes.
   Future<void> joinClub(String clubId) => withBackendErrorContext(
-    () => _functions.httpsCallable('joinClub').call({'clubId': clubId}),
+    () => _functions
+        .httpsCallable('joinClub')
+        .call(ClubIdCallableRequest(clubId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'join club',
@@ -171,7 +174,9 @@ class ClubsRepository {
 
   /// Removes the signed-in user from [clubId] via the `leaveClub` callable.
   Future<void> leaveClub(String clubId) => withBackendErrorContext(
-    () => _functions.httpsCallable('leaveClub').call({'clubId': clubId}),
+    () => _functions
+        .httpsCallable('leaveClub')
+        .call(ClubIdCallableRequest(clubId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'leave club',
@@ -184,10 +189,14 @@ class ClubsRepository {
     required String clubId,
     required bool enabled,
   }) => withBackendErrorContext(
-    () => _functions.httpsCallable('setClubNotificationPreference').call({
-      'clubId': clubId,
-      'enabled': enabled,
-    }),
+    () => _functions
+        .httpsCallable('setClubNotificationPreference')
+        .call(
+          SetClubNotificationPreferenceCallableRequest(
+            clubId: clubId,
+            enabled: enabled,
+          ).toJson(),
+        ),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'update club notifications',

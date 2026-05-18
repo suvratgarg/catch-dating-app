@@ -2,6 +2,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/reviews/data/review_callable_dtos.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -99,12 +100,14 @@ class ReviewsRepository {
     }
 
     return withBackendErrorContext(
-      () => _functions.httpsCallable('createEventReview').call({
-        'clubId': review.clubId,
-        'eventId': eventId,
-        'rating': review.rating,
-        'comment': review.comment,
-      }),
+      () => _functions
+          .httpsCallable('createEventReview')
+          .call(
+            CreateEventReviewCallableRequest.fromReview(
+              review,
+              eventId: eventId,
+            ).toJson(),
+          ),
       context: const BackendErrorContext(
         service: BackendService.functions,
         action: 'add review',
@@ -114,11 +117,9 @@ class ReviewsRepository {
   }
 
   Future<void> updateReview(Review review) => withBackendErrorContext(
-    () => _functions.httpsCallable('updateEventReview').call({
-      'reviewId': review.id,
-      'rating': review.rating,
-      'comment': review.comment,
-    }),
+    () => _functions
+        .httpsCallable('updateEventReview')
+        .call(UpdateEventReviewCallableRequest.fromReview(review).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'update review',
@@ -127,9 +128,9 @@ class ReviewsRepository {
   );
 
   Future<void> deleteReview(String reviewId) => withBackendErrorContext(
-    () => _functions.httpsCallable('deleteEventReview').call({
-      'reviewId': reviewId,
-    }),
+    () => _functions
+        .httpsCallable('deleteEventReview')
+        .call(ReviewIdCallableRequest(reviewId).toJson()),
     context: const BackendErrorContext(
       service: BackendService.functions,
       action: 'delete review',

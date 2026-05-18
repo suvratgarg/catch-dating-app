@@ -3,6 +3,7 @@ import 'package:catch_dating_app/core/backend_error_util.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
+import 'package:catch_dating_app/user_profile/data/user_profile_callable_dtos.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -81,9 +82,9 @@ class UserProfileRepository {
     required Map<String, dynamic> fields,
     String action = 'update profile',
   }) => withBackendErrorContext(
-    () => _functions.httpsCallable('updateUserProfile').call({
-      'fields': _callableFields(fields),
-    }),
+    () => _functions
+        .httpsCallable('updateUserProfile')
+        .call(UpdateUserProfileCallableRequest(fields: fields).toJson()),
     context: BackendErrorContext(
       service: BackendService.functions,
       action: action,
@@ -136,25 +137,6 @@ class UserProfileRepository {
     fields: {'profileComplete': true},
     action: 'set profile complete',
   );
-}
-
-Map<String, Object?> _callableFields(Map<String, dynamic> fields) =>
-    fields.map((key, value) => MapEntry(key, _callableValue(value)));
-
-Object? _callableValue(Object? value) {
-  if (value is Timestamp) {
-    return value.millisecondsSinceEpoch;
-  }
-  if (value is DateTime) {
-    return value.millisecondsSinceEpoch;
-  }
-  if (value is Iterable) {
-    return value.map(_callableValue).toList();
-  }
-  if (value is Map) {
-    return value.map((key, child) => MapEntry(key, _callableValue(child)));
-  }
-  return value;
 }
 
 @Riverpod(keepAlive: true)
