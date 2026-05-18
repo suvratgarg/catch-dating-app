@@ -369,8 +369,7 @@ class _ActivityItem {
       items.add(
         _ActivityItem(
           title: _eventReminderTitle(event.startTime, now),
-          subtitle:
-              '${event.meetingPoint} · ${EventFormatters.distanceKm(event.distanceKm)} · ${event.pace.label}',
+          subtitle: '${event.meetingPoint} · ${event.activitySummaryLabel}',
           createdAt: reminderAt,
           icon: Icons.directions_run_rounded,
           route: Routes.eventDetailScreen.path

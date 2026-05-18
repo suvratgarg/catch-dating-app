@@ -57,44 +57,43 @@ final class HealthActivityRepositoryProvider
 String _$healthActivityRepositoryHash() =>
     r'43618d3b17dd71c0ebc74924f62e79411be00522';
 
-@ProviderFor(weeklyRunningActivity)
-final weeklyRunningActivityProvider = WeeklyRunningActivityProvider._();
+@ProviderFor(weeklyActivity)
+final weeklyActivityProvider = WeeklyActivityProvider._();
 
-final class WeeklyRunningActivityProvider
+final class WeeklyActivityProvider
     extends
         $FunctionalProvider<
-          AsyncValue<WeeklyRunningActivitySnapshot>,
-          WeeklyRunningActivitySnapshot,
-          FutureOr<WeeklyRunningActivitySnapshot>
+          AsyncValue<WeeklyActivitySnapshot>,
+          WeeklyActivitySnapshot,
+          FutureOr<WeeklyActivitySnapshot>
         >
     with
-        $FutureModifier<WeeklyRunningActivitySnapshot>,
-        $FutureProvider<WeeklyRunningActivitySnapshot> {
-  WeeklyRunningActivityProvider._()
+        $FutureModifier<WeeklyActivitySnapshot>,
+        $FutureProvider<WeeklyActivitySnapshot> {
+  WeeklyActivityProvider._()
     : super(
         from: null,
         argument: null,
         retry: null,
-        name: r'weeklyRunningActivityProvider',
+        name: r'weeklyActivityProvider',
         isAutoDispose: true,
         dependencies: null,
         $allTransitiveDependencies: null,
       );
 
   @override
-  String debugGetCreateSourceHash() => _$weeklyRunningActivityHash();
+  String debugGetCreateSourceHash() => _$weeklyActivityHash();
 
   @$internal
   @override
-  $FutureProviderElement<WeeklyRunningActivitySnapshot> $createElement(
+  $FutureProviderElement<WeeklyActivitySnapshot> $createElement(
     $ProviderPointer pointer,
   ) => $FutureProviderElement(pointer);
 
   @override
-  FutureOr<WeeklyRunningActivitySnapshot> create(Ref ref) {
-    return weeklyRunningActivity(ref);
+  FutureOr<WeeklyActivitySnapshot> create(Ref ref) {
+    return weeklyActivity(ref);
   }
 }
 
-String _$weeklyRunningActivityHash() =>
-    r'a81f72847c44089b8e071b0f01a760e2d02a696d';
+String _$weeklyActivityHash() => r'b23a66750d37828d99d657f27a180e6888f7f14f';

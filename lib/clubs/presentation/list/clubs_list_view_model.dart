@@ -154,22 +154,31 @@ AsyncValue<List<Club>> filteredClubs(Ref ref) {
 /// lists for the UI.
 @riverpod
 AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
-  final uidAsync = ref.watch(uidProvider);
   final filteredAsync = ref.watch(filteredClubsProvider);
 
-  if (uidAsync.isLoading || filteredAsync.isLoading) {
+  if (filteredAsync.isLoading) {
+    return const AsyncLoading();
+  }
+  if (filteredAsync.hasError) {
+    return AsyncError(
+      filteredAsync.error!,
+      filteredAsync.stackTrace ?? StackTrace.current,
+    );
+  }
+
+  final clubs = filteredAsync.asData?.value ?? const <Club>[];
+  if (clubs.isEmpty) {
+    return const AsyncData(ClubsListViewModel(joinedClubs: [], allClubs: []));
+  }
+
+  final uidAsync = ref.watch(uidProvider);
+  if (uidAsync.isLoading) {
     return const AsyncLoading();
   }
   if (uidAsync.hasError) {
     return AsyncError(
       uidAsync.error!,
       uidAsync.stackTrace ?? StackTrace.current,
-    );
-  }
-  if (filteredAsync.hasError) {
-    return AsyncError(
-      filteredAsync.error!,
-      filteredAsync.stackTrace ?? StackTrace.current,
     );
   }
 
@@ -193,7 +202,6 @@ AsyncValue<ClubsListViewModel> clubsListViewModel(Ref ref) {
           .map((membership) => membership.clubId)
           .toSet() ??
       <String>{};
-  final clubs = filteredAsync.asData?.value ?? const <Club>[];
   final hostedClubIds = uid == null
       ? <String>{}
       : clubs

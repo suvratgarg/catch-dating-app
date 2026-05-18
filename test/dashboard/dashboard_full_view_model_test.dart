@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_full_view_model.dart';
 import 'package:catch_dating_app/dashboard/presentation/dashboard_recommendations_provider.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -25,15 +26,15 @@ DashboardEventRecommendationCandidate _recommendationCandidate(
   clubLocation: clubLocation,
 );
 
-RunnerActivity _platformActivity({
+PhysicalActivity _platformActivity({
   required String id,
   required DateTime startTime,
   required double distanceMeters,
 }) {
-  return RunnerActivity(
+  return PhysicalActivity(
     stableId: id,
-    provider: RunnerActivityProvider.appleHealth,
-    type: RunnerActivityType.running,
+    provider: PhysicalActivityProvider.appleHealth,
+    type: ActivityKind.running,
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 1)),
     distanceMeters: distanceMeters,
@@ -142,7 +143,7 @@ void main() {
         signedUpEvents: const [],
         attendedEventsAsync: AsyncData<List<Event>>([attendedRun]),
         weeklyActivityAsync: AsyncData(
-          WeeklyRunningActivitySnapshot.permissionRequired(
+          WeeklyActivitySnapshot.permissionRequired(
             referenceDate: now,
             platformLabel: 'Apple Health',
           ),
@@ -152,10 +153,10 @@ void main() {
       );
 
       final snapshot = viewModel.weeklyActivitySection.data!;
-      expect(snapshot.source, WeeklyRunningActivitySource.catchFallback);
+      expect(snapshot.source, WeeklyActivitySource.catchFallback);
       expect(snapshot.canRequestPermission, isTrue);
       expect(snapshot.summary.totalDistanceKm, 5);
-      expect(snapshot.summary.runCount, 1);
+      expect(snapshot.summary.activityCount, 1);
     });
 
     test(
@@ -177,7 +178,7 @@ void main() {
           signedUpEvents: const [],
           attendedEventsAsync: AsyncData<List<Event>>([catchEvent]),
           weeklyActivityAsync: AsyncData(
-            WeeklyRunningActivitySnapshot.connected(
+            WeeklyActivitySnapshot.connected(
               referenceDate: now,
               platformLabel: 'Apple Health',
               activities: [platformActivity],
@@ -188,9 +189,9 @@ void main() {
         );
 
         final snapshot = viewModel.weeklyActivitySection.data!;
-        expect(snapshot.source, WeeklyRunningActivitySource.mixed);
+        expect(snapshot.source, WeeklyActivitySource.mixed);
         expect(snapshot.summary.totalDistanceKm, 8);
-        expect(snapshot.summary.runCount, 2);
+        expect(snapshot.summary.activityCount, 2);
         expect(snapshot.activities.map((activity) => activity.stableId), [
           'health-event',
           'catch:catch-event',
@@ -216,7 +217,7 @@ void main() {
         signedUpEvents: const [],
         attendedEventsAsync: AsyncData<List<Event>>([catchEvent]),
         weeklyActivityAsync: AsyncData(
-          WeeklyRunningActivitySnapshot.connected(
+          WeeklyActivitySnapshot.connected(
             referenceDate: now,
             platformLabel: 'Apple Health',
             activities: [platformActivity],
@@ -227,9 +228,9 @@ void main() {
       );
 
       final snapshot = viewModel.weeklyActivitySection.data!;
-      expect(snapshot.source, WeeklyRunningActivitySource.healthPlatform);
+      expect(snapshot.source, WeeklyActivitySource.healthPlatform);
       expect(snapshot.summary.totalDistanceMeters, 5100);
-      expect(snapshot.summary.runCount, 1);
+      expect(snapshot.summary.activityCount, 1);
       expect(snapshot.activities.map((activity) => activity.stableId), [
         'health-event',
       ]);

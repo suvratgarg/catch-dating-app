@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 
 enum HealthActivityConnectionStatus {
@@ -7,34 +8,59 @@ enum HealthActivityConnectionStatus {
   connected,
 }
 
-enum WeeklyRunningActivitySource { none, healthPlatform, catchFallback, mixed }
+enum WeeklyActivitySource { none, healthPlatform, catchFallback, mixed }
+
+@Deprecated('Use WeeklyActivitySource.')
+typedef WeeklyRunningActivitySource = WeeklyActivitySource;
 
 class WeeklyActivitySummary {
   const WeeklyActivitySummary({
     required this.weekStart,
     required this.weekEnd,
     required this.distanceMetersByWeekday,
-    required this.runCount,
+    required this.activeMinutesByWeekday,
+    required this.activityCount,
+    this.countsByKind = const {},
     this.refreshedAt,
-  }) : assert(distanceMetersByWeekday.length == 7);
+  }) : assert(distanceMetersByWeekday.length == 7),
+       assert(activeMinutesByWeekday.length == 7);
 
   final DateTime weekStart;
   final DateTime weekEnd;
   final List<double> distanceMetersByWeekday;
-  final int runCount;
+  final List<int> activeMinutesByWeekday;
+  final int activityCount;
+  final Map<ActivityKind, int> countsByKind;
   final DateTime? refreshedAt;
+
+  @Deprecated('Use activityCount.')
+  int get runCount => activityCount;
 
   double get totalDistanceMeters =>
       distanceMetersByWeekday.fold<double>(0, (sum, meters) => sum + meters);
 
   double get totalDistanceKm => totalDistanceMeters / 1000;
 
+  int get totalActiveMinutes =>
+      activeMinutesByWeekday.fold<int>(0, (sum, minutes) => sum + minutes);
+
   double get maxDailyDistanceMeters => distanceMetersByWeekday.fold<double>(
     0,
     (max, meters) => meters > max ? meters : max,
   );
 
-  bool get hasEvents => runCount > 0 && totalDistanceMeters > 0;
+  int get maxDailyActiveMinutes => activeMinutesByWeekday.fold<int>(
+    0,
+    (max, minutes) => minutes > max ? minutes : max,
+  );
+
+  bool get hasEvents => activityCount > 0;
+
+  List<MapEntry<ActivityKind, int>> get topActivityCounts {
+    final entries = countsByKind.entries.toList(growable: false)
+      ..sort((a, b) => b.value.compareTo(a.value));
+    return entries;
+  }
 
   static DateTime weekStartFor(DateTime date) {
     return DateTime(date.year, date.month, date.day - (date.weekday - 1));
@@ -49,31 +75,42 @@ class WeeklyActivitySummary {
       weekStart: weekStart,
       weekEnd: weekStart.add(const Duration(days: 7)),
       distanceMetersByWeekday: List<double>.filled(7, 0),
-      runCount: 0,
+      activeMinutesByWeekday: List<int>.filled(7, 0),
+      activityCount: 0,
       refreshedAt: refreshedAt,
     );
   }
 
   factory WeeklyActivitySummary.fromActivities(
-    Iterable<RunnerActivity> activities, {
+    Iterable<PhysicalActivity> activities, {
     required DateTime referenceDate,
     DateTime? refreshedAt,
   }) {
     final weekStart = weekStartFor(referenceDate);
     final weekEnd = weekStart.add(const Duration(days: 7));
     final metersByWeekday = List<double>.filled(7, 0);
+    final activeMinutesByWeekday = List<int>.filled(7, 0);
+    final countsByKind = <ActivityKind, int>{};
     var count = 0;
 
     for (final activity in activities) {
       final startsInWeek =
           !activity.startTime.isBefore(weekStart) &&
           activity.startTime.isBefore(weekEnd);
-      if (!startsInWeek || activity.distanceMeters <= 0) {
+      final distanceMeters = activity.distanceMeters ?? 0;
+      final activeMinutes = activity.durationMinutes;
+      if (!startsInWeek || (distanceMeters <= 0 && activeMinutes <= 0)) {
         continue;
       }
 
-      metersByWeekday[activity.startTime.weekday - 1] +=
-          activity.distanceMeters;
+      final weekdayIndex = activity.startTime.weekday - 1;
+      metersByWeekday[weekdayIndex] += distanceMeters;
+      activeMinutesByWeekday[weekdayIndex] += activeMinutes;
+      countsByKind.update(
+        activity.type,
+        (value) => value + 1,
+        ifAbsent: () => 1,
+      );
       count++;
     }
 
@@ -81,14 +118,16 @@ class WeeklyActivitySummary {
       weekStart: weekStart,
       weekEnd: weekEnd,
       distanceMetersByWeekday: metersByWeekday,
-      runCount: count,
+      activeMinutesByWeekday: activeMinutesByWeekday,
+      activityCount: count,
+      countsByKind: Map.unmodifiable(countsByKind),
       refreshedAt: refreshedAt,
     );
   }
 }
 
-class WeeklyRunningActivitySnapshot {
-  const WeeklyRunningActivitySnapshot({
+class WeeklyActivitySnapshot {
+  const WeeklyActivitySnapshot({
     required this.connectionStatus,
     required this.platformLabel,
     required this.summary,
@@ -102,8 +141,8 @@ class WeeklyRunningActivitySnapshot {
   final HealthActivityConnectionStatus connectionStatus;
   final String platformLabel;
   final WeeklyActivitySummary summary;
-  final List<RunnerActivity> activities;
-  final WeeklyRunningActivitySource source;
+  final List<PhysicalActivity> activities;
+  final WeeklyActivitySource source;
   final String? message;
   final bool canRequestPermission;
   final bool canInstallHealthConnect;
@@ -113,12 +152,13 @@ class WeeklyRunningActivitySnapshot {
 
   bool get hasEvents => summary.hasEvents;
 
-  factory WeeklyRunningActivitySnapshot.unsupported({
+  factory WeeklyActivitySnapshot.unsupported({
     required DateTime referenceDate,
     DateTime? refreshedAt,
-    String message = 'Running activity is available on iPhone and Android.',
+    String message =
+        'Activity sync is available from Apple Health and Health Connect.',
   }) {
-    return WeeklyRunningActivitySnapshot(
+    return WeeklyActivitySnapshot(
       connectionStatus: HealthActivityConnectionStatus.unsupported,
       platformLabel: 'Health',
       summary: WeeklyActivitySummary.emptyForWeek(
@@ -126,16 +166,16 @@ class WeeklyRunningActivitySnapshot {
         refreshedAt: refreshedAt,
       ),
       activities: const [],
-      source: WeeklyRunningActivitySource.none,
+      source: WeeklyActivitySource.none,
       message: message,
     );
   }
 
-  factory WeeklyRunningActivitySnapshot.needsHealthConnect({
+  factory WeeklyActivitySnapshot.needsHealthConnect({
     required DateTime referenceDate,
     DateTime? refreshedAt,
   }) {
-    return WeeklyRunningActivitySnapshot(
+    return WeeklyActivitySnapshot(
       connectionStatus: HealthActivityConnectionStatus.needsHealthConnect,
       platformLabel: 'Health Connect',
       summary: WeeklyActivitySummary.emptyForWeek(
@@ -143,18 +183,18 @@ class WeeklyRunningActivitySnapshot {
         refreshedAt: refreshedAt,
       ),
       activities: const [],
-      source: WeeklyRunningActivitySource.none,
-      message: 'Install or update Health Connect to show weekly events.',
+      source: WeeklyActivitySource.none,
+      message: 'Install or update Health Connect to show weekly activity.',
       canInstallHealthConnect: true,
     );
   }
 
-  factory WeeklyRunningActivitySnapshot.permissionRequired({
+  factory WeeklyActivitySnapshot.permissionRequired({
     required DateTime referenceDate,
     required String platformLabel,
     DateTime? refreshedAt,
   }) {
-    return WeeklyRunningActivitySnapshot(
+    return WeeklyActivitySnapshot(
       connectionStatus: HealthActivityConnectionStatus.permissionRequired,
       platformLabel: platformLabel,
       summary: WeeklyActivitySummary.emptyForWeek(
@@ -162,16 +202,16 @@ class WeeklyRunningActivitySnapshot {
         refreshedAt: refreshedAt,
       ),
       activities: const [],
-      source: WeeklyRunningActivitySource.none,
-      message: 'Connect $platformLabel to include events outside Catch.',
+      source: WeeklyActivitySource.none,
+      message: 'Connect $platformLabel to include activity outside Catch.',
       canRequestPermission: true,
     );
   }
 
-  factory WeeklyRunningActivitySnapshot.connected({
+  factory WeeklyActivitySnapshot.connected({
     required DateTime referenceDate,
     required String platformLabel,
-    required List<RunnerActivity> activities,
+    required List<PhysicalActivity> activities,
     DateTime? refreshedAt,
   }) {
     final summary = WeeklyActivitySummary.fromActivities(
@@ -179,28 +219,28 @@ class WeeklyRunningActivitySnapshot {
       referenceDate: referenceDate,
       refreshedAt: refreshedAt,
     );
-    return WeeklyRunningActivitySnapshot(
+    return WeeklyActivitySnapshot(
       connectionStatus: HealthActivityConnectionStatus.connected,
       platformLabel: platformLabel,
       summary: summary,
       activities: List.unmodifiable(activities),
       source: summary.hasEvents
-          ? WeeklyRunningActivitySource.healthPlatform
-          : WeeklyRunningActivitySource.none,
+          ? WeeklyActivitySource.healthPlatform
+          : WeeklyActivitySource.none,
       message: null,
     );
   }
 
-  WeeklyRunningActivitySnapshot copyWith({
+  WeeklyActivitySnapshot copyWith({
     WeeklyActivitySummary? summary,
-    List<RunnerActivity>? activities,
-    WeeklyRunningActivitySource? source,
+    List<PhysicalActivity>? activities,
+    WeeklyActivitySource? source,
     String? message,
     bool clearMessage = false,
     bool? canRequestPermission,
     bool? canInstallHealthConnect,
   }) {
-    return WeeklyRunningActivitySnapshot(
+    return WeeklyActivitySnapshot(
       connectionStatus: connectionStatus,
       platformLabel: platformLabel,
       summary: summary ?? this.summary,
@@ -215,3 +255,6 @@ class WeeklyRunningActivitySnapshot {
     );
   }
 }
+
+@Deprecated('Use WeeklyActivitySnapshot.')
+typedef WeeklyRunningActivitySnapshot = WeeklyActivitySnapshot;

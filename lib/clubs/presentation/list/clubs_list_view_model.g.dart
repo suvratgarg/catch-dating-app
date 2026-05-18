@@ -284,7 +284,7 @@ final class ClubsListViewModelProvider
 }
 
 String _$clubsListViewModelHash() =>
-    r'314b891a836f24d4e7b6e8c35d3b425cb0d9a295';
+    r'db364b8920a427c54438af68cd086c6a5c3ca433';
 
 /// **Pattern D: View-model provider**
 ///

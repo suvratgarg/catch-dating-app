@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/club_membership_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
@@ -50,9 +51,9 @@ DashboardRecommendationsQuery _recommendationsQueryFor(
 const _noRecommendationCandidates =
     AsyncData<List<DashboardEventRecommendationCandidate>>([]);
 
-AsyncData<WeeklyRunningActivitySnapshot> _emptyWeeklyActivitySnapshot() {
+AsyncData<WeeklyActivitySnapshot> _emptyWeeklyActivitySnapshot() {
   return AsyncData(
-    WeeklyRunningActivitySnapshot.permissionRequired(
+    WeeklyActivitySnapshot.permissionRequired(
       referenceDate: DateTime(2026, 5, 13),
       platformLabel: 'Apple Health',
     ),
@@ -588,16 +589,16 @@ void main() {
             watchAttendedEventsProvider(
               user.uid,
             ).overrideWithValue(const AsyncData<List<Event>>([])),
-            weeklyRunningActivityProvider.overrideWithValue(
+            weeklyActivityProvider.overrideWithValue(
               AsyncData(
-                WeeklyRunningActivitySnapshot.connected(
+                WeeklyActivitySnapshot.connected(
                   referenceDate: DateTime.now(),
                   platformLabel: 'Apple Health',
                   activities: [
-                    RunnerActivity(
+                    PhysicalActivity(
                       stableId: 'health-event',
-                      provider: RunnerActivityProvider.appleHealth,
-                      type: RunnerActivityType.running,
+                      provider: PhysicalActivityProvider.appleHealth,
+                      type: ActivityKind.running,
                       startTime: DateTime.now(),
                       endTime: DateTime.now().add(const Duration(hours: 1)),
                       distanceMeters: 6400,
@@ -625,9 +626,9 @@ void main() {
 
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Your stride · this week'), findsOneWidget);
+      expect(find.text('Your activity · this week'), findsOneWidget);
       expect(find.text('6.4'), findsOneWidget);
-      expect(find.text('km · 1 event'), findsOneWidget);
+      expect(find.text('km · 60 min · 1 activity'), findsOneWidget);
       expect(find.text('From Apple Health'), findsOneWidget);
     });
 
@@ -639,7 +640,7 @@ void main() {
           theme: AppTheme.light,
           home: Scaffold(
             body: StrideCard(
-              snapshot: WeeklyRunningActivitySnapshot.permissionRequired(
+              snapshot: WeeklyActivitySnapshot.permissionRequired(
                 referenceDate: DateTime(2026, 5, 13),
                 platformLabel: 'Apple Health',
               ),
@@ -651,7 +652,7 @@ void main() {
 
       expect(find.text('Connect Apple Health'), findsOneWidget);
       expect(
-        find.text('Connect Apple Health to include events outside Catch.'),
+        find.text('Connect Apple Health to include activity outside Catch.'),
         findsOneWidget,
       );
     });
@@ -1347,7 +1348,7 @@ List _dashboardHostOverrides(
   String hostedClubId = 'club-host',
   List<Event> hostedEvents = const [],
   bool includeWeeklyActivity = true,
-  AsyncValue<WeeklyRunningActivitySnapshot>? weeklyActivity,
+  AsyncValue<WeeklyActivitySnapshot>? weeklyActivity,
 }) {
   final hostedClubs = hostedEvents.isEmpty
       ? const <Club>[]
@@ -1366,7 +1367,7 @@ List _dashboardHostOverrides(
       user.uid,
     ).overrideWithValue(AsyncData(hostedClubs)),
     if (includeWeeklyActivity)
-      weeklyRunningActivityProvider.overrideWithValue(
+      weeklyActivityProvider.overrideWithValue(
         weeklyActivity ?? _emptyWeeklyActivitySnapshot(),
       ),
     if (hostedEvents.isNotEmpty)

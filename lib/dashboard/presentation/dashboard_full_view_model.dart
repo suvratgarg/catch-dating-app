@@ -62,8 +62,7 @@ class DashboardFullViewModel {
   final Event? pendingReviewEvent;
   final List<DashboardHostEventTool> hostEventTools;
   final DashboardSectionModel<List<Event>> attendedEventsSection;
-  final DashboardSectionModel<WeeklyRunningActivitySnapshot>
-  weeklyActivitySection;
+  final DashboardSectionModel<WeeklyActivitySnapshot> weeklyActivitySection;
   final DashboardSectionModel<List<DashboardEventRecommendation>>
   recommendationsSection;
 }
@@ -105,7 +104,7 @@ DashboardFullViewModel buildDashboardFullViewModel({
   required AsyncValue<List<Event>> attendedEventsAsync,
   required AsyncValue<List<DashboardEventRecommendationCandidate>>
   recommendedEventsAsync,
-  AsyncValue<WeeklyRunningActivitySnapshot>? weeklyActivityAsync,
+  AsyncValue<WeeklyActivitySnapshot>? weeklyActivityAsync,
   AsyncValue<List<Review>> reviewsByUserAsync = const AsyncData<List<Review>>(
     [],
   ),
@@ -202,20 +201,19 @@ DashboardFullViewModel buildDashboardFullViewModel({
   );
 }
 
-DashboardSectionModel<WeeklyRunningActivitySnapshot>
-_buildWeeklyActivitySection({
+DashboardSectionModel<WeeklyActivitySnapshot> _buildWeeklyActivitySection({
   required AsyncValue<List<Event>> attendedEventsAsync,
-  required AsyncValue<WeeklyRunningActivitySnapshot>? weeklyActivityAsync,
+  required AsyncValue<WeeklyActivitySnapshot>? weeklyActivityAsync,
   required DateTime referenceDate,
 }) {
   if (attendedEventsAsync.isLoading) {
-    return const DashboardSectionModel<WeeklyRunningActivitySnapshot>.loading(
+    return const DashboardSectionModel<WeeklyActivitySnapshot>.loading(
       'Loading your recent events...',
     );
   }
   if (weeklyActivityAsync?.isLoading ?? false) {
-    return const DashboardSectionModel<WeeklyRunningActivitySnapshot>.loading(
-      'Loading your weekly running activity...',
+    return const DashboardSectionModel<WeeklyActivitySnapshot>.loading(
+      'Loading your weekly activity...',
     );
   }
 
@@ -223,33 +221,31 @@ _buildWeeklyActivitySection({
   final platformSnapshot = weeklyActivityAsync?.asData?.value;
   if (attendedEventsAsync.hasError &&
       platformSnapshot?.hasPlatformConnection != true) {
-    return const DashboardSectionModel<WeeklyRunningActivitySnapshot>.error(
+    return const DashboardSectionModel<WeeklyActivitySnapshot>.error(
       'Unable to load your recent events.',
     );
   }
 
   if (attendedEvents != null || platformSnapshot != null) {
-    return DashboardSectionModel<WeeklyRunningActivitySnapshot>.data(
+    return DashboardSectionModel<WeeklyActivitySnapshot>.data(
       buildDashboardWeeklyActivitySnapshot(
         attendedEvents: attendedEvents ?? const <Event>[],
         platformSnapshot:
             platformSnapshot ??
-            WeeklyRunningActivitySnapshot.unsupported(
-              referenceDate: referenceDate,
-            ),
+            WeeklyActivitySnapshot.unsupported(referenceDate: referenceDate),
         referenceDate: referenceDate,
       ),
     );
   }
 
-  return DashboardSectionModel<WeeklyRunningActivitySnapshot>.data(
-    WeeklyRunningActivitySnapshot.unsupported(referenceDate: referenceDate),
+  return DashboardSectionModel<WeeklyActivitySnapshot>.data(
+    WeeklyActivitySnapshot.unsupported(referenceDate: referenceDate),
   );
 }
 
-WeeklyRunningActivitySnapshot buildDashboardWeeklyActivitySnapshot({
+WeeklyActivitySnapshot buildDashboardWeeklyActivitySnapshot({
   required List<Event> attendedEvents,
-  required WeeklyRunningActivitySnapshot platformSnapshot,
+  required WeeklyActivitySnapshot platformSnapshot,
   required DateTime referenceDate,
 }) {
   final catchActivities = attendedEvents
@@ -266,13 +262,13 @@ WeeklyRunningActivitySnapshot buildDashboardWeeklyActivitySnapshot({
       return platformSnapshot.copyWith(
         summary: catchSummary,
         activities: const [],
-        source: WeeklyRunningActivitySource.none,
+        source: WeeklyActivitySource.none,
       );
     }
     return platformSnapshot.copyWith(
       summary: catchSummary,
       activities: catchActivities,
-      source: WeeklyRunningActivitySource.catchFallback,
+      source: WeeklyActivitySource.catchFallback,
       message: 'Catch check-ins only.',
     );
   }
@@ -300,29 +296,32 @@ WeeklyRunningActivitySnapshot buildDashboardWeeklyActivitySnapshot({
     summary: summary,
     activities: mergedActivities,
     source: source,
-    clearMessage: source != WeeklyRunningActivitySource.catchFallback,
-    message: source == WeeklyRunningActivitySource.catchFallback
+    clearMessage: source != WeeklyActivitySource.catchFallback,
+    message: source == WeeklyActivitySource.catchFallback
         ? 'Catch check-ins only.'
         : null,
   );
 }
 
-RunnerActivity _activityFromCatchEvent(Event event) {
-  return RunnerActivity(
+PhysicalActivity _activityFromCatchEvent(Event event) {
+  final activityKind = event.eventFormat.healthActivityKind;
+  return PhysicalActivity(
     stableId: 'catch:${event.id}',
-    provider: RunnerActivityProvider.catchAttendance,
-    type: RunnerActivityType.running,
+    provider: PhysicalActivityProvider.catchAttendance,
+    type: activityKind,
     startTime: event.startTime,
     endTime: event.endTime,
-    distanceMeters: event.distanceKm * 1000,
+    distanceMeters: activityKind.isDistanceBased
+        ? event.distanceKm * 1000
+        : null,
     sourceName: 'Catch',
     matchedCatchEventId: event.id,
   );
 }
 
 bool _overlapsPlatformActivity(
-  RunnerActivity catchActivity,
-  List<RunnerActivity> platformActivities,
+  PhysicalActivity catchActivity,
+  List<PhysicalActivity> platformActivities,
 ) {
   final matchWindowStart = catchActivity.startTime.subtract(
     const Duration(minutes: 30),
@@ -333,19 +332,19 @@ bool _overlapsPlatformActivity(
   );
 }
 
-WeeklyRunningActivitySource _weeklyActivitySource({
-  required List<RunnerActivity> platformActivities,
-  required List<RunnerActivity> catchActivities,
+WeeklyActivitySource _weeklyActivitySource({
+  required List<PhysicalActivity> platformActivities,
+  required List<PhysicalActivity> catchActivities,
   required WeeklyActivitySummary summary,
 }) {
-  if (!summary.hasEvents) return WeeklyRunningActivitySource.none;
+  if (!summary.hasEvents) return WeeklyActivitySource.none;
   if (platformActivities.isNotEmpty && catchActivities.isNotEmpty) {
-    return WeeklyRunningActivitySource.mixed;
+    return WeeklyActivitySource.mixed;
   }
   if (platformActivities.isNotEmpty) {
-    return WeeklyRunningActivitySource.healthPlatform;
+    return WeeklyActivitySource.healthPlatform;
   }
-  return WeeklyRunningActivitySource.catchFallback;
+  return WeeklyActivitySource.catchFallback;
 }
 
 List<DashboardHostEventTool> _buildHostEventTools(
@@ -659,7 +658,7 @@ DashboardFullViewModel dashboardFullViewModel(
     viewer: user,
     hostedEvents: hostedEvents,
     attendedEventsAsync: ref.watch(watchAttendedEventsProvider(uid)),
-    weeklyActivityAsync: ref.watch(weeklyRunningActivityProvider),
+    weeklyActivityAsync: ref.watch(weeklyActivityProvider),
     reviewsByUserAsync: ref.watch(watchReviewsByUserProvider(uid)),
     recommendedEventsAsync: ref.watch(
       dashboardRecommendedEventsProvider(
