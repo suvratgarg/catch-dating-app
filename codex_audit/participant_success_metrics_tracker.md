@@ -99,6 +99,7 @@ Event dimensions:
 
 - `npm --prefix functions run build` - pass.
 - `npm --prefix functions run lint` - pass.
+- `npm --prefix functions test` - 149 tests pass.
 - `node --test functions/lib/marketplace/*.test.js functions/lib/matching/*.test.js` - 16 tests pass.
-- `firebase emulators:exec --only firestore 'node --test --test-concurrency=1 functions/test/firestore.rules.test.cjs'` - 64 tests pass.
-- `firebase emulators:exec --only firestore,storage 'npm --prefix functions run test:rules'` - Firestore assertions passed, but the pre-existing Storage rules tests still fail on chat/event photo permissions. Storage rules were not touched in this pass.
+- `firebase emulators:exec --only firestore,storage 'npm --prefix functions run test:rules'` - 66 rules tests pass.
+- `./tool/check_data_contract.sh` - pass.
