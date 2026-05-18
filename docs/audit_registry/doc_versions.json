@@ -15,22 +15,22 @@
   },
   "audit_doc_summaries": {
     "path": "docs/audit_registry/doc_summaries.json",
-    "version": "3.0.8",
-    "updated": "2026-05-17",
+    "version": "3.0.9",
+    "updated": "2026-05-18",
     "status": "active",
     "read_policy": "Use for compact read/skip policies before opening long markdown docs."
   },
   "audit_doc_versions": {
     "path": "docs/audit_registry/doc_versions.json",
-    "version": "3.0.8",
-    "updated": "2026-05-17",
+    "version": "3.0.9",
+    "updated": "2026-05-18",
     "status": "active",
     "read_policy": "Use for durable doc version metadata and read policies."
   },
   "audit_rules": {
     "path": "docs/audit_registry/rules.json",
-    "version": "2.5.3",
-    "updated": "2026-05-17",
+    "version": "2.5.4",
+    "updated": "2026-05-18",
     "status": "active",
     "read_policy": "Use for active/watch/archived recursive audit rules, including widget catalog updates, realtime stream lifecycle constraints, branded error UI requirements, Firestore rules emulator-test workflow, event-policy/event-success in-development preservation, and error catalogue maintenance."
   },
@@ -57,15 +57,22 @@
   },
   "event_success_layer_in_development": {
     "path": "codex_audit/event_success_layer_in_development.md",
-    "version": "0.1.0",
-    "updated": "2026-05-16",
+    "version": "0.2.0",
+    "updated": "2026-05-18",
     "status": "active",
-    "read_policy": "Read before deleting, moving, wiring, or auditing lib/event_success; this marks the parallel event-success layer as intentional in-development code."
+    "read_policy": "Read before deleting, moving, wiring, or auditing lib/event_success; this marks the live-wired but still in-development event-success layer as intentional code."
+  },
+  "event_success_completion_tracker": {
+    "path": "codex_audit/event_success_completion_tracker.md",
+    "version": "0.1.0",
+    "updated": "2026-05-18",
+    "status": "active",
+    "read_policy": "Read when checking remaining production event-success wiring, host setup UI, attendee companion behavior, feedback/report metrics, or current pass proof."
   },
   "docs_index": {
     "path": "docs/README.md",
-    "version": "3.0.3",
-    "updated": "2026-05-17",
+    "version": "3.0.4",
+    "updated": "2026-05-18",
     "status": "active",
     "read_policy": "Read before adding, deleting, or consolidating docs."
   },
@@ -134,8 +141,8 @@
   },
   "widget_catalog": {
     "path": "docs/widget_catalog.md",
-    "version": "2.5.77",
-    "updated": "2026-05-17",
+    "version": "2.5.78",
+    "updated": "2026-05-18",
     "status": "active",
     "read_policy": "Use as widget inventory and update it when widget APIs, ownership models, sliver/tab structures, or reusable design-system roles materially change."
   },

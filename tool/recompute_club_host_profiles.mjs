@@ -40,7 +40,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   if (!args.apply) {
-    console.log("\nDry event only. Re-event with --apply to write host fields.");
+    console.log("\nDry run only. Re-event with --apply to write host fields.");
     return;
   }
 
@@ -132,7 +132,7 @@ function loadProfileProjection() {
   } catch (error) {
     throw new Error(
       "Could not load functions/lib/shared/profileProjection.js. " +
-      "Event `npm --prefix functions event build` before this repair tool. " +
+      "Event `npm --prefix functions run build` before this repair tool. " +
       `Original error: ${error.message}`
     );
   }
@@ -200,7 +200,7 @@ Recomputes clubs/{clubId}.hostName and hostAvatarUrl from the host
 users/{uid} profile document.
 
 Options:
-  --apply                 Write repairs. Default is dry-event.
+  --apply                 Write repairs. Default is dry-run.
   --json                  Print summary as JSON.
   --env <dev|staging|prod> Resolve project id from .firebaserc.
   --project <id>          Firebase project id.

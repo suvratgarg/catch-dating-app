@@ -30,7 +30,7 @@ The lower-level world seeder is still available:
 node tool/seed_demo_data.mjs
 ```
 
-It is deterministic and dry-event-first. Generated documents use stable IDs with a
+It is deterministic and dry-run-first. Generated documents use stable IDs with a
 seed prefix, and every event writes a manifest to `seedEvents/{seedPrefix}_{scenario}`
 so the same synthetic world can be deleted and recreated.
 
@@ -118,7 +118,7 @@ The supported commands are:
 | `scenario-info` | List scenario definitions under `tool/demo_seed/scenarios`. |
 | `list-golden-accounts` | Read the golden account registry JSON. |
 
-All write/delete commands are dry-event-first. Add `--apply` to mutate data.
+All write/delete commands are dry-run-first. Add `--apply` to mutate data.
 Production writes also require `--allow-prod`.
 
 ### Match Two Real Testers
@@ -149,7 +149,7 @@ To intentionally create starter messages for a scripted demo, add:
 
 Opt-in starter messages are backdated into the recent past. The command does
 not use a Firestore server timestamp for generated chat rows because demo plans
-need deterministic dry-event output and repeatable document IDs.
+need deterministic dry-run output and repeatable document IDs.
 
 To exercise the actual swipe trigger as well, add:
 
@@ -250,7 +250,7 @@ node tool/demo_ops.mjs cleanup-stale-events \
   --allow-prod
 ```
 
-The command is dry-event-first if you omit `--apply`. It deletes stale seeded
+The command is dry-run-first if you omit `--apply`. It deletes stale seeded
 `events`, `eventParticipations`, schedule locks, saved events, payments, reviews,
 event-linked swipes, demo match threads tied to stale event IDs, and event/match
 notifications. It recomputes event and event-club aggregates after apply.
@@ -405,7 +405,7 @@ TestFlight accounts are assigned to stable roles.
 
 ## Launch Cleanup
 
-Before public launch, event a dry event:
+Before public launch, run a dry run:
 
 ```bash
 node tool/demo_ops.mjs cleanup-demo-data \
@@ -432,7 +432,7 @@ zero demo residue before launch.
 
 For active beta testing, use this rhythm:
 
-- Weekly: dry-event `seed-world --scenario beta-full --reset-synthetic`, review
+- Weekly: dry-run `seed-world --scenario beta-full --reset-synthetic`, review
   counts, then apply if the synthetic world itself needs a full refresh.
 - When inviting a new tester: use `append-user`, not `--reset-synthetic`, so
   existing testers do not receive duplicate seeded notifications.
@@ -446,7 +446,7 @@ For active beta testing, use this rhythm:
 
 Treat this tooling as product infrastructure:
 
-- **Dry-event first:** every mutation command should show its plan before writes.
+- **Dry-run first:** every mutation command should show its plan before writes.
 - **Prod guard:** prod writes require both `--apply` and `--allow-prod`.
 - **Deterministic IDs:** reevents should repair state, not create duplicates.
 - **Manifested writes:** each operation writes a `demoOpsEvents/{operationId}`
@@ -516,7 +516,7 @@ Emulator events do not need live credentials.
 
 ## Dry Event
 
-Always start with a dry event:
+Always start with a dry run:
 
 ```bash
 node tool/seed_demo_data.mjs --env dev --scenario smoke
@@ -580,7 +580,7 @@ JSON anchor files can use either shape:
 ```
 
 If an anchor user is missing, the script fails before writing. If an anchor user
-does not have a `publicProfiles/{uid}` document, the dry event prints a warning.
+does not have a `publicProfiles/{uid}` document, the dry run prints a warning.
 Fix onboarding/profile sync first if that happens; the seeder intentionally does
 not overwrite real user profiles.
 
@@ -673,7 +673,7 @@ node tool/seed_demo_data.mjs \
   --allow-prod
 ```
 
-If the dry event shows the expected new anchor count, apply it:
+If the dry run shows the expected new anchor count, apply it:
 
 ```bash
 node tool/seed_demo_data.mjs \
@@ -736,7 +736,7 @@ Firebase projects.
 
 ## Operational Notes
 
-- Default mode is dry event. `--apply` is required for writes.
+- Default mode is dry run. `--apply` is required for writes.
 - Prod writes require both `--apply` and `--allow-prod`.
 - `--reset-synthetic` deletes only documents recorded in the seed manifest, or
   the current deterministic generated paths if no manifest exists.
@@ -752,7 +752,7 @@ Firebase projects.
 
 1. Collect the TestFlight users' Firebase Auth UIDs or phone numbers.
 2. Put them in `tool/demo_seed/beta_anchors.txt`.
-3. Dry-event prod:
+3. Dry-run prod:
 
    ```bash
    node tool/seed_demo_data.mjs --env prod --scenario beta-full --anchor-file tool/demo_seed/beta_anchors.txt --allow-prod

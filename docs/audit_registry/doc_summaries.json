@@ -1,6 +1,6 @@
 {
-  "version": "3.0.8",
-  "updated": "2026-05-17",
+  "version": "3.0.9",
+  "updated": "2026-05-18",
   "owner": "recursive_audit_loop",
   "summaries": {
     "PROJECT_CONTEXT.md": {
@@ -115,14 +115,26 @@
       ]
     },
     "codex_audit/event_success_layer_in_development.md": {
-      "purpose": "Human-readable preservation marker for the parallel event-success layer that is intentionally not wired into live event flows yet.",
+      "purpose": "Human-readable preservation marker for the live-wired but still in-development event-success layer.",
       "read_when": [
         "Auditing lib/event_success",
         "Considering dead-code cleanup of event success files",
+        "Changing live event-success host setup, attendee companion, private follow-up, feedback, or report behavior",
         "Planning live event facilitation, host coaching, check-in, private crushes, decomposed feedback, or activity-agnostic event platform work"
       ],
       "skip_when": [
         "The task does not touch live event success, host tooling, event quality, attendee mixing, or post-event matching strategy"
+      ]
+    },
+    "codex_audit/event_success_completion_tracker.md": {
+      "purpose": "Current production event-success rollout tracker with remaining watch items and proof commands.",
+      "read_when": [
+        "Checking whether event-success production wiring is complete",
+        "Changing event-success host setup, attendee companion, or feedback/report metrics",
+        "Preparing a future cleanup pass around event-success in-development code"
+      ],
+      "skip_when": [
+        "The task does not touch event-success rollout status or current pass proof"
       ]
     },
     "docs/controller_patterns.md": {

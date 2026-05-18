@@ -251,17 +251,18 @@
       "status": "active",
       "introduced_in": {
         "doc_id": "event_success_layer_in_development",
-        "version": "0.1.0"
+        "version": "0.2.0"
       },
       "applies_to": [
         "lib/event_success/**",
         "test/event_success/**",
         "codex_audit/event_success_layer_in_development.md",
+        "codex_audit/event_success_completion_tracker.md",
         "PROJECT_CONTEXT.md"
       ],
-      "instruction": "Treat lib/event_success as an intentional in-development feature, not dead code. Keep it isolated from production routes, Firestore, Functions, booking, attendance, swipes, reviews, chat, and host tools until the product, safety, privacy, and backend ownership rules are approved.",
+      "instruction": "Treat lib/event_success as an intentional in-development production rollout, not dead code. It may be wired into live event routes through controller/repository seams, but new live modules need explicit privacy, safety, backend ownership, and Firestore read/write behavior in the same pass. Private-crush target identities stay attendee-private; host reporting may use aggregate metrics only.",
       "sunset_when": [
-        "The event success layer is wired into live event host and attendee flows",
+        "The event success layer is fully production-owned and no longer needs an in-development preservation marker",
         "Or the product decision explicitly cancels the live event success layer"
       ]
     },

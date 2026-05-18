@@ -625,7 +625,7 @@ function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
   }
   console.log(title);
   console.log(`Project: ${projectId}`);
-  console.log(`Mode: ${args.apply ? "apply" : "dry event"}`);
+  console.log(`Mode: ${args.apply ? "apply" : "dry run"}`);
   if (plan.command) console.log(`Command: ${plan.command}`);
   if (plan.operationId) console.log(`Operation: ${plan.operationId}`);
   if (plan.uid) console.log(`User: ${plan.uid}`);
@@ -657,7 +657,7 @@ function printPlan({args, projectId, title, plan, manifest, appliedSummary}) {
       }
     }
   } else {
-    console.log("\nDry event only. Re-event with --apply to write changes.");
+    console.log("\nDry run only. Re-event with --apply to write changes.");
   }
 }
 
@@ -704,7 +704,7 @@ Usage:
 Common options:
   --env <dev|staging|prod>       Resolve project id from .firebaserc.
   --project <firebase-project>   Explicit project id.
-  --apply                        Write/delete documents. Default is dry event.
+  --apply                        Write/delete documents. Default is dry run.
   --allow-prod                   Required for prod writes.
   --json                         Machine-readable output.
   --emulator / --emulator-host   Use Firestore emulator.

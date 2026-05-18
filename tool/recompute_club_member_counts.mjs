@@ -37,7 +37,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   if (!args.apply) {
-    console.log("\nDry event only. Re-event with --apply to write memberCount.");
+    console.log("\nDry run only. Re-event with --apply to write memberCount.");
     return;
   }
 
@@ -171,7 +171,7 @@ Recomputes clubs/{clubId}.memberCount from active
 clubMemberships/{clubId_uid} edge documents.
 
 Options:
-  --apply                 Write repairs. Default is dry-event.
+  --apply                 Write repairs. Default is dry-run.
   --json                  Print summary as JSON.
   --env <dev|staging|prod> Resolve project id from .firebaserc.
   --project <id>          Firebase project id.

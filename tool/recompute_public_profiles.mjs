@@ -30,7 +30,7 @@ export async function main(argv = process.argv.slice(2)) {
   if (args.apply && isProductionTarget(args, projectId) && !args.allowProd) {
     throw new Error(
       "Refusing to repair prod without --allow-prod. " +
-      "Event a dry event first, then rerun with --apply --allow-prod."
+      "Run a dry run first, then rerun with --apply --allow-prod."
     );
   }
   if (args.emulatorHost) {
@@ -52,7 +52,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   if (!args.apply) {
-    console.log("\nDry event only. Re-event with --apply to write repairs.");
+    console.log("\nDry run only. Re-event with --apply to write repairs.");
     return;
   }
 
@@ -185,7 +185,7 @@ function loadProfileProjection() {
   } catch (error) {
     throw new Error(
       "Could not load functions/lib/shared/profileProjection.js. " +
-      "Event `npm --prefix functions event build` before this repair tool. " +
+      "Event `npm --prefix functions run build` before this repair tool. " +
       `Original error: ${error.message}`
     );
   }
@@ -301,11 +301,11 @@ function printHelp() {
   console.log(`Usage: node tool/recompute_public_profiles.mjs [options]
 
 Recomputes publicProfiles/{uid} from users/{uid} using the compiled Functions
-profile projection helper. The script is dry-event by default and writes full
+profile projection helper. The script is dry-run by default and writes full
 public profile replacements so stale legacy fields are removed.
 
 Options:
-  --apply                 Write repairs. Default is dry-event.
+  --apply                 Write repairs. Default is dry-run.
   --allow-prod            Required with --apply against prod.
   --json                  Print summary as JSON.
   --summary-only          Omit per-document repair details from output.

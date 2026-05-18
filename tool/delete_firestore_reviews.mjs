@@ -123,7 +123,7 @@ function printHelp() {
 Delete all Firestore reviews and reset derived review aggregates.
 
 This tool is intentionally destructive only with explicit confirmation. Without
---apply it performs a dry-event relationship map.
+--apply it performs a dry-run relationship map.
 
 Usage:
   node tool/delete_firestore_reviews.mjs --env dev
@@ -219,7 +219,7 @@ async function buildDeletionPlan(firestore, metadata) {
     projectId: metadata.projectId,
     emulatorHost: metadata.emulatorHost ?? null,
     generatedAt: new Date().toISOString(),
-    mode: metadata.afterApply ? "post-apply-check" : "dry-event",
+    mode: metadata.afterApply ? "post-apply-check" : "dry-run",
     summary: {
       reviewDocumentsToDelete: reviewDocs.length,
       affectedClubs: affectedClubIds.size,

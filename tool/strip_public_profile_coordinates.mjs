@@ -22,7 +22,7 @@ export async function main(argv = []) {
   if (isProductionTarget({env: args.env, projectId}) && !args.allowProd) {
     throw new Error(
       "Refusing to touch prod without --allow-prod. " +
-      "Event a dry-event first, then pass --apply --allow-prod intentionally."
+      "Run a dry-run first, then pass --apply --allow-prod intentionally."
     );
   }
   if (args.emulatorHost) {
@@ -46,7 +46,7 @@ export async function main(argv = []) {
     changed += 1;
 
     console.log(
-      `${args.apply ? "[update]" : "[dry-event]"} publicProfiles/${doc.id}`
+      `${args.apply ? "[update]" : "[dry-run]"} publicProfiles/${doc.id}`
     );
 
     if (!args.apply) continue;
@@ -70,7 +70,7 @@ export async function main(argv = []) {
   }
 
   console.log(JSON.stringify({
-    mode: args.apply ? "apply" : "dry-event",
+    mode: args.apply ? "apply" : "dry-run",
     projectId,
     scanned,
     changed,
@@ -102,7 +102,7 @@ Usage:
   node tool/strip_public_profile_coordinates.mjs --env prod --apply --allow-prod
 
 Removes legacy latitude/longitude fields from publicProfiles/{uid}. The script
-is dry-event by default.
+is dry-run by default.
 `.trim());
 }
 
