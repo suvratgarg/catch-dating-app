@@ -149,7 +149,10 @@ class _PaymentTile extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      EventFormatters.priceInPaise(payment.amount),
+                      EventFormatters.priceInPaise(
+                        payment.amount,
+                        currencyCode: payment.currency,
+                      ),
                       style: CatchTextStyles.bodyM(
                         context,
                       ).copyWith(fontWeight: FontWeight.w600),
@@ -210,7 +213,10 @@ class _PaymentTile extends ConsumerWidget {
                       ),
                       const Spacer(),
                       Text(
-                        EventFormatters.priceInPaise(payment.amount),
+                        EventFormatters.priceInPaise(
+                          payment.amount,
+                          currencyCode: payment.currency,
+                        ),
                         style: CatchTextStyles.displayS(context),
                       ),
                     ],

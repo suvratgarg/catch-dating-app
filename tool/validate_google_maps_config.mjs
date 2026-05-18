@@ -7,6 +7,7 @@ import {fileURLToPath} from "node:url";
 const toolDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.resolve(toolDir, "..");
 const placesSecretName = "GOOGLE_MAPS_PLACES_API_KEY";
+const supportedPlacesRegionCodes = ["in", "np", "au", "us"];
 
 const args = parseArgs(process.argv.slice(2));
 const envs = args.env ? [args.env] : ["dev", "staging", "prod"];
@@ -193,9 +194,8 @@ async function validatePlacesEndpoint({env, projectId, secretName, apiKey}) {
         },
         body: JSON.stringify({
           input: "Neighbour",
-          includedRegionCodes: ["in"],
-          regionCode: "in",
-          languageCode: "en-IN",
+          includedRegionCodes: supportedPlacesRegionCodes,
+          languageCode: "en",
           locationBias: {
             circle: {
               center: {latitude: 22.726506, longitude: 75.900464},

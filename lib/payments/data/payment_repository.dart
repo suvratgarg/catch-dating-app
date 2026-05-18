@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firebase_providers.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_callable_dtos.dart';
@@ -36,6 +37,7 @@ class PaymentRepository {
   /// Captured order data used to build the confirmation payload on success.
   String? _pendingEventId;
   int? _pendingAmountInPaise;
+  String? _pendingCurrency;
 
   bool get supportsPaidBookings {
     if (_isWebOverride ?? kIsWeb) return false;
@@ -88,6 +90,7 @@ class PaymentRepository {
     _completer = completer;
     _pendingEventId = eventId;
     _pendingAmountInPaise = order.amountInPaise;
+    _pendingCurrency = order.currency;
 
     try {
       razorpay.open({
@@ -194,6 +197,7 @@ class PaymentRepository {
           paymentId: paymentId,
           orderId: orderId,
           amountInPaise: _pendingAmountInPaise ?? 0,
+          currency: _pendingCurrency ?? defaultCurrencyCode,
           eventId: _pendingEventId ?? '',
         ),
       );

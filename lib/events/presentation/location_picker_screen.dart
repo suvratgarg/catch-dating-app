@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:catch_dating_app/core/city_catalog.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -17,9 +18,13 @@ import 'package:google_maps_flutter/google_maps_flutter.dart' as gmaps;
 class LocationPickerScreen extends ConsumerStatefulWidget {
   const LocationPickerScreen({
     super.key,
+    this.countryIsoCode,
     this.initialLocation,
     this.loadMapTiles = true,
   });
+
+  /// ISO country code used to scope meeting-point search suggestions.
+  final String? countryIsoCode;
 
   /// If provided, the map opens centred on this pin.
   final LocationCoordinate? initialLocation;
@@ -33,9 +38,6 @@ class LocationPickerScreen extends ConsumerStatefulWidget {
 }
 
 class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
-  // Default centre: Mumbai, India
-  static const _defaultCenter = LocationCoordinate(19.0760, 72.8777);
-
   final _searchController = TextEditingController();
   LocationCoordinate? _selected;
   gmaps.GoogleMapController? _mapController;
@@ -44,6 +46,14 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   var _suggestions = <PlaceAutocompleteSuggestion>[];
   var _searching = false;
   String? _searchError;
+
+  LocationCoordinate get _defaultCenter {
+    final city = defaultCityDataForMarket();
+    return LocationCoordinate(city.latitude, city.longitude);
+  }
+
+  String get _countryIsoCode =>
+      widget.countryIsoCode ?? defaultCityDataForMarket().countryIsoCode;
 
   @override
   void initState() {
@@ -160,6 +170,7 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
             input: query,
             sessionToken: _sessionToken,
             bias: _selected ?? widget.initialLocation ?? _defaultCenter,
+            countryIsoCode: _countryIsoCode,
           );
       if (!mounted || _searchController.text.trim() != query) return;
       setState(() {

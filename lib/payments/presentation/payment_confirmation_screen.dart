@@ -225,7 +225,7 @@ class _ReferralBanner extends ConsumerWidget {
                 ),
                 gapH2,
                 Text(
-                  'Share the link · they get ₹100 off',
+                  'Share the link for a friend discount',
                   style: CatchTextStyles.bodyS(context),
                 ),
               ],

@@ -6,15 +6,18 @@ final class PlacesAutocompleteCallableRequest {
     required this.input,
     required this.sessionToken,
     required this.bias,
+    this.countryIsoCode,
   });
 
   final String input;
   final String sessionToken;
   final LocationCoordinate? bias;
+  final String? countryIsoCode;
 
   Map<String, Object?> toJson() => {
     'input': input,
     'sessionToken': sessionToken,
+    if (countryIsoCode != null) 'countryIsoCode': countryIsoCode,
     if (bias != null) ...{
       'latitude': bias!.latitude,
       'longitude': bias!.longitude,

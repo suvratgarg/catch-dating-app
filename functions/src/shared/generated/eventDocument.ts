@@ -68,6 +68,7 @@ export interface EventDocument {
   capacityLimit: number;
   description: string;
   priceInPaise: number;
+  currency?: string;
   bookedCount: number;
   checkedInCount: number;
   waitlistedCount: number;

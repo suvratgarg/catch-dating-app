@@ -214,7 +214,7 @@ return $default(_that.firstName,_that.lastName,_that.dateOfBirth,_that.phoneNumb
 
 
 class _OnboardingProfileDraft extends OnboardingProfileDraft {
-  const _OnboardingProfileDraft({this.firstName = '', this.lastName = '', this.dateOfBirth, this.phoneNumber = '', this.countryCode = '+91', this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
+  const _OnboardingProfileDraft({this.firstName = '', this.lastName = '', this.dateOfBirth, this.phoneNumber = '', this.countryCode = defaultCountryDialCode, this.gender, final  List<Gender> interestedInGenders = const [], this.instagramHandle, final  List<ProfilePromptAnswer> profilePrompts = const []}): _interestedInGenders = interestedInGenders,_profilePrompts = profilePrompts,super._();
   
 
 @override@JsonKey() final  String firstName;

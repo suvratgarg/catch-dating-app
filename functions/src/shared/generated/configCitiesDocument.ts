@@ -15,5 +15,9 @@ export interface ConfigCitiesDocument {
     label: string;
     latitude: number | null;
     longitude: number | null;
+    countryIsoCode: string;
+    currencyCode: string;
+    dialCode: string;
+    timeZone: string;
   }[];
 }

@@ -23,6 +23,7 @@ function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
     capacityLimit: 20,
     description: "Easy paced seaside event.",
     priceInPaise: 25000,
+    currency: "INR",
     status: "active",
     cancelledAt: null,
     cancellationReason: null,

@@ -321,6 +321,10 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
           'label',
           'latitude',
           'longitude',
+          'countryIsoCode',
+          'currencyCode',
+          'dialCode',
+          'timeZone',
         ],
         'properties': <String, Object?>{
           'name': <String, Object?>{
@@ -352,6 +356,23 @@ const schemaConfigCitiesDocumentSchema = <String, Object?>{
             ],
             'minimum': -180,
             'maximum': 180,
+          },
+          'countryIsoCode': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[A-Z]{2}\$',
+          },
+          'currencyCode': <String, Object?>{
+            'type': 'string',
+            'pattern': '^[A-Z]{3}\$',
+          },
+          'dialCode': <String, Object?>{
+            'type': 'string',
+            'pattern': '^\\+\\d{1,4}\$',
+          },
+          'timeZone': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 80,
           },
         },
       },
@@ -592,6 +613,10 @@ const schemaUserProfileDocumentSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 32,
+    },
+    'countryCode': <String, Object?>{
+      'type': 'string',
+      'pattern': '^\\+\\d{1,4}\$',
     },
     'profileComplete': <String, Object?>{
       'type': 'boolean',
@@ -2603,6 +2628,10 @@ const schemaEventDocumentSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100000000,
+    },
+    'currency': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[A-Z]{3}\$',
     },
     'bookedCount': <String, Object?>{
       'type': 'integer',
@@ -6125,6 +6154,25 @@ const schemaCreateClubCallablePayloadSchema = <String, Object?>{
   },
 };
 
+const schemaCreateClubCallableResponseSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callable_responses/create_club_response.schema.json',
+  'title': 'CreateClubCallableResponse',
+  'description': 'Callable response returned by createClub.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'clubId',
+  ],
+  'properties': <String, Object?>{
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+  },
+};
+
 const schemaUpdateClubCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/update_club_payload.schema.json',
@@ -6411,6 +6459,10 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
       'type': 'integer',
       'minimum': 0,
       'maximum': 100000000,
+    },
+    'currency': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[A-Z]{3}\$',
     },
     'eventPolicy': <String, Object?>{
       'type': 'object',
@@ -6999,6 +7051,23 @@ const schemaMarkEventAttendanceCallablePayloadSchema = <String, Object?>{
   },
 };
 
+const schemaMarkEventAttendanceCallableResponseSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callable_responses/mark_event_attendance_response.schema.json',
+  'title': 'MarkEventAttendanceCallableResponse',
+  'description': 'Callable response returned by markEventAttendance.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'attended',
+  ],
+  'properties': <String, Object?>{
+    'attended': <String, Object?>{
+      'type': 'boolean',
+    },
+  },
+};
+
 const schemaSelfCheckInAttendanceCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/self_check_in_attendance_payload.schema.json',
@@ -7231,6 +7300,36 @@ const schemaVerifyRazorpayPaymentCallablePayloadSchema = <String, Object?>{
   },
 };
 
+const schemaRazorpayOrderCallableResponseSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callable_responses/razorpay_order_response.schema.json',
+  'title': 'RazorpayOrderCallableResponse',
+  'description': 'Callable response returned by createRazorpayOrder.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'orderId',
+    'amount',
+    'currency',
+  ],
+  'properties': <String, Object?>{
+    'orderId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'amount': <String, Object?>{
+      'type': 'integer',
+      'minimum': 1,
+      'maximum': 100000000,
+    },
+    'currency': <String, Object?>{
+      'type': 'string',
+      'pattern': '^[A-Z]{3}\$',
+    },
+  },
+};
+
 const schemaPlacesAutocompleteCallablePayloadSchema = <String, Object?>{
   '\$schema': 'http://json-schema.org/draft-07/schema#',
   '\$id': 'https://catch.app/contracts/callables/places_autocomplete_payload.schema.json',
@@ -7252,6 +7351,19 @@ const schemaPlacesAutocompleteCallablePayloadSchema = <String, Object?>{
       'minLength': 8,
       'maxLength': 128,
     },
+    'countryIsoCode': <String, Object?>{
+      'type': 'string',
+      'enum': <Object?>[
+        'IN',
+        'NP',
+        'AU',
+        'US',
+        'in',
+        'np',
+        'au',
+        'us',
+      ],
+    },
     'latitude': <String, Object?>{
       'type': 'number',
       'minimum': -90,
@@ -7261,6 +7373,53 @@ const schemaPlacesAutocompleteCallablePayloadSchema = <String, Object?>{
       'type': 'number',
       'minimum': -180,
       'maximum': 180,
+    },
+  },
+};
+
+const schemaPlacesAutocompleteCallableResponseSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callable_responses/places_autocomplete_response.schema.json',
+  'title': 'PlacesAutocompleteCallableResponse',
+  'description': 'Callable response returned by placesAutocomplete.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'predictions',
+  ],
+  'properties': <String, Object?>{
+    'predictions': <String, Object?>{
+      'type': 'array',
+      'maxItems': 10,
+      'items': <String, Object?>{
+        'type': 'object',
+        'additionalProperties': false,
+        'required': <Object?>[
+          'placeId',
+          'description',
+          'mainText',
+          'secondaryText',
+        ],
+        'properties': <String, Object?>{
+          'placeId': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 256,
+          },
+          'description': <String, Object?>{
+            'type': 'string',
+            'maxLength': 1000,
+          },
+          'mainText': <String, Object?>{
+            'type': 'string',
+            'maxLength': 240,
+          },
+          'secondaryText': <String, Object?>{
+            'type': 'string',
+            'maxLength': 1000,
+          },
+        },
+      },
     },
   },
 };
@@ -7285,6 +7444,56 @@ const schemaPlaceDetailsCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 8,
       'maxLength': 128,
+    },
+  },
+};
+
+const schemaPlaceDetailsCallableResponseSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/callable_responses/place_details_response.schema.json',
+  'title': 'PlaceDetailsCallableResponse',
+  'description': 'Callable response returned by placeDetails.',
+  'type': 'object',
+  'additionalProperties': false,
+  'required': <Object?>[
+    'place',
+  ],
+  'properties': <String, Object?>{
+    'place': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'placeId',
+        'displayName',
+        'formattedAddress',
+        'latitude',
+        'longitude',
+      ],
+      'properties': <String, Object?>{
+        'placeId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 256,
+        },
+        'displayName': <String, Object?>{
+          'type': 'string',
+          'maxLength': 240,
+        },
+        'formattedAddress': <String, Object?>{
+          'type': 'string',
+          'maxLength': 1000,
+        },
+        'latitude': <String, Object?>{
+          'type': 'number',
+          'minimum': -90,
+          'maximum': 90,
+        },
+        'longitude': <String, Object?>{
+          'type': 'number',
+          'minimum': -180,
+          'maximum': 180,
+        },
+      },
     },
   },
 };
@@ -7978,6 +8187,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaCreateClubCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'CreateClubCallableResponse',
+    source: 'callable_responses/create_club_response.schema.json',
+    schema: schemaCreateClubCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'UpdateClubCallablePayload',
     source: 'callables/update_club_payload.schema.json',
     schema: schemaUpdateClubCallablePayloadSchema,
@@ -8033,6 +8247,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaMarkEventAttendanceCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'MarkEventAttendanceCallableResponse',
+    source: 'callable_responses/mark_event_attendance_response.schema.json',
+    schema: schemaMarkEventAttendanceCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'SelfCheckInAttendanceCallablePayload',
     source: 'callables/self_check_in_attendance_payload.schema.json',
     schema: schemaSelfCheckInAttendanceCallablePayloadSchema,
@@ -8073,14 +8292,29 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaVerifyRazorpayPaymentCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'RazorpayOrderCallableResponse',
+    source: 'callable_responses/razorpay_order_response.schema.json',
+    schema: schemaRazorpayOrderCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'PlacesAutocompleteCallablePayload',
     source: 'callables/places_autocomplete_payload.schema.json',
     schema: schemaPlacesAutocompleteCallablePayloadSchema,
   ),
   SchemaContractDefinition(
+    name: 'PlacesAutocompleteCallableResponse',
+    source: 'callable_responses/places_autocomplete_response.schema.json',
+    schema: schemaPlacesAutocompleteCallableResponseSchema,
+  ),
+  SchemaContractDefinition(
     name: 'PlaceDetailsCallablePayload',
     source: 'callables/place_details_payload.schema.json',
     schema: schemaPlaceDetailsCallablePayloadSchema,
+  ),
+  SchemaContractDefinition(
+    name: 'PlaceDetailsCallableResponse',
+    source: 'callable_responses/place_details_response.schema.json',
+    schema: schemaPlaceDetailsCallableResponseSchema,
   ),
   SchemaContractDefinition(
     name: 'CreateProfileDecisionClientWrite',
@@ -8148,6 +8382,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'SeedEventManifestDocument': schemaSeedEventManifestDocumentSchema,
   'UpdateUserProfileCallablePayload': schemaUpdateUserProfileCallablePayloadSchema,
   'CreateClubCallablePayload': schemaCreateClubCallablePayloadSchema,
+  'CreateClubCallableResponse': schemaCreateClubCallableResponseSchema,
   'UpdateClubCallablePayload': schemaUpdateClubCallablePayloadSchema,
   'ArchiveClubCallablePayload': schemaArchiveClubCallablePayloadSchema,
   'DeleteClubCallablePayload': schemaDeleteClubCallablePayloadSchema,
@@ -8159,6 +8394,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'DeleteEventCallablePayload': schemaDeleteEventCallablePayloadSchema,
   'EventIdCallablePayload': schemaEventIdCallablePayloadSchema,
   'MarkEventAttendanceCallablePayload': schemaMarkEventAttendanceCallablePayloadSchema,
+  'MarkEventAttendanceCallableResponse': schemaMarkEventAttendanceCallableResponseSchema,
   'SelfCheckInAttendanceCallablePayload': schemaSelfCheckInAttendanceCallablePayloadSchema,
   'CreateEventReviewCallablePayload': schemaCreateEventReviewCallablePayloadSchema,
   'UpdateEventReviewCallablePayload': schemaUpdateEventReviewCallablePayloadSchema,
@@ -8167,8 +8403,11 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'UnblockUserCallablePayload': schemaUnblockUserCallablePayloadSchema,
   'ReportUserCallablePayload': schemaReportUserCallablePayloadSchema,
   'VerifyRazorpayPaymentCallablePayload': schemaVerifyRazorpayPaymentCallablePayloadSchema,
+  'RazorpayOrderCallableResponse': schemaRazorpayOrderCallableResponseSchema,
   'PlacesAutocompleteCallablePayload': schemaPlacesAutocompleteCallablePayloadSchema,
+  'PlacesAutocompleteCallableResponse': schemaPlacesAutocompleteCallableResponseSchema,
   'PlaceDetailsCallablePayload': schemaPlaceDetailsCallablePayloadSchema,
+  'PlaceDetailsCallableResponse': schemaPlaceDetailsCallableResponseSchema,
   'CreateProfileDecisionClientWrite': schemaCreateProfileDecisionClientWriteSchema,
   'CreateChatMessageClientWrite': schemaCreateChatMessageClientWriteSchema,
   'CreateSavedEventClientWrite': schemaCreateSavedEventClientWriteSchema,
@@ -8211,6 +8450,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/seed_events.schema.json': schemaSeedEventManifestDocumentSchema,
   'patches/update_user_profile.schema.json': schemaUpdateUserProfileCallablePayloadSchema,
   'callables/create_club_payload.schema.json': schemaCreateClubCallablePayloadSchema,
+  'callable_responses/create_club_response.schema.json': schemaCreateClubCallableResponseSchema,
   'callables/update_club_payload.schema.json': schemaUpdateClubCallablePayloadSchema,
   'callables/archive_club_payload.schema.json': schemaArchiveClubCallablePayloadSchema,
   'callables/delete_club_payload.schema.json': schemaDeleteClubCallablePayloadSchema,
@@ -8222,6 +8462,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/delete_event_payload.schema.json': schemaDeleteEventCallablePayloadSchema,
   'callables/event_id_payload.schema.json': schemaEventIdCallablePayloadSchema,
   'callables/mark_event_attendance_payload.schema.json': schemaMarkEventAttendanceCallablePayloadSchema,
+  'callable_responses/mark_event_attendance_response.schema.json': schemaMarkEventAttendanceCallableResponseSchema,
   'callables/self_check_in_attendance_payload.schema.json': schemaSelfCheckInAttendanceCallablePayloadSchema,
   'callables/create_event_review_payload.schema.json': schemaCreateEventReviewCallablePayloadSchema,
   'callables/update_event_review_payload.schema.json': schemaUpdateEventReviewCallablePayloadSchema,
@@ -8230,8 +8471,11 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'callables/unblock_user_payload.schema.json': schemaUnblockUserCallablePayloadSchema,
   'callables/report_user_payload.schema.json': schemaReportUserCallablePayloadSchema,
   'callables/verify_razorpay_payment_payload.schema.json': schemaVerifyRazorpayPaymentCallablePayloadSchema,
+  'callable_responses/razorpay_order_response.schema.json': schemaRazorpayOrderCallableResponseSchema,
   'callables/places_autocomplete_payload.schema.json': schemaPlacesAutocompleteCallablePayloadSchema,
+  'callable_responses/places_autocomplete_response.schema.json': schemaPlacesAutocompleteCallableResponseSchema,
   'callables/place_details_payload.schema.json': schemaPlaceDetailsCallablePayloadSchema,
+  'callable_responses/place_details_response.schema.json': schemaPlaceDetailsCallableResponseSchema,
   'client_writes/create_profile_decision.schema.json': schemaCreateProfileDecisionClientWriteSchema,
   'client_writes/create_chat_message.schema.json': schemaCreateChatMessageClientWriteSchema,
   'client_writes/create_saved_event.schema.json': schemaCreateSavedEventClientWriteSchema,

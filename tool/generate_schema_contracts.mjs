@@ -191,6 +191,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/createClubCallablePayload.ts",
   },
   {
+    name: "CreateClubCallableResponse",
+    source: "callable_responses/create_club_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/createClubCallableResponse.ts",
+  },
+  {
     name: "UpdateClubCallablePayload",
     source: "callables/update_club_payload.schema.json",
     typeOutput:
@@ -252,6 +258,12 @@ const schemaSpecs = [
       "functions/src/shared/generated/markEventAttendanceCallablePayload.ts",
   },
   {
+    name: "MarkEventAttendanceCallableResponse",
+    source: "callable_responses/mark_event_attendance_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/markEventAttendanceCallableResponse.ts",
+  },
+  {
     name: "SelfCheckInAttendanceCallablePayload",
     source: "callables/self_check_in_attendance_payload.schema.json",
     typeOutput:
@@ -297,16 +309,34 @@ const schemaSpecs = [
       "functions/src/shared/generated/verifyRazorpayPaymentCallablePayload.ts",
   },
   {
+    name: "RazorpayOrderCallableResponse",
+    source: "callable_responses/razorpay_order_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/razorpayOrderCallableResponse.ts",
+  },
+  {
     name: "PlacesAutocompleteCallablePayload",
     source: "callables/places_autocomplete_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/placesAutocompleteCallablePayload.ts",
   },
   {
+    name: "PlacesAutocompleteCallableResponse",
+    source: "callable_responses/places_autocomplete_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/placesAutocompleteCallableResponse.ts",
+  },
+  {
     name: "PlaceDetailsCallablePayload",
     source: "callables/place_details_payload.schema.json",
     typeOutput:
       "functions/src/shared/generated/placeDetailsCallablePayload.ts",
+  },
+  {
+    name: "PlaceDetailsCallableResponse",
+    source: "callable_responses/place_details_response.schema.json",
+    typeOutput:
+      "functions/src/shared/generated/placeDetailsCallableResponse.ts",
   },
   {
     name: "CreateProfileDecisionClientWrite",

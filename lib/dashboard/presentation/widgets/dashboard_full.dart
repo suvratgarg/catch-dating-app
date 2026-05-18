@@ -43,7 +43,7 @@ class DashboardFull extends ConsumerWidget {
 
   static String dayCity(String? cityLabel) {
     final day = DateFormat('EEEE').format(DateTime.now());
-    return '$day · ${cityLabel ?? 'Mumbai'}';
+    return '$day · ${cityLabel ?? defaultCityDataForMarket().label}';
   }
 
   @override

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/time_formatters.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:intl/intl.dart';
@@ -35,12 +36,10 @@ class EventFormatters {
     return includeUnit ? '${value}km' : value;
   }
 
-  static String priceInPaise(int paise) {
-    final rupees = paise / 100;
-    return rupees == rupees.roundToDouble()
-        ? '₹${rupees.round()}'
-        : '₹${rupees.toStringAsFixed(2)}';
-  }
+  static String priceInPaise(
+    int paise, {
+    String currencyCode = defaultCurrencyCode,
+  }) => formatMinorCurrency(paise, currencyCode: currencyCode);
 
   static String durationMinutes(int minutes) {
     final hours = minutes ~/ 60;

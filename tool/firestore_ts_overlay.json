@@ -262,14 +262,14 @@
       "email": "nullable in Firestore"
     },
     "EventDoc": {
-      "priceInPaise": "in paise (INR subunit). 0 = free event",
+      "priceInPaise": "legacy field name; amount in the event currency's minor unit. 0 = free event",
       "startingPointLat": "nullable in Firestore",
       "startingPointLng": "nullable in Firestore",
       "locationDetails": "nullable in Firestore",
       "genderCounts": "Keys are Gender enum names: 'man', 'woman', 'nonBinary', 'other'. Denormalized counts maintained atomically by Cloud Functions."
     },
     "PaymentDoc": {
-      "amount": "in paise",
+      "amount": "amount in the payment currency's minor unit",
       "signUpFailed": "True when payment succeeded but sign-up failed due to a race or refund",
       "id": "Razorpay paymentId for paid, auto-id for free"
     },

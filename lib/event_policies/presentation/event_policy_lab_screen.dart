@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -531,7 +532,7 @@ class _ResultRow extends StatelessWidget {
               CatchBadge(
                 label: _formatPaise(row.finalPriceInPaise),
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.currency_rupee_rounded,
+                icon: Icons.payments_outlined,
               ),
             ],
           ),
@@ -637,7 +638,7 @@ class _CancellationRow extends StatelessWidget {
               CatchBadge(
                 label: 'Refund ${_formatPaise(row.refundAmountInPaise)}',
                 tone: CatchBadgeTone.neutral,
-                icon: Icons.currency_rupee_rounded,
+                icon: Icons.payments_outlined,
               ),
               CatchBadge(
                 label: 'Credit ${_formatPaise(row.creditAmountInPaise)}',
@@ -912,31 +913,10 @@ String _formatCohortId(String cohortId) {
 }
 
 String _formatPaise(int paise) {
-  final negative = paise < 0;
-  final absolute = paise.abs();
-  final rupees = absolute ~/ 100;
-  final paiseRemainder = absolute % 100;
-  final formattedRupees = _formatRupees(rupees);
-  final value = paiseRemainder == 0
-      ? '₹$formattedRupees'
-      : '₹$formattedRupees.${paiseRemainder.toString().padLeft(2, '0')}';
-  return negative ? '-$value' : value;
+  return formatMinorCurrency(paise);
 }
 
 String _formatSignedPaise(int paise) {
-  if (paise == 0) return '₹0';
+  if (paise == 0) return _formatPaise(0);
   return paise > 0 ? '+${_formatPaise(paise)}' : _formatPaise(paise);
-}
-
-String _formatRupees(int rupees) {
-  final value = rupees.toString();
-  final buffer = StringBuffer();
-  for (var i = 0; i < value.length; i++) {
-    final remaining = value.length - i;
-    buffer.write(value[i]);
-    if (remaining > 1 && remaining % 3 == 1) {
-      buffer.write(',');
-    }
-  }
-  return buffer.toString();
 }

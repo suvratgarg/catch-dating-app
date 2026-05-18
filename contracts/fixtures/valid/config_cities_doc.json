@@ -5,13 +5,21 @@
       "name": "mumbai",
       "label": "Mumbai",
       "latitude": 19.076,
-      "longitude": 72.8777
+      "longitude": 72.8777,
+      "countryIsoCode": "IN",
+      "currencyCode": "INR",
+      "dialCode": "+91",
+      "timeZone": "Asia/Kolkata"
     },
     {
       "name": "indore",
       "label": "Indore",
       "latitude": 22.7196,
-      "longitude": 75.8577
+      "longitude": 75.8577,
+      "countryIsoCode": "IN",
+      "currencyCode": "INR",
+      "dialCode": "+91",
+      "timeZone": "Asia/Kolkata"
     }
   ]
 }

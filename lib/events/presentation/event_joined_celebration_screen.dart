@@ -57,7 +57,10 @@ class EventJoinedCelebrationScreen extends StatelessWidget {
           CelebrationDetail(
             icon: Icons.payments_outlined,
             label: 'Paid',
-            value: EventFormatters.priceInPaise(paymentData.amountInPaise),
+            value: EventFormatters.priceInPaise(
+              paymentData.amountInPaise,
+              currencyCode: paymentData.currency,
+            ),
           ),
           CelebrationDetail(
             icon: Icons.receipt_long_outlined,

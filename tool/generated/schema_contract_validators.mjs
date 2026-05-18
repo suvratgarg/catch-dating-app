@@ -36,6 +36,7 @@ import {
   seedEventManifestDocumentSchema,
   updateUserProfileCallablePayloadSchema,
   createClubCallablePayloadSchema,
+  createClubCallableResponseSchema,
   updateClubCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
@@ -47,6 +48,7 @@ import {
   deleteEventCallablePayloadSchema,
   eventIdCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
+  markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
   updateEventReviewCallablePayloadSchema,
@@ -55,8 +57,11 @@ import {
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
   verifyRazorpayPaymentCallablePayloadSchema,
+  razorpayOrderCallableResponseSchema,
   placesAutocompleteCallablePayloadSchema,
+  placesAutocompleteCallableResponseSchema,
   placeDetailsCallablePayloadSchema,
+  placeDetailsCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
   createSavedEventClientWriteSchema,
@@ -107,6 +112,7 @@ export const validateFunctionEventReceiptDocument = ajv.compile(functionEventRec
 export const validateSeedEventManifestDocument = ajv.compile(seedEventManifestDocumentSchema);
 export const validateUpdateUserProfileCallablePayload = ajv.compile(updateUserProfileCallablePayloadSchema);
 export const validateCreateClubCallablePayload = ajv.compile(createClubCallablePayloadSchema);
+export const validateCreateClubCallableResponse = ajv.compile(createClubCallableResponseSchema);
 export const validateUpdateClubCallablePayload = ajv.compile(updateClubCallablePayloadSchema);
 export const validateArchiveClubCallablePayload = ajv.compile(archiveClubCallablePayloadSchema);
 export const validateDeleteClubCallablePayload = ajv.compile(deleteClubCallablePayloadSchema);
@@ -118,6 +124,7 @@ export const validateCancelEventCallablePayload = ajv.compile(cancelEventCallabl
 export const validateDeleteEventCallablePayload = ajv.compile(deleteEventCallablePayloadSchema);
 export const validateEventIdCallablePayload = ajv.compile(eventIdCallablePayloadSchema);
 export const validateMarkEventAttendanceCallablePayload = ajv.compile(markEventAttendanceCallablePayloadSchema);
+export const validateMarkEventAttendanceCallableResponse = ajv.compile(markEventAttendanceCallableResponseSchema);
 export const validateSelfCheckInAttendanceCallablePayload = ajv.compile(selfCheckInAttendanceCallablePayloadSchema);
 export const validateCreateEventReviewCallablePayload = ajv.compile(createEventReviewCallablePayloadSchema);
 export const validateUpdateEventReviewCallablePayload = ajv.compile(updateEventReviewCallablePayloadSchema);
@@ -126,8 +133,11 @@ export const validateBlockUserCallablePayload = ajv.compile(blockUserCallablePay
 export const validateUnblockUserCallablePayload = ajv.compile(unblockUserCallablePayloadSchema);
 export const validateReportUserCallablePayload = ajv.compile(reportUserCallablePayloadSchema);
 export const validateVerifyRazorpayPaymentCallablePayload = ajv.compile(verifyRazorpayPaymentCallablePayloadSchema);
+export const validateRazorpayOrderCallableResponse = ajv.compile(razorpayOrderCallableResponseSchema);
 export const validatePlacesAutocompleteCallablePayload = ajv.compile(placesAutocompleteCallablePayloadSchema);
+export const validatePlacesAutocompleteCallableResponse = ajv.compile(placesAutocompleteCallableResponseSchema);
 export const validatePlaceDetailsCallablePayload = ajv.compile(placeDetailsCallablePayloadSchema);
+export const validatePlaceDetailsCallableResponse = ajv.compile(placeDetailsCallableResponseSchema);
 export const validateCreateProfileDecisionClientWrite = ajv.compile(createProfileDecisionClientWriteSchema);
 export const validateCreateChatMessageClientWrite = ajv.compile(createChatMessageClientWriteSchema);
 export const validateCreateSavedEventClientWrite = ajv.compile(createSavedEventClientWriteSchema);

@@ -2,6 +2,7 @@ import 'package:catch_dating_app/auth/presentation/auth_controller.dart';
 import 'package:catch_dating_app/auth/presentation/auth_form_keys.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -177,7 +178,7 @@ class _CountryCodeSelector extends StatelessWidget {
           border: Border.all(color: t.line2, width: 1.5),
         ),
         child: CountryCodePicker(
-          initialSelection: countryCode.isEmpty ? 'IN' : countryCode,
+          initialSelection: countryIsoForDialCode(countryCode),
           onChanged: (code) {
             final dialCode = code.dialCode;
             if (dialCode == null || dialCode.isEmpty) return;
@@ -191,7 +192,7 @@ class _CountryCodeSelector extends StatelessWidget {
           showFlagDialog: true,
           showDropDownButton: true,
           hideMainText: false,
-          favorite: const ['IN'],
+          favorite: supportedCountryPickerFavorites,
           textStyle: CatchTextStyles.bodyM(context, color: t.ink),
           dialogTextStyle: CatchTextStyles.bodyM(context, color: t.ink),
           searchStyle: CatchTextStyles.bodyM(context, color: t.ink),

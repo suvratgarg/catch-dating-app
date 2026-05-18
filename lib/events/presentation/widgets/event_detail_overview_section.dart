@@ -141,7 +141,10 @@ class _EventPolicySummary extends StatelessWidget {
             _PolicyLine(
               icon: Icons.trending_up_rounded,
               title: 'Demand pricing',
-              body: _dynamicPricingSummary(policy.pricingPolicy),
+              body: _dynamicPricingSummary(
+                policy.pricingPolicy,
+                currencyCode: event.currency,
+              ),
             ),
           ],
           gapH10,
@@ -307,12 +310,21 @@ String _admissionSummary(EventAdmissionPolicy policy) {
   };
 }
 
-String _dynamicPricingSummary(EventPricingPolicy policy) {
+String _dynamicPricingSummary(
+  EventPricingPolicy policy, {
+  required String currencyCode,
+}) {
   if (policy.demandPricingRules.isEmpty) {
     return 'Price can change based on live demand.';
   }
   final rule = policy.demandPricingRules.first;
-  final step = EventFormatters.priceInPaise(rule.stepAdjustment.inPaise);
-  final max = EventFormatters.priceInPaise(rule.maxAdjustment.inPaise);
+  final step = EventFormatters.priceInPaise(
+    rule.stepAdjustment.inPaise,
+    currencyCode: currencyCode,
+  );
+  final max = EventFormatters.priceInPaise(
+    rule.maxAdjustment.inPaise,
+    currencyCode: currencyCode,
+  );
   return 'Price can increase by $step per demand step, capped at $max above the base price.';
 }

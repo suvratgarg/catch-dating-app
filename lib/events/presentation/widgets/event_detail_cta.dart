@@ -164,7 +164,10 @@ class EventDetailCta extends ConsumerWidget {
             leadingContent: isFreeForViewer
                 ? null
                 : PriceLeading(
-                    price: EventFormatters.priceInPaise(quotedPriceInPaise),
+                    price: EventFormatters.priceInPaise(
+                      quotedPriceInPaise,
+                      currencyCode: event.currency,
+                    ),
                   ),
           ),
           EventSignUpStatus.signedUp => (() {

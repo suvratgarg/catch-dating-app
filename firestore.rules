@@ -70,12 +70,20 @@ service cloud.firestore {
         'bangalore',
         'hyderabad',
         'chennai',
-        'kolkata',
-        'pune',
-        'ahmedabad',
-        'indore'
-      ];
-    }
+	        'kolkata',
+	        'pune',
+	        'ahmedabad',
+	        'indore',
+	        'kathmandu',
+	        'pokhara',
+	        'sydney',
+	        'melbourne',
+	        'brisbane',
+	        'new-york',
+	        'san-francisco',
+	        'los-angeles'
+	      ];
+	    }
 
     function isConfiguredCity(city) {
       return exists(/databases/$(database)/documents/config/cities)
@@ -166,7 +174,7 @@ service cloud.firestore {
           // Core
           'name', 'firstName', 'lastName', 'displayName', 'email',
           'profilePrompts',
-          'instagramHandle', 'phoneNumber', 'dateOfBirth',
+	          'instagramHandle', 'phoneNumber', 'countryCode', 'dateOfBirth',
           'gender', 'profileComplete',
           // Photos
           'photoUrls', 'photoThumbnailUrls', 'photoPrompts', 'profilePhotos',
@@ -222,9 +230,10 @@ service cloud.firestore {
         && data.email is string
         && data.profilePrompts is list
         && data.profilePrompts.size() <= 3
-        && optionalString(data, 'instagramHandle')
-        && data.phoneNumber is string
-        && data.dateOfBirth is timestamp
+	        && optionalString(data, 'instagramHandle')
+	        && data.phoneNumber is string
+	        && optionalString(data, 'countryCode')
+	        && data.dateOfBirth is timestamp
         && data.gender in ['man', 'woman', 'nonBinary', 'other']
         && data.profileComplete is bool
         // Photos

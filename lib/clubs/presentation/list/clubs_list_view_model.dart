@@ -59,7 +59,7 @@ class SelectedClubCity extends _$SelectedClubCity {
   bool _userSelected = false;
 
   @override
-  CityData build() => _mumbaiDefault;
+  CityData build() => defaultCityDataForMarket();
 
   void setCity(CityData city) {
     _userSelected = true;
@@ -96,13 +96,6 @@ class SelectedClubCityWasUserSelected extends Notifier<bool> {
 
   void markSelected() => state = true;
 }
-
-final _mumbaiDefault = CityData(
-  name: 'mumbai',
-  label: 'Mumbai',
-  latitude: 19.0760,
-  longitude: 72.8777,
-);
 
 /// **KeepAlive notifier — simple string state**
 ///

@@ -14,6 +14,7 @@ import {
   validateConfigCitiesDocument,
   validateCreateEventCallablePayload,
   validateCreateClubCallablePayload,
+  validateCreateClubCallableResponse,
   validateCreateEventReviewCallablePayload,
   validateCreateChatMessageClientWrite,
   validateCreateProfileDecisionClientWrite,
@@ -26,12 +27,15 @@ import {
   validateFunctionEventReceiptDocument,
   validateMarkNotificationReadClientWrite,
   validateMarkEventAttendanceCallablePayload,
+  validateMarkEventAttendanceCallableResponse,
   validateMatchDocument,
   validateModerationFlagDocument,
   validateOnboardingDraftDocument,
   validatePaymentDocument,
   validatePlaceDetailsCallablePayload,
+  validatePlaceDetailsCallableResponse,
   validatePlacesAutocompleteCallablePayload,
+  validatePlacesAutocompleteCallableResponse,
   validatePhotoPromptAnswer,
   validateProfilePhoto,
   validateProfilePromptAnswer,
@@ -62,6 +66,7 @@ import {
   validateUserEventScheduleLockDocument,
   validateUserProfileDocument,
   validateVerifyRazorpayPaymentCallablePayload,
+  validateRazorpayOrderCallableResponse,
 } from "./generated/schemaValidators";
 
 type Validator = Parameters<typeof schemaErrorMessages>[0];
@@ -210,6 +215,10 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/create_club_payload.json")
   );
   assertValid(
+    validateCreateClubCallableResponse as Validator,
+    readFixture("fixtures/valid/create_club_response.json")
+  );
+  assertValid(
     validateUpdateClubCallablePayload as Validator,
     readFixture("fixtures/valid/update_club_payload.json")
   );
@@ -256,6 +265,10 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/mark_event_attendance_payload.json")
   );
   assertValid(
+    validateMarkEventAttendanceCallableResponse as Validator,
+    readFixture("fixtures/valid/mark_event_attendance_response.json")
+  );
+  assertValid(
     validateSelfCheckInAttendanceCallablePayload as Validator,
     readFixture("fixtures/valid/self_check_in_attendance_payload.json")
   );
@@ -288,12 +301,24 @@ test("generated schema validators accept valid contract fixtures", () => {
     readFixture("fixtures/valid/verify_razorpay_payment_payload.json")
   );
   assertValid(
+    validateRazorpayOrderCallableResponse as Validator,
+    readFixture("fixtures/valid/razorpay_order_response.json")
+  );
+  assertValid(
     validatePlacesAutocompleteCallablePayload as Validator,
     readFixture("fixtures/valid/places_autocomplete_payload.json")
   );
   assertValid(
+    validatePlacesAutocompleteCallableResponse as Validator,
+    readFixture("fixtures/valid/places_autocomplete_response.json")
+  );
+  assertValid(
     validatePlaceDetailsCallablePayload as Validator,
     readFixture("fixtures/valid/place_details_payload.json")
+  );
+  assertValid(
+    validatePlaceDetailsCallableResponse as Validator,
+    readFixture("fixtures/valid/place_details_response.json")
   );
   assertValid(
     validateCreateProfileDecisionClientWrite as Validator,
@@ -373,6 +398,10 @@ test("generated schema validators reject invalid contract fixtures", () => {
   assertInvalid(
     validatePlacesAutocompleteCallablePayload as Validator,
     readFixture("fixtures/invalid/places_autocomplete_short_input.json")
+  );
+  assertInvalid(
+    validateRazorpayOrderCallableResponse as Validator,
+    readFixture("fixtures/invalid/razorpay_order_response_missing_amount.json")
   );
   assertInvalid(
     validateCreateChatMessageClientWrite as Validator,

@@ -20,6 +20,7 @@ export interface CreateEventCallablePayload {
   capacityLimit: number;
   description: string;
   priceInPaise: number;
+  currency?: string;
   eventPolicy?: {
     version: 1;
     admission: {

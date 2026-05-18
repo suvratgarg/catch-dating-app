@@ -49,6 +49,7 @@ class EventPolicyStep extends StatelessWidget {
     required this.formKey,
     required this.capacityController,
     required this.priceController,
+    required this.currencyCode,
     required this.inviteCodeController,
     required this.dynamicPricingStepController,
     required this.dynamicPricingMaxController,
@@ -67,6 +68,7 @@ class EventPolicyStep extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController capacityController;
   final TextEditingController priceController;
+  final String currencyCode;
   final TextEditingController inviteCodeController;
   final TextEditingController dynamicPricingStepController;
   final TextEditingController dynamicPricingMaxController;
@@ -153,10 +155,10 @@ class EventPolicyStep extends StatelessWidget {
               Expanded(
                 child: CatchTextField(
                   key: CreateEventFormKeys.price,
-                  label: 'Base price (Rs)',
+                  label: 'Base price ($currencyCode)',
                   controller: priceController,
                   hintText: '0',
-                  prefixIcon: const Icon(Icons.currency_rupee_outlined),
+                  prefixIcon: const Icon(Icons.payments_outlined),
                   keyboardType: const TextInputType.numberWithOptions(
                     decimal: true,
                   ),
@@ -317,7 +319,7 @@ class EventPolicyStep extends StatelessWidget {
                         Expanded(
                           child: CatchTextField(
                             key: CreateEventFormKeys.dynamicPricingStep,
-                            label: 'Step (Rs)',
+                            label: 'Step ($currencyCode)',
                             controller: dynamicPricingStepController,
                             hintText: '250',
                             prefixIcon: const Icon(Icons.trending_up_rounded),
@@ -335,7 +337,7 @@ class EventPolicyStep extends StatelessWidget {
                         Expanded(
                           child: CatchTextField(
                             key: CreateEventFormKeys.dynamicPricingMax,
-                            label: 'Max (Rs)',
+                            label: 'Max ($currencyCode)',
                             controller: dynamicPricingMaxController,
                             hintText: '1500',
                             prefixIcon: const Icon(Icons.price_change_outlined),

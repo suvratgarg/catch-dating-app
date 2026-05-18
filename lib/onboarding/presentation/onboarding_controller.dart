@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/require_signed_in_uid.dart';
 import 'package:catch_dating_app/core/backend_error_util.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/exceptions/error_logger.dart';
 import 'package:catch_dating_app/onboarding/data/onboarding_draft_repository.dart';
@@ -131,13 +132,14 @@ class OnboardingController extends _$OnboardingController {
         return;
       }
 
+      final dialCode = _dialCodeFromPhoneNumber(phoneNumber);
       _setStateIfChanged(
         state.copyWith(
           step: OnboardingStep.nameDob,
           phoneVerified: true,
           profileDraft: state.profileDraft.copyWith(
-            phoneNumber: _stripCountryCode(phoneNumber, '+91'),
-            countryCode: '+91',
+            phoneNumber: _stripCountryCode(phoneNumber, dialCode),
+            countryCode: dialCode,
           ),
         ),
       );
@@ -249,6 +251,7 @@ class OnboardingController extends _$OnboardingController {
             dateOfBirth: draft.dateOfBirth!,
             gender: draft.gender!,
             phoneNumber: verifiedPhoneNumber,
+            countryCode: draft.countryCode,
             interestedInGenders: draft.interestedInGenders,
             instagramHandle: (draft.instagramHandle?.trim() ?? '').isEmpty
                 ? null
@@ -385,6 +388,17 @@ class OnboardingController extends _$OnboardingController {
       return phoneNumber.substring(countryCode.length);
     }
     return phoneNumber;
+  }
+
+  String _dialCodeFromPhoneNumber(String phoneNumber) {
+    final normalized = phoneNumber.trim();
+    final sortedDialCodes =
+        supportedCountryMarkets.map((market) => market.dialCode).toList()
+          ..sort((a, b) => b.length.compareTo(a.length));
+    for (final dialCode in sortedDialCodes) {
+      if (normalized.startsWith(dialCode)) return dialCode;
+    }
+    return state.countryCode;
   }
 
   void _saveDraft() {

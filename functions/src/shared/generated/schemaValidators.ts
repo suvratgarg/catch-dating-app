@@ -37,6 +37,7 @@ import {FunctionEventReceiptDocument} from "./functionEventReceiptDocument";
 import {SeedEventManifestDocument} from "./seedEventManifestDocument";
 import {UpdateUserProfileCallablePayload} from "./updateUserProfileCallablePayload";
 import {CreateClubCallablePayload} from "./createClubCallablePayload";
+import {CreateClubCallableResponse} from "./createClubCallableResponse";
 import {UpdateClubCallablePayload} from "./updateClubCallablePayload";
 import {ArchiveClubCallablePayload} from "./archiveClubCallablePayload";
 import {DeleteClubCallablePayload} from "./deleteClubCallablePayload";
@@ -48,6 +49,7 @@ import {CancelEventCallablePayload} from "./cancelEventCallablePayload";
 import {DeleteEventCallablePayload} from "./deleteEventCallablePayload";
 import {EventIdCallablePayload} from "./eventIdCallablePayload";
 import {MarkEventAttendanceCallablePayload} from "./markEventAttendanceCallablePayload";
+import {MarkEventAttendanceCallableResponse} from "./markEventAttendanceCallableResponse";
 import {SelfCheckInAttendanceCallablePayload} from "./selfCheckInAttendanceCallablePayload";
 import {CreateEventReviewCallablePayload} from "./createEventReviewCallablePayload";
 import {UpdateEventReviewCallablePayload} from "./updateEventReviewCallablePayload";
@@ -56,8 +58,11 @@ import {BlockUserCallablePayload} from "./blockUserCallablePayload";
 import {UnblockUserCallablePayload} from "./unblockUserCallablePayload";
 import {ReportUserCallablePayload} from "./reportUserCallablePayload";
 import {VerifyRazorpayPaymentCallablePayload} from "./verifyRazorpayPaymentCallablePayload";
+import {RazorpayOrderCallableResponse} from "./razorpayOrderCallableResponse";
 import {PlacesAutocompleteCallablePayload} from "./placesAutocompleteCallablePayload";
+import {PlacesAutocompleteCallableResponse} from "./placesAutocompleteCallableResponse";
 import {PlaceDetailsCallablePayload} from "./placeDetailsCallablePayload";
+import {PlaceDetailsCallableResponse} from "./placeDetailsCallableResponse";
 import {CreateProfileDecisionClientWrite} from "./createProfileDecisionClientWrite";
 import {CreateChatMessageClientWrite} from "./createChatMessageClientWrite";
 import {CreateSavedEventClientWrite} from "./createSavedEventClientWrite";
@@ -98,6 +103,7 @@ import {
   seedEventManifestDocumentSchema,
   updateUserProfileCallablePayloadSchema,
   createClubCallablePayloadSchema,
+  createClubCallableResponseSchema,
   updateClubCallablePayloadSchema,
   archiveClubCallablePayloadSchema,
   deleteClubCallablePayloadSchema,
@@ -109,6 +115,7 @@ import {
   deleteEventCallablePayloadSchema,
   eventIdCallablePayloadSchema,
   markEventAttendanceCallablePayloadSchema,
+  markEventAttendanceCallableResponseSchema,
   selfCheckInAttendanceCallablePayloadSchema,
   createEventReviewCallablePayloadSchema,
   updateEventReviewCallablePayloadSchema,
@@ -117,8 +124,11 @@ import {
   unblockUserCallablePayloadSchema,
   reportUserCallablePayloadSchema,
   verifyRazorpayPaymentCallablePayloadSchema,
+  razorpayOrderCallableResponseSchema,
   placesAutocompleteCallablePayloadSchema,
+  placesAutocompleteCallableResponseSchema,
   placeDetailsCallablePayloadSchema,
+  placeDetailsCallableResponseSchema,
   createProfileDecisionClientWriteSchema,
   createChatMessageClientWriteSchema,
   createSavedEventClientWriteSchema,
@@ -262,6 +272,10 @@ export const validateCreateClubCallablePayload:
   ValidateFunction<CreateClubCallablePayload> =
     ajv.compile(createClubCallablePayloadSchema) as
       ValidateFunction<CreateClubCallablePayload>;
+export const validateCreateClubCallableResponse:
+  ValidateFunction<CreateClubCallableResponse> =
+    ajv.compile(createClubCallableResponseSchema) as
+      ValidateFunction<CreateClubCallableResponse>;
 export const validateUpdateClubCallablePayload:
   ValidateFunction<UpdateClubCallablePayload> =
     ajv.compile(updateClubCallablePayloadSchema) as
@@ -306,6 +320,10 @@ export const validateMarkEventAttendanceCallablePayload:
   ValidateFunction<MarkEventAttendanceCallablePayload> =
     ajv.compile(markEventAttendanceCallablePayloadSchema) as
       ValidateFunction<MarkEventAttendanceCallablePayload>;
+export const validateMarkEventAttendanceCallableResponse:
+  ValidateFunction<MarkEventAttendanceCallableResponse> =
+    ajv.compile(markEventAttendanceCallableResponseSchema) as
+      ValidateFunction<MarkEventAttendanceCallableResponse>;
 export const validateSelfCheckInAttendanceCallablePayload:
   ValidateFunction<SelfCheckInAttendanceCallablePayload> =
     ajv.compile(selfCheckInAttendanceCallablePayloadSchema) as
@@ -338,14 +356,26 @@ export const validateVerifyRazorpayPaymentCallablePayload:
   ValidateFunction<VerifyRazorpayPaymentCallablePayload> =
     ajv.compile(verifyRazorpayPaymentCallablePayloadSchema) as
       ValidateFunction<VerifyRazorpayPaymentCallablePayload>;
+export const validateRazorpayOrderCallableResponse:
+  ValidateFunction<RazorpayOrderCallableResponse> =
+    ajv.compile(razorpayOrderCallableResponseSchema) as
+      ValidateFunction<RazorpayOrderCallableResponse>;
 export const validatePlacesAutocompleteCallablePayload:
   ValidateFunction<PlacesAutocompleteCallablePayload> =
     ajv.compile(placesAutocompleteCallablePayloadSchema) as
       ValidateFunction<PlacesAutocompleteCallablePayload>;
+export const validatePlacesAutocompleteCallableResponse:
+  ValidateFunction<PlacesAutocompleteCallableResponse> =
+    ajv.compile(placesAutocompleteCallableResponseSchema) as
+      ValidateFunction<PlacesAutocompleteCallableResponse>;
 export const validatePlaceDetailsCallablePayload:
   ValidateFunction<PlaceDetailsCallablePayload> =
     ajv.compile(placeDetailsCallablePayloadSchema) as
       ValidateFunction<PlaceDetailsCallablePayload>;
+export const validatePlaceDetailsCallableResponse:
+  ValidateFunction<PlaceDetailsCallableResponse> =
+    ajv.compile(placeDetailsCallableResponseSchema) as
+      ValidateFunction<PlaceDetailsCallableResponse>;
 export const validateCreateProfileDecisionClientWrite:
   ValidateFunction<CreateProfileDecisionClientWrite> =
     ajv.compile(createProfileDecisionClientWriteSchema) as

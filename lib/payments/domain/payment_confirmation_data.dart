@@ -4,11 +4,13 @@ class PaymentConfirmationData {
     required this.paymentId,
     required this.orderId,
     required this.amountInPaise,
+    required this.currency,
     required this.eventId,
   });
 
   final String paymentId;
   final String orderId;
   final int amountInPaise;
+  final String currency;
   final String eventId;
 }

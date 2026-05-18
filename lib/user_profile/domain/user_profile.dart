@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:catch_dating_app/user_profile/domain/profile_photo.dart';
@@ -198,6 +199,7 @@ abstract class UserProfile with _$UserProfile {
     @TimestampConverter() required DateTime dateOfBirth,
     required Gender gender,
     required String phoneNumber,
+    @Default(defaultCountryDialCode) String countryCode,
     required bool profileComplete,
 
     // Optional profile/contact field. Authentication is phone-only.

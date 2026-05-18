@@ -18,6 +18,7 @@ void main() {
       paymentId: 'pay_ABC123',
       orderId: 'order_XYZ789',
       amountInPaise: 29900,
+      currency: 'INR',
       eventId: 'event-1',
     );
 

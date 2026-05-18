@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/core/labelled.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -25,8 +26,8 @@ abstract class Payment with _$Payment {
     required String orderId,
     required String paymentId,
     required String eventId,
-    required int amount, // in paise
-    @Default('INR') String currency,
+    required int amount,
+    @Default(defaultCurrencyCode) String currency,
     required PaymentStatus status,
     @Default(false) bool signUpFailed,
     @TimestampConverter() required DateTime createdAt,

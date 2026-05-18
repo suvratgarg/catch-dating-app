@@ -26,6 +26,7 @@ function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
     capacityLimit: 20,
     description: "Easy paced seaside event.",
     priceInPaise: 25000,
+    currency: "INR",
     status: "active",
     cancelledAt: null,
     cancellationReason: null,
@@ -85,6 +86,25 @@ test("buildOrderCreatePayload rejects free events", () => {
     isHttpsError("invalid-argument", "Event price must be a positive integer.")
   );
 });
+
+test(
+  "buildOrderCreatePayload rejects non-INR paid events until a provider exists",
+  () => {
+    assert.throws(
+      () =>
+        buildOrderCreatePayload({
+          eventId: "event-1",
+          event: buildEventDoc({currency: "AUD"}),
+          userId: "runner-1",
+          receiptToken: 123,
+        }),
+      isHttpsError(
+        "failed-precondition",
+        "Paid bookings are not available for this event currency yet."
+      )
+    );
+  }
+);
 
 test("buildOrderCreatePayload rejects cancelled events", () => {
   assert.throws(

@@ -22,12 +22,38 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["name", "label", "latitude", "longitude"],
+        "required": [
+          "name",
+          "label",
+          "latitude",
+          "longitude",
+          "countryIsoCode",
+          "currencyCode",
+          "dialCode",
+          "timeZone"
+        ],
         "properties": {
           "name": {"$ref": "../shared/event_common.schema.json#/definitions/citySlug"},
           "label": {"type": "string", "minLength": 1, "maxLength": 80},
           "latitude": {"$ref": "../shared/event_common.schema.json#/definitions/latitude"},
-          "longitude": {"$ref": "../shared/event_common.schema.json#/definitions/longitude"}
+          "longitude": {"$ref": "../shared/event_common.schema.json#/definitions/longitude"},
+          "countryIsoCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{2}$"
+          },
+          "currencyCode": {
+            "type": "string",
+            "pattern": "^[A-Z]{3}$"
+          },
+          "dialCode": {
+            "type": "string",
+            "pattern": "^\\+\\d{1,4}$"
+          },
+          "timeZone": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 80
+          }
         }
       },
       "uniqueItems": true

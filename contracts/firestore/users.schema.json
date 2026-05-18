@@ -71,6 +71,10 @@
       "minLength": 1,
       "maxLength": 32
     },
+    "countryCode": {
+      "type": "string",
+      "pattern": "^\\+\\d{1,4}$"
+    },
     "profileComplete": {
       "type": "boolean"
     },

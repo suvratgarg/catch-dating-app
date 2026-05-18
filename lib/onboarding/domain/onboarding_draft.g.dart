@@ -17,7 +17,7 @@ _OnboardingDraft _$OnboardingDraftFromJson(Map<String, dynamic> json) =>
         const TimestampConverter().fromJson,
       ),
       phoneNumber: json['phoneNumber'] as String? ?? '',
-      countryCode: json['countryCode'] as String? ?? '+91',
+      countryCode: json['countryCode'] as String? ?? defaultCountryDialCode,
       gender: $enumDecodeNullable(_$GenderEnumMap, json['gender']),
       interestedInGenders:
           (json['interestedInGenders'] as List<dynamic>?)

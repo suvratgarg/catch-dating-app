@@ -1187,6 +1187,22 @@ firebase emulators:exec --project demo-catch-rules --only firestore,storage "npm
 
 Result: focused direct client-write operation checks passed on 2026-05-15.
 
+### 2026-05-19: Callable Response Contract Slice
+
+Added the first response-side callable contracts for responses the Flutter app
+decodes into typed client objects:
+
+- `CreateClubCallableResponse`
+- `MarkEventAttendanceCallableResponse`
+- `RazorpayOrderCallableResponse`
+- `PlacesAutocompleteCallableResponse`
+- `PlaceDetailsCallableResponse`
+
+These live under `contracts/callable_responses/` and flow through the same
+generated TypeScript validators, tool validators, and Dart schema registry as
+request payloads. Callable request DTOs remain client adapters for now, with
+parity coverage against the generated Dart schemas.
+
 ### 2026-05-15: Phase 9 Storage/API Rename Guard Slice
 
 Started the future `swipes` storage rename safely without moving live data:
@@ -1521,6 +1537,8 @@ Tasks:
 - [x] Add generated schemas for safety callables.
 - [x] Add generated schemas for payment callables.
 - [x] Add generated schemas for Places callables.
+- [x] Add generated schemas for selected typed callable responses decoded by
+  Flutter.
 - [x] Remove remaining handwritten Zod callable validators.
 - [x] Remove the Functions `zod` dependency.
 
