@@ -40,11 +40,11 @@ class HealthActivityCapabilities {
 abstract class HealthActivityClient {
   Future<HealthActivityCapabilities> capabilities();
 
-  Future<bool?> hasRunningReadPermission();
+  Future<bool?> hasActivityReadPermission();
 
-  Future<bool> requestRunningReadPermission();
+  Future<bool> requestActivityReadPermission();
 
-  Future<List<RunnerActivity>> fetchEventningActivities({
+  Future<List<PhysicalActivity>> fetchPhysicalActivities({
     required DateTime startTime,
     required DateTime endTime,
   });

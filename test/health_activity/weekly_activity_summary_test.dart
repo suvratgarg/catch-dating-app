@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,32 +19,58 @@ void main() {
 
       expect(summary.weekStart, DateTime(2026, 5, 11));
       expect(summary.weekEnd, DateTime(2026, 5, 18));
-      expect(summary.runCount, 2);
+      expect(summary.activityCount, 2);
       expect(summary.totalDistanceKm, 8);
+      expect(summary.totalActiveMinutes, 120);
       expect(summary.distanceMetersByWeekday[0], 5000);
       expect(summary.distanceMetersByWeekday[6], 3000);
+      expect(summary.countsByKind[ActivityKind.running], 2);
     });
 
-    test('ignores zero-distance activity', () {
+    test('counts non-distance activities by active minutes', () {
       final summary = WeeklyActivitySummary.fromActivities([
-        _activity(startTime: DateTime(2026, 5, 11), distanceMeters: 0),
+        _activity(
+          startTime: DateTime(2026, 5, 11),
+          type: ActivityKind.pickleball,
+          distanceMeters: null,
+        ),
+      ], referenceDate: DateTime(2026, 5, 13));
+
+      expect(summary.hasEvents, isTrue);
+      expect(summary.activityCount, 1);
+      expect(summary.totalDistanceMeters, 0);
+      expect(summary.totalActiveMinutes, 60);
+      expect(summary.countsByKind[ActivityKind.pickleball], 1);
+    });
+
+    test('ignores entries without distance or duration', () {
+      final startTime = DateTime(2026, 5, 11);
+      final summary = WeeklyActivitySummary.fromActivities([
+        PhysicalActivity(
+          stableId: 'zero',
+          provider: PhysicalActivityProvider.appleHealth,
+          type: ActivityKind.running,
+          startTime: startTime,
+          endTime: startTime,
+          distanceMeters: 0,
+        ),
       ], referenceDate: DateTime(2026, 5, 13));
 
       expect(summary.hasEvents, isFalse);
-      expect(summary.runCount, 0);
-      expect(summary.totalDistanceMeters, 0);
+      expect(summary.activityCount, 0);
     });
   });
 }
 
-RunnerActivity _activity({
+PhysicalActivity _activity({
   required DateTime startTime,
-  required double distanceMeters,
+  ActivityKind type = ActivityKind.running,
+  double? distanceMeters = 5000,
 }) {
-  return RunnerActivity(
+  return PhysicalActivity(
     stableId: startTime.toIso8601String(),
-    provider: RunnerActivityProvider.appleHealth,
-    type: RunnerActivityType.running,
+    provider: PhysicalActivityProvider.appleHealth,
+    type: type,
     startTime: startTime,
     endTime: startTime.add(const Duration(hours: 1)),
     distanceMeters: distanceMeters,

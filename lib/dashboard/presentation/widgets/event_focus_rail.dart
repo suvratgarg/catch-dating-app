@@ -488,7 +488,7 @@ class _EventFocusCard extends StatelessWidget {
                 _EventFocusMetaLine(
                   icon: Icons.route_outlined,
                   label:
-                      '${item.event.distanceLabel} · ${item.event.pace.label} · '
+                      '${item.event.activitySummaryLabel} · '
                       '${item.event.signedUpCount}/${item.event.capacityLimit} spots',
                 ),
                 gapH16,

@@ -186,6 +186,35 @@ void main() {
       },
     );
 
+    test(
+      'clubsListViewModelProvider shows empty city without waiting for auth',
+      () async {
+        final container = ProviderContainer(
+          overrides: [
+            uidProvider.overrideWith((ref) => const Stream.empty()),
+            watchClubsByLocationProvider(
+              'mumbai',
+            ).overrideWith((ref) => Stream.value(const <Club>[])),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        final subscription = container.listen(
+          clubsListViewModelProvider,
+          (_, _) {},
+          fireImmediately: true,
+        );
+        addTearDown(subscription.close);
+        await flushTestEventQueue();
+
+        final viewModel = subscription.read().value!;
+
+        expect(viewModel.isEmpty, isTrue);
+        expect(viewModel.joinedClubs, isEmpty);
+        expect(viewModel.allClubs, isEmpty);
+      },
+    );
+
     test('filteredClubsProvider applies the normalized search query', () async {
       final bandraClub = buildClub(id: 'bandra-club', area: 'Bandra');
       final ashaClub = buildClub(
@@ -220,7 +249,9 @@ void main() {
           uidProvider.overrideWith(
             (ref) => Stream.error(StateError('uid failed')),
           ),
-          filteredClubsProvider.overrideWithValue(const AsyncData(<Club>[])),
+          filteredClubsProvider.overrideWithValue(
+            AsyncData([buildClub(id: 'available-club')]),
+          ),
         ],
       );
       addTearDown(container.dispose);

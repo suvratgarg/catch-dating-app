@@ -59,8 +59,7 @@ class DashboardEmpty extends StatelessWidget {
 class DashboardEmptySliverBody extends StatelessWidget {
   const DashboardEmptySliverBody({super.key, this.weeklyActivitySection});
 
-  final DashboardSectionModel<WeeklyRunningActivitySnapshot>?
-  weeklyActivitySection;
+  final DashboardSectionModel<WeeklyActivitySnapshot>? weeklyActivitySection;
 
   @override
   Widget build(BuildContext context) {

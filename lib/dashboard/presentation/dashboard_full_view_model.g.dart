@@ -100,7 +100,7 @@ final class DashboardFullViewModelProvider
 }
 
 String _$dashboardFullViewModelHash() =>
-    r'129fdf40dc4fc526290c9c848b72167dca516e60';
+    r'31137430248f4a1891ff3d977b02242a66393ccd';
 
 /// Combines signed-up events, attended events, and recommended events into a single
 /// [DashboardFullViewModel] for the dashboard screen.

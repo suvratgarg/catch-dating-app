@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_client.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:health/health.dart' as health;
@@ -46,7 +47,7 @@ class MobileHealthActivityClient implements HealthActivityClient {
   }
 
   @override
-  Future<List<RunnerActivity>> fetchEventningActivities({
+  Future<List<PhysicalActivity>> fetchPhysicalActivities({
     required DateTime startTime,
     required DateTime endTime,
   }) async {
@@ -59,7 +60,7 @@ class MobileHealthActivityClient implements HealthActivityClient {
       endTime: endTime,
     );
 
-    final activities = <RunnerActivity>[];
+    final activities = <PhysicalActivity>[];
     for (final point in points) {
       final activity = _activityFromWorkoutPoint(point);
       if (activity != null) {
@@ -71,12 +72,12 @@ class MobileHealthActivityClient implements HealthActivityClient {
   }
 
   @override
-  Future<bool?> hasRunningReadPermission() async {
+  Future<bool?> hasActivityReadPermission() async {
     if (!_isSupportedDevice) return false;
     await _configure();
     return _health.hasPermissions(
-      _runningReadTypes,
-      permissions: _runningReadPermissions,
+      _activityReadTypes,
+      permissions: _activityReadPermissions,
     );
   }
 
@@ -87,12 +88,12 @@ class MobileHealthActivityClient implements HealthActivityClient {
   }
 
   @override
-  Future<bool> requestRunningReadPermission() async {
+  Future<bool> requestActivityReadPermission() async {
     if (!_isSupportedDevice) return false;
     await _configure();
     return _health.requestAuthorization(
-      _runningReadTypes,
-      permissions: _runningReadPermissions,
+      _activityReadTypes,
+      permissions: _activityReadPermissions,
     );
   }
 
@@ -102,7 +103,7 @@ class MobileHealthActivityClient implements HealthActivityClient {
     _configured = true;
   }
 
-  List<health.HealthDataType> get _runningReadTypes {
+  List<health.HealthDataType> get _activityReadTypes {
     final types = <health.HealthDataType>[health.HealthDataType.WORKOUT];
     if (Platform.isIOS &&
         _health.isDataTypeAvailable(
@@ -116,15 +117,15 @@ class MobileHealthActivityClient implements HealthActivityClient {
     return types;
   }
 
-  List<health.HealthDataAccess> get _runningReadPermissions {
+  List<health.HealthDataAccess> get _activityReadPermissions {
     return List<health.HealthDataAccess>.filled(
-      _runningReadTypes.length,
+      _activityReadTypes.length,
       health.HealthDataAccess.READ,
       growable: false,
     );
   }
 
-  RunnerActivity? _activityFromWorkoutPoint(health.HealthDataPoint point) {
+  PhysicalActivity? _activityFromWorkoutPoint(health.HealthDataPoint point) {
     final value = point.value;
     if (value is! health.WorkoutHealthValue) {
       return null;
@@ -134,11 +135,13 @@ class MobileHealthActivityClient implements HealthActivityClient {
       return null;
     }
     final distanceMeters = _distanceMeters(value);
-    if (distanceMeters == null || distanceMeters <= 0) {
+    final duration = point.dateTo.difference(point.dateFrom);
+    if ((distanceMeters == null || distanceMeters <= 0) &&
+        duration.inMinutes <= 0) {
       return null;
     }
 
-    return RunnerActivity(
+    return PhysicalActivity(
       stableId: 'health:${point.sourcePlatform.name}:${point.uuid}',
       provider: _providerFor(point.sourcePlatform),
       type: type,
@@ -150,22 +153,29 @@ class MobileHealthActivityClient implements HealthActivityClient {
     );
   }
 
-  RunnerActivityProvider _providerFor(health.HealthPlatformType platform) {
+  PhysicalActivityProvider _providerFor(health.HealthPlatformType platform) {
     return switch (platform) {
       health.HealthPlatformType.appleHealth =>
-        RunnerActivityProvider.appleHealth,
+        PhysicalActivityProvider.appleHealth,
       health.HealthPlatformType.googleHealthConnect =>
-        RunnerActivityProvider.healthConnect,
+        PhysicalActivityProvider.healthConnect,
     };
   }
 
-  RunnerActivityType? _activityType(
-    health.HealthWorkoutActivityType workoutType,
-  ) {
+  ActivityKind? _activityType(health.HealthWorkoutActivityType workoutType) {
     return switch (workoutType) {
-      health.HealthWorkoutActivityType.RUNNING => RunnerActivityType.running,
+      health.HealthWorkoutActivityType.RUNNING => ActivityKind.running,
       health.HealthWorkoutActivityType.RUNNING_TREADMILL =>
-        RunnerActivityType.treadmillRunning,
+        ActivityKind.running,
+      health.HealthWorkoutActivityType.WALKING ||
+      health.HealthWorkoutActivityType.WALKING_TREADMILL =>
+        ActivityKind.walking,
+      health.HealthWorkoutActivityType.PICKLEBALL => ActivityKind.pickleball,
+      health.HealthWorkoutActivityType.TENNIS ||
+      health.HealthWorkoutActivityType.TABLE_TENNIS => ActivityKind.tennis,
+      health.HealthWorkoutActivityType.BADMINTON => ActivityKind.badminton,
+      health.HealthWorkoutActivityType.BIKING => ActivityKind.cycling,
+      health.HealthWorkoutActivityType.YOGA => ActivityKind.yoga,
       _ => null,
     };
   }

@@ -12,7 +12,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 class DashboardStrideSection extends ConsumerStatefulWidget {
   const DashboardStrideSection({super.key, required this.section});
 
-  final DashboardSectionModel<WeeklyRunningActivitySnapshot> section;
+  final DashboardSectionModel<WeeklyActivitySnapshot> section;
 
   @override
   ConsumerState<DashboardStrideSection> createState() =>
@@ -56,8 +56,8 @@ class _DashboardStrideSectionState
     setState(() => _isConnecting = true);
     final granted = await ref
         .read(healthActivityRepositoryProvider)
-        .requestRunningReadPermission();
-    ref.invalidate(weeklyRunningActivityProvider);
+        .requestActivityReadPermission();
+    ref.invalidate(weeklyActivityProvider);
     if (!mounted) return;
     setState(() => _isConnecting = false);
     if (!granted) {
@@ -71,7 +71,7 @@ class _DashboardStrideSectionState
     if (_isInstallingHealthConnect) return;
     setState(() => _isInstallingHealthConnect = true);
     await ref.read(healthActivityRepositoryProvider).installHealthConnect();
-    ref.invalidate(weeklyRunningActivityProvider);
+    ref.invalidate(weeklyActivityProvider);
     if (!mounted) return;
     setState(() => _isInstallingHealthConnect = false);
   }
@@ -87,7 +87,7 @@ class StrideCard extends StatelessWidget {
     this.isInstallingHealthConnect = false,
   });
 
-  final WeeklyRunningActivitySnapshot snapshot;
+  final WeeklyActivitySnapshot snapshot;
   final VoidCallback? onConnect;
   final VoidCallback? onInstallHealthConnect;
   final bool isConnecting;
@@ -103,7 +103,7 @@ class StrideCard extends StatelessWidget {
     final isToday = now.weekday - 1; // 0 = Mon
     final summary = snapshot.summary;
     final totalKm = summary.totalDistanceKm;
-    final maxMeters = summary.maxDailyDistanceMeters;
+    final maxMinutes = summary.maxDailyActiveMinutes;
 
     return CatchSurface(
       padding: const EdgeInsets.all(Sizes.p18),
@@ -113,7 +113,7 @@ class StrideCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Your stride · this week',
+            'Your activity · this week',
             style: CatchTextStyles.titleL(context),
           ),
           gapH8,
@@ -128,9 +128,13 @@ class StrideCard extends StatelessWidget {
                 ).copyWith(fontSize: 36, letterSpacing: -1),
               ),
               gapW6,
-              Text(
-                'km · ${summary.runCount} event${summary.runCount == 1 ? '' : 's'}',
-                style: CatchTextStyles.bodyS(context),
+              Flexible(
+                child: Text(
+                  _metricLabel(summary),
+                  style: CatchTextStyles.bodyS(context),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
             ],
           ),
@@ -149,8 +153,8 @@ class StrideCard extends StatelessWidget {
                   if (i > 0) gapW6,
                   Expanded(
                     child: StrideBarColumn(
-                      fraction: maxMeters > 0
-                          ? summary.distanceMetersByWeekday[i] / maxMeters
+                      fraction: maxMinutes > 0
+                          ? summary.activeMinutesByWeekday[i] / maxMinutes
                           : 0,
                       dayLabel: _days[i],
                       isToday: i == isToday,
@@ -194,15 +198,23 @@ class StrideCard extends StatelessWidget {
     );
   }
 
-  String _sourceText(WeeklyRunningActivitySnapshot snapshot) {
+  String _metricLabel(WeeklyActivitySummary summary) {
+    final activityNoun = summary.activityCount == 1 ? 'activity' : 'activities';
+    final minutes = summary.totalActiveMinutes;
+    if (summary.totalDistanceMeters <= 0) {
+      return '$minutes min · ${summary.activityCount} $activityNoun';
+    }
+    return 'km · $minutes min · ${summary.activityCount} $activityNoun';
+  }
+
+  String _sourceText(WeeklyActivitySnapshot snapshot) {
     return switch (snapshot.source) {
-      WeeklyRunningActivitySource.healthPlatform =>
-        'From ${snapshot.platformLabel}',
-      WeeklyRunningActivitySource.mixed =>
+      WeeklyActivitySource.healthPlatform => 'From ${snapshot.platformLabel}',
+      WeeklyActivitySource.mixed =>
         '${snapshot.platformLabel} + Catch check-ins',
-      WeeklyRunningActivitySource.catchFallback => 'Catch check-ins only',
-      WeeklyRunningActivitySource.none =>
-        snapshot.message ?? 'No running activity this week yet.',
+      WeeklyActivitySource.catchFallback => 'Catch check-ins only',
+      WeeklyActivitySource.none =>
+        snapshot.message ?? 'No activity this week yet.',
     };
   }
 }

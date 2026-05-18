@@ -9,13 +9,13 @@ part 'health_activity_repository.g.dart';
 class HealthActivityRepository {
   HealthActivityRepository(this._client);
 
-  static const _runningPermissionRequestedKey =
-      'health_activity.running_permission_requested';
+  static const _activityPermissionRequestedKey =
+      'health_activity.activity_permission_requested';
 
   final HealthActivityClient _client;
   SharedPreferences? _prefsInstance;
 
-  Future<WeeklyRunningActivitySnapshot> fetchWeeklyRunningActivity({
+  Future<WeeklyActivitySnapshot> fetchWeeklyActivity({
     DateTime? referenceDate,
   }) async {
     final now = referenceDate ?? DateTime.now();
@@ -23,7 +23,7 @@ class HealthActivityRepository {
     final capabilities = await _client.capabilities();
 
     if (!capabilities.isSupported) {
-      return WeeklyRunningActivitySnapshot.unsupported(
+      return WeeklyActivitySnapshot.unsupported(
         referenceDate: now,
         refreshedAt: refreshedAt,
       );
@@ -33,21 +33,21 @@ class HealthActivityRepository {
         HealthConnectAvailability.notApplicable) {
       if (capabilities.healthConnectAvailability !=
           HealthConnectAvailability.available) {
-        return WeeklyRunningActivitySnapshot.needsHealthConnect(
+        return WeeklyActivitySnapshot.needsHealthConnect(
           referenceDate: now,
           refreshedAt: refreshedAt,
         );
       }
     }
 
-    final permission = await _client.hasRunningReadPermission();
-    final requestedBefore = await _hasRequestedRunningPermission();
+    final permission = await _client.hasActivityReadPermission();
+    final requestedBefore = await _hasRequestedActivityPermission();
     final shouldFetch =
         permission == true ||
         (capabilities.platform == HealthActivityPlatform.appleHealth &&
             requestedBefore);
     if (!shouldFetch) {
-      return WeeklyRunningActivitySnapshot.permissionRequired(
+      return WeeklyActivitySnapshot.permissionRequired(
         referenceDate: now,
         platformLabel: capabilities.platformLabel,
         refreshedAt: refreshedAt,
@@ -57,18 +57,18 @@ class HealthActivityRepository {
     final weekStart = WeeklyActivitySummary.weekStartFor(now);
     final weekEnd = weekStart.add(const Duration(days: 7));
     try {
-      final activities = await _client.fetchEventningActivities(
+      final activities = await _client.fetchPhysicalActivities(
         startTime: weekStart,
         endTime: weekEnd,
       );
-      return WeeklyRunningActivitySnapshot.connected(
+      return WeeklyActivitySnapshot.connected(
         referenceDate: now,
         platformLabel: capabilities.platformLabel,
         activities: activities,
         refreshedAt: refreshedAt,
       );
     } catch (_) {
-      return WeeklyRunningActivitySnapshot.permissionRequired(
+      return WeeklyActivitySnapshot.permissionRequired(
         referenceDate: now,
         platformLabel: capabilities.platformLabel,
         refreshedAt: refreshedAt,
@@ -76,20 +76,31 @@ class HealthActivityRepository {
     }
   }
 
-  Future<bool> requestRunningReadPermission() async {
-    final granted = await _client.requestRunningReadPermission();
+  Future<bool> requestActivityReadPermission() async {
+    final granted = await _client.requestActivityReadPermission();
     if (granted) {
       final prefs = await _prefs;
-      await prefs.setBool(_runningPermissionRequestedKey, true);
+      await prefs.setBool(_activityPermissionRequestedKey, true);
     }
     return granted;
   }
 
+  @Deprecated('Use fetchWeeklyActivity.')
+  Future<WeeklyActivitySnapshot> fetchWeeklyRunningActivity({
+    DateTime? referenceDate,
+  }) => fetchWeeklyActivity(referenceDate: referenceDate);
+
+  @Deprecated('Use requestActivityReadPermission.')
+  Future<bool> requestRunningReadPermission() =>
+      requestActivityReadPermission();
+
   Future<void> installHealthConnect() => _client.installHealthConnect();
 
-  Future<bool> _hasRequestedRunningPermission() async {
+  Future<bool> _hasRequestedActivityPermission() async {
     final prefs = await _prefs;
-    return prefs.getBool(_runningPermissionRequestedKey) ?? false;
+    return prefs.getBool(_activityPermissionRequestedKey) ??
+        prefs.getBool('health_activity.running_permission_requested') ??
+        false;
   }
 
   Future<SharedPreferences> get _prefs async {
@@ -104,8 +115,6 @@ HealthActivityRepository healthActivityRepository(Ref ref) {
 }
 
 @riverpod
-Future<WeeklyRunningActivitySnapshot> weeklyRunningActivity(Ref ref) {
-  return ref
-      .watch(healthActivityRepositoryProvider)
-      .fetchWeeklyRunningActivity();
+Future<WeeklyActivitySnapshot> weeklyActivity(Ref ref) {
+  return ref.watch(healthActivityRepositoryProvider).fetchWeeklyActivity();
 }

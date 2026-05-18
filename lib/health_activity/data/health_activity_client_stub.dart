@@ -16,7 +16,7 @@ class UnsupportedHealthActivityClient implements HealthActivityClient {
   }
 
   @override
-  Future<List<RunnerActivity>> fetchEventningActivities({
+  Future<List<PhysicalActivity>> fetchPhysicalActivities({
     required DateTime startTime,
     required DateTime endTime,
   }) async {
@@ -24,7 +24,7 @@ class UnsupportedHealthActivityClient implements HealthActivityClient {
   }
 
   @override
-  Future<bool?> hasRunningReadPermission() async {
+  Future<bool?> hasActivityReadPermission() async {
     return false;
   }
 
@@ -32,7 +32,7 @@ class UnsupportedHealthActivityClient implements HealthActivityClient {
   Future<void> installHealthConnect() async {}
 
   @override
-  Future<bool> requestRunningReadPermission() async {
+  Future<bool> requestActivityReadPermission() async {
     return false;
   }
 }
