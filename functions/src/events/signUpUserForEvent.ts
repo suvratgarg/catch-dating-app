@@ -19,6 +19,7 @@ import {claimUserEventScheduleInTransaction} from "./scheduleConflicts";
 import {
   assertPolicyAllowsSignup,
   cohortIdForUser,
+  decrementCount,
   eventPolicyFromEvent,
   incrementCount,
   rosterFromEvent,
@@ -34,6 +35,7 @@ import {
  *   3. Check overall capacity.
  *   4. Write the user's eventParticipation edge.
  *   5. Update aggregate count projections on the event.
+ *   6. Preserve invite-only validation made by the caller.
  *
  * Enforces blocks against signed-up and attended participation edges inside
  * this transaction. The error remains generic so callers cannot infer
@@ -44,13 +46,15 @@ import {
  * @param {string} eventId Event to sign the user up for.
  * @param {string} userId User being signed up.
  * @param {string=} paymentId Optional payment document linked to the signup.
+ * @param {object=} options Admission context already verified by caller.
  * @return {Promise<void>} Resolves when the transaction completes.
  */
 export async function signUpUserForEvent(
   db: FirebaseFirestore.Firestore,
   eventId: string,
   userId: string,
-  paymentId?: string
+  paymentId?: string,
+  options: {hasValidInvite?: boolean} = {}
 ): Promise<void> {
   const eventRef = db.collection("events").doc(eventId);
   const userRef = db.collection("users").doc(userId);
@@ -143,6 +147,7 @@ export async function signUpUserForEvent(
       policy,
       cohortId,
       roster: {...rosterFromEvent(event), totalBooked: currentBookedCount},
+      hasValidInvite: options.hasValidInvite,
     });
 
     await claimUserEventScheduleInTransaction(tx, db, {
@@ -166,6 +171,10 @@ export async function signUpUserForEvent(
     };
     if (wasWaitlisted) {
       eventUpdate.waitlistedCount = admin.firestore.FieldValue.increment(-1);
+      eventUpdate.waitlistedCohortCounts = decrementCount(
+        event.waitlistedCohortCounts ?? {},
+        cohortId
+      );
     }
 
     tx.update(eventRef, eventUpdate);

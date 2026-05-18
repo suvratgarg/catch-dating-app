@@ -34,10 +34,15 @@ void main() {
       final controller = container.read(
         eventBookingControllerProvider.notifier,
       );
-      await controller.book(event: buildEvent(), user: buildUser());
+      await controller.book(
+        event: buildEvent(),
+        user: buildUser(),
+        inviteCode: 'CATCH-DELHI',
+      );
 
       expect(fakePaymentRepository.bookFreeEventCalled, isTrue);
       expect(fakePaymentRepository.bookedFreeEventId, 'event-1');
+      expect(fakePaymentRepository.bookedFreeEventInviteCode, 'CATCH-DELHI');
       expect(fakePaymentRepository.processPaymentCalled, isFalse);
     });
 
@@ -89,7 +94,33 @@ void main() {
         fakePaymentRepository.lastProcessPaymentCall!.userContact,
         '+919876543210',
       );
+      expect(fakePaymentRepository.lastProcessPaymentCall!.inviteCode, isNull);
       expect(fakePaymentRepository.bookFreeEventCalled, isFalse);
+    });
+
+    test('passes invite codes through paid bookings', () async {
+      final fakePaymentRepository = FakePaymentRepository(supportsPaid: true);
+      final container = ProviderContainer(
+        overrides: [
+          paymentRepositoryProvider.overrideWithValue(fakePaymentRepository),
+          uidProvider.overrideWith((ref) => Stream.value('runner-7')),
+        ],
+      );
+      addTearDown(container.dispose);
+      await primeUidProvider(container);
+
+      await container
+          .read(eventBookingControllerProvider.notifier)
+          .book(
+            event: buildEvent(id: 'paid-event', priceInPaise: 50000),
+            user: buildUser(uid: 'runner-7'),
+            inviteCode: 'CATCH-DELHI',
+          );
+
+      expect(
+        fakePaymentRepository.lastProcessPaymentCall!.inviteCode,
+        'CATCH-DELHI',
+      );
     });
 
     test('throws when paid bookings are unsupported on the platform', () async {
@@ -231,9 +262,13 @@ void main() {
 
         await container
             .read(eventBookingControllerProvider.notifier)
-            .joinWaitlist(event: buildEvent(id: 'event-42'));
+            .joinWaitlist(
+              event: buildEvent(id: 'event-42'),
+              inviteCode: 'CATCH-DELHI',
+            );
 
         expect(fakeEventRepository.joinedWaitlistEventId, 'event-42');
+        expect(fakeEventRepository.joinedWaitlistInviteCode, 'CATCH-DELHI');
       },
     );
 

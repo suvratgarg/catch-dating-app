@@ -63,6 +63,7 @@ class PaymentRepository {
     required String userName,
     required String userEmail,
     required String userContact,
+    String? inviteCode,
   }) async {
     if (!supportsPaidBookings) {
       throw const PaidBookingUnsupportedException();
@@ -76,7 +77,10 @@ class PaymentRepository {
     }
 
     // Step 1: Create a Razorpay order server-side.
-    final orderResult = await _createOrder(eventId: eventId);
+    final orderResult = await _createOrder(
+      eventId: eventId,
+      inviteCode: inviteCode,
+    );
     final order = _parseOrderResponse(orderResult.data);
 
     // Step 2: Open the Razorpay checkout sheet.
@@ -130,11 +134,16 @@ class PaymentRepository {
 
   /// Signs the current user up for a free event via the [signUpForFreeEvent]
   /// Cloud Function, which validates the event is free and checks capacity.
-  Future<void> bookFreeEvent({required String eventId}) =>
+  Future<void> bookFreeEvent({required String eventId, String? inviteCode}) =>
       withBackendErrorContext(
         () => _functions
             .httpsCallable('signUpForFreeEvent')
-            .call(EventBookingCallableRequest(eventId: eventId).toJson()),
+            .call(
+              EventBookingCallableRequest(
+                eventId: eventId,
+                inviteCode: inviteCode,
+              ).toJson(),
+            ),
         context: const BackendErrorContext(
           service: BackendService.functions,
           action: 'book an event',
@@ -223,11 +232,15 @@ class PaymentRepository {
 
   Future<HttpsCallableResult<Object?>> _createOrder({
     required String eventId,
+    String? inviteCode,
   }) => withBackendErrorContext(
     () => _functions
         .httpsCallable('createRazorpayOrder')
         .call<Object?>(
-          CreateRazorpayOrderCallableRequest(eventId: eventId).toJson(),
+          CreateRazorpayOrderCallableRequest(
+            eventId: eventId,
+            inviteCode: inviteCode,
+          ).toJson(),
         ),
     context: const BackendErrorContext(
       service: BackendService.functions,

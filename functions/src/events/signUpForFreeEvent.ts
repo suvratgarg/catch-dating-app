@@ -14,8 +14,10 @@ import {validateEventIdCallablePayload} from
 import {validateCallableWithAjv} from "../shared/validation";
 import {normalizeEventIdPayload} from "./eventPayloadNormalization";
 import {
+  assertPolicyAllowsSignup,
   cohortIdForUser,
   eventPolicyFromEvent,
+  hasValidInviteForEvent,
   quotePriceInPaise,
   rosterFromEvent,
 } from "./eventPolicy";
@@ -30,7 +32,9 @@ interface SignUpForFreeEventDeps {
   signUpForEvent: (
     db: FirebaseFirestore.Firestore,
     eventId: string,
-    userId: string
+    userId: string,
+    paymentId?: string,
+    options?: {hasValidInvite?: boolean}
   ) => Promise<void>;
 }
 
@@ -51,7 +55,7 @@ export async function signUpForFreeEventHandler(
   deps: SignUpForFreeEventDeps = defaultDeps
 ): Promise<{success: boolean}> {
   const uid = requireAuth(request);
-  const {eventId} = validateCallableWithAjv<EventIdCallablePayload>(
+  const {eventId, inviteCode} = validateCallableWithAjv<EventIdCallablePayload>(
     request,
     validateEventIdCallablePayload,
     normalizeEventIdPayload
@@ -75,8 +79,15 @@ export async function signUpForFreeEventHandler(
 
   const event = eventSnap.data() as EventDoc;
   const user = userSnap.data() as UserProfileDoc;
+  const policy = eventPolicyFromEvent(event);
+  const hasValidInvite = await hasValidInviteForEvent({
+    db,
+    eventId,
+    policy,
+    inviteCode,
+  });
   const priceInPaise = quotePriceInPaise({
-    policy: eventPolicyFromEvent(event),
+    policy,
     cohortId: cohortIdForUser(user),
     roster: rosterFromEvent(event),
   });
@@ -87,8 +98,14 @@ export async function signUpForFreeEventHandler(
       "This event requires payment. Use the payment flow instead."
     );
   }
+  assertPolicyAllowsSignup({
+    policy,
+    cohortId: cohortIdForUser(user),
+    roster: rosterFromEvent(event),
+    hasValidInvite,
+  });
 
-  await deps.signUpForEvent(db, eventId, uid);
+  await deps.signUpForEvent(db, eventId, uid, undefined, {hasValidInvite});
 
   return {success: true};
 }

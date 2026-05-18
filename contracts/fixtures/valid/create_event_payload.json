@@ -8,6 +8,12 @@
   "startingPointLng": 75.8577,
   "locationDetails": "Meet near the main gate.",
   "photoUrl": "https://img.example/events/event-1.jpg",
+  "eventFormat": {
+    "version": 1,
+    "activityKind": "socialRun",
+    "interactionModel": "pacePods",
+    "defaultPlaybookId": "social_run_light"
+  },
   "distanceKm": 5,
   "pace": "easy",
   "capacityLimit": 12,

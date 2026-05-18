@@ -35,8 +35,10 @@ void main() {
           action: 'book event',
           resource: 'events',
         ),
-        mapper: (error, stackTrace, context) =>
-            EventBookingFailedException('This event is full.', context: context),
+        mapper: (error, stackTrace, context) => EventBookingFailedException(
+          'This event is full.',
+          context: context,
+        ),
       );
 
       expect(mapped, isA<EventBookingFailedException>());
@@ -70,6 +72,42 @@ void main() {
       expect(missing, isA<DocumentNotFoundException>());
       expect(missing.context?.resource, 'events');
     });
+
+    test(
+      'maps Firestore index preconditions to retryable operational errors',
+      () {
+        final error = normalizeBackendError(
+          FirebaseException(
+            plugin: 'cloud_firestore',
+            code: 'failed-precondition',
+            message:
+                'The query requires an index. That index is currently building '
+                'and cannot be used yet. See its status here: '
+                'https://console.firebase.google.com/example',
+          ),
+          context: const BackendErrorContext(
+            service: BackendService.firestore,
+            action: 'watch clubs by location',
+            resource: 'clubs',
+          ),
+        );
+
+        expect(error, isA<BackendOperationException>());
+        expect(error.retryable, isTrue);
+        expect(
+          error.message,
+          'This list is still getting set up. Please try again in a moment.',
+        );
+        expect(
+          error.debugMessage,
+          contains('required index is still building'),
+        );
+        expect(
+          error.debugMessage,
+          isNot(contains('console.firebase.google.com')),
+        );
+      },
+    );
 
     test('maps callable Functions failures with Functions service context', () {
       final error = normalizeBackendError(

@@ -57,12 +57,15 @@ class EventTileData {
   String get compactTimeRangeLabel => event.compactTimeRangeLabel;
   String get distanceLabel => event.distanceLabel;
   String get paceLabel => event.pace.label;
+  String get activitySummaryLabel => event.activitySummaryLabel;
   String get signupLabel =>
       '${event.signedUpCount}/${event.capacityLimit} signed up';
   String get spotsLabel =>
       '${event.signedUpCount}/${event.capacityLimit} spots';
   String get priceLabel => event.priceInPaise <= 0
       ? 'Free'
+      : event.effectiveEventPolicy.usesDemandPricing
+      ? 'From ${EventFormatters.priceInPaise(event.priceInPaise)}'
       : EventFormatters.priceInPaise(event.priceInPaise);
   bool get hasExactStartingPoint => event.hasExactStartingPoint;
 }

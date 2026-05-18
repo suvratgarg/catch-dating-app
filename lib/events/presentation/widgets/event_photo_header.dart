@@ -1,6 +1,7 @@
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_badge.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:flutter/material.dart';
 
 class EventPhotoHeader extends StatelessWidget {
@@ -86,9 +87,7 @@ class EventPhotoHeader extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  event.distanceKm == event.distanceKm.roundToDouble()
-                      ? '${event.distanceKm.round()}km'
-                      : '${event.distanceKm.toStringAsFixed(1)}km',
+                  event.distanceLabel,
                   style: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,

@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:catch_dating_app/core/widgets/catch_text_field.dart';
 import 'package:catch_dating_app/core/widgets/vibe_tag.dart';
@@ -16,6 +17,8 @@ class EventDetailsStep extends StatelessWidget {
     required this.onPickPhoto,
     required this.distanceController,
     required this.descriptionController,
+    required this.selectedActivityKind,
+    required this.onActivityKindChanged,
     required this.selectedPace,
     required this.onPaceChanged,
   });
@@ -25,6 +28,8 @@ class EventDetailsStep extends StatelessWidget {
   final VoidCallback? onPickPhoto;
   final TextEditingController distanceController;
   final TextEditingController descriptionController;
+  final ActivityKind selectedActivityKind;
+  final ValueChanged<ActivityKind> onActivityKindChanged;
   final PaceLevel? selectedPace;
   final ValueChanged<PaceLevel?> onPaceChanged;
 
@@ -48,71 +53,97 @@ class EventDetailsStep extends StatelessWidget {
               onTap: onPickPhoto,
             ),
             const SizedBox(height: 20),
-            CatchTextField(
-              key: CreateEventFormKeys.distance,
-              label: 'Distance (km)',
-              controller: distanceController,
-              hintText: '10',
-              prefixIcon: const Icon(Icons.straighten_outlined),
-              keyboardType: const TextInputType.numberWithOptions(
-                decimal: true,
-              ),
-              inputFormatters: [
-                FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
-              ],
-              textInputAction: TextInputAction.next,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Required';
-                final distance = double.tryParse(v.trim());
-                if (distance == null) return 'Invalid';
-                if (distance <= 0) return 'Must be > 0';
-                return null;
-              },
-            ),
-            const SizedBox(height: 20),
-            const FieldLabel('Pace level'),
+            const FieldLabel('Activity type'),
             const SizedBox(height: 8),
-            FormField<PaceLevel>(
-              initialValue: selectedPace,
-              validator: (v) => v == null ? 'Select a pace' : null,
-              builder: (field) => Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 8,
-                    children: PaceLevel.values
-                        .map(
-                          (p) => Semantics(
-                            button: true,
-                            selected: selectedPace == p,
-                            label: 'Select ${p.label} pace',
-                            child: GestureDetector(
-                              onTap: () {
-                                final next = selectedPace == p ? null : p;
-                                onPaceChanged(next);
-                                field.didChange(next);
-                              },
-                              child: VibeTag(
-                                label: p.label,
-                                active: selectedPace == p,
-                              ),
-                            ),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                  if (field.hasError)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 6, left: 4),
-                      child: Text(
-                        field.errorText!,
-                        style: TextStyle(fontSize: 12, color: t.primary),
+            Wrap(
+              key: CreateEventFormKeys.activityType,
+              spacing: 8,
+              runSpacing: 8,
+              children: ActivityKind.eventCreationDefaults
+                  .map(
+                    (activityKind) => Semantics(
+                      button: true,
+                      selected: selectedActivityKind == activityKind,
+                      label: 'Select ${activityKind.label}',
+                      child: GestureDetector(
+                        onTap: () => onActivityKindChanged(activityKind),
+                        child: VibeTag(
+                          label: activityKind.label,
+                          active: selectedActivityKind == activityKind,
+                        ),
                       ),
                     ),
-                ],
-              ),
+                  )
+                  .toList(),
             ),
+            if (selectedActivityKind.isDistanceBased) ...[
+              const SizedBox(height: 20),
+              CatchTextField(
+                key: CreateEventFormKeys.distance,
+                label: 'Distance (km)',
+                controller: distanceController,
+                hintText: '10',
+                prefixIcon: const Icon(Icons.straighten_outlined),
+                keyboardType: const TextInputType.numberWithOptions(
+                  decimal: true,
+                ),
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d*')),
+                ],
+                textInputAction: TextInputAction.next,
+                validator: (v) {
+                  if (v == null || v.trim().isEmpty) return 'Required';
+                  final distance = double.tryParse(v.trim());
+                  if (distance == null) return 'Invalid';
+                  if (distance <= 0) return 'Must be > 0';
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              const FieldLabel('Pace level'),
+              const SizedBox(height: 8),
+              FormField<PaceLevel>(
+                initialValue: selectedPace,
+                validator: (v) => v == null ? 'Select a pace' : null,
+                builder: (field) => Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: PaceLevel.values
+                          .map(
+                            (p) => Semantics(
+                              button: true,
+                              selected: selectedPace == p,
+                              label: 'Select ${p.label} pace',
+                              child: GestureDetector(
+                                onTap: () {
+                                  final next = selectedPace == p ? null : p;
+                                  onPaceChanged(next);
+                                  field.didChange(next);
+                                },
+                                child: VibeTag(
+                                  label: p.label,
+                                  active: selectedPace == p,
+                                ),
+                              ),
+                            ),
+                          )
+                          .toList(),
+                    ),
+                    if (field.hasError)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6, left: 4),
+                        child: Text(
+                          field.errorText!,
+                          style: TextStyle(fontSize: 12, color: t.primary),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
             const SizedBox(height: 20),
             CatchTextField(
               key: CreateEventFormKeys.description,

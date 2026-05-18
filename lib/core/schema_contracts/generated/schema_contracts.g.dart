@@ -2401,6 +2401,7 @@ const schemaEventDocumentSchema = <String, Object?>{
     'startingPointLat',
     'startingPointLng',
     'locationDetails',
+    'eventFormat',
     'distanceKm',
     'pace',
     'capacityLimit',
@@ -2414,6 +2415,8 @@ const schemaEventDocumentSchema = <String, Object?>{
     'cancellationReason',
     'constraints',
     'genderCounts',
+    'cohortCounts',
+    'waitlistedCohortCounts',
   ],
   'properties': <String, Object?>{
     'clubId': <String, Object?>{
@@ -2503,8 +2506,80 @@ const schemaEventDocumentSchema = <String, Object?>{
     },
     'distanceKm': <String, Object?>{
       'type': 'number',
-      'exclusiveMinimum': 0,
+      'minimum': 0,
       'maximum': 100,
+    },
+    'eventFormat': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'version',
+        'activityKind',
+        'interactionModel',
+      ],
+      'properties': <String, Object?>{
+        'version': <String, Object?>{
+          'type': 'integer',
+          'const': 1,
+        },
+        'activityKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'socialRun',
+            'running',
+            'walking',
+            'pickleball',
+            'padel',
+            'tennis',
+            'badminton',
+            'cycling',
+            'spinClass',
+            'yoga',
+            'strengthTraining',
+            'pubQuiz',
+            'barCrawl',
+            'dinner',
+            'singlesMixer',
+            'openActivity',
+          ],
+        },
+        'interactionModel': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'pacePods',
+            'pairedRotations',
+            'teamRotations',
+            'seatedTable',
+            'freeFormMixer',
+            'hostLedProgram',
+            'openFormat',
+          ],
+        },
+        'customActivityLabel': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 80,
+        },
+        'defaultPlaybookId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+        },
+        'defaultModuleIds': <String, Object?>{
+          'type': 'array',
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'maxItems': 30,
+          'uniqueItems': true,
+        },
+        'activityDetails': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': true,
+        },
+      },
     },
     'pace': <String, Object?>{
       'type': 'string',
@@ -2643,6 +2718,7 @@ const schemaEventDocumentSchema = <String, Object?>{
             'inviteRequired',
             'membershipRequired',
             'manualApprovalRequired',
+            'privateAccessPolicy',
             'cohortCapacityLimits',
             'balancedRatioPolicy',
           ],
@@ -2695,6 +2771,34 @@ const schemaEventDocumentSchema = <String, Object?>{
             },
             'manualApprovalRequired': <String, Object?>{
               'type': 'boolean',
+            },
+            'privateAccessPolicy': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'mode',
+                'inviteCodeHint',
+                'privateLinkEnabled',
+              ],
+              'properties': <String, Object?>{
+                'mode': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'none',
+                    'inviteCode',
+                  ],
+                },
+                'inviteCodeHint': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 64,
+                },
+                'privateLinkEnabled': <String, Object?>{
+                  'type': 'boolean',
+                },
+              },
             },
             'cohortCapacityLimits': <String, Object?>{
               'type': 'object',
@@ -2870,6 +2974,13 @@ const schemaEventDocumentSchema = <String, Object?>{
         'minimum': 0,
       },
     },
+    'waitlistedCohortCounts': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': <String, Object?>{
+        'type': 'integer',
+        'minimum': 0,
+      },
+    },
     'synthetic': <String, Object?>{
       'type': 'boolean',
       'description': 'Internal demo seed marker used for cleanup and diagnostics.',
@@ -2901,6 +3012,63 @@ const schemaEventDocumentSchema = <String, Object?>{
       'minLength': 1,
       'maxLength': 80,
       'description': 'Internal demo-operations command name used for cleanup and diagnostics.',
+    },
+  },
+};
+
+const schemaEventPrivateAccessDocumentSchema = <String, Object?>{
+  '\$schema': 'http://json-schema.org/draft-07/schema#',
+  '\$id': 'https://catch.app/contracts/firestore/event_private_access.schema.json',
+  'title': 'EventPrivateAccessDocument',
+  'description': 'Host-private access material for invite-only events stored at eventPrivateAccess/{eventId}.',
+  'type': 'object',
+  'additionalProperties': false,
+  'x-firestore-collection': 'eventPrivateAccess',
+  'x-firestore-path': 'eventPrivateAccess/{eventId}',
+  'x-document-id-field': 'id',
+  'x-owner': 'createEvent callable; readable only by the host of the linked event',
+  'required': <Object?>[
+    'eventId',
+    'clubId',
+    'inviteCode',
+    'createdAt',
+  ],
+  'properties': <String, Object?>{
+    'eventId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'clubId': <String, Object?>{
+      'type': 'string',
+      'minLength': 1,
+      'maxLength': 180,
+    },
+    'inviteCode': <String, Object?>{
+      'type': 'string',
+      'minLength': 4,
+      'maxLength': 64,
+      'pattern': '^[A-Za-z0-9_-]+\$',
+    },
+    'createdAt': <String, Object?>{
+      'type': 'object',
+      'description': 'Serialized Firestore Timestamp fixture shape.',
+      'x-firestore-type': 'timestamp',
+      'additionalProperties': false,
+      'required': <Object?>[
+        '_seconds',
+        '_nanoseconds',
+      ],
+      'properties': <String, Object?>{
+        '_seconds': <String, Object?>{
+          'type': 'integer',
+        },
+        '_nanoseconds': <String, Object?>{
+          'type': 'integer',
+          'minimum': 0,
+          'maximum': 999999999,
+        },
+      },
     },
   },
 };
@@ -6218,7 +6386,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
     },
     'distanceKm': <String, Object?>{
       'type': 'number',
-      'exclusiveMinimum': 0,
+      'minimum': 0,
       'maximum': 100,
     },
     'pace': <String, Object?>{
@@ -6269,6 +6437,7 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             'inviteRequired',
             'membershipRequired',
             'manualApprovalRequired',
+            'privateAccessPolicy',
             'cohortCapacityLimits',
             'balancedRatioPolicy',
           ],
@@ -6321,6 +6490,34 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
             },
             'manualApprovalRequired': <String, Object?>{
               'type': 'boolean',
+            },
+            'privateAccessPolicy': <String, Object?>{
+              'type': 'object',
+              'additionalProperties': false,
+              'required': <Object?>[
+                'mode',
+                'inviteCodeHint',
+                'privateLinkEnabled',
+              ],
+              'properties': <String, Object?>{
+                'mode': <String, Object?>{
+                  'type': 'string',
+                  'enum': <Object?>[
+                    'none',
+                    'inviteCode',
+                  ],
+                },
+                'inviteCodeHint': <String, Object?>{
+                  'type': <Object?>[
+                    'string',
+                    'null',
+                  ],
+                  'maxLength': 64,
+                },
+                'privateLinkEnabled': <String, Object?>{
+                  'type': 'boolean',
+                },
+              },
             },
             'cohortCapacityLimits': <String, Object?>{
               'type': 'object',
@@ -6482,6 +6679,90 @@ const schemaCreateEventCallablePayloadSchema = <String, Object?>{
         },
       },
     },
+    'privateAccess': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'properties': <String, Object?>{
+        'inviteCode': <String, Object?>{
+          'type': 'string',
+          'minLength': 4,
+          'maxLength': 64,
+          'pattern': '^[A-Za-z0-9_-]+\$',
+        },
+      },
+    },
+    'eventFormat': <String, Object?>{
+      'type': 'object',
+      'additionalProperties': false,
+      'required': <Object?>[
+        'version',
+        'activityKind',
+        'interactionModel',
+      ],
+      'properties': <String, Object?>{
+        'version': <String, Object?>{
+          'type': 'integer',
+          'const': 1,
+        },
+        'activityKind': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'socialRun',
+            'running',
+            'walking',
+            'pickleball',
+            'padel',
+            'tennis',
+            'badminton',
+            'cycling',
+            'spinClass',
+            'yoga',
+            'strengthTraining',
+            'pubQuiz',
+            'barCrawl',
+            'dinner',
+            'singlesMixer',
+            'openActivity',
+          ],
+        },
+        'interactionModel': <String, Object?>{
+          'type': 'string',
+          'enum': <Object?>[
+            'pacePods',
+            'pairedRotations',
+            'teamRotations',
+            'seatedTable',
+            'freeFormMixer',
+            'hostLedProgram',
+            'openFormat',
+          ],
+        },
+        'customActivityLabel': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 80,
+        },
+        'defaultPlaybookId': <String, Object?>{
+          'type': 'string',
+          'minLength': 1,
+          'maxLength': 120,
+        },
+        'defaultModuleIds': <String, Object?>{
+          'type': 'array',
+          'items': <String, Object?>{
+            'type': 'string',
+            'minLength': 1,
+            'maxLength': 120,
+          },
+          'maxItems': 30,
+          'uniqueItems': true,
+        },
+        'activityDetails': <String, Object?>{
+          'type': 'object',
+          'additionalProperties': true,
+        },
+      },
+    },
     'constraints': <String, Object?>{
       'type': 'object',
       'additionalProperties': false,
@@ -6599,7 +6880,7 @@ const schemaUpdateEventCallablePayloadSchema = <String, Object?>{
         },
         'distanceKm': <String, Object?>{
           'type': 'number',
-          'exclusiveMinimum': 0,
+          'minimum': 0,
           'maximum': 100,
         },
         'pace': <String, Object?>{
@@ -6680,6 +6961,15 @@ const schemaEventIdCallablePayloadSchema = <String, Object?>{
       'type': 'string',
       'minLength': 1,
       'maxLength': 180,
+    },
+    'inviteCode': <String, Object?>{
+      'type': <Object?>[
+        'string',
+        'null',
+      ],
+      'minLength': 4,
+      'maxLength': 64,
+      'pattern': '^[A-Za-z0-9_-]+\$',
     },
   },
 };
@@ -7578,6 +7868,11 @@ const schemaContractDefinitions = <SchemaContractDefinition>[
     schema: schemaEventDocumentSchema,
   ),
   SchemaContractDefinition(
+    name: 'EventPrivateAccessDocument',
+    source: 'firestore/event_private_access.schema.json',
+    schema: schemaEventPrivateAccessDocumentSchema,
+  ),
+  SchemaContractDefinition(
     name: 'EventParticipationDocument',
     source: 'firestore/event_participations.schema.json',
     schema: schemaEventParticipationDocumentSchema,
@@ -7831,6 +8126,7 @@ const schemaContractsByName = <String, Map<String, Object?>>{
   'ClubMembershipDocument': schemaClubMembershipDocumentSchema,
   'ClubHostClaimDocument': schemaClubHostClaimDocumentSchema,
   'EventDocument': schemaEventDocumentSchema,
+  'EventPrivateAccessDocument': schemaEventPrivateAccessDocumentSchema,
   'EventParticipationDocument': schemaEventParticipationDocumentSchema,
   'EventSuccessPlanDocument': schemaEventSuccessPlanDocumentSchema,
   'EventSuccessFeedbackDocument': schemaEventSuccessFeedbackDocumentSchema,
@@ -7893,6 +8189,7 @@ const schemaContractsBySource = <String, Map<String, Object?>>{
   'firestore/club_memberships.schema.json': schemaClubMembershipDocumentSchema,
   'firestore/club_host_claims.schema.json': schemaClubHostClaimDocumentSchema,
   'firestore/events.schema.json': schemaEventDocumentSchema,
+  'firestore/event_private_access.schema.json': schemaEventPrivateAccessDocumentSchema,
   'firestore/event_participations.schema.json': schemaEventParticipationDocumentSchema,
   'firestore/event_success_plans.schema.json': schemaEventSuccessPlanDocumentSchema,
   'firestore/event_success_feedback.schema.json': schemaEventSuccessFeedbackDocumentSchema,

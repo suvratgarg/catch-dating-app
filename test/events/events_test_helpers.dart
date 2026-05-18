@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/theme/app_theme.dart';
@@ -8,6 +9,7 @@ import 'package:catch_dating_app/events/data/saved_event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:catch_dating_app/payments/data/payment_repository.dart';
 import 'package:catch_dating_app/payments/domain/payment_confirmation_data.dart';
@@ -30,6 +32,7 @@ Event buildEvent({
   double? startingPointLng,
   String? locationDetails,
   String? photoUrl,
+  EventFormatSnapshot eventFormat = const EventFormatSnapshot.socialRun(),
   double distanceKm = 5,
   PaceLevel pace = PaceLevel.easy,
   int capacityLimit = 20,
@@ -43,6 +46,7 @@ Event buildEvent({
   EventPolicyBundle? eventPolicy,
   Map<String, int> genderCounts = const {},
   Map<String, int> cohortCounts = const {},
+  Map<String, int> waitlistedCohortCounts = const {},
 }) {
   final start = startTime ?? DateTime.now().add(const Duration(hours: 2));
   return Event(
@@ -55,6 +59,7 @@ Event buildEvent({
     startingPointLng: startingPointLng,
     locationDetails: locationDetails,
     photoUrl: photoUrl,
+    eventFormat: eventFormat,
     distanceKm: distanceKm,
     pace: pace,
     capacityLimit: capacityLimit,
@@ -68,6 +73,7 @@ Event buildEvent({
     eventPolicy: eventPolicy,
     genderCounts: genderCounts,
     cohortCounts: cohortCounts,
+    waitlistedCohortCounts: waitlistedCohortCounts,
   );
 }
 
@@ -258,6 +264,8 @@ class FakeEventRepository extends Fake implements EventRepository {
   String? hostCancelReason;
   String? deletedEventId;
   String? joinedWaitlistEventId;
+  String? joinedWaitlistInviteCode;
+  String? createdEventInviteCode;
   String? leftWaitlistEventId;
   String? leftWaitlistUserId;
   String? markedAttendanceEventId;
@@ -268,6 +276,7 @@ class FakeEventRepository extends Fake implements EventRepository {
   final Map<String, List<Event>> clubEvents = {};
   final Map<String, List<Event>> attendedEvents = {};
   final Map<String, List<Event>> signedUpEvents = {};
+  final Map<String, EventPrivateAccess?> privateAccessByEventId = {};
   List<String>? recommendedClubIds;
   List<Event> recommendedEvents = const [];
 
@@ -275,11 +284,12 @@ class FakeEventRepository extends Fake implements EventRepository {
   String generateId() => generatedId;
 
   @override
-  Future<void> createEvent({required Event event}) async {
+  Future<void> createEvent({required Event event, String? inviteCode}) async {
     if (createError != null) {
       throw createError!;
     }
     createdEvent = event;
+    createdEventInviteCode = inviteCode;
   }
 
   @override
@@ -287,6 +297,10 @@ class FakeEventRepository extends Fake implements EventRepository {
 
   @override
   Stream<Event?> watchEvent(String id) => Stream.value(watchedEvents[id]);
+
+  @override
+  Stream<EventPrivateAccess?> watchPrivateAccess(String eventId) =>
+      Stream.value(privateAccessByEventId[eventId]);
 
   @override
   Stream<List<Event>> watchEventsForClub({required String clubId}) =>
@@ -332,11 +346,15 @@ class FakeEventRepository extends Fake implements EventRepository {
   }
 
   @override
-  Future<void> joinWaitlistViaFunction({required String eventId}) async {
+  Future<void> joinWaitlistViaFunction({
+    required String eventId,
+    String? inviteCode,
+  }) async {
     if (joinWaitlistError != null) {
       throw joinWaitlistError!;
     }
     joinedWaitlistEventId = eventId;
+    joinedWaitlistInviteCode = inviteCode;
   }
 
   @override
@@ -408,13 +426,19 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
   @override
   bool get supportsPaidBookings => supportsPaid;
 
+  String? bookedFreeEventInviteCode;
+
   @override
-  Future<void> bookFreeEvent({required String eventId}) async {
+  Future<void> bookFreeEvent({
+    required String eventId,
+    String? inviteCode,
+  }) async {
     if (bookFreeEventError != null) {
       throw bookFreeEventError!;
     }
     bookFreeEventCalled = true;
     bookedFreeEventId = eventId;
+    bookedFreeEventInviteCode = inviteCode;
   }
 
   @override
@@ -424,6 +448,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
     required String userName,
     required String userEmail,
     required String userContact,
+    String? inviteCode,
   }) async {
     if (!supportsPaid) {
       throw const PaidBookingUnsupportedException();
@@ -438,6 +463,7 @@ class FakePaymentRepository extends Fake implements PaymentRepository {
       userName: userName,
       userEmail: userEmail,
       userContact: userContact,
+      inviteCode: inviteCode,
     );
     return processPaymentResult ??
         PaymentConfirmationData(
@@ -459,6 +485,7 @@ class ProcessPaymentCall {
     required this.userName,
     required this.userEmail,
     required this.userContact,
+    this.inviteCode,
   });
 
   final String eventId;
@@ -466,6 +493,7 @@ class ProcessPaymentCall {
   final String userName;
   final String userEmail;
   final String userContact;
+  final String? inviteCode;
 }
 
 class FakePublicProfileRepository extends Fake

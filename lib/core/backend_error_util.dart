@@ -236,6 +236,17 @@ AppException _mapCommonFirebaseException(
       stackTrace: stackTrace,
       context: context,
     ),
+    'failed-precondition' when context.service == BackendService.firestore =>
+      BackendOperationException(
+        code: error.code,
+        message: _firestoreFailedPreconditionMessage(error),
+        debugMessage: _firestoreFailedPreconditionDebugMessage(error, context),
+        cause: error,
+        stackTrace: stackTrace,
+        context: context,
+        retryable: true,
+        severity: AppErrorSeverity.error,
+      ),
     'aborted' => BackendOperationException(
       code: error.code,
       message: 'The operation could not be completed. Please try again.',
@@ -255,6 +266,37 @@ AppException _mapCommonFirebaseException(
       severity: AppErrorSeverity.error,
     ),
   };
+}
+
+String _firestoreFailedPreconditionMessage(FirebaseException error) {
+  final message = error.message ?? '';
+  if (_mentionsFirestoreIndex(message)) {
+    return 'This list is still getting set up. Please try again in a moment.';
+  }
+  return 'Unable to load this data right now. Please try again.';
+}
+
+String _firestoreFailedPreconditionDebugMessage(
+  FirebaseException error,
+  BackendErrorContext context,
+) {
+  final message = error.message ?? '';
+  if (_mentionsFirestoreIndex(message)) {
+    final state = message.toLowerCase().contains('currently building')
+        ? 'required index is still building'
+        : 'required index is missing';
+    return '${context.service.label}.${context.action} failed '
+        'with ${error.plugin}/${error.code}: $state.';
+  }
+  return _firebaseDebugMessage(error, context);
+}
+
+bool _mentionsFirestoreIndex(String message) {
+  final normalized = message.toLowerCase();
+  return normalized.contains('index') &&
+      (normalized.contains('requires an index') ||
+          normalized.contains('query requires an index') ||
+          normalized.contains('currently building'));
 }
 
 AppException _mapFunctionsException(

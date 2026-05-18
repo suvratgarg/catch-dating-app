@@ -42,6 +42,11 @@ export interface CreateEventCallablePayload {
       inviteRequired: boolean;
       membershipRequired: boolean;
       manualApprovalRequired: boolean;
+      privateAccessPolicy: {
+        mode: "none" | "inviteCode";
+        inviteCodeHint: string | null;
+        privateLinkEnabled: boolean;
+      };
       cohortCapacityLimits: {
         [k: string]: number;
       };
@@ -79,6 +84,46 @@ export interface CreateEventCallablePayload {
     };
     settlement: {
       hostPayoutTiming: "afterEventCompletion";
+    };
+  };
+  privateAccess?: {
+    inviteCode?: string;
+  };
+  eventFormat?: {
+    version: 1;
+    activityKind:
+      | "socialRun"
+      | "running"
+      | "walking"
+      | "pickleball"
+      | "padel"
+      | "tennis"
+      | "badminton"
+      | "cycling"
+      | "spinClass"
+      | "yoga"
+      | "strengthTraining"
+      | "pubQuiz"
+      | "barCrawl"
+      | "dinner"
+      | "singlesMixer"
+      | "openActivity";
+    interactionModel:
+      | "pacePods"
+      | "pairedRotations"
+      | "teamRotations"
+      | "seatedTable"
+      | "freeFormMixer"
+      | "hostLedProgram"
+      | "openFormat";
+    customActivityLabel?: string;
+    defaultPlaybookId?: string;
+    /**
+     * @maxItems 30
+     */
+    defaultModuleIds?: string[];
+    activityDetails?: {
+      [k: string]: unknown;
     };
   };
   constraints?: {

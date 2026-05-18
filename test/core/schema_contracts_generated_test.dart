@@ -177,7 +177,10 @@ void main() {
         'EventDocument',
         'invalid/event_doc_invalid_pace.json',
       ),
-      _SchemaFixtureCase.valid('SavedEventDocument', 'valid/saved_event_doc.json'),
+      _SchemaFixtureCase.valid(
+        'SavedEventDocument',
+        'valid/saved_event_doc.json',
+      ),
       _SchemaFixtureCase.valid('SwipeDocument', 'valid/swipe_doc.json'),
       _SchemaFixtureCase.invalid(
         'SwipeDocument',
@@ -206,8 +209,8 @@ void main() {
     ];
 
     for (final fixtureCase in cases) {
-      final schema = schema_contracts
-          .schemaContractsByName[fixtureCase.schemaName];
+      final schema =
+          schema_contracts.schemaContractsByName[fixtureCase.schemaName];
       expect(
         schema,
         isNotNull,
@@ -219,7 +222,8 @@ void main() {
       expect(
         result.isValid,
         fixtureCase.isValid,
-        reason: '${fixtureCase.schemaName} should validate '
+        reason:
+            '${fixtureCase.schemaName} should validate '
             '${fixtureCase.fixturePath}: ${result.errors}',
       );
     }

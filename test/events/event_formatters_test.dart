@@ -1,3 +1,4 @@
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -53,7 +54,19 @@ void main() {
       expect(event.compactTimeRangeLabel, '6:30 AM–7:45 AM');
       expect(event.distanceLabel, '5.5km');
       expect(event.distanceValueLabel, '5.5');
+      expect(event.activitySummaryLabel, '5.5km · Easy');
       expect(event.spotsLabel, '2/20');
+    });
+
+    test('uses activity labels for non-distance event formats', () {
+      final event = buildEvent(
+        eventFormat: EventFormatSnapshot.fromActivityKind(ActivityKind.dinner),
+        distanceKm: 0,
+      );
+
+      expect(event.distanceLabel, 'Dinner');
+      expect(event.distanceValueLabel, 'Dinner');
+      expect(event.activitySummaryLabel, 'Dinner');
     });
   });
 }

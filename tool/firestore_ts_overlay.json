@@ -61,6 +61,20 @@
       ]
     },
     {
+      "name": "EventFormatSnapshot",
+      "collectionPath": "embedded event format snapshot",
+      "comment": "Stored inside events/{eventId}.eventFormat so event success, health activity, and host defaults share one activity taxonomy.",
+      "fields": [
+        { "name": "version", "tsType": "number" },
+        { "name": "activityKind", "tsType": "\"socialRun\" | \"running\" | \"walking\" | \"pickleball\" | \"padel\" | \"tennis\" | \"badminton\" | \"cycling\" | \"spinClass\" | \"yoga\" | \"strengthTraining\" | \"pubQuiz\" | \"barCrawl\" | \"dinner\" | \"singlesMixer\" | \"openActivity\"" },
+        { "name": "interactionModel", "tsType": "\"pacePods\" | \"pairedRotations\" | \"teamRotations\" | \"seatedTable\" | \"freeFormMixer\" | \"hostLedProgram\" | \"openFormat\"" },
+        { "name": "customActivityLabel", "tsType": "string", "optional": true },
+        { "name": "defaultPlaybookId", "tsType": "string", "optional": true },
+        { "name": "defaultModuleIds", "tsType": "string[]", "optional": true },
+        { "name": "activityDetails", "tsType": "Record<string, unknown>", "optional": true }
+      ]
+    },
+    {
       "name": "ProfilePhotoModeration",
       "collectionPath": "embedded profile photo moderation",
       "comment": "Stored inside users/{uid}.profilePhotos and publicProfiles/{uid}.profilePhotos.",
@@ -110,8 +124,19 @@
         { "name": "inviteRequired", "tsType": "boolean", "optional": true },
         { "name": "membershipRequired", "tsType": "boolean", "optional": true },
         { "name": "manualApprovalRequired", "tsType": "boolean", "optional": true },
+        { "name": "privateAccessPolicy", "tsType": "EventPolicyPrivateAccessDoc", "optional": true },
         { "name": "cohortCapacityLimits", "tsType": "Record<string, number>", "optional": true },
         { "name": "balancedRatioPolicy", "tsType": "EventPolicyBalancedRatioDoc | null", "optional": true }
+      ]
+    },
+    {
+      "name": "EventPolicyPrivateAccessDoc",
+      "collectionPath": "embedded event policy private access",
+      "comment": "Public, non-secret invite metadata nested inside events/{eventId}.eventPolicy.admission.privateAccessPolicy. Secret invite codes live in eventPrivateAccess/{eventId}.",
+      "fields": [
+        { "name": "mode", "tsType": "\"none\" | \"inviteCode\"" },
+        { "name": "inviteCodeHint", "tsType": "string | null" },
+        { "name": "privateLinkEnabled", "tsType": "boolean" }
       ]
     },
     {
@@ -156,6 +181,17 @@
         { "name": "maxAdjustmentInPaise", "tsType": "number" },
         { "name": "freeSkew", "tsType": "number" },
         { "name": "demandStep", "tsType": "number" }
+      ]
+    },
+    {
+      "name": "EventPrivateAccessDoc",
+      "collectionPath": "/eventPrivateAccess/{eventId}",
+      "comment": "Host-private invite material created by createEvent for invite-only events.",
+      "fields": [
+        { "name": "eventId", "tsType": "string" },
+        { "name": "clubId", "tsType": "string" },
+        { "name": "inviteCode", "tsType": "string" },
+        { "name": "createdAt", "tsType": "FirebaseFirestore.Timestamp" }
       ]
     },
     {

@@ -209,6 +209,9 @@ export async function cancelEventSignUpHandler(
       event.cohortCounts ?? {},
       cancellerCohort
     );
+    let newWaitlistedCohortCounts = {
+      ...(event.waitlistedCohortCounts ?? {}),
+    };
     let promotedParticipationRef:
         FirebaseFirestore.DocumentReference | null = null;
     let promotedParticipationPatch: Record<string, unknown> | null = null;
@@ -278,6 +281,10 @@ export async function cancelEventSignUpHandler(
       nextWaitlistedCount = Math.max(0, nextWaitlistedCount - 1);
       newGenderCounts[wGender] = (newGenderCounts[wGender] ?? 0) + 1;
       newCohortCounts = incrementCount(newCohortCounts, wCohort);
+      newWaitlistedCohortCounts = decrementCount(
+        newWaitlistedCohortCounts,
+        wCohort
+      );
       promotedParticipationRef = waitlistedParticipation.ref;
       promotedParticipationPatch = eventParticipationPatch({
         exists: true,
@@ -308,6 +315,7 @@ export async function cancelEventSignUpHandler(
       waitlistedCount: nextWaitlistedCount,
       genderCounts: newGenderCounts,
       cohortCounts: newCohortCounts,
+      waitlistedCohortCounts: newWaitlistedCohortCounts,
     });
     tx.set(participationRef, eventParticipationPatch({
       exists: participationSnap.exists,

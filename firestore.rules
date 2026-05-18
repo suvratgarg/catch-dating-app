@@ -608,6 +608,13 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    match /eventPrivateAccess/{eventId} {
+      allow read: if isAuthed()
+        && resource.data.eventId == eventId
+        && isClubHostForEvent(eventId);
+      allow write: if false;
+    }
+
     function isValidEventSuccessPlan(eventId, data) {
       return data.keys().hasOnly([
           'eventId', 'clubId', 'playbookId', 'selectedModuleIds',

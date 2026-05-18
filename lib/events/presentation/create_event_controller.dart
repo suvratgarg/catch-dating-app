@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/event_policies/domain/event_policy.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
@@ -52,11 +53,13 @@ class CreateEventController extends _$CreateEventController {
     double? startingPointLat,
     double? startingPointLng,
     String? locationDetails,
+    required EventFormatSnapshot eventFormat,
     required double distanceKm,
     required PaceLevel pace,
     required String description,
     required EventConstraints constraints,
     required EventPolicyBundle eventPolicy,
+    String? inviteCode,
     XFile? photoImage,
   }) async {
     final normalizedClubId = _requireNonBlank(
@@ -79,11 +82,18 @@ class CreateEventController extends _$CreateEventController {
         'Event end time must be after the start time.',
       );
     }
-    if (distanceKm <= 0) {
+    if (eventFormat.isDistanceBased && distanceKm <= 0) {
       throw ArgumentError.value(
         distanceKm,
         'distanceKm',
         'Distance must be greater than zero.',
+      );
+    }
+    if (!eventFormat.isDistanceBased && distanceKm < 0) {
+      throw ArgumentError.value(
+        distanceKm,
+        'distanceKm',
+        'Distance cannot be negative.',
       );
     }
     if (eventPolicy.capacityLimit < 1) {
@@ -98,6 +108,15 @@ class CreateEventController extends _$CreateEventController {
         eventPolicy.basePriceInPaise,
         'eventPolicy.basePriceInPaise',
         'Price cannot be negative.',
+      );
+    }
+    final normalizedInviteCode = _trimToNull(inviteCode);
+    if (eventPolicy.usesInviteOnly &&
+        (normalizedInviteCode == null || normalizedInviteCode.length < 4)) {
+      throw ArgumentError.value(
+        inviteCode,
+        'inviteCode',
+        'Invite-only events need a code of at least 4 characters.',
       );
     }
     final normalizedStartingPoint = _requireStartingPoint(
@@ -128,6 +147,7 @@ class CreateEventController extends _$CreateEventController {
       startingPointLng: normalizedStartingPoint.longitude,
       locationDetails: normalizedLocationDetails,
       photoUrl: photoUrl,
+      eventFormat: eventFormat,
       distanceKm: distanceKm,
       pace: pace,
       capacityLimit: eventPolicy.capacityLimit,
@@ -136,7 +156,7 @@ class CreateEventController extends _$CreateEventController {
       constraints: constraints,
       eventPolicy: eventPolicy,
     );
-    await eventRepo.createEvent(event: event);
+    await eventRepo.createEvent(event: event, inviteCode: normalizedInviteCode);
     return event;
   }
 }

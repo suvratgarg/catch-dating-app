@@ -2388,6 +2388,7 @@ export const eventDocumentSchema = {
     "startingPointLat",
     "startingPointLng",
     "locationDetails",
+    "eventFormat",
     "distanceKm",
     "pace",
     "capacityLimit",
@@ -2400,7 +2401,9 @@ export const eventDocumentSchema = {
     "cancelledAt",
     "cancellationReason",
     "constraints",
-    "genderCounts"
+    "genderCounts",
+    "cohortCounts",
+    "waitlistedCohortCounts"
   ],
   "properties": {
     "clubId": {
@@ -2490,8 +2493,80 @@ export const eventDocumentSchema = {
     },
     "distanceKm": {
       "type": "number",
-      "exclusiveMinimum": 0,
+      "minimum": 0,
       "maximum": 100
+    },
+    "eventFormat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "activityKind",
+        "interactionModel"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1
+        },
+        "activityKind": {
+          "type": "string",
+          "enum": [
+            "socialRun",
+            "running",
+            "walking",
+            "pickleball",
+            "padel",
+            "tennis",
+            "badminton",
+            "cycling",
+            "spinClass",
+            "yoga",
+            "strengthTraining",
+            "pubQuiz",
+            "barCrawl",
+            "dinner",
+            "singlesMixer",
+            "openActivity"
+          ]
+        },
+        "interactionModel": {
+          "type": "string",
+          "enum": [
+            "pacePods",
+            "pairedRotations",
+            "teamRotations",
+            "seatedTable",
+            "freeFormMixer",
+            "hostLedProgram",
+            "openFormat"
+          ]
+        },
+        "customActivityLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "defaultPlaybookId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "defaultModuleIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "maxItems": 30,
+          "uniqueItems": true
+        },
+        "activityDetails": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
     },
     "pace": {
       "type": "string",
@@ -2630,6 +2705,7 @@ export const eventDocumentSchema = {
             "inviteRequired",
             "membershipRequired",
             "manualApprovalRequired",
+            "privateAccessPolicy",
             "cohortCapacityLimits",
             "balancedRatioPolicy"
           ],
@@ -2682,6 +2758,34 @@ export const eventDocumentSchema = {
             },
             "manualApprovalRequired": {
               "type": "boolean"
+            },
+            "privateAccessPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "inviteCodeHint",
+                "privateLinkEnabled"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "inviteCode"
+                  ]
+                },
+                "inviteCodeHint": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 64
+                },
+                "privateLinkEnabled": {
+                  "type": "boolean"
+                }
+              }
             },
             "cohortCapacityLimits": {
               "type": "object",
@@ -2857,6 +2961,13 @@ export const eventDocumentSchema = {
         "minimum": 0
       }
     },
+    "waitlistedCohortCounts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "minimum": 0
+      }
+    },
     "synthetic": {
       "type": "boolean",
       "description": "Internal demo seed marker used for cleanup and diagnostics."
@@ -2888,6 +2999,63 @@ export const eventDocumentSchema = {
       "minLength": 1,
       "maxLength": 80,
       "description": "Internal demo-operations command name used for cleanup and diagnostics."
+    }
+  }
+};
+
+export const eventPrivateAccessDocumentSchema = {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://catch.app/contracts/firestore/event_private_access.schema.json",
+  "title": "EventPrivateAccessDocument",
+  "description": "Host-private access material for invite-only events stored at eventPrivateAccess/{eventId}.",
+  "type": "object",
+  "additionalProperties": false,
+  "x-firestore-collection": "eventPrivateAccess",
+  "x-firestore-path": "eventPrivateAccess/{eventId}",
+  "x-document-id-field": "id",
+  "x-owner": "createEvent callable; readable only by the host of the linked event",
+  "required": [
+    "eventId",
+    "clubId",
+    "inviteCode",
+    "createdAt"
+  ],
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "clubId": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "inviteCode": {
+      "type": "string",
+      "minLength": 4,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]+$"
+    },
+    "createdAt": {
+      "type": "object",
+      "description": "Serialized Firestore Timestamp fixture shape.",
+      "x-firestore-type": "timestamp",
+      "additionalProperties": false,
+      "required": [
+        "_seconds",
+        "_nanoseconds"
+      ],
+      "properties": {
+        "_seconds": {
+          "type": "integer"
+        },
+        "_nanoseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 999999999
+        }
+      }
     }
   }
 };
@@ -6205,7 +6373,7 @@ export const createEventCallablePayloadSchema = {
     },
     "distanceKm": {
       "type": "number",
-      "exclusiveMinimum": 0,
+      "minimum": 0,
       "maximum": 100
     },
     "pace": {
@@ -6256,6 +6424,7 @@ export const createEventCallablePayloadSchema = {
             "inviteRequired",
             "membershipRequired",
             "manualApprovalRequired",
+            "privateAccessPolicy",
             "cohortCapacityLimits",
             "balancedRatioPolicy"
           ],
@@ -6308,6 +6477,34 @@ export const createEventCallablePayloadSchema = {
             },
             "manualApprovalRequired": {
               "type": "boolean"
+            },
+            "privateAccessPolicy": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "mode",
+                "inviteCodeHint",
+                "privateLinkEnabled"
+              ],
+              "properties": {
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "none",
+                    "inviteCode"
+                  ]
+                },
+                "inviteCodeHint": {
+                  "type": [
+                    "string",
+                    "null"
+                  ],
+                  "maxLength": 64
+                },
+                "privateLinkEnabled": {
+                  "type": "boolean"
+                }
+              }
             },
             "cohortCapacityLimits": {
               "type": "object",
@@ -6469,6 +6666,90 @@ export const createEventCallablePayloadSchema = {
         }
       }
     },
+    "privateAccess": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "inviteCode": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 64,
+          "pattern": "^[A-Za-z0-9_-]+$"
+        }
+      }
+    },
+    "eventFormat": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "version",
+        "activityKind",
+        "interactionModel"
+      ],
+      "properties": {
+        "version": {
+          "type": "integer",
+          "const": 1
+        },
+        "activityKind": {
+          "type": "string",
+          "enum": [
+            "socialRun",
+            "running",
+            "walking",
+            "pickleball",
+            "padel",
+            "tennis",
+            "badminton",
+            "cycling",
+            "spinClass",
+            "yoga",
+            "strengthTraining",
+            "pubQuiz",
+            "barCrawl",
+            "dinner",
+            "singlesMixer",
+            "openActivity"
+          ]
+        },
+        "interactionModel": {
+          "type": "string",
+          "enum": [
+            "pacePods",
+            "pairedRotations",
+            "teamRotations",
+            "seatedTable",
+            "freeFormMixer",
+            "hostLedProgram",
+            "openFormat"
+          ]
+        },
+        "customActivityLabel": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "defaultPlaybookId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 120
+        },
+        "defaultModuleIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 120
+          },
+          "maxItems": 30,
+          "uniqueItems": true
+        },
+        "activityDetails": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
     "constraints": {
       "type": "object",
       "additionalProperties": false,
@@ -6586,7 +6867,7 @@ export const updateEventCallablePayloadSchema = {
         },
         "distanceKm": {
           "type": "number",
-          "exclusiveMinimum": 0,
+          "minimum": 0,
           "maximum": 100
         },
         "pace": {
@@ -6667,6 +6948,15 @@ export const eventIdCallablePayloadSchema = {
       "type": "string",
       "minLength": 1,
       "maxLength": 180
+    },
+    "inviteCode": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "minLength": 4,
+      "maxLength": 64,
+      "pattern": "^[A-Za-z0-9_-]+$"
     }
   }
 };

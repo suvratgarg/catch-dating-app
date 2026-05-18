@@ -7,4 +7,5 @@
  */
 export interface EventIdCallablePayload {
   eventId: string;
+  inviteCode?: string | null;
 }

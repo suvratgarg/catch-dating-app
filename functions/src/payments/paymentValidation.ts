@@ -30,6 +30,7 @@ export interface VerifiedPaymentBooking {
   userId: string;
   amountInPaise: number;
   currency: string;
+  inviteVerified?: boolean;
 }
 
 export interface PaymentRecordInput extends VerifiedPaymentBooking {
@@ -57,12 +58,14 @@ export function buildOrderCreatePayload({
   userId,
   receiptToken,
   amountInPaise,
+  inviteVerified = false,
 }: {
   eventId: string;
   event: EventDoc;
   userId: string;
   receiptToken: string | number;
   amountInPaise?: number;
+  inviteVerified?: boolean;
 }) {
   if (event.status === "cancelled") {
     throw new HttpsError(
@@ -84,6 +87,7 @@ export function buildOrderCreatePayload({
       eventId,
       userId,
       quotedAmountInPaise: trustedAmountInPaise,
+      inviteVerified: inviteVerified ? "true" : "false",
     },
   };
 }
@@ -167,6 +171,7 @@ export function verifyPaidEventBooking({
 
   const eventId = getRequiredNote(order.notes, "eventId");
   const userId = getRequiredNote(order.notes, "userId");
+  const inviteVerified = order.notes?.inviteVerified === "true";
 
   if (userId !== expectedUserId) {
     throw new HttpsError(
@@ -180,6 +185,7 @@ export function verifyPaidEventBooking({
     userId,
     amountInPaise: orderAmount,
     currency: order.currency,
+    inviteVerified,
   };
 }
 

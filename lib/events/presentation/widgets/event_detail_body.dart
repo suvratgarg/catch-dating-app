@@ -39,6 +39,7 @@ class EventDetailBody extends ConsumerWidget {
     required this.isHost,
     required this.isSaved,
     required this.participation,
+    this.inviteCode,
     this.onShareEvent,
     this.now,
   });
@@ -51,6 +52,7 @@ class EventDetailBody extends ConsumerWidget {
   final bool isHost;
   final bool isSaved;
   final EventParticipation? participation;
+  final String? inviteCode;
   final EventShareHandler? onShareEvent;
   final DateTime? now;
 
@@ -95,7 +97,7 @@ class EventDetailBody extends ConsumerWidget {
             onShare: (buttonContext) => unawaited(
               onShareEvent != null
                   ? onShareEvent!(buttonContext, event)
-                  : _shareEvent(buttonContext, event, share),
+                  : _shareEvent(buttonContext, event, share, inviteCode),
             ),
             showAddToCalendar: _canAddEventToCalendar(
               event: event,
@@ -165,9 +167,14 @@ class EventDetailBody extends ConsumerWidget {
               clubId: clubId,
               isHost: isHost,
               participation: participation,
+              inviteCode: inviteCode,
               now: now,
             )
-          : _GuestBookCta(clubId: clubId, eventId: event.id),
+          : _GuestBookCta(
+              clubId: clubId,
+              eventId: event.id,
+              inviteCode: inviteCode,
+            ),
     );
   }
 }
@@ -274,10 +281,15 @@ Future<void> _shareEvent(
   BuildContext context,
   Event event,
   ExternalShareController share,
+  String? inviteCode,
 ) async {
   final box = context.findRenderObject() as RenderBox?;
   final origin = box == null ? null : box.localToGlobal(Offset.zero) & box.size;
-  final uri = AppDeepLinks.event(clubId: event.clubId, eventId: event.id);
+  final uri = AppDeepLinks.event(
+    clubId: event.clubId,
+    eventId: event.id,
+    inviteCode: inviteCode,
+  );
 
   try {
     await share.shareText(
@@ -367,10 +379,15 @@ bool _canAddEventToCalendar({
 }
 
 class _GuestBookCta extends StatelessWidget {
-  const _GuestBookCta({required this.clubId, required this.eventId});
+  const _GuestBookCta({
+    required this.clubId,
+    required this.eventId,
+    this.inviteCode,
+  });
 
   final String clubId;
   final String eventId;
+  final String? inviteCode;
 
   @override
   Widget build(BuildContext context) {
@@ -383,7 +400,13 @@ class _GuestBookCta extends StatelessWidget {
           onPressed: () => context.go(
             Uri(
               path: Routes.authScreen.path,
-              queryParameters: {'from': '/clubs/$clubId/events/$eventId'},
+              queryParameters: {
+                'from': AppDeepLinks.inAppEventPath(
+                  clubId: clubId,
+                  eventId: eventId,
+                  inviteCode: inviteCode,
+                ),
+              },
             ).toString(),
           ),
           icon: Icon(Icons.lock_outline_rounded, size: 18, color: t.primary),

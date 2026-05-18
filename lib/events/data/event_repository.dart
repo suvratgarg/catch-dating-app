@@ -6,6 +6,7 @@ import 'package:catch_dating_app/core/firestore_converters.dart';
 import 'package:catch_dating_app/events/data/event_callable_dtos.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -37,6 +38,14 @@ class EventRepository {
         toJson: (participation) => participation.toJson(),
       );
 
+  CollectionReference<EventPrivateAccess> get _privateAccessRef => _db
+      .collection('eventPrivateAccess')
+      .withDocumentIdConverter<EventPrivateAccess>(
+        idField: 'id',
+        fromJson: EventPrivateAccess.fromJson,
+        toJson: (access) => access.toJson(),
+      );
+
   DocumentReference<Event> _eventRef(String id) => _eventsRef.doc(id);
 
   // ── Read ──────────────────────────────────────────────────────────────────
@@ -62,6 +71,19 @@ class EventRepository {
       resource: _collectionPath,
     ),
   );
+
+  Stream<EventPrivateAccess?> watchPrivateAccess(String eventId) =>
+      withBackendErrorStream(
+        () => _privateAccessRef
+            .doc(eventId)
+            .snapshots()
+            .map((doc) => doc.exists ? doc.data() : null),
+        context: const BackendErrorContext(
+          service: BackendService.firestore,
+          action: 'watch event private access',
+          resource: 'eventPrivateAccess',
+        ),
+      );
 
   Stream<List<Event>> watchEventsForClub({required String clubId}) =>
       withBackendErrorStream(
@@ -245,16 +267,22 @@ class EventRepository {
 
   // ── Write ─────────────────────────────────────────────────────────────────
 
-  Future<void> createEvent({required Event event}) => withBackendErrorContext(
-    () => _functions
-        .httpsCallable('createEvent')
-        .call(CreateEventCallableRequest.fromEvent(event).toJson()),
-    context: const BackendErrorContext(
-      service: BackendService.functions,
-      action: 'create event',
-      resource: _collectionPath,
-    ),
-  );
+  Future<void> createEvent({required Event event, String? inviteCode}) =>
+      withBackendErrorContext(
+        () => _functions
+            .httpsCallable('createEvent')
+            .call(
+              CreateEventCallableRequest.fromEvent(
+                event,
+                inviteCode: inviteCode,
+              ).toJson(),
+            ),
+        context: const BackendErrorContext(
+          service: BackendService.functions,
+          action: 'create event',
+          resource: _collectionPath,
+        ),
+      );
 
   Future<void> updateEventDetails({required Event event}) =>
       withBackendErrorContext(
@@ -320,17 +348,19 @@ class EventRepository {
         ),
       );
 
-  Future<void> joinWaitlistViaFunction({required String eventId}) =>
-      withBackendErrorContext(
-        () => _functions
-            .httpsCallable('joinEventWaitlist')
-            .call(EventIdCallableRequest(eventId).toJson()),
-        context: const BackendErrorContext(
-          service: BackendService.functions,
-          action: 'join waitlist',
-          resource: _collectionPath,
-        ),
-      );
+  Future<void> joinWaitlistViaFunction({
+    required String eventId,
+    String? inviteCode,
+  }) => withBackendErrorContext(
+    () => _functions
+        .httpsCallable('joinEventWaitlist')
+        .call(EventIdCallableRequest(eventId, inviteCode: inviteCode).toJson()),
+    context: const BackendErrorContext(
+      service: BackendService.functions,
+      action: 'join waitlist',
+      resource: _collectionPath,
+    ),
+  );
 
   Future<void> leaveWaitlist({
     required String eventId,
@@ -417,6 +447,10 @@ EventRepository eventRepository(Ref ref) => EventRepository(
 @riverpod
 Stream<Event?> watchEvent(Ref ref, String eventId) =>
     ref.watch(eventRepositoryProvider).watchEvent(eventId);
+
+@riverpod
+Stream<EventPrivateAccess?> watchEventPrivateAccess(Ref ref, String eventId) =>
+    ref.watch(eventRepositoryProvider).watchPrivateAccess(eventId);
 
 @riverpod
 Stream<List<Event>> watchEventsForClub(Ref ref, String clubId) =>

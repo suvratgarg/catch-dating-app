@@ -9,17 +9,24 @@ import 'package:catch_dating_app/events/presentation/widgets/field_label.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum EventAdmissionPreset { openCapacity, balancedSingles, fixedCohortCaps }
+enum EventAdmissionPreset {
+  openCapacity,
+  inviteOnly,
+  balancedSingles,
+  fixedCohortCaps,
+}
 
 extension EventAdmissionPresetX on EventAdmissionPreset {
   String get label => switch (this) {
     EventAdmissionPreset.openCapacity => 'OPEN',
+    EventAdmissionPreset.inviteOnly => 'INVITE',
     EventAdmissionPreset.balancedSingles => 'BALANCED',
     EventAdmissionPreset.fixedCohortCaps => 'FIXED CAPS',
   };
 
   String get title => switch (this) {
     EventAdmissionPreset.openCapacity => 'Open capacity',
+    EventAdmissionPreset.inviteOnly => 'Invite only',
     EventAdmissionPreset.balancedSingles => 'Balanced singles',
     EventAdmissionPreset.fixedCohortCaps => 'Fixed cohort caps',
   };
@@ -27,6 +34,8 @@ extension EventAdmissionPresetX on EventAdmissionPreset {
   String get description => switch (this) {
     EventAdmissionPreset.openCapacity =>
       'Anyone eligible can book until the event reaches capacity.',
+    EventAdmissionPreset.inviteOnly =>
+      'Only people with the invite code or private link can book. Waitlist is off by default.',
     EventAdmissionPreset.balancedSingles =>
       'Straight men and women are kept within one spot of each other. Queer, open, non-binary, and other attendees can book within total capacity.',
     EventAdmissionPreset.fixedCohortCaps =>
@@ -40,12 +49,17 @@ class EventPolicyStep extends StatelessWidget {
     required this.formKey,
     required this.capacityController,
     required this.priceController,
+    required this.inviteCodeController,
+    required this.dynamicPricingStepController,
+    required this.dynamicPricingMaxController,
     required this.minAgeController,
     required this.maxAgeController,
     required this.maxMenController,
     required this.maxWomenController,
     required this.admissionPreset,
     required this.onAdmissionPresetChanged,
+    required this.dynamicPricingEnabled,
+    required this.onDynamicPricingChanged,
     required this.cancellationPolicyId,
     required this.onCancellationPolicyChanged,
   });
@@ -53,12 +67,17 @@ class EventPolicyStep extends StatelessWidget {
   final GlobalKey<FormState> formKey;
   final TextEditingController capacityController;
   final TextEditingController priceController;
+  final TextEditingController inviteCodeController;
+  final TextEditingController dynamicPricingStepController;
+  final TextEditingController dynamicPricingMaxController;
   final TextEditingController minAgeController;
   final TextEditingController maxAgeController;
   final TextEditingController maxMenController;
   final TextEditingController maxWomenController;
   final EventAdmissionPreset admissionPreset;
   final ValueChanged<EventAdmissionPreset> onAdmissionPresetChanged;
+  final bool dynamicPricingEnabled;
+  final ValueChanged<bool> onDynamicPricingChanged;
   final EventCancellationPolicyId cancellationPolicyId;
   final ValueChanged<EventCancellationPolicyId> onCancellationPolicyChanged;
 
@@ -184,6 +203,51 @@ class EventPolicyStep extends StatelessWidget {
             admissionPreset.description,
             style: CatchTextStyles.bodyS(context, color: t.ink2),
           ),
+          if (admissionPreset == EventAdmissionPreset.inviteOnly) ...[
+            const SizedBox(height: 20),
+            CatchSurface(
+              padding: const EdgeInsets.all(12),
+              tone: CatchSurfaceTone.surface,
+              radius: CatchRadius.md,
+              borderColor: t.line,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.key_outlined, color: t.primary, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'The code is stored in the host-only private access document. Public event listings only show that an invite is required.',
+                          style: CatchTextStyles.bodyS(context, color: t.ink2),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  CatchTextField(
+                    key: CreateEventFormKeys.inviteCode,
+                    label: 'Invite code',
+                    controller: inviteCodeController,
+                    hintText: 'CATCH-DELHI',
+                    prefixIcon: const Icon(Icons.lock_outline_rounded),
+                    textInputAction: TextInputAction.next,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.allow(
+                        RegExp(r'[A-Za-z0-9_-]'),
+                      ),
+                    ],
+                    validator:
+                        admissionPreset == EventAdmissionPreset.inviteOnly
+                        ? _inviteCodeValidator
+                        : null,
+                  ),
+                ],
+              ),
+            ),
+          ],
           if (admissionPreset == EventAdmissionPreset.fixedCohortCaps) ...[
             const SizedBox(height: 20),
             const FieldLabel('Cohort caps'),
@@ -220,6 +284,76 @@ class EventPolicyStep extends StatelessWidget {
                   ),
                 ),
               ],
+            ),
+          ],
+          if (admissionPreset == EventAdmissionPreset.balancedSingles) ...[
+            const SizedBox(height: 20),
+            CatchSurface(
+              padding: const EdgeInsets.all(12),
+              tone: CatchSurfaceTone.surface,
+              radius: CatchRadius.md,
+              borderColor: t.line,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SwitchListTile.adaptive(
+                    key: CreateEventFormKeys.dynamicPricingToggle,
+                    contentPadding: EdgeInsets.zero,
+                    value: dynamicPricingEnabled,
+                    onChanged: onDynamicPricingChanged,
+                    title: Text(
+                      'Demand pricing',
+                      style: CatchTextStyles.labelL(context),
+                    ),
+                    subtitle: Text(
+                      'Increase the straight-men price when that cohort has more booked and waitlisted demand than the balancing cohort.',
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
+                  ),
+                  if (dynamicPricingEnabled) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: CatchTextField(
+                            key: CreateEventFormKeys.dynamicPricingStep,
+                            label: 'Step (Rs)',
+                            controller: dynamicPricingStepController,
+                            hintText: '250',
+                            prefixIcon: const Icon(Icons.trending_up_rounded),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            textInputAction: TextInputAction.next,
+                            validator: dynamicPricingEnabled
+                                ? _positiveRequiredValidator
+                                : null,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: CatchTextField(
+                            key: CreateEventFormKeys.dynamicPricingMax,
+                            label: 'Max (Rs)',
+                            controller: dynamicPricingMaxController,
+                            hintText: '1500',
+                            prefixIcon: const Icon(Icons.price_change_outlined),
+                            keyboardType: TextInputType.number,
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly,
+                            ],
+                            textInputAction: TextInputAction.next,
+                            validator: dynamicPricingEnabled
+                                ? _positiveRequiredValidator
+                                : null,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
             ),
           ],
           const SizedBox(height: 20),
@@ -313,6 +447,21 @@ String? _positiveOptionalValidator(String? value) {
   if (value == null || value.trim().isEmpty) return null;
   final n = int.tryParse(value.trim());
   if (n == null || n < 1) return 'Min 1';
+  return null;
+}
+
+String? _positiveRequiredValidator(String? value) {
+  if (value == null || value.trim().isEmpty) return 'Required';
+  final n = int.tryParse(value.trim());
+  if (n == null || n < 1) return 'Min 1';
+  return null;
+}
+
+String? _inviteCodeValidator(String? value) {
+  final code = value?.trim() ?? '';
+  if (code.isEmpty) return 'Required';
+  if (code.length < 4) return 'Min 4 chars';
+  if (code.length > 64) return 'Max 64 chars';
   return null;
 }
 

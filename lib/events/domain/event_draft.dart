@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:catch_dating_app/activity/domain/activity_taxonomy.dart';
 import 'package:catch_dating_app/core/business_rules.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -17,6 +18,7 @@ abstract class EventDraft with _$EventDraft {
     String? capacity,
     String? price,
     String? description,
+    String? activityKind,
     String? paceName,
     // Where step
     String? meetingPoint,
@@ -35,6 +37,10 @@ abstract class EventDraft with _$EventDraft {
     String? maxMen,
     String? maxWomen,
     String? admissionPreset,
+    String? inviteCode,
+    @Default(false) bool dynamicPricingEnabled,
+    String? dynamicPricingStep,
+    String? dynamicPricingMax,
     String? cancellationPolicy,
   }) = _EventDraft;
 
@@ -56,6 +62,7 @@ extension EventDraftX on EventDraft {
       capacity == null &&
       price == null &&
       description == null &&
+      (activityKind == null || activityKind == 'socialRun') &&
       paceName == null &&
       meetingPoint == null &&
       locationDetails == null &&
@@ -70,6 +77,10 @@ extension EventDraftX on EventDraft {
       maxMen == null &&
       maxWomen == null &&
       admissionPreset == null &&
+      inviteCode == null &&
+      dynamicPricingEnabled == false &&
+      dynamicPricingStep == null &&
+      dynamicPricingMax == null &&
       cancellationPolicy == null;
 
   String get summary {
@@ -78,6 +89,8 @@ extension EventDraftX on EventDraft {
       var distPart = '${distance!}km';
       if (paceName != null) distPart += ' $paceName';
       parts.add(distPart);
+    } else if (activityKind != null && activityKind != 'socialRun') {
+      parts.add(_activityLabel(activityKind!));
     } else if (paceName != null) {
       parts.add(paceName!);
     }
@@ -89,4 +102,13 @@ extension EventDraftX on EventDraft {
     if (parts.isEmpty) return 'Empty draft';
     return parts.join(' · ');
   }
+}
+
+String _activityLabel(String name) {
+  return ActivityKind.values
+      .firstWhere(
+        (activityKind) => activityKind.name == name,
+        orElse: () => ActivityKind.openActivity,
+      )
+      .label;
 }

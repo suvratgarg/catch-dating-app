@@ -31,6 +31,8 @@ export type EventOutOfRatioCohortPolicy =
   | "manualReview"
   | "reject";
 
+export type EventPrivateAccessMode = "none" | "inviteCode";
+
 export type EventCancellationPolicyId = "flexible" | "standard" | "strict";
 
 export type EventCancellationRemedy =
@@ -51,6 +53,11 @@ export interface EventPolicyBundleDoc {
     inviteRequired?: boolean;
     membershipRequired?: boolean;
     manualApprovalRequired?: boolean;
+    privateAccessPolicy?: {
+      mode: EventPrivateAccessMode;
+      inviteCodeHint: string | null;
+      privateLinkEnabled: boolean;
+    };
     cohortCapacityLimits?: Record<string, number>;
     balancedRatioPolicy?: {
       leftCohortId: string;
@@ -82,6 +89,7 @@ export interface EventPolicyBundleDoc {
 
 export interface EventRosterSnapshot {
   bookedCountsByCohort: Record<string, number>;
+  waitlistedCountsByCohort: Record<string, number>;
   totalBooked: number;
 }
 
@@ -110,6 +118,11 @@ export function normalizePolicy(policy: EventPolicyBundleDoc):
       membershipRequired: policy.admission?.membershipRequired === true,
       manualApprovalRequired:
         policy.admission?.manualApprovalRequired === true,
+      privateAccessPolicy: normalizePrivateAccessPolicy(
+        policy.admission?.privateAccessPolicy,
+        policy.admission?.inviteRequired === true ||
+          policy.admission?.format === "inviteOnly"
+      ),
       cohortCapacityLimits: sanitizeCountMap(
         policy.admission?.cohortCapacityLimits
       ),
@@ -149,6 +162,11 @@ export function legacyPolicyFromEvent(event: EventDoc): EventPolicyBundleDoc {
       inviteRequired: false,
       membershipRequired: false,
       manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
+      },
       cohortCapacityLimits: {
         ...(maxMen != null ? {[cohortIds.menInterestedInWomen]: maxMen} : {}),
         ...(maxWomen != null ?
@@ -191,9 +209,14 @@ export function rosterFromEvent(event: EventDoc): EventRosterSnapshot {
     Object.keys(storedCohortCounts).length > 0 ?
     sanitizeCountMap(storedCohortCounts) :
     legacyCohortCounts(event);
+  const waitlistedCountsByCohort = sanitizeCountMap(
+    (event as EventDoc & {
+      waitlistedCohortCounts?: Record<string, number> | null;
+    }).waitlistedCohortCounts
+  );
   const totalBooked = event.bookedCount ??
     Object.values(bookedCountsByCohort).reduce((sum, count) => sum + count, 0);
-  return {bookedCountsByCohort, totalBooked};
+  return {bookedCountsByCohort, waitlistedCountsByCohort, totalBooked};
 }
 
 export function quotePriceInPaise(params: {
@@ -211,9 +234,11 @@ export function quotePriceInPaise(params: {
     if (params.cohortId !== rule.pricedCohortId) continue;
     const pricedDemand =
       (params.roster.bookedCountsByCohort[rule.pricedCohortId] ?? 0) +
+      (params.roster.waitlistedCountsByCohort[rule.pricedCohortId] ?? 0) +
       (includeRequestedAttendee ? 1 : 0);
     const balancingDemand =
-      params.roster.bookedCountsByCohort[rule.balancingCohortId] ?? 0;
+      (params.roster.bookedCountsByCohort[rule.balancingCohortId] ?? 0) +
+      (params.roster.waitlistedCountsByCohort[rule.balancingCohortId] ?? 0);
     const excessDemand = pricedDemand - balancingDemand - rule.freeSkew;
     if (excessDemand <= 0) continue;
     const steps = Math.ceil(excessDemand / Math.max(1, rule.demandStep));
@@ -280,8 +305,16 @@ export function assertPolicyAllowsSignup(params: {
   policy: EventPolicyBundleDoc;
   cohortId: string;
   roster: EventRosterSnapshot;
+  hasValidInvite?: boolean;
 }) {
   const admission = params.policy.admission;
+  if (admission.inviteRequired && params.hasValidInvite !== true) {
+    throw new HttpsError(
+      "failed-precondition",
+      "Enter a valid invite code to book this event."
+    );
+  }
+
   if (params.roster.totalBooked >= admission.capacityLimit) {
     throw new HttpsError("failed-precondition", "This event is now full.");
   }
@@ -330,6 +363,33 @@ export function assertPolicyAllowsSignup(params: {
     "failed-precondition",
     "A balanced spot is not available right now. Join the waitlist."
   );
+}
+
+export async function hasValidInviteForEvent(params: {
+  db: FirebaseFirestore.Firestore;
+  eventId: string;
+  policy: EventPolicyBundleDoc;
+  inviteCode?: string | null;
+}): Promise<boolean> {
+  if (!params.policy.admission.inviteRequired) return true;
+  const submittedCode = normalizeInviteCode(params.inviteCode);
+  if (!submittedCode) return false;
+
+  const accessSnap = await params.db
+    .collection("eventPrivateAccess")
+    .doc(params.eventId)
+    .get();
+  if (!accessSnap.exists) return false;
+
+  const storedCode = normalizeInviteCode(accessSnap.data()?.inviteCode);
+  return storedCode !== null &&
+    storedCode.toLowerCase() === submittedCode.toLowerCase();
+}
+
+export function normalizeInviteCode(value: unknown): string | null {
+  if (typeof value !== "string") return null;
+  const normalized = value.trim();
+  return normalized.length > 0 ? normalized : null;
 }
 
 export function incrementCount(
@@ -381,6 +441,27 @@ function sanitizeAmountMap(value?: Record<string, number> | null):
       .filter(([, amount]) => Number.isFinite(amount))
       .map(([key, amount]) => [key, Math.trunc(amount)])
   );
+}
+
+function normalizePrivateAccessPolicy(
+  value: EventPolicyBundleDoc["admission"]["privateAccessPolicy"] | undefined,
+  inviteRequired: boolean
+): NonNullable<EventPolicyBundleDoc["admission"]["privateAccessPolicy"]> {
+  if (!inviteRequired) {
+    return {
+      mode: "none",
+      inviteCodeHint: null,
+      privateLinkEnabled: false,
+    };
+  }
+
+  return {
+    mode: value?.mode === "inviteCode" ? "inviteCode" : "inviteCode",
+    inviteCodeHint: typeof value?.inviteCodeHint === "string" ?
+      value.inviteCodeHint :
+      null,
+    privateLinkEnabled: value?.privateLinkEnabled !== false,
+  };
 }
 
 function cancellationWindow(policyId: EventCancellationPolicyId): {

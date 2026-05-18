@@ -20,11 +20,13 @@ class EventDetailScreen extends ConsumerWidget {
     required this.clubId,
     required this.eventId,
     this.initialEvent,
+    this.inviteCode,
   });
 
   final String clubId;
   final String eventId;
   final Event? initialEvent;
+  final String? inviteCode;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -72,6 +74,7 @@ class EventDetailScreen extends ConsumerWidget {
       isHost: vm.isHost,
       isSaved: vm.isSaved,
       participation: vm.participation,
+      inviteCode: inviteCode,
     );
   }
 
@@ -110,6 +113,7 @@ class EventDetailScreen extends ConsumerWidget {
       isHost: currentUid != null && club?.hostUserId == currentUid,
       isSaved: savedEvent != null,
       participation: participation,
+      inviteCode: inviteCode,
     );
   }
 }

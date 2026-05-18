@@ -27,6 +27,43 @@ export interface EventDocument {
   locationDetails: string | null;
   photoUrl?: string | null;
   distanceKm: number;
+  eventFormat: {
+    version: 1;
+    activityKind:
+      | "socialRun"
+      | "running"
+      | "walking"
+      | "pickleball"
+      | "padel"
+      | "tennis"
+      | "badminton"
+      | "cycling"
+      | "spinClass"
+      | "yoga"
+      | "strengthTraining"
+      | "pubQuiz"
+      | "barCrawl"
+      | "dinner"
+      | "singlesMixer"
+      | "openActivity";
+    interactionModel:
+      | "pacePods"
+      | "pairedRotations"
+      | "teamRotations"
+      | "seatedTable"
+      | "freeFormMixer"
+      | "hostLedProgram"
+      | "openFormat";
+    customActivityLabel?: string;
+    defaultPlaybookId?: string;
+    /**
+     * @maxItems 30
+     */
+    defaultModuleIds?: string[];
+    activityDetails?: {
+      [k: string]: unknown;
+    };
+  };
   pace: "easy" | "moderate" | "fast" | "competitive";
   capacityLimit: number;
   description: string;
@@ -68,6 +105,11 @@ export interface EventDocument {
       inviteRequired: boolean;
       membershipRequired: boolean;
       manualApprovalRequired: boolean;
+      privateAccessPolicy: {
+        mode: "none" | "inviteCode";
+        inviteCodeHint: string | null;
+        privateLinkEnabled: boolean;
+      };
       cohortCapacityLimits: {
         [k: string]: number;
       };
@@ -110,7 +152,10 @@ export interface EventDocument {
   genderCounts: {
     [k: string]: number;
   };
-  cohortCounts?: {
+  cohortCounts: {
+    [k: string]: number;
+  };
+  waitlistedCohortCounts: {
     [k: string]: number;
   };
   /**

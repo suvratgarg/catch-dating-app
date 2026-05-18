@@ -461,6 +461,12 @@ function validEventDoc() {
     startingPointLat: 22.7196,
     startingPointLng: 75.8577,
     locationDetails: "Meet near the main gate.",
+    eventFormat: {
+      version: 1,
+      activityKind: "socialRun",
+      interactionModel: "pacePods",
+      defaultPlaybookId: "social_run_light",
+    },
     distanceKm: 5,
     pace: "easy",
     capacityLimit: 12,
@@ -481,6 +487,10 @@ function validEventDoc() {
     genderCounts: {
       woman: 1,
     },
+    cohortCounts: {
+      womenInterestedInMen: 1,
+    },
+    waitlistedCohortCounts: {},
   };
 }
 

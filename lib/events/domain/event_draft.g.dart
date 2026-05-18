@@ -14,6 +14,7 @@ _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
   capacity: json['capacity'] as String?,
   price: json['price'] as String?,
   description: json['description'] as String?,
+  activityKind: json['activityKind'] as String?,
   paceName: json['paceName'] as String?,
   meetingPoint: json['meetingPoint'] as String?,
   locationDetails: json['locationDetails'] as String?,
@@ -30,6 +31,10 @@ _EventDraft _$EventDraftFromJson(Map<String, dynamic> json) => _EventDraft(
   maxMen: json['maxMen'] as String?,
   maxWomen: json['maxWomen'] as String?,
   admissionPreset: json['admissionPreset'] as String?,
+  inviteCode: json['inviteCode'] as String?,
+  dynamicPricingEnabled: json['dynamicPricingEnabled'] as bool? ?? false,
+  dynamicPricingStep: json['dynamicPricingStep'] as String?,
+  dynamicPricingMax: json['dynamicPricingMax'] as String?,
   cancellationPolicy: json['cancellationPolicy'] as String?,
 );
 
@@ -42,6 +47,7 @@ Map<String, dynamic> _$EventDraftToJson(_EventDraft instance) =>
       'capacity': instance.capacity,
       'price': instance.price,
       'description': instance.description,
+      'activityKind': instance.activityKind,
       'paceName': instance.paceName,
       'meetingPoint': instance.meetingPoint,
       'locationDetails': instance.locationDetails,
@@ -56,5 +62,9 @@ Map<String, dynamic> _$EventDraftToJson(_EventDraft instance) =>
       'maxMen': instance.maxMen,
       'maxWomen': instance.maxWomen,
       'admissionPreset': instance.admissionPreset,
+      'inviteCode': instance.inviteCode,
+      'dynamicPricingEnabled': instance.dynamicPricingEnabled,
+      'dynamicPricingStep': instance.dynamicPricingStep,
+      'dynamicPricingMax': instance.dynamicPricingMax,
       'cancellationPolicy': instance.cancellationPolicy,
     };

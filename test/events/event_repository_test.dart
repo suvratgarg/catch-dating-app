@@ -315,6 +315,7 @@ void main() {
             'startingPointLng': event.startingPointLng,
             'locationDetails': event.locationDetails,
             'photoUrl': event.photoUrl,
+            'eventFormat': event.eventFormat.toJson(),
             'distanceKm': event.distanceKm,
             'pace': event.pace.name,
             'description': event.description,

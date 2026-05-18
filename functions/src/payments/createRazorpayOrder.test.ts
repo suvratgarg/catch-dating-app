@@ -12,6 +12,12 @@ function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
     startTime: timestamp("2026-05-02T01:30:00.000Z"),
     endTime: timestamp("2026-05-02T02:30:00.000Z"),
     meetingPoint: "Carter Road",
+    eventFormat: {
+      version: 1,
+      activityKind: "socialRun",
+      interactionModel: "pacePods",
+      defaultPlaybookId: "social_run_light",
+    },
     distanceKm: 5,
     pace: "easy",
     capacityLimit: 20,
@@ -26,6 +32,7 @@ function buildEventDoc(overrides: Partial<EventDoc> = {}): EventDoc {
     },
     genderCounts: {},
     cohortCounts: {},
+    waitlistedCohortCounts: {},
     ...overrides,
   };
 }
@@ -63,6 +70,7 @@ test("createRazorpayOrderHandler uses trusted order data", async () => {
       eventId: "event-1",
       userId: "runner-1",
       quotedAmountInPaise: 25000,
+      inviteVerified: "false",
     },
   });
   assert.deepEqual(order, {
@@ -119,6 +127,127 @@ test(
   }
 );
 
+test("createRazorpayOrderHandler includes waitlisted demand in quoted price",
+  async () => {
+    let capturedPayload: Record<string, unknown> | undefined;
+    const order = await createRazorpayOrderHandler(
+      buildRequest({
+        data: {eventId: "event-1"},
+        auth: {uid: "runner-1"},
+      }),
+      {
+        firestore: () => createEventFirestore(buildEventDoc({
+          bookedCount: 4,
+          cohortCounts: {
+            menInterestedInWomen: 2,
+            womenInterestedInMen: 2,
+          },
+          waitlistedCohortCounts: {
+            menInterestedInWomen: 3,
+          },
+          eventPolicy: demandPricedPolicy(),
+        })),
+        createClient: () => ({
+          orders: {
+            create: async (payload: Record<string, unknown>) => {
+              capturedPayload = payload;
+              return {
+                id: "order_dynamic",
+                amount: payload.amount,
+                currency: "INR",
+              };
+            },
+          },
+        }) as unknown as Razorpay,
+        now: () => 456,
+      }
+    );
+
+    assert.deepEqual(capturedPayload, {
+      amount: 55000,
+      currency: "INR",
+      receipt: "event_event-1_456",
+      notes: {
+        eventId: "event-1",
+        userId: "runner-1",
+        quotedAmountInPaise: 55000,
+        inviteVerified: "false",
+      },
+    });
+    assert.deepEqual(order, {
+      orderId: "order_dynamic",
+      amount: 55000,
+      currency: "INR",
+    });
+  }
+);
+
+test("createRazorpayOrderHandler enforces invite-only paid access",
+  async () => {
+    await assert.rejects(
+      createRazorpayOrderHandler(
+        buildRequest({
+          data: {eventId: "event-1"},
+          auth: {uid: "runner-1"},
+        }),
+        {
+          firestore: () => createEventFirestore(
+            buildEventDoc({eventPolicy: inviteOnlyPolicy()}),
+            [],
+            {"event-1": {inviteCode: "CATCH-DELHI"}}
+          ),
+          createClient: failOnClientUse,
+          now: () => 0,
+        }
+      ),
+      isHttpsError(
+        "failed-precondition",
+        "Enter a valid invite code to book this event."
+      )
+    );
+
+    let capturedPayload: Record<string, unknown> | undefined;
+    await createRazorpayOrderHandler(
+      buildRequest({
+        data: {eventId: "event-1", inviteCode: " catch-delhi "},
+        auth: {uid: "runner-1"},
+      }),
+      {
+        firestore: () => createEventFirestore(
+          buildEventDoc({eventPolicy: inviteOnlyPolicy()}),
+          [],
+          {"event-1": {inviteCode: "CATCH-DELHI"}}
+        ),
+        createClient: () => ({
+          orders: {
+            create: async (payload: Record<string, unknown>) => {
+              capturedPayload = payload;
+              return {
+                id: "order_invite",
+                amount: payload.amount,
+                currency: "INR",
+              };
+            },
+          },
+        }) as unknown as Razorpay,
+        now: () => 789,
+      }
+    );
+
+    assert.deepEqual(capturedPayload, {
+      amount: 25000,
+      currency: "INR",
+      receipt: "event_event-1_789",
+      notes: {
+        eventId: "event-1",
+        userId: "runner-1",
+        quotedAmountInPaise: 25000,
+        inviteVerified: "true",
+      },
+    });
+  }
+);
+
 test(
   "createRazorpayOrderHandler rejects policy-blocked cohorts before payment",
   async () => {
@@ -148,6 +277,11 @@ test(
                   inviteRequired: false,
                   membershipRequired: false,
                   manualApprovalRequired: false,
+                  privateAccessPolicy: {
+                    mode: "none",
+                    inviteCodeHint: null,
+                    privateLinkEnabled: false,
+                  },
                   cohortCapacityLimits: {},
                   balancedRatioPolicy: {
                     leftCohortId: "menInterestedInWomen",
@@ -197,7 +331,8 @@ function buildRequest({
 
 function createEventFirestore(
   event: EventDoc | null,
-  participations: Array<{uid: string; status: string}> = []
+  participations: Array<{uid: string; status: string}> = [],
+  eventPrivateAccess: Record<string, Record<string, unknown>> = {}
 ): FirebaseFirestore.Firestore {
   return {
     collection: (collectionName: string) => {
@@ -257,9 +392,85 @@ function createEventFirestore(
           }),
         };
       }
+      if (collectionName === "eventPrivateAccess") {
+        return {
+          doc: (id: string) => ({
+            get: async () => {
+              const access = eventPrivateAccess[id];
+              return {
+                exists: access !== undefined,
+                data: () => access,
+              };
+            },
+          }),
+        };
+      }
       throw new Error(`Unexpected collection ${collectionName}`);
     },
   } as unknown as FirebaseFirestore.Firestore;
+}
+
+function demandPricedPolicy(): NonNullable<EventDoc["eventPolicy"]> {
+  return {
+    version: 1,
+    admission: {
+      format: "open",
+      capacityLimit: 20,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: false,
+      membershipRequired: false,
+      manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
+      },
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: null,
+    },
+    pricing: {
+      basePriceInPaise: 25000,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [{
+        pricedCohortId: "menInterestedInWomen",
+        balancingCohortId: "womenInterestedInMen",
+        stepAdjustmentInPaise: 10000,
+        maxAdjustmentInPaise: 30000,
+        freeSkew: 1,
+        demandStep: 1,
+      }],
+    },
+    cancellation: {policyId: "standard"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
+}
+
+function inviteOnlyPolicy(): NonNullable<EventDoc["eventPolicy"]> {
+  return {
+    version: 1,
+    admission: {
+      format: "inviteOnly",
+      capacityLimit: 20,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: true,
+      membershipRequired: false,
+      manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "inviteCode",
+        inviteCodeHint: "CA...HI",
+        privateLinkEnabled: true,
+      },
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: null,
+    },
+    pricing: {
+      basePriceInPaise: 25000,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId: "standard"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
+  };
 }
 
 function timestamp(iso: string): FirebaseFirestore.Timestamp {

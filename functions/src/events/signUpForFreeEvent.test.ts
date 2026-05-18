@@ -7,7 +7,7 @@ import {signUpForFreeEventHandler} from "./signUpForFreeEvent";
 test(
   "signUpForFreeEventHandler books a free event through shared signer",
   async () => {
-    const signUpCalls: Array<{eventId: string; userId: string}> = [];
+    const signUpCalls: SignUpCall[] = [];
     const rateLimitCalls: Array<{uid: string; action: string}> = [];
 
     const result = await signUpForFreeEventHandler(
@@ -27,9 +27,83 @@ test(
     assert.deepEqual(rateLimitCalls, [
       {uid: "runner-1", action: "signUpForFreeEvent"},
     ]);
-    assert.deepEqual(signUpCalls, [{eventId: "event-1", userId: "runner-1"}]);
+    assert.deepEqual(signUpCalls, [{
+      eventId: "event-1",
+      userId: "runner-1",
+      options: {hasValidInvite: true},
+    }]);
   }
 );
+
+test("signUpForFreeEventHandler enforces invite-only access", async () => {
+  const event = {
+    priceInPaise: 0,
+    capacityLimit: 12,
+    bookedCount: 0,
+    genderCounts: {},
+    cohortCounts: {},
+    waitlistedCohortCounts: {},
+    constraints: {minAge: 0, maxAge: 99},
+    eventPolicy: inviteOnlyPolicy(),
+  };
+
+  await assert.rejects(
+    () => signUpForFreeEventHandler(
+      request("runner-1", {eventId: "event-1"}),
+      deps({
+        events: {"event-1": event},
+        eventPrivateAccess: {
+          "event-1": {inviteCode: "CATCH-DELHI"},
+        },
+      })
+    ),
+    isHttpsError(
+      "failed-precondition",
+      "Enter a valid invite code to book this event."
+    )
+  );
+
+  await assert.rejects(
+    () => signUpForFreeEventHandler(
+      request("runner-1", {
+        eventId: "event-1",
+        inviteCode: "wrong-code",
+      }),
+      deps({
+        events: {"event-1": event},
+        eventPrivateAccess: {
+          "event-1": {inviteCode: "CATCH-DELHI"},
+        },
+      })
+    ),
+    isHttpsError(
+      "failed-precondition",
+      "Enter a valid invite code to book this event."
+    )
+  );
+
+  const signUpCalls: SignUpCall[] = [];
+  const result = await signUpForFreeEventHandler(
+    request("runner-1", {
+      eventId: "event-1",
+      inviteCode: " catch-delhi ",
+    }),
+    deps({
+      events: {"event-1": event},
+      eventPrivateAccess: {
+        "event-1": {inviteCode: "CATCH-DELHI"},
+      },
+      signUpCalls,
+    })
+  );
+
+  assert.deepEqual(result, {success: true});
+  assert.deepEqual(signUpCalls, [{
+    eventId: "event-1",
+    userId: "runner-1",
+    options: {hasValidInvite: true},
+  }]);
+});
 
 test("signUpForFreeEventHandler rejects paid events", async () => {
   await assert.rejects(
@@ -97,6 +171,7 @@ function deps({
       interestedInGenders: ["woman"],
     },
   },
+  eventPrivateAccess = {},
   signUpCalls = [],
   rateLimitCalls = [],
   onEventRead,
@@ -104,7 +179,8 @@ function deps({
 }: {
   events?: Record<string, Record<string, unknown>>;
   users?: Record<string, Record<string, unknown>>;
-  signUpCalls?: Array<{eventId: string; userId: string}>;
+  eventPrivateAccess?: Record<string, Record<string, unknown>>;
+  signUpCalls?: SignUpCall[];
   rateLimitCalls?: Array<{uid: string; action: string}>;
   onEventRead?: () => void;
   checkRateLimit?: (
@@ -115,12 +191,16 @@ function deps({
 }) {
   const firestore = {
     collection: (path: string) => {
-      assert.match(path, /^(events|users)$/);
+      assert.match(path, /^(events|users|eventPrivateAccess)$/);
       return {
         doc: (id: string) => ({
           get: async () => {
             if (path === "events") onEventRead?.();
-            const data = path === "events" ? events[id] : users[id];
+            const data = path === "events" ?
+              events[id] :
+              path === "users" ?
+                users[id] :
+                eventPrivateAccess[id];
             return {
               exists: data !== undefined,
               data: () => data,
@@ -139,10 +219,46 @@ function deps({
     signUpForEvent: async (
       _db: FirebaseFirestore.Firestore,
       eventId: string,
-      userId: string
+      userId: string,
+      _paymentId?: string,
+      options?: {hasValidInvite?: boolean}
     ) => {
-      signUpCalls.push({eventId, userId});
+      signUpCalls.push({eventId, userId, options});
     },
+  };
+}
+
+interface SignUpCall {
+  eventId: string;
+  userId: string;
+  options?: {hasValidInvite?: boolean};
+}
+
+function inviteOnlyPolicy() {
+  return {
+    version: 1,
+    admission: {
+      format: "inviteOnly",
+      capacityLimit: 12,
+      waitlistPolicy: {mode: "rankedOffer", offerWindowMinutes: 20},
+      inviteRequired: true,
+      membershipRequired: false,
+      manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "inviteCode",
+        inviteCodeHint: "CA...HI",
+        privateLinkEnabled: true,
+      },
+      cohortCapacityLimits: {},
+      balancedRatioPolicy: null,
+    },
+    pricing: {
+      basePriceInPaise: 0,
+      cohortAdjustmentsInPaise: {},
+      demandPricingRules: [],
+    },
+    cancellation: {policyId: "standard"},
+    settlement: {hostPayoutTiming: "afterEventCompletion"},
   };
 }
 

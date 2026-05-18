@@ -124,7 +124,7 @@ class EventHeroTile extends StatelessWidget {
                     ),
                     _EventMetaChip(
                       icon: Icons.route_outlined,
-                      label: '${data.distanceLabel} · ${data.paceLabel}',
+                      label: data.activitySummaryLabel,
                     ),
                   ],
                 ),

@@ -2,7 +2,9 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
+  cohortIds,
   EventPolicyBundleDoc,
+  quotePriceInPaise,
   quoteAttendeeCancellation,
 } from "./eventPolicy";
 
@@ -70,6 +72,40 @@ test(
   }
 );
 
+test("quotePriceInPaise includes same-cohort waitlist demand", () => {
+  assert.equal(
+    quotePriceInPaise({
+      policy: {
+        ...policy("standard"),
+        pricing: {
+          basePriceInPaise: 25000,
+          cohortAdjustmentsInPaise: {},
+          demandPricingRules: [{
+            pricedCohortId: cohortIds.menInterestedInWomen,
+            balancingCohortId: cohortIds.womenInterestedInMen,
+            stepAdjustmentInPaise: 10000,
+            maxAdjustmentInPaise: 30000,
+            freeSkew: 1,
+            demandStep: 1,
+          }],
+        },
+      },
+      cohortId: cohortIds.menInterestedInWomen,
+      roster: {
+        bookedCountsByCohort: {
+          [cohortIds.menInterestedInWomen]: 2,
+          [cohortIds.womenInterestedInMen]: 2,
+        },
+        waitlistedCountsByCohort: {
+          [cohortIds.menInterestedInWomen]: 3,
+        },
+        totalBooked: 4,
+      },
+    }),
+    55000
+  );
+});
+
 function policy(
   policyId: EventPolicyBundleDoc["cancellation"]["policyId"]
 ): EventPolicyBundleDoc {
@@ -82,6 +118,11 @@ function policy(
       inviteRequired: false,
       membershipRequired: false,
       manualApprovalRequired: false,
+      privateAccessPolicy: {
+        mode: "none",
+        inviteCodeHint: null,
+        privateLinkEnabled: false,
+      },
       cohortCapacityLimits: {},
       balancedRatioPolicy: null,
     },

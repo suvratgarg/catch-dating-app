@@ -15,6 +15,7 @@ import {ClubDocument} from "./clubDocument";
 import {ClubMembershipDocument} from "./clubMembershipDocument";
 import {ClubHostClaimDocument} from "./clubHostClaimDocument";
 import {EventDocument} from "./eventDocument";
+import {EventPrivateAccessDocument} from "./eventPrivateAccessDocument";
 import {EventParticipationDocument} from "./eventParticipationDocument";
 import {EventSuccessPlanDocument} from "./eventSuccessPlanDocument";
 import {EventSuccessFeedbackDocument} from "./eventSuccessFeedbackDocument";
@@ -75,6 +76,7 @@ import {
   clubMembershipDocumentSchema,
   clubHostClaimDocumentSchema,
   eventDocumentSchema,
+  eventPrivateAccessDocumentSchema,
   eventParticipationDocumentSchema,
   eventSuccessPlanDocumentSchema,
   eventSuccessFeedbackDocumentSchema,
@@ -172,6 +174,10 @@ export const validateEventDocument:
   ValidateFunction<EventDocument> =
     ajv.compile(eventDocumentSchema) as
       ValidateFunction<EventDocument>;
+export const validateEventPrivateAccessDocument:
+  ValidateFunction<EventPrivateAccessDocument> =
+    ajv.compile(eventPrivateAccessDocumentSchema) as
+      ValidateFunction<EventPrivateAccessDocument>;
 export const validateEventParticipationDocument:
   ValidateFunction<EventParticipationDocument> =
     ajv.compile(eventParticipationDocumentSchema) as

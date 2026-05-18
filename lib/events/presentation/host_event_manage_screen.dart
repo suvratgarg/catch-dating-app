@@ -5,6 +5,7 @@ import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
 import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
+import 'package:catch_dating_app/core/external_share.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
@@ -22,9 +23,12 @@ import 'package:catch_dating_app/events/data/event_participation_repository.dart
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
+import 'package:catch_dating_app/events/domain/event_private_access.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
+import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
 import 'package:catch_dating_app/host_tools/presentation/host_club_tools.dart';
+import 'package:catch_dating_app/routing/app_deep_links.dart';
 import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
@@ -215,6 +219,10 @@ class HostEventManageScreen extends ConsumerWidget {
             ),
             gapH20,
             _HostEventSummaryCard(club: club, event: event),
+            if (event.effectiveEventPolicy.usesInviteOnly) ...[
+              gapH20,
+              _HostPrivateAccessCard(club: club, event: event),
+            ],
             gapH20,
             _HostEventActionsCard(
               event: event,
@@ -257,6 +265,169 @@ class HostEventManageScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+}
+
+class _HostPrivateAccessCard extends ConsumerWidget {
+  const _HostPrivateAccessCard({required this.club, required this.event});
+
+  final Club club;
+  final Event event;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final accessAsync = ref.watch(watchEventPrivateAccessProvider(event.id));
+    return accessAsync.when(
+      loading: () => const _PrivateAccessShell(
+        child: Row(
+          children: [
+            SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            ),
+            gapW12,
+            Text('Loading invite access...'),
+          ],
+        ),
+      ),
+      error: (error, _) => CatchInlineErrorState.fromError(
+        error,
+        context: AppErrorContext.event,
+        compact: true,
+        onRetry: () =>
+            ref.invalidate(watchEventPrivateAccessProvider(event.id)),
+      ),
+      data: (access) =>
+          _PrivateAccessBody(club: club, event: event, access: access),
+    );
+  }
+}
+
+class _PrivateAccessShell extends StatelessWidget {
+  const _PrivateAccessShell({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    return CatchSurface(
+      padding: const EdgeInsets.all(CatchSpacing.s4),
+      borderColor: t.line,
+      radius: CatchRadius.lg,
+      child: child,
+    );
+  }
+}
+
+class _PrivateAccessBody extends ConsumerWidget {
+  const _PrivateAccessBody({
+    required this.club,
+    required this.event,
+    required this.access,
+  });
+
+  final Club club;
+  final Event event;
+  final EventPrivateAccess? access;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final t = CatchTokens.of(context);
+    final inviteCode = access?.inviteCode.trim();
+    final inviteLink = inviteCode == null || inviteCode.isEmpty
+        ? null
+        : AppDeepLinks.event(
+            clubId: club.id,
+            eventId: event.id,
+            inviteCode: inviteCode,
+          ).toString();
+
+    return _PrivateAccessShell(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Icon(Icons.key_outlined, color: t.primary),
+              gapW10,
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Private access',
+                      style: CatchTextStyles.titleM(context),
+                    ),
+                    gapH4,
+                    Text(
+                      inviteCode == null || inviteCode.isEmpty
+                          ? 'This event requires an invite, but no host-readable access code was found.'
+                          : 'Share this code or private link with invited attendees only.',
+                      style: CatchTextStyles.bodyS(context, color: t.ink2),
+                    ),
+                  ],
+                ),
+              ),
+              const CatchBadge(label: 'Invite', tone: CatchBadgeTone.brand),
+            ],
+          ),
+          if (inviteCode != null && inviteCode.isNotEmpty) ...[
+            gapH14,
+            _HostEventSummaryRow(
+              icon: Icons.password_rounded,
+              label: 'Code',
+              value: inviteCode,
+            ),
+            if (inviteLink != null)
+              _HostEventSummaryRow(
+                icon: Icons.link_rounded,
+                label: 'Link',
+                value: inviteLink,
+                showDivider: false,
+              ),
+            gapH14,
+            CatchButton(
+              label: 'Share private link',
+              onPressed: inviteLink == null
+                  ? null
+                  : () =>
+                        unawaited(_sharePrivateLink(context, ref, inviteLink)),
+              variant: CatchButtonVariant.secondary,
+              icon: const Icon(Icons.ios_share_rounded),
+              fullWidth: true,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _sharePrivateLink(
+    BuildContext context,
+    WidgetRef ref,
+    String inviteLink,
+  ) async {
+    final box = context.findRenderObject() as RenderBox?;
+    final origin = box == null
+        ? null
+        : box.localToGlobal(Offset.zero) & box.size;
+    try {
+      await ref
+          .read(externalShareControllerProvider)
+          .shareText(
+            text: 'Join ${event.title} from ${club.name}: $inviteLink',
+            subject: event.title,
+            origin: origin,
+          );
+    } catch (_) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Could not open share sheet.')),
+      );
+    }
   }
 }
 
@@ -525,8 +696,7 @@ class _HostEventSummaryCard extends StatelessWidget {
           _HostEventSummaryRow(
             icon: Icons.route_rounded,
             label: 'Event',
-            value:
-                '${event.distanceKm.toStringAsFixed(1)} km · ${event.pace.label}',
+            value: event.activitySummaryLabel,
           ),
           _HostEventSummaryRow(
             icon: Icons.payments_outlined,

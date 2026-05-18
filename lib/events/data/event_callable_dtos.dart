@@ -10,18 +10,24 @@ final class CreateEventCallableRequest {
     required this.priceInPaise,
     required this.constraints,
     required this.eventPolicy,
+    required this.eventFormat,
+    required this.inviteCode,
   });
 
-  factory CreateEventCallableRequest.fromEvent(Event event) =>
-      CreateEventCallableRequest(
-        eventId: event.id,
-        clubId: event.clubId,
-        details: EventDetailsCallableFields.fromEvent(event),
-        capacityLimit: event.capacityLimit,
-        priceInPaise: event.priceInPaise,
-        constraints: EventConstraintsCallableDto.fromDomain(event.constraints),
-        eventPolicy: event.eventPolicy?.toJson(),
-      );
+  factory CreateEventCallableRequest.fromEvent(
+    Event event, {
+    String? inviteCode,
+  }) => CreateEventCallableRequest(
+    eventId: event.id,
+    clubId: event.clubId,
+    details: EventDetailsCallableFields.fromEvent(event),
+    capacityLimit: event.capacityLimit,
+    priceInPaise: event.priceInPaise,
+    constraints: EventConstraintsCallableDto.fromDomain(event.constraints),
+    eventPolicy: event.eventPolicy?.toJson(),
+    eventFormat: event.eventFormat.toJson(),
+    inviteCode: inviteCode,
+  );
 
   final String eventId;
   final String clubId;
@@ -30,6 +36,8 @@ final class CreateEventCallableRequest {
   final int priceInPaise;
   final EventConstraintsCallableDto constraints;
   final Map<String, Object?>? eventPolicy;
+  final Map<String, Object?> eventFormat;
+  final String? inviteCode;
 
   Map<String, Object?> toJson() => {
     'eventId': eventId,
@@ -39,6 +47,8 @@ final class CreateEventCallableRequest {
     'priceInPaise': priceInPaise,
     'constraints': constraints.toJson(),
     'eventPolicy': ?eventPolicy,
+    'eventFormat': eventFormat,
+    'privateAccess': ?_privateAccessJson(inviteCode),
   };
 }
 
@@ -147,11 +157,15 @@ final class EventConstraintsCallableDto {
 }
 
 final class EventIdCallableRequest {
-  const EventIdCallableRequest(this.eventId);
+  const EventIdCallableRequest(this.eventId, {this.inviteCode});
 
   final String eventId;
+  final String? inviteCode;
 
-  Map<String, Object?> toJson() => {'eventId': eventId};
+  Map<String, Object?> toJson() => {
+    'eventId': eventId,
+    'inviteCode': ?inviteCode,
+  };
 }
 
 final class CancelEventCallableRequest {
@@ -161,6 +175,12 @@ final class CancelEventCallableRequest {
   final String? reason;
 
   Map<String, Object?> toJson() => {'eventId': eventId, 'reason': ?reason};
+}
+
+Map<String, Object?>? _privateAccessJson(String? inviteCode) {
+  final normalized = inviteCode?.trim();
+  if (normalized == null || normalized.isEmpty) return null;
+  return {'inviteCode': normalized};
 }
 
 final class MarkEventAttendanceCallableRequest {

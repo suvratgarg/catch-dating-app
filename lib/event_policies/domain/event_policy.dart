@@ -34,6 +34,8 @@ enum EventOutOfRatioCohortPolicy {
   reject,
 }
 
+enum EventPrivateAccessMode { none, inviteCode }
+
 enum EventAdmissionDecisionType {
   admitted,
   waitlisted,
@@ -209,6 +211,48 @@ class EventWaitlistPolicy {
   };
 }
 
+class EventPrivateAccessPolicy {
+  const EventPrivateAccessPolicy({
+    this.mode = EventPrivateAccessMode.none,
+    this.inviteCodeHint,
+    this.privateLinkEnabled = false,
+  });
+
+  const EventPrivateAccessPolicy.none()
+    : mode = EventPrivateAccessMode.none,
+      inviteCodeHint = null,
+      privateLinkEnabled = false;
+
+  const EventPrivateAccessPolicy.inviteCode({
+    this.inviteCodeHint,
+    this.privateLinkEnabled = true,
+  }) : mode = EventPrivateAccessMode.inviteCode;
+
+  final EventPrivateAccessMode mode;
+  final String? inviteCodeHint;
+  final bool privateLinkEnabled;
+
+  bool get requiresInviteCode => mode == EventPrivateAccessMode.inviteCode;
+
+  factory EventPrivateAccessPolicy.fromJson(Map<String, dynamic> json) {
+    return EventPrivateAccessPolicy(
+      mode: _enumFromName(
+        EventPrivateAccessMode.values,
+        json['mode'],
+        EventPrivateAccessMode.none,
+      ),
+      inviteCodeHint: _stringValue(json['inviteCodeHint']),
+      privateLinkEnabled: _boolValue(json['privateLinkEnabled']),
+    );
+  }
+
+  Map<String, Object?> toJson() => {
+    'mode': mode.name,
+    'inviteCodeHint': inviteCodeHint,
+    'privateLinkEnabled': privateLinkEnabled,
+  };
+}
+
 class BalancedRatioPolicy {
   const BalancedRatioPolicy({
     required this.leftCohortId,
@@ -289,6 +333,7 @@ class EventAdmissionPolicy {
     this.inviteRequired = false,
     this.membershipRequired = false,
     this.manualApprovalRequired = false,
+    this.privateAccessPolicy = const EventPrivateAccessPolicy.none(),
     this.cohortCapacityLimits = const {},
     this.balancedRatioPolicy,
   });
@@ -305,11 +350,14 @@ class EventAdmissionPolicy {
   const EventAdmissionPolicy.inviteOnly({
     required int capacityLimit,
     EventWaitlistPolicy waitlistPolicy = const EventWaitlistPolicy.disabled(),
+    EventPrivateAccessPolicy privateAccessPolicy =
+        const EventPrivateAccessPolicy.inviteCode(),
   }) : this(
          format: EventAdmissionFormat.inviteOnly,
          capacityLimit: capacityLimit,
          inviteRequired: true,
          waitlistPolicy: waitlistPolicy,
+         privateAccessPolicy: privateAccessPolicy,
        );
 
   const EventAdmissionPolicy.manualApproval({
@@ -360,6 +408,7 @@ class EventAdmissionPolicy {
   final bool inviteRequired;
   final bool membershipRequired;
   final bool manualApprovalRequired;
+  final EventPrivateAccessPolicy privateAccessPolicy;
   final Map<String, int> cohortCapacityLimits;
   final BalancedRatioPolicy? balancedRatioPolicy;
 
@@ -377,6 +426,11 @@ class EventAdmissionPolicy {
       inviteRequired: _boolValue(json['inviteRequired']),
       membershipRequired: _boolValue(json['membershipRequired']),
       manualApprovalRequired: _boolValue(json['manualApprovalRequired']),
+      privateAccessPolicy: _mapValue(json['privateAccessPolicy']) == null
+          ? const EventPrivateAccessPolicy.none()
+          : EventPrivateAccessPolicy.fromJson(
+              _mapValue(json['privateAccessPolicy'])!,
+            ),
       cohortCapacityLimits: _intMap(json['cohortCapacityLimits']),
       balancedRatioPolicy: _mapValue(json['balancedRatioPolicy']) == null
           ? null
@@ -393,6 +447,7 @@ class EventAdmissionPolicy {
     'inviteRequired': inviteRequired,
     'membershipRequired': membershipRequired,
     'manualApprovalRequired': manualApprovalRequired,
+    'privateAccessPolicy': privateAccessPolicy.toJson(),
     'cohortCapacityLimits': cohortCapacityLimits,
     'balancedRatioPolicy': balancedRatioPolicy?.toJson(),
   };
@@ -532,6 +587,8 @@ class EventPricingPolicy {
       finalAmount: finalAmount,
     );
   }
+
+  bool get hasDemandPricing => demandPricingRules.isNotEmpty;
 
   factory EventPricingPolicy.fromJson(Map<String, dynamic> json) {
     return EventPricingPolicy(
@@ -851,6 +908,28 @@ class EventPolicyBundle {
     );
   }
 
+  factory EventPolicyBundle.inviteOnlyEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    String? inviteCodeHint,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle(
+      admissionPolicy: EventAdmissionPolicy.inviteOnly(
+        capacityLimit: capacityLimit,
+        waitlistPolicy: const EventWaitlistPolicy.disabled(),
+        privateAccessPolicy: EventPrivateAccessPolicy.inviteCode(
+          inviteCodeHint: inviteCodeHint,
+        ),
+      ),
+      pricingPolicy: EventPricingPolicy.fixed(
+        MoneyAmount.inPaise(basePriceInPaise),
+      ),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
   factory EventPolicyBundle.fixedCohortCapsEvent({
     required int capacityLimit,
     required int basePriceInPaise,
@@ -879,6 +958,7 @@ class EventPolicyBundle {
     required int capacityLimit,
     required int basePriceInPaise,
     int maxSkew = 1,
+    EventDemandPricingRule? demandPricingRule,
     EventCancellationPolicy cancellationPolicy =
         const EventCancellationPolicy.standard(),
   }) {
@@ -896,6 +976,29 @@ class EventPolicyBundle {
       ),
       pricingPolicy: EventPricingPolicy.fixed(
         MoneyAmount.inPaise(basePriceInPaise),
+      ).copyWithDemandRule(demandPricingRule),
+      cancellationPolicy: cancellationPolicy,
+    );
+  }
+
+  factory EventPolicyBundle.demandPricedBalancedSinglesEvent({
+    required int capacityLimit,
+    required int basePriceInPaise,
+    required int stepAdjustmentInPaise,
+    required int maxAdjustmentInPaise,
+    int maxSkew = 1,
+    EventCancellationPolicy cancellationPolicy =
+        const EventCancellationPolicy.standard(),
+  }) {
+    return EventPolicyBundle.balancedSinglesEvent(
+      capacityLimit: capacityLimit,
+      basePriceInPaise: basePriceInPaise,
+      maxSkew: maxSkew,
+      demandPricingRule: EventDemandPricingRule(
+        pricedCohortId: EventCohortIds.menInterestedInWomen,
+        balancingCohortId: EventCohortIds.womenInterestedInMen,
+        stepAdjustment: MoneyAmount.inPaise(stepAdjustmentInPaise),
+        maxAdjustment: MoneyAmount.inPaise(maxAdjustmentInPaise),
       ),
       cancellationPolicy: cancellationPolicy,
     );
@@ -947,6 +1050,12 @@ class EventPolicyBundle {
   bool get usesFixedCohortCaps =>
       admissionPolicy.format == EventAdmissionFormat.fixedCohortCaps;
 
+  bool get usesInviteOnly =>
+      admissionPolicy.format == EventAdmissionFormat.inviteOnly ||
+      admissionPolicy.inviteRequired;
+
+  bool get usesDemandPricing => pricingPolicy.hasDemandPricing;
+
   Map<String, Object?> toJson() => {
     'version': version,
     'admission': admissionPolicy.toJson(),
@@ -954,6 +1063,17 @@ class EventPolicyBundle {
     'cancellation': cancellationPolicy.toJson(),
     'settlement': settlementPolicy.toJson(),
   };
+}
+
+extension _EventPricingPolicyX on EventPricingPolicy {
+  EventPricingPolicy copyWithDemandRule(EventDemandPricingRule? rule) {
+    if (rule == null) return this;
+    return EventPricingPolicy(
+      basePrice: basePrice,
+      cohortAdjustments: cohortAdjustments,
+      demandPricingRules: [rule],
+    );
+  }
 }
 
 class EventAdmissionRequest {
