@@ -45,7 +45,7 @@ If the conversation context closes, restart from this file, `PROJECT_CONTEXT.md`
   use:
 
   ```bash
-  firebase emulators:exec --only firestore "npm --prefix functions event test:rules"
+  firebase emulators:exec --only firestore "npm --prefix functions run test:rules"
   ```
 
   The standalone `npm event test:rules` / `node --test
@@ -84,7 +84,7 @@ Functions document interface changes:
 
 ```bash
 dart tool/generate_firestore_types.dart
-npm --prefix functions event build
+npm --prefix functions run build
 ```
 
 CI also events the generator and fails if `functions/src/shared/firestore.ts`
@@ -211,7 +211,7 @@ operation ownership drift.
     reset those event count projections and `genderCounts` from the edge source.
   - `node tool/validate_firestore_data.mjs --env dev --json` then scanned 10
     docs with 0 errors and 0 warnings.
-- Verification: `npm --prefix functions event lint` and
+- Verification: `npm --prefix functions run lint` and
   `npm --prefix functions test` passed, focused review tests passed through
   `node --test functions/lib/reviews/*.test.js`, aggregate repair tool tests
   passed through `node --test tool/recompute_club_member_counts.test.mjs
@@ -466,10 +466,10 @@ Follow-up debt:
 - [x] Update rules tests for denied direct membership writes and allowed
   callable-admin effects via seeded data.
 - [x] Verify:
-  - [x] `npm --prefix functions event lint`
-  - [x] `npm --prefix functions event build`
+  - [x] `npm --prefix functions run lint`
+  - [x] `npm --prefix functions run build`
   - [x] `npm --prefix functions test`
-  - [x] `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`
+  - [x] `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`
   - [x] Focused `flutter analyze`
   - [x] Focused `flutter test`
 
@@ -784,11 +784,11 @@ Approved decisions:
 Append newest entries at the top.
 
 - 2026-05-05: Deleted all live review test data after mapping dependencies.
-  Added `tool/delete_firestore_reviews.mjs`, a dry-event-first Admin SDK cleanup
+  Added `tool/delete_firestore_reviews.mjs`, a dry-run-first Admin SDK cleanup
   tool that maps all `reviews/{id}` docs, affected `clubs`, affected `events`,
   reviewer `users`, detected review-reference fields, and required
   `clubs.rating`/`reviewCount` resets before applying deletion with
-  `--apply --confirm-delete-all-reviews`. Live dry-events showed that all current
+  `--apply --confirm-delete-all-reviews`. Live dry-runs showed that all current
   dev/prod reviews were legacy club-scoped reviews without `eventId`; no affected
   event documents or user documents contained review reference fields. Applied
   cleanup to dev and prod. Dev deleted 3 reviews and reset
@@ -851,13 +851,13 @@ Append newest entries at the top.
   `updateEventDetails` calls `updateEvent`. Firestore rules now deny direct event
   creates and direct host detail edits. A later relationship-doc slice moved
   waitlist self-removal behind `leaveEventWaitlist` as well. Verification passed:
-  `npm --prefix functions event build`;
-  `npm --prefix functions event lint`;
+  `npm --prefix functions run build`;
+  `npm --prefix functions run lint`;
   `node --test functions/lib/events/mutateRun.test.js`;
   `node tool/check_firestore_contract.mjs`;
   `flutter analyze lib/events/data/event_repository.dart lib/events/presentation/create_event_controller.dart test/events/event_repository_test.dart test/events/create_event_controller_test.dart`;
   `flutter test test/events/event_repository_test.dart test/events/create_event_controller_test.dart`;
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
   `npm --prefix functions test`.
 - 2026-05-05: Phase 9 deterministic event reviews completed. Review creates now
   use `eventId~reviewerUserId` document IDs, `watchUserReviewForRun` reads the
@@ -869,12 +869,12 @@ Append newest entries at the top.
   `flutter test test/reviews/reviews_repository_test.dart`;
   `flutter test test/clubs/clubs_widgets_test.dart --plain-name "ClubDetailBody keeps club review aggregate read-only"`;
   `flutter test test/events/event_detail_widgets_test.dart --plain-name "renders detail sections and review CTA when attended"`;
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`.
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
 - 2026-05-05: Phase 9 host leave guard completed. The `leaveClub`
   callable now rejects attempts by `hostUserId`, and the host club detail
   widget test explicitly verifies that hosts do not see `Leave club`.
   Verification passed:
-  `npm --prefix functions event build`;
+  `npm --prefix functions run build`;
   `node --test functions/lib/clubs/membership.test.js`;
   `flutter analyze lib/clubs/presentation/detail/widgets/club_detail_body.dart test/clubs/clubs_widgets_test.dart`;
   `flutter test test/clubs/clubs_widgets_test.dart --plain-name "ClubDetailBody host view exposes edit and create navigation"`.
@@ -912,10 +912,10 @@ Append newest entries at the top.
   only. Flutter `UserProfileRepository`
   now delegates profile patches/photo updates/profile completion to the callable
   and normalizes timestamp values for callable transport. Verification passed:
-  `npm --prefix functions event build`;
-  `npm --prefix functions event lint`;
+  `npm --prefix functions run build`;
+  `npm --prefix functions run lint`;
   `node --test functions/lib/profiles/updateUserProfile.test.js`;
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
   `flutter analyze lib/user_profile/data/user_profile_repository.dart test/user_profile/user_profile_repository_test.dart`;
   `flutter test test/user_profile/user_profile_repository_test.dart`.
 - 2026-05-05: Phase 8 swipe contract hardening completed. Direct swipe creates
@@ -923,14 +923,14 @@ Append newest entries at the top.
   direction, timestamp `createdAt`, a non-deleted target with a public profile,
   an existing event, both users with attended `eventParticipations`, and no block
   edge between them. Verification passed:
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`.
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
 - 2026-05-05: Phase 8 event host update hardening completed. Host direct edits are
   now limited to schedule/descriptive fields; booking-sensitive fields
   (`waitlistUserIds`, `signedUpUserIds`, `attendedUserIds`, `genderCounts`),
   ownership fields (`clubId`), and payment/eligibility fields
   (`capacityLimit`, `priceInPaise`, `constraints`) are denied for direct host
   updates. Verification passed:
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`.
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
 - 2026-05-05: Final full data-contract verification passed after all Phase
   4-7 edits: `./tool/check_data_contract.sh` completed generator drift check,
   generator analyze, Firestore contract check, Functions lint/tests, Firestore
@@ -943,9 +943,9 @@ Append newest entries at the top.
   moderation flags deterministic; removed the checked-in App Check debug token;
   fixed Firestore predeploy to event emulator rules tests; and expanded the deploy
   smoke checklist. Verification passed:
-  `npm --prefix functions event lint`;
+  `npm --prefix functions run lint`;
   `npm --prefix functions test`;
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
   `node tool/check_firestore_contract.mjs`;
   JSON parse checks for `firebase.json`, `tool/dart_defines/dev.json`, and
   `tool/firestore_contract.json`.
@@ -957,7 +957,7 @@ Append newest entries at the top.
   Firestore rules CI event the contract checker plus emulator rules tests for
   schema/tooling changes. Also added shared callable rate limiting to
   `createClub`, `joinClub`, and `leaveClub`. Verification passed:
-  `npm --prefix functions event lint`;
+  `npm --prefix functions run lint`;
   `npm --prefix functions test`;
   `node tool/check_firestore_contract.mjs`;
   `./tool/check_data_contract.sh` (generator drift, generator analyze,
@@ -972,7 +972,7 @@ Append newest entries at the top.
   intentional direct host-owned edit seam. Verification passed:
   `flutter analyze lib/events/data/event_repository.dart test/events/event_repository_test.dart lib/clubs/data/clubs_repository.dart test/clubs/clubs_repository_test.dart test/clubs/clubs_test_helpers.dart`;
   `flutter test test/events/event_repository_test.dart test/clubs/clubs_repository_test.dart`;
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`.
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`.
 - 2026-05-05: Phase 1 event-club membership callable migration completed.
   Added `createClub`, `joinClub`, and `leaveClub` callables under
   `functions/src/clubs/`, exported them from Functions, added unit tests,
@@ -981,10 +981,10 @@ Append newest entries at the top.
   direct `clubs` create/membership writes plus direct
   `users.joinedClubIds` updates in rules.
   Verification passed:
-  `npm --prefix functions event lint`;
-  `npm --prefix functions event build`;
+  `npm --prefix functions run lint`;
+  `npm --prefix functions run build`;
   `npm --prefix functions test`;
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
   focused `flutter analyze`;
   focused `flutter test`.
   Deploy-order note: deploy Functions and the Flutter client path before or
@@ -994,14 +994,14 @@ Append newest entries at the top.
   Commands:
   `dart tool/generate_firestore_types.dart`;
   `dart analyze tool/generate_firestore_types.dart`;
-  `npm --prefix functions event lint`;
-  `npm --prefix functions event build`;
+  `npm --prefix functions run lint`;
+  `npm --prefix functions run build`;
   `npm --prefix functions test`;
-  `firebase emulators:exec --only firestore "npm --prefix functions event test:rules"`;
+  `firebase emulators:exec --only firestore "npm --prefix functions run test:rules"`;
   `flutter analyze lib/clubs/data/clubs_repository.dart lib/clubs/presentation/detail/club_membership_controller.dart lib/clubs/presentation/list/clubs_list_controller.dart test/clubs/clubs_repository_test.dart test/clubs/clubs_list_controller_test.dart`;
   `flutter test test/clubs/clubs_repository_test.dart test/clubs/clubs_list_controller_test.dart`.
 - 2026-05-05: Baseline initially failed at
-  `npm --prefix functions event lint` because `tool/generate_firestore_types.dart`
+  `npm --prefix functions run lint` because `tool/generate_firestore_types.dart`
   generated max-len violations in `functions/src/shared/firestore.ts`.
   Fixed the generator to wrap long JSDoc/property union lines, regenerated the
   TS file, and verified lint/build/tests/rules.

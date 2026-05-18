@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.3.0
-updated: 2026-05-16
+version: 1.3.1
+updated: 2026-05-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -37,6 +37,28 @@ The current workflows are:
 | `.github/workflows/release-readiness.yml` | Manual staging/prod release gate. |
 | `.github/workflows/ios-testflight-release.yml` | Manual prod iOS archive/export gate, with optional TestFlight upload. |
 | `.github/workflows/observability-evidence.yml` | Manual Crashlytics and Analytics evidence capture. |
+
+## Git Branch Hygiene
+
+Treat PR branches as single-use. After a PR branch is merged into `main`, do
+not keep committing to that same branch for the next slice of work. GitHub adds
+a merge commit to `main`, and a reused branch can look locally ahead while still
+missing the new `origin/main` merge commit. That produces repeat PR conflicts
+and huge compare diffs.
+
+Before staging or opening a PR:
+
+1. Run `git fetch origin main`.
+2. Check `git rev-list --left-right --count origin/main...HEAD`.
+3. If the first number is not `0`, the current branch is behind `origin/main`;
+   start a fresh `codex/<task>` branch from `origin/main` or rebase before new
+   work.
+4. If the branch already has a merged or conflicted PR, prefer a fresh branch
+   from `origin/main` and cherry-pick only the still-needed commits.
+
+Do not trust stale local `main` for this check. Use `origin/main` as the source
+of truth, and close any superseded conflicted PR after the replacement branch is
+published.
 
 ## Required Secrets And Environments
 

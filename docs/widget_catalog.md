@@ -1,7 +1,7 @@
 ---
 doc_id: widget_catalog
-version: 2.5.77
-updated: 2026-05-17
+version: 2.5.78
+updated: 2026-05-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -16,6 +16,19 @@ start with `docs/audit_registry/README.md`,
 feature section here only when auditing that feature's widget surface.
 
 ## Rule Changelog
+
+### 2.5.78
+
+- Event detail now includes a `What to expect` section ahead of booking,
+  cancellation, and settlement policy details. It is derived from the already
+  loaded event snapshot, so the listing/detail policy copy does not add another
+  Firestore read.
+- Live event-success host setup now exposes target attendance, host goal,
+  attendee prompt, module selection, private follow-up, contextual openers, and
+  a start-time freeze notice on the production host success screen.
+- The attendee companion private follow-up action now feeds the post-event
+  feedback/report aggregate while private-crush target identities remain
+  attendee-private.
 
 ### 2.5.77
 

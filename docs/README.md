@@ -1,7 +1,7 @@
 ---
 doc_id: docs_index
-version: 3.0.3
-updated: 2026-05-17
+version: 3.0.4
+updated: 2026-05-18
 owner: recursive_audit_loop
 status: active
 ---
@@ -62,6 +62,7 @@ durable owners above or closed in code.
 |---|---|
 | `host_tooling_consolidation_tracker.md` | Host tooling is mostly consolidated, but Edit run and club archive/delete UX are still open product decisions. |
 | `public_profile_overhaul_tracker.md` | Cardless profile surfaces are implemented, but profile prompt picker, richer compatibility reasons, quality coaching, visual regression coverage, device QA, and user-facing "swipe" copy cleanup remain. |
+| `../codex_audit/event_success_completion_tracker.md` | Event-success is now live-wired; this tracker keeps the final production rollout checks, proof commands, and future module guardrails visible. |
 
 Completed temporary trackers removed on 2026-05-17 after code verification:
 `dashboard_run_focus_tracker.md`, `run_tile_consolidation_tracker.md`, and

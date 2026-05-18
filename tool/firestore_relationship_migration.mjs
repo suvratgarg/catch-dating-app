@@ -32,7 +32,7 @@ if (args.json) {
 }
 
 if (!args.apply) {
-  console.log("\nDry event only. Re-event with --apply to write relationship docs.");
+  console.log("\nDry run only. Re-event with --apply to write relationship docs.");
   process.exit(0);
 }
 
@@ -83,7 +83,7 @@ repositories only; this tool no longer reconstructs edge documents from legacy
 parent-document arrays.
 
 Options:
-  --apply                 Write the planned docs. Default is dry-event.
+  --apply                 Write the planned docs. Default is dry-run.
   --json                  Print summary as JSON.
   --project <id>          Firebase project id. Defaults to env project or demo.
   --emulator              Use Firestore emulator at 127.0.0.1:8080.

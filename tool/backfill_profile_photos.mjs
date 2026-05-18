@@ -33,7 +33,7 @@ export async function main(argv = process.argv.slice(2)) {
   if (args.apply && isProductionTarget(args) && !args.allowProd) {
     throw new Error(
       "Refusing to backfill prod without --allow-prod. " +
-        "Event a dry event first, then rerun with --apply --allow-prod."
+        "Run a dry run first, then rerun with --apply --allow-prod."
     );
   }
   if (args.emulatorHost) {
@@ -56,7 +56,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   if (!args.apply) {
-    console.log("\nDry event only. Re-event with --apply to write repairs.");
+    console.log("\nDry run only. Re-event with --apply to write repairs.");
     return;
   }
 
@@ -389,7 +389,7 @@ function loadProfileProjection() {
   } catch (error) {
     throw new Error(
       "Could not load functions/lib/shared/profileProjection.js. " +
-        "Event `npm --prefix functions event build` before this tool. " +
+        "Event `npm --prefix functions run build` before this tool. " +
         `Original error: ${error.message}`
     );
   }

@@ -673,18 +673,18 @@ flutter analyze
 flutter test
 ```
 
-Event app:
+Run app:
 
 ```bash
-./tool/flutter_with_env.sh dev event
+./tool/flutter_with_env.sh dev run
 ```
 
-Preferred environment-aware events:
+Preferred environment-aware runs:
 
 ```bash
-./tool/flutter_with_env.sh dev event
-./tool/flutter_with_env.sh staging event
-./tool/flutter_with_env.sh prod event
+./tool/flutter_with_env.sh dev run
+./tool/flutter_with_env.sh staging run
+./tool/flutter_with_env.sh prod run
 ```
 
 Switch active native/web Firebase files:
@@ -698,19 +698,19 @@ Switch active native/web Firebase files:
 Use emulators:
 
 ```bash
-flutter event --dart-define=USE_FIREBASE_EMULATORS=true
+flutter run --dart-define=USE_FIREBASE_EMULATORS=true
 ```
 
 Push messaging:
 
 ```bash
-flutter event --dart-define=ENABLE_PUSH_MESSAGING=true
+flutter run --dart-define=ENABLE_PUSH_MESSAGING=true
 ```
 
 Regenerate Riverpod/Freezed/Envied code:
 
 ```bash
-dart event build_runner build --delete-conflicting-outputs
+dart run build_runner build --delete-conflicting-outputs
 ```
 
 Functions:
@@ -930,13 +930,17 @@ When working in this repo:
 
 1. Read this file.
 2. Read the feature’s `domain`, `data`, and `presentation` files together.
-3. If a change touches a model used by Cloud Functions, update Dart, event
+3. If a change touches a model used by Cloud Functions, update Dart, run
    `dart tool/generate_firestore_types.dart`, and commit
    `functions/src/shared/firestore.ts`.
 4. If a change touches rules-sensitive documents, check `firestore.rules` immediately.
-5. Event `build_runner` after annotation/model changes.
+5. Run `build_runner` after annotation/model changes.
 6. Prefer updating repository/controller layers instead of pushing Firebase calls directly into widgets.
-7. Treat the sharp edges above as real until verified in code or in the deployed Firebase project.
+7. Before committing or opening a PR, follow the branch hygiene rule in
+   [`docs/release_operations.md`](/Users/suvratgarg/Development/catch-dating-app/catch_dating_app/docs/release_operations.md):
+   fetch `origin/main`, verify the current branch is not behind it, and do not
+   reuse a PR branch after it has been merged.
+8. Treat the sharp edges above as real until verified in code or in the deployed Firebase project.
 
 ## 17. Non-production directories
 

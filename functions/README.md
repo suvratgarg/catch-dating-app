@@ -214,9 +214,9 @@ workflow is missing, not necessarily that the rules changed incorrectly.
 ## Commands
 
 ```bash
-npm --prefix functions event lint
+npm --prefix functions run lint
 npm --prefix functions test
-firebase emulators:exec --only firestore,storage "npm --prefix functions event test:rules"
+firebase emulators:exec --only firestore,storage "npm --prefix functions run test:rules"
 ./tool/firebase_with_env.sh dev deploy --only functions
 ./tool/firebase_with_env.sh staging deploy --only functions
 ./tool/firebase_with_env.sh prod deploy --only functions

@@ -37,7 +37,7 @@ export async function main(argv = process.argv.slice(2)) {
   }
 
   if (!args.apply) {
-    console.log("\nDry event only. Re-event with --apply to write repairs.");
+    console.log("\nDry run only. Re-event with --apply to write repairs.");
     return;
   }
 
@@ -298,7 +298,7 @@ Downgrades invalid future-event attended participations to signedUp and repairs
 affected event aggregate counts.
 
 Options:
-  --apply                 Write repairs. Default is dry-event.
+  --apply                 Write repairs. Default is dry-run.
   --json                  Print summary as JSON.
   --env <dev|staging|prod> Resolve project id from .firebaserc.
   --project <id>          Firebase project id.
