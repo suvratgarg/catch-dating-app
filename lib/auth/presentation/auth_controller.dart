@@ -3,8 +3,10 @@ import 'dart:async';
 import 'package:catch_dating_app/auth/data/auth_repository.dart';
 import 'package:catch_dating_app/auth/presentation/auth_input.dart';
 import 'package:catch_dating_app/core/app_config.dart';
+import 'package:catch_dating_app/core/country_markets.dart';
 import 'package:catch_dating_app/exceptions/app_exception.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -14,11 +16,20 @@ part 'auth_controller.g.dart';
 
 enum AuthStep { phone, otp }
 
+@Riverpod(keepAlive: true)
+String authInitialCountryDialCode(Ref ref) {
+  final countryCode = WidgetsFlutterBinding.ensureInitialized()
+      .platformDispatcher
+      .locale
+      .countryCode;
+  return marketForIsoCode(countryCode).dialCode;
+}
+
 @freezed
 abstract class AuthScreenState with _$AuthScreenState {
   const factory AuthScreenState({
     @Default('') String phoneNumber,
-    @Default('+91') String countryCode,
+    @Default(defaultCountryDialCode) String countryCode,
     String? verificationId,
     @Default(AuthStep.phone) AuthStep step,
   }) = _AuthScreenState;
@@ -40,7 +51,9 @@ class AuthController extends _$AuthController {
   static final verifyOtpMutation = Mutation<void>();
 
   @override
-  AuthScreenState build() => const AuthScreenState();
+  AuthScreenState build() => AuthScreenState(
+    countryCode: ref.watch(authInitialCountryDialCodeProvider),
+  );
 
   void setCountryCode(String code) {
     state = state.copyWith(countryCode: code);
@@ -136,7 +149,9 @@ class AuthController extends _$AuthController {
   }
 
   void reset() {
-    state = const AuthScreenState();
+    state = AuthScreenState(
+      countryCode: ref.read(authInitialCountryDialCodeProvider),
+    );
     sendOtpMutation.reset(ref);
     verifyOtpMutation.reset(ref);
   }
