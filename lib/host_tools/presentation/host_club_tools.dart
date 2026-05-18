@@ -117,9 +117,12 @@ class HostStatsStrip extends StatelessWidget {
 
     final totalBooked = events.fold(0, (sum, r) => sum + r.signedUpCount);
     final totalWaitlist = events.fold(0, (sum, r) => sum + r.waitlistCount);
-    final revenueRupees = events.fold(
+    final baseRevenueEstimateRupees = events.fold(
       0,
       (sum, r) => sum + r.signedUpCount * (r.priceInPaise ~/ 100),
+    );
+    final usesDemandPricing = events.any(
+      (event) => event.effectiveEventPolicy.usesDemandPricing,
     );
 
     return CatchSurface(
@@ -161,13 +164,22 @@ class HostStatsStrip extends StatelessWidget {
               gapW8,
               Expanded(
                 child: HostStatChip(
-                  label: 'Revenue',
-                  value: revenueRupees > 0 ? '₹$revenueRupees' : '-',
+                  label: usesDemandPricing ? 'Base est.' : 'Revenue',
+                  value: baseRevenueEstimateRupees > 0
+                      ? '₹$baseRevenueEstimateRupees'
+                      : '-',
                   icon: Icons.currency_rupee_rounded,
                 ),
               ),
             ],
           ),
+          if (usesDemandPricing) ...[
+            gapH8,
+            Text(
+              'Base estimate uses starting prices; demand-priced bookings may settle higher.',
+              style: CatchTextStyles.bodyS(context, color: t.ink2),
+            ),
+          ],
         ],
       ),
     );

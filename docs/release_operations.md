@@ -216,8 +216,8 @@ After a backend deploy, smoke test:
 
 - Phone sign-in and onboarding continuation.
 - Profile edit and public profile projection.
-- Create/join/leave run club.
-- Create run, join free run, paid booking where enabled, waitlist, cancellation.
+- Create/join/leave club.
+- Create event, join free event, paid booking where enabled, waitlist, cancellation.
 - Self check-in and host attendance.
 - Swipe, match, chat message, unread count, block/report.
 - Payment history, review prompt, notifications.
@@ -236,18 +236,18 @@ emulator backed.
 - Routing and app shell: unauthenticated redirects, authenticated redirects,
   five-tab navigation, top-level route back behavior, FCM/deep-link chat routes,
   and inactive-tab stream gating.
-- Dashboard: empty state, booked-run state, activity tab, next-run CTA,
-  swipe-window CTA, and recommended-run navigation.
-- Run clubs: city selection, search, joined/discover partitioning, club detail,
+- Dashboard: empty state, booked-event state, activity tab, next-event CTA,
+  swipe-window CTA, and recommended-event navigation.
+- Clubs: city selection, search, joined/discover partitioning, club detail,
   create club, edit club, join, leave, and host-only affordances.
-- Runs: create run, run detail, free booking, paid booking handoff, waitlist,
+- Events: create event, event detail, free booking, paid booking handoff, waitlist,
   cancellation, self check-in, host attendance, map view, and location picker.
-- Catches and swipes: eligible attended-run list, swipe deck, empty candidate
-  states, like/pass decisions, match creation result, and run recap.
+- Catches and swipes: eligible attended-event list, swipe deck, empty candidate
+  states, like/pass decisions, match creation result, and event recap.
 - Chats: matches list, search, chat route hydration, message send, unread reset,
   block/report, and push/FCM route handling.
 - Payments and reviews: payment confirmation, payment history, review prompt,
-  create/update/delete review, and post-run review visibility.
+  create/update/delete review, and post-event review visibility.
 - Profile and settings: inline profile edits, photo upload replacement,
   public-profile projection, notification preferences, sign out, and account
   deletion/anonymization entry points.
@@ -270,8 +270,8 @@ an explicit device/live-service test target.
 | App Check | Backend errors map App Check failures; app bootstrap activates App Check in `main.dart`. | Prove enforced App Check accepts the app's token and rejects missing/invalid tokens for Auth, Firestore, Storage, and callable Functions. | Firebase dev/staging project with App Check enforcement enabled plus registered debug token or release attestation. |
 | Real phone auth | App-shell integration covers phone entry, OTP continuation, and repository calls with a fake auth repository. | Complete a real OTP send and sign-in against Firebase Auth. | Physical iOS/Android device or Firebase Auth emulator; use a Firebase test phone number for repeatability. |
 | Push permission and token registration | App-shell integration verifies authenticated shell invokes FCM initialization; routing tests cover FCM chat route handling; backend notification producers are covered separately. | Grant/deny notification permission, save a real FCM token to `users/{uid}.fcmToken`, receive a push, and tap it into the intended route. | iOS/Android device or simulator with push support and Firebase Messaging configured for the target app id. |
-| Image picker and Storage upload | App-shell integration covers picking a run-club cover through the full routed UI and passing uploaded URL into create-club submission with a fake upload repository. | Pick media through the native picker and upload to Firebase Storage under enforced Storage/App Check rules. | iOS/Android simulator/device with photo-library permission and Firebase Storage in dev/staging. |
-| Real map rendering | Create-run integration opens the map picker and selects a map coordinate through the `GoogleMap` widget callback. | Render real map tiles/markers and verify Places-backed search/details on the target app build. | iOS/Android simulator/device with configured Google Maps/Places keys and network access. |
+| Image picker and Storage upload | App-shell integration covers picking a club cover through the full routed UI and passing uploaded URL into create-club submission with a fake upload repository. | Pick media through the native picker and upload to Firebase Storage under enforced Storage/App Check rules. | iOS/Android simulator/device with photo-library permission and Firebase Storage in dev/staging. |
+| Real map rendering | Create-event integration opens the map picker and selects a map coordinate through the `GoogleMap` widget callback. | Render real map tiles/markers and verify Places-backed search/details on the target app build. | iOS/Android simulator/device with configured Google Maps/Places keys and network access. |
 | Razorpay checkout UI | App-shell integration covers paid booking handoff and confirmation with a fake payment repository; payment repository tests cover typed Razorpay success/error callbacks and callable verification contract. | Open the native Razorpay checkout sheet, complete/cancel a test payment, and verify post-payment booking state. | iOS/Android device or simulator supported by `razorpay_flutter`, with Razorpay test keys and callable Functions. |
 | Analytics DebugView | App-shell integration verifies route screen views reach `AppAnalytics`; unit tests cover event sanitization and collection gating. | See expected auth/routing/booking/review events in Firebase Analytics DebugView for a real build. | Debug or release-like app build connected to Firebase Analytics DebugView for the target app id. |
 | Crashlytics visibility | App-shell integration verifies the authenticated uid is attached to the crash reporter on cold launch; unit tests cover fatal/error reporting paths. | Trigger a non-production test crash/non-fatal error and confirm it appears with expected custom keys and symbolication. | Release-like iOS/Android build with Crashlytics collection enabled for dev/staging and dSYM/mapping upload configured. |

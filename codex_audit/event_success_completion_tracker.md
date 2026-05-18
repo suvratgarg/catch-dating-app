@@ -36,6 +36,13 @@ from live-wired scaffolding to usable host and attendee workflows.
 - Keep high-churn event-success setup and feedback in edge documents.
 - Private crush targets remain attendee-private; host reports may show aggregate
   counts only.
+- Attendee companion is intentionally hidden until a saved
+  `eventSuccessPlans/{eventId}` document exists. Do not fall back to generated
+  defaults on attendee routes; the host setup screen may preview defaults before
+  saving.
+- Current modules are pilot-live surfaces: host setup, live mode, attendee
+  prompts, private follow-up, feedback, and reports are wired, but rotation,
+  pod assignment, and pairing engines are not fully automated yet.
 - Setup fields that affect attendee expectations should be treated as frozen
   once the event starts.
 - Event format is a user-visible snapshot. Treat it like listing copy: changing

@@ -66,6 +66,13 @@ Current proof:
 - Production host setup now exposes target attendance, host goal, attendee
   prompt, module selection, private follow-up, and contextual opener controls;
   setup is visibly frozen once the event has started.
+- Production attendee companion is gated on a persisted host setup document.
+  Event detail hides the companion entry until `eventSuccessPlans/{eventId}`
+  exists, and the direct companion route shows an unavailable state instead of
+  synthesizing a default plan.
+- Current modules are pilot-live surfaces, not complete automation engines.
+  Rotation, pod assignment, and pairing logic still need dedicated product and
+  backend passes before being described as fully automated.
 - Production event detail now shows "What to expect" before booking,
   cancellation, and settlement policy copy without adding another Firestore
   read.
