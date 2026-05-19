@@ -102,7 +102,8 @@ Event dimensions:
 - [x] Deploy Firestore-to-BigQuery extensions to `catchdates-staging`.
 - [x] Confirm BigQuery datasets/tables/views in dev and staging.
 - [x] Confirm INR 25 monthly budget alerts for dev and staging.
-- [ ] Enable Firebase Analytics BigQuery export in dev/staging console.
+- [ ] Enable Firebase Analytics BigQuery export in dev/staging console or
+  through the Analytics Admin API after Analytics-scoped auth is available.
 - [ ] Add client-side profile impression batching.
 
 ## Verification Log
@@ -164,5 +165,10 @@ Shared defaults:
 
 Remaining setup gates:
 
-- Firebase Analytics BigQuery export still needs to be enabled from Firebase
-  console for both `catchdates-dev` and `catchdates-staging`.
+- Firebase Analytics projects are linked for dev/staging/prod and dev/staging
+  web measurement IDs are now checked in.
+- Firebase Analytics BigQuery export still needs to be enabled from Firebase or
+  Analytics Console for `catchdates-dev` and `catchdates-staging`, or through
+  the Analytics Admin API after Analytics-scoped auth/service-account access is
+  available. `bq ls` currently shows no `analytics_*` dataset in dev, staging,
+  or prod.

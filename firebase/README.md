@@ -66,6 +66,11 @@ Current state:
 - **Cloud Vision API must be enabled on every GCP project.**
   `gcloud services enable vision.googleapis.com --project=<project-id>`.
   The `moderatePhotoOnUpload` Storage trigger depends on it.
+- Firebase Analytics is linked to Google Analytics account `365970973` for
+  dev, staging, and prod. Dev and staging web configs include their GA4
+  measurement IDs. Fresh iOS/Android SDK config downloads still omit Analytics
+  metadata, so use Firebase project analytics details and DebugView evidence
+  rather than the native config files alone to verify mobile Analytics.
 
 ## Runtime source of truth
 

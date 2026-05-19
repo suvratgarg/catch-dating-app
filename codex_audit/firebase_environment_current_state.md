@@ -153,13 +153,31 @@ dataset and the six Firestore BigQuery export extension instances declared in
 - `bq-participant-momentum`
 - `bq-participant-signal-facts`
 
-Firebase Analytics is wired in app code, but the downloaded iOS and Android
-Firebase app configs currently report Analytics as disabled/missing analytics
-service metadata. The local prod web config includes a measurement ID, but the
-Firebase CLI web sdkconfig read failed during this audit, so web Analytics still
-needs console verification. Treat Analytics DebugView evidence as pending until
-the Firebase apps are linked to the intended Google Analytics property and fresh
-configs are downloaded into `firebase/<env>/`.
+Firebase Analytics is wired in app code and all three Firebase projects are
+linked to Google Analytics account `365970973` as of 2026-05-20:
+
+| Environment | GA4 property | Web measurement ID |
+| --- | --- | --- |
+| `dev` | `538364226` (`catchdates-dev`) | `G-TCR62QJVH9` |
+| `staging` | `538360932` (`catchdates-staging`) | `G-LL66RSRVJP` |
+| `prod` | `526484083` (`catch-dating-app-64e51`) | `G-CH7WMQY5FV` |
+
+The dev/staging web measurement IDs are checked into
+`lib/firebase_options_<env>.dart` and `firebase/<env>/web/firebase-messaging-sw.js`.
+The active root `web/firebase-messaging-sw.js` is aligned to dev.
+
+Fresh iOS and Android SDK config downloads still report Analytics as
+disabled/missing analytics service metadata even though the Firebase Management
+API reports Android/iOS stream mappings. Treat DebugView evidence as pending
+until a real release-like app build is observed in Firebase Analytics.
+
+GA4 BigQuery export is separate from the Firestore BigQuery export extensions.
+The current Google OAuth token can verify Firebase Analytics linkage, but it
+does not have Analytics Admin scopes for listing or creating GA4 BigQuery links.
+`bq ls` currently shows only `catch_marketplace_metrics` in dev, staging, and
+prod; there is no `analytics_*` GA4 export dataset yet. Use Firebase/Analytics
+Console or a service account granted GA4 Admin/Editor access before marking GA4
+BigQuery export complete.
 
 ## Firestore And Storage
 

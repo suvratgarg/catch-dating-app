@@ -8,6 +8,7 @@ firebase.initializeApp({
   projectId: 'catchdates-dev',
   authDomain: 'catchdates-dev.firebaseapp.com',
   storageBucket: 'catchdates-dev.firebasestorage.app',
+  measurementId: 'G-TCR62QJVH9',
 });
 
 const messaging = firebase.messaging();
