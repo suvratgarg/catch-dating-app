@@ -36,6 +36,7 @@ class DefaultFirebaseOptionsStaging {
     projectId: 'catchdates-staging',
     authDomain: 'catchdates-staging.firebaseapp.com',
     storageBucket: 'catchdates-staging.firebasestorage.app',
+    measurementId: 'G-LL66RSRVJP',
   );
 
   static const FirebaseOptions android = FirebaseOptions(

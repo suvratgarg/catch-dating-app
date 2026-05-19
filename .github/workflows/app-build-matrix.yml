@@ -50,11 +50,10 @@ jobs:
       - name: Write dev Android Maps key
         env:
           GOOGLE_MAPS_ANDROID_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY_DEV }}
-          GOOGLE_MAPS_ANDROID_API_KEY: ${{ secrets.GOOGLE_MAPS_ANDROID_API_KEY }}
         run: |
-          key="${GOOGLE_MAPS_ANDROID_API_KEY_DEV:-${GOOGLE_MAPS_ANDROID_API_KEY:-}}"
+          key="${GOOGLE_MAPS_ANDROID_API_KEY_DEV:-}"
           if [[ -z "$key" ]]; then
-            echo "Missing GOOGLE_MAPS_ANDROID_API_KEY_DEV or GOOGLE_MAPS_ANDROID_API_KEY secret."
+            echo "Missing GOOGLE_MAPS_ANDROID_API_KEY_DEV secret."
             exit 1
           fi
           printf '\nGOOGLE_MAPS_ANDROID_API_KEY_DEV=%s\n' "$key" >> android/local.properties
@@ -81,16 +80,14 @@ jobs:
       - name: Write dev iOS Maps key
         env:
           GOOGLE_MAPS_IOS_API_KEY_DEV: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY_DEV }}
-          GOOGLE_MAPS_IOS_API_KEY: ${{ secrets.GOOGLE_MAPS_IOS_API_KEY }}
         run: |
-          key="${GOOGLE_MAPS_IOS_API_KEY_DEV:-${GOOGLE_MAPS_IOS_API_KEY:-}}"
+          key="${GOOGLE_MAPS_IOS_API_KEY_DEV:-}"
           if [[ -z "$key" ]]; then
-            echo "Missing GOOGLE_MAPS_IOS_API_KEY_DEV or GOOGLE_MAPS_IOS_API_KEY secret."
+            echo "Missing GOOGLE_MAPS_IOS_API_KEY_DEV secret."
             exit 1
           fi
           {
             echo "GOOGLE_MAPS_IOS_API_KEY_DEV=$key"
-            echo "GOOGLE_MAPS_IOS_API_KEY=$key"
           } > ios/Flutter/GoogleMapsKeys.xcconfig
 
       - name: Build dev iOS simulator artifact

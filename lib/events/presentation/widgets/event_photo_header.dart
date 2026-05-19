@@ -92,7 +92,6 @@ class EventPhotoHeader extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
                     color: Colors.white,
-                    fontFamily: 'JetBrainsMono',
                   ),
                 ),
               ),

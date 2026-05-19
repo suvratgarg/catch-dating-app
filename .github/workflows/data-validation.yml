@@ -25,10 +25,15 @@ on:
         default: false
         type: boolean
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   validate:
     name: Validate ${{ github.event.inputs.environment || 'prod' }} Firestore data
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'prod' }}
     timeout-minutes: 20
 
     steps:
@@ -42,28 +47,11 @@ jobs:
 
       - run: npm --prefix functions ci
 
-      - name: Select Firebase service account
-        env:
-          TARGET_ENV: ${{ github.event.inputs.environment || 'prod' }}
-          FIREBASE_SERVICE_ACCOUNT_DEV: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
-          FIREBASE_SERVICE_ACCOUNT_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
-          FIREBASE_SERVICE_ACCOUNT_PROD: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}
-        run: |
-          case "$TARGET_ENV" in
-            dev) service_account="$FIREBASE_SERVICE_ACCOUNT_DEV" ;;
-            staging) service_account="$FIREBASE_SERVICE_ACCOUNT_STAGING" ;;
-            prod) service_account="$FIREBASE_SERVICE_ACCOUNT_PROD" ;;
-            *) echo "Unsupported environment: $TARGET_ENV" >&2; exit 1 ;;
-          esac
-
-          if [[ -z "$service_account" ]]; then
-            echo "Missing FIREBASE_SERVICE_ACCOUNT_${TARGET_ENV} secret." >&2
-            exit 1
-          fi
-
-          credentials_path="$RUNNER_TEMP/firebase-service-account.json"
-          printf '%s' "$service_account" > "$credentials_path"
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$credentials_path" >> "$GITHUB_ENV"
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Validate Firestore data
         env:

@@ -1,7 +1,7 @@
 ---
 doc_id: release_operations
-version: 1.3.1
-updated: 2026-05-18
+version: 1.5.1
+updated: 2026-05-20
 owner: recursive_audit_loop
 status: active
 ---
@@ -60,16 +60,38 @@ Do not trust stale local `main` for this check. Use `origin/main` as the source
 of truth, and close any superseded conflicted PR after the replacement branch is
 published.
 
-## Required Secrets And Environments
+## GitHub Environments And Auth
 
-Firebase workflows need one service-account JSON secret per environment:
+Firebase deploy and data-validation workflows use GitHub OIDC rather than
+long-lived service-account JSON secrets. Use GitHub Environments named `dev`,
+`staging`, and `prod`. Require manual reviewers for `prod`.
 
-- `FIREBASE_SERVICE_ACCOUNT_DEV`
-- `FIREBASE_SERVICE_ACCOUNT_STAGING`
-- `FIREBASE_SERVICE_ACCOUNT_PROD`
+Each GitHub Environment must define these variables:
 
-Use GitHub Environments named `dev`, `staging`, and `prod`. Require manual
-reviewers for `prod`.
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_SERVICE_ACCOUNT_EMAIL`
+
+The corresponding Google Cloud service accounts are:
+
+- `github-actions-deploy@catchdates-dev.iam.gserviceaccount.com`
+- `github-actions-deploy@catchdates-staging.iam.gserviceaccount.com`
+- `github-actions-deploy@catch-dating-app-64e51.iam.gserviceaccount.com`
+
+Do not add `FIREBASE_SERVICE_ACCOUNT_*` JSON secrets unless the OIDC setup is
+intentionally retired.
+
+## Required Secrets
+
+Build workflows need environment-specific Google Maps SDK secrets. Do not rely
+on a generic fallback secret, because that can silently mix project keys across
+flavors:
+
+- `GOOGLE_MAPS_ANDROID_API_KEY_DEV`
+- `GOOGLE_MAPS_ANDROID_API_KEY_STAGING`
+- `GOOGLE_MAPS_ANDROID_API_KEY_PROD`
+- `GOOGLE_MAPS_IOS_API_KEY_DEV`
+- `GOOGLE_MAPS_IOS_API_KEY_STAGING`
+- `GOOGLE_MAPS_IOS_API_KEY_PROD`
 
 The manual `iOS TestFlight Release` workflow also needs these repository or
 `prod` environment secrets:
@@ -180,6 +202,11 @@ Before rules or Functions depend on them, each Firebase/GCP environment needs:
   environment-owned provider keys.
 - Google Maps SDK/Places APIs enabled and key restrictions configured as
   described in `docs/location_stack_plan.md`.
+- Firestore BigQuery export extensions installed where marketplace/event-success
+  metrics should be queryable.
+- Firebase Analytics linked to the intended Google Analytics property, web
+  measurement IDs refreshed, GA4 BigQuery export enabled where needed, and
+  DebugView evidence captured for the target app id.
 
 ## Firebase Deploy Order
 
@@ -273,7 +300,7 @@ an explicit device/live-service test target.
 | Image picker and Storage upload | App-shell integration covers picking a club cover through the full routed UI and passing uploaded URL into create-club submission with a fake upload repository. | Pick media through the native picker and upload to Firebase Storage under enforced Storage/App Check rules. | iOS/Android simulator/device with photo-library permission and Firebase Storage in dev/staging. |
 | Real map rendering | Create-event integration opens the map picker and selects a map coordinate through the `GoogleMap` widget callback. | Render real map tiles/markers and verify Places-backed search/details on the target app build. | iOS/Android simulator/device with configured Google Maps/Places keys and network access. |
 | Razorpay checkout UI | App-shell integration covers paid booking handoff and confirmation with a fake payment repository; payment repository tests cover typed Razorpay success/error callbacks and callable verification contract. | Open the native Razorpay checkout sheet, complete/cancel a test payment, and verify post-payment booking state. | iOS/Android device or simulator supported by `razorpay_flutter`, with Razorpay test keys and callable Functions. |
-| Analytics DebugView | App-shell integration verifies route screen views reach `AppAnalytics`; unit tests cover event sanitization and collection gating. | See expected auth/routing/booking/review events in Firebase Analytics DebugView for a real build. | Debug or release-like app build connected to Firebase Analytics DebugView for the target app id. |
+| Analytics DebugView | App-shell integration verifies route screen views reach `AppAnalytics`; unit tests cover event sanitization and collection gating. Dev/staging/prod Firebase projects are linked to GA4 properties under Analytics account `365970973`. | See expected auth/routing/booking/review events in Firebase Analytics DebugView for a real build. GA4 BigQuery export still requires Analytics Admin access or console setup. | Debug or release-like app build connected to Firebase Analytics DebugView for the target app id. |
 | Crashlytics visibility | App-shell integration verifies the authenticated uid is attached to the crash reporter on cold launch; unit tests cover fatal/error reporting paths. | Trigger a non-production test crash/non-fatal error and confirm it appears with expected custom keys and symbolication. | Release-like iOS/Android build with Crashlytics collection enabled for dev/staging and dSYM/mapping upload configured. |
 
 Do not make these live-service tests block every PR until they have stable
@@ -289,9 +316,11 @@ release candidate to send to App Store Connect.
 
 The workflow uses App Store Connect API key authentication for
 `xcodebuild -allowProvisioningUpdates`, exports with
-`ios/ExportOptions.prod.plist`, verifies the exported profile contains
-HealthKit, checks the signed app contains HealthKit and Associated Domains, and
-stores the IPA as a short-lived GitHub Actions artifact.
+`ios/ExportOptions.prod.plist`, archives the `prod` scheme with
+`Release-prod`, verifies the archived and exported app contain the prod iOS
+Maps key, verifies the exported profile contains HealthKit, checks the signed
+app contains HealthKit and Associated Domains, and stores the IPA as a
+short-lived GitHub Actions artifact.
 
 ## Human Release Evidence
 

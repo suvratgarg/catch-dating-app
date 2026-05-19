@@ -36,6 +36,7 @@ class DefaultFirebaseOptionsDev {
     projectId: 'catchdates-dev',
     authDomain: 'catchdates-dev.firebaseapp.com',
     storageBucket: 'catchdates-dev.firebasestorage.app',
+    measurementId: 'G-TCR62QJVH9',
   );
 
   static const FirebaseOptions android = FirebaseOptions(

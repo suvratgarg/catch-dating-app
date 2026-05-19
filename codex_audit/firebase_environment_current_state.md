@@ -1,6 +1,6 @@
 # Firebase Environment Current State
 
-Last verified: 2026-05-01
+Last verified: 2026-05-20
 
 This is the canonical handoff note for the current Firebase/App Check/Functions
 setup. Older audit files may describe earlier gaps that have since been closed.
@@ -17,6 +17,37 @@ There is no separate `developer` Firebase project in the repo. Local developer
 builds use `APP_ENV=dev` plus debug App Check providers when Flutter is running
 in debug mode or emulator mode.
 
+## GitHub Deploy Auth
+
+GitHub Actions Firebase deploy and data-validation workflows use keyless Google
+Cloud auth through GitHub OIDC. The repo has environment variables configured
+for `dev`, `staging`, and `prod`:
+
+- `GCP_WORKLOAD_IDENTITY_PROVIDER`
+- `GCP_SERVICE_ACCOUNT_EMAIL`
+
+Each environment points at a dedicated `github-actions-deploy` service account
+in the matching Google Cloud project. The service accounts are trusted only
+through the repo-restricted `suvratgarg/catch-dating-app` OIDC provider.
+
+The deploy service accounts have the same verified project role set in all
+three projects:
+
+- `roles/artifactregistry.admin`
+- `roles/cloudbuild.builds.editor`
+- `roles/cloudfunctions.admin`
+- `roles/cloudscheduler.admin`
+- `roles/datastore.indexAdmin`
+- `roles/datastore.viewer`
+- `roles/eventarc.admin`
+- `roles/firebase.viewer`
+- `roles/firebaserules.admin`
+- `roles/iam.serviceAccountUser`
+- `roles/pubsub.admin`
+- `roles/run.admin`
+- `roles/secretmanager.viewer`
+- `roles/serviceusage.serviceUsageViewer`
+
 ## App Registrations
 
 Each Firebase project should have exactly one current app registration per
@@ -26,7 +57,10 @@ shipping platform:
 - iOS/macOS: bundle ID `com.catchdates.app`
 - Web: current Catch web app
 
-Production currently has exactly these active app registrations:
+The Firebase project/app registration check was rerun on 2026-05-20. Each
+environment has exactly one active Android, one active iOS, and one active web
+app registration for the expected project and package/bundle IDs. Production
+currently has exactly these active app registrations:
 
 | Display name | App ID | Platform |
 | --- | --- | --- |
@@ -50,11 +84,19 @@ Android, iOS, and web are registered in App Check for `dev`, `staging`, and
 | iOS/macOS | App Attest | App Attest | App Attest |
 | Web | reCAPTCHA Enterprise | reCAPTCHA Enterprise | reCAPTCHA Enterprise |
 
-Firebase App Check service enforcement is enabled for all three projects:
+Firebase App Check service enforcement was verified through the App Check REST
+API on 2026-05-20. Firestore, Storage, and Firebase Auth are enforced in all
+three projects:
 
 - Cloud Firestore: `ENFORCED`
 - Cloud Storage: `ENFORCED`
 - Firebase Authentication: `ENFORCED`
+
+Provider configs are present for Android Play Integrity, iOS App Attest, and
+web reCAPTCHA Enterprise in `dev`, `staging`, and `prod`. The Google Places API
+is listed as `UNENFORCED` in the dev App Check services response; Places access
+from the app still goes through App Check-protected callable Functions and the
+server-side `GOOGLE_MAPS_PLACES_API_KEY` secret.
 
 Callable Cloud Functions are configured with `enforceAppCheck: true`. The public
 marketing waitlist HTTP endpoint remains public by design. It uses an explicit
@@ -80,11 +122,16 @@ checked-in `document == 'app_config'` read rule. Prod already had that rule.
 
 ## Functions
 
-The full Functions set is deployed to `dev`, `staging`, and `prod` in
-`asia-south1`. The set was redeployed to all three projects on 2026-05-01 after
-the shared Firestore types and account-deletion anonymization changes, then
-verified with `firebase functions:list` in each project. All deployed functions
-are v2 Node.js 24 functions with 256 MB memory.
+Functions were checked through Cloud Functions on 2026-05-20.
+
+- `dev`: 64 app-owned functions plus 24 BigQuery extension functions.
+- `staging`: 64 app-owned functions plus 24 BigQuery extension functions.
+- `prod`: current event/club functions are deployed alongside legacy run and
+  run-club functions, so the current Flutter app can call the prod backend.
+
+The legacy prod run/run-club functions remain deployed for backward
+compatibility. Do not delete them until old clients no longer need them and a
+deliberate cleanup plan is in place.
 
 Dev and staging reuse the current Razorpay test-mode secrets from prod because
 no live Razorpay dashboard credentials are in use yet.
@@ -92,6 +139,61 @@ no live Razorpay dashboard credentials are in use yet.
 Before real payments launch, replace this with explicit environment-owned
 Razorpay secrets and document whether each project uses Razorpay test or live
 mode.
+
+## BigQuery And Analytics
+
+`dev`, `staging`, and `prod` have the `catch_marketplace_metrics` BigQuery
+dataset and the six Firestore BigQuery export extension instances declared in
+`firebase.json` / `extensions/*.env`:
+
+- `bq-event-success-feedback`
+- `bq-event-success-scorecards`
+- `bq-participant-marketplace-metrics`
+- `bq-participant-metric-counters`
+- `bq-participant-momentum`
+- `bq-participant-signal-facts`
+
+Firebase Analytics is wired in app code and all three Firebase projects are
+linked to Google Analytics account `365970973` as of 2026-05-20:
+
+| Environment | GA4 property | Web measurement ID |
+| --- | --- | --- |
+| `dev` | `538364226` (`catchdates-dev`) | `G-TCR62QJVH9` |
+| `staging` | `538360932` (`catchdates-staging`) | `G-LL66RSRVJP` |
+| `prod` | `526484083` (`catch-dating-app-64e51`) | `G-CH7WMQY5FV` |
+
+The dev/staging web measurement IDs are checked into
+`lib/firebase_options_<env>.dart` and `firebase/<env>/web/firebase-messaging-sw.js`.
+The active root `web/firebase-messaging-sw.js` is aligned to dev.
+
+Fresh iOS and Android SDK config downloads still report Analytics as
+disabled/missing analytics service metadata even though the Firebase Management
+API reports Android/iOS stream mappings. Treat DebugView evidence as pending
+until a real release-like app build is observed in Firebase Analytics.
+
+GA4 BigQuery export is separate from the Firestore BigQuery export extensions.
+The current Google OAuth token can verify Firebase Analytics linkage, but it
+does not have Analytics Admin scopes for listing or creating GA4 BigQuery links.
+`bq ls` currently shows only `catch_marketplace_metrics` in dev, staging, and
+prod; there is no `analytics_*` GA4 export dataset yet. Use Firebase/Analytics
+Console or a service account granted GA4 Admin/Editor access before marking GA4
+BigQuery export complete.
+
+## Firestore And Storage
+
+All three Firestore databases are native mode in `asia-south1`, and all three
+projects currently have 28 composite indexes. The Firestore TTL policy for
+`rateLimits.expiresAt` is `ACTIVE` in `dev`, `staging`, and `prod`.
+
+Storage bucket locations are not fully aligned:
+
+- `dev`: default Firebase Storage bucket in `ASIA-SOUTH1`
+- `staging`: default Firebase Storage bucket in `ASIA-SOUTH1`
+- `prod`: default Firebase Storage bucket in `US-CENTRAL1`
+
+Firebase Storage bucket location cannot be changed in place. If data locality or
+latency matters for prod media, plan a separate bucket/migration decision rather
+than treating this as a simple config edit.
 
 ## Force Update Config
 

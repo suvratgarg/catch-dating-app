@@ -22,6 +22,10 @@ concurrency:
   group: firebase-deploy-${{ inputs.environment }}
   cancel-in-progress: false
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   deploy:
     name: Deploy ${{ inputs.environment }}
@@ -47,27 +51,11 @@ jobs:
 
       - run: npm install -g firebase-tools
 
-      - name: Select Firebase service account
-        env:
-          FIREBASE_SERVICE_ACCOUNT_DEV: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DEV }}
-          FIREBASE_SERVICE_ACCOUNT_STAGING: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_STAGING }}
-          FIREBASE_SERVICE_ACCOUNT_PROD: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_PROD }}
-        run: |
-          case "${{ inputs.environment }}" in
-            dev) service_account="$FIREBASE_SERVICE_ACCOUNT_DEV" ;;
-            staging) service_account="$FIREBASE_SERVICE_ACCOUNT_STAGING" ;;
-            prod) service_account="$FIREBASE_SERVICE_ACCOUNT_PROD" ;;
-            *) echo "Unsupported environment: ${{ inputs.environment }}" >&2; exit 1 ;;
-          esac
-
-          if [[ -z "$service_account" ]]; then
-            echo "Missing FIREBASE_SERVICE_ACCOUNT_${{ inputs.environment }} secret." >&2
-            exit 1
-          fi
-
-          credentials_path="$RUNNER_TEMP/firebase-service-account.json"
-          printf '%s' "$service_account" > "$credentials_path"
-          echo "GOOGLE_APPLICATION_CREDENTIALS=$credentials_path" >> "$GITHUB_ENV"
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT_EMAIL }}
 
       - name: Contract check
         run: node tool/check_firestore_contract.mjs
