@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 /// Typography tokens for Catch's canonical type system:
-/// Inter for display and text, and JetBrains Mono for numerics.
+/// Inter for display, text, labels, and numeric treatments.
 ///
 /// These names mirror the design-system catalog. Prefer the named styles over
 /// ad hoc `TextStyle` values, and use `copyWith` only for local state changes
@@ -132,7 +132,7 @@ abstract final class CatchTextStyles {
   // ── Mono — pace, distance, codes, countdowns ─────────────────────────────
 
   static TextStyle mono(BuildContext context, {Color? color}) =>
-      GoogleFonts.jetBrainsMono(
+      GoogleFonts.inter(
         fontSize: 13,
         fontWeight: FontWeight.w500,
         height: 1.40,

@@ -154,9 +154,9 @@ Dark mode + two other palettes (Street, Editorial) included in `tokens.jsx`.
 ### Typography — Sporty (launch default)
 - **Display**: Inter, weight 700, tracking -0.02em
 - **Text**: Inter, weights 400/500/600/700
-- **Mono**: JetBrains Mono (timers, distances)
+- **Numeric/mono token**: Inter
 
-Editorial variant: Fraunces + Inter. Both should be available as swappable theme.
+Color palettes remain swappable; typography is Inter-only.
 
 ### Spacing & radii
 - Standard padding: 20px horizontal on screens, 16px on cards
