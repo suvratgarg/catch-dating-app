@@ -1,8 +1,9 @@
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
 import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event_participation.dart';
-import 'package:catch_dating_app/events/presentation/attendance_sheet_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_attendance_panel.dart';
 import 'package:catch_dating_app/public_profile/data/public_profile_repository.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../test_pump_helpers.dart';
@@ -16,7 +17,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      AttendanceSheetScreen(clubId: event.clubId, eventId: event.id),
+      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
       overrides: [
         watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
         watchEventParticipationsForEventProvider(
@@ -46,7 +47,7 @@ void main() {
 
     await pumpEventsTestApp(
       tester,
-      AttendanceSheetScreen(clubId: event.clubId, eventId: event.id),
+      Scaffold(body: HostEventAttendancePanel(eventId: event.id)),
       overrides: [
         watchEventProvider(event.id).overrideWith((ref) => Stream.value(event)),
         watchEventParticipationsForEventProvider(event.id).overrideWith(

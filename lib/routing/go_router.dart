@@ -18,16 +18,15 @@ import 'package:catch_dating_app/dashboard/presentation/dashboard_screen.dart';
 import 'package:catch_dating_app/event_policies/presentation/event_policy_lab_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_companion_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_event_preview_screen.dart';
-import 'package:catch_dating_app/event_success/presentation/event_success_host_screen.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_lab_screen.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
-import 'package:catch_dating_app/events/presentation/attendance_sheet_screen.dart';
 import 'package:catch_dating_app/events/presentation/create_event_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_detail_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_location_map_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
-import 'package:catch_dating_app/events/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/events/presentation/saved_events_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/edit_hosted_event_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/matches/presentation/matches_list_screen.dart'; // ChatsListScreen
 import 'package:catch_dating_app/onboarding/presentation/onboarding_screen.dart';
 import 'package:catch_dating_app/onboarding/presentation/pages/welcome_page.dart';
@@ -65,7 +64,11 @@ enum Routes {
   filtersScreen('/filters'),
   eventMapScreen('/map'),
   dashboardEventDetailScreen('/dashboard/clubs/:clubId/events/:eventId'),
-  hostEventManageScreen('/dashboard/clubs/:clubId/events/:eventId/manage'),
+  dashboardHostEventManageScreen(
+    '/dashboard/clubs/:clubId/events/:eventId/manage',
+  ),
+  hostEventManageScreen('/clubs/:clubId/events/:eventId/manage'),
+  editHostedEventScreen('/clubs/:clubId/events/:eventId/edit'),
   eventSuccessHostScreen('/dashboard/clubs/:clubId/events/:eventId/success'),
   eventLocationMapScreen('/events/:eventId/location'),
   // Home / Dashboard branch (index 0)
@@ -223,23 +226,51 @@ GoRouter goRouter(Ref ref) {
         ),
       ),
       GoRoute(
-        path: Routes.hostEventManageScreen.path,
-        name: Routes.hostEventManageScreen.name,
+        path: Routes.dashboardHostEventManageScreen.path,
         builder: (context, state) => HostEventManageRouteScreen(
-          clubId: state.pathParameters['clubId']!,
-          eventId: state.pathParameters['eventId']!,
-        ),
-      ),
-      GoRoute(
-        path: Routes.eventSuccessHostScreen.path,
-        name: Routes.eventSuccessHostScreen.name,
-        builder: (context, state) => EventSuccessHostRouteScreen(
           clubId: state.pathParameters['clubId']!,
           eventId: state.pathParameters['eventId']!,
           initialEvent: switch (state.extra) {
             final Event event => event,
             _ => null,
           },
+        ),
+      ),
+      GoRoute(
+        path: Routes.hostEventManageScreen.path,
+        name: Routes.hostEventManageScreen.name,
+        builder: (context, state) => HostEventManageRouteScreen(
+          clubId: state.pathParameters['clubId']!,
+          eventId: state.pathParameters['eventId']!,
+          initialEvent: switch (state.extra) {
+            final Event event => event,
+            _ => null,
+          },
+        ),
+      ),
+      GoRoute(
+        path: Routes.editHostedEventScreen.path,
+        name: Routes.editHostedEventScreen.name,
+        builder: (context, state) => EditHostedEventRouteScreen(
+          clubId: state.pathParameters['clubId']!,
+          eventId: state.pathParameters['eventId']!,
+          initialEvent: switch (state.extra) {
+            final Event event => event,
+            _ => null,
+          },
+        ),
+      ),
+      GoRoute(
+        path: Routes.eventSuccessHostScreen.path,
+        name: Routes.eventSuccessHostScreen.name,
+        builder: (context, state) => HostEventManageRouteScreen(
+          clubId: state.pathParameters['clubId']!,
+          eventId: state.pathParameters['eventId']!,
+          initialEvent: switch (state.extra) {
+            final Event event => event,
+            _ => null,
+          },
+          initialSection: HostEventManageSection.eventSuccess,
         ),
       ),
       GoRoute(
@@ -369,10 +400,17 @@ GoRouter goRouter(Ref ref) {
                             path: 'attendance',
                             name: Routes.attendanceSheet.name,
                             parentNavigatorKey: _rootNavigatorKey,
-                            builder: (context, state) => AttendanceSheetScreen(
-                              clubId: state.pathParameters['clubId']!,
-                              eventId: state.pathParameters['eventId']!,
-                            ),
+                            builder: (context, state) =>
+                                HostEventManageRouteScreen(
+                                  clubId: state.pathParameters['clubId']!,
+                                  eventId: state.pathParameters['eventId']!,
+                                  initialEvent: switch (state.extra) {
+                                    final Event event => event,
+                                    _ => null,
+                                  },
+                                  initialSection:
+                                      HostEventManageSection.attendance,
+                                ),
                           ),
                           GoRoute(
                             path: 'companion',
@@ -517,6 +555,7 @@ bool _isPublicRoute(String matchedLocation) {
     // Write-oriented sub-routes still require auth.
     if (matchedLocation.endsWith('/edit')) return false;
     if (matchedLocation.endsWith('/create-event')) return false;
+    if (matchedLocation.endsWith('/manage')) return false;
     if (matchedLocation.endsWith('/attendance')) return false;
     return true;
   }

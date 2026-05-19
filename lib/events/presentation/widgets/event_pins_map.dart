@@ -45,7 +45,8 @@ class _EventPinsMapState extends State<EventPinsMap> {
 
   @override
   void dispose() {
-    _mapController?.dispose();
+    // GoogleMap owns disposal of its controller; clear only our reference.
+    _mapController = null;
     super.dispose();
   }
 

@@ -17,7 +17,6 @@ import 'package:catch_dating_app/events/presentation/create_event_controller.dar
 import 'package:catch_dating_app/events/presentation/create_event_draft_controller.dart';
 import 'package:catch_dating_app/events/presentation/create_event_success_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_formatters.dart';
-import 'package:catch_dating_app/events/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/events/presentation/location_picker_screen.dart';
 import 'package:catch_dating_app/events/presentation/widgets/create_event_step_header.dart';
 import 'package:catch_dating_app/events/presentation/widgets/draft_picker_sheet.dart';
@@ -27,8 +26,10 @@ import 'package:catch_dating_app/events/presentation/widgets/stepper_footer.dart
 import 'package:catch_dating_app/events/presentation/widgets/when_step.dart';
 import 'package:catch_dating_app/events/presentation/widgets/where_step.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
+import 'package:catch_dating_app/routing/go_router.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 DateTime _systemNow() => DateTime.now();
 
@@ -57,7 +58,6 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
   final _pageController = PageController();
   int _currentStep = 0;
   Event? _createdEvent;
-  bool _showHostManage = false;
 
   // Draft support
   String? _activeDraftId;
@@ -743,19 +743,20 @@ class _CreateEventScreenState extends ConsumerState<CreateEventScreen> {
 
     final createdEvent = _createdEvent;
     if (createdEvent != null) {
-      return _showHostManage
-          ? HostEventManageScreen(
-              club: widget.club,
-              event: createdEvent,
-              onBackToSuccess: () => setState(() => _showHostManage = false),
-            )
-          : CreateEventSuccessScreen(
-              club: widget.club,
-              event: createdEvent,
-              inviteCode: _trimmedTextOrNull(_inviteCodeController),
-              onManageEvent: () => setState(() => _showHostManage = true),
-              onDone: () => Navigator.of(context).pop(),
-            );
+      return CreateEventSuccessScreen(
+        club: widget.club,
+        event: createdEvent,
+        inviteCode: _trimmedTextOrNull(_inviteCodeController),
+        onManageEvent: () => context.goNamed(
+          Routes.hostEventManageScreen.name,
+          pathParameters: {
+            'clubId': widget.club.id,
+            'eventId': createdEvent.id,
+          },
+          extra: createdEvent,
+        ),
+        onDone: () => Navigator.of(context).pop(),
+      );
     }
 
     return Scaffold(

@@ -8,7 +8,7 @@ import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/presentation/create_event_success_screen.dart';
 import 'package:catch_dating_app/events/presentation/event_map_screen.dart';
-import 'package:catch_dating_app/events/presentation/host_event_manage_screen.dart';
+import 'package:catch_dating_app/hosts/presentation/host_event_manage_screen.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/matches/data/match_repository.dart';
 import 'package:catch_dating_app/matches/domain/match.dart';

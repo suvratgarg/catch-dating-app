@@ -35,6 +35,7 @@ class EventBookingController extends _$EventBookingController {
   static final selfCheckInMutation = Mutation<void>();
   static final hostCancelEventMutation = Mutation<void>();
   static final deleteEventMutation = Mutation<void>();
+  static final updateHostedEventMutation = Mutation<void>();
 
   @override
   void build() {}
@@ -102,6 +103,15 @@ class EventBookingController extends _$EventBookingController {
   Future<void> deleteHostedEvent({required Event event}) async {
     _requireSignedIn(action: 'delete a hosted event');
     await ref.read(eventRepositoryProvider).deleteEvent(eventId: event.id);
+  }
+
+  /// Updates host-editable event details via the server-owned callable.
+  ///
+  /// The backend enforces host ownership, rejects cancelled events, and blocks
+  /// schedule changes once participants or waitlisted users exist.
+  Future<void> updateHostedEvent({required Event event}) async {
+    _requireSignedIn(action: 'edit a hosted event');
+    await ref.read(eventRepositoryProvider).updateEventDetails(event: event);
   }
 
   /// Adds the user to the waitlist for a full event.

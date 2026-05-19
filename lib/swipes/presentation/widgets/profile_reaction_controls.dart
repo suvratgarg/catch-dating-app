@@ -34,13 +34,13 @@ class ProfileReactionControls extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final children = [
-      _ReactionIconButton(
+      _ReactionControlButton(
         tooltip: 'Like ${target.label}',
         icon: Icons.favorite_border_rounded,
         onPressed: () => unawaited(Future.sync(() => onReact(target, null))),
         style: style,
       ),
-      _ReactionIconButton(
+      _ReactionControlButton(
         tooltip: 'Comment on ${target.label}',
         icon: Icons.chat_bubble_outline_rounded,
         onPressed: () => unawaited(_commentThenReact(context)),
@@ -189,8 +189,8 @@ class _ProfileReactionCommentSheetState
   }
 }
 
-class _ReactionIconButton extends StatelessWidget {
-  const _ReactionIconButton({
+class _ReactionControlButton extends StatelessWidget {
+  const _ReactionControlButton({
     required this.tooltip,
     required this.icon,
     required this.onPressed,

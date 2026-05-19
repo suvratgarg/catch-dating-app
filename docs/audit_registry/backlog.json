@@ -1,16 +1,16 @@
 {
-  "version": "2.6.2",
-  "updated": "2026-05-17",
+  "version": "2.6.3",
+  "updated": "2026-05-19",
   "owner": "recursive_audit_loop",
   "read_policy": "Use this file for active backlog, next actions, scanner counts, stable debt ids, and documentation hygiene follow-up. Do not reread archived markdown history unless a debt id points there.",
   "scanner_snapshot": {
-    "updated": "2026-05-08",
+    "updated": "2026-05-19",
     "command": "bash tool/widget_cleanup_scan.sh",
     "counts": {
-      "centralized_widget_timing": 3,
+      "centralized_widget_timing": 32,
       "async_unit_flush": 0,
-      "positional_widget_finders": 0,
-      "presentation_repository_reaches": 0,
+      "positional_widget_finders": 15,
+      "presentation_repository_reaches": 3,
       "catch_tokens_prop_drilling": 0,
       "raw_material_button_candidates": 0,
       "raw_text_input_candidates": 0,
@@ -22,13 +22,13 @@
       "fixed_white_pill_cta_candidates": 0,
       "raw_range_slider_candidates": 0,
       "raw_number_stepper_candidates": 0,
-      "feature_tappable_candidates": 1,
-      "literal_sized_box_spacing_candidates": 176,
-      "raw_decorated_surface_candidates": 67,
-      "unstyled_text_candidates": 15,
-      "legacy_spacing_canonical_candidates": 0,
-      "fine_grained_spacing_compatibility": 17,
-      "presentation_plugin_imports": 0,
+      "feature_tappable_candidates": 0,
+      "literal_sized_box_spacing_candidates": 160,
+      "raw_decorated_surface_candidates": 83,
+      "unstyled_text_candidates": 12,
+      "legacy_spacing_canonical_candidates": 11,
+      "fine_grained_spacing_compatibility": 25,
+      "presentation_plugin_imports": 1,
       "raw_error_surface_candidates": 0
     },
     "notes": [
@@ -58,7 +58,8 @@
       "Canonical spacing migration should be piecemeal and touch-driven.",
       "Raw error-surface candidates are clean after the hard CatchErrorText removal and direct primitive migration.",
       "Stream lifecycle watch audit on 2026-05-06 found only one-shot auth/payment protocol timeout usage, not Firestore snapshot listener timeouts.",
-      "Error UI watch audit on 2026-05-06 found no CatchErrorText regression and zero scanner raw error-surface candidates."
+      "Error UI watch audit on 2026-05-06 found no CatchErrorText regression and zero scanner raw error-surface candidates.",
+      "The 2026-05-19 release cleanup removed the remaining raw Material button candidate and unresolved feature tappable candidates. Remaining timing, positional finder, spacing, decorated-surface, unstyled-text, presentation repository, and plugin-import matches are broad audit queues, not release blockers by themselves."
     ]
   },
   "pending": [
@@ -593,6 +594,29 @@
       ]
     },
     {
+      "id": "HOST-PUBLISHED-EDIT-POLICY-001",
+      "title": "Decide post-publish host event edit policy",
+      "status": "identified",
+      "area": "hosts,events,event_policies,image_uploads",
+      "priority": "medium",
+      "rules": [
+        "ACTION-CARDINALITY-001",
+        "CONTROLLER-BOUNDARY-001",
+        "DOC-HYGIENE-001",
+        "EVENT-POLICY-INDEV-001"
+      ],
+      "summary": "Current Host Manage exposes a limited published-event edit route for operational fields only: unlocked schedule, meeting point, pinned starting point, extra directions, distance, pace, and description. Product intentionally deferred whether photo replacement, title, capacity, price, admission/event policy, or invite setup should be editable after publishing. Before exposing those fields, decide host notification copy, refund/payment implications, schedule-lock behavior, event-policy snapshot migration, invite-code safety, and photo replacement moderation/storage rules.",
+      "paths": [
+        "docs/host_tooling_consolidation_tracker.md",
+        "lib/hosts/presentation/edit_hosted_event_screen.dart",
+        "lib/hosts/presentation/host_event_manage_screen.dart",
+        "lib/events/presentation/create_event_screen.dart",
+        "lib/events/presentation/event_booking_controller.dart",
+        "lib/events/data/event_repository.dart",
+        "lib/image_uploads/presentation/profile_photo_editor_screen.dart"
+      ]
+    },
+    {
       "id": "SCREEN-SPACING-SYSTEM-001",
       "title": "Unify top-level tab header and first-content spacing",
       "status": "identified",
@@ -624,6 +648,7 @@
     "RUN-SCHEDULE-CONFLICTS-001",
     "MATCH-CHAT-REMAINING-001",
     "BUSINESS-RULES-CONSOLIDATION-001",
+    "HOST-PUBLISHED-EDIT-POLICY-001",
     "RELATIONSHIP-DOC-MIGRATION",
     "FIRESTORE-RULES-SIMPLIFICATION-001",
     "DELETE-METHODOLOGY-QUEUE",

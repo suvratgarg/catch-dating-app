@@ -1,28 +1,7 @@
 {
-  "generated_at": "2026-05-17T17:41:15.862271+00:00",
-  "total_candidates": 11,
+  "generated_at": "2026-05-19T15:31:24.625741+00:00",
+  "total_candidates": 9,
   "candidates": [
-    {
-      "match_type": "exact_name_collision",
-      "severity": "high",
-      "name": "_DarkPill",
-      "kind": "class",
-      "is_widget": true,
-      "sites": [
-        {
-          "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-          "line": 711,
-          "signature": "class _DarkPill extends StatelessWidget {"
-        },
-        {
-          "file": "lib/event_success/presentation/event_success_run_preview_screen.dart",
-          "line": 260,
-          "signature": "class _DarkPill extends StatelessWidget {"
-        }
-      ],
-      "suggestion": "Class '_DarkPill' is defined in 2 files. Extract a single shared implementation and import it.",
-      "id": "C-001"
-    },
     {
       "match_type": "exact_name_collision",
       "severity": "high",
@@ -42,28 +21,7 @@
         }
       ],
       "suggestion": "Class '_ErrorIcon' is defined in 2 files. Extract a single shared implementation and import it.",
-      "id": "C-002"
-    },
-    {
-      "match_type": "exact_name_collision",
-      "severity": "high",
-      "name": "_MetricPill",
-      "kind": "class",
-      "is_widget": true,
-      "sites": [
-        {
-          "file": "lib/event_success/presentation/event_success_feature_blocks.dart",
-          "line": 695,
-          "signature": "class _MetricPill extends StatelessWidget {"
-        },
-        {
-          "file": "lib/event_success/presentation/event_success_lab_screen.dart",
-          "line": 617,
-          "signature": "class _MetricPill extends StatelessWidget {"
-        }
-      ],
-      "suggestion": "Class '_MetricPill' is defined in 2 files. Extract a single shared implementation and import it.",
-      "id": "C-003"
+      "id": "C-001"
     },
     {
       "match_type": "exact_name_collision",
@@ -74,17 +32,17 @@
       "sites": [
         {
           "file": "lib/event_policies/presentation/event_policy_lab_screen.dart",
-          "line": 732,
+          "line": 733,
           "signature": "class _PolicyLine extends StatelessWidget {"
         },
         {
-          "file": "lib/runs/presentation/widgets/run_detail_overview_section.dart",
-          "line": 124,
+          "file": "lib/events/presentation/widgets/event_detail_overview_section.dart",
+          "line": 168,
           "signature": "class _PolicyLine extends StatelessWidget {"
         }
       ],
       "suggestion": "Class '_PolicyLine' is defined in 2 files. Extract a single shared implementation and import it.",
-      "id": "C-004"
+      "id": "C-002"
     },
     {
       "match_type": "exact_name_collision",
@@ -94,18 +52,18 @@
       "is_widget": true,
       "sites": [
         {
+          "file": "lib/clubs/presentation/list/widgets/clubs_sliver_header.dart",
+          "line": 69,
+          "signature": "class _SearchRow extends ConsumerWidget {"
+        },
+        {
           "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
           "line": 70,
           "signature": "class _SearchRow extends StatelessWidget {"
-        },
-        {
-          "file": "lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart",
-          "line": 70,
-          "signature": "class _SearchRow extends ConsumerWidget {"
         }
       ],
       "suggestion": "Class '_SearchRow' is defined in 2 files. Extract a single shared implementation and import it.",
-      "id": "C-005"
+      "id": "C-003"
     },
     {
       "match_type": "exact_name_collision",
@@ -115,18 +73,18 @@
       "is_widget": true,
       "sites": [
         {
+          "file": "lib/clubs/presentation/list/widgets/clubs_sliver_header.dart",
+          "line": 26,
+          "signature": "class _TitleRow extends ConsumerWidget {"
+        },
+        {
           "file": "lib/matches/presentation/widgets/chats_sliver_header.dart",
           "line": 22,
           "signature": "class _TitleRow extends StatelessWidget {"
-        },
-        {
-          "file": "lib/run_clubs/presentation/list/widgets/run_clubs_sliver_header.dart",
-          "line": 26,
-          "signature": "class _TitleRow extends ConsumerWidget {"
         }
       ],
       "suggestion": "Class '_TitleRow' is defined in 2 files. Extract a single shared implementation and import it.",
-      "id": "C-006"
+      "id": "C-004"
     },
     {
       "match_type": "exact_name_collision",
@@ -152,7 +110,7 @@
         }
       ],
       "suggestion": "Same function 'collapseStackedPromptBlankLines' defined in 2 places. Consolidate into one location and import it.",
-      "id": "C-007"
+      "id": "C-005"
     },
     {
       "match_type": "exact_name_collision",
@@ -168,7 +126,7 @@
         },
         {
           "file": "lib/health_activity/data/health_activity_client_mobile.dart",
-          "line": 7,
+          "line": 8,
           "signature": "HealthActivityClient createHealthActivityClient() {"
         },
         {
@@ -178,15 +136,99 @@
         }
       ],
       "suggestion": "Same function 'createHealthActivityClient' defined in 3 places. Consolidate into one location and import it.",
-      "id": "C-008"
+      "id": "C-006"
     },
     {
-      "id": "C-009",
+      "id": "C-007",
       "match_type": "inline_color_literals",
       "severity": "medium",
       "name": "Hardcoded Color(0x...) literals",
       "kind": "token",
       "sites": [
+        {
+          "file": "lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart",
+          "line": 45,
+          "color": "0x40000000",
+          "context": "Color(0x40000000),"
+        },
+        {
+          "file": "lib/clubs/presentation/list/widgets/club_list_tile_parts/directory_card.dart",
+          "line": 47,
+          "color": "0x1A000000",
+          "context": "Color(0x1A000000),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 198,
+          "color": "0xFF21433D",
+          "context": "start: const Color(0xFF21433D),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 199,
+          "color": "0xFF6A3D2A",
+          "context": "end: const Color(0xFF6A3D2A),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 200,
+          "color": "0xFFE6D8B8",
+          "context": "line: const Color(0xFFE6D8B8).withValues(alpha: 0.20),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 203,
+          "color": "0xFF243D5A",
+          "context": "start: const Color(0xFF243D5A),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 204,
+          "color": "0xFF5B2F4B",
+          "context": "end: const Color(0xFF5B2F4B),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 205,
+          "color": "0xFFD9E7F2",
+          "context": "line: const Color(0xFFD9E7F2).withValues(alpha: 0.20),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 208,
+          "color": "0xFF39452D",
+          "context": "start: const Color(0xFF39452D),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 209,
+          "color": "0xFF7A4C32",
+          "context": "end: const Color(0xFF7A4C32),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 210,
+          "color": "0xFFF1E3C6",
+          "context": "line: const Color(0xFFF1E3C6).withValues(alpha: 0.20),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 213,
+          "color": "0xFF2E385A",
+          "context": "start: const Color(0xFF2E385A),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 214,
+          "color": "0xFF365947",
+          "context": "end: const Color(0xFF365947),"
+        },
+        {
+          "file": "lib/clubs/presentation/shared/club_cover_fallback.dart",
+          "line": 215,
+          "color": "0xFFE2F0DD",
+          "context": "line: const Color(0xFFE2F0DD).withValues(alpha: 0.20),"
+        },
         {
           "file": "lib/core/celebration/catch_celebration_screen.dart",
           "line": 14,
@@ -290,142 +332,58 @@
           "context": "..color = const Color(0xFFFF6A3F)"
         },
         {
-          "file": "lib/public_profile/presentation/public_profile_screen.dart",
-          "line": 236,
-          "color": "0x66000000",
-          "context": "color: Color(0x66000000),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/list/widgets/run_club_list_tile_parts/directory_card.dart",
-          "line": 45,
-          "color": "0x40000000",
-          "context": "Color(0x40000000),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/list/widgets/run_club_list_tile_parts/directory_card.dart",
-          "line": 47,
-          "color": "0x1A000000",
-          "context": "Color(0x1A000000),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 198,
-          "color": "0xFF21433D",
-          "context": "start: const Color(0xFF21433D),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 199,
-          "color": "0xFF6A3D2A",
-          "context": "end: const Color(0xFF6A3D2A),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 200,
-          "color": "0xFFE6D8B8",
-          "context": "line: const Color(0xFFE6D8B8).withValues(alpha: 0.20),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 203,
-          "color": "0xFF243D5A",
-          "context": "start: const Color(0xFF243D5A),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 204,
-          "color": "0xFF5B2F4B",
-          "context": "end: const Color(0xFF5B2F4B),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 205,
-          "color": "0xFFD9E7F2",
-          "context": "line: const Color(0xFFD9E7F2).withValues(alpha: 0.20),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 208,
-          "color": "0xFF39452D",
-          "context": "start: const Color(0xFF39452D),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 209,
-          "color": "0xFF7A4C32",
-          "context": "end: const Color(0xFF7A4C32),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 210,
-          "color": "0xFFF1E3C6",
-          "context": "line: const Color(0xFFF1E3C6).withValues(alpha: 0.20),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 213,
-          "color": "0xFF2E385A",
-          "context": "start: const Color(0xFF2E385A),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 214,
-          "color": "0xFF365947",
-          "context": "end: const Color(0xFF365947),"
-        },
-        {
-          "file": "lib/run_clubs/presentation/shared/run_club_cover_fallback.dart",
-          "line": 215,
-          "color": "0xFFE2F0DD",
-          "context": "line: const Color(0xFFE2F0DD).withValues(alpha: 0.20),"
-        },
-        {
-          "file": "lib/runs/domain/pace_level_theme.dart",
+          "file": "lib/events/domain/pace_level_theme.dart",
           "line": 18,
           "color": "0xFFDCFCE7",
           "context": "bg: Color(0xFFDCFCE7),"
         },
         {
-          "file": "lib/runs/domain/pace_level_theme.dart",
+          "file": "lib/events/domain/pace_level_theme.dart",
           "line": 19,
           "color": "0xFF166534",
           "context": "fg: Color(0xFF166534),"
         },
         {
-          "file": "lib/runs/domain/pace_level_theme.dart",
+          "file": "lib/events/domain/pace_level_theme.dart",
           "line": 22,
           "color": "0xFFDBEAFE",
           "context": "bg: Color(0xFFDBEAFE),"
         },
         {
-          "file": "lib/runs/domain/pace_level_theme.dart",
+          "file": "lib/events/domain/pace_level_theme.dart",
           "line": 23,
           "color": "0xFF1E40AF",
           "context": "fg: Color(0xFF1E40AF),"
         },
         {
-          "file": "lib/runs/domain/pace_level_theme.dart",
+          "file": "lib/events/domain/pace_level_theme.dart",
           "line": 26,
           "color": "0xFFFEF3C7",
           "context": "bg: Color(0xFFFEF3C7),"
         },
         {
-          "file": "lib/runs/domain/pace_level_theme.dart",
+          "file": "lib/events/domain/pace_level_theme.dart",
           "line": 27,
           "color": "0xFF92400E",
           "context": "fg: Color(0xFF92400E),"
         },
         {
-          "file": "lib/runs/domain/pace_level_theme.dart",
+          "file": "lib/events/domain/pace_level_theme.dart",
           "line": 30,
           "color": "0xFFFFE4E6",
           "context": "bg: Color(0xFFFFE4E6),"
         },
         {
-          "file": "lib/runs/domain/pace_level_theme.dart",
+          "file": "lib/events/domain/pace_level_theme.dart",
           "line": 31,
           "color": "0xFF9F1239",
           "context": "fg: Color(0xFF9F1239),"
+        },
+        {
+          "file": "lib/public_profile/presentation/public_profile_screen.dart",
+          "line": 236,
+          "color": "0x66000000",
+          "context": "color: Color(0x66000000),"
         },
         {
           "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
@@ -459,31 +417,25 @@
         },
         {
           "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
-          "line": 51,
+          "line": 50,
           "color": "0xFFD8C8B6",
-          "context": "? const Color(0xFFD8C8B6)"
+          "context": "textSecondary: isDark ? const Color(0xFFD8C8B6) : const Color(0xFF665447),"
         },
         {
           "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
-          "line": 52,
-          "color": "0xFF665447",
-          "context": ": const Color(0xFF665447),"
-        },
-        {
-          "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
-          "line": 53,
+          "line": 51,
           "color": "0xFF9E8B79",
           "context": "textMuted: isDark ? const Color(0xFF9E8B79) : const Color(0xFF9A8777),"
         },
         {
           "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
-          "line": 56,
+          "line": 54,
           "color": "0xFFFFF6EC",
           "context": ": const Color(0xFFFFF6EC),"
         },
         {
           "file": "lib/swipes/presentation/widgets/profile_card_style.dart",
-          "line": 59,
+          "line": 57,
           "color": "0xFFE7D6C8",
           "context": ": const Color(0xFFE7D6C8),"
         }
@@ -491,27 +443,27 @@
       "suggestion": "Move these hardcoded colors into CatchTokens or a theme file so they can be managed centrally."
     },
     {
-      "id": "C-011",
+      "id": "C-009",
       "match_type": "duplicate_date_format",
       "severity": "low",
       "name": "DateFormat('EEE d MMM')",
       "kind": "function",
       "sites": [
         {
-          "file": "lib/chats/presentation/widgets/chat_run_context_header.dart",
+          "file": "lib/chats/presentation/widgets/chat_event_context_header.dart",
           "line": 20,
-          "context": ": DateFormat('EEE d MMM').format(run!.startTime);"
+          "context": ": DateFormat('EEE d MMM').format(event!.startTime);"
         },
         {
-          "file": "lib/swipes/presentation/widgets/attended_run_tile.dart",
+          "file": "lib/swipes/presentation/widgets/attended_event_tile.dart",
           "line": 22,
-          "context": "final dateStr = DateFormat('EEE d MMM').format(run.startTime);"
+          "context": "final dateStr = DateFormat('EEE d MMM').format(event.startTime);"
         }
       ],
       "suggestion": "DateFormat('EEE d MMM') used in 2 files. Consider a shared formatRunDate() utility."
     },
     {
-      "id": "C-012",
+      "id": "C-010",
       "match_type": "duplicate_date_format",
       "severity": "low",
       "name": "DateFormat('EEEE')",
@@ -519,17 +471,17 @@
       "sites": [
         {
           "file": "lib/dashboard/presentation/widgets/dashboard_full.dart",
-          "line": 45,
+          "line": 46,
           "context": "final day = DateFormat('EEEE').format(DateTime.now());"
         },
         {
-          "file": "lib/runs/domain/run.dart",
-          "line": 191,
+          "file": "lib/events/domain/event.dart",
+          "line": 219,
           "context": "final weekday = DateFormat('EEEE').format(startTime);"
         },
         {
-          "file": "lib/runs/presentation/run_formatters.dart",
-          "line": 8,
+          "file": "lib/events/presentation/event_formatters.dart",
+          "line": 9,
           "context": "static final _weekdayLong = DateFormat('EEEE');"
         }
       ],

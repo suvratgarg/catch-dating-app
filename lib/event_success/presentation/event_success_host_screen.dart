@@ -1,6 +1,3 @@
-import 'package:catch_dating_app/auth/data/auth_repository.dart';
-import 'package:catch_dating_app/clubs/data/clubs_repository.dart';
-import 'package:catch_dating_app/clubs/domain/club.dart';
 import 'package:catch_dating_app/core/app_error_message.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
@@ -19,175 +16,231 @@ import 'package:catch_dating_app/event_success/domain/event_success_playbooks.da
 import 'package:catch_dating_app/event_success/presentation/event_success_controller.dart';
 import 'package:catch_dating_app/event_success/presentation/event_success_feature_blocks.dart';
 import 'package:catch_dating_app/events/data/event_participation_repository.dart';
-import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/domain/event.dart';
 import 'package:catch_dating_app/events/domain/event_participation_roster.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/experimental/mutation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:go_router/go_router.dart';
 
-class EventSuccessHostRouteScreen extends ConsumerWidget {
-  const EventSuccessHostRouteScreen({
+enum EventSuccessHostTab { setup, live, report }
+
+class EventSuccessHostSection extends ConsumerWidget {
+  const EventSuccessHostSection({
     super.key,
-    required this.clubId,
-    required this.eventId,
-    this.initialEvent,
+    required this.event,
+    this.initialTab = EventSuccessHostTab.setup,
   });
 
-  final String clubId;
-  final String eventId;
-  final Event? initialEvent;
+  final Event event;
+  final EventSuccessHostTab initialTab;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final uid = ref.watch(uidProvider).asData?.value;
-    final eventAsync = ref.watch(watchEventProvider(eventId));
-    final event = eventAsync.asData?.value ?? initialEvent;
-    final clubAsync = ref.watch(fetchClubProvider(clubId));
-    final planAsync = ref.watch(watchEventSuccessPlanProvider(eventId));
+    final planAsync = ref.watch(watchEventSuccessPlanProvider(event.id));
     final rosterAsync = ref.watch(
-      watchEventParticipationRosterProvider(eventId),
+      watchEventParticipationRosterProvider(event.id),
     );
-    final feedbackAsync = ref.watch(watchEventSuccessFeedbackProvider(eventId));
+    final feedbackAsync = ref.watch(
+      watchEventSuccessFeedbackProvider(event.id),
+    );
 
-    if (eventAsync.isLoading && event == null) {
-      return const Scaffold(body: CatchLoadingIndicator());
-    }
-    if (eventAsync.hasError) {
-      return CatchErrorScaffold.fromError(
-        eventAsync.error!,
-        context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchEventProvider(eventId)),
-      );
-    }
-    if (event == null) {
-      return const CatchErrorScaffold(
-        title: 'Event not found',
-        message: 'This event is no longer available.',
-      );
-    }
-    if (clubAsync.isLoading || planAsync.isLoading || rosterAsync.isLoading) {
-      return const Scaffold(body: CatchLoadingIndicator());
-    }
-    if (clubAsync.hasError) {
-      return CatchErrorScaffold.fromError(
-        clubAsync.error!,
-        context: AppErrorContext.club,
-        onRetry: () => ref.invalidate(fetchClubProvider(clubId)),
+    if (planAsync.isLoading || rosterAsync.isLoading) {
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
+        child: Center(child: CatchLoadingIndicator()),
       );
     }
     if (planAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return CatchInlineErrorState.fromError(
         planAsync.error!,
         context: AppErrorContext.event,
-        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(eventId)),
+        onRetry: () => ref.invalidate(watchEventSuccessPlanProvider(event.id)),
       );
     }
     if (rosterAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return CatchInlineErrorState.fromError(
         rosterAsync.error!,
         context: AppErrorContext.event,
         onRetry: () =>
-            ref.invalidate(watchEventParticipationRosterProvider(eventId)),
+            ref.invalidate(watchEventParticipationRosterProvider(event.id)),
       );
     }
     if (feedbackAsync.hasError) {
-      return CatchErrorScaffold.fromError(
+      return CatchInlineErrorState.fromError(
         feedbackAsync.error!,
         context: AppErrorContext.event,
         onRetry: () =>
-            ref.invalidate(watchEventSuccessFeedbackProvider(eventId)),
+            ref.invalidate(watchEventSuccessFeedbackProvider(event.id)),
       );
     }
 
-    final club = clubAsync.asData?.value;
-    if (club == null) {
-      return const CatchErrorScaffold(
-        title: 'Club not found',
-        message: 'This club is no longer available.',
-      );
-    }
-    if (uid == null || club.hostUserId != uid) {
-      return const CatchErrorScaffold(
-        title: 'Host access only',
-        message: 'Only the club host can manage event success tools.',
-      );
-    }
-
-    final plan =
-        planAsync.asData?.value ?? EventSuccessPlan.defaultForEvent(event);
+    final persistedPlan = planAsync.asData?.value;
+    final plan = persistedPlan ?? EventSuccessPlan.defaultForEvent(event);
     final roster =
         rosterAsync.asData?.value ?? EventParticipationRoster.empty();
     final feedback =
         feedbackAsync.asData?.value ?? const <EventSuccessFeedback>[];
 
-    return EventSuccessHostScreen(
-      club: club,
+    return EventSuccessHostPanel(
       event: event,
       plan: plan,
-      planIsPersisted: planAsync.asData?.value != null,
+      planIsPersisted: persistedPlan != null,
       roster: roster,
       feedback: feedback,
+      initialTab: initialTab,
+      embedded: true,
     );
   }
 }
 
-class EventSuccessHostScreen extends StatelessWidget {
-  const EventSuccessHostScreen({
+class EventSuccessHostPanel extends StatefulWidget {
+  const EventSuccessHostPanel({
     super.key,
-    required this.club,
     required this.event,
     required this.plan,
     required this.planIsPersisted,
     required this.roster,
     required this.feedback,
+    this.initialTab = EventSuccessHostTab.setup,
+    this.embedded = true,
   });
 
-  final Club club;
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
   final EventParticipationRoster roster;
   final List<EventSuccessFeedback> feedback;
+  final EventSuccessHostTab initialTab;
+  final bool embedded;
+
+  @override
+  State<EventSuccessHostPanel> createState() => _EventSuccessHostPanelState();
+}
+
+class _EventSuccessHostPanelState extends State<EventSuccessHostPanel> {
+  late EventSuccessHostTab _selectedTab = widget.initialTab;
+
+  @override
+  void didUpdateWidget(covariant EventSuccessHostPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.initialTab != widget.initialTab) {
+      _selectedTab = widget.initialTab;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: t.bg,
-        appBar: AppBar(
-          title: const Text('Event success'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_rounded),
-            tooltip: 'Back',
-            onPressed: () => context.pop(),
-          ),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Setup'),
-              Tab(text: 'Live'),
-              Tab(text: 'Report'),
-            ],
-          ),
-        ),
-        body: TabBarView(
-          children: [
-            _SetupTab(
-              event: event,
-              plan: plan,
-              planIsPersisted: planIsPersisted,
-            ),
-            _LiveTab(event: event, plan: plan, roster: roster),
-            _ReportTab(event: event, plan: plan, feedback: feedback),
-          ],
-        ),
-      ),
+    final body = _selectedBody();
+    final tabs = _EventSuccessTabPicker(
+      selectedTab: _selectedTab,
+      onChanged: (tab) => setState(() => _selectedTab = tab),
     );
+
+    if (widget.embedded) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [tabs, gapH16, body],
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s4,
+            CatchSpacing.s5,
+            CatchSpacing.s2,
+          ),
+          child: tabs,
+        ),
+        Expanded(child: body),
+      ],
+    );
+  }
+
+  Widget _selectedBody() {
+    final shrinkWrap = widget.embedded;
+    final physics = widget.embedded
+        ? const NeverScrollableScrollPhysics()
+        : const AlwaysScrollableScrollPhysics();
+    final padding = widget.embedded
+        ? EdgeInsets.zero
+        : const EdgeInsets.all(CatchSpacing.s5);
+
+    return switch (_selectedTab) {
+      EventSuccessHostTab.setup => _SetupTab(
+        event: widget.event,
+        plan: widget.plan,
+        planIsPersisted: widget.planIsPersisted,
+        shrinkWrap: shrinkWrap,
+        physics: physics,
+        padding: padding,
+      ),
+      EventSuccessHostTab.live => _LiveTab(
+        event: widget.event,
+        plan: widget.plan,
+        roster: widget.roster,
+        shrinkWrap: shrinkWrap,
+        physics: physics,
+        padding: padding,
+      ),
+      EventSuccessHostTab.report => _ReportTab(
+        event: widget.event,
+        plan: widget.plan,
+        feedback: widget.feedback,
+        shrinkWrap: shrinkWrap,
+        physics: physics,
+        padding: padding,
+      ),
+    };
+  }
+}
+
+class _EventSuccessTabPicker extends StatelessWidget {
+  const _EventSuccessTabPicker({
+    required this.selectedTab,
+    required this.onChanged,
+  });
+
+  final EventSuccessHostTab selectedTab;
+  final ValueChanged<EventSuccessHostTab> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      spacing: CatchSpacing.s2,
+      runSpacing: CatchSpacing.s2,
+      children: [
+        for (final tab in EventSuccessHostTab.values)
+          CatchChip(
+            label: tab.label,
+            active: selectedTab == tab,
+            icon: Icon(tab.icon),
+            onTap: () => onChanged(tab),
+          ),
+      ],
+    );
+  }
+}
+
+extension on EventSuccessHostTab {
+  String get label {
+    return switch (this) {
+      EventSuccessHostTab.setup => 'Setup',
+      EventSuccessHostTab.live => 'Live',
+      EventSuccessHostTab.report => 'Report',
+    };
+  }
+
+  IconData get icon {
+    return switch (this) {
+      EventSuccessHostTab.setup => Icons.tune_rounded,
+      EventSuccessHostTab.live => Icons.play_circle_outline_rounded,
+      EventSuccessHostTab.report => Icons.insights_outlined,
+    };
   }
 }
 
@@ -196,11 +249,17 @@ class _SetupTab extends StatefulWidget {
     required this.event,
     required this.plan,
     required this.planIsPersisted,
+    required this.shrinkWrap,
+    required this.physics,
+    required this.padding,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final bool planIsPersisted;
+  final bool shrinkWrap;
+  final ScrollPhysics physics;
+  final EdgeInsetsGeometry padding;
 
   @override
   State<_SetupTab> createState() => _SetupTabState();
@@ -251,7 +310,10 @@ class _SetupTabState extends State<_SetupTab> {
             : ensureMutation;
 
         return ListView(
-          padding: const EdgeInsets.all(CatchSpacing.s5),
+          shrinkWrap: widget.shrinkWrap,
+          primary: widget.shrinkWrap ? false : null,
+          physics: widget.physics,
+          padding: widget.padding,
           children: [
             if (!widget.planIsPersisted) ...[
               _NoticeCard(
@@ -281,7 +343,7 @@ class _SetupTabState extends State<_SetupTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _SectionTitle(
+                  _SetupSectionTitle(
                     title: 'Format',
                     subtitle:
                         'Pick the live structure the host will use before, during, and after this event.',
@@ -351,7 +413,7 @@ class _SetupTabState extends State<_SetupTab> {
                     onChanged: (_) => setState(() {}),
                   ),
                   gapH16,
-                  _SectionTitle(
+                  _SetupSectionTitle(
                     title: 'Modules',
                     subtitle:
                         'These controls decide which success tools appear for the host and attendees.',
@@ -443,11 +505,17 @@ class _LiveTab extends ConsumerWidget {
     required this.event,
     required this.plan,
     required this.roster,
+    required this.shrinkWrap,
+    required this.physics,
+    required this.padding,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final EventParticipationRoster roster;
+  final bool shrinkWrap;
+  final ScrollPhysics physics;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -473,7 +541,10 @@ class _LiveTab extends ConsumerWidget {
     );
 
     return ListView(
-      padding: const EdgeInsets.all(CatchSpacing.s5),
+      shrinkWrap: shrinkWrap,
+      primary: shrinkWrap ? false : null,
+      physics: physics,
+      padding: padding,
       children: [
         if (mutation.hasError) ...[
           _ErrorText(error: (mutation as MutationError).error),
@@ -539,18 +610,27 @@ class _ReportTab extends StatelessWidget {
     required this.event,
     required this.plan,
     required this.feedback,
+    required this.shrinkWrap,
+    required this.physics,
+    required this.padding,
   });
 
   final Event event;
   final EventSuccessPlan plan;
   final List<EventSuccessFeedback> feedback;
+  final bool shrinkWrap;
+  final ScrollPhysics physics;
+  final EdgeInsetsGeometry padding;
 
   @override
   Widget build(BuildContext context) {
     final brief = plan.buildBrief(event: event, feedback: feedback);
 
     return ListView(
-      padding: const EdgeInsets.all(CatchSpacing.s5),
+      shrinkWrap: shrinkWrap,
+      primary: shrinkWrap ? false : null,
+      physics: physics,
+      padding: padding,
       children: [
         _NoticeCard(
           icon: Icons.assignment_turned_in_outlined,
@@ -782,8 +862,8 @@ String _normalizedRequired(String value, {required String fallback}) {
   return trimmed.isEmpty ? fallback : trimmed;
 }
 
-class _SectionTitle extends StatelessWidget {
-  const _SectionTitle({required this.title, required this.subtitle});
+class _SetupSectionTitle extends StatelessWidget {
+  const _SetupSectionTitle({required this.title, required this.subtitle});
 
   final String title;
   final String subtitle;

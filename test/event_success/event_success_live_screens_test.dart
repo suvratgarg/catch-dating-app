@@ -17,12 +17,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../events/events_test_helpers.dart'
-    show
-        buildClub,
-        buildEvent,
-        buildEventParticipation,
-        buildPublicProfile,
-        buildUser;
+    show buildEvent, buildEventParticipation, buildPublicProfile, buildUser;
 
 void main() {
   testWidgets('host screen exposes setup live mode and report tabs', (
@@ -40,23 +35,29 @@ void main() {
       ProviderScope(
         child: MaterialApp(
           theme: AppTheme.light,
-          home: EventSuccessHostScreen(
-            club: buildClub(),
-            event: event,
-            plan: plan,
-            planIsPersisted: true,
-            roster: const EventParticipationRoster(
-              bookedIds: ['a', 'b', 'c'],
-              checkedInIds: ['a', 'b'],
-              waitlistedIds: [],
+          home: Scaffold(
+            body: SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: EventSuccessHostPanel(
+                  event: event,
+                  plan: plan,
+                  planIsPersisted: true,
+                  roster: const EventParticipationRoster(
+                    bookedIds: ['a', 'b', 'c'],
+                    checkedInIds: ['a', 'b'],
+                    waitlistedIds: [],
+                  ),
+                  feedback: const [],
+                  embedded: true,
+                ),
+              ),
             ),
-            feedback: const [],
           ),
         ),
       ),
     );
 
-    expect(find.text('Event success'), findsOneWidget);
     expect(find.text('Setup'), findsWidgets);
     expect(find.text('Target attendees'), findsOneWidget);
     expect(find.text('Host goal'), findsOneWidget);

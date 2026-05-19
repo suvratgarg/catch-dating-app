@@ -6,6 +6,7 @@ import 'package:catch_dating_app/events/domain/event_constraints.dart';
 import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
 import 'package:catch_dating_app/user_profile/domain/user_profile.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -450,53 +451,52 @@ void main() {
       expect(viewModel.hostEventTools.single.event.id, 'hosted-event');
       expect(
         viewModel.hostEventTools.single.attendanceState,
-        DashboardHostAttendanceState.open,
+        HostEventAttendanceState.open,
       );
     });
 
-    test(
-      'exposes actionable hosted events with attendance-open events first',
-      () {
-        final now = DateTime(2026, 4, 23, 9);
-        final recentlyEnded = buildEvent(
-          id: 'recently-ended-hosted',
-          startTime: now.subtract(const Duration(hours: 2)),
-          endTime: now.subtract(const Duration(hours: 1)),
-        );
-        final old = buildEvent(
-          id: 'old-hosted',
-          startTime: now.subtract(const Duration(hours: 10)),
-          endTime: now.subtract(const Duration(hours: 9)),
-        );
-        final later = buildEvent(
-          id: 'later-hosted',
-          startTime: now.add(const Duration(hours: 4)),
-        );
-        final sooner = buildEvent(
-          id: 'sooner-hosted',
-          startTime: now.add(const Duration(hours: 2)),
-        );
+    test('keeps past hosted events with attendance-open events first', () {
+      final now = DateTime(2026, 4, 23, 9);
+      final recentlyEnded = buildEvent(
+        id: 'recently-ended-hosted',
+        startTime: now.subtract(const Duration(hours: 2)),
+        endTime: now.subtract(const Duration(hours: 1)),
+      );
+      final old = buildEvent(
+        id: 'old-hosted',
+        startTime: now.subtract(const Duration(hours: 10)),
+        endTime: now.subtract(const Duration(hours: 9)),
+      );
+      final later = buildEvent(
+        id: 'later-hosted',
+        startTime: now.add(const Duration(hours: 4)),
+      );
+      final sooner = buildEvent(
+        id: 'sooner-hosted',
+        startTime: now.add(const Duration(hours: 2)),
+      );
 
-        final viewModel = buildDashboardFullViewModel(
-          signedUpEvents: const [],
-          uid: 'host-1',
-          hostedEvents: [old, later, recentlyEnded, sooner],
-          attendedEventsAsync: const AsyncData<List<Event>>([]),
-          recommendedEventsAsync: _noRecommendationCandidates,
-          now: now,
-        );
+      final viewModel = buildDashboardFullViewModel(
+        signedUpEvents: const [],
+        uid: 'host-1',
+        hostedEvents: [old, later, recentlyEnded, sooner],
+        attendedEventsAsync: const AsyncData<List<Event>>([]),
+        recommendedEventsAsync: _noRecommendationCandidates,
+        now: now,
+      );
 
-        expect(viewModel.hostEventTools.map((tool) => tool.event.id), [
-          'recently-ended-hosted',
-          'sooner-hosted',
-          'later-hosted',
-        ]);
-        expect(viewModel.hostEventTools.map((tool) => tool.attendanceState), [
-          DashboardHostAttendanceState.open,
-          DashboardHostAttendanceState.opensLater,
-          DashboardHostAttendanceState.opensLater,
-        ]);
-      },
-    );
+      expect(viewModel.hostEventTools.map((tool) => tool.event.id), [
+        'recently-ended-hosted',
+        'sooner-hosted',
+        'later-hosted',
+        'old-hosted',
+      ]);
+      expect(viewModel.hostEventTools.map((tool) => tool.attendanceState), [
+        HostEventAttendanceState.open,
+        HostEventAttendanceState.opensLater,
+        HostEventAttendanceState.opensLater,
+        HostEventAttendanceState.closed,
+      ]);
+    });
   });
 }

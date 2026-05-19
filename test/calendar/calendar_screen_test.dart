@@ -366,6 +366,198 @@ void main() {
     });
 
     testWidgets(
+      'pulling down expands month grid and scrolling up collapses it',
+      (tester) async {
+        tester.view.devicePixelRatio = 1.0;
+        tester.view.physicalSize = const Size(390, 640);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+
+        final selectedDate = DateUtils.dateOnly(
+          DateTime.now().add(const Duration(days: 2)),
+        );
+        final event = buildEvent(
+          id: 'expand-event',
+          startTime: selectedDate.add(const Duration(hours: 7)),
+          meetingPoint: 'Expandable Start',
+          distanceKm: 5,
+          pace: PaceLevel.easy,
+        );
+        final firstOfMonth = DateTime(selectedDate.year, selectedDate.month);
+
+        await _pumpCalendar(
+          tester,
+          overrides: [
+            watchSignedUpEventsProvider(
+              'runner-1',
+            ).overrideWithValue(AsyncData<List<Event>>([event])),
+          ],
+        );
+
+        expect(find.byKey(_calendarWeekDayKey(selectedDate)), findsOneWidget);
+        expect(find.byKey(_calendarMonthDayKey(firstOfMonth)), findsNothing);
+
+        await tester.drag(
+          find.byKey(_calendarWeekDayKey(selectedDate)),
+          const Offset(0, 96),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(_calendarMonthDayKey(firstOfMonth)), findsOneWidget);
+        expect(find.byKey(_calendarWeekDayKey(selectedDate)), findsNothing);
+
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -96));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(_calendarMonthDayKey(firstOfMonth)), findsNothing);
+        expect(find.byKey(_calendarWeekDayKey(selectedDate)), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'collapsed week strip follows a date selected from month grid',
+      (tester) async {
+        tester.view.devicePixelRatio = 1.0;
+        tester.view.physicalSize = const Size(390, 640);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPhysicalSize);
+
+        final anchor = DateTime(
+          DateTime.now().year,
+          DateTime.now().month + 1,
+          15,
+        );
+        final targetDate = DateTime(anchor.year, anchor.month, 22);
+        final event = buildEvent(
+          id: 'anchor-event',
+          startTime: anchor.add(const Duration(hours: 7)),
+          meetingPoint: 'Anchor Start',
+          distanceKm: 5,
+          pace: PaceLevel.easy,
+        );
+
+        await _pumpCalendar(
+          tester,
+          overrides: [
+            watchSignedUpEventsProvider(
+              'runner-1',
+            ).overrideWithValue(AsyncData<List<Event>>([event])),
+          ],
+        );
+
+        await tester.drag(
+          find.byKey(_calendarWeekDayKey(anchor)),
+          const Offset(0, 96),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(_calendarMonthDayKey(targetDate)));
+        await tester.pumpAndSettle();
+
+        await tester.drag(find.byType(CustomScrollView), const Offset(0, -96));
+        await tester.pumpAndSettle();
+
+        expect(find.byKey(_calendarWeekDayKey(targetDate)), findsOneWidget);
+        expect(find.byKey(_calendarWeekDayKey(anchor)), findsNothing);
+      },
+    );
+
+    testWidgets('Today button returns expanded calendar to current day', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(390, 640);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final now = DateTime.now();
+      final today = DateUtils.dateOnly(now);
+      final futureAnchor = DateTime(now.year, now.month + 1, 15);
+      final event = buildEvent(
+        id: 'future-event',
+        startTime: futureAnchor.add(const Duration(hours: 7)),
+        meetingPoint: 'Future Start',
+        distanceKm: 5,
+        pace: PaceLevel.easy,
+      );
+
+      await _pumpCalendar(
+        tester,
+        overrides: [
+          watchSignedUpEventsProvider(
+            'runner-1',
+          ).overrideWithValue(AsyncData<List<Event>>([event])),
+        ],
+      );
+
+      await tester.drag(
+        find.byKey(_calendarWeekDayKey(futureAnchor)),
+        const Offset(0, 96),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text(_monthYearLabel(futureAnchor)), findsOneWidget);
+
+      await tester.tap(find.text('Today'));
+      await tester.pumpAndSettle();
+
+      expect(find.text(_monthYearLabel(today)), findsOneWidget);
+      expect(find.byKey(_calendarMonthDayKey(today)), findsOneWidget);
+    });
+
+    testWidgets('keeps month and week picker tappable after agenda jump', (
+      tester,
+    ) async {
+      tester.view.devicePixelRatio = 1.0;
+      tester.view.physicalSize = const Size(390, 560);
+      addTearDown(tester.view.resetDevicePixelRatio);
+      addTearDown(tester.view.resetPhysicalSize);
+
+      final nextWeek = DateUtils.dateOnly(
+        DateTime.now().add(const Duration(days: 7)),
+      );
+      final monday = nextWeek.subtract(Duration(days: nextWeek.weekday - 1));
+      final events = List.generate(
+        7,
+        (index) => buildEvent(
+          id: 'sticky-week-event-$index',
+          startTime: monday.add(Duration(days: index, hours: 7)),
+          meetingPoint: 'Sticky Week Event $index',
+          distanceKm: 5,
+          pace: PaceLevel.easy,
+        ),
+      );
+      final targetDate = DateUtils.dateOnly(events.last.startTime);
+
+      await _pumpCalendar(
+        tester,
+        overrides: [
+          watchSignedUpEventsProvider(
+            'runner-1',
+          ).overrideWithValue(AsyncData<List<Event>>(events)),
+        ],
+      );
+
+      await tester.tap(find.byKey(_calendarWeekDayKey(targetDate)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sticky Week Event 6').hitTestable(), findsOneWidget);
+      expect(
+        find.text(_monthYearLabel(targetDate)).hitTestable(),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(_calendarWeekDayKey(monday)).hitTestable(),
+        findsOneWidget,
+      );
+
+      await tester.tap(find.byKey(_calendarWeekDayKey(monday)));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Sticky Week Event 0').hitTestable(), findsOneWidget);
+    });
+
+    testWidgets(
       'opens a booked event from the agenda and back returns to calendar',
       (tester) async {
         final event = buildEvent(
@@ -534,6 +726,10 @@ String _timeLabel(DateTime date) => EventFormatters.time(date);
 
 Key _calendarWeekDayKey(DateTime date) {
   return ValueKey<String>('calendar-week-day-${_dateKey(date)}');
+}
+
+Key _calendarMonthDayKey(DateTime date) {
+  return ValueKey<String>('calendar-month-day-${_dateKey(date)}');
 }
 
 String _dateKey(DateTime date) {

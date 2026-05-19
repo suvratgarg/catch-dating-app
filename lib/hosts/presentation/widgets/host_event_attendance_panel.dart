@@ -7,7 +7,6 @@ import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_error_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
-import 'package:catch_dating_app/core/widgets/catch_top_bar.dart';
 import 'package:catch_dating_app/core/widgets/error_banner.dart';
 import 'package:catch_dating_app/core/widgets/mutation_error_util.dart';
 import 'package:catch_dating_app/core/widgets/person_row.dart';
@@ -16,40 +15,35 @@ import 'package:catch_dating_app/events/data/event_repository.dart';
 import 'package:catch_dating_app/events/presentation/attendance_sheet_view_model.dart';
 import 'package:catch_dating_app/events/presentation/event_booking_controller.dart';
 import 'package:catch_dating_app/events/presentation/widgets/who_is_going.dart';
-import 'package:catch_dating_app/host_tools/presentation/host_event_tools.dart';
+import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
+import 'package:catch_dating_app/hosts/presentation/widgets/host_event_tools.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class AttendanceSheetScreen extends ConsumerWidget {
-  const AttendanceSheetScreen({
+class HostEventAttendancePanel extends ConsumerWidget {
+  const HostEventAttendancePanel({
     super.key,
-    required this.clubId,
     required this.eventId,
+    this.scrollable = false,
   });
 
-  final String clubId;
   final String eventId;
+  final bool scrollable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final t = CatchTokens.of(context);
     final attendanceAsync = ref.watch(
       attendanceSheetViewModelProvider(eventId),
     );
 
-    return Scaffold(
-      backgroundColor: t.bg,
-      appBar: CatchTopBar(
-        title: 'Take Attendance',
-        leading: CatchTopBarIconAction(
-          icon: Icons.arrow_back_ios_new_rounded,
-          tooltip: 'Back',
-          onPressed: () => Navigator.of(context).pop(),
-        ),
+    return attendanceAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
+        child: Center(child: CatchLoadingIndicator()),
       ),
-      body: attendanceAsync.when(
-        loading: () => const CatchLoadingIndicator(),
-        error: (e, _) => CatchErrorState.fromError(
+      error: (e, _) => Padding(
+        padding: const EdgeInsets.all(CatchSpacing.s4),
+        child: CatchInlineErrorState.fromError(
           e,
           context: AppErrorContext.event,
           onRetry: () {
@@ -58,24 +52,31 @@ class AttendanceSheetScreen extends ConsumerWidget {
             ref.invalidate(attendanceSheetViewModelProvider(eventId));
           },
         ),
-        data: (viewModel) {
-          if (viewModel == null) {
-            return const CatchErrorState(
+      ),
+      data: (viewModel) {
+        if (viewModel == null) {
+          return const Padding(
+            padding: EdgeInsets.symmetric(vertical: CatchSpacing.s5),
+            child: CatchEmptyState(
+              icon: Icons.event_busy_outlined,
               title: 'Event not found',
               message: 'This event is no longer available.',
-            );
-          }
-          return _AttendanceList(viewModel: viewModel);
-        },
-      ),
+              surface: false,
+              iconStyle: CatchEmptyStateIconStyle.plain,
+            ),
+          );
+        }
+        return _AttendanceList(viewModel: viewModel, scrollable: scrollable);
+      },
     );
   }
 }
 
 class _AttendanceList extends ConsumerWidget {
-  const _AttendanceList({required this.viewModel});
+  const _AttendanceList({required this.viewModel, required this.scrollable});
 
   final AttendanceSheetViewModel viewModel;
+  final bool scrollable;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -83,19 +84,44 @@ class _AttendanceList extends ConsumerWidget {
     final mutation = ref.watch(EventBookingController.markAttendanceMutation);
 
     if (viewModel.isEmpty) {
-      return const Center(
-        child: CatchEmptyState(
-          icon: Icons.group_outlined,
-          title: 'No attendees yet',
-          message: 'No one has signed up for this event yet.',
-          surface: false,
-          iconStyle: CatchEmptyStateIconStyle.plain,
+      return const Padding(
+        padding: EdgeInsets.symmetric(vertical: CatchSpacing.s5),
+        child: Center(
+          child: CatchEmptyState(
+            icon: Icons.group_outlined,
+            title: 'No attendees yet',
+            message: 'No one has signed up for this event yet.',
+            surface: false,
+            iconStyle: CatchEmptyStateIconStyle.plain,
+          ),
         ),
       );
     }
 
     final profilesAsync = ref.watch(attendeeProfilesProvider(attendeeIds));
     final profiles = profilesAsync.asData?.value ?? {};
+    final Widget rows = profilesAsync.isLoading
+        ? const Padding(
+            padding: EdgeInsets.symmetric(vertical: CatchSpacing.s6),
+            child: Center(child: CatchLoadingIndicator()),
+          )
+        : profilesAsync.hasError
+        ? Padding(
+            padding: const EdgeInsets.all(CatchSpacing.s4),
+            child: CatchInlineErrorState.fromError(
+              profilesAsync.error!,
+              context: AppErrorContext.event,
+              onRetry: () =>
+                  ref.invalidate(attendeeProfilesProvider(attendeeIds)),
+            ),
+          )
+        : _AttendeeRows(
+            attendeeIds: attendeeIds,
+            profiles: profiles,
+            attendedIds: viewModel.attendedIds,
+            eventId: viewModel.event.id,
+            scrollable: scrollable,
+          );
 
     return Column(
       children: [
@@ -105,43 +131,7 @@ class _AttendanceList extends ConsumerWidget {
           checkedInCount: viewModel.checkedInCount,
           totalCount: viewModel.totalCount,
         ),
-        Expanded(
-          child: profilesAsync.isLoading
-              ? const CatchLoadingIndicator()
-              : profilesAsync.hasError
-              ? Padding(
-                  padding: const EdgeInsets.all(CatchSpacing.s5),
-                  child: CatchInlineErrorState.fromError(
-                    profilesAsync.error!,
-                    context: AppErrorContext.event,
-                    onRetry: () =>
-                        ref.invalidate(attendeeProfilesProvider(attendeeIds)),
-                  ),
-                )
-              : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(
-                    CatchSpacing.s5,
-                    CatchSpacing.s2,
-                    CatchSpacing.s5,
-                    CatchSpacing.s6,
-                  ),
-                  itemCount: attendeeIds.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 8),
-                  itemBuilder: (context, index) {
-                    final uid = attendeeIds[index];
-                    final profile = profiles[uid];
-                    final isAttended = viewModel.isAttended(uid);
-
-                    return _AttendeeRow(
-                      uid: uid,
-                      name: profile?.$1 ?? 'Runner',
-                      photoUrl: profile?.$2,
-                      isAttended: isAttended,
-                      eventId: viewModel.event.id,
-                    );
-                  },
-                ),
-        ),
+        if (scrollable) Expanded(child: rows) else rows,
       ],
     );
   }
@@ -165,12 +155,7 @@ class _AttendanceSummaryHeader extends StatelessWidget {
     );
 
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-        CatchSpacing.s5,
-        CatchSpacing.s3,
-      ),
+      padding: const EdgeInsets.only(bottom: CatchSpacing.s3),
       child: CatchSurface(
         padding: const EdgeInsets.all(CatchSpacing.s4),
         backgroundColor: palette.background,
@@ -198,11 +183,13 @@ class _AttendanceSummaryHeader extends StatelessWidget {
             gapH10,
             Row(
               children: [
-                Text(
-                  '$checkedInCount / $totalCount checked in',
-                  style: CatchTextStyles.titleM(context),
+                Expanded(
+                  child: Text(
+                    '$checkedInCount / $totalCount checked in',
+                    style: CatchTextStyles.titleM(context),
+                  ),
                 ),
-                const Spacer(),
+                gapW12,
                 Text(
                   'Tap to toggle',
                   style: CatchTextStyles.bodyS(context, color: t.ink2),
@@ -212,6 +199,49 @@ class _AttendanceSummaryHeader extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _AttendeeRows extends StatelessWidget {
+  const _AttendeeRows({
+    required this.attendeeIds,
+    required this.profiles,
+    required this.attendedIds,
+    required this.eventId,
+    required this.scrollable,
+  });
+
+  final List<String> attendeeIds;
+  final Map<String, (String, String?)> profiles;
+  final Set<String> attendedIds;
+  final String eventId;
+  final bool scrollable;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListView.separated(
+      shrinkWrap: !scrollable,
+      primary: scrollable ? null : false,
+      physics: scrollable
+          ? const AlwaysScrollableScrollPhysics()
+          : const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.only(bottom: scrollable ? CatchSpacing.s6 : 0),
+      itemCount: attendeeIds.length,
+      separatorBuilder: (_, _) => const SizedBox(height: CatchSpacing.s2),
+      itemBuilder: (context, index) {
+        final uid = attendeeIds[index];
+        final profile = profiles[uid];
+        final isAttended = attendedIds.contains(uid);
+
+        return _AttendeeRow(
+          uid: uid,
+          name: profile?.$1 ?? 'Runner',
+          photoUrl: profile?.$2,
+          isAttended: isAttended,
+          eventId: eventId,
+        );
+      },
     );
   }
 }

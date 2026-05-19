@@ -149,8 +149,14 @@ Standalone routes:
 - `/dev/event-success-lab` → dev/staging-only event-success feature lab
 - `/dev/event-success-preview/:clubId/:eventId` → dev/staging-only contextual
   success preview for a real event
-- `/dashboard/clubs/:clubId/events/:eventId/success` → host event-success
-  setup, live facilitation, and feedback report
+- `/clubs/:clubId/events/:eventId/manage` → canonical Host Manage workspace for
+  overview, attendance correction, cancellation/deletion, and event-success tools
+- `/clubs/:clubId/events/:eventId/edit` → host-only edit form for published
+  event operational details
+- `/dashboard/clubs/:clubId/events/:eventId/manage` → legacy/deep-link alias
+  into canonical Host Manage
+- `/dashboard/clubs/:clubId/events/:eventId/success` → legacy/deep-link alias
+  into Host Manage with the Event success section selected
 - `/profiles/:uid` → public profile of any user
 
 Tabbed shell routes:
@@ -160,6 +166,8 @@ Tabbed shell routes:
 - `/clubs/:clubId` → Club detail
 - `/clubs/:clubId/edit` → Edit club
 - `/clubs/:clubId/events/:eventId` → Event detail
+- `/clubs/:clubId/events/:eventId/attendance` → legacy/deep-link alias into
+  Host Manage with the Attendance section selected
 - `/clubs/:clubId/events/:eventId/companion` → attendee event-success
   companion for the booked/attended event
 - `/clubs/create-club` → Create club

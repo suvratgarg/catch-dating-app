@@ -3,6 +3,7 @@ import 'package:catch_dating_app/clubs/presentation/club_name_lookup.dart';
 import 'package:catch_dating_app/core/theme/catch_spacing.dart';
 import 'package:catch_dating_app/core/theme/catch_text_styles.dart';
 import 'package:catch_dating_app/core/theme/catch_tokens.dart';
+import 'package:catch_dating_app/core/widgets/catch_button.dart';
 import 'package:catch_dating_app/core/widgets/catch_empty_state.dart';
 import 'package:catch_dating_app/core/widgets/catch_loading_indicator.dart';
 import 'package:catch_dating_app/core/widgets/catch_surface.dart';
@@ -15,6 +16,7 @@ import 'package:catch_dating_app/events/presentation/event_formatters.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_agenda_list.dart';
 import 'package:catch_dating_app/events/presentation/widgets/event_tiles/event_tiles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -26,9 +28,12 @@ class CalendarScreen extends ConsumerStatefulWidget {
 }
 
 class _CalendarScreenState extends ConsumerState<CalendarScreen> {
+  static const double _calendarDragThreshold = 8;
+
   final Map<DateTime, GlobalKey> _daySectionKeys = {};
 
   DateTime? _selectedDate;
+  bool _calendarExpanded = false;
 
   @override
   Widget build(BuildContext context) {
@@ -75,21 +80,37 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               ),
             );
 
-            return CustomScrollView(
-              slivers: [
-                SliverToBoxAdapter(
-                  child: _CalendarHeader(
-                    summary: summary,
-                    selectedDate: selectedDate,
-                    onDateSelected: _selectDate,
+            return NotificationListener<ScrollNotification>(
+              onNotification: _handleCalendarScrollNotification,
+              child: CustomScrollView(
+                slivers: [
+                  SliverPersistentHeader(
+                    pinned: true,
+                    delegate: _CalendarDateHeaderDelegate(
+                      height: _CalendarDateHeader.heightFor(
+                        context,
+                        expanded: _calendarExpanded,
+                      ),
+                      child: _CalendarDateHeader(
+                        summary: summary,
+                        selectedDate: selectedDate,
+                        expanded: _calendarExpanded,
+                        onDateSelected: _selectDate,
+                        onTodayPressed: () => _selectDate(summary.today),
+                        onVerticalDragDelta: _handleCalendarHeaderDragDelta,
+                      ),
+                    ),
                   ),
-                ),
-                ..._buildCalendarEventSlivers(
-                  context: context,
-                  summary: summary,
-                  clubNamesAsync: clubNamesAsync,
-                ),
-              ],
+                  SliverToBoxAdapter(
+                    child: _CalendarStatsHeader(summary: summary),
+                  ),
+                  ..._buildCalendarEventSlivers(
+                    context: context,
+                    summary: summary,
+                    clubNamesAsync: clubNamesAsync,
+                  ),
+                ],
+              ),
             );
           },
         ),
@@ -108,13 +129,73 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
       if (!mounted) return;
       final dayContext = _daySectionKeys[day]?.currentContext;
       if (dayContext == null) return;
+      final alignment = _agendaRevealAlignment(dayContext);
       Scrollable.ensureVisible(
         dayContext,
         duration: const Duration(milliseconds: 320),
         curve: Curves.easeOutCubic,
-        alignment: 0.08,
+        alignment: alignment,
       );
     });
+  }
+
+  double _agendaRevealAlignment(BuildContext dayContext) {
+    final scrollable = Scrollable.maybeOf(dayContext);
+    final viewportHeight = scrollable?.position.viewportDimension;
+    if (viewportHeight == null || viewportHeight <= 0) return 0.18;
+
+    return ((_CalendarDateHeader.heightFor(
+                  context,
+                  expanded: _calendarExpanded,
+                ) +
+                Sizes.p8) /
+            viewportHeight)
+        .clamp(0.12, 0.32)
+        .toDouble();
+  }
+
+  bool _handleCalendarScrollNotification(ScrollNotification notification) {
+    if (notification.depth != 0) return false;
+
+    if (notification is ScrollUpdateNotification) {
+      final delta = notification.dragDetails?.delta.dy;
+      if (delta != null) {
+        _handleCalendarDragDelta(
+          delta,
+          scrollPixels: notification.metrics.pixels,
+        );
+      }
+    } else if (notification is OverscrollNotification) {
+      final delta = notification.dragDetails?.delta.dy;
+      if (delta != null) {
+        _handleCalendarDragDelta(
+          delta,
+          scrollPixels: notification.metrics.pixels,
+        );
+      }
+    } else if (notification is UserScrollNotification &&
+        notification.direction == ScrollDirection.reverse) {
+      _setCalendarExpanded(false);
+    }
+
+    return false;
+  }
+
+  void _handleCalendarHeaderDragDelta(double delta) {
+    _handleCalendarDragDelta(delta, scrollPixels: 0);
+  }
+
+  void _handleCalendarDragDelta(double delta, {required double scrollPixels}) {
+    if (delta > _calendarDragThreshold && scrollPixels <= Sizes.p16) {
+      _setCalendarExpanded(true);
+    } else if (delta < -_calendarDragThreshold) {
+      _setCalendarExpanded(false);
+    }
+  }
+
+  void _setCalendarExpanded(bool expanded) {
+    if (_calendarExpanded == expanded) return;
+    setState(() => _calendarExpanded = expanded);
   }
 
   Key _agendaDayKey(DateTime date) {
@@ -180,16 +261,179 @@ String _calendarEventDetailPath(Event event) {
   return '/calendar/clubs/$clubId/events/$eventId';
 }
 
-class _CalendarHeader extends StatelessWidget {
-  const _CalendarHeader({
+class _CalendarDateHeader extends StatelessWidget {
+  const _CalendarDateHeader({
     required this.summary,
     required this.selectedDate,
+    required this.expanded,
     required this.onDateSelected,
+    required this.onTodayPressed,
+    required this.onVerticalDragDelta,
   });
 
   final _CalendarEventSummary summary;
   final DateTime selectedDate;
+  final bool expanded;
   final ValueChanged<DateTime> onDateSelected;
+  final VoidCallback onTodayPressed;
+  final ValueChanged<double> onVerticalDragDelta;
+
+  static double heightFor(BuildContext context, {required bool expanded}) {
+    final scaler = MediaQuery.textScalerOf(context);
+    final monthHeight = scaler.scale(26) * 1.12;
+    final titleRowHeight = monthHeight < 36 ? 36.0 : monthHeight;
+    final weekdayHeight = scaler.scale(13) * 1.45;
+    final dateHeight = scaler.scale(13) * 1.30;
+    final weekStripHeight =
+        (Sizes.p8 * 2) + weekdayHeight + Sizes.p2 + dateHeight + Sizes.p4 + 4;
+    if (expanded) {
+      final monthWeekdayHeight = scaler.scale(11) * 1.30;
+      const monthDayHeight = 40.0;
+      return Sizes.p8 +
+          titleRowHeight +
+          Sizes.p16 +
+          monthWeekdayHeight +
+          Sizes.p8 +
+          (monthDayHeight * 6) +
+          (Sizes.p6 * 5) +
+          Sizes.p12 +
+          Sizes.p2;
+    }
+
+    return Sizes.p8 +
+        titleRowHeight +
+        Sizes.p14 +
+        weekStripHeight +
+        Sizes.p12 +
+        Sizes.p2;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: expanded
+          ? 'Calendar date header. Drag up to collapse the month.'
+          : 'Calendar date header. Drag down to expand the month.',
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onVerticalDragUpdate: (details) =>
+            onVerticalDragDelta(details.delta.dy),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CatchSpacing.s5,
+            CatchSpacing.s2,
+            CatchSpacing.s5,
+            CatchSpacing.s3,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _CalendarTitleRow(
+                title: _monthLabel(selectedDate),
+                onTodayPressed: onTodayPressed,
+              ),
+              gapH14,
+              if (expanded)
+                _MonthGrid(
+                  summary: summary,
+                  selectedDate: selectedDate,
+                  onDateSelected: onDateSelected,
+                )
+              else
+                _WeekStrip(
+                  summary: summary,
+                  selectedDate: selectedDate,
+                  onDateSelected: onDateSelected,
+                ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  static String _monthLabel(DateTime date) {
+    return '${_monthName(date.month)} ${date.year}';
+  }
+}
+
+class _CalendarTitleRow extends StatelessWidget {
+  const _CalendarTitleRow({required this.title, required this.onTodayPressed});
+
+  final String title;
+  final VoidCallback onTodayPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+
+    return Row(
+      children: [
+        Expanded(
+          child: Text(
+            title,
+            style: CatchTextStyles.displayM(context),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+          ),
+        ),
+        gapW12,
+        CatchButton(
+          label: 'Today',
+          onPressed: onTodayPressed,
+          variant: CatchButtonVariant.secondary,
+          size: CatchButtonSize.sm,
+          foregroundColor: t.ink,
+          borderColor: t.line,
+        ),
+      ],
+    );
+  }
+}
+
+class _CalendarDateHeaderDelegate extends SliverPersistentHeaderDelegate {
+  const _CalendarDateHeaderDelegate({
+    required this.child,
+    required this.height,
+  });
+
+  final Widget child;
+  final double height;
+
+  @override
+  double get minExtent => height;
+
+  @override
+  double get maxExtent => height;
+
+  @override
+  Widget build(
+    BuildContext context,
+    double shrinkOffset,
+    bool overlapsContent,
+  ) {
+    final t = CatchTokens.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: t.bg,
+        border: overlapsContent
+            ? Border(bottom: BorderSide(color: t.line))
+            : null,
+      ),
+      child: SizedBox.expand(child: child),
+    );
+  }
+
+  @override
+  bool shouldRebuild(covariant _CalendarDateHeaderDelegate oldDelegate) {
+    return child != oldDelegate.child || height != oldDelegate.height;
+  }
+}
+
+class _CalendarStatsHeader extends StatelessWidget {
+  const _CalendarStatsHeader({required this.summary});
+
+  final _CalendarEventSummary summary;
 
   @override
   Widget build(BuildContext context) {
@@ -198,62 +442,42 @@ class _CalendarHeader extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CatchSpacing.s5,
-        CatchSpacing.s2,
+        Sizes.p2,
         CatchSpacing.s5,
         CatchSpacing.s3,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Text(
-            _monthLabel(selectedDate),
-            style: CatchTextStyles.displayM(context),
-          ),
-          gapH14,
-          _WeekStrip(
-            summary: summary,
-            selectedDate: selectedDate,
-            onDateSelected: onDateSelected,
-          ),
-          gapH14,
-          CatchSurface(
-            padding: const EdgeInsets.all(Sizes.p14),
-            radius: CatchRadius.md,
-            borderColor: t.line,
-            child: Row(
-              children: [
-                Expanded(
-                  child: StatColumn(
-                    label: 'Planned',
-                    value: '${summary.events.length}',
-                  ),
-                ),
-                const _StatDivider(),
-                Expanded(
-                  child: StatColumn(
-                    label: 'Distance',
-                    value: '${summary.totalDistance.round()} km',
-                  ),
-                ),
-                const _StatDivider(),
-                Expanded(
-                  child: StatColumn(
-                    label: 'Next',
-                    value: summary.nextEvent == null
-                        ? 'None'
-                        : EventFormatters.time(summary.nextEvent!.startTime),
-                  ),
-                ),
-              ],
+      child: CatchSurface(
+        padding: const EdgeInsets.all(Sizes.p14),
+        radius: CatchRadius.md,
+        borderColor: t.line,
+        child: Row(
+          children: [
+            Expanded(
+              child: StatColumn(
+                label: 'Planned',
+                value: '${summary.events.length}',
+              ),
             ),
-          ),
-        ],
+            const _StatDivider(),
+            Expanded(
+              child: StatColumn(
+                label: 'Distance',
+                value: '${summary.totalDistance.round()} km',
+              ),
+            ),
+            const _StatDivider(),
+            Expanded(
+              child: StatColumn(
+                label: 'Next',
+                value: summary.nextEvent == null
+                    ? 'None'
+                    : EventFormatters.time(summary.nextEvent!.startTime),
+              ),
+            ),
+          ],
+        ),
       ),
     );
-  }
-
-  static String _monthLabel(DateTime date) {
-    return '${_monthName(date.month)} ${date.year}';
   }
 }
 
@@ -357,6 +581,151 @@ class _WeekDay extends StatelessWidget {
                   height: 4,
                   decoration: BoxDecoration(
                     color: hasEvent ? t.primary : Colors.transparent,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _MonthGrid extends StatelessWidget {
+  const _MonthGrid({
+    required this.summary,
+    required this.selectedDate,
+    required this.onDateSelected,
+  });
+
+  final _CalendarEventSummary summary;
+  final DateTime selectedDate;
+  final ValueChanged<DateTime> onDateSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final firstOfMonth = DateTime(selectedDate.year, selectedDate.month);
+    final gridStart = firstOfMonth.subtract(
+      Duration(days: firstOfMonth.weekday % DateTime.daysPerWeek),
+    );
+    final eventDays = summary.events
+        .map((event) => DateUtils.dateOnly(event.startTime))
+        .toSet();
+
+    return Column(
+      children: [
+        Row(
+          children: [
+            for (final day in const ['S', 'M', 'T', 'W', 'T', 'F', 'S'])
+              Expanded(
+                child: Text(
+                  day,
+                  textAlign: TextAlign.center,
+                  style: CatchTextStyles.labelM(context),
+                ),
+              ),
+          ],
+        ),
+        gapH8,
+        for (var week = 0; week < 6; week += 1) ...[
+          Row(
+            children: [
+              for (
+                var weekday = 0;
+                weekday < DateTime.daysPerWeek;
+                weekday += 1
+              )
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      final date = DateUtils.dateOnly(
+                        gridStart.add(
+                          Duration(
+                            days: (week * DateTime.daysPerWeek) + weekday,
+                          ),
+                        ),
+                      );
+                      final inMonth = date.month == selectedDate.month;
+                      return _MonthDay(
+                        key: inMonth ? _calendarMonthDayKey(date) : null,
+                        date: date,
+                        inMonth: inMonth,
+                        active: DateUtils.isSameDay(date, selectedDate),
+                        today: DateUtils.isSameDay(date, summary.today),
+                        hasEvent: eventDays.contains(date),
+                        onTap: () => onDateSelected(date),
+                      );
+                    },
+                  ),
+                ),
+            ],
+          ),
+          if (week < 5) gapH6,
+        ],
+      ],
+    );
+  }
+}
+
+class _MonthDay extends StatelessWidget {
+  const _MonthDay({
+    super.key,
+    required this.date,
+    required this.inMonth,
+    required this.active,
+    required this.today,
+    required this.hasEvent,
+    required this.onTap,
+  });
+
+  final DateTime date;
+  final bool inMonth;
+  final bool active;
+  final bool today;
+  final bool hasEvent;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final t = CatchTokens.of(context);
+    final textColor = active
+        ? t.surface
+        : inMonth
+        ? t.ink
+        : t.ink3.withValues(alpha: 0.36);
+    final dayText = Text(
+      '${date.day}',
+      style: CatchTextStyles.labelL(context, color: textColor),
+    );
+
+    return Semantics(
+      button: inMonth,
+      selected: active,
+      label: '${date.day}',
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: inMonth ? onTap : null,
+          borderRadius: BorderRadius.circular(12),
+          child: Ink(
+            height: 40,
+            decoration: BoxDecoration(
+              color: active ? t.ink : Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              border: today && !active ? Border.all(color: t.line2) : null,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                inMonth ? dayText : Opacity(opacity: 0, child: dayText),
+                gapH4,
+                Container(
+                  width: 4,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: hasEvent && inMonth ? t.primary : Colors.transparent,
                     shape: BoxShape.circle,
                   ),
                 ),
@@ -500,6 +869,10 @@ String _monthName(int month) {
 
 Key _calendarWeekDayKey(DateTime date) {
   return ValueKey<String>('calendar-week-day-${_dateKey(date)}');
+}
+
+Key _calendarMonthDayKey(DateTime date) {
+  return ValueKey<String>('calendar-month-day-${_dateKey(date)}');
 }
 
 String _dateKey(DateTime date) {

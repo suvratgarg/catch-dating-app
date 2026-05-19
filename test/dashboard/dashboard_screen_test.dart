@@ -23,6 +23,7 @@ import 'package:catch_dating_app/events/presentation/event_check_in_location_ser
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/notifications/data/activity_notification_repository.dart';
 import 'package:catch_dating_app/notifications/domain/activity_notification.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
@@ -1045,7 +1046,7 @@ void main() {
       expect(find.textContaining('NEXT EVENT'), findsNothing);
     });
 
-    testWidgets('shows a paged host tools rail for upcoming hosted events', (
+    testWidgets('shows a paged host tools rail for hosted events', (
       tester,
     ) async {
       final now = DateTime.now();
@@ -1063,6 +1064,13 @@ void main() {
           startTime: now.add(const Duration(hours: 5)),
           bookedCount: 7,
           waitlistedCount: 1,
+        ),
+        buildEvent(
+          id: 'hosted-event-3',
+          clubId: 'club-host',
+          startTime: now.subtract(const Duration(hours: 10)),
+          endTime: now.subtract(const Duration(hours: 9)),
+          bookedCount: 4,
         ),
       ];
 
@@ -1093,8 +1101,9 @@ void main() {
       );
       await _pumpDashboardUi(tester);
 
-      expect(find.text('Host tools'), findsOneWidget);
-      expect(find.text('2 events'), findsOneWidget);
+      expect(find.text('Host operations'), findsOneWidget);
+      expect(find.text('Active 2'), findsOneWidget);
+      expect(find.text('Past 1'), findsOneWidget);
       expect(find.text('HOST TOOLS'), findsOneWidget);
       expect(find.text('Manage event'), findsOneWidget);
       expect(find.text('Attendance opens later'), findsOneWidget);
@@ -1109,6 +1118,13 @@ void main() {
 
       expect(find.text('2/2'), findsOneWidget);
       expect(find.textContaining('7/20 booked'), findsOneWidget);
+
+      await tester.tap(find.text('Past 1'));
+      await _pumpDashboardUi(tester);
+
+      expect(find.text('1 event'), findsOneWidget);
+      expect(find.textContaining('4/20 booked'), findsOneWidget);
+      expect(find.text('Attendance closed'), findsOneWidget);
     });
   });
 
@@ -1205,7 +1221,7 @@ void main() {
       final event = buildEvent(id: 'hosted-event', clubId: 'club-host');
       final tool = DashboardHostEventTool(
         event: event,
-        attendanceState: DashboardHostAttendanceState.opensLater,
+        attendanceState: HostEventAttendanceState.opensLater,
       );
       final router = GoRouter(
         initialLocation: '/',
@@ -1243,7 +1259,7 @@ void main() {
       final event = buildEvent(id: 'hosted-event', clubId: 'club-host');
       final tool = DashboardHostEventTool(
         event: event,
-        attendanceState: DashboardHostAttendanceState.open,
+        attendanceState: HostEventAttendanceState.open,
       );
       final router = GoRouter(
         initialLocation: '/',

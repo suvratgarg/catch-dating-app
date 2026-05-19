@@ -7,6 +7,7 @@ import 'package:catch_dating_app/events/presentation/event_arrival_action.dart';
 import 'package:catch_dating_app/health_activity/data/health_activity_repository.dart';
 import 'package:catch_dating_app/health_activity/domain/runner_activity.dart';
 import 'package:catch_dating_app/health_activity/domain/weekly_activity_summary.dart';
+import 'package:catch_dating_app/hosts/domain/host_attendance_window.dart';
 import 'package:catch_dating_app/locations/domain/location_coordinate.dart';
 import 'package:catch_dating_app/reviews/data/reviews_repository.dart';
 import 'package:catch_dating_app/reviews/domain/review.dart';
@@ -67,19 +68,19 @@ class DashboardFullViewModel {
   recommendationsSection;
 }
 
-enum DashboardHostAttendanceState { open, opensLater, closed }
-
 class DashboardHostEventTool {
   const DashboardHostEventTool({
     required this.event,
     required this.attendanceState,
+    this.isPast = false,
   });
 
   final Event event;
-  final DashboardHostAttendanceState attendanceState;
+  final HostEventAttendanceState attendanceState;
+  final bool isPast;
 
   bool get canTakeAttendance =>
-      attendanceState == DashboardHostAttendanceState.open;
+      attendanceState == HostEventAttendanceState.open;
 }
 
 class DashboardEventRecommendation {
@@ -354,36 +355,43 @@ List<DashboardHostEventTool> _buildHostEventTools(
   final tools = <DashboardHostEventTool>[];
   for (final event in hostedEvents) {
     if (event.isCancelled) continue;
-    final attendanceState = _hostAttendanceState(event: event, now: now);
-    final isFuture = event.startTime.isAfter(now);
-    if (!isFuture && attendanceState != DashboardHostAttendanceState.open) {
-      continue;
-    }
+    final attendanceState = hostEventAttendanceStateFor(event: event, now: now);
     tools.add(
-      DashboardHostEventTool(event: event, attendanceState: attendanceState),
+      DashboardHostEventTool(
+        event: event,
+        attendanceState: attendanceState,
+        isPast: isPastHostedEventForOperations(
+          event: event,
+          attendanceState: attendanceState,
+          now: now,
+        ),
+      ),
     );
   }
 
-  tools.sort((a, b) {
-    if (a.canTakeAttendance != b.canTakeAttendance) {
-      return a.canTakeAttendance ? -1 : 1;
-    }
-    return a.event.startTime.compareTo(b.event.startTime);
-  });
+  tools.sort((a, b) => _compareHostEventTools(a, b, now: now));
   return tools;
 }
 
-DashboardHostAttendanceState _hostAttendanceState({
-  required Event event,
+int _compareHostEventTools(
+  DashboardHostEventTool a,
+  DashboardHostEventTool b, {
   required DateTime now,
 }) {
-  if (isHostAttendanceOpen(event: event, now: now)) {
-    return DashboardHostAttendanceState.open;
+  final rankA = _hostEventToolRank(a, now: now);
+  final rankB = _hostEventToolRank(b, now: now);
+  if (rankA != rankB) return rankA.compareTo(rankB);
+
+  if (rankA == 2) {
+    return b.event.startTime.compareTo(a.event.startTime);
   }
-  if (now.isBefore(hostAttendanceWindowStartsAt(event))) {
-    return DashboardHostAttendanceState.opensLater;
-  }
-  return DashboardHostAttendanceState.closed;
+  return a.event.startTime.compareTo(b.event.startTime);
+}
+
+int _hostEventToolRank(DashboardHostEventTool tool, {required DateTime now}) {
+  if (tool.canTakeAttendance) return 0;
+  if (tool.event.startTime.isAfter(now)) return 1;
+  return 2;
 }
 
 Event? _latestUnreviewedAttendedEvent(

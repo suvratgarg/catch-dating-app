@@ -167,7 +167,6 @@ void main() {
           bottomNavigationBar: EventDetailCta(
             event: buildEvent(bookedCount: 2),
             clubId: 'club1',
-            isHost: false,
             userProfile: buildUser(),
             participation: null,
           ),
@@ -203,7 +202,6 @@ void main() {
           bottomNavigationBar: EventDetailCta(
             event: event,
             clubId: 'club1',
-            isHost: false,
             userProfile: buildUser(),
             participation: null,
             inviteCode: 'CATCH-DELHI',
@@ -235,7 +233,6 @@ void main() {
               ),
             ),
             clubId: 'club1',
-            isHost: false,
             userProfile: buildUser(),
             participation: null,
           ),
@@ -262,7 +259,6 @@ void main() {
           bottomNavigationBar: EventDetailCta(
             event: buildEvent(),
             clubId: 'club1',
-            isHost: false,
             userProfile: buildUser(),
             participation: null,
           ),
@@ -298,7 +294,6 @@ void main() {
           bottomNavigationBar: EventDetailCta(
             event: buildEvent(priceInPaise: 15000),
             clubId: 'club1',
-            isHost: false,
             userProfile: buildUser(),
             participation: null,
           ),
@@ -327,7 +322,6 @@ void main() {
           bottomNavigationBar: EventDetailCta(
             event: buildEvent(bookedCount: 1),
             clubId: 'club1',
-            isHost: false,
             userProfile: buildUser(),
             participation: _participation(
               status: EventParticipationStatus.signedUp,
@@ -356,7 +350,6 @@ void main() {
           bottomNavigationBar: EventDetailCta(
             event: buildEvent(bookedCount: 1),
             clubId: 'club1',
-            isHost: false,
             userProfile: buildUser(uid: 'runner-1'),
             participation: null,
           ),
@@ -371,35 +364,6 @@ void main() {
       expect(find.text('Join event — 19 spots left'), findsOneWidget);
     });
 
-    testWidgets('renders host tools as the event-detail bottom action', (
-      tester,
-    ) async {
-      final startTime = DateTime(2026, 1, 1, 9);
-
-      await pumpEventsTestApp(
-        tester,
-        Scaffold(
-          bottomNavigationBar: EventDetailCta(
-            event: buildEvent(startTime: startTime),
-            clubId: 'club1',
-            isHost: true,
-            now: startTime.subtract(const Duration(minutes: 5)),
-            userProfile: buildUser(uid: 'host-1'),
-            participation: null,
-          ),
-        ),
-        overrides: [
-          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
-        ],
-      );
-
-      expect(find.text('HOST TOOLS'), findsOneWidget);
-      expect(find.text('ATTENDANCE OPEN'), findsOneWidget);
-      expect(find.text('Take attendance'), findsOneWidget);
-      expect(find.text('Manage event'), findsOneWidget);
-      expect(find.text('Join event — 20 spots left'), findsNothing);
-    });
-
     testWidgets(
       'does not render self check-in as an event-detail bottom action',
       (tester) async {
@@ -411,7 +375,6 @@ void main() {
             bottomNavigationBar: EventDetailCta(
               event: buildEvent(startTime: startTime, bookedCount: 1),
               clubId: 'club1',
-              isHost: false,
               now: startTime.subtract(const Duration(minutes: 5)),
               userProfile: buildUser(uid: 'runner-1'),
               participation: _participation(
@@ -461,14 +424,12 @@ void main() {
                   EventDetailCta(
                     event: buildEvent(capacityLimit: 1, bookedCount: 1),
                     clubId: 'club1',
-                    isHost: false,
                     userProfile: buildUser(uid: 'runner-9'),
                     participation: null,
                   ),
                   EventDetailCta(
                     event: buildEvent(waitlistedCount: 1),
                     clubId: 'club1',
-                    isHost: false,
                     userProfile: buildUser(uid: 'runner-9'),
                     participation: _participation(
                       uid: 'runner-9',
@@ -509,7 +470,6 @@ void main() {
                   checkedInCount: 1,
                 ),
                 clubId: 'club1',
-                isHost: false,
                 userProfile: buildUser(),
                 participation: _participation(
                   status: EventParticipationStatus.attended,
@@ -521,7 +481,6 @@ void main() {
                   endTime: DateTime.now().subtract(const Duration(hours: 1)),
                 ),
                 clubId: 'club1',
-                isHost: false,
                 userProfile: buildUser(),
                 participation: null,
               ),
@@ -555,7 +514,6 @@ void main() {
               checkedInCount: 1,
             ),
             clubId: 'club1',
-            isHost: false,
             now: now,
             userProfile: buildUser(),
             participation: _participation(
@@ -596,7 +554,6 @@ void main() {
                   constraints: const EventConstraints(minAge: 18),
                 ),
                 clubId: 'club1',
-                isHost: false,
                 userProfile: tooYoungUser,
                 participation: null,
               ),
@@ -605,7 +562,6 @@ void main() {
                   constraints: const EventConstraints(maxAge: 40),
                 ),
                 clubId: 'club1',
-                isHost: false,
                 userProfile: olderUser,
                 participation: null,
               ),
@@ -615,7 +571,6 @@ void main() {
                   genderCounts: const {'man': 1},
                 ),
                 clubId: 'club1',
-                isHost: false,
                 userProfile: buildUser(uid: 'runner-3'),
                 participation: null,
               ),
@@ -783,6 +738,34 @@ void main() {
       expect(find.text('Sign in to book this event'), findsOneWidget);
       expect(find.text('Reviews'), findsNothing);
       expect(find.text('Write a review'), findsNothing);
+    });
+
+    testWidgets('does not render a host bottom action footer', (tester) async {
+      final event = buildEvent();
+
+      await pumpEventsTestApp(
+        tester,
+        EventDetailBody(
+          event: event,
+          userProfile: buildUser(uid: 'host-1'),
+          clubId: 'club-1',
+          isHost: true,
+          reviews: const [],
+          isAuthenticated: true,
+          isSaved: false,
+          participation: null,
+        ),
+        overrides: [
+          clubsRepositoryProvider.overrideWithValue(FakeClubsRepository()),
+          paymentRepositoryProvider.overrideWithValue(FakePaymentRepository()),
+        ],
+      );
+
+      expect(find.text(event.title), findsWidgets);
+      expect(find.text('HOST TOOLS'), findsNothing);
+      expect(find.text('Manage event'), findsNothing);
+      expect(find.text('Take attendance'), findsNothing);
+      expect(find.text('Join event — 20 spots left'), findsNothing);
     });
 
     testWidgets('shows a full-screen celebration after a successful booking', (

@@ -156,10 +156,10 @@ class _LabHero extends StatelessWidget {
               spacing: CatchSpacing.s2,
               runSpacing: CatchSpacing.s2,
               children: [
-                _DarkPill(label: '$playbookCount playbooks'),
-                const _DarkPill(label: 'Dev/staging route'),
-                const _DarkPill(label: 'No Firestore writes'),
-                const _DarkPill(label: 'No booking changes'),
+                EventSuccessDarkPill(label: '$playbookCount playbooks'),
+                const EventSuccessDarkPill(label: 'Dev/staging route'),
+                const EventSuccessDarkPill(label: 'No Firestore writes'),
+                const EventSuccessDarkPill(label: 'No booking changes'),
               ],
             ),
           ],
@@ -541,19 +541,19 @@ class _CoachPanel extends StatelessWidget {
             spacing: CatchSpacing.s2,
             runSpacing: CatchSpacing.s2,
             children: [
-              _MetricPill(
+              EventSuccessMetricPill(
                 label: 'Check-in',
                 value: brief.scorecard.checkInRate,
               ),
-              _MetricPill(
+              EventSuccessMetricPill(
                 label: 'Intro coverage',
                 value: brief.scorecard.introCoverageRate,
               ),
-              _MetricPill(
+              EventSuccessMetricPill(
                 label: 'Private crush',
                 value: brief.scorecard.privateCrushRate,
               ),
-              _MetricPill(
+              EventSuccessMetricPill(
                 label: 'Chat start',
                 value: brief.scorecard.chatStartRate,
               ),
@@ -561,7 +561,10 @@ class _CoachPanel extends StatelessWidget {
           ),
           const SizedBox(height: CatchSpacing.s4),
           for (final recommendation in brief.recommendations) ...[
-            _RecommendationTile(recommendation: recommendation),
+            EventSuccessRecommendationTile(
+              recommendation: recommendation,
+              icon: _priorityIcon(recommendation.priority),
+            ),
             if (recommendation != brief.recommendations.last)
               const SizedBox(height: CatchSpacing.s3),
           ],
@@ -570,71 +573,6 @@ class _CoachPanel extends StatelessWidget {
             _NotesList(title: 'Strengths', items: brief.strengths),
           ],
         ],
-      ),
-    );
-  }
-}
-
-class _RecommendationTile extends StatelessWidget {
-  const _RecommendationTile({required this.recommendation});
-
-  final EventSuccessRecommendation recommendation;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      tone: CatchSurfaceTone.raised,
-      padding: const EdgeInsets.all(CatchSpacing.s3),
-      radius: CatchRadius.sm,
-      borderColor: t.line,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(_priorityIcon(recommendation.priority), color: t.primary),
-          const SizedBox(width: CatchSpacing.s3),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  recommendation.title,
-                  style: CatchTextStyles.titleS(context),
-                ),
-                const SizedBox(height: CatchSpacing.s1),
-                Text(
-                  recommendation.rationale,
-                  style: CatchTextStyles.bodyS(context),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class _MetricPill extends StatelessWidget {
-  const _MetricPill({required this.label, required this.value});
-
-  final String label;
-  final double value;
-
-  @override
-  Widget build(BuildContext context) {
-    final t = CatchTokens.of(context);
-    return CatchSurface(
-      tone: CatchSurfaceTone.raised,
-      radius: CatchRadius.pill,
-      borderColor: t.line,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CatchSpacing.s3,
-        vertical: CatchSpacing.s2,
-      ),
-      child: Text(
-        '$label ${_formatPercent(value)}',
-        style: CatchTextStyles.labelL(context),
       ),
     );
   }
@@ -709,33 +647,6 @@ class _Section extends StatelessWidget {
   }
 }
 
-class _DarkPill extends StatelessWidget {
-  const _DarkPill({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: Colors.white.withValues(alpha: 0.12),
-        borderRadius: BorderRadius.circular(CatchRadius.pill),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.18)),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: CatchSpacing.s3,
-          vertical: CatchSpacing.s2,
-        ),
-        child: Text(
-          label,
-          style: CatchTextStyles.labelL(context, color: Colors.white),
-        ),
-      ),
-    );
-  }
-}
-
 IconData _activityIcon(ActivityKind type) => switch (type) {
   ActivityKind.socialRun => Icons.directions_run_rounded,
   ActivityKind.running => Icons.directions_run_rounded,
@@ -763,5 +674,3 @@ IconData _priorityIcon(EventRecommendationPriority priority) =>
       EventRecommendationPriority.medium => Icons.tune_rounded,
       EventRecommendationPriority.low => Icons.check_circle_outline_rounded,
     };
-
-String _formatPercent(double value) => '${(value * 100).round()}%';
