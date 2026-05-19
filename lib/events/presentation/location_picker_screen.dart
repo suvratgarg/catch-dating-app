@@ -65,7 +65,8 @@ class _LocationPickerScreenState extends ConsumerState<LocationPickerScreen> {
   void dispose() {
     _searchDebounce?.cancel();
     _searchController.dispose();
-    _mapController?.dispose();
+    // GoogleMap owns disposal of its controller; clear only our reference.
+    _mapController = null;
     super.dispose();
   }
 
