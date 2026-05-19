@@ -80,6 +80,13 @@ jobs:
             -hideShellScriptEnvironment \
             archive
 
+      - name: Verify archived Maps key
+        run: |
+          node tool/validate_google_maps_config.mjs \
+            --env prod \
+            --platform ios \
+            --ios-built-plist "$RUNNER_TEMP/Runner.xcarchive/Products/Applications/Runner.app/Info.plist"
+
       - name: Export prod IPA
         run: |
           set -euo pipefail
@@ -104,6 +111,11 @@ jobs:
           rm -rf "$extract_dir"
           mkdir -p "$extract_dir"
           ditto -x -k "$ipa_path" "$extract_dir"
+
+          node tool/validate_google_maps_config.mjs \
+            --env prod \
+            --platform ios \
+            --ios-built-plist "$extract_dir/Payload/Runner.app/Info.plist"
 
           openssl cms -inform DER -verify -noverify \
             -in "$extract_dir/Payload/Runner.app/embedded.mobileprovision" \

@@ -24,6 +24,10 @@ if (args.includePlacesSecret) {
   await validatePlacesSecrets(envs, args.project);
 }
 
+if (args.iosBuiltPlist) {
+  validateIosBuiltPlist(args.iosBuiltPlist, args.env);
+}
+
 if (errors.length > 0) {
   console.error("Google Maps config validation failed:");
   for (const error of errors) console.error(`- ${error}`);
@@ -39,6 +43,7 @@ function parseArgs(argv) {
   const parsed = {
     env: null,
     includePlacesSecret: false,
+    iosBuiltPlist: null,
     platform: "all",
     project: null,
   };
@@ -47,6 +52,8 @@ function parseArgs(argv) {
     if (arg === "--env") parsed.env = requireValue(argv, ++i, arg);
     else if (arg === "--include-places-secret") {
       parsed.includePlacesSecret = true;
+    } else if (arg === "--ios-built-plist") {
+      parsed.iosBuiltPlist = requireValue(argv, ++i, arg);
     } else if (arg === "--project") {
       parsed.project = requireValue(argv, ++i, arg);
     } else if (arg === "--platform") {
@@ -85,6 +92,59 @@ function validateIos(targetEnvs) {
       value: values.get(key),
       source: "ios/Flutter/GoogleMapsKeys.xcconfig",
     });
+  }
+}
+
+function validateIosBuiltPlist(plistPath, targetEnv) {
+  const resolvedPath = path.isAbsolute(plistPath)
+    ? plistPath
+    : path.join(repoRoot, plistPath);
+  if (!fs.existsSync(resolvedPath)) {
+    errors.push(
+      `Missing built iOS Info.plist: ${path.relative(repoRoot, resolvedPath)}`
+    );
+    return;
+  }
+
+  const result = spawnSync(
+    "/usr/libexec/PlistBuddy",
+    ["-c", "Print :GoogleMapsApiKey", resolvedPath],
+    {encoding: "utf8"}
+  );
+  if (result.error) {
+    errors.push(
+      `Could not read GoogleMapsApiKey from ${path.relative(repoRoot, resolvedPath)}: ` +
+        result.error.message
+    );
+    return;
+  }
+  if (result.status !== 0) {
+    errors.push(
+      `Missing GoogleMapsApiKey in built iOS Info.plist: ` +
+        path.relative(repoRoot, resolvedPath)
+    );
+    return;
+  }
+
+  const builtValue = result.stdout.trim();
+  validateApiKey({
+    label: "built ios GoogleMapsApiKey",
+    value: builtValue,
+    source: path.relative(repoRoot, resolvedPath),
+  });
+
+  if (!targetEnv) return;
+  const values = readKeyValueFile(
+    path.join(repoRoot, "ios/Flutter/GoogleMapsKeys.xcconfig"),
+    "iOS Google Maps key file"
+  );
+  const expectedKey = `GOOGLE_MAPS_IOS_API_KEY_${targetEnv.toUpperCase()}`;
+  const expectedValue = values.get(expectedKey);
+  if (expectedValue && builtValue !== expectedValue) {
+    errors.push(
+      `built ios GoogleMapsApiKey in ${path.relative(repoRoot, resolvedPath)} ` +
+        `does not match ${expectedKey} from ios/Flutter/GoogleMapsKeys.xcconfig.`
+    );
   }
 }
 
@@ -274,6 +334,8 @@ function printHelp() {
 Options:
   --env <dev|staging|prod>       Validate one environment. Defaults to all.
   --platform <ios|android|all>   Validate one platform. Defaults to all.
+  --ios-built-plist <path>       Also validate GoogleMapsApiKey in a built
+                                 Runner.app Info.plist.
   --include-places-secret        Also validate GOOGLE_MAPS_PLACES_API_KEY
                                  from Secret Manager via gcloud.
   --project <project-id>         Override the Firebase project used for the
