@@ -152,7 +152,7 @@ heroGrad    linear-gradient(135deg, #FF4E1F 0%, #FF9A5C 60%, #FFC78A 100%)
 Dark mode + two other palettes (Street, Editorial) included in `tokens.jsx`.
 
 ### Typography — Sporty (launch default)
-- **Display**: Space Grotesk, weight 700, tracking -0.02em
+- **Display**: Inter, weight 700, tracking -0.02em
 - **Text**: Inter, weights 400/500/600/700
 - **Mono**: JetBrains Mono (timers, distances)
 

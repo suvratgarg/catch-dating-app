@@ -91,7 +91,7 @@ abstract final class AppTheme {
         scrolledUnderElevation: 0,
         backgroundColor: tokens.bg,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: GoogleFonts.spaceGrotesk(
+        titleTextStyle: GoogleFonts.inter(
           fontSize: 17,
           fontWeight: FontWeight.w700,
           letterSpacing: 17 * -0.02,

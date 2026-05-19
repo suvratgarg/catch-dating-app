@@ -113,8 +113,8 @@ const PALETTES = {
 const TYPE = {
   sporty: {
     name: 'Sporty',
-    sub:  'Space Grotesk + Inter',
-    display: "'Space Grotesk', 'Inter', -apple-system, system-ui, sans-serif",
+    sub:  'Inter',
+    display: "'Inter', -apple-system, system-ui, sans-serif",
     text:    "'Inter', -apple-system, system-ui, sans-serif",
     mono:    "'JetBrains Mono', ui-monospace, monospace",
     displayWeight: 700,

@@ -2,8 +2,8 @@ import 'package:catch_dating_app/core/theme/catch_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// Typography tokens for Catch's canonical Sporty type system:
-/// Space Grotesk for display, Inter for text, and JetBrains Mono for numerics.
+/// Typography tokens for Catch's canonical type system:
+/// Inter for display and text, and JetBrains Mono for numerics.
 ///
 /// These names mirror the design-system catalog. Prefer the named styles over
 /// ad hoc `TextStyle` values, and use `copyWith` only for local state changes
@@ -147,7 +147,7 @@ abstract final class CatchTextStyles {
     required double height,
     double trackingEm = 0,
     Color? color,
-  }) => GoogleFonts.spaceGrotesk(
+  }) => GoogleFonts.inter(
     fontSize: size,
     fontWeight: weight,
     height: height,
